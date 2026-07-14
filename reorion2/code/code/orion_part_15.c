@@ -74,7 +74,7 @@ int __usercall sub_E5BE3( int a1, int a2,
         int a25,
         int a26,
         int a27,
-        __int128 a28)
+        hr_int128_t a28)
 {
   int16_t v28; // ax
   int v29; // esi
@@ -1461,7 +1461,7 @@ char __fastcall sub_E7303(int a1, int a2)
 
 //----- (000E7343) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=225)) - nutno dohledat rucne v IDA @ 0xE7651 */
-_DWORD __stdcall sub_E7343(_DWORD, int, _DWORD, int, int, _DWORD)
+_DWORD __stdcall sub_E7343(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4, _DWORD _p5)
 {
   DECOMP_TODO("call analysis failed (funcsize=225)");
 }
@@ -2522,7 +2522,7 @@ char __fastcall sub_E8776(int a1)
 
 //----- (000E87D2) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (function frame is wrong (funcsize=0)) - nutno dohledat rucne v IDA @ 0xE87D2 */
-int __fastcall sub_E87D2(_DWORD, _DWORD)
+int __fastcall sub_E87D2(_DWORD _p0, _DWORD _p1)
 {
   DECOMP_TODO("function frame is wrong (funcsize=0)");
 }
@@ -6044,7 +6044,7 @@ int __fastcall sub_ED48B(
         int a6,
         int64_t a7,
         arg8_ED48B a8,
-        __int128 a9,
+        hr_int128_t a9,
         int a10,
         int a11, unsigned int a12,
         int a13,

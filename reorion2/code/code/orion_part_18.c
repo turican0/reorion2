@@ -123,7 +123,7 @@ int __usercall sub_10D041( int a1)
   int64_t v2; // rax
   int v4; // [esp+0h] [ebp+7Ah]
   int v5[17]; // [esp+4h] [ebp+7Eh] BYREF
-  __int128 v6; // [esp+48h] [ebp+C2h]
+  hr_int128_t v6; // [esp+48h] [ebp+C2h]
   int64_t v7; // [esp+58h] [ebp+D2h]
   int64_t v8; // [esp+60h] [ebp+DAh]
   int v9; // [esp+68h] [ebp+E2h]
@@ -156,8 +156,7 @@ int __usercall sub_10D041( int a1)
     v5[13],
     v5[14],
     v5[15],
-    v5[16],
-    v6,
+    v5[16],(int)LODWORD(v6),
     v7,
     v8,
     v9,
@@ -177,7 +176,7 @@ int __usercall sub_10D041( int a1)
 int __fastcall sub_10D0DA(int64_t a1, int a2)
 {
   int v4[18]; // [esp+0h] [ebp-104h] BYREF
-  __int128 v5; // [esp+48h] [ebp-BCh]
+  hr_int128_t v5; // [esp+48h] [ebp-BCh]
   int64_t v6; // [esp+58h] [ebp-ACh]
   int64_t v7; // [esp+60h] [ebp-A4h]
   int v8; // [esp+68h] [ebp-9Ch]
@@ -212,8 +211,7 @@ int __fastcall sub_10D0DA(int64_t a1, int a2)
     v4[14],
     v4[15],
     v4[16],
-    v4[17],
-    v5,
+    v4[17],(int)LODWORD(v5),
     v6,
     v7,
     v8,
@@ -234,7 +232,7 @@ int __usercall sub_10D167( int a1, int a2, int a3)
   _DWORD *v4; // eax
   int64_t v5; // rax
   int v7[18]; // [esp+0h] [ebp-104h] BYREF
-  __int128 v8; // [esp+48h] [ebp-BCh]
+  hr_int128_t v8; // [esp+48h] [ebp-BCh]
   int64_t v9; // [esp+58h] [ebp-ACh]
   int64_t v10; // [esp+60h] [ebp-A4h]
   int v11; // [esp+68h] [ebp-9Ch]
@@ -268,8 +266,7 @@ int __usercall sub_10D167( int a1, int a2, int a3)
     v7[14],
     v7[15],
     v7[16],
-    v7[17],
-    v8,
+    v7[17],(int)LODWORD(v8),
     v9,
     v10,
     v11,
@@ -294,7 +291,7 @@ void __fastcall sub_10D1FC( int a1)
   int v7; // ebx
   int64_t v8; // rax
   int v9[18]; // [esp+0h] [ebp-14Ch] BYREF
-  __int128 v10; // [esp+48h] [ebp-104h]
+  hr_int128_t v10; // [esp+48h] [ebp-104h]
   int64_t v11; // [esp+58h] [ebp-F4h]
   int64_t v12; // [esp+60h] [ebp-ECh]
   int v13; // [esp+68h] [ebp-E4h]
@@ -357,8 +354,7 @@ void __fastcall sub_10D1FC( int a1)
       v9[14],
       v9[15],
       v9[16],
-      v9[17],
-      v10,
+      v9[17],(int)LODWORD(v10),
       v11,
       v12,
       v13,
@@ -398,7 +394,7 @@ int16_t __usercall sub_10D31C(
         int a18,
         int a19,
         int a20,
-        __int128 a21,
+        hr_int128_t a21,
         int64_t a22,
         int64_t a23,
         int a24,
@@ -3392,7 +3388,7 @@ int sub_111B77()
   {
     if ( i >= 33 )
     {
-      __debugbreak();
+      hr_debugbreak();
       return -1;
     }
     if ( dword_1AE0CC[10 * i] == -1 && dword_1AE0D0[10 * i] == -1 )

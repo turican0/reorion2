@@ -4478,7 +4478,7 @@ int __usercall sub_8DAE8(
         int a18,
         int a19,
         int a20,
-        __int128 a21,
+        hr_int128_t a21,
         int64_t a22,
         int64_t a23,
         int a24,

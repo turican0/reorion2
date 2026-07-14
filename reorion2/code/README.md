@@ -90,3 +90,40 @@ Hledej `grep -rn DECOMP_TODO out/` - oznacuje:
 Vsechny tyto zmeny jsou funkcni/typove zjednoduseni pro to, aby soubor
 sel prelozit - NEJDE o overenou behovou korektnost. Pred realnym
 sestavenim/spustenim je potreba projit DECOMP_TODO mista.
+
+## Poznamky pro MSVC / Visual Studio
+
+Pipeline je ted pripraveny i pro cl.exe (ne jen GCC), ale par veci je potreba
+nastavit v projektu rucne:
+
+1. **`.c` soubory (orion_common.h, orion_data.c, orion_part_*.c) musi byt
+   kompilovany jako C, ne C++.** VS to obvykle pozna automaticky podle
+   pripony `.c`, ale over si to v Project Properties > C/C++ > Advanced >
+   "Compile As" - u techto souboru by melo byt "Default" nebo "Compile as C
+   Code (/TC)", NE "Compile as C++ Code (/TP)". Duvod: v C++ ma prazdny
+   seznam parametru `f()` jiny vyznam nez v C (0 argumentu misto
+   "nespecifikovano"), coz by rozbilo K&R deklarace popsane vyse.
+
+2. **`reorion2.cpp` zustava C++** (pouziva iostream, std::stoi...) a
+   includuje `orion_common.h`. Hlavicka uz obsahuje `extern "C" { ... }`
+   wrapping, takze se linker trefi na spravne (nezkomolene) jmeno symbolu
+   `main__0` a vseho ostatniho, i kdyz je to prelozene jako C.
+
+3. **MSVC nema nativni `__int128`** (na rozdil od GCC/Clang) - `hexrays_compat.h`
+   ho pro MSVC nahrazuje structem `{low, high}`. Protoze struct se
+   neprevede implicitne na `int` jako skutecne cislo, `split.py` pri
+   generovani automaticky obali kazde MISTO, kde se `__int128`/`_OWORD`
+   promenna predava jako HOLY argument volani, do `LODWORD(...)` (viz
+   funkce `wrap_wide_args` ve `split.py`). Pokud presto narazis na chybu
+   "argument typu __int128 nekompatibilni s int/...", posli mi presne
+   soubor+radek, doplnim vyjimku.
+
+4. Kompilatorovy ekvivalent `-fno-builtin` (kvuli `calloc`/`exit` s jinym
+   poctem argumentu nez v <stdlib.h>) by na MSVC nemel byt potreba - cl.exe
+   takhle prisne vestavene funkce nekontroluje jako GCC, ale kdyby ano,
+   hlas se.
+
+Tohle vsechno jsem si mohl overit jen proti GCC (v tomhle prostredi neni
+cl.exe) - je mozne, ze se objevi jeste dalsi drobnosti specificke pro MSVC.
+Klidne mi posilej presne chybove hlasky (soubor:radek + text chyby), budeme
+to doladovat iterativne.

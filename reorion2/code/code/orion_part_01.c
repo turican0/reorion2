@@ -1762,7 +1762,7 @@ int sub_1241A()
 
 //----- (00012479) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=170)) - nutno dohledat rucne v IDA @ 0x12520 */
-_DWORD __stdcall sub_12479(_DWORD, _DWORD)
+_DWORD __stdcall sub_12479(_DWORD _p0, _DWORD _p1)
 {
   DECOMP_TODO("call analysis failed (funcsize=170)");
 }
@@ -6651,7 +6651,7 @@ void sub_18B79()
   int v25; // [esp+4h] [ebp-5BEh]
   int16_t v26; // [esp+4h] [ebp-5BEh]
   int v27[13]; // [esp+8h] [ebp-5BAh] BYREF
-  __int128 v28; // [esp+3Ch] [ebp-586h]
+  hr_int128_t v28; // [esp+3Ch] [ebp-586h]
   int64_t v29; // [esp+4Ch] [ebp-576h]
   int64_t v30; // [esp+54h] [ebp-56Eh]
   int64_t v31; // [esp+5Ch] [ebp-566h]
@@ -6910,8 +6910,7 @@ LABEL_16:
               v27[9],
               v27[10],
               v27[11],
-              v27[12],
-              v28,
+              v27[12],(int)LODWORD(v28),
               v29,
               v30,
               v31,
@@ -7026,7 +7025,7 @@ void sub_194C5()
   int v19; // [esp+0h] [ebp-3C6h]
   int v20; // [esp+4h] [ebp-3C2h]
   int v21[13]; // [esp+8h] [ebp-3BEh] BYREF
-  __int128 v22; // [esp+3Ch] [ebp-38Ah]
+  hr_int128_t v22; // [esp+3Ch] [ebp-38Ah]
   int64_t v23; // [esp+4Ch] [ebp-37Ah]
   int64_t v24; // [esp+54h] [ebp-372h]
   int64_t v25; // [esp+5Ch] [ebp-36Ah]
@@ -7156,8 +7155,7 @@ LABEL_20:
                     v21[9],
                     v21[10],
                     v21[11],
-                    v21[12],
-                    v22,
+                    v21[12],(int)LODWORD(v22),
                     v23,
                     v24,
                     v25,
@@ -7572,7 +7570,7 @@ int __userpurge sub_19F26(
         int a15,
         int a16,
         int a17,
-        __int128 a18,
+        hr_int128_t a18,
         int64_t a19,
         int64_t a20,
         int64_t a21,
@@ -7917,7 +7915,7 @@ int __usercall sub_1AC12(int16_t *a1)
   int v7; // eax
   int v8; // eax
   int v10[15]; // [esp+0h] [ebp-490h] BYREF
-  __int128 v11; // [esp+3Ch] [ebp-454h]
+  hr_int128_t v11; // [esp+3Ch] [ebp-454h]
   int64_t v12; // [esp+4Ch] [ebp-444h]
   int64_t v13; // [esp+54h] [ebp-43Ch]
   int64_t v14; // [esp+5Ch] [ebp-434h]
@@ -8002,8 +8000,7 @@ LABEL_14:
            v10[11],
            v10[12],
            v10[13],
-           v10[14],
-           v11,
+           v10[14],(int)LODWORD(v11),
            v12,
            v13,
            v14,
@@ -9692,7 +9689,7 @@ void __fastcall sub_1CB4D(int a1, int a2)
   int v35; // [esp+30h] [ebp-504h]
   int v36; // [esp+34h] [ebp-500h]
   int v37; // [esp+38h] [ebp-4FCh]
-  __int128 v38; // [esp+3Ch] [ebp-4F8h]
+  hr_int128_t v38; // [esp+3Ch] [ebp-4F8h]
   int64_t v39; // [esp+4Ch] [ebp-4E8h]
   int64_t v40; // [esp+54h] [ebp-4E0h]
   int64_t v41; // [esp+5Ch] [ebp-4D8h]
@@ -9745,8 +9742,7 @@ void __fastcall sub_1CB4D(int a1, int a2)
           v34,
           v35,
           v36,
-          v37,
-          v38,
+          v37,(int)LODWORD(v38),
           v39,
           v40,
           v41,
@@ -9785,8 +9781,7 @@ void __fastcall sub_1CB4D(int a1, int a2)
                 v34,
                 v35,
                 v36,
-                v37,
-                v38,
+                v37,(int)LODWORD(v38),
                 v39,
                 v40,
                 v41,
@@ -9928,7 +9923,7 @@ int __userpurge sub_1CFB1( int a1,
         int a23,
         int a24,
         int a25,
-        __int128 a26,
+        hr_int128_t a26,
         int a27,
         int a28,
         int a29,
@@ -10618,7 +10613,7 @@ void __usercall sub_1DEF8(int16_t *a1)
   int v31; // edx
   int16_t *v32; // [esp-4h] [ebp-5FCh]
   int v33[15]; // [esp+0h] [ebp-5F8h] BYREF
-  __int128 v34; // [esp+3Ch] [ebp-5BCh]
+  hr_int128_t v34; // [esp+3Ch] [ebp-5BCh]
   int64_t v35; // [esp+4Ch] [ebp-5ACh]
   int64_t v36; // [esp+54h] [ebp-5A4h]
   int64_t v37; // [esp+5Ch] [ebp-59Ch]
@@ -11014,8 +11009,7 @@ void __usercall sub_1DEF8(int16_t *a1)
                     v33[11],
                     v33[12],
                     v33[13],
-                    v33[14],
-                    v34,
+                    v33[14],(int)LODWORD(v34),
                     v35,
                     v36,
                     v37,
@@ -12803,10 +12797,10 @@ void __usercall sub_21371(int a1, int a2)
   int v28; // edx
   int16_t v29; // si
   int16_t v30; // si
-  __int128 v31; // [esp-28h] [ebp-80h]
+  hr_int128_t v31; // [esp-28h] [ebp-80h]
   int v32; // [esp+0h] [ebp-58h] BYREF
   int v33; // [esp+4h] [ebp-54h]
-  __int128 v34; // [esp+8h] [ebp-50h]
+  hr_int128_t v34; // [esp+8h] [ebp-50h]
   int64_t v35; // [esp+18h] [ebp-40h]
   int v36; // [esp+20h] [ebp-38h]
   int v37; // [esp+24h] [ebp-34h]
@@ -13104,8 +13098,7 @@ LABEL_97:
                 0,
                 (int)&unk_19AA74,
                 v32,
-                v33,
-                v34,
+                v33,(int)LODWORD(v34),
                 v35,
                 v36,
                 v37,
@@ -13137,8 +13130,7 @@ LABEL_97:
                 0,
                 (int)&unk_19AA74,
                 v32,
-                v33,
-                v34,
+                v33,(int)LODWORD(v34),
                 v35,
                 v36,
                 v37,
@@ -13164,8 +13156,7 @@ LABEL_97:
           DWORD2(v31) = (int16_t)v43;
           DWORD1(v31) = (int16_t)v39;
           LODWORD(v31) = (int16_t)var4;
-          sub_21B6D(
-            v31,
+          sub_21B6D((int)LODWORD(v31),
             (int16_t)v41,
             (int16_t)v44,
             (int16_t)v48,
@@ -13173,8 +13164,7 @@ LABEL_97:
             (int16_t)v47,
             (int)&unk_19AA74,
             v32,
-            v33,
-            v34,
+            v33,(int)LODWORD(v34),
             v35,
             v36,
             v37,
@@ -13310,7 +13300,7 @@ LABEL_96:
 //----- (00021B6D) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
 char __userpurge sub_21B6D(
-        __int128 a1,
+        hr_int128_t a1,
         int a2,
         int a3,
         int a4,
@@ -13319,7 +13309,7 @@ char __userpurge sub_21B6D(
         int a7,
         int a8,
         int a9,
-        __int128 a10,
+        hr_int128_t a10,
         int64_t a11,
         int a12,
         int a13,

@@ -9213,7 +9213,7 @@ void sub_9E17C()
 
 //----- (0009E207) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=37)) - nutno dohledat rucne v IDA @ 0x9E257 */
-int __fastcall sub_9E207(_DWORD, _DWORD, _DWORD, _DWORD)
+int __fastcall sub_9E207(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
 {
   DECOMP_TODO("call analysis failed (funcsize=37)");
 }
@@ -9429,7 +9429,7 @@ void sub_9E664()
 
 //----- (0009E68B) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=34)) - nutno dohledat rucne v IDA @ 0x9E6F5 */
-int __fastcall sub_9E68B(_DWORD)
+int __fastcall sub_9E68B(_DWORD _p0)
 {
   DECOMP_TODO("call analysis failed (funcsize=34)");
 }
@@ -9751,7 +9751,7 @@ int __cdecl sub_9EC4A(
         int a22,
         int a23,
         int a24,
-        __int128 a25)
+        hr_int128_t a25)
 {
   char *v25; // eax
   int v26; // ecx

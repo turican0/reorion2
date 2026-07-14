@@ -1273,7 +1273,7 @@ char asc_17957D[2] = "."; // weak
 char aRaceoptLbx_1[12] = "raceopt.lbx"; // weak
 char asc_179595[2] = "L"; // weak
 _UNKNOWN unk_179597; // weak
-wchar_t aNsqoA[6] = L"NSQO\x1BA"; // weak
+wchar_t aNsqoA[6] = L"NSQO\x1B""A"; // weak
 char aInvalid[12] = "* INVALID *"; // weak
 char aD_0[2] = "D"; // weak
 char aC_0[2] = "C"; // weak
@@ -1421,11 +1421,11 @@ char asc_179DFD[2] = ":"; // weak
 _UNKNOWN unk_179E03; // weak
 _BYTE byte_179E06[2] = { 112, 0 }; // weak
 wchar_t aFs[3] = L"fs "; // weak
-char a1[3] = "\x1B1"; // weak
-char a2[3] = "\x1B2"; // weak
-char a0_0[3] = "\x1B0"; // weak
+char a1[3] = "\x1B""1"; // weak
+char a2[3] = "\x1B""2"; // weak
+char a0_0[3] = "\x1B""0"; // weak
 _UNKNOWN unk_179E17; // weak
-char a2_0[3] = "\x1B2"; // weak
+char a2_0[3] = "\x1B""2"; // weak
 char asc_179E1C[3] = ", "; // weak
 char aBuffer0Lbx_6[12] = "BUFFER0.LBX"; // weak
 _UNKNOWN unk_179E6B; // weak
@@ -1622,7 +1622,7 @@ char aError[6] = "ERROR"; // weak
 char aConnect[8] = "CONNECT"; // weak
 char aUnableToSend[16] = "Unable to send."; // weak
 char aLownetLog[11] = "lownet.log"; // weak
-char aLownetLogError[] = "\nLOWNET.LOG error\n"; // weak
+char aLownetLogError[19] = "\nLOWNET.LOG error\n"; // weak
 _UNKNOWN unk_17B145; // weak
 char aAilDebug[10] = "AIL_DEBUG"; // weak
 char aAilSysDebug[14] = "AIL_SYS_DEBUG"; // weak

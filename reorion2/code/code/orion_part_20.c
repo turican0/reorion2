@@ -3639,19 +3639,19 @@ int64_t __fastcall sub_132AF8(int64_t a1, int a2)
 
   v2 = (unsigned int *)a1;
   v4 = HIDWORD(a1);
-  __outbyte(0x3C6u, 0xFFu);
+  hr_outbyte(0x3C6u, 0xFFu);
   v5 = 968;
   do
   {
     _disable();
-    __outbyte(v5, v4);
+    hr_outbyte(v5, v4);
     v6 = v5 + 1;
     v7 = *v2++;
     v7 >>= 8;
-    __outbyte(v6, v7);
+    hr_outbyte(v6, v7);
     v7 >>= 8;
-    __outbyte(v6, v7);
-    __outbyte(v6, BYTE1(v7));
+    hr_outbyte(v6, v7);
+    hr_outbyte(v6, BYTE1(v7));
     _enable();
     v5 = v6 - 1;
     ++v4;
@@ -3672,10 +3672,10 @@ void sub_132B27()
   if ( !dword_1BC798 )
   {
     do
-      v0 = __inbyte(0x3DAu);
+      v0 = hr_inbyte(0x3DAu);
     while ( (v0 & 8) != 0 );
     do
-      v1 = __inbyte(0x3DAu);
+      v1 = hr_inbyte(0x3DAu);
     while ( (v1 & 8) == 0 );
   }
 }
@@ -3689,10 +3689,10 @@ void sub_132B41()
   uint8_t v1; // al
 
   do
-    v0 = __inbyte(0x3DAu);
+    v0 = hr_inbyte(0x3DAu);
   while ( (v0 & 8) != 0 );
   do
-    v1 = __inbyte(0x3DAu);
+    v1 = hr_inbyte(0x3DAu);
   while ( (v1 & 8) == 0 );
 }
 
@@ -3722,7 +3722,7 @@ int __fastcall sub_132C80(int a1)
 
   dword_184608 = a1;
   LOWORD(dword_184608) = 100 - a1;
-  __outbyte(0x3C6u, 0xFFu);
+  hr_outbyte(0x3C6u, 0xFFu);
   sub_132B41();
   v1 = 968;
   v2 = (uint8_t *)dword_1BB880;
@@ -3730,18 +3730,18 @@ int __fastcall sub_132C80(int a1)
   do
   {
     _disable();
-    __outbyte(v1, 0x80 - v3);
+    hr_outbyte(v1, 0x80 - v3);
     v4 = v1 + 1;
     v5 = dword_184608;
     LOWORD(v2) = (_WORD)v2 + 1;
     v6 = *v2;
     v7 = v2 + 1;
-    __outbyte(v4, (uint16_t)((uint8_t)dword_184608 * v6) / 0x64u);
+    hr_outbyte(v4, (uint16_t)((uint8_t)dword_184608 * v6) / 0x64u);
     v8 = *v7++;
-    __outbyte(v4, (uint16_t)(v5 * v8) / 0x64u);
+    hr_outbyte(v4, (uint16_t)(v5 * v8) / 0x64u);
     v9 = *v7;
     v2 = v7 + 1;
-    __outbyte(v4, (uint16_t)(v5 * v9) / 0x64u);
+    hr_outbyte(v4, (uint16_t)(v5 * v9) / 0x64u);
     _enable();
     v1 = v4 - 1;
     --v3;
@@ -3753,18 +3753,18 @@ int __fastcall sub_132C80(int a1)
   do
   {
     _disable();
-    __outbyte(v10, -(char)v11);
+    hr_outbyte(v10, -(char)v11);
     v12 = v10 + 1;
     v13 = dword_184608;
     LOWORD(v2) = (_WORD)v2 + 1;
     v14 = *v2;
     v15 = v2 + 1;
-    __outbyte(v12, (uint16_t)((uint8_t)dword_184608 * v14) / 0x64u);
+    hr_outbyte(v12, (uint16_t)((uint8_t)dword_184608 * v14) / 0x64u);
     v16 = *v15++;
-    __outbyte(v12, (uint16_t)(v13 * v16) / 0x64u);
+    hr_outbyte(v12, (uint16_t)(v13 * v16) / 0x64u);
     v17 = *v15;
     v2 = v15 + 1;
-    __outbyte(v12, (uint16_t)(v13 * v17) / 0x64u);
+    hr_outbyte(v12, (uint16_t)(v13 * v17) / 0x64u);
     _enable();
     v10 = v12 - 1;
     --v11;
@@ -3794,11 +3794,11 @@ char __fastcall sub_132F27( int a1, int a2, int a3, int a4)
   word_184612 = a2;
   word_184616 = a3;
   word_184614 = a4;
-  __outbyte(0x3C8u, a1);
-  __outbyte(0x3C9u, word_184612);
-  __outbyte(0x3C9u, word_184616);
+  hr_outbyte(0x3C8u, a1);
+  hr_outbyte(0x3C9u, word_184612);
+  hr_outbyte(0x3C9u, word_184616);
   result = word_184614;
-  __outbyte(0x3C9u, word_184614);
+  hr_outbyte(0x3C9u, word_184614);
   return result;
 }
 // 184612: using guessed type int16_t word_184612;

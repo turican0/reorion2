@@ -2619,7 +2619,7 @@ void sub_C8F6B()
 
 //----- (000C8F9A) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (positive sp value has been found (funcsize=4)) - nutno dohledat rucne v IDA @ 0xC8F9D */
-int __fastcall sub_C8F9A(_DWORD)
+int __fastcall sub_C8F9A(_DWORD _p0)
 {
   DECOMP_TODO("positive sp value has been found (funcsize=4)");
 }

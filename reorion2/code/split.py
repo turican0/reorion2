@@ -75,6 +75,57 @@ def clean_common(text):
     return text
 
 # ---------- 1) DECLARATIONS BLOCK -> common.h ----------
+# ---------- MSVC ma nektere identifikatory jako rezervovana klicova slova /
+# vestavene intrinsiky (nelze je predefinovat jako typedef/funkci) - v
+# generovanem kodu je proto prejmenujeme na vlastni jmena bez kolize.
+MSVC_RESERVED_RENAME = {
+    '__int128': 'hr_int128_t',
+    '__readgsbyte': 'hr_readgsbyte',
+    '__readgsword': 'hr_readgsword',
+    '__writegsbyte': 'hr_writegsbyte',
+    '__writegsword': 'hr_writegsword',
+    '__writegsdword': 'hr_writegsdword',
+    '__addgsword': 'hr_addgsword',
+    '__inbyte': 'hr_inbyte',
+    '__outbyte': 'hr_outbyte',
+    '__readeflags': 'hr_readeflags',
+    '__writeeflags': 'hr_writeeflags',
+    '__getcallerseflags': 'hr_getcallerseflags',
+    '__debugbreak': 'hr_debugbreak',
+}
+MSVC_RENAME_RE = re.compile(r'\b(' + '|'.join(re.escape(k) for k in MSVC_RESERVED_RENAME) + r')\b')
+
+def rename_msvc_reserved(text):
+    return MSVC_RENAME_RE.sub(lambda m: MSVC_RESERVED_RENAME[m.group(1)], text)
+
+# C/MSVC "\x" pohlti VSECHNY nasledujici hex znaky, takze "\x1B0" (mysleno
+# ESC + text "0") se prevede na jedno cislo 0x1B0 (mimo rozsah char) misto
+# escape + literal. Opravime vlozenim rozdeleni retezce hned za 2 hex cislice.
+HEX_ESCAPE_RE = re.compile(r'\\x([0-9A-Fa-f]{2})(?=[0-9A-Fa-f])')
+
+def fix_hex_escapes_in_strings(text):
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        c = text[i]
+        if c == '"':
+            j = i + 1
+            buf = ['"']
+            while j < n:
+                if text[j] == '\\' and j + 1 < n:
+                    buf.append(text[j]); buf.append(text[j+1]); j += 2; continue
+                if text[j] == '"':
+                    buf.append('"'); j += 1; break
+                buf.append(text[j]); j += 1
+            lit = ''.join(buf)
+            lit = HEX_ESCAPE_RE.sub(r'\\x\1""', lit)
+            out.append(lit)
+            i = j
+        else:
+            out.append(c); i += 1
+    return ''.join(out)
+
 decl_text = clean_common(''.join(decl_lines))
 
 # ---------- 2) DATA BLOCK -> data.c (definitions) + extern decls for common.h ----------
@@ -198,7 +249,7 @@ for stmt in raw_statements:
         declared_data_names.add(sym_name)
     data_out_parts.append(stmt)
 
-data_out_lines = [''.join(data_out_parts)]
+data_out_lines = [fix_hex_escapes_in_strings(''.join(data_out_parts))]
 
 # mapa nazev funkce -> (navratovy typ+konvence, parametry) z bloku deklaraci,
 # aby stub-funkce (selhana dekompilace) mely stejnou signaturu jako deklarace
@@ -361,6 +412,49 @@ def flush():
     cur_addr = None
     cur_lines = []
 
+def find_matching_paren(text, open_idx):
+    depth = 0
+    for i in range(open_idx, len(text)):
+        if text[i] == '(':
+            depth += 1
+        elif text[i] == ')':
+            depth -= 1
+            if depth == 0:
+                return i
+    return None
+
+def split_top_commas(text):
+    parts = []
+    depth = 0
+    buf = []
+    for c in text:
+        if c in '([{':
+            depth += 1
+        elif c in ')]}':
+            depth -= 1
+        if c == ',' and depth == 0:
+            parts.append(''.join(buf)); buf = []
+        else:
+            buf.append(c)
+    parts.append(''.join(buf))
+    return parts
+
+TYPE_KEYWORDS_NO_NAME = {
+    'int', 'char', 'short', 'long', 'void', 'float', 'double', 'unsigned', 'signed',
+    '_DWORD', '_WORD', '_BYTE', '_QWORD', '_BOOL1', '_BOOL2', '_BOOL4', '_UNKNOWN',
+    'int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t',
+    'uint64_t', '__int128', '_OWORD',
+}
+
+def param_has_name(param):
+    p = param.strip()
+    if not p or p.endswith('*'):
+        return False
+    tokens = p.replace('*', ' ').split()
+    if not tokens:
+        return False
+    return tokens[-1] not in TYPE_KEYWORDS_NO_NAME
+
 i = 0
 L = impl_lines
 while i < len(L):
@@ -383,6 +477,19 @@ while i < len(L):
         rettype, params = proto_map.get(fname, ('void', 'void'))
         if not params:
             params = 'void'
+        if params.strip() != 'void':
+            # C (na rozdil od C++) vyzaduje u DEFINICE pojmenovane parametry,
+            # i kdyz se nepouzivaji - doplnit jmena _p0, _p1, ... jen tam,
+            # kde jmeno chybi (jinak by vzniklo "int a1 _p0" - duplicitni id)
+            parts = split_top_commas(params)
+            named = []
+            for idx2, p in enumerate(parts):
+                p = p.strip()
+                if param_has_name(p):
+                    named.append(p)
+                else:
+                    named.append(f"{p} _p{idx2}")
+            params = ', '.join(named)
         cur_lines.append(
             f"/* DECOMP_TODO: dekompilace selhala ({reason}) - nutno dohledat rucne v IDA @ 0x{addr_hex} */\n"
         )
@@ -412,7 +519,65 @@ def fix_asm(text):
 
 func_chunks = [(a, clean_common(fix_asm(t))) for a, t in func_chunks]
 func_chunks.sort(key=lambda p: p[0])
+KNOWN_FIELD_MACROS = {
+    'LOBYTE', 'HIBYTE', 'LOWORD', 'HIWORD', 'LODWORD', 'HIDWORD', 'SHIDWORD',
+    'SLODWORD', 'SLOWORD', 'SHIWORD', 'SLOBYTE', 'SHIBYTE', 'BYTEn', 'WORDn',
+    'DWORDn', 'SBYTEn', 'SWORDn', 'BYTE1', 'BYTE2', 'BYTE3', 'BYTE4', 'BYTE5',
+    'BYTE6', 'BYTE7', 'BYTE14', 'WORD1', 'WORD2', 'WORD3', 'WORD4', 'WORD5',
+    'WORD6', 'DWORD1', 'DWORD2', 'sizeof', 'DECOMP_TODO',
+}
+def wrap_wide_args(text):
+    """MSVC nema nativni __int128/_OWORD (u nas nahrazeny structem) - pokud
+    se takova lokalni promenna predava jako HOLY argument volani (ne pres
+    field-extrakcni makro jako LODWORD/DWORD1/...), implicitni prevod na
+    int/jiny skalar selze. Takove vyskyty obalime explicitnim LODWORD()."""
+    wide_vars = set(re.findall(r'\b__int128\s+(\w+)', text))
+    wide_vars.update(re.findall(r'\b_OWORD\s+(\w+)', text))
+    if not wide_vars:
+        return text
+
+    result = []
+    i = 0
+    n = len(text)
+    call_re = re.compile(r'([A-Za-z_]\w*)\s*\(')
+    while i < n:
+        m = call_re.match(text, i)
+        if not m:
+            result.append(text[i]); i += 1; continue
+        fname = m.group(1)
+        open_idx = m.end() - 1
+        close_idx = find_matching_paren(text, open_idx)
+        if close_idx is None:
+            result.append(text[i]); i += 1; continue
+        if fname in KNOWN_FIELD_MACROS:
+            result.append(text[i:close_idx+1])
+            i = close_idx + 1
+            continue
+        inner = text[open_idx+1:close_idx]
+        args = split_top_commas(inner)
+        new_args = []
+        changed = False
+        for a in args:
+            s = a.strip()
+            if s in wide_vars:
+                new_args.append(f'(int)LODWORD({s})')
+                changed = True
+            else:
+                new_args.append(a)
+        if changed:
+            result.append(text[i:open_idx+1] + ','.join(new_args) + ')')
+        else:
+            result.append(text[i:close_idx+1])
+        i = close_idx + 1
+    return ''.join(result)
+
 func_chunks = [(a, promote_header_in_func_text(t)) for a, t in func_chunks]
+func_chunks = [(a, wrap_wide_args(t)) for a, t in func_chunks]
+
+# ---------- MSVC-specificke prejmenovani + oprava \xHH escape sekvenci ----------
+func_chunks = [(a, fix_hex_escapes_in_strings(rename_msvc_reserved(t))) for a, t in func_chunks]
+
+
 
 # prototypy odvozene primo z definic (vc. DECOMP_TODO stubu) - zarucuji
 # 100% shodu typu mezi deklaraci a definici napric soubory
@@ -496,6 +661,10 @@ KNOWN_EXTRA_DECLS = [
 # ---------- zapis vystupu ----------
 with open(os.path.join(OUTDIR, 'orion_common.h'), 'w', encoding='utf-8') as f:
     f.write('#ifndef ORION_COMMON_H\n#define ORION_COMMON_H\n\n')
+    f.write('/* Pri includovani z C++ (napr. .cpp wrapper volajici main__0)\n'
+             '   potrebuji tyto deklarace C linkage, jinak se nenajdou symboly\n'
+             '   z .c souboru prelozenych jako C. */\n'
+             '#ifdef __cplusplus\nextern "C" {\n#endif\n\n')
     f.write('#include "hexrays_compat.h"\n\n')
     f.write('/* ==== deklarace vsech funkci - odvozene primo z definic, aby typy\n'
              '   vzdy presne sedely (puvodni Hex-Rays hlavicka byla u cca 700\n'
@@ -550,6 +719,7 @@ with open(os.path.join(OUTDIR, 'orion_common.h'), 'w', encoding='utf-8') as f:
     f.write(''.join(orphan_data_decls))
     f.write('\n/* ==== ruzne pojmenovane FLIRT-rozpoznane knihovni symboly ==== */\n')
     f.write(''.join(KNOWN_EXTRA_DECLS))
+    f.write('\n#ifdef __cplusplus\n}\n#endif\n')
     f.write('\n#endif\n')
 
 with open(os.path.join(OUTDIR, 'orion_data.c'), 'w', encoding='utf-8') as f:

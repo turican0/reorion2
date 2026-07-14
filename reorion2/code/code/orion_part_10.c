@@ -2423,7 +2423,7 @@ int __userpurge sub_A2123(
         int a11,
         int a12,
         int a13,
-        __int128 a14,
+        hr_int128_t a14,
         int64_t a15,
         int a16,
         int a17,
@@ -2433,7 +2433,7 @@ int __userpurge sub_A2123(
         int a21,
         int a22,
         int a23,
-        __int128 a24,
+        hr_int128_t a24,
         int a25)
 {
   _BOOL1 v25; // al
@@ -3266,7 +3266,7 @@ void __fastcall sub_A31DA(int a1, int a2, int a3, int a4, int a5, int a6, int a7
   int v55; // [esp+10h] [ebp-C6h]
   int v56; // [esp+14h] [ebp-C2h]
   int v57; // [esp+18h] [ebp-BEh]
-  __int128 v58; // [esp+1Ch] [ebp-BAh]
+  hr_int128_t v58; // [esp+1Ch] [ebp-BAh]
   int64_t v59; // [esp+2Ch] [ebp-AAh]
   int v60; // [esp+34h] [ebp-A2h]
   int v61; // [esp+38h] [ebp-9Eh]
@@ -3276,7 +3276,7 @@ void __fastcall sub_A31DA(int a1, int a2, int a3, int a4, int a5, int a6, int a7
   int v65; // [esp+48h] [ebp-8Eh]
   int v66; // [esp+4Ch] [ebp-8Ah]
   int v67; // [esp+50h] [ebp-86h]
-  __int128 v68; // [esp+54h] [ebp-82h]
+  hr_int128_t v68; // [esp+54h] [ebp-82h]
   int v69; // [esp+64h] [ebp-72h]
   char v70[80]; // [esp+68h] [ebp-6Eh] BYREF
   _BYTE v71[8]; // [esp+B8h] [ebp-1Eh] BYREF
@@ -3532,8 +3532,7 @@ LABEL_29:
           v54,
           v55,
           v56,
-          v57,
-          v58,
+          v57,(int)LODWORD(v58),
           v59,
           v60,
           v61,
@@ -3542,8 +3541,7 @@ LABEL_29:
           v64,
           v65,
           v66,
-          v67,
-          v68,
+          v67,(int)LODWORD(v68),
           v69);
         sub_8F055(v97, v88, (int16_t)(v95 + 9), v96 + 4, 0x3Fu);
         sub_A2123(
@@ -3559,8 +3557,7 @@ LABEL_29:
           v54,
           v55,
           v56,
-          v57,
-          v58,
+          v57,(int)LODWORD(v58),
           v59,
           v60,
           v61,
@@ -3569,8 +3566,7 @@ LABEL_29:
           v64,
           v65,
           v66,
-          v67,
-          v68,
+          v67,(int)LODWORD(v68),
           v69);
       }
     }
@@ -4520,7 +4516,7 @@ LABEL_24:
 
 //----- (000A4C0F) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=21)) - nutno dohledat rucne v IDA @ 0xA4C37 */
-_DWORD __stdcall sub_A4C0F( int, int, int)
+_DWORD __stdcall sub_A4C0F( int _p0, int _p1, int _p2)
 {
   DECOMP_TODO("call analysis failed (funcsize=21)");
 }
@@ -6664,7 +6660,7 @@ char __fastcall sub_A75C3( int a1, int a2, int a3)
 
 //----- (000A761C) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (function frame is wrong (funcsize=0)) - nutno dohledat rucne v IDA @ 0xA761C */
-int __fastcall sub_A761C(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD)
+int __fastcall sub_A761C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3, _DWORD _p4, _DWORD _p5, _DWORD _p6, _DWORD _p7, _DWORD _p8, _DWORD _p9, _DWORD _p10, _DWORD _p11, _DWORD _p12, _DWORD _p13, _DWORD _p14, _DWORD _p15, _DWORD _p16, _DWORD _p17)
 {
   DECOMP_TODO("function frame is wrong (funcsize=0)");
 }
@@ -6677,7 +6673,7 @@ int __userpurge sub_A8197(
         int a2,
         int a3,
         int a4,
-        __int128 a5,
+        hr_int128_t a5,
         int64_t a6,
         int64_t a7,
         int64_t a8,
@@ -6686,12 +6682,12 @@ int __userpurge sub_A8197(
         int64_t a11,
         int64_t a12,
         int64_t a13,
-        __int128 a14,
+        hr_int128_t a14,
         int a15,
         int a16,
         int a17,
         int a18,
-        __int128 a19)
+        hr_int128_t a19)
 {
   int v19; // ecx
   int v20; // ebx
@@ -6775,7 +6771,7 @@ int __userpurge sub_A8197(
   int v98; // [esp+18h] [ebp-158h]
   int v99; // [esp+1Ch] [ebp-154h]
   int v100; // [esp+20h] [ebp-150h]
-  __int128 v101; // [esp+24h] [ebp-14Ch]
+  hr_int128_t v101; // [esp+24h] [ebp-14Ch]
   int v102; // [esp+34h] [ebp-13Ch]
   int v103; // [esp+38h] [ebp-138h]
   int v104; // [esp+3Ch] [ebp-134h]
@@ -6808,9 +6804,9 @@ int __userpurge sub_A8197(
   vars6 = -65536;
   *(_DWORD *)((char *)&a6 + 6) = 0;
   vars2 = 0;
-  v19 = SWORD3(a19);
+  v19 = SWORD3((int)LODWORD(a19));
   var2 = 0;
-  v20 = SWORD1(a19);
+  v20 = SWORD1((int)LODWORD(a19));
   v118 = 0;
   v117 = sub_12484C();
   v116 = 0;
@@ -6876,8 +6872,8 @@ int __userpurge sub_A8197(
       *(_DWORD *)((char *)&a6 + 2) = 0;
       if ( word_1998FC == v109 && !HIWORD(a19) )
       {
-        v25 = SWORD3(a19);
-        v26 = SWORD1(a19);
+        v25 = SWORD3((int)LODWORD(a19));
+        v26 = SWORD1((int)LODWORD(a19));
         sub_30062(
           word_1998FC,
           350,
@@ -6893,8 +6889,7 @@ int __userpurge sub_A8197(
           v97,
           v98,
           v99,
-          v100,
-          v101,
+          v100,(int)LODWORD(v101),
           v102,
           v103,
           v104,
@@ -6922,8 +6917,7 @@ int __userpurge sub_A8197(
           v97,
           v98,
           v99,
-          v100,
-          v101,
+          v100,(int)LODWORD(v101),
           v102,
           v103,
           v104,
@@ -6951,8 +6945,8 @@ int __userpurge sub_A8197(
         *(_DWORD *)((char *)&a10 + 2) = v30;
         if ( HIWORD(a19) )
         {
-          v25 = SWORD3(a19);
-          v26 = SWORD1(a19);
+          v25 = SWORD3((int)LODWORD(a19));
+          v26 = SWORD1((int)LODWORD(a19));
           v31 = sub_329A4(v112, SWORD1(a19), SWORD3(a19));
         }
         else
@@ -6976,7 +6970,7 @@ int __userpurge sub_A8197(
           if ( !*(_WORD *)(v32 + 4) && !*(_WORD *)(v32 + 6) && !*(_BYTE *)(v32 + 14) && v109 && !HIWORD(a19) )
           {
             v33 = (uint8_t)byte_182477[sub_A9AAD(*(uint8_t *)(313 * v109 + dword_192864 + 37))];
-            v34 = SWORD3(a5) / 2;
+            v34 = SWORD3((int)LODWORD(a5)) / 2;
             if ( (int16_t)(v33 / 2) <= v34 )
               LOWORD(v34) = v33 / 2;
             v35 = (int16_t)v34;
@@ -6988,7 +6982,7 @@ int __userpurge sub_A8197(
           }
           if ( !v109 && !*(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
           {
-            v37 = SWORD3(a5) / 2;
+            v37 = SWORD3((int)LODWORD(a5)) / 2;
             if ( v37 >= 30 )
               LOWORD(v37) = 30;
             v25 = (int16_t)v37;
@@ -7010,7 +7004,7 @@ LABEL_39:
           }
           if ( HIWORD(a19) && !*(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
           {
-            v44 = SWORD3(a5) / 2;
+            v44 = SWORD3((int)LODWORD(a5)) / 2;
             if ( (uint8_t)byte_182477[0] / 2 <= v44 )
               LOWORD(v44) = (uint8_t)byte_182477[0] / 2;
             v38 = (int16_t)v44 / 2;
@@ -7113,8 +7107,8 @@ LABEL_51:
                 v115 = 0;
                 v114 = 0;
                 word_18248B = 2;
-                v52 = SWORD1(a19);
-                *(_DWORD *)&_17A = SWORD3(a19);
+                v52 = SWORD1((int)LODWORD(a19));
+                *(_DWORD *)&_17A = SWORD3((int)LODWORD(a19));
                 byte_18248D = 1;
                 ((int __userpurge(*)())(void*)sub_A8197)(v109, SWORD1(a19), *(_DWORD *)&_17A, v112, (int16_t)v111, (int16_t)v110, v113, 0);
                 byte_18248D = 0;
@@ -7147,8 +7141,7 @@ LABEL_51:
                     v97,
                     v98,
                     v99,
-                    v100,
-                    v101,
+                    v100,(int)LODWORD(v101),
                     v102,
                     v103,
                     v104,
@@ -7176,8 +7169,7 @@ LABEL_51:
                     v97,
                     v98,
                     v99,
-                    v100,
-                    v101,
+                    v100,(int)LODWORD(v101),
                     v102,
                     v103,
                     v104,
@@ -7292,7 +7284,7 @@ LABEL_51:
             v87 = word_182481;
             v64 = sub_A956C(v112, v109);
             v65 = *(uint8_t *)(v69 + dword_192864 + 37);
-            v66 = SWORD5(a14) / 2;
+            v66 = SWORD5((int)LODWORD(a14)) / 2;
             v67 = WORD1(a7);
             v68 = HIWORD(a8);
 LABEL_113:
@@ -7888,7 +7880,7 @@ int __fastcall sub_A97F7( int a1, int a2, int a3, int a4)
 
 //----- (000A9867) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=87)) - nutno dohledat rucne v IDA @ 0xA9930 */
-int __fastcall sub_A9867(_DWORD, _DWORD, _DWORD, _DWORD)
+int __fastcall sub_A9867(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
 {
   DECOMP_TODO("call analysis failed (funcsize=87)");
 }
@@ -9387,7 +9379,7 @@ void __fastcall sub_AB850( int a1, int a2)
 
 //----- (000AB8BF) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=89)) - nutno dohledat rucne v IDA @ 0xAB9C1 */
-int __fastcall sub_AB8BF(_DWORD, _DWORD, _DWORD, _DWORD)
+int __fastcall sub_AB8BF(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
 {
   DECOMP_TODO("call analysis failed (funcsize=89)");
 }
@@ -9395,7 +9387,7 @@ int __fastcall sub_AB8BF(_DWORD, _DWORD, _DWORD, _DWORD)
 
 //----- (000ABA09) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=160)) - nutno dohledat rucne v IDA @ 0xABBFD */
-_DWORD __stdcall sub_ABA09( int, int)
+_DWORD __stdcall sub_ABA09( int _p0, int _p1)
 {
   DECOMP_TODO("call analysis failed (funcsize=160)");
 }
@@ -9489,7 +9481,7 @@ void __fastcall sub_ABFF3( int a1, int a2)
 
 //----- (000AC136) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=212)) - nutno dohledat rucne v IDA @ 0xAC203 */
-int __fastcall sub_AC136(_DWORD, _DWORD, _DWORD)
+int __fastcall sub_AC136(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 {
   DECOMP_TODO("call analysis failed (funcsize=212)");
 }
@@ -9497,7 +9489,7 @@ int __fastcall sub_AC136(_DWORD, _DWORD, _DWORD)
 
 //----- (000AC472) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=124)) - nutno dohledat rucne v IDA @ 0xAC5B8 */
-int __fastcall sub_AC472(_DWORD, _DWORD, _DWORD, _DWORD)
+int __fastcall sub_AC472(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
 {
   DECOMP_TODO("call analysis failed (funcsize=124)");
 }
@@ -9643,7 +9635,7 @@ LABEL_31:
 
 //----- (000AC87A) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=169)) - nutno dohledat rucne v IDA @ 0xACA74 */
-int __fastcall sub_AC87A(_DWORD, _DWORD)
+int __fastcall sub_AC87A(_DWORD _p0, _DWORD _p1)
 {
   DECOMP_TODO("call analysis failed (funcsize=169)");
 }
@@ -10340,7 +10332,7 @@ LABEL_22:
 
 //----- (000AD7F5) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=97)) - nutno dohledat rucne v IDA @ 0xAD93E */
-int __fastcall sub_AD7F5(_DWORD, _DWORD, _DWORD)
+int __fastcall sub_AD7F5(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 {
   DECOMP_TODO("call analysis failed (funcsize=97)");
 }
@@ -10854,7 +10846,7 @@ LABEL_27:
             v90[6],
             v90[7],
             v90[8],
-            *(__int128 *)&v90[9],
+            *(hr_int128_t *)&v90[9],
             v90[13],
             v90[14],
             v90[15],
@@ -10916,7 +10908,7 @@ LABEL_27:
           v90[6],
           v90[7],
           v90[8],
-          *(__int128 *)&v90[9],
+          *(hr_int128_t *)&v90[9],
           v90[13],
           v90[14],
           v90[15],
@@ -10994,7 +10986,7 @@ LABEL_90:
               v90[6],
               v90[7],
               v90[8],
-              *(__int128 *)&v90[9],
+              *(hr_int128_t *)&v90[9],
               v90[13],
               v90[14],
               v90[15],
@@ -11338,7 +11330,7 @@ void __usercall sub_AEC7B( int a1, int a2, int a3, int a4, int a5)
   int v58; // [esp+28h] [ebp-3Ch]
   int64_t *v59; // [esp+2Ch] [ebp-38h]
   int v60; // [esp+30h] [ebp-34h]
-  __int128 v61; // [esp+34h] [ebp-30h]
+  hr_int128_t v61; // [esp+34h] [ebp-30h]
   int v62; // [esp+44h] [ebp-20h]
   int v63; // [esp+48h] [ebp-1Ch]
   int v64; // [esp+4Ch] [ebp-18h]
@@ -11515,7 +11507,7 @@ LABEL_87:
       if ( *(uint8_t *)(dword_192864 + 313 * a1 + 32) == word_19988E )
         sub_137D86(dword_19283C, (int)v55, 32, 32);
       v14 = (int16_t)v61;
-      sub_12A478(SWORD4(v61), v61, dword_19283C);
+      sub_12A478(SWORD4(v61),(int)LODWORD(v61), dword_19283C);
       sub_12B65C();
       LOWORD(v48) = sub_128BE7();
       sub_1077D(v48);
@@ -11621,8 +11613,7 @@ LABEL_20:
                   v57,
                   v58,
                   (int)v59,
-                  v60,
-                  v61,
+                  v60,(int)LODWORD(v61),
                   v62,
                   v63,
                   v64,

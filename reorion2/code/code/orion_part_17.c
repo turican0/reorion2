@@ -504,7 +504,7 @@ void sub_102FA8()
 
 //----- (00102FD8) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */
-_DWORD __stdcall sub_102FD8(_DWORD, int, _DWORD, int, int)
+_DWORD __stdcall sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4)
 {
   DECOMP_TODO("call analysis failed (funcsize=111)");
 }
@@ -578,7 +578,7 @@ void sub_10324A()
 
 //----- (00103259) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=44)) - nutno dohledat rucne v IDA @ 0x10327D */
-_DWORD __stdcall sub_103259(_DWORD)
+_DWORD __stdcall sub_103259(_DWORD _p0)
 {
   DECOMP_TODO("call analysis failed (funcsize=44)");
 }
@@ -966,7 +966,7 @@ LABEL_25:
 
 //----- (00103915) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103929 */
-_DWORD __stdcall sub_103915( int)
+_DWORD __stdcall sub_103915( int _p0)
 {
   DECOMP_TODO("call analysis failed (funcsize=14)");
 }
@@ -974,7 +974,7 @@ _DWORD __stdcall sub_103915( int)
 
 //----- (00103933) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103948 */
-_DWORD __stdcall sub_103933( int, _DWORD)
+_DWORD __stdcall sub_103933( int _p0, _DWORD _p1)
 {
   DECOMP_TODO("call analysis failed (funcsize=14)");
 }
@@ -982,7 +982,7 @@ _DWORD __stdcall sub_103933( int, _DWORD)
 
 //----- (00103952) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */
-int __fastcall sub_103952(_DWORD, _DWORD, _DWORD)
+int __fastcall sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 {
   DECOMP_TODO("call analysis failed (funcsize=14)");
 }
@@ -990,7 +990,7 @@ int __fastcall sub_103952(_DWORD, _DWORD, _DWORD)
 
 //----- (00103971) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=13)) - nutno dohledat rucne v IDA @ 0x103983 */
-int __fastcall sub_103971(_DWORD, _DWORD, _DWORD)
+int __fastcall sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 {
   DECOMP_TODO("call analysis failed (funcsize=13)");
 }
@@ -5711,7 +5711,7 @@ void __usercall sub_1086D6( unsigned int a1,
         int a24,
         int a25,
         int a26,
-        __int128 a27)
+        hr_int128_t a27)
 {
   char v27; // dl
   char *v28; // esi
@@ -5953,7 +5953,7 @@ int sub_1089C6()
   int64_t v27; // [esp+28h] [ebp-62h]
   int v28[10]; // [esp+30h] [ebp-5Ah] BYREF
   int v29[4]; // [esp+58h] [ebp-32h] BYREF
-  __int128 v30; // [esp+68h] [ebp-22h]
+  hr_int128_t v30; // [esp+68h] [ebp-22h]
   char v31[40]; // [esp+80h] [ebp-Ah] BYREF
   char v32[64]; // [esp+A8h] [ebp+1Eh] BYREF
   _DWORD *v33; // [esp+E8h] [ebp+5Eh]
@@ -6032,8 +6032,7 @@ int sub_1089C6()
         v29[0],
         v29[1],
         v29[2],
-        v29[3],
-        v30);
+        v29[3],(int)LODWORD(v30));
     }
     ++v40;
   }

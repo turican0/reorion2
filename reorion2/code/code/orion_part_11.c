@@ -291,7 +291,7 @@ void __fastcall sub_B0A9C( int a1)
 
 //----- (000B0AE3) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=51)) - nutno dohledat rucne v IDA @ 0xB0BA4 */
-int __fastcall sub_B0AE3(_DWORD)
+int __fastcall sub_B0AE3(_DWORD _p0)
 {
   DECOMP_TODO("call analysis failed (funcsize=51)");
 }

@@ -2692,7 +2692,7 @@ void __fastcall sub_D94B3(
         int a20,
         int a21,
         int a22,
-        __int128 a23,
+        hr_int128_t a23,
         int64_t a24,
         int64_t a25,
         int64_t a26)
@@ -2872,7 +2872,7 @@ LABEL_21:
 
 //----- (000D97EE) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=26)) - nutno dohledat rucne v IDA @ 0xD9830 */
-int64_t __fastcall sub_D97EE(_DWORD, _DWORD)
+int64_t __fastcall sub_D97EE(_DWORD _p0, _DWORD _p1)
 {
   DECOMP_TODO("call analysis failed (funcsize=26)");
 }
@@ -4932,7 +4932,7 @@ void __usercall sub_DBB29(int16_t *a1)
 void __fastcall sub_DBB9F( int a1, int a2, int a3, int a4, int16_t *a5, _WORD *a6, _DWORD *a7)
 {
   int v7[18]; // [esp+0h] [ebp-2E0h] BYREF
-  __int128 v8; // [esp+48h] [ebp-298h]
+  hr_int128_t v8; // [esp+48h] [ebp-298h]
   int64_t v9; // [esp+58h] [ebp-288h]
   int64_t v10; // [esp+60h] [ebp-280h]
   int64_t v11; // [esp+68h] [ebp-278h]
@@ -4974,8 +4974,7 @@ void __fastcall sub_DBB9F( int a1, int a2, int a3, int a4, int16_t *a5, _WORD *a
       v7[14],
       v7[15],
       v7[16],
-      v7[17],
-      v8,
+      v7[17],(int)LODWORD(v8),
       v9,
       v10,
       v11);

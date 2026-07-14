@@ -5482,9 +5482,9 @@ void sub_163C58()
 //----- (00163C6D) --------------------------------------------------------
 void __noreturn sub_163C6D()
 {
-  __outbyte(0x20u, 0x20u);
-  __outbyte(0xA0u, 0x20u);
-  __outbyte(0xF0u, 0);
+  hr_outbyte(0x20u, 0x20u);
+  hr_outbyte(0xA0u, 0x20u);
+  hr_outbyte(0xF0u, 0);
   sub_163C7A();
 }
 // 163C6D: using guessed type void __noreturn sub_163C6D();

@@ -206,8 +206,8 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
   int v37; // eax
   int16_t v38; // si
   int16_t v39; // ax
-  __int128 v41; // [esp-10h] [ebp-168h]
-  __int128 v42; // [esp-10h] [ebp-168h]
+  hr_int128_t v41; // [esp-10h] [ebp-168h]
+  hr_int128_t v42; // [esp-10h] [ebp-168h]
   uint64_t v43; // [esp+0h] [ebp-158h]
   int64_t v44; // [esp+8h] [ebp-150h] BYREF
   int64_t v45; // [esp+10h] [ebp-148h]
@@ -216,12 +216,12 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
   int64_t v48; // [esp+28h] [ebp-130h]
   int64_t v49; // [esp+30h] [ebp-128h]
   int64_t v50; // [esp+38h] [ebp-120h]
-  __int128 v51; // [esp+40h] [ebp-118h]
+  hr_int128_t v51; // [esp+40h] [ebp-118h]
   int v52; // [esp+50h] [ebp-108h]
   int v53; // [esp+54h] [ebp-104h]
   int v54; // [esp+58h] [ebp-100h]
   int v55; // [esp+5Ch] [ebp-FCh]
-  __int128 v56; // [esp+60h] [ebp-F8h]
+  hr_int128_t v56; // [esp+60h] [ebp-F8h]
   int v57; // [esp+FCh] [ebp-5Ch]
   int v58; // [esp+100h] [ebp-58h]
   int v59; // [esp+104h] [ebp-54h]
@@ -359,8 +359,7 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
                     (int16_t)v44,
                     (int16_t)(WORD2(v43) - 20 * word_1998F0),
                     a4,
-                    (int16_t)(v43 - 20 * word_1998F2),
-                    v41,
+                    (int16_t)(v43 - 20 * word_1998F2),(int)LODWORD(v41),
                     v43,
                     v44,
                     v45,
@@ -368,13 +367,11 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
                     v47,
                     v48,
                     v49,
-                    v50,
-                    v51,
+                    v50,(int)LODWORD(v51),
                     v52,
                     v53,
                     v54,
-                    v55,
-                    v56);
+                    v55,(int)LODWORD(v56));
                   v76 = 0;
                   sub_127776((_BYTE *)&v44 + 4, 0xF0u);
                 }
@@ -522,8 +519,7 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
       (int16_t)v44,
       (int16_t)(WORD2(v43) - 20 * word_1998F0),
       a4,
-      (int16_t)(v43 - 20 * word_1998F2),
-      v42,
+      (int16_t)(v43 - 20 * word_1998F2),(int)LODWORD(v42),
       v43,
       v44,
       v45,
@@ -531,13 +527,11 @@ int __fastcall sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a
       v47,
       v48,
       v49,
-      v50,
-      v51,
+      v50,(int)LODWORD(v51),
       v52,
       v53,
       v54,
-      v55,
-      v56);
+      v55,(int)LODWORD(v56));
   }
   v38 = v44;
   v39 = sub_3897A(v44);
@@ -2033,7 +2027,7 @@ void __fastcall sub_3B077(int a1, int a2)
   int v9; // eax
   _BOOL2 v10; // ax
   int v11; // eax
-  __int128 v12; // [esp-10h] [ebp-12Ch]
+  hr_int128_t v12; // [esp-10h] [ebp-12Ch]
   _BOOL2 v13; // [esp-8h] [ebp-124h]
   int64_t v14; // [esp+0h] [ebp-11Ch] BYREF
   int64_t v15; // [esp+8h] [ebp-114h]
@@ -2043,12 +2037,12 @@ void __fastcall sub_3B077(int a1, int a2)
   int64_t v19; // [esp+28h] [ebp-F4h]
   int64_t v20; // [esp+30h] [ebp-ECh]
   int64_t v21; // [esp+38h] [ebp-E4h]
-  __int128 v22; // [esp+40h] [ebp-DCh]
+  hr_int128_t v22; // [esp+40h] [ebp-DCh]
   int v23; // [esp+50h] [ebp-CCh]
   int v24; // [esp+54h] [ebp-C8h]
   int v25; // [esp+58h] [ebp-C4h]
   int v26; // [esp+5Ch] [ebp-C0h]
-  __int128 v27; // [esp+60h] [ebp-BCh]
+  hr_int128_t v27; // [esp+60h] [ebp-BCh]
   int v28; // [esp+F4h] [ebp-28h]
   int v29; // [esp+F8h] [ebp-24h]
   int v30; // [esp+FCh] [ebp-20h] BYREF
@@ -2117,8 +2111,7 @@ void __fastcall sub_3B077(int a1, int a2)
       (int16_t)v14,
       (int16_t)(20 * (*(uint8_t *)(dword_192864 + 313 * (int16_t)v14 + 33) - word_1998F0)),
       a2,
-      (int16_t)(20 * (*(uint8_t *)(dword_192864 + 313 * (int16_t)v14 + 34) - word_1998F2)),
-      v12,
+      (int16_t)(20 * (*(uint8_t *)(dword_192864 + 313 * (int16_t)v14 + 34) - word_1998F2)),(int)LODWORD(v12),
       v14,
       v15,
       v16,
@@ -2126,13 +2119,11 @@ void __fastcall sub_3B077(int a1, int a2)
       v18,
       v19,
       v20,
-      v21,
-      v22,
+      v21,(int)LODWORD(v22),
       v23,
       v24,
       v25,
-      v26,
-      v27);
+      v26,(int)LODWORD(v27));
   }
   if ( (_WORD)v34 )
     sub_39E15(
@@ -3658,8 +3649,8 @@ int __fastcall sub_3D2DF(int a1, int a2, int a3)
   int v49; // [esp+28h] [ebp-44h]
   int v50; // [esp+2Ch] [ebp-40h]
   int v51; // [esp+30h] [ebp-3Ch] BYREF
-  __int128 v52; // [esp+34h] [ebp-38h]
-  __int128 v53; // [esp+44h] [ebp-28h]
+  hr_int128_t v52; // [esp+34h] [ebp-38h]
+  hr_int128_t v53; // [esp+44h] [ebp-28h]
   int64_t v54; // [esp+54h] [ebp-18h]
   int64_t v55; // [esp+5Ch] [ebp-10h] BYREF
   int64_t v56; // [esp+64h] [ebp-8h]
@@ -3801,12 +3792,10 @@ LABEL_41:
                 v48,
                 v49,
                 v50,
-                v51,
-                v52,
+                v51,(int)LODWORD(v52),
                 SDWORD1(v52),
                 SDWORD2(v52),
-                SWORD6(v52),
-                v53,
+                SWORD6(v52),(int)LODWORD(v53),
                 v54,
                 v55,
                 v56,
@@ -3849,7 +3838,7 @@ LABEL_41:
             v18 = word_199224[*(int16_t *)(dword_192B14 + 26 * (int16_t)a1 + 2)];
             if ( (BYTE1(v53) & 0x40) != 0 )
               v18 += 50;
-            HIDWORD(v52) = word_17F819[14 * SWORD6(v53)] * v18 / 100;
+            HIDWORD(v52) = word_17F819[14 * SWORD6((int)LODWORD(v53))] * v18 / 100;
             if ( (WORD6(v53) == 20 || WORD6(v53) == 40) && (v53 & 0x20) == 0 )
             {
               if ( WORD6(v53) == 20 )
@@ -3867,14 +3856,14 @@ LABEL_41:
                   v22 = 0;
                 v21 = 15 * (v22 / 20);
               }
-              HIDWORD(v52) = SWORD6(v52) - v21;
+              HIDWORD(v52) = SWORD6((int)LODWORD(v52)) - v21;
               if ( SWORD6(v52) <= 0 )
                 *(_WORD *)(dword_192B14 + 26 * (int16_t)a1 + 15) = 0;
             }
             if ( !(_WORD)v54 && byte_17F80F[28 * SWORD6(v53)] == 2 )
             {
               HIWORD(v23) = HIWORD(v52);
-              LOWORD(v23) = SWORD6(v52) / 2;
+              LOWORD(v23) = SWORD6((int)LODWORD(v52)) / 2;
               HIDWORD(v52) = v23;
             }
             HIDWORD(v54) = 0;
@@ -3897,7 +3886,7 @@ LABEL_41:
                   do
                   {
                     LOWORD(v51) = WORD6(v52);
-                    sub_39985(v54, (int16_t *)&v51, (int16_t *)&v46, SWORD2(v52), v53, (int16_t)v48, 0, 0, v52);
+                    sub_39985(v54, (int16_t *)&v51, (int16_t *)&v46, SWORD2(v52),(int)LODWORD(v53), (int16_t)v48, 0, 0,(int)LODWORD(v52));
                     DWORD1(v53) += v51;
                     ++DWORD1(v52);
                     DWORD2(v53) += v46;
@@ -3907,7 +3896,7 @@ LABEL_41:
                 else
                 {
                   LOWORD(v51) = WORD6(v52);
-                  v45 = sub_39985(v54, (int16_t *)&v51, (int16_t *)&v46, (int16_t)v50, v53, (int16_t)v48, 0, 0, v52);
+                  v45 = sub_39985(v54, (int16_t *)&v51, (int16_t *)&v46, (int16_t)v50,(int)LODWORD(v53), (int16_t)v48, 0, 0,(int)LODWORD(v52));
                   DWORD1(v53) += v51;
                   DWORD2(v53) += v46;
                 }
@@ -3957,9 +3946,7 @@ LABEL_41:
                     v48,
                     v49,
                     v50,
-                    v51,
-                    v52,
-                    v53,
+                    v51,(int)LODWORD(v52),(int)LODWORD(v53),
                     SDWORD1(v53),
                     SDWORD2(v53),
                     SHIDWORD(v53),
@@ -4479,7 +4466,7 @@ _BOOL1 __fastcall sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
   int v41; // [esp+28h] [ebp+Ah]
   int v42; // [esp+2Ch] [ebp+Eh]
   int v43; // [esp+30h] [ebp+12h]
-  __int128 v44; // [esp+34h] [ebp+16h] BYREF
+  hr_int128_t v44; // [esp+34h] [ebp+16h] BYREF
   int v45; // [esp+44h] [ebp+26h]
   int v46; // [esp+48h] [ebp+2Ah]
   int v47; // [esp+4Ch] [ebp+2Eh]
@@ -4588,8 +4575,7 @@ _BOOL1 __fastcall sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
         v40,
         v41,
         v42,
-        v43,
-        v44,
+        v43,(int)LODWORD(v44),
         v45,
         v46,
         v47,
@@ -4655,8 +4641,7 @@ _BOOL1 __fastcall sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
           v40,
           v41,
           v42,
-          v43,
-          v44,
+          v43,(int)LODWORD(v44),
           v45,
           v46,
           v47,
@@ -5148,7 +5133,7 @@ unsigned int __fastcall sub_3EE0F( int a1, int a2, int a3)
   int v33; // eax
   int16_t v34; // ax
   int v36[13]; // [esp+0h] [ebp-2D4h]
-  __int128 v37; // [esp+34h] [ebp-2A0h]
+  hr_int128_t v37; // [esp+34h] [ebp-2A0h]
   int v38; // [esp+44h] [ebp-290h]
   int v39; // [esp+48h] [ebp-28Ch]
   int v40; // [esp+4Ch] [ebp-288h]
@@ -5367,8 +5352,7 @@ unsigned int __fastcall sub_3EE0F( int a1, int a2, int a3)
             v36[9],
             v36[10],
             v36[11],
-            v36[12],
-            v37,
+            v36[12],(int)LODWORD(v37),
             v38,
             v39,
             v40,
@@ -5505,7 +5489,7 @@ int __fastcall sub_3F628( int a1, int a2, int a3, int a4)
   int16_t j; // cx
   int result; // eax
   int v22[13]; // [esp+0h] [ebp-280h]
-  __int128 v23; // [esp+34h] [ebp-24Ch]
+  hr_int128_t v23; // [esp+34h] [ebp-24Ch]
   int v24; // [esp+44h] [ebp-23Ch]
   int v25; // [esp+48h] [ebp-238h]
   int v26; // [esp+4Ch] [ebp-234h]
@@ -5620,8 +5604,7 @@ LABEL_6:
           v22[9],
           v22[10],
           v22[11],
-          v22[12],
-          v23,
+          v22[12],(int)LODWORD(v23),
           v24,
           v25,
           v26,
@@ -8721,9 +8704,9 @@ void __usercall sub_42F7F(int a1, int a2, int a3)
   int v139; // [esp+24h] [ebp+6h]
   int v140; // [esp+28h] [ebp+Ah]
   int v141; // [esp+2Ch] [ebp+Eh]
-  __int128 v142; // [esp+30h] [ebp+12h]
+  hr_int128_t v142; // [esp+30h] [ebp+12h]
   int v143; // [esp+40h] [ebp+22h]
-  __int128 v144; // [esp+44h] [ebp+26h]
+  hr_int128_t v144; // [esp+44h] [ebp+26h]
   int64_t v145; // [esp+54h] [ebp+36h]
   int64_t v146; // [esp+5Ch] [ebp+3Eh]
   _BYTE v147[12]; // [esp+64h] [ebp+46h]
@@ -9167,10 +9150,8 @@ LABEL_107:
                         v138,
                         v139,
                         v140,
-                        v141,
-                        v142,
-                        v143,
-                        v144,
+                        v141,(int)LODWORD(v142),
+                        v143,(int)LODWORD(v144),
                         v145,
                         v146,
                         *(int *)v147,
@@ -9215,13 +9196,11 @@ LABEL_107:
                         v138,
                         v139,
                         v140,
-                        v141,
-                        v142,
+                        v141,(int)LODWORD(v142),
                         SDWORD1(v142),
                         SDWORD2(v142),
                         SHIDWORD(v142),
-                        v143,
-                        v144,
+                        v143,(int)LODWORD(v144),
                         v145,
                         v146,
                         *(int64_t *)v147,
@@ -10490,7 +10469,7 @@ int __fastcall sub_45964( int a1)
 
 //----- (000459E7) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=294)) - nutno dohledat rucne v IDA @ 0x45E7F */
-int __fastcall sub_459E7(_DWORD)
+int __fastcall sub_459E7(_DWORD _p0)
 {
   DECOMP_TODO("call analysis failed (funcsize=294)");
 }
@@ -17337,7 +17316,7 @@ int __fastcall sub_4F93B( int a1, int a2, int a3, int a4, int a5, int a6, int a7
   int v20; // edx
   int16_t v21; // ax
   int v22[25]; // [esp+0h] [ebp-3CEh] BYREF
-  __int128 v23; // [esp+64h] [ebp-36Ah]
+  hr_int128_t v23; // [esp+64h] [ebp-36Ah]
   char v24[212]; // [esp+350h] [ebp-7Eh] BYREF
   unsigned int v25; // [esp+424h] [ebp+56h]
   unsigned int v26; // [esp+428h] [ebp+5Ah]
@@ -17469,8 +17448,7 @@ int __fastcall sub_4F93B( int a1, int a2, int a3, int a4, int a5, int a6, int a7
               v22[21],
               v22[22],
               v22[23],
-              v22[24],
-              v23);
+              v22[24],(int)LODWORD(v23));
       if ( v30 != -1 && sub_E4A09(v30, (int16_t)v32, a1) == 1 )
       {
         word_19B582 = (char)v30;

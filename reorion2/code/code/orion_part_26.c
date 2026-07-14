@@ -2018,7 +2018,7 @@ int __cdecl sub_168549(int a1)
 {
   uint8_t v1; // al
 
-  v1 = __inbyte(a1);
+  v1 = hr_inbyte(a1);
   return (uint8_t)nullsub_22(v1, a1);
 }
 // 168692: using guessed type int __fastcall nullsub_22(_DWORD, _DWORD);
@@ -2027,7 +2027,7 @@ int __cdecl sub_168549(int a1)
 //----- (00168560) --------------------------------------------------------
 int __cdecl sub_168560(int a1, int a2)
 {
-  __outbyte(a1, a2);
+  hr_outbyte(a1, a2);
   return (uint8_t)nullsub_22(a2, a1);
 }
 // 168692: using guessed type int __fastcall nullsub_22(_DWORD, _DWORD);
@@ -2058,14 +2058,14 @@ char __cdecl sub_168577(int a1, int a2)
     while ( 1 )
     {
       v7 = v3 + 5;
-      v8 = __inbyte(v7);
+      v8 = hr_inbyte(v7);
       v9 = nullsub_22(v8, v7);
       v3 = v7 - 5;
       *MK_FP(a2, a1 + 30) = v9 | *MK_FP(a2, a1 + 30);
       LOBYTE(v9) = v9 & 1;
       if ( !(_BYTE)v9 )
         break;
-      v10 = __inbyte(v3);
+      v10 = hr_inbyte(v3);
       if ( v6 < 1023 )
       {
         *MK_FP(a2, a1 + *MK_FP(a2, a1 + 18) + 58) = v10;
@@ -2077,9 +2077,9 @@ char __cdecl sub_168577(int a1, int a2)
     if ( v6 > 768 )
     {
       v11 = v3 + 4;
-      LOBYTE(v9) = __inbyte(v11);
+      LOBYTE(v9) = hr_inbyte(v11);
       LOBYTE(v9) = ~*MK_FP(a2, a1 + 34) & nullsub_22(v9, v11);
-      __outbyte(v11, v9);
+      hr_outbyte(v11, v9);
     }
     a1 = *MK_FP(a2, a1);
   }
@@ -2104,9 +2104,9 @@ void __fastcall sub_1685E9(int a1)
   ++*(_DWORD *)(v1 + 54);
   (*(void (__cdecl **)(_DWORD, _DWORD))(v1 + 10))(*(_DWORD *)(v1 + 20), *(uint16_t *)(v1 + 24));
   if ( (_WORD)v2 )
-    __outbyte(v2, 0x20u);
+    hr_outbyte(v2, 0x20u);
   if ( (_WORD)v3 )
-    __outbyte(v3, 0x20u);
+    hr_outbyte(v3, 0x20u);
   /* __asm: iret */ DECOMP_TODO("inline asm");
 }
 // 168635: positive sp value 4 has been found

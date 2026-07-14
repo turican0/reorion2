@@ -480,7 +480,7 @@ LABEL_17:
         goto LABEL_11;
       }
     }
-    __debugbreak();
+    hr_debugbreak();
   }
 LABEL_20:
   byte_199F09 = 0;

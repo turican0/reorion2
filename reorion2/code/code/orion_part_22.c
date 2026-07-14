@@ -786,9 +786,9 @@ void sub_149A20()
       sub_1402FD(v0, dword_1C3C1C);
       sub_1404C7(dword_1C3C10);
       sub_1403E9();
-      __outbyte(0x43u, 0x34u);
-      __outbyte(0x40u, v1);
-      __outbyte(0x40u, v2);
+      hr_outbyte(0x43u, 0x34u);
+      hr_outbyte(0x40u, v1);
+      hr_outbyte(0x40u, v2);
       while ( 1 )
         ;
     }
@@ -7845,7 +7845,7 @@ int __fastcall sub_1534B8(int *a1, int a2, int a3, int a4)
     v19 = *((_WORD *)a1 + 2);
     v18 += 58;
     v8 = v18 + v15;
-    v9 = __readgsbyte(v18 + v15);
+    v9 = hr_readgsbyte(v18 + v15);
     v15 = ((_WORD)v15 + 1) & 0x3FF;
     v11 = a1[1];
     v10 = *a1;
@@ -7875,7 +7875,7 @@ int __fastcall sub_153598(int *a1, int a2, int a3, int a4)
   sub_15E3A8((int)v6, a1[1], *a1, a4, *a1, a1[1], 58);
   sub_168541();
   if ( v7 - v8 + (v7 - v8 < 0 ? 0x400 : 0) )
-    return __readgsbyte(*a1 + 58 + v8);
+    return hr_readgsbyte(*a1 + 58 + v8);
   else
     return -8;
 }
@@ -8653,7 +8653,7 @@ int __usercall sub_154D9A(
   if ( dword_1899FE )
   {
     v17 = a1;
-    __outbyte(0x20u, 0x20u);
+    hr_outbyte(0x20u, 0x20u);
     /* __asm: iret */ DECOMP_TODO("inline asm");
   }
   v17 = a7;
@@ -8686,7 +8686,7 @@ int __usercall sub_154D9A(
       dword_1898EC[i] = v9;
     }
   }
-  __outbyte(0x20u, 0x20u);
+  hr_outbyte(0x20u, 0x20u);
   _enable();
   if ( dword_189A02 <= 0 )
   {
@@ -8741,19 +8741,19 @@ char __cdecl sub_154EC0(int a1)
   _BOOL1 v4; // zf
   _UNKNOWN *retaddr; // [esp+10h] [ebp+4h]
 
-  v1 = __readeflags();
+  v1 = hr_readeflags();
   _disable();
-  __outbyte(0x43u, 0x36u);
+  hr_outbyte(0x43u, 0x36u);
   v2 = BYTE1(a1);
   dword_1899F6 = a1;
-  __outbyte(0x40u, a1);
+  hr_outbyte(0x40u, a1);
   result = BYTE1(a1);
-  __outbyte(0x40u, v2);
+  hr_outbyte(0x40u, v2);
   v4 = (BYTE1(retaddr) & 2) == 0;
   _disable();
   if ( !v4 )
     _enable();
-  __writeeflags(v1);
+  hr_writeeflags(v1);
   return result;
 }
 // 1899F6: using guessed type int dword_1899F6;
@@ -8805,7 +8805,7 @@ void __fastcall sub_154F88(int a1, unsigned int a2)
   _BOOL1 v3; // zf
   char v4; // [esp-7h] [ebp-13h]
 
-  v2 = __readeflags();
+  v2 = hr_readeflags();
   v4 = BYTE1(v2);
   _disable();
   word_189A06 = __DS__;
@@ -8830,7 +8830,7 @@ void __fastcall sub_154F88(int a1, unsigned int a2)
   _disable();
   if ( !v3 )
     _enable();
-  __writeeflags(v2);
+  hr_writeeflags(v2);
 }
 // 1898AC: using guessed type int dword_1898AC[];
 // 1898E8: using guessed type int dword_1898E8;
@@ -8855,7 +8855,7 @@ int sub_155076()
   _BOOL1 v2; // zf
   char v3; // [esp-3h] [ebp-Fh]
 
-  v0 = __readeflags();
+  v0 = hr_readeflags();
   v3 = BYTE1(v0);
   _disable();
   sub_154EC0(0);
@@ -8865,7 +8865,7 @@ int sub_155076()
   _disable();
   if ( !v2 )
     _enable();
-  __writeeflags(v0);
+  hr_writeeflags(v0);
   return result;
 }
 // 1899EC: using guessed type int dword_1899EC;
@@ -8989,7 +8989,7 @@ unsigned int sub_1553B4()
   unsigned int v0; // kr00_4
   unsigned int result; // eax
 
-  v0 = __getcallerseflags();
+  v0 = hr_getcallerseflags();
   result = v0;
   _disable();
   return result;
@@ -9006,7 +9006,7 @@ void __cdecl sub_1553B8(unsigned int a1)
   _disable();
   if ( !v1 )
     _enable();
-  __writeeflags(a1);
+  hr_writeeflags(a1);
 }
 
 
@@ -9077,10 +9077,10 @@ uint8_t __cdecl sub_1554F9(int a1)
   for ( i = a1; i; --i )
   {
     do
-      v4 = __inbyte(v2);
+      v4 = hr_inbyte(v2);
     while ( (v4 & 8) == 0 );
     do
-      result = __inbyte(v2);
+      result = hr_inbyte(v2);
     while ( (result & 8) != 0 );
   }
   return result;

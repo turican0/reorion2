@@ -5749,10 +5749,10 @@ char sub_15C730()
     {
       dword_18A5AC = (int (__fastcall *)(_DWORD))&off_15C810;
       dword_18A5B0 = -MEMORY[0x46C];
-      __outbyte(0x43u, 0x34u);
-      __outbyte(0x40u, 0);
+      hr_outbyte(0x43u, 0x34u);
+      hr_outbyte(0x40u, 0);
       result = 0;
-      __outbyte(0x40u, 0);
+      hr_outbyte(0x40u, 0);
     }
   }
   return result;
@@ -6407,16 +6407,16 @@ void sub_15DD55()
 
   v0 = dword_18ACBC;
   v1 = dword_18ACC0;
-  v2 = __readgsword(dword_18AC9C);
+  v2 = hr_readgsword(dword_18AC9C);
   v3 = v2 + dword_18ACA0;
   if ( dword_18ACC0 + (unsigned int)v2 >= 0x3A34 )
   {
-    __writegsword(v3, 0xFFFu);
+    hr_writegsword(v3, 0xFFFu);
     v3 = dword_18ACA0;
-    __writegsword(dword_18AC9C, 0);
+    hr_writegsword(dword_18AC9C, 0);
   }
   v4 = (uint8_t *)v0;
-  __writegsdword(v3, dword_18ACC0);
+  hr_writegsdword(v3, dword_18ACC0);
   v5 = v3;
   v6 = 0;
   v7 = v1 - 4;
@@ -6425,14 +6425,14 @@ void sub_15DD55()
   {
     v9 = *v4++;
     v6 += v9;
-    __writegsbyte(v8++, v9);
+    hr_writegsbyte(v8++, v9);
     --v7;
   }
   while ( v7 );
-  __writegsbyte(v5 + 2, v6);
+  hr_writegsbyte(v5 + 2, v6);
   v10 = dword_18ACC0;
-  __addgsword(dword_18AC9C, dword_18ACC0);
-  __addgsword(dword_18AC94, v10);
+  hr_addgsword(dword_18AC9C, dword_18ACC0);
+  hr_addgsword(dword_18AC94, v10);
 }
 // 18AC94: using guessed type int dword_18AC94;
 // 18AC9C: using guessed type int dword_18AC9C;
@@ -6444,7 +6444,7 @@ void sub_15DD55()
 //----- (0015DDE1) --------------------------------------------------------
 bool sub_15DDE1()
 {
-  return __readgsword(dword_18ACA4) == 0;
+  return hr_readgsword(dword_18ACA4) == 0;
 }
 // 18ACA4: using guessed type int dword_18ACA4;
 
@@ -6464,33 +6464,33 @@ int sub_15DE09()
   _BOOL1 v10; // zf
   uint16_t v11; // [esp-28h] [ebp-28h]
 
-  if ( !__readgsword(dword_18ACA4) )
+  if ( !hr_readgsword(dword_18ACA4) )
     return 2;
-  __writegsword(dword_18ACB4, 1u);
-  v1 = __readgsword(dword_18ACA8);
+  hr_writegsword(dword_18ACB4, 1u);
+  v1 = hr_readgsword(dword_18ACA8);
   if ( v1 >= 0x3A97u )
     goto LABEL_10;
   v2 = v1 + dword_18ACB0;
-  v3 = __readgsword(v2);
+  v3 = hr_readgsword(v2);
   if ( (uint16_t)v3 == 4095 )
     goto LABEL_7;
   if ( (uint16_t)v3 + (unsigned int)v1 >= 0x3A97 )
   {
 LABEL_10:
     _disable();
-    __writegsword(dword_18ACA4, 0);
-    __writegsword(dword_18ACA8, 0);
-    __writegsword(dword_18ACAC, dword_18ACB0);
+    hr_writegsword(dword_18ACA4, 0);
+    hr_writegsword(dword_18ACA8, 0);
+    hr_writegsword(dword_18ACAC, dword_18ACB0);
     _enable();
-    __writegsword(dword_18ACB4, 0);
+    hr_writegsword(dword_18ACB4, 0);
     return 0;
   }
   if ( (_WORD)v3 == 4095 )
   {
 LABEL_7:
-    __writegsword(dword_18ACA8, 0);
+    hr_writegsword(dword_18ACA8, 0);
     v2 = dword_18ACB0;
-    v3 = __readgsword(dword_18ACB0);
+    v3 = hr_readgsword(dword_18ACB0);
   }
   if ( v3 > 0x1F4 || v3 <= 4 )
     goto LABEL_10;
@@ -6503,16 +6503,16 @@ LABEL_7:
   v8 = v2 + 4;
   do
   {
-    v9 = __readgsbyte(v8++);
+    v9 = hr_readgsbyte(v8++);
     v7 += v9;
     *v4++ = v9;
     --v5;
   }
   while ( v5 );
-  __addgsword(dword_18ACA8, v11);
-  __writegsword(dword_18ACA4, __readgsword(dword_18ACA4) - v11);
-  v10 = v7 == (char)__readgsbyte(v6 + 2);
-  __writegsword(dword_18ACB4, 0);
+  hr_addgsword(dword_18ACA8, v11);
+  hr_writegsword(dword_18ACA4, hr_readgsword(dword_18ACA4) - v11);
+  v10 = v7 == (char)hr_readgsbyte(v6 + 2);
+  hr_writegsword(dword_18ACB4, 0);
   if ( v10 )
     return 1;
   else
@@ -6741,7 +6741,7 @@ int __stdcall sub_15E350(unsigned int a1, int a2, unsigned int a3, int a4)
 
   result = a4;
   while ( --result != -1 )
-    __writegsbyte(a1++, a3);
+    hr_writegsbyte(a1++, a3);
   return result;
 }
 
@@ -6756,7 +6756,7 @@ void __cdecl sub_15E37C(unsigned int a1, int a2, uint8_t *a3, int a4)
     v6 = a4--;
     if ( v6 <= 0 )
       break;
-    __writegsbyte(a1++, *a3++);
+    hr_writegsbyte(a1++, *a3++);
   }
   JUMPOUT(0x15E375);
 }
@@ -6775,7 +6775,7 @@ int __fastcall sub_15E3A8(int result, int a2, int a3, int a4, unsigned int a5, i
     if ( v8 <= 0 )
       break;
     ++result;
-    v9 = __readgsbyte(a5++);
+    v9 = hr_readgsbyte(a5++);
     *(_BYTE *)(result - 1) = v9;
   }
   return result;
