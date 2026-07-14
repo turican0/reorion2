@@ -112,7 +112,10 @@ typedef struct { unsigned char b[16]; } _OWORD;
    kazde HOLE predani takove promenne jako argumentu volani do LODWORD(...).
    Pokud i presto narazis na chybu "argument nekompatibilni s int" u
    nejakeho hr_int128_t, oznac mi presny soubor+radek. */
-typedef struct { uint64_t low; int64_t high; } hr_int128_t;
+/* Syntakticka nahrada: dekompilovany kod pouziva tyto hodnoty pouze jako
+   docasne registry. 64 bitu zachova nizsi cast a na rozdil od structu se
+   chova jako cislo v aritmetickych vyrazech i pri navratove hodnote. */
+typedef uint64_t hr_int128_t;
 #else
 /* GCC/Clang maji __int128 jako vestavany typ - hr_int128_t je na nej jen alias. */
 typedef __int128 hr_int128_t;

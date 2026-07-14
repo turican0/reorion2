@@ -22,8 +22,8 @@ extern "C" {
    Skutecna/plna signatura je v komentari nad kazdou deklaraci a v
    tele prislusne definice. DECOMP_TODO: az bude potreba typova
    kontrola, dohledat a sjednotit realny pocet parametru v IDA. ==== */
-// plna signatura: void __usercall __noreturn main__0(int a1, int a2, int16_t *a3);
-extern void __usercall __noreturn main__0(int a1, int a2, int16_t *a3);
+// plna signatura: void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3);
+extern void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3);
 // plna signatura: void __usercall sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6);
 extern void __usercall sub_1049B();
 // plna signatura: int __usercall sub_1077D(int a1, int a2, int a3, int16_t *a4);
@@ -10223,7 +10223,7 @@ extern void *__fastcall sub_1694D9();
 // Function declarations
 
 void __noreturn sub_10000(); // weak
-// void __usercall __noreturn main__0(int a1, int a2, int16_t *a3);
+// void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3);
 // void __usercall sub_1049B(int a1, int a2, int a3, int16_t a4, int a5, char *a6);
 // int __usercall sub_1077D(int a1, int a2, int a3, int16_t *a4);
 _DWORD *__fastcall sub_107AF(_DWORD *result);

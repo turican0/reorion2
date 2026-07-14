@@ -13944,7 +13944,7 @@ int dword_18AD6C = 0; // weak
 int dword_18AD70 = 0; // weak
 int16_t word_18ADA8 = 0; // weak
 _UNKNOWN unk_18ADB4; // weak
-double dbl_18ADBE = 1.797693134862316e308; // weak
+double dbl_18ADBE = 1.7976931348623157e308; // weak
 float flt_18ADC6 = 3.4028235e38; // weak
 char byte_18AFD0 = '\0'; // weak
 _UNKNOWN *off_18B018 = &loc_168636; // weak

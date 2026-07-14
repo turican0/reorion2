@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x10057 - 0x23563  (200 funkci) */
 
 //----- (00010057) --------------------------------------------------------
-void __usercall __noreturn main__0(int a1, int a2, int16_t *a3)
+void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3)
 {
   int v3; // eax
   int v4; // eax
