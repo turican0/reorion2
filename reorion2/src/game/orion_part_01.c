@@ -5,7 +5,7 @@
 //----- (00010057) --------------------------------------------------------
 void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
 {
-  int v3; // eax
+  int v3=0; // eax
   int v4; // eax
   _BYTE v5[32]; // [esp+6Ch] [ebp+3Eh] BYREF
   char v6[16]; // [esp+9Ch] [ebp+6Eh] BYREF

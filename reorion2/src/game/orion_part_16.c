@@ -8105,7 +8105,7 @@ char __usercall sub_FE86B(int a1, int16_t *a2)
 //----- (000FE8BE) --------------------------------------------------------
 int __usercall sub_FE8BE(int a1, int a2, int a3, int16_t *a4)
 {
-  int v4; // eax
+  int v4=0; // eax
 
   sub_1131F0(a1, a2);
   sub_F69FE(v4, a2, a3, a4);
