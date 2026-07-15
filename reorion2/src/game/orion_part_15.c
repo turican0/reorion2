@@ -11602,7 +11602,7 @@ int __fastcall sub_F4B41( int a1, int a2, int a3)
 
 
 //----- (000F4B81) --------------------------------------------------------
-void *sub_F4B81()
+void *GetGameFlagsTable_F4B81()
 {
   return &unk_1784DD;
 }
@@ -11887,19 +11887,57 @@ LABEL_44:
 
 
 //----- (000F4FD5) --------------------------------------------------------
-int __usercall sub_F4FD5(_BYTE *a1, int a2)
+// DECOMP_TODO (opraveno v teto vlne): puvodni kod volal strstr pres
+// podezrely pretypovany ukazatel na funkci s JEDINYM parametrem:
+//   result = ((int (__fastcall *)(int))strstr)(a2 + 34);
+// strstr ale potrebuje DVA parametry (haystack, needle). Stejny druh
+// artefaktu jako u ParseCommandLine_107E6 (viz vlna 02) - puvodni Watcom
+// kod spolehal na to, ze parametr a1 uz sedi ve spravnem registru z doby,
+// kdy byla tato funkce zavolana, takze zadna instrukce pro jeho predani
+// nebyla treba. Pri prekladu modernim kompilatorem uz tohle NEPLATI (jiny
+// stack frame, jine registry) - proto to v runtime padalo na Access
+// Violation (viz obrazek v zadani - ctenie z nesmyslne adresy).
+// Oprava: explicitni volani strstr se DVEMA parametry.
+//
+// DECOMP_TODO (a2 - zdroj textu k prohledani): puvodni kod pocital cilovou
+// adresu jako "&stackAnchor_v16 - 67 + 34" (viz puvodni verze
+// ParseCommandLine_107E6 pred vlnou 05) - vyraz zavisly na PRESNEM stack
+// frame puvodniho Watcom prekladace, ktery se pri prekladu modernim
+// kompilatorem NEZACHOVA (jiny layout lokalnich promennych), takze
+// vysledna adresa byla po prekompilovani nesmyslna - to je skutecna
+// prvotni pricina padu, ne jen chybejici druhy parametr strstr vyse.
+// Funkcne davá jednoznacny smysl, ze tato funkce ma - stejne jako vsechny
+// sousedni "strstr(currentArg_v17, ...)" kontroly ve stejne smycce - hledat
+// vzor v prave zpracovavanem argumentu prikazove radky, takze volajici
+// (ParseCommandLine_107E6) uz ted primo predava "currentArg_v17" misto
+// puvodniho nepresnosneho vypoctu. Presny puvodni bytovy posun (+34) se
+// nepodarilo overit (neodpovida zadne pojmenovane lokalni promenne v
+// puvodnim rozpisu stack frame) - ale funkcni zamer je jednoznacny.
+int MarkCheatPatternFlag_F4FD5(char *pattern_a1, char *argText_a2)
 {
-  int result; // eax
-  _BYTE *v3; // edx
+  int patternFound_result; // eax - 1 pokud se vzor v argText_a2 nasel, jinak 0
+  char *patternEnd_v3;     // edx - ukazatel na bajt hned za koncem vzoru v pameti
 
-  result = ((int (__fastcall *)(int))strstr)(a2 + 34);
-  do
-    ++a1;
-  while ( *a1 );
-  v3 = a1 + 1;
-  if ( result )
-    *v3 = -1;
-  return result;
+  // DECOMP_TODO: zapis "*patternEnd_v3 = -1" pri nalezeni vzoru spoleha na
+  // to, ze bezprostredne za textovym literalem "pattern_a1" v pameti lezi
+  // samostatny bajt slouzici jako priznak (potvrzeno v orion_data.c - napr.
+  // za "aNowh" nasleduje "byte_1783D3"). To je krehky trik zavisly na
+  // PRESNEM poradi globalnich promennych v pameti, jak je usporadal puvodni
+  // Watcom linker - moderni linker (MSVC) stejne poradi negarantuje (mj.
+  // muze slucovat identicke retezcove literaly, pridavat zarovnani atd.).
+  // Zatim ponechano 1:1 kvuli zachovani chovani (a protoze presny vyznam
+  // vsech takto ulozenych priznaku - zejmena uvnitr GetGameFlagsTable_F4B81
+  // tabulky - jeste neni prozkoumany), ale je to jasny kandidat na
+  // nahrazeni radnou strukturou v nekterI z pristich vln, az bude jasne,
+  // co presne kazdy priznak rika a kdo ho cte.
+  patternFound_result = strstr(argText_a2, pattern_a1) != NULL;
+  patternEnd_v3 = pattern_a1;
+  while ( *patternEnd_v3 )
+    ++patternEnd_v3;
+  ++patternEnd_v3;
+  if ( patternFound_result )
+    *patternEnd_v3 = -1;
+  return patternFound_result;
 }
 
 

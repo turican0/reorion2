@@ -1,0 +1,4 @@
+# Vlna 05: sub_F4FD5 (kontrola cheat/debug prepinacu v argv) a jeho pomocna
+# funkce sub_F4B81 (getter spolecne tabulky priznaku)
+sub_F4FD5 MarkCheatPatternFlag_F4FD5
+sub_F4B81 GetGameFlagsTable_F4B81

@@ -273,6 +273,89 @@ bud DOS/Watcom specificke (`int386`, `dos_getvect`, `_DOS4G_hook_init`,
 `memavl`, `nosound`...) nebo neoznacene `sub_XXXXX`/`nullsub_N` placeholdery,
 ktere s modernim CRT/SDL3 kolidovat nemohou.
 
+## Hotovo - vlna 05: oprava padu v `MarkCheatPatternFlag_F4FD5` (`sub_F4FD5`)
+
+**Prvni pad (z obrazku v zadani):** stejny druh artefaktu jako u
+`ParseCommandLine_107E6` ve vlne 02, jen jinde. Puvodni kod volal `strstr`
+pres pretypovany ukazatel na funkci s JEDINYM parametrem:
+```c
+result = ((int (__fastcall *)(int))strstr)(a2 + 34);
+```
+`strstr` ale potrebuje DVA parametry. Puvodni Watcom kod spolehal na to, ze
+vzor (`a1`) uz sedi ve spravnem registru z doby, kdy byla funkce zavolana -
+zadna instrukce pro jeho predani nebyla treba. Po prekompilovani modernim
+kompilatorem (jiny stack frame, jine registry) uz to neplati -> cteni z
+nesmyslne adresy -> Access Violation presne podle obrazku.
+
+**Druhy, hlubsi problem (proc to vubec padalo NA SPRAVNEM MISTE):** druhy
+parametr (`a2 + 34`) byl pocitany v `ParseCommandLine_107E6` vyrazem
+`&stackAnchor_v16 - 67` (viz puvodni DECOMP_TODO z vlny 02) - vyraz zavisly
+na PRESNEM stack frame puvodniho Watcom prekladace. Po prekompilovani uz
+tenhle vypocet vede do nesmyslne pameti bez ohledu na pocet parametru
+`strstr`. Presny puvodni bytovy posun se neda bez binarky/disassembly
+overit, ale funkcne je jednoznacne, ze `MarkCheatPatternFlag_F4FD5` ma -
+stejne jako vsech pet sousednich `strstr(currentArg_v17, ...)` kontrol ve
+stejne smycce v `ParseCommandLine_107E6` - hledat vzor v PRAVE ZPRACOVAVANEM
+ARGUMENTU prikazove radky. Cela nebezpecna `cheatFlagsBuffer_v0`/
+`stackAnchor_v16` konstrukce byla odstranena, vsech 13 volani
+`MarkCheatPatternFlag_F4FD5` v `ParseCommandLine_107E6` ted primo predava
+`currentArg_v17`.
+
+**Treti problem, ktery by se projevil hned pri dalsi iteraci:** `JUMPOUT`
+je v `hexrays_compat.h` definovany jako NO-OP (viz komentar tam - "Hex-Rays
+nedokazal prevest control-flow, funkci je nutne dohledat rucne v IDA"). V
+`ParseCommandLine_107E6` byl `JUMPOUT(0x103DF)` na miste, kam se ma skocit,
+kdyz dojdou vsechny argumenty bez nalezeni `/saveset` - jako NO-OP kod bez
+navratu SPADL DAL na `strcpy(currentArg_v17, argValues_a2[argIndex_v1])` s
+indexem == `argc`, tedy `argv[argc]`, ktere je dle standardu vzdy `NULL` ->
+`strcpy(dest, NULL)` je jisty pad. Puvodni komentar disassembly
+("control flows out of bounds to 103DF") + fakt, ze cil lezi MIMO
+rozpoznane telo funkce, odpovida tomu, ze to byl skok primo na
+epilog/return teto (void) funkce. Nahrazeno primym `return;`.
+
+**Ctvrty úklid (stejna vlna):** `goto LABEL_26;`/`LABEL_26:` pouzite jen na
+jednom miste (kdyz argument obsahuje `aDate` vzor) nahrazeno primym
+zavolanim `sub_126487(...)` + `return;` - stejne chovani, bez goto/navesti.
+Vsechny zbyvajici `((int (__fastcall *)(char *, char *))strstr)(...)`
+pretypovani v teto funkci nahrazena primym `strstr(...)` (bezpecne - na
+rozdil od `MarkCheatPatternFlag_F4FD5` mely spravny pocet parametru,
+pretypovani bylo jen dekompilacni sum).
+
+**`MarkCheatPatternFlag_F4FD5` samotna:** odstraneno `__usercall`, parametry
+prejmenovany a spravne otypovany na `char*`. Zapis priznakoveho bajtu hned
+za koncem vzoru v pameti (viz DECOMP_TODO primo u funkce) ZUSTAL zachovany
+1:1 - je to krehky trik zavisly na poradi globalnich promennych v pameti
+(potvrzeno v `orion_data.c`, napr. za `aNowh` nasleduje samostatny
+`byte_1783D3`), ktery moderni linker negarantuje, ale nahrazeni radnou
+strukturou vyzaduje napred zjistit vyznam KAZDEHO takto ulozeneho priznaku
+(zejmena tech uvnitr `GetGameFlagsTable_F4B81` tabulky na offsetech
+610/621/712/721/732) - odlozeno na pozdejsi vlnu, kdyz uz to bude jasne.
+Navratova hodnota zmenena z puvodniho "raw pointer truncated to int" na
+explicitni `strstr(...) != NULL` (0/1) - na 64bit sestaveni by orezani
+ukazatele na `int` bylo samo o sobe UB/nespolehlive; vsechna volajici mista
+pouzivaji navratovou hodnotu jen jako pravda/nepravda, takze to nic nemeni.
+
+`sub_F4B81` (getter spolecne tabulky nastaveni) prejmenovan na
+`GetGameFlagsTable_F4B81` - na rozdil od drivejsi chyby se `sub_FE8BE`
+(vlna 01) tady overilo, ze funkce je VSUDE volana konzistentne bez
+parametru (24 volani v 5 souborech) - zadne zneklidnujici nesrovnalosti
+jako u `sub_FE8BE`, takze prejmenovani je bezpecne.
+
+Overeno `gcc -fsyntax-only` na celem `src/game/` - zadne nove chyby.
+
+### DULEZITE - systemove riziko: `JUMPOUT` je VSUDE no-op
+
+Jen v `orion_part_01.c` je JESTE 43 dalsich vyskytu `JUMPOUT(...)`, ktere
+jsou VSECHNY momentalne no-op (viz `hexrays_compat.h`). Kazdy z nich je
+potenacialni "tichy pad podobny tomu, co jsme prave opravili" - misto skoku
+tam, kam mel puvodni kod skocit, kod proste spadne dal na dalsi radek. Napric
+CELYM projektem (26 souboru) jich bude pravdepodobne mnohem vic. **Tohle
+neni izolovany bug, je to systemovy vzor** - kazdy JUMPOUT je potreba projit
+jednotlive (stejnym zpusobem jako ten v `ParseCommandLine_107E6`: zjistit,
+kam cilova adresa smeruje vzhledem k rozpoznanemu telu funkce, a podle toho
+usoudit, jestli jde o `return`, `break`, `continue` nebo neco jineho) - to
+je prace na mnoho dalsich vln, ne neco, co jde udelat hromadne/automaticky.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 1. Analyzovat `sub_FE8BE` poradne - projit reprezentativni vzorek z 701

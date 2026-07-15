@@ -315,42 +315,44 @@ int sub_107CA()
 
 
 //----- (000107E6) --------------------------------------------------------
-// DECOMP_TODO (opraveno v teto vlne): puvodni dekompilace mela signaturu
+// DECOMP_TODO (opraveno ve vlne 02): puvodni dekompilace mela signaturu
 // "void sub_107E6()" bez parametru, ale telo funkce pouzivalo dve promenne
 // (puvodne v13/v14), ktere nikde nebyly nastaveny - Hex-Rays k nim hlasil
 // "variable is possibly undefined" a ve Visual Studiu to pri behu spadne na
-// "Run-Time Check Failure #3" (viz obrazek v zadani). Skutecny duvod: jde o
-// klasicky Hex-Rays artefakt, kdy volajici (GameMain_10057) preda argc/argv
-// dale beze zmeny v temze registru, ve kterem je sam prijal - zadna instrukce
-// MOV tedy neexistuje a dekompilator to nedokazal rozpoznat jako predavany
-// parametr. Assembly hodnoty tam ale REALNE jsou (argc/argv z main()), takze
-// zpristupneni jako explicitni parametry NEMENI chovani, jen opravuje chybny
-// popis funkce a odstranuje UB (cteni neinicializovane pameti).
+// "Run-Time Check Failure #3". Skutecny duvod: jde o klasicky Hex-Rays
+// artefakt, kdy volajici (GameMain_10057) preda argc/argv dale beze zmeny
+// v temze registru, ve kterem je sam prijal - zadna instrukce MOV tedy
+// neexistuje a dekompilator to nedokazal rozpoznat jako predavany parametr.
+// Assembly hodnoty tam ale REALNE jsou (argc/argv z main()), takze
+// zpristupneni jako explicitni parametry NEMENI chovani, jen opravuje
+// chybny popis funkce a odstranuje UB (cteni neinicializovane pameti).
+//
+// DECOMP_TODO (vyreseno ve vlne 05): puvodni kod tu jeste pocital zvlastni
+// ukazatel "cheatFlagsBuffer_v0 = &stackAnchor_v16 - 67" a predaval ho (jako
+// "(int)cheatFlagsBuffer_v0") do vsech volani MarkCheatPatternFlag_F4FD5.
+// Tenhle vyraz zavisel na PRESNEM stack frame puvodniho Watcom prekladace -
+// po prekompilovani modernim kompilatorem uz vypocitava nesmyslnou adresu
+// (jiny layout lokalnich promennych), coz zpusobovalo Access Violation pri
+// prvnim volani MarkCheatPatternFlag_F4FD5 (viz obrazek v zadani). Presny
+// puvodni bytovy posun se nepodarilo overit, ale funkcne je jednoznacne, ze
+// MarkCheatPatternFlag_F4FD5 ma - stejne jako vsech pet sousednich
+// "strstr(currentArg_v17, ...)" kontrol o par radku vyse a nize ve stejne
+// smycce - hledat vzor v PRAVE ZPRACOVAVANEM ARGUMENTU prikazove radky.
+// Proto se ted primo predava "currentArg_v17".
 void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
 {
-  // DECOMP_TODO: presny cil tohoto ukazatele se nepodarilo bezpecne overit
-  // (pocitane vyrazem "&stackAnchor_v16 - 67", ktery ukazuje mimo vsechny
-  // pojmenovane lokalni promenne teto funkce - pravdepodobne jde o dalsi
-  // Hex-Rays artefakt/sdileny stack buffer z volajiciho ramce). Ponechano
-  // 1:1 beze zmeny vypoctu, aby se negarantovane nezmenilo chovani - jen
-  // prejmenovano podle toho, k cemu se pouziva (predava se do sub_F4FD5
-  // jako cilovy buffer pro hledani cheat/debug prepinacu).
-  int16_t* cheatFlagsBuffer_v0; // ebp
-
   int argIndex_v1;              // ecx - index prochazeneho argv[]
   int saveSlotNumber_v2;        // eax - cislo save slotu ze "SAVESET=N"
   int64_t sprintfResult_v6;     // rax - pouzit jen kvuli SHIDWORD() nize (viz TODO)
   int64_t logMessagePacked_v8;  // rax - pouzit jen kvuli HIDWORD/LODWORD trik (viz TODO)
   int picksCount_v9;            // eax - z "PICKS=N", povoleny rozsah 10..14
   int planetsCount_v10;         // eax - z "PLANETS=N", povoleny rozsah 2..5
-  _BYTE* gameFlagsTable_v11;    // [esp-Ch] [ebp-42h] - spolecna tabulka nastaveni (viz sub_F4B81)
+  _BYTE* gameFlagsTable_v11;    // [esp-Ch] [ebp-42h] - spolecna tabulka nastaveni (viz GetGameFlagsTable_F4B81)
   char messageBuffer_v15[46];   // [esp+8h] [ebp-2Eh] BYREF
-  int16_t stackAnchor_v16;      // [esp+36h] [ebp+0h] BYREF - viz DECOMP_TODO vyse
   char currentArg_v17[80];      // [esp+58h] [ebp+22h] BYREF - aktualne zpracovavany argv[i]
   char nosavesPrefix_v18[12];   // [esp+A8h] [ebp+72h] BYREF
   char statsPrefix_v19[8];      // [esp+B4h] [ebp+7Eh] BYREF
 
-  cheatFlagsBuffer_v0 = &stackAnchor_v16 - 67;
   byte_19A007 = 0;
   byte_19A004 = 0;
   dword_19327C = 0;
@@ -362,51 +364,62 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
   strcpy(statsPrefix_v19, "/stats=");
   while ( 1 )
   {
+    // DECOMP_TODO (vyreseno ve vlne 05): tady byvalo "JUMPOUT(0x103DF);",
+    // ktere je v hexrays_compat.h definovane jako NO-OP (viz komentar tam) -
+    // takze kdyz doslo vsech argumentu bez nalezeni "/saveset", kod bez
+    // navratu SPADL DAL na "strcpy(currentArg_v17, argValues_a2[argIndex_v1])"
+    // s argIndex_v1 == argCount_a1, tedy cteni argv[argc], ktere je podle
+    // standardu vzdy NULL - strcpy(dest, NULL) je jisty pad. Puvodni
+    // disassembly komentar ("control flows out of bounds to 103DF") + fakt,
+    // ze cilova adresa lezi MIMO rozpoznane telo funkce, odpovida tomu, ze
+    // asembler tu jen skakal primo na epilog/ret teto (void) funkce -
+    // funkcne tedy jde o predcasny navrat, nahrazeno primym "return;".
     if ( (int16_t)argIndex_v1 >= argCount_a1 )
-      JUMPOUT(0x103DF);
+      return;
     strcpy(currentArg_v17, argValues_a2[argIndex_v1]);
-    if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSaveset) )
+    if ( strstr(currentArg_v17, aSaveset) )
       break;
-    if ( !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aMaps) )
+    if ( !strstr(currentArg_v17, aMaps) )
     {
-      if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSeed) )
+      if ( strstr(currentArg_v17, aSeed) )
       {
         dword_19327C = sub_10A0E(aSeed, currentArg_v17);
       }
-      else if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aNolog) )
+      else if ( strstr(currentArg_v17, aNolog) )
       {
         byte_1AB093 = 1;
       }
-      else if ( !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aNet)
-             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, nosavesPrefix_v18)
-             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, statsPrefix_v19)
-             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aQuickstart) )
+      else if ( !strstr(currentArg_v17, aNet)
+             && !strstr(currentArg_v17, nosavesPrefix_v18)
+             && !strstr(currentArg_v17, statsPrefix_v19)
+             && !strstr(currentArg_v17, aQuickstart) )
       {
-        // DECOMP_TODO: sub_F4FD5(vzor, buffer) hleda "vzor" v cheatFlagsBuffer_v0
-        // a pokud ho najde, nastavi bajt hned za koncem retezce "vzor" v pameti
-        // na -1 (0xFF) - jde o dobovy trik, kdy je priznakovy bajt ulozeny
-        // bezprostredne za textovym literalem v pameti. Nazvy priznaku (NOWH,
-        // NOBH, NOORION, GOODSTART, RICHSTART, NOSPLINT...) odpovidaji
-        // cheat/debug prepinacum Master of Orion - presna sada a vyznam kazdeho
-        // se doresi az v dalsi vlne spolu s analyzou sub_F4FD5 a sub_F4B81.
-        sub_F4FD5(aNowh, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(aNobh, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(aNoorion, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(byte_178440, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(aGoodstart, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(byte_178463, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(aRichstart, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(aNosplint, (int)cheatFlagsBuffer_v0);
-        // sub_F4B81() je cisty getter (vraci porad stejnou globalni adresu
-        // &unk_1784DD) - puvodni kod ho volal 2x zbytecne (v11 i v12 mely
+        // DECOMP_TODO: MarkCheatPatternFlag_F4FD5(vzor, text) hleda "vzor" v
+        // "text" a pokud ho najde, nastavi bajt hned za koncem retezce "vzor"
+        // v pameti na -1 (0xFF) - jde o dobovy trik, kdy je priznakovy bajt
+        // ulozeny bezprostredne za textovym literalem v pameti (viz DECOMP_TODO
+        // primo u MarkCheatPatternFlag_F4FD5 - krehke pod modernim linkerem).
+        // Nazvy vzoru (NOWH, NOBH, NOORION, GOODSTART, RICHSTART, NOSPLINT...)
+        // odpovidaji cheat/debug prepinacum Master of Orion - presny vyznam
+        // kazdeho priznaku (kdo ho cte) se doresi az v dalsi vlne.
+        MarkCheatPatternFlag_F4FD5(aNowh, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5(aNobh, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5(aNoorion, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)byte_178440, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5(aGoodstart, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)byte_178463, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5(aRichstart, currentArg_v17);
+        MarkCheatPatternFlag_F4FD5(aNosplint, currentArg_v17);
+        // GetGameFlagsTable_F4B81() je cisty getter (vraci porad stejnou globalni
+        // adresu &unk_1784DD) - puvodni kod ho volal 2x zbytecne (v11 i v12 mely
         // vzdy stejnou hodnotu), takze staci jedno volani/jedna promenna.
-        gameFlagsTable_v11 = (_BYTE*)sub_F4B81();
-        sub_F4FD5(gameFlagsTable_v11 + 712, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(gameFlagsTable_v11 + 721, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(gameFlagsTable_v11 + 732, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(gameFlagsTable_v11 + 610, (int)cheatFlagsBuffer_v0);
-        sub_F4FD5(gameFlagsTable_v11 + 621, (int)cheatFlagsBuffer_v0);
-        if ( sub_F4FD5(aPicks, (int)cheatFlagsBuffer_v0) )
+        gameFlagsTable_v11 = (_BYTE*)GetGameFlagsTable_F4B81();
+        MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 712), currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 721), currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 732), currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 610), currentArg_v17);
+        MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 621), currentArg_v17);
+        if ( MarkCheatPatternFlag_F4FD5(aPicks, currentArg_v17) )
         {
           picksCount_v9 = sub_10A0E(aPicks, currentArg_v17);
           if ( picksCount_v9 < 10 || picksCount_v9 >= 15 )
@@ -414,7 +427,7 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
           else
             aPicks[0] = picksCount_v9;
         }
-        if ( sub_F4FD5(aPlanets, (int)cheatFlagsBuffer_v0) )
+        if ( MarkCheatPatternFlag_F4FD5(aPlanets, currentArg_v17) )
         {
           planetsCount_v10 = sub_10A0E(aPlanets, currentArg_v17);
           if ( planetsCount_v10 < 2 || planetsCount_v10 >= 6 )
@@ -422,11 +435,11 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
           else
             aPlanets[0] = planetsCount_v10;
         }
-        if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSkipintro) )
+        if ( strstr(currentArg_v17, aSkipintro) )
         {
           byte_19A004 = 1;
         }
-        else if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aMonsters) )
+        else if ( strstr(currentArg_v17, aMonsters) )
         {
           byte_19A006 = sub_10A0E(aMonsters, currentArg_v17);
         }
@@ -439,10 +452,17 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
           // pak drzi dva ruzne 32bit ukazatele (zpravu a "kod"/kontext) pro
           // nasledne volani sub_126487(zprava, kod). Zachovano 1:1.
           HIDWORD(logMessagePacked_v8) = (int)aDate;
-          if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aDate) )
+          if ( strstr(currentArg_v17, aDate) )
           {
+            // DECOMP_TODO (vyreseno ve vlne 05): puvodni "goto LABEL_26;"
+            // skakal primo na zaverecne volani sub_126487 na konci funkce
+            // (viz tail nize) a presoskocil tak celou logiku pro nacitani
+            // save souboru. Protoze je LABEL_26 pouzity jen na tomto jednom
+            // miste a je to posledni prikaz funkce, nahrazeno primym
+            // zavolanim + return - identicke chovani, bez goto/navesti.
             LODWORD(logMessagePacked_v8) = (int)aMay222006_1;
-            goto LABEL_26;
+            sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
+            return;
           }
         }
       }
@@ -462,11 +482,8 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
   else
     logMessagePacked_v8 = sprintf(messageBuffer_v15, "Unable to convert settings saved in SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
   LODWORD(logMessagePacked_v8) = (int)messageBuffer_v15;
-LABEL_26:
   sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
 }
-// 10A09: control flows out of bounds to 103DF
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 178440: using guessed type _BYTE[10];
 // 178463: using guessed type _BYTE[11];
 // 19327C: using guessed type int dword_19327C;
