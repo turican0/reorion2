@@ -743,7 +743,7 @@ int16_t __usercall sub_245FD(int16_t *a1)
   int16_t j; // dx
   int v4; // ecx
 
-  result = sub_110B5C();
+  result = IsMemPoolReady_110B5C();
   if ( result != 1 )
   {
     sub_121C24(0, 0, (uint8_t)byte_199CAE, (int)&unk_178BB0);
@@ -1514,7 +1514,7 @@ bool sub_25259()
   _BYTE v2[80]; // [esp+50h] [ebp-50h] BYREF
 
   sprintf(v1, "%ssimtex.lbx", byte_184544);
-  return sub_1114D7(aSimtexLbx, v2) || sub_1114D7(v1, v2);
+  return FindMoxSetPath_1114D7(aSimtexLbx, v2) || FindMoxSetPath_1114D7(v1, v2);
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 

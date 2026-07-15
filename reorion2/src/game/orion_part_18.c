@@ -2588,7 +2588,7 @@ int __fastcall sub_1101F0(int a1, int a2, int a3, int a4)
   _BYTE v31[8]; // [esp+410h] [ebp-Ch] BYREF
   _BYTE v32[4]; // [esp+418h] [ebp-4h] BYREF
 
-  result = sub_110B5C();
+  result = IsMemPoolReady_110B5C();
   if ( (int16_t)result != 1 )
   {
     byte_1B922A = 1;
@@ -2596,7 +2596,7 @@ int __fastcall sub_1101F0(int a1, int a2, int a3, int a4)
     sub_123A30();
     v29 = 0;
     strcpy(v19, "SCR00.PCX");
-    while ( sub_1114D7(v19, v5) )
+    while ( FindMoxSetPath_1114D7(v19, v5) )
     {
       if ( ++v29 >= 10 )
       {
@@ -2802,23 +2802,23 @@ int sub_110AFC()
 
 
 //----- (00110B34) --------------------------------------------------------
-void sub_110B34()
+void MarkMemPoolReady_110B34()
 {
-  word_184374 = 1;
+  flagMemPoolReady_184374 = 1;
 }
-// 184374: using guessed type int16_t word_184374;
+// 184374: using guessed type int16_t flagMemPoolReady_184374;
 
 
 //----- (00110B5C) --------------------------------------------------------
-int16_t sub_110B5C()
+int16_t IsMemPoolReady_110B5C()
 {
-  return word_184374;
+  return flagMemPoolReady_184374;
 }
-// 184374: using guessed type int16_t word_184374;
+// 184374: using guessed type int16_t flagMemPoolReady_184374;
 
 
 //----- (00110B89) --------------------------------------------------------
-_DWORD *__fastcall sub_110B89(int a1, int a2)
+_DWORD *__fastcall PoolAlloc_110B89(int a1, int a2)
 {
   _DWORD *v4; // [esp+4h] [ebp-10h]
   int v5; // [esp+Ch] [ebp-8h]
@@ -3144,7 +3144,7 @@ int __fastcall sub_111499(int a1)
 
 
 //----- (001114D7) --------------------------------------------------------
-int __fastcall sub_1114D7(_BYTE *a1, _BYTE *a2)
+int __fastcall FindMoxSetPath_1114D7(_BYTE *a1, _BYTE *a2)
 {
   int v3; // [esp+8h] [ebp-8h]
 
@@ -3262,7 +3262,7 @@ int __fastcall sub_111932(int a1)
 
 
 //----- (00111959) --------------------------------------------------------
-int __fastcall sub_111959(int a1)
+int __fastcall SelectResourceModule_111959(int a1)
 {
   if ( a1 )
   {
@@ -4887,7 +4887,7 @@ int sub_113D23()
 
 
 //----- (00113D47) --------------------------------------------------------
-void __fastcall __noreturn sub_113D47(int a1, _BYTE *a2)
+void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2)
 {
   int v2; // eax
   int16_t v3; // [esp+0h] [ebp-8h]

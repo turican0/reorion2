@@ -2675,7 +2675,7 @@ void __fastcall sub_8BC39(int a1)
       if ( i < word_199998 )
         v11[*(uint8_t *)(dword_1930D4 + 17 * *(int16_t *)(3753 * i + dword_197F98 + 41) + 2)] = 1;
     }
-    if ( !sub_110B5C() )
+    if ( !IsMemPoolReady_110B5C() )
     {
       _wcpp_1_unwind_leave(
         0,
@@ -6301,7 +6301,7 @@ void __fastcall sub_8F99A(char *a1, char *a2)
     strcpy(v5, v12);
     v9 = v11;
     strcpy(v11, v10);
-    sub_1114D7(v11, v10);
+    FindMoxSetPath_1114D7(v11, v10);
     if ( strcmp(v11, v10) )
       goto LABEL_11;
     ++v17;

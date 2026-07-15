@@ -1118,7 +1118,7 @@ void __fastcall sub_11CEF5(int a1, int a2, int a3, int a4)
     }
     if ( (int16_t)v48 == -31488 )
     {
-      v5 = sub_110B5C();
+      v5 = IsMemPoolReady_110B5C();
       if ( (int16_t)v5 != 1 )
         sub_1172B0(v5, a2);
     }
@@ -1137,9 +1137,9 @@ void __fastcall sub_11CEF5(int a1, int a2, int a3, int a4)
       v51 = 1;
       goto LABEL_325;
     }
-    if ( (int16_t)v48 == 10592 && !sub_110B5C() )
+    if ( (int16_t)v48 == 10592 && !IsMemPoolReady_110B5C() )
       word_1844CC = word_1844CC == 0;
-    if ( (int16_t)v48 == 10622 && !sub_110B5C() )
+    if ( (int16_t)v48 == 10622 && !IsMemPoolReady_110B5C() )
       LOWORD(dword_1844CE) = (_WORD)dword_1844CE == 0;
     if ( (_WORD)v47 && *((uint8_t *)off_184480 + 55 * (int16_t)v47 + 52) == (_WORD)v48 )
     {
@@ -2366,7 +2366,7 @@ int __fastcall sub_120526(int a1)
   else
   {
     v3 = sub_126ABD(a1, 0);
-    dword_1B3E78 = (int)sub_110B89(12644, 0);
+    dword_1B3E78 = (int)PoolAlloc_110B89(12644, 0);
   }
   dword_184514 = (int)v3;
   sub_12779E(byte_1BA318, v3, 0x40u);
@@ -3219,7 +3219,7 @@ int16_t __fastcall sub_121F7B( int a1, int a2, int a3)
   int v17; // [esp+24h] [ebp-Ch]
   int v18; // [esp+2Ch] [ebp-4h]
 
-  result = sub_110B5C();
+  result = IsMemPoolReady_110B5C();
   if ( !result )
   {
     byte_1B922A = 1;
@@ -5040,12 +5040,12 @@ int __fastcall sub_12537D(int a1, int a2)
   unsigned int v2; // edx
   int result; // eax
 
-  dword_1BB90C = (int)sub_110B89(a1 + 46, a2);
-  dword_1BB8FC = (int)sub_110B89(a1 + 46, a2);
+  dword_1BB90C = (int)PoolAlloc_110B89(a1 + 46, a2);
+  dword_1BB8FC = (int)PoolAlloc_110B89(a1 + 46, a2);
   sub_127678((char *)dword_1BB90C, dword_18453C, 0);
   v2 = sub_127678((char *)dword_1BB8FC, dword_18453C, 0);
-  dword_1BB908 = (int)sub_110B89(4 * a2, v2);
-  dword_1BB8C0 = (int)sub_110B89(4 * a2, v2);
+  dword_1BB908 = (int)PoolAlloc_110B89(4 * a2, v2);
+  dword_1BB8C0 = (int)PoolAlloc_110B89(4 * a2, v2);
   sub_127678((char *)dword_1BB908, 4 * a2, 0);
   result = dword_1BB8C0;
   sub_127678((char *)dword_1BB8C0, 4 * a2, 0);

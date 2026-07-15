@@ -6961,7 +6961,7 @@ int16_t __fastcall sub_CED9B(int16_t *a1, _WORD *a2)
   }
   if ( *((char *)v2 + 51) > 0 )
   {
-    LOWORD(a1) = sub_110B5C();
+    LOWORD(a1) = IsMemPoolReady_110B5C();
     if ( (_WORD)a1 )
     {
       v10 = *((char *)v2 + 51);

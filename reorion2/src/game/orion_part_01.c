@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x10057 - 0x23563  (200 funkci) */
 
 //----- (00010057) --------------------------------------------------------
-void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3)
+void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
 {
   int v3; // eax
   int v4; // eax
@@ -16,25 +16,25 @@ void __usercall __noreturn main__0(int a1, intptr_t a2, int16_t *a3)
   word_1999EA = 20;
   word_1999EE = 20;
   byte_19A006 = -1;
-  sub_107E6();
+  ParseCommandLine_107E6();
   sub_FE8BE(v3, a1, a2, a3);
-  sub_110B34();
-  dword_19916C = (int)sub_110B89((int)&loc_63FFB + 5, (int)v5);
-  v4 = sub_1114D7(aMoxSet, v5);
+  MarkMemPoolReady_110B34();
+  dword_19916C = (int)PoolAlloc_110B89((int)&loc_63FFB + 5, (int)v5);
+  v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
   {
-    sub_11C39(v4);
+    LoadSettingsFile_11C39(v4);
     if ( word_199CBE != 130 )
-      sub_12227();
+      LoadOrResetSettings_12227();
   }
   else
   {
-    sub_127E1();
+    InitDefaultSettings_127E1();
   }
-  sub_10C2F();
-  sub_7AA33(v6);
-  sub_111959(dword_19916C);
-  sub_113D47(4, v6);
+  LoadLanguageSetting_10C2F();
+  GetFontsLbxName_7AA33(v6);
+  SelectResourceModule_111959(dword_19916C);
+  RunGameAndExit_113D47(4, v6);
 }
 // 100A0: variable 'v3' is possibly undefined
 // 12479: using guessed type _DWORD __stdcall sub_12479(_DWORD, _DWORD);
@@ -302,7 +302,7 @@ int (**__fastcall sub_107C2(int (**result)(void)))(void)
 //----- (000107CA) --------------------------------------------------------
 int sub_107CA()
 {
-  sub_110B5C();
+  IsMemPoolReady_110B5C();
   if ( dword_19327C )
     return sub_124820(dword_19327C);
   else
@@ -312,7 +312,7 @@ int sub_107CA()
 
 
 //----- (000107E6) --------------------------------------------------------
-void sub_107E6()
+void ParseCommandLine_107E6()
 {
   int16_t *v0; // ebp
   int v1; // ecx
@@ -423,7 +423,7 @@ void sub_107E6()
   v4 = v2;
   v5 = v2;
   sprintf(v15, "SAVE%d.GAM", (int16_t)v2);
-  if ( !sub_1114D7(v15, v15) )
+  if ( !FindMoxSetPath_1114D7(v15, v15) )
   {
     v6 = sprintf(v15, "Unable to open SAVE%d.GAM", v3);
     sub_126487(v15, SHIDWORD(v6));
@@ -491,7 +491,7 @@ int sub_10A72()
   _BYTE v11[80]; // [esp+118h] [ebp+CEh] BYREF
 
   HIDWORD(v0) = v10;
-  if ( !sub_1114D7(aOrioncdIni, v10) )
+  if ( !FindMoxSetPath_1114D7(aOrioncdIni, v10) )
   {
     if ( byte_199CAE )
     {
@@ -546,10 +546,10 @@ LABEL_34:
     strcpy(v5, asc_17837F);
   }
   sprintf(v11, "%sdiplomat.lbx", v10);
-  LODWORD(v0) = sub_1114D7(aDiplomatLbx, v10);
+  LODWORD(v0) = FindMoxSetPath_1114D7(aDiplomatLbx, v10);
   if ( !(_DWORD)v0 )
   {
-    v0 = __PAIR64__(v10, sub_1114D7(v11, v10));
+    v0 = __PAIR64__(v10, FindMoxSetPath_1114D7(v11, v10));
     if ( !(_DWORD)v0 )
     {
       if ( byte_199CAE )
@@ -587,7 +587,7 @@ LABEL_34:
 
 
 //----- (00010C2F) --------------------------------------------------------
-int sub_10C2F()
+int LoadLanguageSetting_10C2F()
 {
   int result; // eax
   int v1; // ecx
@@ -595,7 +595,7 @@ int sub_10C2F()
   char v3[80]; // [esp+0h] [ebp-A0h] BYREF
   _BYTE v4[80]; // [esp+50h] [ebp-50h] BYREF
 
-  result = sub_1114D7(aLanguageIni, v4);
+  result = FindMoxSetPath_1114D7(aLanguageIni, v4);
   if ( result )
   {
     v1 = fopen(aLanguageIni);
@@ -627,14 +627,14 @@ _BYTE *__fastcall sub_10CB5(int a1, int a2)
   _DWORD *v4; // eax
   _BYTE *result; // eax
 
-  dword_192EF4 = (int)sub_110B89((int)&unk_1B5030, a2);
-  dword_193178 = (int)sub_110B89(30000, a2);
-  dword_19A00C = (int)sub_110B89(1000, a2);
-  dword_1930D4 = (int)sub_110B89(6120, 6120);
+  dword_192EF4 = (int)PoolAlloc_110B89((int)&unk_1B5030, a2);
+  dword_193178 = (int)PoolAlloc_110B89(30000, a2);
+  dword_19A00C = (int)PoolAlloc_110B89(1000, a2);
+  dword_1930D4 = (int)PoolAlloc_110B89(6120, 6120);
   sub_127776((_BYTE *)dword_1930D4, 0x17E8u);
-  dword_197F98 = (int)sub_110B89(30024, 30024);
+  dword_197F98 = (int)PoolAlloc_110B89(30024, 30024);
   sub_127776((_BYTE *)dword_197F98, 0x7548u);
-  dword_192B18 = (int)sub_110B89((int)&loc_16085 + 5, (int)&loc_16085 + 5);
+  dword_192B18 = (int)PoolAlloc_110B89((int)&loc_16085 + 5, (int)&loc_16085 + 5);
   v2 = sub_127776((_BYTE *)dword_192B18, (unsigned int)&loc_16085 + 5);
   if ( sub_127880() )
   {
@@ -653,7 +653,7 @@ LABEL_6:
     v3 = sub_1279AF(dword_193170, v2);
     goto LABEL_6;
   }
-  v4 = sub_110B89((int)&loc_3E7FB + 5, v2);
+  v4 = PoolAlloc_110B89((int)&loc_3E7FB + 5, v2);
   v2 -= (int)&loc_40F0D + 3;
   dword_192EF0 = (int)v4;
   dword_193174 = (int)sub_1279AF(v2, v2);
@@ -1244,7 +1244,7 @@ char sub_11BE4()
 
 
 //----- (00011C39) --------------------------------------------------------
-char __fastcall sub_11C39(int a1)
+char __fastcall LoadSettingsFile_11C39(int a1)
 {
   int v1; // eax
   int v2; // esi
@@ -1617,7 +1617,7 @@ int sub_121F0()
 
 
 //----- (00012227) --------------------------------------------------------
-char sub_12227()
+char LoadOrResetSettings_12227()
 {
   int v0; // eax
   char v1; // bl
@@ -1625,10 +1625,10 @@ char sub_12227()
 
   v0 = fopen(aMoxSet_0);
   v1 = 0;
-  if ( !v0 || (v2 = fclose(v0), sub_11C39(v2), word_199CBE = 130, LOBYTE(v0) = sub_11BE4(), !(_BYTE)v0) )
+  if ( !v0 || (v2 = fclose(v0), LoadSettingsFile_11C39(v2), word_199CBE = 130, LOBYTE(v0) = sub_11BE4(), !(_BYTE)v0) )
     v1 = 1;
   if ( v1 )
-    LOBYTE(v0) = sub_127E1();
+    LOBYTE(v0) = InitDefaultSettings_127E1();
   return v0;
 }
 // 12697A: using guessed type int __fastcall fclose(_DWORD);
@@ -1795,7 +1795,7 @@ unsigned int __fastcall sub_1279F(int a1)
 
 
 //----- (000127E1) --------------------------------------------------------
-int sub_127E1()
+int InitDefaultSettings_127E1()
 {
   int i; // eax
   uint64_t v1; // rax
@@ -2684,7 +2684,7 @@ int16_t __usercall sub_136B3(
   for ( i = 0; i < word_199998; ++i )
     sub_97A66(i);
   sub_EF827();
-  if ( !sub_110B5C() )
+  if ( !IsMemPoolReady_110B5C() )
     sub_92C87();
   result = sub_10208A();
   ++dword_192FD8;

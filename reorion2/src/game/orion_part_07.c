@@ -763,7 +763,7 @@ void __usercall sub_7A9B1(int a1, char *a2, int16_t *a3)
   v3 = sub_FECDA();
   sub_CDF65(v3, a1, a2);
   v5[0] = 0;
-  sub_7AA33(v5);
+  GetFontsLbxName_7AA33(v5);
   v4 = sub_120526((int)v5);
   sub_7AB13(v4, a1);
   sub_7ABD7();
@@ -779,13 +779,13 @@ int sub_7AA05()
   char v1[20]; // [esp+0h] [ebp-14h] BYREF
 
   v1[0] = 0;
-  sub_7AA33(v1);
+  GetFontsLbxName_7AA33(v1);
   return sub_120526((int)v1);
 }
 
 
 //----- (0007AA33) --------------------------------------------------------
-char *__fastcall sub_7AA33(char *a1)
+char *__fastcall GetFontsLbxName_7AA33(char *a1)
 {
   char *v1; // edi
   char *result; // eax
@@ -3497,7 +3497,7 @@ void sub_7D954()
     while ( *v4 );
     strcpy(v4, aGam_0);
     *v3 = 0;
-    if ( sub_1114D7(v8, v8) )
+    if ( FindMoxSetPath_1114D7(v8, v8) )
     {
       sub_11E56((int)v8);
       if ( v5 > 0 && sub_11E04((int)v8) )
@@ -6193,11 +6193,11 @@ int sub_80AE4()
   sub_11FCC(9);
   v0 = sprintf(v4, "save%d.gam", 10);
   sub_11C2F0();
-  if ( BYTE4(v0) <= 1u && sub_1114D7(v4, v5) == 1 )
+  if ( BYTE4(v0) <= 1u && FindMoxSetPath_1114D7(v4, v5) == 1 )
     *(_WORD *)(dword_19C090 + 12) = sub_11438B(415, 172, 567, 193, aC_1, 41);
   else
     *(_WORD *)(dword_19C090 + 12) = -1000;
-  if ( word_1999E4 || sub_1114D7(aSaveGam, v5) != 1 )
+  if ( word_1999E4 || FindMoxSetPath_1114D7(aSaveGam, v5) != 1 )
     *(_WORD *)(dword_19C090 + 26) = -1000;
   else
     *(_WORD *)(dword_19C090 + 26) = sub_11438B(415, 195, 567, 215, aLnmhq, 41);
@@ -7616,7 +7616,7 @@ int16_t __usercall sub_82809(int a1, char *a2)
   int16_t v17; // [esp+1E0h] [ebp-4h]
 
   v2 = a1;
-  if ( (_WORD)a1 == word_182153 && (LOWORD(a1) = sub_110B5C(), !(_WORD)a1) || v2 == word_18215D )
+  if ( (_WORD)a1 == word_182153 && (LOWORD(a1) = IsMemPoolReady_110B5C(), !(_WORD)a1) || v2 == word_18215D )
   {
     v3 = dword_197F98 + 3753 * word_19999C;
     v4 = *(_BYTE *)(v3 + 2234) == 0;

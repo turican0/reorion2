@@ -3482,7 +3482,7 @@ LABEL_42:
       sub_C0257(v11, a3);
       return 0;
     }
-    if ( (_WORD)a1 == word_182AF7 && sub_110B5C() )
+    if ( (_WORD)a1 == word_182AF7 && IsMemPoolReady_110B5C() )
     {
       byte_182ACB = byte_182ACB == 0;
     }
@@ -8012,7 +8012,7 @@ void sub_C5BB9()
   int v2; // eax
   int v3; // eax
 
-  sub_110B5C();
+  IsMemPoolReady_110B5C();
   v0 = 0;
   if ( !byte_18319C )
   {

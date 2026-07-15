@@ -669,9 +669,9 @@ _BYTE *sub_103421()
   _BYTE v4[52]; // [esp+80h] [ebp+7Eh] BYREF
 
   sprintf(byte_1ACE98, "SR_R%x_SC.LBX", *(uint8_t *)(3753 * word_19999C + dword_197F98 + 37));
-  if ( !sub_1114D7(byte_1ACE98, v4) )
+  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v4) )
   {
-    if ( sub_1114D7(aSrRScLbx, v4) )
+    if ( FindMoxSetPath_1114D7(aSrRScLbx, v4) )
       sub_1117BF((int)v4);
     strcpy(v3, byte_184544);
     v2 = v3;
@@ -696,7 +696,7 @@ void sub_1034CB()
   _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
 
   sprintf(byte_1ACE98, "SR_R%x_SP.LBX", *(uint8_t *)(dword_197F98 + 3753 * word_19999C + 37));
-  if ( !sub_1114D7(byte_1ACE98, v0) )
+  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
     JUMPOUT(0x103472);
   JUMPOUT(0x1034BB);
 }
@@ -714,7 +714,7 @@ void sub_103521()
   _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
 
   sprintf(byte_1ACE98, "SR_R%x_TR.LBX", *(uint8_t *)(dword_197F98 + 3753 * word_19999C + 37));
-  if ( !sub_1114D7(byte_1ACE98, v0) )
+  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
     JUMPOUT(0x103472);
   JUMPOUT(0x1034BB);
 }

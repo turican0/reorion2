@@ -1,0 +1,19 @@
+# Vlna 01: main__0 a jeho primo volane funkce (startup retezec)
+# format: stare_jmeno nove_jmeno
+main__0 GameMain_10057
+sub_107E6 ParseCommandLine_107E6
+sub_FE8BE ProcessStartupArgs_FE8BE
+sub_110B34 MarkMemPoolReady_110B34
+sub_110B5C IsMemPoolReady_110B5C
+sub_110B89 PoolAlloc_110B89
+sub_1114D7 FindMoxSetPath_1114D7
+sub_11C39 LoadSettingsFile_11C39
+sub_12227 LoadOrResetSettings_12227
+sub_127E1 InitDefaultSettings_127E1
+sub_10C2F LoadLanguageSetting_10C2F
+sub_7AA33 GetFontsLbxName_7AA33
+sub_111959 SelectResourceModule_111959
+sub_113D47 RunGameAndExit_113D47
+
+# tesne svazane globalni promenne (pouzite jen uvnitr prave prejmenovanych funkci)
+word_184374 flagMemPoolReady_184374

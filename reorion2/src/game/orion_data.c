@@ -7991,7 +7991,7 @@ char *off_184350[5] =
   "nrqqqrrsnutsttuv",
   "nrqqqrrsnutsttuv"
 }; // weak
-int16_t word_184374 = 0; // weak
+int16_t flagMemPoolReady_184374 = 0; // weak
 int dword_184378 = 0; // weak
 int dword_184380 = 0; // weak
 int dword_184384 = 0; // weak

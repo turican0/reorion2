@@ -6689,7 +6689,7 @@ void __fastcall sub_B8E43(int16_t *a1, _WORD *a2)
     v10 = sub_CDF5C(497);
     sub_B8D4A(v10, v9, a2, (int)a1);
   }
-  if ( *((char *)a1 + 51) > 0 && sub_110B5C() )
+  if ( *((char *)a1 + 51) > 0 && IsMemPoolReady_110B5C() )
   {
     v11 = *((char *)a1 + 51);
     v12 = sub_CDF5C(123);
