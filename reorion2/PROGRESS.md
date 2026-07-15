@@ -119,13 +119,128 @@ Take hotovo:
   `ItemDefinitionGroup`, to jsem nemenil, protoze nevim, kam SDL3 na tvem
   stroji umistis.
 
-## Dalsi rozumny krok (navrh pro pristi session)
+## Hotovo - vlna 02: oprava RTC chyby v `ParseCommandLine_107E6` + `port_memory`
+
+### Oprava "Run-Time Check Failure #3" v `ParseCommandLine_107E6`
+
+Puvodni `void sub_107E6()` pouzivala dve promenne (`v13`, `v14`), ktere nikde
+nebyly nastaveny - Hex-Rays k nim psal komentar "possibly undefined" a MSVC
+run-time check na to spadl (viz obrazek v zadani - `v14` pouzita bez
+inicializace na radku 349). Skutecna prezina: klasicky Hex-Rays artefakt, kdy
+volajici (`GameMain_10057`) preda `argc`/`argv` dal ve stejnych registrech, ve
+kterych je sam prijal - zadna instrukce `MOV` neexistuje, takze to
+dekompilator nerozpoznal jako parametr. Hodnoty tam ale realne jsou.
+
+**Reseni:** `ParseCommandLine_107E6` ted ma explicitni signaturu
+`(int argCount_a1, char** argValues_a2)` a volajici (`GameMain_10057`) ji
+predava sve vlastni `a1`/`a2` (ktere jsou v tu chvili porad nedotcene
+argc/argv). Chovani programu se nezmenilo - jen se zpristupnily hodnoty,
+ktere v assembly vzdy byly, jen je pseudokod neuznaval za parametr.
+
+Zaroven jsem v ramci teto funkce:
+- prejmenoval vsechny lokalni promenne na logicke nazvy (`argIndex_v1`,
+  `saveSlotNumber_v2`, `currentArg_v17`, `messageBuffer_v15`, ...),
+- **slouceil zbytecne duplicity** beze zmeny chovani: `v11`+`v12` (dve
+  identicka volani cisteho getteru `sub_F4B81()`) -> jedna promenna
+  `gameFlagsTable_v11`; `v3`/`v4`/`v5` (tri kopie stejne hodnoty v ruznych
+  sirkach) -> `saveSlotNumber_v2` s explicitnim `(int16_t)` castem tam, kde
+  byl puvodne uzsi typ - vysledek je bit-identicky, jen bez nadbytecnych
+  promennych,
+- oznacil `DECOMP_TODO` komentari mista, kde jsem nazev/vyznam nemohl
+  bezpecne overit (`cheatFlagsBuffer_v0` - ukazatel pocitany vyrazem mimo
+  vsechny pojmenovane lokalni promenne; `logMessagePacked_v8` - HIDWORD/
+  LODWORD trik simulujici 64bit navratovou hodnotu `sprintf`). U obojiho
+  jsem **nemenil puvodni vypocet**, jen popsal, co se deje a proc.
+- rozpoznal, ze jde o parsovani cheat/debug prepinacu prikazove radky hry
+  **Master of Orion** (retezce `NOWH`, `NOBH`, `NOORION`, `GOODSTART`,
+  `RICHSTART`, `NOSPLINT`, `PICKS=`, `PLANETS=`, `MONSTERS=`, `SAVESET=`
+  atd.) - potvrzuje to i `ORIONCD.INI` v `sub_10A72` o kousek dal v souboru.
+
+Overeno `gcc -fsyntax-only` na celem `src/game/` - zadne nove chyby oproti
+puvodnimu stavu.
+
+**POZOR - dalsi vyskyt stejne tridy chyby, zatim nereseno:** v `GameMain_10057`
+je `int v3; // eax` pouzita v `sub_FE8BE(v3, a1, a2, a3)` bez predchoziho
+nastaveni - stejny artefakt jako u `v13`/`v14`. Nejpravdepodobnejsi hypoteza:
+`v3` je navratova hodnota `ParseCommandLine_107E6` (v assembly zjevne neco
+vraci v EAX, i kdyz ji Hex-Rays oznacil jako `void`) - ale to je zatim jen
+hypoteza a NENI overena. Necham to zaverne vyresit spolu s analyzou
+`sub_FE8BE` (viz "Dalsi krok" nize), aby se nepredbihalo stejnou chybou jako
+u prvniho pokusu o `sub_FE8BE` v prvni vlne.
+
+### Novy `src/port/port_memory.{h,cpp}`
+
+Podle upresneneho zadani - misto puvodniho DOS zpusobu (hledani volneho
+useku pameti, prace se segment:offset adresami, zonovy alokator kolem
+`PoolAlloc_110B89`) pouziva port vrstva bezne `malloc`/`free` (pres tenkou
+`Port::Memory::Alloc/Free` obalku), ktera navic:
+- eviduje vsechny zive alokace (adresa, velikost, volitelny popisek),
+- pri `Shutdown()` nahlasi na stderr vse, co zustalo neuvolnene (jednoduchy
+  leak-detektor bez zavislosti na externich nastrojich),
+- nabizi sablonovy `AllocArray<T>()` a doporuceni pouzivat pro VESKEROU
+  novou (neportovanou 1:1) logiku radeji `std::unique_ptr`/`std::vector`
+  (RAII) - primy `Alloc`/`Free` je hlavne prechodovy most pro postupnou
+  konverzi puvodni DOS pool-alokace.
+- Napojeno na `reorion2.cpp` (`Port::Memory::Init()` se vola jako uplne prvni
+  krok, `Shutdown()` na konci - i kdyz `GameMain_10057` je `__noreturn`, takze
+  se tam beh realne nikdy nevrati; az najdeme, kudy hra doopravdy konci
+  [pravdepodobne uvnitr `RunGameAndExit_113D47`], napojime tam radny
+  leak-report misto spolehani na nedosazitelny kod).
+- **Zatim NENI napojeno na `PoolAlloc_110B89`** - to je zamerne, vyzaduje to
+  drivejsi pochopeni, jak presne se zonovy alokator v puvodnim kodu pouzival
+  (kolik ruznych "poolu" existuje, jestli se nekde spolehalo na konkretni
+  layout pameti), aby prepojeni na `malloc`/`free` nezmenilo chovani.
+- `reorion2.vcxproj` aktualizovan o nove soubory.
+
+## Hotovo - vlna 03: oprava LNK2005/LNK1169 (fprintf uz definovana dvakrat)
+
+Po pridani SDL3 zavislosti (a diky `port_memory.cpp`, ktery pouziva
+`<cstdio>`) se do projektu poprve realne slinkuje skutecna CRT knihovna.
+`src/game/link_stubs.c` ale odjakziva obsahoval VLASTNI no-op nahrady pro
+`fprintf`, `printf`, `sprintf` a `fscanf` (`int fprintf(void){return 0;}`
+apod.) - puvodne vznikly jen proto, aby se dekompilovany kod vubec dal
+slinkovat, kdyz zadna realna CRT knihovna jeste pripojena nebyla. Ve chvili,
+kdy se realna CRT pripoji, vznikne "multiply defined symbol"
+(LNK2005/LNK1169) presne podle chybove hlasky v zadani.
+
+**Dulezite:** tyhle 4 funkce NEJSOU nepouzivane mrtve stuby - dekompilovany
+kod je genuinne vola se skutecnymi argumenty na **1018 mistech** (napr. AIL
+debug log v `orion_part_21.c` pres `fprintf(dword_1C0E50, ...)`, kde
+`dword_1C0E50` je puvodni `FILE*` cachovane jako cislo). Puvodni no-op stub
+tedy tyhle volani tise "spolykal" (vzdy vratil 0, nic nezapsal) - odstranenim
+stubu se ted linkuje SKUTECNA CRT implementace, coz je blize puvodnimu chovani
+hry, ne dal od nej.
+
+**Reseni:** v `link_stubs.c` odstraneny ctyri kolidujici definice
+(`fprintf`, `printf`, `sprintf`, `fscanf`), nahrazeny komentarem
+vysvetlujicim proc. **Zkousel jsem** k tomu jeste pridat `#include <stdio.h>`
+do `hexrays_compat.h`, aby mely spravny prototyp všude - ale to zpusobilo
+NOVOU vlnu chyb (`fopen`/`fseek`/`fgets`/`fgetc`/`ftell` volane v
+dekompilovanem kodu s jinym poctem argumentu, nez maji skutecne CRT
+prototypy - stejna trida Hex-Rays artefaktu jako u `fprintf` v puvodni
+signature, jen se to bez prototypu netestovalo). **Vraceno zpet** - tyhle
+funkce zustavaji zamerne bez explicitniho prototypu (implicitni K&R
+deklarace), protoze na cdecl ABI to funguje i s "spatnym" poctem argumentu
+v deklaraci (viz komentar primo v `hexrays_compat.h`). Overeno
+`gcc -fsyntax-only` na celem `src/game/` - stav chyb stejny jako pred touto
+vlnou (jen puvodni pre-existujici `exit`/`calloc` nesrovnalosti).
+
+**Ponauceni do budoucna:** kdykoliv `link_stubs.c` hlasi LNK2005 pro nejake
+jmeno, prvni otazka je "je to skutecna standardni/CRT funkce, nebo DOS/Watcom
+specificka vec (jako `nmalloc`, `memavl`, `int386`)?" - u prvniho pripadu
+stub jen odstranit (a poznamkovat proc), u druheho nechat, protoze modernim
+linkerem/CRT se stejne nikdy neuspokoji.
 
 1. Analyzovat `sub_FE8BE` poradne - projit reprezentativni vzorek z 701
-   volani, zjistit skutecny ucel, pak teprve prejmenovat (vlna 02).
+   volani, zjistit skutecny ucel, pak teprve prejmenovat. Soucasne overit
+   hypotezu o `v3` v `GameMain_10057` (viz vyse).
 2. Pokracovat grafem volani z `RunGameAndExit_113D47` (hlavni smycka) a
-   `ParseCommandLine_107E6` (jeho volane `sub_F4FD5`, `sub_10A0E` atd.) -
-   to je prirozene pokracovani "shora dolu" od vstupniho bodu.
-1. Az narazime na prvni funkci, ktera zjevne odpovida VGA/zvuku/mysi/DOS
+   z volanych funkci uvnitr `ParseCommandLine_107E6` (`sub_F4FD5`,
+   `sub_F4B81`, `sub_10A0E`, `sub_10E2F`, `sub_11F11`, `sub_126487`) - to
+   je prirozene pokracovani "shora dolu" od vstupniho bodu. `sub_F4B81`
+   (vraci `&unk_1784DD`) je dobry kandidat na vytknuti struktury - pouziva
+   se s fixnimi offsety (610, 621, 712, 721, 732), takze jde pravdepodobne
+   o tabulku nastaveni/priznaku hry.
+3. Az narazime na prvni funkci, ktera zjevne odpovida VGA/zvuku/mysi/DOS
    sluzbam, napojit ji na prislusny `port_*.cpp` a smazat puvodni primy
-   pristup na porty/pamet.
+   pristup na porty/pamet. Totez pro `PoolAlloc_110B89` -> `port_memory`.

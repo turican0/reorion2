@@ -16,6 +16,13 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+/* POZOR: zamerne NEpridavame <stdio.h> sem. Dekompilovany kod vola
+   fopen/fseek/fgets/fgetc/ftell s jinym poctem argumentu, nez maji
+   skutecne CRT prototypy (typicky Hex-Rays "guessed type" artefakt) -
+   bez prototypu se to preklada jako implicitni K&R deklarace (funguje
+   na cdecl ABI), se skutecnym prototypem z <stdio.h> uz ne. fprintf a
+   spol. proto zustavaji take bez explicitniho prototypu zde - viz
+   poznamka v link_stubs.c u jejich odstranenych stubu. */
 
 /* ---- zakladni typy ----
    __int8/16/32/64 a jejich unsigned/signed kombinace jsou v preprocesnim

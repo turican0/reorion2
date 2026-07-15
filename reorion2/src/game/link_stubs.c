@@ -206,8 +206,14 @@ int dword_1BBA74;
 int dword_1BD352;
 int dword_1C9400;
 int dword_1C9540;
-int fprintf(void) { return 0; }
-int fscanf(void) { return 0; }
+/* fprintf/fscanf/printf/sprintf ZAMERNE NEJSOU stubovane - jsou to realne
+   standardni CRT funkce (viz <stdio.h> pribaleny v hexrays_compat.h) a
+   dekompilovany kod je opravdu pouziva se skutecnymi argumenty (napr. AIL
+   debug log v orion_part_21.c, nacitani hodnot v orion_part_07.c) - stub
+   vracejici vzdy 0 by jejich chovani rozbil. Puvodne tu byly definovane
+   jako no-op nahrady (viz git historie), coz zpusobovalo LNK2005/LNK1169
+   "multiply defined symbol" ve chvili, kdy se do projektu pridala realna
+   CRT knihovna (SDL3 zavislosti, port_memory.cpp pouzivajici <cstdio>). */
 int HEXRAYS_MEMORY_STUB;
 int HEXRAYS_STACK_STUB;
 int int386(void) { return 0; }
@@ -249,14 +255,14 @@ int nullsub_6(void) { return 0; }
 int nullsub_7(void) { return 0; }
 int nullsub_8(void) { return 0; }
 int nullsub_9(void) { return 0; }
-int printf(void) { return 0; }
+/* printf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
 int qmemcpy(void) { return 0; }
 int SBYTE4(void) { return 0; }
 int SDWORD1(void) { return 0; }
 int SDWORD2(void) { return 0; }
 int segread(void) { return 0; }
 int sound(void) { return 0; }
-int sprintf(void) { return 0; }
+/* sprintf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
 int sub_10000;
 int sub_1279A(void) { return 0; }
 int sub_13F949(void) { return 0; }

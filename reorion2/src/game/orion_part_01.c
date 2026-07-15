@@ -16,7 +16,10 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   word_1999EA = 20;
   word_1999EE = 20;
   byte_19A006 = -1;
-  ParseCommandLine_107E6();
+  // a1/a2 jsou tady porad nedotcene argc/argv teto funkce (GameMain_10057) -
+  // presne ty hodnoty, ktere ParseCommandLine_107E6 drive cetla z
+  // neinicializovanych promennych. Viz DECOMP_TODO u ParseCommandLine_107E6.
+  ParseCommandLine_107E6(a1, (char**)a2);
   sub_FE8BE(v3, a1, a2, a3);
   MarkMemPoolReady_110B34();
   dword_19916C = (int)PoolAlloc_110B89((int)&loc_63FFB + 5, (int)v5);
@@ -312,134 +315,157 @@ int sub_107CA()
 
 
 //----- (000107E6) --------------------------------------------------------
-void ParseCommandLine_107E6()
+// DECOMP_TODO (opraveno v teto vlne): puvodni dekompilace mela signaturu
+// "void sub_107E6()" bez parametru, ale telo funkce pouzivalo dve promenne
+// (puvodne v13/v14), ktere nikde nebyly nastaveny - Hex-Rays k nim hlasil
+// "variable is possibly undefined" a ve Visual Studiu to pri behu spadne na
+// "Run-Time Check Failure #3" (viz obrazek v zadani). Skutecny duvod: jde o
+// klasicky Hex-Rays artefakt, kdy volajici (GameMain_10057) preda argc/argv
+// dale beze zmeny v temze registru, ve kterem je sam prijal - zadna instrukce
+// MOV tedy neexistuje a dekompilator to nedokazal rozpoznat jako predavany
+// parametr. Assembly hodnoty tam ale REALNE jsou (argc/argv z main()), takze
+// zpristupneni jako explicitni parametry NEMENI chovani, jen opravuje chybny
+// popis funkce a odstranuje UB (cteni neinicializovane pameti).
+void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
 {
-  int16_t *v0; // ebp
-  int v1; // ecx
-  int v2; // eax
-  int v3; // esi
-  int v4; // ebx
-  int16_t v5; // di
-  int64_t v6; // rax
-  int64_t v8; // rax
-  int v9; // eax
-  int v10; // eax
-  _BYTE *v11; // [esp-Ch] [ebp-42h]
-  _BYTE *v12; // [esp-Ch] [ebp-42h]
-  int v13; // [esp+0h] [ebp-36h]
-  int16_t v14; // [esp+4h] [ebp-32h]
-  char v15[46]; // [esp+8h] [ebp-2Eh] BYREF
-  int16_t v16; // [esp+36h] [ebp+0h] BYREF
-  char v17[80]; // [esp+58h] [ebp+22h] BYREF
-  char v18[12]; // [esp+A8h] [ebp+72h] BYREF
-  char v19[8]; // [esp+B4h] [ebp+7Eh] BYREF
+  // DECOMP_TODO: presny cil tohoto ukazatele se nepodarilo bezpecne overit
+  // (pocitane vyrazem "&stackAnchor_v16 - 67", ktery ukazuje mimo vsechny
+  // pojmenovane lokalni promenne teto funkce - pravdepodobne jde o dalsi
+  // Hex-Rays artefakt/sdileny stack buffer z volajiciho ramce). Ponechano
+  // 1:1 beze zmeny vypoctu, aby se negarantovane nezmenilo chovani - jen
+  // prejmenovano podle toho, k cemu se pouziva (predava se do sub_F4FD5
+  // jako cilovy buffer pro hledani cheat/debug prepinacu).
+  int16_t* cheatFlagsBuffer_v0; // ebp
 
-  v0 = &v16 - 67;
+  int argIndex_v1;              // ecx - index prochazeneho argv[]
+  int saveSlotNumber_v2;        // eax - cislo save slotu ze "SAVESET=N"
+  int64_t sprintfResult_v6;     // rax - pouzit jen kvuli SHIDWORD() nize (viz TODO)
+  int64_t logMessagePacked_v8;  // rax - pouzit jen kvuli HIDWORD/LODWORD trik (viz TODO)
+  int picksCount_v9;            // eax - z "PICKS=N", povoleny rozsah 10..14
+  int planetsCount_v10;         // eax - z "PLANETS=N", povoleny rozsah 2..5
+  _BYTE* gameFlagsTable_v11;    // [esp-Ch] [ebp-42h] - spolecna tabulka nastaveni (viz sub_F4B81)
+  char messageBuffer_v15[46];   // [esp+8h] [ebp-2Eh] BYREF
+  int16_t stackAnchor_v16;      // [esp+36h] [ebp+0h] BYREF - viz DECOMP_TODO vyse
+  char currentArg_v17[80];      // [esp+58h] [ebp+22h] BYREF - aktualne zpracovavany argv[i]
+  char nosavesPrefix_v18[12];   // [esp+A8h] [ebp+72h] BYREF
+  char statsPrefix_v19[8];      // [esp+B4h] [ebp+7Eh] BYREF
+
+  cheatFlagsBuffer_v0 = &stackAnchor_v16 - 67;
   byte_19A007 = 0;
   byte_19A004 = 0;
   dword_19327C = 0;
   byte_199F2A = 0;
-  strcpy(v18, "/nosaves=");
+  strcpy(nosavesPrefix_v18, "/nosaves=");
   word_1999E4 = 0;
   word_1999E0 = 0;
-  v1 = 0;
-  strcpy(v19, "/stats=");
+  argIndex_v1 = 0;
+  strcpy(statsPrefix_v19, "/stats=");
   while ( 1 )
   {
-    if ( (int16_t)v1 >= v14 )
+    if ( (int16_t)argIndex_v1 >= argCount_a1 )
       JUMPOUT(0x103DF);
-    strcpy(v17, *(char **)(v13 + 4 * (int16_t)v1));
-    if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aSaveset) )
+    strcpy(currentArg_v17, argValues_a2[argIndex_v1]);
+    if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSaveset) )
       break;
-    if ( !((int (__fastcall *)(char *, char *))strstr)(v17, aMaps) )
+    if ( !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aMaps) )
     {
-      if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aSeed) )
+      if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSeed) )
       {
-        dword_19327C = sub_10A0E(aSeed, v17);
+        dword_19327C = sub_10A0E(aSeed, currentArg_v17);
       }
-      else if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aNolog) )
+      else if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aNolog) )
       {
         byte_1AB093 = 1;
       }
-      else if ( !((int (__fastcall *)(char *, char *))strstr)(v17, aNet)
-             && !((int (__fastcall *)(char *, char *))strstr)(v17, v18)
-             && !((int (__fastcall *)(char *, char *))strstr)(v17, v19)
-             && !((int (__fastcall *)(char *, char *))strstr)(v17, aQuickstart) )
+      else if ( !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aNet)
+             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, nosavesPrefix_v18)
+             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, statsPrefix_v19)
+             && !((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aQuickstart) )
       {
-        sub_F4FD5(aNowh, (int)v0);
-        sub_F4FD5(aNobh, (int)v0);
-        sub_F4FD5(aNoorion, (int)v0);
-        sub_F4FD5(byte_178440, (int)v0);
-        sub_F4FD5(aGoodstart, (int)v0);
-        sub_F4FD5(byte_178463, (int)v0);
-        sub_F4FD5(aRichstart, (int)v0);
-        sub_F4FD5(aNosplint, (int)v0);
-        v11 = sub_F4B81();
-        sub_F4FD5(v11 + 712, (int)v0);
-        sub_F4FD5(v11 + 721, (int)v0);
-        sub_F4FD5(v11 + 732, (int)v0);
-        v12 = sub_F4B81();
-        sub_F4FD5(v12 + 610, (int)v0);
-        sub_F4FD5(v12 + 621, (int)v0);
-        if ( sub_F4FD5(aPicks, (int)v0) )
+        // DECOMP_TODO: sub_F4FD5(vzor, buffer) hleda "vzor" v cheatFlagsBuffer_v0
+        // a pokud ho najde, nastavi bajt hned za koncem retezce "vzor" v pameti
+        // na -1 (0xFF) - jde o dobovy trik, kdy je priznakovy bajt ulozeny
+        // bezprostredne za textovym literalem v pameti. Nazvy priznaku (NOWH,
+        // NOBH, NOORION, GOODSTART, RICHSTART, NOSPLINT...) odpovidaji
+        // cheat/debug prepinacum Master of Orion - presna sada a vyznam kazdeho
+        // se doresi az v dalsi vlne spolu s analyzou sub_F4FD5 a sub_F4B81.
+        sub_F4FD5(aNowh, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(aNobh, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(aNoorion, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(byte_178440, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(aGoodstart, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(byte_178463, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(aRichstart, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(aNosplint, (int)cheatFlagsBuffer_v0);
+        // sub_F4B81() je cisty getter (vraci porad stejnou globalni adresu
+        // &unk_1784DD) - puvodni kod ho volal 2x zbytecne (v11 i v12 mely
+        // vzdy stejnou hodnotu), takze staci jedno volani/jedna promenna.
+        gameFlagsTable_v11 = (_BYTE*)sub_F4B81();
+        sub_F4FD5(gameFlagsTable_v11 + 712, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(gameFlagsTable_v11 + 721, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(gameFlagsTable_v11 + 732, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(gameFlagsTable_v11 + 610, (int)cheatFlagsBuffer_v0);
+        sub_F4FD5(gameFlagsTable_v11 + 621, (int)cheatFlagsBuffer_v0);
+        if ( sub_F4FD5(aPicks, (int)cheatFlagsBuffer_v0) )
         {
-          v9 = sub_10A0E(aPicks, v17);
-          if ( v9 < 10 || v9 >= 15 )
+          picksCount_v9 = sub_10A0E(aPicks, currentArg_v17);
+          if ( picksCount_v9 < 10 || picksCount_v9 >= 15 )
             aPicks[0] = 10;
           else
-            aPicks[0] = v9;
+            aPicks[0] = picksCount_v9;
         }
-        if ( sub_F4FD5(aPlanets, (int)v0) )
+        if ( sub_F4FD5(aPlanets, (int)cheatFlagsBuffer_v0) )
         {
-          v10 = sub_10A0E(aPlanets, v17);
-          if ( v10 < 2 || v10 >= 6 )
+          planetsCount_v10 = sub_10A0E(aPlanets, currentArg_v17);
+          if ( planetsCount_v10 < 2 || planetsCount_v10 >= 6 )
             aPlanets[0] = 2;
           else
-            aPlanets[0] = v10;
+            aPlanets[0] = planetsCount_v10;
         }
-        if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aSkipintro) )
+        if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aSkipintro) )
         {
           byte_19A004 = 1;
         }
-        else if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aMonsters) )
+        else if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aMonsters) )
         {
-          byte_19A006 = sub_10A0E(aMonsters, v17);
+          byte_19A006 = sub_10A0E(aMonsters, currentArg_v17);
         }
         else
         {
-          HIDWORD(v8) = aDate;
-          if ( ((int (__fastcall *)(char *, char *))strstr)(v17, aDate) )
+          // DECOMP_TODO: puvodni kod predem uklada HIDWORD(logMessagePacked_v8)
+          // = aDate jeste PRED samotnym testem strstr - klasicky pripad, kdy
+          // Hex-Rays predstira 64bit navratovou hodnotu funkce (tady sprintf),
+          // aby simuloval "par registru" (eax:edx), pricemz LODWORD/HIDWORD
+          // pak drzi dva ruzne 32bit ukazatele (zpravu a "kod"/kontext) pro
+          // nasledne volani sub_126487(zprava, kod). Zachovano 1:1.
+          HIDWORD(logMessagePacked_v8) = (int)aDate;
+          if ( ((int (__fastcall *)(char *, char *))strstr)(currentArg_v17, aDate) )
           {
-            LODWORD(v8) = aMay222006_1;
+            LODWORD(logMessagePacked_v8) = (int)aMay222006_1;
             goto LABEL_26;
           }
         }
       }
     }
-    ++v1;
+    ++argIndex_v1;
   }
-  v2 = sub_10A0E(aSaveset_0, v17);
-  v3 = (int16_t)v2;
-  v4 = v2;
-  v5 = v2;
-  sprintf(v15, "SAVE%d.GAM", (int16_t)v2);
-  if ( !FindMoxSetPath_1114D7(v15, v15) )
+  saveSlotNumber_v2 = sub_10A0E(aSaveset_0, currentArg_v17);
+  sprintf(messageBuffer_v15, "SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
+  if ( !FindMoxSetPath_1114D7(messageBuffer_v15, messageBuffer_v15) )
   {
-    v6 = sprintf(v15, "Unable to open SAVE%d.GAM", v3);
-    sub_126487(v15, SHIDWORD(v6));
+    sprintfResult_v6 = sprintf(messageBuffer_v15, "Unable to open SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
+    sub_126487(messageBuffer_v15, SHIDWORD(sprintfResult_v6));
   }
-  sub_10E2F((int16_t)(v4 - 1), (int)v15, v4 - 1, v1);
-  if ( (uint8_t)sub_11F11(v5, (int)aSetTmp) )
-    v8 = sprintf(v15, "settings from SAVE%d.GAM saved to SET.TMP", v5);
+  sub_10E2F((int16_t)(saveSlotNumber_v2 - 1), (int)messageBuffer_v15, saveSlotNumber_v2 - 1, argIndex_v1);
+  if ( (uint8_t)sub_11F11((int16_t)saveSlotNumber_v2, (int)aSetTmp) )
+    logMessagePacked_v8 = sprintf(messageBuffer_v15, "settings from SAVE%d.GAM saved to SET.TMP", (int16_t)saveSlotNumber_v2);
   else
-    v8 = sprintf(v15, "Unable to convert settings saved in SAVE%d.GAM", v5);
-  LODWORD(v8) = v15;
+    logMessagePacked_v8 = sprintf(messageBuffer_v15, "Unable to convert settings saved in SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
+  LODWORD(logMessagePacked_v8) = (int)messageBuffer_v15;
 LABEL_26:
-  sub_126487((char *)v8, SHIDWORD(v8));
+  sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
 }
 // 10A09: control flows out of bounds to 103DF
-// 1084D: variable 'v13' is possibly undefined
-// 10A03: variable 'v14' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 178440: using guessed type _BYTE[10];
 // 178463: using guessed type _BYTE[11];

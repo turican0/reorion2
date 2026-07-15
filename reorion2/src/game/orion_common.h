@@ -36,8 +36,10 @@ extern int __fastcall sub_107BA();
 extern int (**__fastcall sub_107C2(int (**result)(void)))(void);
 // plna signatura: int sub_107CA();
 extern int sub_107CA();
-// plna signatura: void ParseCommandLine_107E6();
-extern void ParseCommandLine_107E6();
+// plna signatura: void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2);
+// (opraveno ve vlne 02 - puvodni Hex-Rays signatura byla bez parametru, viz
+// DECOMP_TODO primo u definice funkce v orion_part_01.c)
+extern void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2);
 // plna signatura: int __fastcall sub_10A0E(char *a1, char *a2);
 extern int __fastcall sub_10A0E();
 // plna signatura: int sub_10A72();
@@ -10230,7 +10232,7 @@ _DWORD *__fastcall sub_107AF(_DWORD *result);
 int __fastcall sub_107BA(int *a1);
 int (**__fastcall sub_107C2(int (**result)(void)))(void);
 int sub_107CA();
-void ParseCommandLine_107E6();
+void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2); // opraveno ve vlne 02
 int __fastcall sub_10A0E(char *a1, char *a2);
 int sub_10A72();
 int LoadLanguageSetting_10C2F();

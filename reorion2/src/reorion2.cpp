@@ -14,9 +14,14 @@
 #include "port/port_vga.h"
 #include "port/port_sound.h"
 #include "port/port_mouse.h"
+#include "port/port_memory.h"
 
 int main(int argc, char* argv[])
 {
+    // Evidence alokaci zapnout uplne prvni, aby zachytila i pripadne
+    // alokace, ktere si udelaji Init() funkce port vrstvy nize.
+    Port::Memory::Init();
+
     // Terminal/video emulace se musi zapnout uplne prvni - stejne jako driv
     // BIOS pripravil textovy/VGA rezim jeste pred spustenim programu.
     Port::Dos::InitTerminalEmulation();
@@ -36,5 +41,6 @@ int main(int argc, char* argv[])
     // nevrati. Return tu je jen kvuli tvaru signatury main().
     Port::Sound::Shutdown();
     Port::Vga::Shutdown();
+    Port::Memory::Shutdown();
     return 0;
 }
