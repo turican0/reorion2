@@ -10,6 +10,15 @@ extern "C" {
 
 #include "hexrays_compat.h"
 
+#pragma pack(push, 1)
+typedef struct
+{
+    char    name[19];   // puvodne byte_199699 (slot 0) / byte_1996BE[37*n] (sloty 1-9) / byte_19980B (slot 10)
+    int16_t misc[9];    // puvodne word_1996AC (slot 0); presny vyznam pro ostatni sloty neznamy - DECOMP_TODO
+} TypeSaveSlotInfo_199699;
+#pragma pack(pop)
+//static_assert(sizeof(SaveSlotInfo) == 37, "SaveSlotInfo musi mit 37 bajtu");
+
 /* ==== deklarace vsech funkci - odvozene primo z definic, aby typy
    vzdy presne sedely (puvodni Hex-Rays hlavicka byla u cca 700
    funkci s registrovymi anotacemi jen v komentari a neshodovala
@@ -18365,9 +18374,10 @@ extern int16_t word_1992D4[10];
 extern int16_t word_1992E8[5];
 extern char byte_1992F2[10];
 extern int16_t word_1992FC[462];
-extern char byte_199699[19];
-extern int16_t word_1996AC[9];
-extern char byte_1996BE[333];
+extern TypeSaveSlotInfo_199699 saveSlotInfo_199699[10];
+//extern char byte_199699[19];
+//extern int16_t word_1996AC[9];
+//extern char byte_1996BE[333];
 extern char byte_19980B[37];
 extern int16_t word_199830;
 extern int16_t word_199832;
@@ -20868,7 +20878,7 @@ extern _UNKNOWN unk_1C95D8;
 extern _UNKNOWN word_1B9E2F;
 
 /* ==== ruzne pojmenovane FLIRT-rozpoznane knihovni symboly ==== */
-extern int nmalloc(unsigned int);
+extern void* nmalloc(unsigned int);
 extern int nfree(unsigned int);
 extern void _no_support_loaded(void);
 

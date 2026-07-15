@@ -45,7 +45,7 @@ int16_t word_3BA4B[] = { -12 }; // weak
 _UNKNOWN loc_3E7FB; // weak
 _UNKNOWN loc_40F0D; // weak
 _UNKNOWN loc_61A80; // weak
-_UNKNOWN loc_63FFB; // weak
+//_UNKNOWN loc_63FFB; // weak
 int dword_649E0[2] = { 167773440, 335548160 }; // weak
 int dword_649F4[2] = { 167773440, 335548160 }; // weak
 _UNKNOWN loc_70002; // weak
@@ -15623,9 +15623,10 @@ int16_t word_1992D4[10]; // weak
 int16_t word_1992E8[5]; // weak
 char byte_1992F2[10]; // weak
 int16_t word_1992FC[462]; // weak
-char byte_199699[19]; // weak
-int16_t word_1996AC[9]; // weak
-char byte_1996BE[333]; // weak
+//char byte_199699[19]; // weak
+TypeSaveSlotInfo_199699 saveSlotInfo_199699[10];
+//int16_t word_1996AC[9]; // weak
+//char byte_1996BE[333]; // weak
 char byte_19980B[37]; // weak
 int16_t word_199830; // weak
 int16_t word_199832; // weak

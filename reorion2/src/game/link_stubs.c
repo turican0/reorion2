@@ -232,7 +232,9 @@ int loc_E40C7;
 int memavl(void) { return 0; }
 int memset32(void) { return 0; }
 int nfree;
-int nmalloc;
+void* nmalloc(unsigned int a) {
+    return malloc(a);
+};
 int nosound(void) { return 0; }
 int nullsub_1(void) { return 0; }
 int nullsub_10(void) { return 0; }

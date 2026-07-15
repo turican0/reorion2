@@ -22,7 +22,7 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   ParseCommandLine_107E6(a1, (char**)a2);
   sub_FE8BE(v3, a1, a2, a3);
   MarkMemPoolReady_110B34();
-  dword_19916C = (int)PoolAlloc_110B89((int)&loc_63FFB + 5, (int)v5);
+  dword_19916C = (int)PoolAlloc_110B89(64000, (int)v5);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
   {
@@ -852,7 +852,7 @@ char __fastcall sub_10E2F(int a1, int a2, int a3, int a4)
     v12 = 9;
   else
     v12 = v59;
-  fread(&byte_1996BE[37 * v12], 37, 1, v9);
+  fread(&saveSlotInfo_199699[v12], sizeof(TypeSaveSlotInfo_199699), 1, v9);
   fread(&dword_192FD8, 4, 1, v10);
   fread(&byte_199F3A, 1, 1, v10);
   fread(v50, 553, 1, v10);
@@ -1125,7 +1125,7 @@ void __fastcall sub_1160B(int a1, int a2, int a3, int a4)
       v11 = 9;
     else
       v11 = v34;
-    fwrite(&byte_1996BE[37 * v11], 37, 1, v7);
+    fwrite(&saveSlotInfo_199699[v11], sizeof(TypeSaveSlotInfo_199699), 1, v7);
     fwrite(&dword_192FD8, 4, 1, v7);
     fwrite(&byte_199F3A, 1, 1, v7);
     v12 = fwrite(&byte_199BDC, 553, 1, v7);
@@ -1294,7 +1294,7 @@ char __fastcall LoadSettingsFile_11C39(int a1)
   int v3; // eax
 
   nullsub_14(a1);
-  v1 = fopen(aMoxSet_0);
+  v1 = fopen(aMoxSet_0, "rb");
   v2 = v1;
   if ( v1 )
   {
@@ -1348,10 +1348,10 @@ void sub_11C83()
     v3 = 37 * v0;
     v4 = access(v8, 0);
     v12 = (_DWORD *)(4 * v0 + v7);
-    v10 = &byte_1996BE[37 * v0];
+    v10 = &saveSlotInfo_199699[v0];
     if ( v4 )
     {
-      strcpy(&byte_1996BE[v3], sub_7A990(0x184u));
+      strcpy(&saveSlotInfo_199699[v3/37], sub_7A990(0x184u));
       *v12 = -1;
     }
     else
@@ -1368,11 +1368,11 @@ void sub_11C83()
         {
           if ( (_WORD)v14 == 9 )
           {
-            strcpy(&byte_1996BE[v3], "(Auto Save)");
+            strcpy(&saveSlotInfo_199699[v3/37], "(Auto Save)");
           }
-          else if ( !byte_1996BE[37 * v0] )
+          else if ( !saveSlotInfo_199699[1 + v0].name[0])
           {
-            strcpy(&byte_1996BE[v3], "<< no description >>");
+            strcpy(&saveSlotInfo_199699[1 + v3].name[0], "<< no description >>");
           }
         }
         else
@@ -1666,7 +1666,7 @@ char LoadOrResetSettings_12227()
   char v1; // bl
   int v2; // eax
 
-  v0 = fopen(aMoxSet_0);
+  v0 = fopen(aMoxSet_0,"rb");
   v1 = 0;
   if ( !v0 || (v2 = fclose(v0), LoadSettingsFile_11C39(v2), word_199CBE = 130, LOBYTE(v0) = sub_11BE4(), !(_BYTE)v0) )
     v1 = 1;
@@ -1880,8 +1880,10 @@ int InitDefaultSettings_127E1()
   byte_199C94 = 0;
   word_199CBC = 1;
   word_199CBA = 2;
-  for ( i = 0; i != 370; byte_199699[i] = 0 )
-    i += 37;
+  /*for (i = 0; i != 370; byte_199699[i] = 0)
+    i += 37;*/
+  for (int slot = 0; slot < 10; slot++)
+    saveSlotInfo_199699[slot].name[0] = 0;
   v1 = j___clock(370, 0, 10);
   sprintf(&byte_199BF3, "MOX-%d", (unsigned int)(v1 % 0xA));
   sub_F46E7();

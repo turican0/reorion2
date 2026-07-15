@@ -3883,7 +3883,7 @@ int __fastcall sub_1127A3(int result)
 //----- (00112816) --------------------------------------------------------
 int sub_112816()
 {
-  int result; // eax
+  int result=0; // eax
   int i; // [esp+0h] [ebp-4h]
 
   if ( dword_184380 )
@@ -4712,7 +4712,7 @@ int __fastcall sub_113A20(int a1)
 //----- (00113A4E) --------------------------------------------------------
 int sub_113A4E()
 {
-  int result; // eax
+  int result=0; // eax
 
   if ( dword_184380 && dword_18442B )
   {

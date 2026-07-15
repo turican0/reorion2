@@ -9707,7 +9707,7 @@ LABEL_14:
     v28 = v25 + v6 + 2;
     v24 = (int16_t)v29;
     v27 = v4 + 38;
-    sub_80658(&byte_1996BE[37 * (int16_t)v29]);
+    sub_80658(&saveSlotInfo_199699[1 + (int16_t)v29]);
     qmemcpy(v22, (void *)((int16_t)v26 + dword_192688), 0x19u);
     qmemcpy(v21, (void *)((int16_t)v26 + dword_19268C), 0x19u);
     qmemcpy(v23, sub_8E5C5(*(uint8_t *)(dword_192680 + 270), 144, 147), sizeof(v23));
@@ -9750,8 +9750,8 @@ LABEL_14:
     v10 = 37 * (int16_t)v29;
     v11 = v27 + 9;
     v12 = v28 + v9 / 2;
-    if ( byte_1996BE[v10] )
-      v13 = &byte_1996BE[v10];
+    if (saveSlotInfo_199699[1 + v10/37].name[0])
+      v13 = &saveSlotInfo_199699[1 + v10/37];
     else
       v13 = sub_7A990(0x184u);
     sub_1212B3(v11, v12, (int)v13);
@@ -9763,7 +9763,7 @@ LABEL_14:
     sub_1212B3(v14, v15 + v16, (int)v21);
     v4 = (int16_t)v29;
     result = 37 * (int16_t)v29;
-    if ( byte_1996BE[result] )
+    if (saveSlotInfo_199699[1 + result/37].name[0])
     {
       v18 = *(_BYTE *)((int16_t)v29 + dword_192680 + 203);
       result = 0;

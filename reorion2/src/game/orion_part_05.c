@@ -10508,7 +10508,7 @@ void sub_70875()
     v18 = 5 * *(int16_t *)((char *)&word_197FC3 + v17);
     LOWORD(v18) = *(int16_t *)((char *)&word_1975D4 + v18);
     v53 = v18;
-    word_1996AC[v16] = v52;
+    saveSlotInfo_199699[1 + v16/37].name[0] = v52;
     v19 = 129 * (int16_t)v53;
     v20 = v44 + 58 * (v16 % 3) + 14;
     v41 = 2;

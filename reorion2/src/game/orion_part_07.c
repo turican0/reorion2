@@ -3200,13 +3200,13 @@ int __fastcall sub_7D061(_WORD *a1, _WORD *a2)
       {
         if ( v18 == byte_199BF1 )
         {
-          v19 = sub_806A2(&byte_1996BE[37 * byte_199BF1], 37);
+          v19 = sub_806A2(&saveSlotInfo_199699[byte_199BF1], 37);
         }
         else
         {
           v19 = 37 * v18;
-          if ( byte_1996BE[v19] == 3 )
-            sub_80658(&byte_1996BE[v19]);
+          if (saveSlotInfo_199699[v19 + 1].name[0] == 3)
+            sub_80658(&saveSlotInfo_199699[v19 + 1]);
         }
         ++v18;
       }
@@ -3221,7 +3221,7 @@ int __fastcall sub_7D061(_WORD *a1, _WORD *a2)
           v49 = v19 + 29;
           v20 = v51 + word_19983A + 24;
           if ( *(_BYTE *)((int16_t)v54 + dword_19C038 + 170) == 2 )
-            strcpy(&byte_1996BE[37 * (int16_t)v54], "* INVALID *");
+            strcpy(&saveSlotInfo_199699[v54], "* INVALID *");
           v21 = (int16_t)v54;
           sub_11FCC(v54);
           *(_BYTE *)(v21 + dword_19C038 + 550) = v22;
@@ -3253,12 +3253,12 @@ int __fastcall sub_7D061(_WORD *a1, _WORD *a2)
           v25 = (int16_t)v53;
           sub_120BB5((int16_t)v55, (int)v42);
           if ( *(_BYTE *)(v25 + dword_19C038 + 170) == 2 )
-            strcpy(&byte_1996BE[37 * v25], "* INVALID *");
+            strcpy(&saveSlotInfo_199699[v25 + 1], "* INVALID *");
           v26 = (int16_t)v53;
           sub_11FCC(v53);
           *(_BYTE *)(v26 + dword_19C038 + 550) = v27;
           v28 = sub_122259();
-          v29 = (uint16_t)sub_115BEA(v48 - 3, v24, 200, v28, (int)&byte_1996BE[37 * v26], 30, 0, 0, 41, 0);
+          v29 = (uint16_t)sub_115BEA(v48 - 3, v24, 200, v28, (int)&saveSlotInfo_199699[1 + v26], 30, 0, 0, 41, 0);
           HIWORD(v19) = HIWORD(v26);
           v50 += 31;
           ++v53;
@@ -3590,7 +3590,7 @@ void __fastcall sub_7DA76(_WORD *a1, int a2, int a3, int a4)
     {
       for ( i = 0; i < 10; ++i )
       {
-        v13 = &byte_1996BE[37 * i];
+        v13 = &saveSlotInfo_199699[1 + i];
         sub_80658(v13);
       }
       JUMPOUT(0x7DA0C);
@@ -4039,7 +4039,7 @@ void sub_7E154()
     {
       for ( i = 0; i < 10; ++i )
       {
-        v9 = &byte_1996BE[37 * i];
+        v9 = &saveSlotInfo_199699[1 + i];
         sub_80658(v9);
       }
       if ( v22 && byte_199BE2 )
@@ -4075,7 +4075,7 @@ void sub_7E154()
           v17 = WORD2(v3);
           HIWORD(dword_1844CE) = *(_WORD *)(v3 + 56);
           v10 = v1;
-          strcpy(v1, &byte_1996BE[37 * SWORD2(v3)]);
+          strcpy(v1, &saveSlotInfo_199699[1 + SWORD2(v3)]);
           v1 = v10;
           byte_1B3E18 = 1;
         }
@@ -4135,7 +4135,7 @@ LABEL_37:
   v4 = 37 * v17;
   v21 = 0;
   byte_199BF1 = v17;
-  if ( byte_1996BE[v4] && (v1 = &byte_1996BE[v4], HIDWORD(v5) = word_19C048, strcmp(&byte_1996BE[v4], word_19C048)) )
+  if (saveSlotInfo_199699[1 + v4/37].name[0] && (v1 = &saveSlotInfo_199699[1 + v4 / 37], HIDWORD(v5) = word_19C048, strcmp(&saveSlotInfo_199699[1 + v4/37], word_19C048)))
   {
     if ( !v20 )
     {
@@ -4181,7 +4181,7 @@ LABEL_36:
     if ( (unsigned int)v0 >= 0x25 )
       v15[36] = 0;
     v7 = v15;
-    v1 = &byte_1996BE[37 * v17];
+    v1 = &saveSlotInfo_199699[1 + v17];
   }
   v13 = v1;
   strcpy(v1, v7);
@@ -5017,10 +5017,10 @@ LABEL_39:
           goto LABEL_54;
         }
         v19 = 37 * (int16_t)v36;
-        if ( byte_1996BE[v19] )
+        if (saveSlotInfo_199699[1 + v19/37].name[0])
         {
           v15 = v34;
-          v16 = &byte_1996BE[v19];
+          v16 = &saveSlotInfo_199699[1 + v19/37];
           v17 = dword_19C034;
           v18 = v35 + 4;
           goto LABEL_39;
@@ -5029,7 +5029,7 @@ LABEL_39:
       else
       {
         v20 = 37 * (int16_t)v36;
-        if ( byte_1996BE[v20] )
+        if (saveSlotInfo_199699[1 + v20/37].name[0])
         {
           v15 = v34;
           if ( v38 )
@@ -5040,7 +5040,7 @@ LABEL_39:
           }
           else
           {
-            v16 = &byte_1996BE[v20];
+            v16 = &saveSlotInfo_199699[1 + v20/37];
             v17 = dword_19C034;
             v18 = v35;
           }
@@ -5071,7 +5071,7 @@ LABEL_39:
         }
         else
         {
-          v25 = &byte_1996BE[37 * (int16_t)v36];
+          v25 = &saveSlotInfo_199699[1 + (int16_t)v36];
           v24 = v35;
         }
         sub_1212B3(v24, v34, (int)v25);
@@ -5092,7 +5092,7 @@ LABEL_54:
     {
       sub_122A6E(v35, v27, (int)v30, dword_19C034);
     }
-    else if ( strcmp(&unk_19C048, &byte_1996BE[37 * (int16_t)v36]) )
+    else if ( strcmp(&unk_19C048, &saveSlotInfo_199699[1 + (int16_t)v36]) )
     {
       sub_1212B3(v35, v27, (int)v30);
     }
@@ -5865,12 +5865,12 @@ void sub_80556()
   v0 = 0;
   do
   {
-    v1 = strlen(&byte_1996BE[37 * (int16_t)v0]);
+    v1 = strlen(&saveSlotInfo_199699[1 + (int16_t)v0]);
     for ( i = v1; (int16_t)i < 37; ++i )
     {
       v1 = 37 * (int16_t)v0;
       v3 = (int16_t)i;
-      byte_1996BE[v1 + v3] = 0;
+      saveSlotInfo_199699[1 + v1/37 + v3].name[0] = 0;
     }
     ++v0;
   }
@@ -5884,10 +5884,10 @@ void sub_80556()
   while ( 1 )
   {
     qmemcpy(v8, (void *)(dword_192688 + (int16_t)v9), sizeof(v8));
-    if ( !byte_1996BE[37 * v5] && v8[0] )
+    if ( !saveSlotInfo_199699[1 + v5].name[0] && v8[0])
     {
       v6 = sub_7A990(0xCBu);
-      sprintf(&byte_1996BE[37 * v5], v6, v5);
+      sprintf(&saveSlotInfo_199699[1 + v5], v6, v5);
     }
     ++v5;
     v9 += 25;
@@ -5963,7 +5963,7 @@ int16_t __fastcall sub_80715(_WORD *a1)
   _BYTE v6[200]; // [esp+0h] [ebp-F0h] BYREF
 
   sub_11C83();
-  v5 = &byte_1996BE[37 * byte_199BF1];
+  v5 = &saveSlotInfo_199699[1 + byte_199BF1];
   v4 = byte_199BF1;
   v2 = sub_7A990(0xCCu);
   sprintf(v6, v2, v4, v5);
@@ -6002,7 +6002,7 @@ char __fastcall sub_807A6(_WORD *a1)
   _BYTE v7[200]; // [esp+0h] [ebp-F0h] BYREF
 
   sub_11C83();
-  v6 = &byte_1996BE[37 * byte_199BF1];
+  v6 = &saveSlotInfo_199699[1 + byte_199BF1];
   v5 = byte_199BF1;
   v2 = sub_7A990(0xCDu);
   sprintf(v7, v2, v5, v6);

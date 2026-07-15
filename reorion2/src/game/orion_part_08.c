@@ -1215,7 +1215,7 @@ void __fastcall sub_8A0B7( int a1)
   {
     if ( a1 == *(int16_t *)((char *)&word_197FC1 + 9 * i) )
     {
-      v5 = 5 * *(int16_t *)((char *)&word_197FC3 + 9 * word_1996AC[v3]);
+      v5 = 5 * *(int16_t *)((char *)&word_197FC3 + 9 * saveSlotInfo_199699[1 + v3/37].name[0]);
       if ( sub_7843D(word_19999C, dword_197F9C + 129 * *(int16_t *)((char *)&word_1975D4 + v5)) )
         byte_1975D8[v5] = byte_19C199;
     }
