@@ -231,6 +231,50 @@ specificka vec (jako `nmalloc`, `memavl`, `int386`)?" - u prvniho pripadu
 stub jen odstranit (a poznamkovat proc), u druheho nechat, protoze modernim
 linkerem/CRT se stejne nikdy neuspokoji.
 
+## Hotovo - vlna 04: oprava LNK2019/LNK2001 (fprintf/printf/sprintf/fscanf nevyresene)
+
+**Muj chyba minule:** poslal jsem cely `reorion2.vcxproj` ze sve kopie, cimz
+jsem prepsal tvoje rucne pridane SDL3 cesty (`third_party\SDL3\include`,
+`third_party\SDL3\lib\x86`/`x64`) a `stdcpp17`. **Od tohoto bodu dal posilam
+zmeny ve vcxproj jen jako diff/instrukci, ne cely soubor** - vzdy vychazim
+z posledni verze, kterou mi poslete, ne ze sve stare kopie.
+
+**Novy problem:** po odstraneni falesnych stubu `fprintf`/`printf`/`sprintf`/
+`fscanf` z `link_stubs.c` (vlna 03) se objevily `LNK2019`/`LNK2001`
+"unresolved external symbol" - misto duplicity ted symboly chybi uplne.
+
+**Priciha:** protoze `hexrays_compat.h` zamerne NEobsahuje `<stdio.h>` (viz
+vlna 03 - jinak by se rozbily `fopen`/`fseek`/`fgets` volane s jinym poctem
+argumentu), kompiluje se `printf`/`fprintf`/`sprintf`/`fscanf` jako stara
+implicitni (K&R) deklarace bez prototypu. Moderni Windows SDK/UCRT ale
+"holy" `printf`/`sprintf`/`fprintf`/`fscanf` symboly (bez prototypu z
+`<stdio.h>`) neexportuje primo z `ucrt.lib` - tyhle funkce jsou v UCRT
+implementovany jako inline wrappery nad `__stdio_common_vfprintf` definovane
+primo v hlavicce `<stdio.h>`. Kdyz se `<stdio.h>` nevlozi (jako u nas),
+kompilator vygeneruje volani na "holy" jmeno symbolu, ktere ocekava STAROU
+knihovnu `legacy_stdio_definitions.lib` - tu Microsoft prave pro tenhle
+scenar (stary/K&R kod bez prototypu) do Windows SDK prida.
+
+**Reseni:** pridano `legacy_stdio_definitions.lib` do `AdditionalDependencies`
+ve vsech 4 konfiguracich (`Debug|Win32`, `Release|Win32`, `Debug|x64`,
+`Release|x64`) v `reorion2.vcxproj`, hned za `SDL3.lib;`. Zadna jina zmena
+v projektu - overeno diffem oproti tvemu nahranemu souboru.
+
+**Dodatek (stale vlna 04):** po pridani `legacy_stdio_definitions.lib` se
+objevilo jeste `LNK2005: vsprintf already defined in link_stubs.obj` -
+presne stejna trida chyby, jen jsem `vsprintf` pri puvodnim gr epovani
+prehledl (hledal jsem `[vf]?printf`/`[vf]?scanf`, ale ne uplny vsprintf tvar
+zvlast). Odstranen i tenhle stub (opet: pouziva se genuinne, `orion_part_12.c`,
+`orion_part_21.c`, `orion_part_24.c`). Kvuli tomuhle prehlednuti jsem navic
+udelal siroky sken VSECH ~89 zbylych stubu v `link_stubs.c` proti seznamu
+bezne CRT funkce (printf/scanf rodina, malloc/free, string.h, stdio soubory,
+time.h, atd.) - zadny dalsi kolidujici nazev se nenasel; vse, co zbylo, je
+bud DOS/Watcom specificke (`int386`, `dos_getvect`, `_DOS4G_hook_init`,
+`memavl`, `nosound`...) nebo neoznacene `sub_XXXXX`/`nullsub_N` placeholdery,
+ktere s modernim CRT/SDL3 kolidovat nemohou.
+
+## Dalsi rozumny krok (navrh pro pristi session)
+
 1. Analyzovat `sub_FE8BE` poradne - projit reprezentativni vzorek z 701
    volani, zjistit skutecny ucel, pak teprve prejmenovat. Soucasne overit
    hypotezu o `v3` v `GameMain_10057` (viz vyse).

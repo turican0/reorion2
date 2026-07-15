@@ -330,7 +330,9 @@ int unk_1BB8C4;
 int unk_1C95D8;
 int unknown_libname_1(void) { return 0; }
 int unknown_libname_2(void) { return 0; }
-int vsprintf(void) { return 0; }
+/* vsprintf viz poznamka u fprintf v horni casti souboru - nestubovat, je
+   to realna CRT funkce a dekompilovany kod ji genuinne pouziva (napr.
+   orion_part_12.c, orion_part_21.c, orion_part_24.c). */
 int word_18F500;
 int word_1906C0;
 int word_1906C2;
