@@ -2195,7 +2195,7 @@ int __fastcall sub_169169(int a1, int a2)
 //----- (001691A0) --------------------------------------------------------
 void sub_1691A0()
 {
-  if ( !*(_BYTE *)sub_F4B81() )
+  if ( !*(_BYTE *)GetGameFlagsTable_F4B81() )
     sub_7BBBC();
 }
 
@@ -2222,7 +2222,7 @@ void sub_169245()
   _BYTE *v2; // [esp-Ch] [ebp-Ch]
 
   sub_1691A0();
-  v2 = sub_F4B81();
+  v2 = GetGameFlagsTable_F4B81();
   v0 = v2[2] | v2[740] & 2 | v2[731] & 4;
   v1 = sub_16945B((int)v2);
   *(_BYTE *)(v1 + 14) = v0;
@@ -2235,7 +2235,7 @@ _BOOL1 __fastcall sub_1692A2( int a1, int a2, _BYTE *a3)
 {
   _BOOL1 result; // al
 
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)sub_F4B81() + 109455) + 14) & 4) == 0 )
+  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) == 0 )
     return sub_17847(a1, a2, a3);
   sub_17847(a1, a2, a3);
   result = (char)a3;
@@ -2247,7 +2247,7 @@ _BOOL1 __fastcall sub_1692A2( int a1, int a2, _BYTE *a3)
 //----- (001692C7) --------------------------------------------------------
 void __usercall sub_1692C7( int a1, int a2, int a3)
 {
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)sub_F4B81() + 109455) + 14) & 4) != 0 )
+  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) != 0 )
     *(_BYTE *)(a3 + 40) = 0;
   sub_1C417(a1, a2);
 }
@@ -2284,7 +2284,7 @@ int __fastcall sub_16933A( int a1)
 
   LOBYTE(v1) = sub_8C4D3(a1);
   v4 = v1;
-  v2 = sub_F4B81();
+  v2 = GetGameFlagsTable_F4B81();
   if ( v2[620] )
     v2[137776] = 0;
   return v4;
@@ -2295,8 +2295,8 @@ int __fastcall sub_16933A( int a1)
 //----- (0016937A) --------------------------------------------------------
 void __fastcall sub_16937A(char *a1)
 {
-  *(_WORD *)a1 = (*(_BYTE *)(*(_DWORD *)((char *)sub_F4B81() + 109455) + 14) & 2) == 0
-              || a1 - (char *)((_BYTE *)sub_F4B81() != 136183);
+  *(_WORD *)a1 = (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 2) == 0
+              || a1 - (char *)((_BYTE *)GetGameFlagsTable_F4B81() != 136183);
   JUMPOUT(0x11E68A);
 }
 // 1693A5: control flows out of bounds to 11E68A
@@ -2312,9 +2312,9 @@ int sub_1693B6()
 
   LOWORD(v0) = sub_798D2();
   v3 = v0;
-  if ( (*((_BYTE *)sub_F4B81() + 2) & 1) != 0 )
+  if ( (*((_BYTE *)GetGameFlagsTable_F4B81() + 2) & 1) != 0 )
   {
-    v1 = (char *)sub_F4B81();
+    v1 = (char *)GetGameFlagsTable_F4B81();
     *(_WORD *)((char *)&loc_2152F + (_DWORD)v1) = 1011;
     *(_WORD *)(v1 + 136493) = 800;
     *(_WORD *)(v1 + 136373) = 15;
@@ -2379,7 +2379,7 @@ int sub_1693B6()
 //----- (00169410) --------------------------------------------------------
 int __stdcall sub_169410(int a1, int a2)
 {
-  sub_F4B81();
+  GetGameFlagsTable_F4B81();
   return sub_12479(a1, a2);
 }
 // 12479: using guessed type _DWORD __stdcall sub_12479(_DWORD, _DWORD);
@@ -2395,15 +2395,15 @@ int __fastcall sub_16945B(int a1)
 //----- (0016946E) --------------------------------------------------------
 void sub_16946E()
 {
-  sub_F4B81();
+  GetGameFlagsTable_F4B81();
 }
 
 
 //----- (0016948F) --------------------------------------------------------
 void sub_16948F()
 {
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)sub_F4B81() + 109455) + 14) & 8) != 0 )
-    *(_DWORD *)((char *)sub_F4B81() + 41713) = -65537;
+  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 8) != 0 )
+    *(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 41713) = -65537;
 }
 
 

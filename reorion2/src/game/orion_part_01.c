@@ -8150,15 +8150,15 @@ void __fastcall sub_1AEB5( int a1, int a2)
 
 
 //----- (0001AFA0) --------------------------------------------------------
-int __fastcall sub_1AFA0( int a1)
+int __fastcall sub_1AFA0(__int16 a1, __int16 a2)
 {
-  return sub_1AFA6(a1, 1);
+  return sub_1AFA6(a1, 1, a2);
 }
 // 1AFA6: using guessed type int __fastcall sub_1AFA6(_DWORD, _DWORD);
 
 
 //----- (0001AFA6) --------------------------------------------------------
-int __usercall sub_1AFA6( int a1, int a2, int16_t *a3, int a4)
+int __usercall sub_1AFA6( int a1, int a2, /*int16_t *a3,*/ int a4)
 {
   _BOOL2 v4; // ax
   int16_t v5; // ax

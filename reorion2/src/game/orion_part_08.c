@@ -8702,10 +8702,10 @@ char __fastcall sub_922C2( int a1, int a2, int a3, int a4, char *a5)
     v10 = (char *)(v9 + dword_19306C);
   }
   v18 = v10;
-  v14 = (char *)sub_F4B81();
+  v14 = (char *)GetGameFlagsTable_F4B81();
   *(v14 - 1) = *(_BYTE *)(*(_DWORD *)(v14 + 109455) + 14);
   v22 = sub_91F14(v18, 15, v8, v11, v19, v20, v21);
-  v15 = (char *)sub_F4B81();
+  v15 = (char *)GetGameFlagsTable_F4B81();
   v16 = *(v15 - 1);
   v17 = *(_DWORD *)(v15 + 109455);
   *(_BYTE *)(v17 + 14) = v16;
