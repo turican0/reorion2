@@ -15902,6 +15902,7 @@ int16_t word_199BCD; // weak
 char byte_199BCF[4]; // weak
 int16_t word_199BD3; // weak
 char byte_199BD5; // weak
+
 char byte_199BDC; // weak
 char byte_199BDD; // weak
 char byte_199BDE; // weak
@@ -16043,6 +16044,7 @@ char byte_199F37; // weak
 char byte_199F38; // weak
 char byte_199F39; // weak
 char byte_199F3A; // weak
+
 char byte_19A004; // weak
 char byte_19A005; // weak
 char byte_19A006; // weak
