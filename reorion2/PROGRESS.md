@@ -573,6 +573,100 @@ definovat primo).
 Overeno `gcc -fsyntax-only` na celem `src/game/` - **zadne nove chyby**,
 jen pre-existujici `sub_1AFA0` (viz vlna 06) a `exit()` (viz vlna 01).
 
+## Hotovo - vlna 08: DOS FINDFIRST/FINDNEXT (unknown_libname_1/2)
+
+Uzivatel poskytl asm-urovnovy pseudokod dvou Watcom v9.x DOS runtime
+knihovnich funkci (`unknown_libname_1`/`unknown_libname_2` - IDA jim
+nedokazala priradit vlastni citelnou adresu, byly "COLLAPSED FUNCTION" v
+asm dumpu), ktere spojuji **INT 21h AH=1Ah (SET DTA)** + **AH=4Eh/4Fh
+(FIND FIRST/NEXT ASCIZ)** do jednoho volani - klasicke DOS hledani
+souboru podle wildcard vzoru (`*`, `?`).
+
+### Layout DTA bufferu - overeno, ne odhadnuto
+
+Volajici mista v `orion_part_18.c` pristupuji na pevne bytove offsety od
+`unk_1AD828` (DTA buffer): `dword_1AD842` (+0x1A) se pouziva jako
+velikost souboru, `word_1AD840` (+0x18) se dekoduje presne DOS
+datumovym algoritmem (`((x>>9)+1980)` rok, atd.), `word_1AD83E` (+0x16)
+DOS casovym algoritmem, `unk_1AD846` (+0x1E) je kopirovan jako nazev
+souboru. Tyhle offsety **presne** odpovidaji standardnimu DOS DTA formatu
+(reserved 21B + attr 1B + time 2B + date 2B + size 4B + name 13B = 43B) -
+neni to hadani, je to primo vycteno z toho, jak hra na DTA pristupuje.
+
+### Kam to patri - port_file, ne port_dos
+
+Puvodni navrh (`PORT_LAYER_ARCHITECTURE.md`) mel FINDFIRST/FINDNEXT v
+`port_dos.cpp` (vseobecne INT 21h sluzby). Uzivatel spravne navrhl presunout
+to do `port_file.cpp` - **dava to vetsi smysl**, protoze FindFirst/FindNext
+potrebuje PRESNE tu samou case-insensitive resolver logiku, jakou uz
+`port_file.cpp` ma pro `fopen()` (adresarova cast cesty se resolvuje
+stejnym `ResolveCaseInsensitivePath`). `port_dos.cpp` zustava pro
+obecnejsi/terminalove DOS sluzby. Poznamka o tomhle rozhodnuti pridana do
+`PORT_LAYER_ARCHITECTURE.md` i primo do `port_file.h`.
+
+### Implementace - `Port::File::FindFirst`/`FindNext`
+
+- `struct DosDta` v `port_file.h` (`#pragma pack(1)`, presne overene
+  offsety, `static_assert(sizeof==43)` v C++ rezimu).
+- Case-insensitive wildcard matcher (`*`/`?`) - vlastni implementace,
+  zadna externi zavislost.
+- Hledani pres `std::filesystem::directory_iterator` (portable, C++17) -
+  adresarova cast cesty prochazi stejnym `ResolveCaseInsensitivePath`
+  jako `fopen()`.
+- Stav probihajiciho hledani (pro navazujici `FindNext`) se uklada do
+  tabulky `g_findStates`, handle (index) se zapisuje primo do
+  `DosDta::reserved` bajtu - **presne stejny princip**, jakym DOS sam
+  nese svuj (u nej opaque) hledaci stav mezi FINDFIRST/FINDNEXT volanimi.
+- `unknown_libname_1`/`unknown_libname_2` jsou tenke C-linkage obalky nad
+  `Port::File::FindFirst`/`FindNext`.
+
+### OPRAVA - spatne odhadnuta navratova konvence (nalezeno uzivatelem)
+
+V puvodni verzi teto vlny jsem implementoval `unknown_libname_1/2` tak, aby
+vracely **nenulovou** hodnotu pri nalezeni - zalozeno jen na JEDNOM
+volajicim miste (`orion_part_08.c`), ktere jsem navic spatne precetl.
+Uzivatel se zeptal "nebyly ty navratove hodnoty v DOSu jinak?" - spravna
+otazka, spustila opravu. Krizova kontrola VSECH 4 volani v
+`orion_part_18.c` ukazala jednoznacne OPACNOU konvenci:
+- `sub_11181C`: `return unknown_libname_1(a1, 0, v2) == 0;` - explicitni
+  test na 0 jako uspech.
+- `sub_111610`/`sub_111660`: pri NENULOVE hodnote vraci selhani/0/NULL,
+  pri NULE dekoduji prave vyplnenou DTA (= uspech).
+- `FindMoxSetPath_1114D7`: pri nenulove `*a2=0; return 0` (nenalezeno),
+  pri nule zkopiruje nalezene jmeno a `return 1` (nalezeno).
+
+Skutecna DOS/Watcom konvence je klasicky "errno" styl: **0 = uspech
+(nalezeno)**, nenulova = chyba/nenalezeno - presne obracene nez typicky
+C bool. Opraveno v `port_file.cpp` (`unknown_libname_1/2` ted vraci
+`0`/`1` obracene) - `Port::File::FindFirst`/`FindNext` (C++ vrstva) si
+zachovaly prirozene `bool true=nalezeno`, konverze se deje jen v tenke
+C-linkage obalce. Overeno znovu funkcnim testem (viz nize).
+
+**Ponauceni (dalsi v rade behem tohoto projektu):** i u zdanlive
+jednoduche "najdi/nenajdi" navratove hodnoty je nutne zkontrolovat VSECHNA
+volajici mista, ne jen prvni nalezene - jedno misto muze byt samo o sobe
+zavadejici (v tomto pripade "if (nalezeno) { pouzij vysledek }" vypadalo
+rozumne, ale ve skutecnosti to bylo "if (NEnalezeno) { pouzij tuto
+alternativu jako fallback }").
+
+**Funkcne otestovano** (ne jen zkompilovano): vytvoreny testovaci soubory
+`SAVE1.GAM`/`Save2.gam` (rozdilna velikost pismen), hledani vzorem
+`data/*.GAM`, r==0 znamena nalezeno (2 shody), zaverecne r!=0 (dosli
+zaznamy), negativni test (vzor bez shody) vraci r!=0.
+
+**DECOMP_TODO ponechano:** DOS atributy (hidden/system/archive - jen
+adresar/read-only se momentalne detekuji) nejsou plne mapovany, protoze
+cross-platformni zjisteni FAT-stylovych atributu na Linuxu/macOS nema
+primy ekvivalent - pokud je hra bude niekde skutecne testovat, bude
+potreba dohledat konkretni pouziti.
+
+Odstraneny stare no-op stuby (`int unknown_libname_1(void){return 0;}`) z
+`link_stubs.c`. `hexrays_compat.h` ma DosDta + deklarace pro cisty C herni
+kod (nemuze primo includovat `port_file.h` kvuli C++ `namespace`).
+`reorion2.vcxproj` beze zmeny (`port_file.cpp/h` uz tam byly z vlny 06).
+
+Overeno `gcc -fsyntax-only` na celem `src/game/` - zadne nove chyby.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 1. **fseek/ftell dluh (25 mist)** - viz vyse, nejvyssi priorita, protoze

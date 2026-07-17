@@ -6,7 +6,11 @@
 // DECOMP_TODO: az budeme prochazet dalsi vlny funkci (sub_xxx), veci jako
 // primy pristup na segment:offset pameti, int 21h volani pres emulovane
 // registry apod. sem prijdou postupne - ted je tu jen kostra a terminal
-// emulace, protoze ta musi bezet uplne prvni (viz reorion2.cpp).
+// emulace, protoze ta musi bezet uplne prvni (viz reorion2.cpp). Souborove
+// DOS sluzby (FINDFIRST/FINDNEXT, INT 21h AH=1Ah/4Eh/4Fh) jsou vyjimka -
+// ty jsou v src/port/port_file.cpp spolu se zbytkem souboroveho I/O,
+// protoze znovupouzivaji stejnou case-insensitive resolver logiku (viz
+// PORT_LAYER_ARCHITECTURE.md, "Poznamka k realne implementaci").
 #ifndef PORT_DOS_H
 #define PORT_DOS_H
 

@@ -350,8 +350,10 @@ int unk_1B0057;
 int unk_1B0848;
 int unk_1BB8C4;
 int unk_1C95D8;
-int unknown_libname_1(void) { return 0; }
-int unknown_libname_2(void) { return 0; }
+/* unknown_libname_1/2 (puvodni Watcom v9.x DOS runtime FINDFIRST/FINDNEXT,
+   INT 21h AH=1Ah+4Eh/4Fh) UZ NEJSOU stubovane - skutecna implementace
+   (case-insensitive, s * a ? wildcards) je v src/port/port_file.cpp,
+   deklarace v src/port/port_file.h. Viz PROGRESS.md vlna 08. */
 /* vsprintf viz poznamka u fprintf v horni casti souboru - nestubovat, je
    to realna CRT funkce a dekompilovany kod ji genuinne pouziva (napr.
    orion_part_12.c, orion_part_21.c, orion_part_24.c). */

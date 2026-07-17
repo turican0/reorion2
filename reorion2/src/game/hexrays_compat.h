@@ -98,6 +98,37 @@ int    PortFile_Access(const char* path, int mode);
 #define fflush(str)                PortFile_Flush(str)
 #define access(path, mode)         PortFile_Access((path), (mode))
 
+/* ---- DOS FINDFIRST/FINDNEXT (vlna 08) ----
+   "unknown_libname_1"/"unknown_libname_2" jsou puvodni Watcom v9.x DOS
+   runtime knihovni funkce (nemely rozpoznatelnou vlastni adresu v IDA),
+   ktere spojuji INT 21h AH=1Ah (SET DTA) + AH=4Eh/4Fh (FIND FIRST/NEXT
+   ASCIZ) do jednoho volani. Skutecna implementace (case-insensitive
+   hledani se * a ? wildcards, vyuziva stejny resolver jako fopen() vyse)
+   je v src/port/port_file.cpp - logicky tam patri vic nez do port_dos.cpp,
+   protoze jde primo o adresarove hledani souboru.
+   DosDta layout je OVEREN primo z volajicich mist v orion_part_18.c
+   (pevne bytove offsety na `unk_1AD828` odpovidaji presne standardnimu
+   DOS DTA formatu - viz komentar u struktury nize a v port_file.h). */
+#pragma pack(push, 1)
+struct DosDta {
+    uint8_t  reserved[21]; /* interne pouzivano Port::File pro handle hledani */
+    uint8_t  attr;         /* +0x15 */
+    uint16_t time;         /* +0x16 */
+    uint16_t date;         /* +0x18 */
+    uint32_t size;         /* +0x1A */
+    char     name[13];     /* +0x1E - 8.3 jmeno, null-terminated */
+};
+#pragma pack(pop)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+int unknown_libname_1(const char* pattern, int attrMask, struct DosDta* dta); /* FINDFIRST */
+int unknown_libname_2(struct DosDta* dta); /* FINDNEXT */
+#ifdef __cplusplus
+}
+#endif
+
 /* DECOMP_TODO - DLUH (vlna 07, castecne vyreseno): z 20 fseek + 1 mylne
    pojmenovaneho ftell (celkem 21 mist) je ted 19 opraveno na spravny
    3parametrovy tvar (handle, offset, origin) na zaklade rozpoznaneho LBX

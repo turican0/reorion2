@@ -3,9 +3,12 @@
 #include <cstdio>
 #include <string>
 #include <cstring>
+#include <cctype>
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <filesystem>
+#include <optional>
 
 #ifdef _WIN32
 #include <io.h>
@@ -14,6 +17,8 @@
 #include <unistd.h>
 #include <strings.h> // strcasecmp
 #endif
+
+namespace fs = std::filesystem;
 
 namespace Port::File {
 
@@ -108,12 +113,195 @@ void ClearResolveCache()
     g_resolveCache.clear();
 }
 
+namespace {
+
+// Jednoduchy case-insensitive wildcard matcher pro DOS 8.3 vzory (* a ?).
+// '*' = libovolny (i prazdny) retezec, '?' = presne jeden znak.
+bool WildcardMatch(const char* pattern, const char* name)
+{
+    const char* p = pattern;
+    const char* n = name;
+    const char* starP = nullptr;
+    const char* starN = nullptr;
+
+    while (*n) {
+        if (*p == '?' || (std::tolower((unsigned char)*p) == std::tolower((unsigned char)*n))) {
+            ++p;
+            ++n;
+        } else if (*p == '*') {
+            starP = p++;
+            starN = n;
+        } else if (starP) {
+            p = starP + 1;
+            n = ++starN;
+        } else {
+            return false;
+        }
+    }
+    while (*p == '*')
+        ++p;
+    return *p == '\0';
+}
+
+// Prevod std::filesystem::file_time_type na DOS-kodovane datum/cas
+// (stejny format, jaky by vratil skutecny INT 21h AH=4Eh/4Fh).
+void EncodeDosDateTime(const fs::file_time_type& ftime, uint16_t& outDate, uint16_t& outTime)
+{
+    using namespace std::chrono;
+    auto sctp = time_point_cast<system_clock::duration>(ftime - fs::file_time_type::clock::now() + system_clock::now());
+    std::time_t tt = system_clock::to_time_t(sctp);
+    std::tm tmv{};
+#ifdef _WIN32
+    localtime_s(&tmv, &tt);
+#else
+    localtime_r(&tt, &tmv);
+#endif
+    int year = tmv.tm_year + 1900;
+    if (year < 1980) year = 1980; // DOS datum nezna roky pred 1980
+    outDate = static_cast<uint16_t>(((year - 1980) << 9) | ((tmv.tm_mon + 1) << 5) | tmv.tm_mday);
+    outTime = static_cast<uint16_t>((tmv.tm_hour << 11) | (tmv.tm_min << 5) | (tmv.tm_sec / 2));
+}
+
+// Stav jednoho probihajiciho hledani (mezi FindFirst a nasledujicimi
+// FindNext) - handle na tento stav se uklada do DosDta::reserved, presne
+// jako u puvodniho DOS DTA (tam je to opaque, tady je to jen index).
+struct FindState {
+    std::string directory;   // rozresena (case-insensitive) cesta k adresari
+    std::string wildcard;    // jen jmenna cast vzoru (bez adresare)
+    std::vector<fs::directory_entry> entries; // predem nactene, aby FindNext nemusel znovu prochazet adresar
+    size_t nextIndex = 0;
+};
+
+std::mutex g_findMutex;
+std::vector<std::optional<FindState>> g_findStates; // index 0 nepouzity (0 = neplatny handle)
+
+// Naplni jednu polozku DosDta z nalezeneho directory_entry.
+void FillDta(DosDta* dta, const fs::directory_entry& entry)
+{
+    std::string name = entry.path().filename().string();
+    std::strncpy(dta->name, name.c_str(), sizeof(dta->name) - 1);
+    dta->name[sizeof(dta->name) - 1] = '\0';
+
+    std::error_code ec;
+    auto size = entry.file_size(ec);
+    dta->size = ec ? 0 : static_cast<uint32_t>(size);
+
+    auto ftime = entry.last_write_time(ec);
+    if (!ec)
+        EncodeDosDateTime(ftime, dta->date, dta->time);
+    else
+        dta->date = dta->time = 0;
+
+    // DOS atributy: bit0=read-only, bit4=adresar. Ostatni (hidden/system/
+    // archive) nemame odkud spolehlive zjistit napric platformami - 0 je
+    // bezpecny vychozi stav (bezny soubor).
+    dta->attr = 0;
+    if (entry.is_directory(ec))
+        dta->attr |= 0x10;
+}
+
+// Najde dalsi zaznam v "state" odpovidajici wildcard vzoru a attrMask,
+// vyplni "dta". Vraci false, kdyz uz zadny dalsi zaznam neni.
+bool AdvanceFind(FindState& state, int attrMask, DosDta* dta)
+{
+    while (state.nextIndex < state.entries.size()) {
+        const auto& entry = state.entries[state.nextIndex++];
+        std::string name = entry.path().filename().string();
+
+        std::error_code ec;
+        bool isDir = entry.is_directory(ec);
+        // attrMask==0 (typicky pouziti v teto hre) znamena "jen bezne
+        // soubory" - adresare se v takovem hledani DOS konvenci preskakuji,
+        // pokud volajici vyslovne nepozadal o bit 0x10 v masce.
+        if (isDir && !(attrMask & 0x10))
+            continue;
+
+        if (!WildcardMatch(state.wildcard.c_str(), name.c_str()))
+            continue;
+
+        FillDta(dta, entry);
+        return true;
+    }
+    return false;
+}
+
+} // namespace
+
+bool FindFirst(const char* pattern, int attrMask, DosDta* dta)
+{
+    if (!pattern || !dta)
+        return false;
+
+    std::string patternStr(pattern);
+    size_t slashPos = patternStr.find_last_of("/\\");
+    std::string dirPart = (slashPos == std::string::npos) ? "." : patternStr.substr(0, slashPos);
+    std::string wildcardPart = (slashPos == std::string::npos) ? patternStr : patternStr.substr(slashPos + 1);
+
+    const char* resolvedDir = ResolveCaseInsensitivePath(dirPart.c_str());
+
+    FindState state;
+    state.directory = resolvedDir;
+    state.wildcard = wildcardPart;
+
+    std::error_code ec;
+    fs::directory_iterator it(state.directory, ec);
+    if (ec)
+        return false;
+    for (const auto& entry : it)
+        state.entries.push_back(entry);
+
+    if (!AdvanceFind(state, attrMask, dta))
+        return false;
+
+    // Ulozit stav pro nasledne FindNext - handle (index do g_findStates)
+    // se uklada primo do DosDta::reserved bajtu, presne jako skutecny DOS
+    // DTA nese svuj vlastni (u nej opaque) hledaci stav mezi volanimi.
+    std::lock_guard<std::mutex> lock(g_findMutex);
+    if (g_findStates.empty())
+        g_findStates.emplace_back(std::nullopt); // index 0 = "neplatny handle" strazce
+    g_findStates.push_back(std::move(state));
+    uint32_t handle = static_cast<uint32_t>(g_findStates.size() - 1);
+    std::memcpy(dta->reserved, &handle, sizeof(handle));
+    return true;
+}
+
+bool FindNext(DosDta* dta)
+{
+    if (!dta)
+        return false;
+
+    uint32_t handle = 0;
+    std::memcpy(&handle, dta->reserved, sizeof(handle));
+
+    std::lock_guard<std::mutex> lock(g_findMutex);
+    if (handle == 0 || handle >= g_findStates.size() || !g_findStates[handle])
+        return false;
+
+    return AdvanceFind(*g_findStates[handle], /*attrMask=*/0, dta);
+}
+
 } // namespace Port::File
 
 // ---------------------------------------------------------------------
 // C-linkage most - viz DECOMP_TODO v port_file.h. Handle 0 = neplatny
 // (falsy, stejne jako puvodne NULL z fopen).
 extern "C" {
+
+int unknown_libname_1(const char* pattern, int attrMask, struct DosDta* dta)
+{
+    // OPRAVENO: puvodni verze mela obracenou konvenci. Overeno krizovou
+    // kontrolou VSECH 4 volajicich mist v orion_part_18.c - zejmena
+    // "return unknown_libname_1(a1, 0, v2) == 0;" (sub_11181C, pouzivano
+    // jako "soubor existuje" kontrola) je jednoznacny dukaz. Skutecna
+    // DOS/Watcom konvence (jako errno): 0 = USPECH (nalezeno), nenulova
+    // hodnota = CHYBA/nenalezeno - presne obracene nez typicky C bool.
+    return Port::File::FindFirst(pattern, attrMask, dta) ? 0 : 1;
+}
+
+int unknown_libname_2(struct DosDta* dta)
+{
+    return Port::File::FindNext(dta) ? 0 : 1;
+}
 
 int PortFile_Open(const char* path, const char* mode)
 {
