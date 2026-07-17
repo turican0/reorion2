@@ -100,6 +100,10 @@ src/
     port_pic.h
     port_dos.cpp     # INT 21h subset skutečně používaný hrou (souborový I/O, paměť)
     port_dos.h
+    port_memory.cpp  # nahrada za DOS segment:offset alokaci - malloc/free s evidenci leaku
+    port_memory.h
+    port_file.cpp    # case-insensitive FILE I/O (FAT byl case-insensitive, ext4/APFS nejsou)
+    port_file.h
     port_net.cpp     # (už existuje z MC2 portu) NetBIOS -> TCP
     port_net.h
     port_common.h    # sdílené typy: Bitu/Bit16u ekvivalenty, port I/O rozhraní
@@ -316,6 +320,53 @@ Doporučený postup pro každou nově dekompilovanou funkci:
 | I/O porty `0x220+` (Sound Blaster), `0x388` (Adlib) | `port_sound.cpp` |
 | NetBIOS volání                            | `port_net.cpp`        |
 | Textový výstup / BIOS text mode / logging | `port_term.cpp`       |
+| `malloc`/`calloc`/`realloc`/`free`, Watcom `nmalloc`/`nfree` | `port_memory.cpp` |
+| `fopen`/`fclose`/`fread`/`fwrite`/`fflush`/`access` (souborovy I/O) | `port_file.cpp` |
+
+**Poznámka k realné implementaci (reorion2, vlna 06):** v konkrétním
+Orion2 portu je terminálová emulace zatím součástí `port_dos.cpp` (ne
+samostatného `port_term.cpp` jak plánuje sekce 3) - obě jsou malé a úzce
+svázané (terminál se inicializuje jako první krok DOS/BIOS vrstvy), takže
+rozdělení přijde až bude jasné, že si to zaslouží vlastní soubor (viz
+zásada v sekci 2 - nová struktura se tvoří postupně, ne dopředu).
+`port_memory.cpp`/`port_file.cpp` řeší runtime služby, které nejsou vázané
+na konkrétní `INT`/I/O port (na rozdíl od zbytku tabulky), ale na
+celoprojektové C funkce (`malloc`, `fopen`...) - proto jsou navíc oproti
+původnímu rozpisu v sekci 5.
+
+**Poznatky z praxe (doplňováno postupně, viz PROGRESS.md pro detaily):**
+- **Skryté registrové parametry:** Hex-Rays občas neukáže parametr, který
+  volající předává jen tím, že ho nechá ležet ve stejném registru, ve
+  kterém ho sám dostal (žádná instrukce `MOV` = žádný viditelný parametr
+  v pseudokódu). Po překompilování moderním kompilátorem to vede k
+  Access Violation (viz `strstr` v `MarkCheatPatternFlag_F4FD5`) nebo
+  k tichému čtení nedefinované paměti (`argc`/`argv` v
+  `ParseCommandLine_107E6`). Řešení: dohledat, odkud by hodnota reálně
+  přišla (typicky parametr volající funkce, nebo nedávno vypočtená
+  proměnná), a předat ji explicitně.
+- **Konstanty maskované jako adresy:** IDA občas automaticky převede
+  obyčejnou 32bit celočíselnou konstantu na `offset symbol+delta`, když
+  hodnota náhodou padne do adresního rozsahu programu (viz `loc_63FFB+5`
+  = ve skutečnosti jen číslo 0x64000). Poznat lze podle toho, že "adresa"
+  nedává smysl jako skutečný jump/data target (padá doprostřed jiné
+  instrukce) a číselně dobře sedí jako parametr (např. velikost alokace).
+- **`JUMPOUT` je no-op:** v `hexrays_compat.h` je `JUMPOUT(adr)` jen
+  zaznamenaná adresa bez efektu - každý výskyt je nutné ručně nahradit
+  (`return`/`break`/`continue`) podle toho, kam cílová adresa vzhledem k
+  tělu funkce skutečně směřuje. V jednom souboru (`orion_part_01.c`) jich
+  je přes 40, napříč projektem pravděpodobně stovky.
+- **Chybějící argumenty u knihovních funkcí:** stejný "skrytý registr"
+  problém postihuje i běžné CRT funkce (`fprintf`, `sprintf`, `fopen`,
+  `fseek`, `calloc`...) - před hromadným přesměrováním na port vrstvu je
+  nutné auditovat počet argumentů na VŠECH voláních (ne jen na vzorku),
+  jinak makra jako `#define fopen(p,m) PortFile_Open(p,m)` odhalí desítky
+  chybějících parametrů najednou (užitečné, ale je potřeba to očekávat).
+- **Pointery uložené jako `int`:** dekompilovaný kód všude ukládá
+  ukazatele (souborové handly, návratové hodnoty alokátorů) do 32bit
+  `int`/`_DWORD` proměnných. Cokoliv v port vrstvě, co by na 64bit
+  sestavení vracelo skutečný 8bajtový ukazatel, se při takovém uložení
+  ořízne - proto `port_file.cpp` vrací malý celočíselný handle (index do
+  interní tabulky) místo `FILE*`.
 
 ---
 

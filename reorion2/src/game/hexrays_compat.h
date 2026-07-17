@@ -24,6 +24,93 @@
    spol. proto zustavaji take bez explicitniho prototypu zde - viz
    poznamka v link_stubs.c u jejich odstranenych stubu. */
 
+/* ---- presmerovani alokacnich funkci na port_memory (vlna 06) ----
+   VSECHNY malloc/calloc/realloc/free v dekompilovanem kodu jdou od ted
+   pres Port::Memory:: evidenci zivych alokaci (leak-report pri shutdownu
+   - viz src/port/port_memory.h/.cpp) misto primo na CRT alokator. Stejne
+   jako u fprintf/sprintf drive NEpridavame <stdlib.h> - staci proste C
+   deklarace primo tady, aby makra nekolidovala se skutecnymi prototypy.
+   nmalloc/nfree (Watcom "near heap" varianty) NEJSOU makra, protoze uz
+   maji vlastni extern deklaraci v orion_common.h ("unsigned int" misto
+   "size_t") - kdyby se tu prejmenovaly makrem, ta deklarace by se
+   makro-expandovala taky a vytvorila neshodujici se redeklaraci. Misto
+   toho jsou nmalloc/nfree REALNE funkce definovane v link_stubs.c, ktere
+   uvnitr volaji tyhle same PortMemory_* funkce - viz tam. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+void* PortMemory_Alloc(size_t size);
+void* PortMemory_Calloc(size_t count, size_t size);
+void* PortMemory_Realloc(void* ptr, size_t size);
+int   PortMemory_Free(void* ptr);
+#ifdef __cplusplus
+}
+#endif
+
+#define malloc(sz)      PortMemory_Alloc(sz)
+#define calloc(cnt, sz) PortMemory_Calloc((cnt), (sz))
+#define realloc(p, sz)  PortMemory_Realloc((p), (sz))
+#define free(p)         ((void)PortMemory_Free(p))
+
+/* ---- presmerovani souborovych funkci na port_file (vlna 06) ----
+   fopen/fclose/fread/fwrite/fflush/access presmerovane na case-insensitive
+   wrappery (viz src/port/port_file.h/.cpp) - overeno, ze VSECHNA jejich
+   volani v dekompilovanem kodu maji spravny pocet argumentu (na rozdil od
+   fseek/ftell nize, ktera VETSINOU nemaji - viz DECOMP_TODO tam).
+   Handle je "int" (ne FILE*) - dekompilovany kod vzdy uklada vysledek
+   fopen() do "int"/"_DWORD" promennych; skutecny 8bajtovy FILE* na x64
+   by se pri takovem ulozeni oriznul. Viz DECOMP_TODO v port_file.h. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int    PortFile_Open(const char* path, const char* mode);
+int    PortFile_Close(int handle);
+size_t PortFile_Read(void* buffer, size_t size, size_t count, int handle);
+size_t PortFile_Write(const void* buffer, size_t size, size_t count, int handle);
+int    PortFile_Seek(int handle, long offset, int origin);
+long   PortFile_Tell(int handle);
+int    PortFile_Flush(int handle);
+int    PortFile_Access(const char* path, int mode);
+#ifdef __cplusplus
+}
+#endif
+
+/* SEEK_SET/SEEK_CUR/SEEK_END normalne prijdou z <stdio.h>, ktere sem
+   zamerne nevkladame (viz vyse) - hodnoty jsou soucasti C standardu a
+   nemeni se mezi platformami/kompilatory, takze je bezpecne je definovat
+   primo tady. */
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#endif
+#ifndef SEEK_CUR
+#define SEEK_CUR 1
+#endif
+#ifndef SEEK_END
+#define SEEK_END 2
+#endif
+
+#define fopen(path, mode)          PortFile_Open((path), (mode))
+#define fclose(stream)             PortFile_Close(stream)
+#define fread(buf, sz, cnt, str)   PortFile_Read((buf), (sz), (cnt), (str))
+#define fwrite(buf, sz, cnt, str)  PortFile_Write((buf), (sz), (cnt), (str))
+#define fseek(str, off, orig)      PortFile_Seek((str), (off), (orig))
+#define ftell(str)                 PortFile_Tell(str)
+#define fflush(str)                PortFile_Flush(str)
+#define access(path, mode)         PortFile_Access((path), (mode))
+
+/* DECOMP_TODO - DLUH (vlna 07, castecne vyreseno): z 20 fseek + 1 mylne
+   pojmenovaneho ftell (celkem 21 mist) je ted 19 opraveno na spravny
+   3parametrovy tvar (handle, offset, origin) na zaklade rozpoznaneho LBX
+   archivniho vzoru (offset tabulka nactena spolu s 2048bajtovym headerem,
+   viz orion_part_19/20.c) nebo klasickeho "zjisti velikost souboru" idiomu
+   (orion_part_22.c). 2 mista (orion_part_19.c ~radek 5907, orion_part_20.c
+   ~radek 7230 - "Play_Sound") maji jen NIZKOU jistotu rekonstrukce (viz
+   DECOMP_TODO primo u nich) - oznaceny explicitne v komentari, aby bylo
+   jasne, ze potrebuji dalsi overeni, i kdyz uz technicky pouzivaji makro.
+   VSECHNY fseek/ftell/fopen/fclose/fread/fwrite ted konzistentne pouzivaji
+   stejny int-handle system (viz port_file.h) - fseek/ftell NEMOHOU zustat
+   na skutecnem CRT FILE*, protoze fopen uz vraci jen maly int handle. */
+
 /* ---- zakladni typy ----
    __int8/16/32/64 a jejich unsigned/signed kombinace jsou v preprocesnim
    kroku (split.py) nahrazeny primo za stdint typy, protoze "unsigned __intN"
@@ -42,6 +129,18 @@ typedef int _BOOL4;
 
 /* nezname/nerozpoznane typy - typicky jednobytove placeholdery */
 typedef char _UNKNOWN;
+
+/* __int8/16/32/64 jsou MSVC vestavene typy - split.py je typicky prevadi
+   primo na stdint typy, ale par vyskytu (napr. sub_1AFA0 v orion_part_01.c)
+   proslo beze zmeny. GCC/Clang je neznaji, proto tu pro ne (a jen pro ne -
+   pod MSVC uz tyto typy existuji nativne) pridavame ekvivalentni typedef,
+   aby slo sanity-checkovat preklad i mimo Visual Studio. */
+#ifndef _MSC_VER
+typedef int8_t   __int8;
+typedef int16_t  __int16;
+typedef int32_t  __int32;
+typedef int64_t  __int64;
+#endif
 
 /* ---- kalingove konvence (na urovni zdrojoveho textu nevyznamove) ---- */
 #define __fastcall

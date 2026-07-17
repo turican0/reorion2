@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <unordered_map>
 #include <mutex>
 
@@ -76,6 +77,39 @@ void Free(void* ptr)
     std::free(ptr);
 }
 
+void* Realloc(void* ptr, std::size_t newSize, const char* debugTag)
+{
+    if (!ptr)
+        return Alloc(newSize, debugTag);
+    if (newSize == 0) {
+        Free(ptr);
+        return nullptr;
+    }
+
+    std::size_t oldSize = 0;
+    {
+        std::lock_guard<std::mutex> lock(g_mutex);
+        auto it = g_liveAllocations.find(ptr);
+        if (it != g_liveAllocations.end())
+            oldSize = it->second.size;
+    }
+
+    void* newPtr = std::realloc(ptr, newSize);
+    if (!newPtr)
+        return nullptr; // puvodni ptr dle realloc kontraktu zustava platny
+
+    std::lock_guard<std::mutex> lock(g_mutex);
+    if (g_trackingEnabled) {
+        if (oldSize) {
+            g_liveAllocations.erase(ptr);
+            g_liveBytes -= oldSize;
+        }
+        g_liveAllocations[newPtr] = AllocInfo{newSize, debugTag};
+        g_liveBytes += newSize;
+    }
+    return newPtr;
+}
+
 std::size_t GetLiveBytes()
 {
     std::lock_guard<std::mutex> lock(g_mutex);
@@ -89,3 +123,39 @@ std::size_t GetLiveAllocationCount()
 }
 
 } // namespace Port::Memory
+
+// ---------------------------------------------------------------------
+// C-linkage most - viz DECOMP_TODO v port_memory.h. Vsechny 4 funkce jsou
+// jen tenke obalky nad Port::Memory:: API vyse.
+extern "C" {
+
+void* PortMemory_Alloc(size_t size)
+{
+    return Port::Memory::Alloc(size, "malloc");
+}
+
+void* PortMemory_Calloc(size_t count, size_t size)
+{
+    // std::malloc negarantuje vynulovani pameti - calloc na rozdil od
+    // malloc musi vratit vynulovany blok, proto rucni memset.
+    std::size_t total = count * size;
+    void* ptr = Port::Memory::Alloc(total, "calloc");
+    if (ptr)
+        std::memset(ptr, 0, total);
+    return ptr;
+}
+
+void* PortMemory_Realloc(void* ptr, size_t size)
+{
+    return Port::Memory::Realloc(ptr, size, "realloc");
+}
+
+int PortMemory_Free(void* ptr)
+{
+    if (!ptr)
+        return 0;
+    Port::Memory::Free(ptr);
+    return 1;
+}
+
+} // extern "C"

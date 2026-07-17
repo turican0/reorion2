@@ -1355,10 +1355,20 @@ void __usercall sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 //----- (000F6F90) --------------------------------------------------------
 int __fastcall sub_F6F90(int a1, int a2, int a3)
 {
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. Tato funkce je "virtualni stream"
+  // abstrakce (podporuje realny soubor NEBO in-memory buffer, rozliseno
+  // bajtem na zacatku struktury a1): sesterska funkce sub_F6FD9 ma stejny
+  // dispatch a u ni je vidat, ze skutecny FILE handle je ulozeny na
+  // "*(_DWORD*)(a1+1)". Vetev pro in-memory buffer (typ==2) nize RUCNE
+  // reimplementuje fseek semantiku (a2=offset, a3=whence): "if (!a3)
+  // pozice=base+offset" odpovida SEEK_SET(0), "if (a3==1) pozice+=offset"
+  // odpovida SEEK_CUR(1) - to jednoznacne potvrzuje, ze a2/a3 jsou
+  // skutecne offset/whence parametry puvodniho fseek volani.
   if ( *(_BYTE *)a1 )
   {
     if ( *(_BYTE *)a1 <= 1u )
-      return fseek();
+      return fseek(*(_DWORD *)(a1 + 1), a2, a3);
     if ( *(_BYTE *)a1 != 2 )
       return 0;
     if ( !a3 )
@@ -1694,7 +1704,8 @@ char *__usercall sub_F73C2(int a1, int a2, int16_t *a3)
     }
     else
     {
-      dword_1AB0CF = fopen(aModemTmp);
+          // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    dword_1AB0CF = fopen(aModemTmp, aRb);
       if ( !dword_1AB0CF )
         sub_126487((char *)dword_1AAEA4, a1);
       byte_1AB0CE = 1;

@@ -2,6 +2,7 @@
  * Link-time placeholders for dependencies missing from the Hex-Rays dump.
  * They make the project linkable; they do not implement the original DOS/Watcom runtime.
  */
+#include <stddef.h> /* size_t - potreba pro PortMemory_* deklarace nize (vlna 06) */
 
 int __CS__;
 int __DS__;
@@ -231,9 +232,28 @@ int loc_E0000;
 int loc_E40C7;
 int memavl(void) { return 0; }
 int memset32(void) { return 0; }
-int nfree;
+/* DULEZITA OPRAVA (vlna 06): tady drive bylo "int nfree;" - OBYCEJNA
+   DATOVA promenna se stejnym jmenem, jako ma FUNKCE "nfree" deklarovana
+   v orion_common.h ("extern int nfree(unsigned int);"). Zadna SKUTECNA
+   funkce nfree nikde v projektu neexistovala! Vsech 39 volani nfree(ptr)
+   v herním kodu by se tak za behu linkovalo na adresu ctyr nulovych bajtu
+   (tato promenna) - zavolani teto "funkce" by skocilo doprostred dat a
+   spadlo/poskodilo pamet. Ted uz je nfree skutecna funkce, viz nize -
+   napojena (spolu s nmalloc) na Port::Memory:: pres PortMemory_Alloc/Free. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+void* PortMemory_Alloc(size_t size);
+int   PortMemory_Free(void* ptr);
+#ifdef __cplusplus
+}
+#endif
+
 void* nmalloc(unsigned int a) {
-    return malloc(a);
+    return PortMemory_Alloc(a);
+};
+int nfree(unsigned int a) {
+    return PortMemory_Free((void*)(size_t)a);
 };
 int nosound(void) { return 0; }
 int nullsub_1(void) { return 0; }

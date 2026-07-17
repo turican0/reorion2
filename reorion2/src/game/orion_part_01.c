@@ -5,7 +5,12 @@
 //----- (00010057) --------------------------------------------------------
 void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
 {
-  int v3=0; // eax
+  // DECOMP_TODO: docasny bezpecny placeholder (misto puvodni neinicializovane
+  // promenne - stejna trida chyby jako u ParseCommandLine_107E6/vlna 02).
+  // Presny puvodni vyznam (pravdepodobne navratova hodnota nejakeho volani,
+  // viz PROGRESS.md "dalsi krok") je porad nedoreseny - 0 jen zarucuje
+  // deterministicke chovani mist toho nedefinovaneho.
+  int v3 = 0; // eax
   int v4; // eax
   _BYTE v5[32]; // [esp+6Ch] [ebp+3Eh] BYREF
   char v6[16]; // [esp+9Ch] [ebp+6Eh] BYREF
@@ -22,7 +27,23 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   ParseCommandLine_107E6(a1, (char**)a2);
   sub_FE8BE(v3, a1, a2, a3);
   MarkMemPoolReady_110B34();
-  dword_19916C = (int)PoolAlloc_110B89(64000, (int)v5);
+  // DECOMP_TODO (vyreseno ve vlne 06): puvodni vyraz "(int)&loc_63FFB + 5"
+  // vypadal jako smysluplna adresa, ale podle asm dumpu je "loc_63FFB"
+  // navesti UPROSTRED FUNKCE sub_63FF0 (presne 5 bajtu za jejim zacatkem,
+  // hned za prologem "push esi/edi; enter 48h,0; push eax/edx/ebx; mov
+  // ch,cl") - a "+5" z toho navesti vede jeste o 5 bajtu dal, doprostred
+  // OPERANDU nasledujici instrukce "mov edx, dword_192FD8" (na posledni
+  // bajt jeji 4bajtove adresy). To neni zadny smysluplny kod/data cil.
+  // Ve skutecnosti jde o typicky IDA false-positive: puvodni C kod tu mel
+  // proste 32bit celociselnou konstantu 0x64000 (= 0x63FFB + 5 = 409600 =
+  // 400 KB), ale protoze tahle hodnota nahodou padne do rozsahu adres
+  // nahraneho programu, IDA ji automaticky prevedla na "offset nejblizsi
+  // znamy symbol + delta" misto aby ji nechala jako prosty cislo. Overeno
+  // hexadecimalnim souctem (0x63FFB + 5 = 0x64000) - PoolAlloc_110B89
+  // bere prvni parametr jako POCET BAJTU k alokaci (viz jeho definice),
+  // takze 0x64000 (400 KB) je smysluplna velikost jednorazove alokovaneho
+  // pool bufferu, ne adresa k dereferenci.
+  dword_19916C = (int)PoolAlloc_110B89(0x64000, (int)v5);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
   {
@@ -562,7 +583,8 @@ int sub_10A72()
 LABEL_34:
     sub_126487((char *)v0, SHIDWORD(v0));
   }
-  v1 = fopen(aOrioncdIni);
+      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v1 = fopen(aOrioncdIni, aRb);
   fgets(v10, 60, v1, v1);
   fclose(v1);
   v10[60] = 0;
@@ -641,7 +663,8 @@ int LoadLanguageSetting_10C2F()
   result = FindMoxSetPath_1114D7(aLanguageIni, v4);
   if ( result )
   {
-    v1 = fopen(aLanguageIni);
+        // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v1 = fopen(aLanguageIni, aRb);
     fgets(v3, 60, v1, v1);
     fclose(v1);
     result = sub_12760B(v3);
@@ -808,7 +831,8 @@ char __fastcall sub_10E2F(int a1, int a2, int a3, int a4)
   sub_FE8BE(v4, (int)aRb, 10, v55);
   nullsub_14(v7);
   v60 = 0;
-  v8 = fopen(v55);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v8 = fopen(v55, aRb);
   v9 = (int16_t *)v8;
   v10 = v8;
   if ( !v8 )
@@ -1356,7 +1380,8 @@ void sub_11C83()
     }
     else
     {
-      v5 = fopen(v8);
+          // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v5 = fopen(v8, aRb);
       v6 = v5;
       v13 = v5;
       if ( v5 )
@@ -1429,7 +1454,12 @@ void __fastcall sub_11E56(int a1)
   v1 = fopen(a1, aRb);
   if ( v1 )
   {
-    if ( !fseek(v2) )
+    // DECOMP_TODO (vyreseno ve vlne 07): fseek melo jen 1 (nesouvisejici)
+    // parametr - stejny Hex-Rays artefakt jako u fopen (vlna 06). Vzor je
+    // ve vsech 4 fseek volanich v tomto souboru identicky: seek na zacatek
+    // souboru hned po fopen(), pred fread() se stejnym handle - takze zde
+    // fseek(v1, 0, SEEK_SET).
+    if ( !fseek(v1, 0, SEEK_SET) )
       fread(&v2, 4, 1, v1);
     fclose(v1);
   }
@@ -1454,7 +1484,10 @@ int __fastcall sub_11EAE( int a1, int a2)
   v3 = v2;
   if ( v2 )
   {
-    fseek(v5[0]);
+    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor jako vyse - seek na
+    // zacatek pred cteni 553bajtove struktury nastaveni (srovnej s
+    // sub_11F11 nize, ktery cte stejnych 553 bajtu stejnym zpusobem).
+    fseek(v3, 0, SEEK_SET);
     fread(a2, 553, 1, v3);
     v2 = fclose(v3);
     LOBYTE(v2) = 1;
@@ -1486,13 +1519,17 @@ int __fastcall sub_11F11( int a1, int a2)
 
   sprintf(v9, "SAVE%d.GAM", a1);
   v10 = 1;
-  v4 = fopen(v9);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v4 = fopen(v9, aRb);
   if ( v4 )
   {
-    fseek();
+    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor - seek na zacatek
+    // pred cteni 553bajtove struktury nastaveni.
+    fseek(v4, 0, SEEK_SET);
     fread(v8, 553, 1, v4);
     fclose(v4);
-    v6 = fopen(a2);
+        // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v6 = fopen(a2, aRb);
     v7 = v6;
     if ( v6 )
     {
@@ -1535,7 +1572,9 @@ void __fastcall sub_11FCC( int a1)
   v1 = fopen(v2, aRb);
   if ( v1 )
   {
-    if ( !fseek(v2[0]) )
+    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor - seek na zacatek
+    // pred cteni 1 bajtu.
+    if ( !fseek(v1, 0, SEEK_SET) )
       fread(v3, 1, 1, v1);
     JUMPOUT(0x11E46);
   }
@@ -1571,7 +1610,8 @@ void sub_12030()
 
   v0 = (int)aRb;
   v8 = 0;
-  v1 = fopen(aMoxSet_0);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v1 = fopen(aMoxSet_0, aRb);
   v2 = v1;
   if ( v1 )
   {
@@ -1582,7 +1622,8 @@ void sub_12030()
     qmemcpy(v7, &byte_199BDC, 0xD3u);
     nullsub_14(v4);
     v8 = 1;
-    v5 = fopen(aMoxSet_0);
+        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v5 = fopen(aMoxSet_0, aWb);
     v6 = v5;
     if ( v5 )
     {
@@ -1936,7 +1977,8 @@ int sub_12937()
 {
   int v0; // esi
 
-  v0 = fopen(aMoxSet_1);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v0 = fopen(aMoxSet_1, aWb);
   if ( !v0 )
     sub_126487(aUnableToOpenMo, (int)aWb_0);
   fwrite(&byte_199BDC, 553, 1, v0);

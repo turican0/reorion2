@@ -5795,7 +5795,12 @@ _DWORD *__fastcall sub_126CEB(int a1, int a2, int a3, int a4)
   v12 = dword_1BBA78[v10];
   v13 = v12 - v11;
   v4 = v11;
-  fseek();
+    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
+    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
+    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
+    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
+  fseek(dword_1BC26C, v11, SEEK_SET);
   switch ( v9 )
   {
     case 0:
@@ -5884,7 +5889,12 @@ _DWORD *__fastcall sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, u
   v16 = dword_1BBA74[v10];
   v13 = dword_1BBA78[v10];
   v15 = v13 - v16;
-  fseek();
+    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
+    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
+    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
+    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
+  fseek(dword_1BC26C, v16, SEEK_SET);
   fread(&v18, 2, 1, dword_1BC26C);
   v7 = dword_1BC26C;
   fread(&v19, 2, 1, dword_1BC26C);
@@ -5894,7 +5904,14 @@ _DWORD *__fastcall sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, u
     sub_1273DC(v12, 0xAu, v10, v7);
   if ( (_WORD)v19 != a7 )
     sub_1273DC(v12, 9u, v10, v7);
-  fseek();
+  // DECOMP_TODO - NIZKA JISTOTA (vlna 07): fseek() melo 0 parametru. Na
+  // rozdil od 4 ostatnich fseek v teto funkci tu neni primy "table[idx]"
+  // vzor. Nejlepsi dostupna hypoteza: soubor je prave na pozici "v16 + 4"
+  // (zacatek zaznamu + 2x 2bajtove pole v18/v19 prave precteny), a dalsi
+  // krok pravdepodobne preskakuje na konkretni snimek "a5" (pocatecni
+  // index) o velikosti "v19" kazdy - proto "v16 + 4 + a5 * v19". POTREBUJE
+  // OVERENI - spatny odhad by zpusobil tiche cteni spatnych dat, ne pad.
+  fseek(dword_1BC26C, v16 + 4 + a5 * (uint16_t)v19, SEEK_SET);
   v15 = a6 * (uint16_t)v19;
   switch ( v14 )
   {
@@ -5955,14 +5972,16 @@ int __fastcall sub_127233(int a1, int a2, int a3, int a4)
     if ( dword_184576 )
       fclose(dword_1BC26C);
     strcpy(&unk_1BC270, v6);
-    dword_1BC26C = fopen(v6);
+        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    dword_1BC26C = fopen(v6, aRb);
     if ( !dword_1BC26C )
     {
       if ( !byte_184544[0] )
         sub_1273DC(v6, 1u, v7, a4);
       strcpy(v5, byte_184544);
       strcat(v5, &unk_1BC270);
-      dword_1BC26C = fopen(v5);
+          // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    dword_1BC26C = fopen(v5, aRb);
       if ( !dword_1BC26C )
         sub_1273DC(v6, 1u, v7, a4);
     }
@@ -5977,7 +5996,12 @@ int __fastcall sub_127233(int a1, int a2, int a3, int a4)
   v8 = dword_1BBA74[v7];
   v9 = dword_1BBA78[v7];
   v10 = v9 - v8;
-  fseek();
+    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
+    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
+    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
+    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
+  fseek(dword_1BC26C, v8, SEEK_SET);
   fread(&v11, 2, 1, dword_1BC26C);
   return v11;
 }
@@ -6591,7 +6615,12 @@ _DWORD *__fastcall sub_12816C(int a1, int a2, int a3, int *a4)
   v9 = dword_1BBA74[v12];
   v10 = dword_1BBA78[v12];
   v11 = v10 - v9;
-  fseek();
+    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
+    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
+    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
+    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
+  fseek(dword_1BC26C, v9, SEEK_SET);
   v13 = 0;
   v14 = 0;
   v24 = (int *)(v7 - 12);

@@ -190,6 +190,7 @@
     <ClCompile Include="src\port\port_vga.cpp" />
     <ClCompile Include="src\port\port_sound.cpp" />
     <ClCompile Include="src\port\port_mouse.cpp" />
+    <ClCompile Include="src\port\port_file.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\hexrays_compat.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="src\port\port_vga.h" />
     <ClInclude Include="src\port\port_sound.h" />
     <ClInclude Include="src\port\port_mouse.h" />
+    <ClInclude Include="src\port\port_file.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

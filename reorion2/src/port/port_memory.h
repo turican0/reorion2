@@ -32,6 +32,7 @@ void Shutdown();
 // v debug rezimu pamatuje kazdy ziskany blok (adresa, velikost, misto volani)
 // a pri Shutdown() nahlasi vse, co nebylo uvolneno.
 void* Alloc(std::size_t size, const char* debugTag = nullptr);
+void* Realloc(void* ptr, std::size_t newSize, const char* debugTag = nullptr);
 void Free(void* ptr);
 
 // Pohodlny sablonovy wrapper pro typovanou alokaci jednoho objektu -
@@ -49,5 +50,25 @@ std::size_t GetLiveBytes();
 std::size_t GetLiveAllocationCount();
 
 } // namespace Port::Memory
+
+// ---------------------------------------------------------------------
+// C-linkage most pro dekompilovany herni kod (cisty C, src/game/*.c).
+// Vlna 06: VSECHNY malloc/calloc/realloc/free (a Watcom "near heap"
+// nmalloc/nfree) v dekompilovanem kodu se presmerovavaji sem pres makra
+// v hexrays_compat.h - viz komentar tam. Tyhle funkce jsou jen tenke C
+// obalky nad Port::Memory:: API vyse, aby je bylo mozne volat i z .c
+// souboru (ktere nerozumi namespace/template).
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void* PortMemory_Alloc(size_t size);
+void* PortMemory_Calloc(size_t count, size_t size);
+void* PortMemory_Realloc(void* ptr, size_t size);
+int   PortMemory_Free(void* ptr); // vraci 1 pri uspechu, 0 kdyz ptr byl NULL
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // PORT_MEMORY_H

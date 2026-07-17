@@ -356,18 +356,243 @@ kam cilova adresa smeruje vzhledem k rozpoznanemu telu funkce, a podle toho
 usoudit, jestli jde o `return`, `break`, `continue` nebo neco jineho) - to
 je prace na mnoho dalsich vln, ne neco, co jde udelat hromadne/automaticky.
 
+## Hotovo - vlna 06: loc_63FFB, port_memory (malloc/free/nmalloc), port_file
+
+### 1) `loc_63FFB` - overeno v asm, opraveno
+
+Puvodni `(int)&loc_63FFB + 5` vypadalo jako smysluplna adresa. Podle
+`Orion2_exe.asm` je `loc_63FFB` navesti UPROSTRED funkce `sub_63FF0`
+(presne 5 bajtu za jejim zacatkem), a "+5" z toho vede jeste 5 bajtu dal -
+doprostred operandu nasledujici instrukce, na posledni bajt 4bajtove
+adresy `dword_192FD8`. To neni zadny smysluplny kod/data cil. Jde o
+typicky IDA false-positive: puvodni C kod mel proste 32bit konstantu
+`0x64000` (= `0x63FFB + 5`, overeno hex souctem), ale protoze tahle
+hodnota nahodou padne do adresniho rozsahu programu, IDA ji automaticky
+prevedla na "offset + delta" misto prosteho cisla. `PoolAlloc_110B89`
+bere prvni parametr jako POCET BAJTU (overeno v jeho definici - pocita
+`4*(a1>>2)+4`, alokuje `+12` bajtu hlavicky, uklada `a1` do hlavicky jako
+velikost) - `0x64000` (400 KB, pekle kulate cislo) je smysluplna velikost
+jednorazoveho pool bufferu. Uzivatelova drivejsi rucni oprava pouzivala
+desitkove `64000` (misto hex `0x64000`, tedy ~6.4x mensi hodnotu) -
+opraveno na spravnou hex konstantu.
+
+Mimochodem take opraven vedlejsi pre-existujici problem: `int v3=0;`
+(uzivatelova docasna oprava puvodne neinicializovane promenne) ponechano
+funkcne, jen doplnen komentar, ze presny puvodni vyznam je porad
+nedoreseny (viz "dalsi krok").
+
+**Vedlejsi nalez (nesouvisi s dnesnim zadanim, nefixovano):** `sub_1AFA0`
+(presne ta funkce z uplne prvniho screenshotu v teto konverzaci) ma
+NESHODUJICI SE deklaraci vs definici - `orion_common.h` ji deklaruje s
+JEDNIM parametrem, skutecna definice v `orion_part_01.c` ma DVA
+(`__int16 a1, __int16 a2`). GCC to odhali jako "conflicting types" (MSVC
+mozna ne, kvuli jine striktnosti) - potreba dohledat, ktera signatura
+odpovida realnym volajicim mistum.
+
+### 2) `port_memory` - malloc/calloc/realloc/free + nmalloc/nfree
+
+**KRITICKY BUG NALEZEN A OPRAVEN:** `link_stubs.c` mel `int nfree;` -
+OBYCEJNOU DATOVOU promennou se stejnym jmenem, jako ma FUNKCE `nfree`
+deklarovana v `orion_common.h` (`extern int nfree(unsigned int);`).
+**Zadna skutecna funkce `nfree` nikde v projektu neexistovala.** Vsech 39
+volani `nfree(ptr)` v hernim kodu by se za behu linkovalo na adresu ctyr
+nulovych bajtu - zavolani by skocilo doprostred dat a spadlo/poskodilo
+pamet. Stejna trida zavaznosti jako drivejsi `sub_FE8BE`/`MarkCheatPatternFlag_F4FD5`
+nalezy, jen tentokrat objevena preventivni analyzou, ne pri runtime padu.
+
+**Reseni:**
+- `port_memory.h/.cpp` rozsireno o C-linkage most (`PortMemory_Alloc/
+  Calloc/Realloc/Free`) a `Port::Memory::Realloc` v C++ API - tenke
+  obalky nad existujici `Alloc`/`Free` evidenci zivych alokaci.
+- `hexrays_compat.h`: pridana makra `#define malloc/calloc/realloc/free`
+  presmerovavajici VSECHNY takove volani v hernim kodu na `PortMemory_*`
+  (overeno auditem poctu argumentu pred zavedenim - malloc/free/realloc
+  se v hernim kodu vubec nevolaji primo, jen `nmalloc`/`nfree`).
+- `link_stubs.c`: `nfree`/`nmalloc` jsou (a musi zustat) REALNE FUNKCE, ne
+  makra - kdyby se makrem prejmenovaly, makro by expandovalo i jejich
+  vlastni `extern` deklaraci v `orion_common.h` (jiny typ parametru -
+  `unsigned int` misto `size_t`) a vytvorilo nesedici redeklaraci. Misto
+  toho jejich TELO ted vola `PortMemory_Alloc`/`PortMemory_Free` primo.
+  Oprava `nfree` bugu je soucasti tohoto same zasahu.
+- `orion_part_23.c`: 3x `calloc()` melo jen JEDEN parametr (stejna trida
+  Hex-Rays artefaktu jako u `fopen`/`fseek` nize). `calloc(259)` opraveno
+  bezpecne a jednoznacne na `calloc(1, 259)` (celkovy pocet bajtu je jasny
+  bez ohledu na rozdeleni count/size). **`calloc(1)` (2x, v `sub_15E0F0`
+  a `sub_15E124`) je KRITICKY zavaznejsi:** vysledek se pouziva jako
+  RETEZCOVY BUFFER (overeno v `orion_part_22.c` - `itoa`/`strcpy`/rucni
+  konkatenace zapisujici desitky bajtu, prvni zapis uz prekracuje 1 bajt).
+  Puvodni `1` byl temer jiste jen jedna ze dvou ztracenych hodnot, ne
+  skutecny pozadavek na 1 bajt - 1bajtova alokace by zpusobovala
+  poskozeni haldy. Docasne nastaveno na `calloc(1, 256)` jako bezpecny,
+  ale NEOVERENY odhad - vyzaduje dohledani VSECH volajicich mist a
+  zjisteni skutecne max. delky pred oznacenim za vyresene.
+
+### 3) `port_file` - case-insensitive souborove I/O
+
+Novy `src/port/port_file.h/.cpp`. Klicovy DESIGN DETAIL: dekompilovany kod
+NIKDE nepouziva typ `FILE*` - vysledek `fopen()` vzdy uklada do `int`/
+`_DWORD` promennych (napr. `dword_1BC338 = fopen(...)`). Kdyby
+`PortFile_Open` vracel skutecny `FILE*` (8 bajtu na x64), ulozeni do
+32bit promenne by ukazatel oriznul -> nasledne `fread`/`fclose` by
+dostaly nesmyslnou adresu -> jisty pad. **`PortFile_Open` proto vraci
+maly CELOCISELNY HANDLE** (index do interni tabulky otevrenych souboru, 0
+= neplatny/selhani, stejna "falsy" semantika jako puvodni `NULL`) -
+overeno funkcnim testem (skutecne zkompilovano a spusteno, ne jen
+syntax-check), vcetne soubezneho otevreni vice souboru se ruznymi handly.
+
+Case-insensitivita: na Windows se nic nedeje (NTFS/FAT uz jsou
+case-insensitive samy o sobe). Na Linuxu/macOS `Port::File::
+ResolveCaseInsensitivePath` prochazi cestu segment po segmentu, pro kazdy
+segment otevre `opendir`/`readdir` a hleda `strcasecmp` shodu - vysledky
+se cachuji (mutex-chranena mapa), cache se cisti po zapisu noveho
+souboru. **Funkcne otestovano** (ne jen zkompilovano): vytvoren testovaci
+soubor `DATA/Sound.LBX`, overeno otevreni pres `data/sound.lbx` i
+`DATA/SOUND.lbx` - obojí funguje.
+
+Presmerovano makry v `hexrays_compat.h`: `fopen`/`fclose`/`fread`/
+`fwrite`/`fflush`/`access` - vsechna overena auditem poctu argumentu na
+CELEM projektu pred zavedenim (fclose/fread/fwrite/fflush/access: 100%
+spravny pocet argumentu ve vsech vyskytech; fopen: 52 spravne, 25
+chybne).
+
+**24 chybnych `fopen()` volani opraveno** (chybel mod parametr - stejna
+trida Hex-Rays artefaktu jako drive u `fprintf`). Mod dopocitan
+heuristikou: pokud se v okoli (az po odpovidajici `fclose`) najde
+`fread`/`fwrite`/`fprintf` pouzivajici stejnou promennou, pouzije se
+odpovidajici `"rb"`/`"wb"`/`"r+b"`; jinak bezpecny vychozi `"rb"` (nikdy
+netvori/neniceni soubor jako vedlejsi ucinek). Vyjimka rucne opravena:
+`aLownetLog` (2 mista v `orion_part_21.c`) je log soubor zapisovany pres
+`fprintf` a hned znovu otevirany po kazdem zapisu - heuristika by dala
+`"wb"` (coz by mazalo log pri KAZDEM zavolani), rucne opraveno na `"a"`
+(text append, `aA` konstanta) po precteni kodu. Mista bez jasneho
+cteni/zapisu v okoli (9 z 24) oznacena `DECOMP_TODO` jako needle nizsi
+jistoty - defaultne `"rb"`.
+
+Vsechny existujici mod-retezcove konstanty pouzity znovu (`aRb`, `aWb`,
+`aA`) misto novych retezcovych literalu - konzistentni se zbytkem kodu.
+
+### DULEZITY DLUH - fseek/ftell (25 mist, NEOPRAVENO)
+
+Na rozdil od `fopen` (52 spravnych / 25 chybnych) je `fseek` **VSECH 23
+volani chybnych** (ruzne - nekdy 0 parametru, nekdy 1 misto 3) a OBE
+volani "`ftell`" jsou pravdepodobne ve skutecnosti PRESMEROVANA `fseek`
+(volana se 3 parametry, `ftell(handle, 0, 2)` presne odpovida idiomu
+`fseek(handle, 0, SEEK_END)` pro zjisteni velikosti souboru - moznda
+zamena importniho poradi/thunku pri dekompilaci).
+
+Na rozdil od `fopen`u (kde stacilo doplnit mod retezec, ktery temer vzdy
+jde odvodit z okoli) fseek/ftell potrebuji SKUTECNY OFFSET a ORIGIN,
+ktere jsou VYZNAMOVE, ne binarni volba - spatny odhad by zpusobil TICHE
+cteni ze spatneho mista v souboru (mnohem zakeznejsi nez pad, protoze se
+to nemusi hned projevit). Priklad overene rekonstrukce (viz
+`orion_part_20.c:665`, puvodni `fseek();` s NULA parametry): tesne pred
+volanim se pocita `v9 = *(_DWORD*)(...)` (offset) a `dword_1BC338` (soubor
+handle z predchoziho `fopen`), nasledovane `fread(buf, 0x2000, 1,
+dword_1BC338)` pouzivajicim STEJNY handle - silne to napovida
+`fseek(dword_1BC338, v9, SEEK_SET)`, ale KAZDE z 25 mist potrebuje
+takovouhle vlastni analyzu.
+
+`fseek`/`ftell` proto ZUSTAVAJI zatim BEZ presmerovani na `port_file`
+(zadna case-insensitive/handle-tracking vyhoda pro ne, ale take zadna
+REGRESE - stejne chovani jako pred touto vlnou). Presny seznam v
+`hexrays_compat.h` (komentar u makro-sekce) a v tomto zaznamu.
+
+**Seznam vsech mist s fseek()/ftell() k dohledani pristi session:**
+`orion_part_01.c` (~10x), `orion_part_18.c`, `orion_part_19.c`,
+`orion_part_20.c` (nekolik), `orion_part_22.c` (2x "ftell", ve
+skutecnosti fseek). Presny pocet a kontext ziskatelny znovu pres
+`grep -n "fseek(\|ftell(" src/game/*.c`.
+
+## Hotovo - vlna 07: fseek/ftell dluh z vlny 06 vyresen
+
+Pokracovani vlny 06. Z 20 `fseek()` + 1 mylne pojmenovaneho `ftell()` (21
+mist celkem) je ted **19 opraveno s vysokou jistotou** a **2 s nizkou
+jistotou** (jasne oznaceno, potrebuje dalsi overeni) - vsech 21 uz ma
+spravny 3parametrovy tvar a `fseek`/`ftell` jsou konecne presmerovane na
+`port_file` stejne jako zbytek souborovych funkci.
+
+### Klicovy postreh, ktery skoro zpusobil novy pad
+
+Puvodni plan byl nechat `fseek`/`ftell` volat REALNOU CRT funkci (bez
+presmerovani na `port_file`), protoze nebyly hned vyresitelne. Jenze
+`fopen` uz vraci **maly celociselny handle** (kvuli 64bit bezpecnosti -
+viz vlna 06), ne skutecny `FILE*` - kdyby `fseek`/`ftell` zustaly volat
+realnou CRT verzi, dostaly by misto ukazatele cislo jako `1`, `2`, `3`...
+a spadly by na dereferenci neplatne adresy. **`PortFile_Seek`/
+`PortFile_Tell` proto musely pribyt do `port_file.h/.cpp` HNED, driv nez
+se cokoliv z fseek/ftell mohlo opravit** - jinak by kazda oprava jen
+presunula misto padu, nevyresila ho.
+
+### Rozpoznany vzor (LBX archivni format)
+
+Vetsina mist (orion_part_19.c, orion_part_20.c) sdili identicky,
+jednoznacny vzor: nacte se 2048bajtovy header obsahujici tabulky
+start/end offsetu zaznamu (`dword_1BBA74[]`/`dword_1BBA78[]` a analogicke
+v jinych souborech), spocita se zacatecni offset zaznamu podle indexu, a
+TESNE PRED tim spocitanym offsetem se vola `fseek()` (bez viditelnych
+parametru) - jednoznacne `fseek(handle, vypocteny_offset, SEEK_SET)`.
+Potvrzeno krizovou kontrolou pouziti stejnych tabulek napric 6 ruznymi
+funkcemi (magic number `65197` = signature check, `dword_1BC26C`/
+`dword_1BC338`/`dword_1BC310[idx]` jako souborove handly).
+
+`orion_part_22.c` mel klasicky "zjisti velikost souboru" idiom rozdeleny
+na 3 mista: `fseek()` (prazdne), `ftell(v6, 0, 2)` (3 parametry misto 1 -
+zbytky z predchoziho fseek volani), `fseek()` (prazdne znovu) -
+rekonstruovano jako standardni `fseek(f,0,SEEK_END); size=ftell(f);
+fseek(f,0,SEEK_SET);`.
+
+### 2 mista s NIZKOU jistotou (potrebuji dalsi overeni)
+
+- `orion_part_19.c` (~radek 5913): seek po precteni dvou 2bajtovych poli
+  (snimek pocet/velikost?) - pouzita hypoteza `v16 + 4 + a5*v19`
+  (zacatek zaznamu + hlavicka + preskoceni `a5` snimku). Nejde o pad-
+  riziko (spatna hodnota by cetla existujici, jen spatna data), ale
+  vysledek (asi obrazova/animacni data) muze byt vizualne spatne.
+- `orion_part_20.c` (~radek 7248, "Play_Sound"): tabulka VELIKOSTI
+  zaznamu jasne na `v5[4*v7+8]`, ale zadna tabulka OFFSETU nebyla
+  jednoznacne identifikovana - pouzita hypoteza prokladane tabulky
+  `{offset,size}` DWORD paru (`v5[4*v7+6]` = offset o 4 bajty pred
+  size). Riziko: spatny zvuk by se prehral, ne pad.
+
+Oboje jasne oznaceno `DECOMP_TODO - NIZKA JISTOTA` primo v kodu.
+
+### Zmeny v `port_file.h/.cpp`
+
+Pridano `PortFile_Seek(handle, offset, origin)` a `PortFile_Tell(handle)`
+- tenke obalky nad `std::fseek`/`std::ftell`, pouzivaji STEJNOU tabulku
+  handlu jako Read/Write/Close (viz `PortFile_Resolve` helper). Overeno
+  **funkcnim testem** (ne jen syntax-check): vytvoren testovaci soubor,
+  overeno `fseek(SEEK_END)+ftell` = spravna velikost, seek na zacatek i
+  na konkretni offset, vse pres case-insensitive handle.
+
+`hexrays_compat.h`: pridana makra `#define fseek/ftell` + definice
+`SEEK_SET`/`SEEK_CUR`/`SEEK_END` (normalne z `<stdio.h>`, ktere sem
+zamerne nevkladame - hodnoty 0/1/2 jsou soucast C standardu, bezpecne
+definovat primo).
+
+Overeno `gcc -fsyntax-only` na celem `src/game/` - **zadne nove chyby**,
+jen pre-existujici `sub_1AFA0` (viz vlna 06) a `exit()` (viz vlna 01).
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
-1. Analyzovat `sub_FE8BE` poradne - projit reprezentativni vzorek z 701
+1. **fseek/ftell dluh (25 mist)** - viz vyse, nejvyssi priorita, protoze
+   tiche cteni ze spatneho ofsetu je zakeznejsi nez pad.
+2. **calloc(1,256) verifikace** - dohledat vsechny volajici sub_15E0F0/
+   sub_15E124 a zjistit skutecnou max. delku pouzivaneho retezce.
+3. **Overit 2 nizko-jistotne fseek rekonstrukce** (viz vlna 07 vyse) -
+   `orion_part_19.c` ~5913 a `orion_part_20.c` ~7248 (Play_Sound).
+4. Analyzovat `sub_FE8BE` poradne - projit reprezentativni vzorek z 701
    volani, zjistit skutecny ucel, pak teprve prejmenovat. Soucasne overit
    hypotezu o `v3` v `GameMain_10057` (viz vyse).
-2. Pokracovat grafem volani z `RunGameAndExit_113D47` (hlavni smycka) a
-   z volanych funkci uvnitr `ParseCommandLine_107E6` (`sub_F4FD5`,
-   `sub_F4B81`, `sub_10A0E`, `sub_10E2F`, `sub_11F11`, `sub_126487`) - to
-   je prirozene pokracovani "shora dolu" od vstupniho bodu. `sub_F4B81`
-   (vraci `&unk_1784DD`) je dobry kandidat na vytknuti struktury - pouziva
-   se s fixnimi offsety (610, 621, 712, 721, 732), takze jde pravdepodobne
-   o tabulku nastaveni/priznaku hry.
-3. Az narazime na prvni funkci, ktera zjevne odpovida VGA/zvuku/mysi/DOS
-   sluzbam, napojit ji na prislusny `port_*.cpp` a smazat puvodni primy
-   pristup na porty/pamet. Totez pro `PoolAlloc_110B89` -> `port_memory`.
+5. `sub_1AFA0` deklarace vs. definice nesoulad (jeden parametr vs. dva) -
+   dohledat spravnou signaturu z volajicich mist (viz vlna 06).
+6. Pokracovat grafem volani z `RunGameAndExit_113D47` (hlavni smycka) a
+   z volanych funkci uvnitr `ParseCommandLine_107E6` (`sub_10A0E`,
+   `sub_10E2F`, `sub_11F11`, `sub_126487`) - to je prirozene pokracovani
+   "shora dolu" od vstupniho bodu. `GetGameFlagsTable_F4B81` (vraci
+   `&unk_1784DD`) je dobry kandidat na vytknuti struktury - pouziva se s
+   fixnimi offsety (610, 621, 712, 721, 732), takze jde pravdepodobne o
+   tabulku nastaveni/priznaku hry.
+7. Az narazime na dalsi funkce odpovidajici VGA/zvuku/mysi/DOS sluzbam,
+   napojit je na prislusny `port_*.cpp`. Totez pro `PoolAlloc_110B89` ->
+   `port_memory` (zatim nezavisle vedle sebe, viz vlna 06).

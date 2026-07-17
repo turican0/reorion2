@@ -6180,13 +6180,20 @@ int __fastcall sub_14FEE6(int a1)
   int v10; // [esp+4Ch] [ebp-4h]
 
   v7 = a1;
-  v6 = fopen(a1);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v6 = fopen(a1, aRb);
   if ( !v6 )
     sub_126487(aCanTFindRkerne, (int)aRb_7);
-  fseek();
-  v8 = ftell(v6, 0, 2);
+    // DECOMP_TODO (vyreseno ve vlne 07): klasicky "zjisti velikost souboru"
+    // idiom - fseek(f,0,SEEK_END); size=ftell(f); fseek(f,0,SEEK_SET); - byl
+    // rozbity na 3 mista: dve prazdna fseek() a "ftell(v6,0,2)" se 3 parametry
+    // (spravny ftell bere jen 1 arg - ty dalsi 2 jsou zbytky z fseek(v6,0,2)
+    // volani, ktere Hex-Rays chybne pripsal k ftell). Vsechny 3 pouzivaji
+    // stejny handle v6.
+  fseek(v6, 0, SEEK_END);
+  v8 = ftell(v6);
   dword_18AC7E = v8;
-  fseek();
+  fseek(v6, 0, SEEK_SET);
   v5[0] = 256;
   v5[1] = ((v8 + 256) >> 4) + 1;
   int386(49, v5, v2);

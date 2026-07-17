@@ -638,14 +638,16 @@ int __fastcall sub_12C607(int a1, int a2, int a3, int a4)
     fclose(dword_1BC338);
     dword_1BC338 = 0;
   }
-  dword_1BC338 = fopen(v7);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    dword_1BC338 = fopen(v7, aRb);
   if ( !dword_1BC338 )
   {
     if ( !byte_184544[0] )
       sub_1273DC(v7, 1u, (int16_t)v11, a4);
     strcpy(v6, byte_184544);
     strcat(v6, v7);
-    dword_1BC338 = fopen(v6);
+        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    dword_1BC338 = fopen(v6, aRb);
     if ( !dword_1BC338 )
       sub_1273DC(v7, 1u, (int16_t)v11, a4);
   }
@@ -662,7 +664,10 @@ int __fastcall sub_12C607(int a1, int a2, int a3, int a4)
   dword_1BC328 = v9;
   dword_1BC354 = v8;
   dword_1BC2E8 = v8 - v9;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC338, v9, SEEK_SET);
   return fread(dword_1BC31C, 0x2000, 1, dword_1BC338);
 }
 // 12697A: using guessed type int __fastcall fclose(_DWORD);
@@ -698,7 +703,10 @@ int sub_12C7CC()
   if ( sub_110C29(dword_1BC324) < v6 )
     sub_126487(aFileAnimationF, (int)v0);
   v5 = dword_1BC324;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC338, *v0, SEEK_SET);
   v1 = v6;
   fread(v5, v6, 1, dword_1BC338);
   if ( dword_1BBA28 >= 2 )
@@ -817,7 +825,10 @@ int __fastcall sub_12CAD6( int a1)
   if ( sub_110C29(dword_1BC324) < v5 )
     sub_126487(aFileAnimationF_0, (int)v2);
   v6 = dword_1BC324;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC310[a1], *v2, SEEK_SET);
   v3 = v5;
   fread(v6, v5, 1, dword_1BC310[a1]);
   if ( dword_1BBA28 >= 2 )
@@ -897,7 +908,10 @@ int sub_12CD2D()
   if ( sub_110C29(dword_1BC324) < v3 )
     sub_126487(aFileAnimationF_1, (int)v0);
   v4 = dword_1BC324;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC338, *v0, SEEK_SET);
   fread(v4, v3, 1, dword_1BC338);
   if ( (*(_BYTE *)(dword_1BC2A8 + 11) & 8) != 0 )
     sub_126487(aDifferentailFi_1, v3);
@@ -991,7 +1005,10 @@ int __fastcall sub_12D1C5(int a1, int a2, int a3, int a4)
   dword_1BC348[(int16_t)v13] = v9;
   dword_1BC32C[(int16_t)v13] = v10;
   dword_1BC33C[(int16_t)v13] = v11;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC310[(int16_t)v13], v9, SEEK_SET);
   return fread(dword_1BC31C, 2730, 1, dword_1BC310[(int16_t)v13]);
 }
 // 12685D: using guessed type int __fastcall fopen(_DWORD, _DWORD);
@@ -1032,7 +1049,10 @@ int __fastcall sub_12D408( int a1)
   if ( sub_110C29(dword_1BC324) < v7 )
     sub_126487(aFileAnimationF_3, (int)v2);
   v8 = dword_1BC324;
-  fseek();
+  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
+  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
+  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  fseek(dword_1BC310[a1], *v2, SEEK_SET);
   v3 = v7;
   fread(v8, v7, 1, dword_1BC310[a1]);
   if ( dword_1BBA28 >= 2 )
@@ -7225,7 +7245,14 @@ int __fastcall sub_13AEBB(int result, int a2, int a3)
         sprintf(v4, "ERROR: Play_Sound(%d)", v7);
         sub_126487(v4, v3);
       }
-      fseek();
+      // DECOMP_TODO - NIZKA JISTOTA (vlna 07): fseek() melo 0 parametru.
+      // Tabulka velikosti zaznamu je jasne na "v5[4*v7+8]" (DWORD, cteno
+      // pres int16_t* indexovani). Hypoteza: jde o prokladanou tabulku
+      // {offset,size} DWORD paru (bezny format), takze offset by byl o
+      // 4 bajty (2 int16_t jednotky) driv - "v5[4*v7+6]". NEOVERENO -
+      // spatny odhad zpusobi prehrani spatneho zvuku, ne pad, ale
+      // potrebuje potvrzeni pred oznacenim za hotove.
+      fseek(*((_DWORD *)v5 + 2), *(_DWORD *)&v5[4 * v7 + 6], SEEK_SET);
       return fread(v6, *(_DWORD *)&v5[4 * v7 + 8], 1, *((_DWORD *)v5 + 2));
     }
   }

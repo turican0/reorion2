@@ -619,8 +619,10 @@ int __fastcall sub_103313(int a1)
   int v14; // [esp+108Ch] [ebp+7Ah]
   int v15; // [esp+1090h] [ebp+7Eh]
 
-  v14 = fopen(a1);
-  v1 = fopen(v9);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    v14 = fopen(a1, aRb);
+      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v1 = fopen(v9, aRb);
   v2 = v1;
   if ( !v14 )
   {

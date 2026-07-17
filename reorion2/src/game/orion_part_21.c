@@ -246,12 +246,14 @@ int __cdecl sub_13E186(int a1, int a2)
 
   v4 = &a2;
   if ( !dword_1849E6 )
-    dword_1849E6 = fopen(aLownetLog);
+        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    dword_1849E6 = fopen(aLownetLog, aA);
   vsprintf(v3, a1, &v4);
   if ( fprintf(dword_1849E6, "%s", v3) == -1 )
     sub_126487(aLownetLogError, a1);
   fclose(dword_1849E6);
-  result = fopen(aLownetLog);
+      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
+    result = fopen(aLownetLog, aA);
   dword_1849E6 = result;
   return result;
 }
@@ -583,7 +585,8 @@ void sub_13F640()
   if ( getenv(aAilSysDebug) )
     dword_1C0E58 = 1;
   v0 = aWT;
-  v1 = fopen(v2);
+      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v1 = fopen(v2, aRb);
   dword_1C0E50 = v1;
   if ( v1 )
   {

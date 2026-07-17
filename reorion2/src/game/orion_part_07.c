@@ -4293,7 +4293,8 @@ void __fastcall sub_7E609(int a1, _BYTE *a2)
   int16_t v9; // [esp+10h] [ebp-8h] BYREF
   int16_t v10; // [esp+14h] [ebp-4h] BYREF
 
-  v4 = fopen(a1);
+      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
+    v4 = fopen(a1, aRb);
   if ( v4 )
   {
     fclose(v4);
