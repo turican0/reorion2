@@ -2,6 +2,7 @@
 #include "port_vga.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 
 namespace Port::Dos {
@@ -140,6 +141,17 @@ int dos_setvect(unsigned int vectorNumber, unsigned int vectorNumberDup,
     Port::Dos::SetInterruptVector(
         vectorNumber, DosFarPointer{handlerOffset, uint16_t(handlerSegment)});
     return 0;
+}
+
+void PortDebug_Checkpoint(const char* name, int value)
+{
+    // Env-gated diagnostika (vlna 11) - viz deklarace v hexrays_compat.h.
+    // Staticka inicializace se vyhodnoti jen jednou pri prvnim volani.
+    static const bool enabled = std::getenv("REORION2_TRACE") != nullptr;
+    if (!enabled)
+        return;
+    std::fprintf(stderr, "DIAG %s %d\n", name ? name : "?", value);
+    std::fflush(stderr);
 }
 
 } // extern "C"

@@ -836,8 +836,80 @@ memsize=32) > 1791000 -> prosla presne ta vetev, kterou ukazuje dekompilat.
   adresni posun zdokumentovan v `genCompare/DOSBOX_CTL_PROTOCOL.md`.
 - Šablona `genCompare/engine.cpp` synchronizovana se `src/engine/engine.cpp`.
 
+## Hotovo - vlna 11: zaseknuti v sub_110FE7 + emulovany rozpocet pameti + LARGEADDRESSAWARE:NO
+
+### Nahlaseny problem: beh se zasekava v sub_110FE7
+
+`sub_110FE7` ("Linear space remaining") je Watcom sonda volne pameti:
+alokuje rostouci bloky, dokud nmalloc neselze. Vola se JEN z fatalniho
+hlaseni `sub_110EC3` ("Insufficient Memory!"). Zaseknuti melo DVE pricin:
+1. moderni malloc prakticky neselze -> sonda rostla donekonecna,
+2. hra se do chybove vetve vubec nemela dostat - dostala se tam kvuli
+   dalsim portovacim chybam (viz retez nize).
+
+### Cely retez pricin (odhalen postupnou bisekci pres nove DIAG checkpointy)
+
+1. **Ukazatele v 32bit intech (KRITICKE, reseni pro CELY projekt):**
+   dekompilat uklada ukazatele do `int` (sub_110DFE vraci int, vsechna
+   `dword_x = (int)PoolAlloc(...)`). x64 heap lezi bezne NAD 4 GB ->
+   orez -> pad/NULL. Reseni: **`/LARGEADDRESSAWARE:NO`** v obou x64
+   konfiguracich vcxproj - cely proces (heap/moduly/stack) zije pod 2 GB,
+   kazdy ukazatel prezije pruchod pres int. Standardni trik decomp portu.
+2. **memavl stub vracel 0** -> `sub_110F89` (volna pamet v KiB) vracela 0
+   -> sub_10CB5 sel do nouzove vetve `sub_1279AF(1000*(0-50) = -50000)`
+   -> nmalloc(zaporne=obri) selhal -> "Insufficient Memory!".
+3. **sub_110E36 (DPMI 0x0100 ALLOCATE DOS MEMORY BLOCK)** cetl pres
+   int386 stub NEINICIALIZOVANY vystupni buffer -> nahodne vracel bud
+   falesne selhani, nebo nahodny "ukazatel" (pad v sub_113E08, ktery
+   z adresy pocita real-mode segment adresa>>4).
+4. **screenHeight_184538 (drive `_UNKNOWN unk_184538` = char!)** - vyska
+   obrazovky; 480 se orezalo na signed char -32 -> plocha VGA bufferu
+   `vyska*sirka` = -32*640 = **-20480** -> alokace -20420 B selhala ->
+   znovu "Insufficient Memory!". (Nalezeno DIAG checkpointem primo na
+   vypoctu; v puvodnich datech jde o 4bajtovou promennou 0x184538.)
+5. **Pomalost sondy v Debug buildu**: i s funkcnim rozpoctem by sonda
+   (8KiB kroky do 32 MiB) znamenala ~64 GB zapisu, protoze Debug CRT
+   vyplnuje kazdou alokaci vzorem 0xCD - na DOSu nmalloc nevyplnoval nic,
+   proto byl original okamzity. Sonda nahrazena primym `memavl()`
+   (port zna volnou pamet presne; puvodni telo zachovano v komentari,
+   vcetne DECOMP_TODO o podezrele druhe smycce, ktera roste NAD uz
+   selhavsi velikost - nelze overit pasivnim behem originalu, vetev
+   bezi jen pri skutecnem nedostatku pameti).
+
+### Nova infrastruktura
+
+- **Emulovany rozpocet pameti** v `port_memory` (32 MiB, prepsatelne env
+  `REORION2_MEM_BUDGET`): Alloc/Realloc pri prekroceni vraci NULL - presne
+  jako DOS nmalloc na plnem stroji. Referencni dosbox beh (memsize=32,
+  vlna 10) hlasil DPMI+memavl ~26.3 MB volnych. `memavl()` = zbytek
+  rozpoctu (realna implementace v port_memory.cpp, stub odstranen).
+- **`PortDebug_Checkpoint(name, value)`** (port_dos.cpp, deklarace v
+  hexrays_compat.h): env-gated diagnostika `REORION2_TRACE=1` -> radky
+  "DIAG <jmeno> <hodnota>" na stderr (neubuffrovane, prezije pad).
+  Checkpointy zustavaji osazene v init sekvenci (GameMain, RunGame,
+  sub_1248AB, sub_110EC3) - bez env promenne jsou no-op.
+- `sub_110E36` preveden na port alokaci (16-zarovnany blok kvuli
+  segment prevodum; puvodni DPMI telo v komentari). POZOR: 16bit
+  "segment" (word_1B0700) se pri adresach nad 1 MiB orizne - smi ho
+  pouzivat jen real-mode sluzby, ktere v portu neexistuji.
+
+### Vysledek (overeno behem z C:\prenos\mastori2)
+
+Pred vlnou: beh visel v sub_110FE7. Po vlne prochazi cela init sekvence:
+ParseCommandLine -> nacteni nastaveni -> PoolAlloc(0x64000) -> RunGame ->
+sub_113E08 (8KiB DOS buffer) -> **cela VGA inicializace sub_1248AB**
+(307200 = 640*480 spravne) -> InstallKeyboardIsr -> sub_117262 -> a konci
+az v `sub_111F3E` = **inicializace zvuku AIL/Miles** ("Could not register
+timer with AIL", sub_13F640/sub_1400A9/SOUND.LBX) - to je prirozeny dalsi
+krok pro port_sound (viz nize). Zadne zaseknuti, cisty exit.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
+0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
+   blocker behu (viz vlna 11): napojit na port_sound.cpp (SDL3 audio),
+   minimalne tak, aby init "uspel" bez realneho AIL driveru a hra mohla
+   pokracovat do menu. Pozor na `v5 = v0` s neinicializovanym v0
+   (dekompilacni artefakt - ztracena navratova hodnota sub_1400A9).
 1. **fseek/ftell dluh (25 mist)** - viz vyse, nejvyssi priorita, protoze
    tiche cteni ze spatneho ofsetu je zakeznejsi nez pad.
 2. **calloc(1,256) verifikace** - dohledat vsechny volajici sub_15E0F0/

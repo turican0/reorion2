@@ -17342,7 +17342,7 @@ extern _UNKNOWN unk_184522;
 extern int16_t word_18452A;
 extern int16_t word_18452C;
 extern int64_t qword_184530;
-extern _UNKNOWN unk_184538;
+extern int32_t screenHeight_184538; // vyska obrazovky - drive mylne _UNKNOWN/char, viz orion_data.c (vlna 11)
 extern int dword_18453C;
 extern int dword_184540;
 extern char byte_184544[50];

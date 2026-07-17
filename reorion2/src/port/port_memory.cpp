@@ -23,6 +23,23 @@ std::unordered_map<void*, AllocInfo> g_liveAllocations;
 std::size_t g_liveBytes = 0;
 bool g_trackingEnabled = false;
 
+// Emulovany rozpocet pameti - viz komentar v port_memory.h (vlna 11).
+// 32 MiB odpovida referencnimu dosbox-x behu (memsize=32), na kterem byly
+// zmerene hodnoty originalu (DPMI+memavl ~26.3 MB volnych po startu DOSu).
+constexpr std::size_t kDefaultBudgetBytes = 32u * 1024u * 1024u;
+std::size_t g_budgetBytes = kDefaultBudgetBytes;
+
+// Vejde se dalsich "size" bajtu do rozpoctu? Volat pod zamkem g_mutex.
+// Enforcement jen pri zapnute evidenci (bez ni nezname g_liveBytes) -
+// Port::Memory::Init() se vola jako prvni vec v main(), takze herni beh
+// je pokryty vzdy; bez Init() (izolovane testy) se chova jako driv.
+bool FitsBudgetLocked(std::size_t size)
+{
+    if (!g_trackingEnabled)
+        return true;
+    return size <= g_budgetBytes && g_liveBytes <= g_budgetBytes - size;
+}
+
 } // namespace
 
 void Init()
@@ -31,6 +48,14 @@ void Init()
     g_liveAllocations.clear();
     g_liveBytes = 0;
     g_trackingEnabled = true;
+
+    // Volitelny prepis rozpoctu (v bajtech) - pro ladeni shody s DOSBox
+    // referenci nebo simulaci mensiho stroje.
+    if (const char* env = std::getenv("REORION2_MEM_BUDGET")) {
+        const unsigned long long v = std::strtoull(env, nullptr, 0);
+        if (v > 0)
+            g_budgetBytes = (std::size_t)v;
+    }
 }
 
 void Shutdown()
@@ -49,6 +74,15 @@ void Shutdown()
 
 void* Alloc(std::size_t size, const char* debugTag)
 {
+    {
+        // Rozpocet kontrolovat PRED malloc - emuluje DOS "dosla pamet",
+        // vcetne pripadu, kdy dekompilovany kod dorazi se zapornym intem
+        // pretypovanym na obri size_t (ten rozpocet prekroci vzdy).
+        std::lock_guard<std::mutex> lock(g_mutex);
+        if (!FitsBudgetLocked(size))
+            return nullptr;
+    }
+
     void* ptr = std::malloc(size);
     if (!ptr)
         return nullptr;
@@ -92,6 +126,9 @@ void* Realloc(void* ptr, std::size_t newSize, const char* debugTag)
         auto it = g_liveAllocations.find(ptr);
         if (it != g_liveAllocations.end())
             oldSize = it->second.size;
+        // Rozpocet: pocita se jen NARUST oproti stavajici velikosti bloku.
+        if (newSize > oldSize && !FitsBudgetLocked(newSize - oldSize))
+            return nullptr;
     }
 
     void* newPtr = std::realloc(ptr, newSize);
@@ -120,6 +157,18 @@ std::size_t GetLiveAllocationCount()
 {
     std::lock_guard<std::mutex> lock(g_mutex);
     return g_liveAllocations.size();
+}
+
+std::size_t GetBudgetBytes()
+{
+    std::lock_guard<std::mutex> lock(g_mutex);
+    return g_budgetBytes;
+}
+
+std::size_t GetAvailableBytes()
+{
+    std::lock_guard<std::mutex> lock(g_mutex);
+    return g_liveBytes < g_budgetBytes ? g_budgetBytes - g_liveBytes : 0;
 }
 
 } // namespace Port::Memory
@@ -156,6 +205,15 @@ int PortMemory_Free(void* ptr)
         return 0;
     Port::Memory::Free(ptr);
     return 1;
+}
+
+int memavl(void)
+{
+    // Watcom _memavl: kolik bajtu je jeste k dispozici pro alokaci.
+    // V portu = zbytek emulovaneho rozpoctu. Clamp na INT_MAX kvuli
+    // navratovemu typu int (dekompilovany kod pocita v intech).
+    const std::size_t avail = Port::Memory::GetAvailableBytes();
+    return avail > 0x7FFFFFFFu ? 0x7FFFFFFF : (int)avail;
 }
 
 } // extern "C"

@@ -49,6 +49,23 @@ T* AllocArray(std::size_t count, const char* debugTag = nullptr)
 std::size_t GetLiveBytes();
 std::size_t GetLiveAllocationCount();
 
+// ---------------------------------------------------------------------
+// Emulovany ROZPOCET pameti (vlna 11). Puvodni DOS/Watcom nmalloc SELHAL
+// (vratil NULL), kdyz dosla pamet stroje - hra na tom aktivne stavi:
+// sondovaci smycky "alokuj rostouci velikost, dokud to jde" (sub_110FE7,
+// "Linear space remaining") a vypocet "kolik pameti si smim vzit"
+// (sub_110F89 = DPMI info + memavl, hra si pak nechava jen malou rezervu).
+// Moderni malloc prakticky neselze (virtualni pamet) -> sondovaci smycka
+// by rostla DONEKONECNA a memavl-stub vracejici 0 posilal hru do
+// "Insufficient Memory!" vetve. Proto Alloc/Realloc pri zapnute evidenci
+// odmitnou alokaci, ktera by prekrocila rozpocet (vychozi 32 MiB ~ stroj,
+// na kterem bezel referencni dosbox-x beh s memsize=32 - viz PROGRESS.md
+// vlna 10/11; DPMI+memavl tam hlasily ~26.3 MB volnych). Prepis pres env
+// promennou REORION2_MEM_BUDGET (v bajtech) - hodi se pro budouci ladeni
+// shody dumpu s DOSBox referenci.
+std::size_t GetBudgetBytes();
+std::size_t GetAvailableBytes(); // rozpocet - zive alokace (0 pri prekroceni)
+
 } // namespace Port::Memory
 
 // ---------------------------------------------------------------------
@@ -66,6 +83,12 @@ void* PortMemory_Alloc(size_t size);
 void* PortMemory_Calloc(size_t count, size_t size);
 void* PortMemory_Realloc(void* ptr, size_t size);
 int   PortMemory_Free(void* ptr); // vraci 1 pri uspechu, 0 kdyz ptr byl NULL
+
+/* memavl - Watcom runtime "volne bajty heapu" (jmeno dle IDA, stejny
+   princip jako dos_getvect & spol. ve vlne 09). Drive no-op stub vracejici
+   0 v link_stubs.c - to posilalo hru do "Insufficient Memory!" vetve,
+   viz komentar u rozpoctu vyse a PROGRESS.md vlna 11. */
+int memavl(void);
 
 #ifdef __cplusplus
 }

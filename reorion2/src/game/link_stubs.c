@@ -232,7 +232,10 @@ int loc_93D66;
 int loc_A0020;
 int loc_E0000;
 int loc_E40C7;
-int memavl(void) { return 0; }
+/* memavl UZ NENI stub - skutecna implementace (zbytek emulovaneho 32MiB
+   rozpoctu pameti) je v src/port/port_memory.cpp. Stub vracejici 0 posilal
+   hru do "Insufficient Memory!" vetve a nasledneho zaseknuti v nekonecne
+   sondovaci smycce sub_110FE7. Viz PROGRESS.md vlna 11. */
 int memset32(void) { return 0; }
 /* DULEZITA OPRAVA (vlna 06): tady drive bylo "int nfree;" - OBYCEJNA
    DATOVA promenna se stejnym jmenem, jako ma FUNKCE "nfree" deklarovana

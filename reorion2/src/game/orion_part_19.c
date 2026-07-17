@@ -3226,7 +3226,7 @@ int16_t __fastcall sub_121F7B( int a1, int a2, int a3)
     v18 = dword_1BBA28;
     dword_1BBA28 = 0;
     v10 = (qword_184530 >> 32) / 80 * a1;
-    v11 = unk_184538 / 25 * a2;
+    v11 = screenHeight_184538 / 25 * a2;
     v14 = dword_1BBA4A >> 16;
     v15 = dword_1BBA4E >> 16;
     v16 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
@@ -4051,12 +4051,12 @@ void sub_123491()
   LOWORD(dword_1BB8E0) = 8;
   LOWORD(dword_1BB8E4) = 0;
   LOWORD(dword_1BB8E8) = 0;
-  LOWORD(dword_1BB8EC) = unk_184538 - 1;
+  LOWORD(dword_1BB8EC) = screenHeight_184538 - 1;
   int386(51, &dword_1BB8E0, &dword_1BB8E0);
   LOWORD(dword_1BB8E0) = 26;
   LOWORD(dword_1BB8E4) = 100;
   LOWORD(dword_1BB8E8) = 100;
-  LOWORD(dword_1BB8EC) = unk_184538 - 1;
+  LOWORD(dword_1BB8EC) = screenHeight_184538 - 1;
   int386(51, &dword_1BB8E0, &dword_1BB8E0);
   sub_124105();
   sub_1237F3();
@@ -4066,9 +4066,9 @@ void sub_123491()
   word_1B9220 = 0;
   sub_144A48();
   word_18452A = WORD2(qword_184530) - 1;
-  word_18452C = unk_184538 - 1;
+  word_18452C = screenHeight_184538 - 1;
   sub_123E6C((int)&unk_184522, 1);
-  sub_123B14(SHIDWORD(qword_184530) / 2, unk_184538 / 2);
+  sub_123B14(SHIDWORD(qword_184530) / 2, screenHeight_184538 / 2);
   word_184518 = 1;
   LOWORD(dword_18451A) = 0;
 }
@@ -4585,30 +4585,32 @@ int16_t __fastcall sub_1248AB( int a1)
   {
     case 0:
       HIDWORD(qword_184530) = 320;
-      unk_184538 = 200;
+      screenHeight_184538 = 200;
       break;
     case 1:
       HIDWORD(qword_184530) = 320;
-      unk_184538 = 200;
+      screenHeight_184538 = 200;
       break;
     case 2:
       HIDWORD(qword_184530) = 320;
-      unk_184538 = 240;
+      screenHeight_184538 = 240;
       break;
     case 3:
       HIDWORD(qword_184530) = 320;
-      unk_184538 = 480;
+      screenHeight_184538 = 480;
       break;
     case 4:
       HIDWORD(qword_184530) = 640;
-      unk_184538 = 480;
+      screenHeight_184538 = 480;
       break;
     default:
       break;
   }
-  dword_18453C = unk_184538 * HIDWORD(qword_184530);
-  v1 = unk_184538;
-  sub_12537D(unk_184538 * HIDWORD(qword_184530), unk_184538);
+  dword_18453C = screenHeight_184538 * HIDWORD(qword_184530);
+  v1 = screenHeight_184538;
+  PortDebug_Checkpoint("1248AB.before_12537D", dword_18453C);
+  sub_12537D(screenHeight_184538 * HIDWORD(qword_184530), screenHeight_184538);
+  PortDebug_Checkpoint("1248AB.after_12537D", 0);
   if ( *(int *)((char *)&dword_1BBA64 + 2) >> 16 == 4 )
   {
     HIWORD(dword_1BBA52) = sub_1252C2();
@@ -4621,6 +4623,7 @@ int16_t __fastcall sub_1248AB( int a1)
   }
   HIWORD(dword_1BBA64) = 0;
   dword_1BB910[0] = (int)&loc_9FFFD + 3;
+  PortDebug_Checkpoint("1248AB.before_12542A", 0);
   word_1BBA62 = sub_12542A();
   LOWORD(dword_1BBA4A) = (int)unk_1BBA60 >> 16 >= (2 * dword_18453C
                                                  - (__CFSHL__((2 * dword_18453C) >> 31, 10)
@@ -4628,12 +4631,18 @@ int16_t __fastcall sub_1248AB( int a1)
   word_1BBA56 = sub_1254C0();
   word_1BBA5C = 64 / (uint16_t)word_1BBA56;
   dword_1BB904 = dword_1BB90C;
+  PortDebug_Checkpoint("1248AB.before_125064", dword_1BB90C);
   sub_125064(dword_1BB90C);
+  PortDebug_Checkpoint("1248AB.before_125300", 0);
   sub_125300();
+  PortDebug_Checkpoint("1248AB.before_124D41", 0);
   sub_124D41();
+  PortDebug_Checkpoint("1248AB.before_125CE1", 0);
   sub_125CE1();
+  PortDebug_Checkpoint("1248AB.before_125D18", 0);
   sub_125D18();
   dword_1BBA28 = 0;
+  PortDebug_Checkpoint("1248AB.before_128BE7", 0);
   return sub_128BE7();
 }
 // 184530: using guessed type int64_t qword_184530;
@@ -4875,7 +4884,7 @@ int sub_124ECB()
   if ( dword_1BBA28 == 3 )
   {
     sub_125D4F();
-    sub_12779E((_BYTE *)dword_1BB908, (_BYTE *)dword_1BB8C0, 4 * unk_184538);
+    sub_12779E((_BYTE *)dword_1BB908, (_BYTE *)dword_1BB8C0, 4 * screenHeight_184538);
     sub_125D18();
   }
   else
@@ -5354,7 +5363,7 @@ int sub_125CE1()
   int result; // eax
 
   result = dword_1BB908;
-  sub_127678((char *)dword_1BB908, 4 * unk_184538, -1);
+  sub_127678((char *)dword_1BB908, 4 * screenHeight_184538, -1);
   return result;
 }
 // 1BB908: using guessed type int dword_1BB908;
@@ -5366,7 +5375,7 @@ int sub_125D18()
   int result; // eax
 
   result = dword_1BB8C0;
-  sub_127678((char *)dword_1BB8C0, 4 * unk_184538, -1);
+  sub_127678((char *)dword_1BB8C0, 4 * screenHeight_184538, -1);
   return result;
 }
 // 1BB8C0: using guessed type int dword_1BB8C0;
@@ -5391,7 +5400,7 @@ int sub_125D4F()
   for ( i = 0; ; ++i )
   {
     result = i;
-    if ( i >= unk_184538 )
+    if ( i >= screenHeight_184538 )
       break;
     v6 = *(int16_t *)(dword_1BB8C0 + 4 * i);
     if ( v6 != -1 )

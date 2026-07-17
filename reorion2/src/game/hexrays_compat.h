@@ -129,6 +129,20 @@ int unknown_libname_2(struct DosDta* dta); /* FINDNEXT */
 }
 #endif
 
+/* ---- diagnosticke checkpointy (vlna 11) ----
+   Zapina se env promennou REORION2_TRACE=1 - pak kazdy checkpoint vypise
+   radek "DIAG <jmeno> <hodnota>" na stderr (unbuffered, prezije i pad).
+   Bez promenne no-op. Implementace v port_dos.cpp. Pouziti: docasne i
+   trvale znacky v miste dulezitych prechodu init sekvence - pomaha najit,
+   KAM az se beh dostal, kdyz stdout buffer pri padu zmizi. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+void PortDebug_Checkpoint(const char* name, int value);
+#ifdef __cplusplus
+}
+#endif
+
 /* ---- DOS diskfree + interrupt vektory (vlna 09) ----
    dos_getdiskfree/dos_getvect/dos_setvect jsou Watcom runtime funkce
    (_dos_getdiskfree = INT 21h AH=36h, _dos_getvect/AH=35h,

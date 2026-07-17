@@ -15,6 +15,7 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   _BYTE v5[32]; // [esp+6Ch] [ebp+3Eh] BYREF
   char v6[16]; // [esp+9Ch] [ebp+6Eh] BYREF
 
+  PortDebug_Checkpoint("GameMain_10057.enter", a1);
   byte_199F19 = -1;
   byte_199F36 = 1;
   word_1999EC = 1;
@@ -25,8 +26,11 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   // presne ty hodnoty, ktere ParseCommandLine_107E6 drive cetla z
   // neinicializovanych promennych. Viz DECOMP_TODO u ParseCommandLine_107E6.
   ParseCommandLine_107E6(a1, (char**)a2);
+  PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
   sub_FE8BE(v3, a1, a2, a3);
+  PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
+  PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
   // DECOMP_TODO (vyreseno ve vlne 06): puvodni vyraz "(int)&loc_63FFB + 5"
   // vypadal jako smysluplna adresa, ale podle asm dumpu je "loc_63FFB"
   // navesti UPROSTRED FUNKCE sub_63FF0 (presne 5 bajtu za jejim zacatkem,
@@ -44,6 +48,7 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   // takze 0x64000 (400 KB) je smysluplna velikost jednorazove alokovaneho
   // pool bufferu, ne adresa k dereferenci.
   dword_19916C = (int)PoolAlloc_110B89(0x64000, (int)v5);
+  PortDebug_Checkpoint("GameMain.pool64000.done", dword_19916C != 0);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
   {
@@ -58,6 +63,7 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   LoadLanguageSetting_10C2F();
   GetFontsLbxName_7AA33(v6);
   SelectResourceModule_111959(dword_19916C);
+  PortDebug_Checkpoint("GameMain.beforeRunGame", 0);
   RunGameAndExit_113D47(4, v6);
 }
 // 100A0: variable 'v3' is possibly undefined
@@ -705,6 +711,7 @@ _BYTE *__fastcall sub_10CB5(int a1, int a2)
   // skutecne vola PoolAlloc_110B89 postupne s EAX = 1790000, 30000, 1000,
   // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
   // (runtime EIP = IDA adresa + 0x224000).
+  PortDebug_Checkpoint("sub_10CB5.enter", a1);
   dword_192EF4 = (int)PoolAlloc_110B89(1790000, a2);
   dword_193178 = (int)PoolAlloc_110B89(30000, a2);
   dword_19A00C = (int)PoolAlloc_110B89(1000, a2);
@@ -728,6 +735,7 @@ LABEL_6:
   // Za behu originalu (32MB stroj) tudy proslo v2 = 0x188AB70 (~25.7 MB)
   // -> vetev s PoolAlloc(256000) nize, presne dle tohoto kodu.
   v2 = 1000 * sub_110F89();
+  PortDebug_Checkpoint("sub_10CB5.availBytes", v2);
   if ( v2 <= 1791000 )
   {
     dword_192EF0 = 0;

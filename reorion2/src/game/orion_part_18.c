@@ -2903,28 +2903,33 @@ int __fastcall sub_110DFE(int a1)
 
 
 //----- (00110E36) --------------------------------------------------------
+// Puvodne alokace DOS real-mode pameti pres DPMI 0x0100 (ALLOCATE DOS
+// MEMORY BLOCK, INT 31h): prevede bajty na paragrafy (16 B), vrati
+// 16*segment = linearni adresu bloku POD 1 MiB. Hra ji pouziva primo
+// (sub_113E08: 8KiB buffer, jehoz adresu deli 16 zpet na "segment") i
+// jako zalozni cestu PoolAlloc_110B89/sub_110C62.
+// VLNA 11 - PORT: zadny real mode neexistuje; puvodni telo s int386
+// stubem cetlo NEINICIALIZOVANY vystupni buffer (v3[6]) a vracelo bud
+// falesne selhani (-> "Insufficient Memory!" a drive nekonecna sonda
+// sub_110FE7) nebo nahodny "ukazatel" (-> pad v sub_113E08). Ted se
+// alokuje bezny blok z rozpoctu port_memory. malloc na x64 vraci
+// 16-zarovnane bloky, takze prevod adresa>>4 a zpet 16*(addr>>4), ktery
+// volajici delaji, funguje. POZOR: 16bit "segment" (word_1B0700 v
+// sub_113E08) se pri adresach nad 1 MiB orizne - smi se pouzivat jen
+// pro real-mode sluzby, ktere v portu stejne neexistuji (DECOMP_TODO:
+// az na ne narazime, presmerovat na port vrstvu).
+// Puvodni dekompilovane telo (pro srovnani):
+//   v4 = (a1 & 0xF) ? (a1 >> 4) + 1 : a1 >> 4;  // bajty -> paragrafy
+//   if ( v4 > 0xFFFF ) return 0;                 // DOS blok max ~1 MiB
+//   v2[0] = 256; v2[1] = v4;                     // DPMI fn 0x0100
+//   int386(49, v2, v3);                          // INT 31h
+//   return v3[6] ? 0 : 16 * v3[0];               // CF ? chyba : 16*segment
 int __fastcall sub_110E36(int a1)
 {
-  _DWORD v2[7]; // [esp+0h] [ebp-48h] BYREF
-  _DWORD v3[8]; // [esp+1Ch] [ebp-2Ch] BYREF
-  int v4; // [esp+3Ch] [ebp-Ch]
-
-  v4 = a1;
-  if ( (a1 & 0xF) != 0 )
-    v4 = (v4 >> 4) + 1;
-  else
-    v4 >>= 4;
-  if ( v4 > 0xFFFF )
+  if ( a1 < 0 || ((a1 + 15) >> 4) > 0xFFFF )     // stejny limit jako original
     return 0;
-  v2[0] = 256;
-  v2[1] = v4;
-  int386(49, v2, v3);
-  if ( v3[6] )
-    return 0;
-  else
-    return 16 * v3[0];
+  return (int)(intptr_t)PortMemory_Alloc((unsigned int)a1);
 }
-// 13F253: using guessed type int __fastcall int386(_DWORD, _DWORD, _DWORD);
 
 
 //----- (00110EC3) --------------------------------------------------------
@@ -2933,6 +2938,7 @@ void __fastcall __noreturn sub_110EC3(int a1, int a2)
   int v2; // eax
   int v3; // eax
 
+  PortDebug_Checkpoint("110EC3.attempted_bytes", a1); // kolik chtel alokovat
   sub_113DBD();
   printf("Insufficient Memory!\n\n");
   printf("Attempted to allocate %d bytes\n", a1);
@@ -2977,30 +2983,31 @@ unsigned int sub_110F89()
 
 
 //----- (00110FE7) --------------------------------------------------------
+// "Linear space remaining" (vola se jen z chyboveho hlaseni sub_110EC3):
+// klasicka Watcom sonda volne pameti - alokovala rostouci bloky (po 8 KiB,
+// pak po 1 KiB), dokud nmalloc neselhal, a vratila memavl() + posledni
+// velikost. VLNA 11 - PORT: presne tady se port zasekaval, ze DVOU duvodu:
+//  1) bez emulovaneho rozpoctu pameti (viz port_memory.h) moderni malloc
+//     prakticky NEselze -> smycka rostla donekonecna;
+//  2) i s rozpoctem je sonda nepouzitelne pomala v Debug buildu - CRT
+//     vyplnuje kazdy alokovany blok vzorem 0xCD, takze sonda 8KiB krokem
+//     az k 32 MiB znamena ~64 GB zapisu do pameti (na DOSu nmalloc nic
+//     nevyplnoval, proto byl original okamzity).
+// Port zna volnou pamet primo (memavl = zbytek rozpoctu), takze sondovat
+// neni co - vysledek je tentyz udaj, ktery sonda pracne merila. Funkce
+// se pouziva jen pro vypis cisla v chybovem hlaseni pred exit(1).
+// Puvodni dekompilovane telo (pro srovnani):
+//   v2 = 0x2000; v3 = nmalloc(0x2000); nfree(v3);
+//   while (v3) { v2 += 0x2000; v3 = nmalloc(v2); nfree(v3); }      // hrube nahoru
+//   do { v2 += 1024; v4 = nmalloc(v2); v0 = nfree(v4); } while(v4); // podezrele - roste
+//     // NAD uz selhavsi velikost (original mel mozna v2 -= ..., bisekci);
+//     // nejde overit pasivnim behem originalu - vetev bezi jen pri
+//     // skutecnem nedostatku pameti
+//   return memavl(v0) + v2;
 int sub_110FE7()
 {
-  int v0; // eax
-  int v2; // [esp+4h] [ebp-Ch]
-  int v3; // [esp+8h] [ebp-8h]
-  int v4; // [esp+8h] [ebp-8h]
-
-  v2 = 0x2000;
-  v3 = nmalloc(0x2000);
-  nfree(v3);
-  while ( v3 )
-  {
-    v2 += 0x2000;
-    v3 = nmalloc(v2);
-    nfree(v3);
-  }
-  do
-  {
-    v2 += 1024;
-    v4 = nmalloc(v2);
-    v0 = nfree(v4);
-  }
-  while ( v4 );
-  return memavl(v0) + v2;
+  PortDebug_Checkpoint("sub_110FE7.enter", 0); // = jsme v chybove vetvi!
+  return memavl();
 }
 // 13CAF6: using guessed type int __fastcall nfree(_DWORD);
 // 13CB78: using guessed type int __fastcall nmalloc(_DWORD);
@@ -4905,16 +4912,23 @@ void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2)
   int16_t v3; // [esp+0h] [ebp-8h]
 
   v3 = a1;
+  PortDebug_Checkpoint("RunGame.enter", a1);
   sub_113E08(a1, (int)a2);
+  PortDebug_Checkpoint("RunGame.after_113E08", 0);
   sub_1248AB(v3);
+  PortDebug_Checkpoint("RunGame.after_1248AB", 0);
   LOBYTE(v2) = sub_13372A();
   InstallKeyboardIsr_12C420(v2, (int16_t)a2);
+  PortDebug_Checkpoint("RunGame.after_InstallKbd", 0);
   sub_117262();
+  PortDebug_Checkpoint("RunGame.after_117262", 0);
   sub_111F3E();
+  PortDebug_Checkpoint("RunGame.after_111F3E", *a2);
   if ( *a2 )
     sub_120526((int)a2);
   else
     sub_144348((int)a2, (int)a2);
+  PortDebug_Checkpoint("RunGame.after_mainloop", 0);
   sub_12D78E();
   atexit(sub_113DBD);
   sub_132AA4();

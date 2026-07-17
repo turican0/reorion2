@@ -8071,7 +8071,11 @@ _UNKNOWN unk_184522; // weak
 int16_t word_18452A = 0; // weak
 int16_t word_18452C = 0; // weak
 int64_t qword_184530 = 2748779069440LL; // weak
-_UNKNOWN unk_184538; // weak
+// VLNA 11: drive "_UNKNOWN unk_184538" (= char!) - vyska obrazovky
+// (200/240/480 dle rezimu, viz sub_1248AB). Jako char se 480 orezalo na
+// -32 a soucin vyska*sirka vysel -20480 -> "Insufficient Memory!" pri
+// alokaci VGA bufferu. Puvodni sirka dat: 4 bajty (0x184538..0x18453C).
+int32_t screenHeight_184538; // weak
 int dword_18453C = 307200; // weak
 int dword_184540 = 0; // weak
 char byte_184544[50] =

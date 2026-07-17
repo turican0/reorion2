@@ -129,6 +129,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)third_party\SDL3\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- KRITICKE (vlna 11): dekompilovany kod uklada ukazatele do 32bit
+           "int" (napr. sub_110DFE vraci int, dword_19916C = (int)PoolAlloc...).
+           64bit heap bezne lezi NAD 4GB, takze pruchod pres int ukazatel
+           orizne a vznikne pad/garbage. LARGEADDRESSAWARE:NO drzi CELY
+           proces (heap, moduly, zasobnik) pod 2GB - kazdy ukazatel pak
+           prezije ulozeni do int. Stejny trik pouzivaji jine decomp porty. -->
+      <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(ProjectDir)third_party\SDL3\lib\x64\SDL3.dll" "$(OutDir)"</Command>
@@ -150,6 +157,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)third_party\SDL3\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- viz komentar u Debug|x64 - ukazatele v 32bit intech. -->
+      <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(ProjectDir)third_party\SDL3\lib\x64\SDL3.dll" "$(OutDir)"</Command>
