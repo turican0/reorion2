@@ -3547,8 +3547,8 @@ int __fastcall sub_111D70( int a1, int a2, int a3)
 //----- (00111F3E) --------------------------------------------------------
 void sub_111F3E()
 {
-  int v0; // eax
-  int v1; // eax
+  int v0 = 0; // eax
+  int v1 = 0; // eax
   int v2; // eax
   int i; // [esp+0h] [ebp-8h]
   int j; // [esp+0h] [ebp-8h]

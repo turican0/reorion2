@@ -6034,7 +6034,7 @@ void __fastcall __noreturn sub_1273DC(int a1, unsigned int a2, int a3, int a4)
   _BYTE v6[20]; // [esp+78h] [ebp-20h] BYREF
   int v7; // [esp+8Ch] [ebp-Ch]
   unsigned int v8; // [esp+90h] [ebp-8h]
-  int v9; // [esp+94h] [ebp-4h]
+  int v9 = 0; // [esp+94h] [ebp-4h]
 
   v7 = a1;
   v8 = a2;

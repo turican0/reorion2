@@ -8410,7 +8410,7 @@ bool __cdecl sub_15421D(unsigned int a1, unsigned int a2)
   unsigned int v4; // [esp+4h] [ebp-50h]
   _DWORD v5[7]; // [esp+Ch] [ebp-48h] BYREF
   _BYTE v6[24]; // [esp+28h] [ebp-2Ch] BYREF
-  int v7; // [esp+40h] [ebp-14h]
+  int v7 = 0; // [esp+40h] [ebp-14h]
   int v8; // [esp+44h] [ebp-10h]
   unsigned int v9; // [esp+48h] [ebp-Ch]
   unsigned int v10; // [esp+4Ch] [ebp-8h]
@@ -8746,7 +8746,7 @@ char __cdecl sub_154EC0(int a1)
   uint8_t v2; // ah
   char result; // al
   _BOOL1 v4; // zf
-  _UNKNOWN *retaddr; // [esp+10h] [ebp+4h]
+  _UNKNOWN *retaddr = 0; // [esp+10h] [ebp+4h]
 
   v1 = hr_readeflags();
   _disable();
