@@ -667,6 +667,175 @@ kod (nemuze primo includovat `port_file.h` kvuli C++ `namespace`).
 
 Overeno `gcc -fsyntax-only` na celem `src/game/` - zadne nove chyby.
 
+## Hotovo - vlna 09: dos_getdiskfree + dos_getvect/dos_setvect -> port_dos
+
+Tri posledni DOS/Watcom runtime stuby z `link_stubs.c` nahrazeny skutecnou
+implementaci v `src/port/port_dos.cpp` (deklarace v `port_dos.h`, zrcadlene
+pro cisty C herni kod v `hexrays_compat.h` - stejny vzor jako DosDta/vlna 08).
+
+### dos_getdiskfree (Watcom `_dos_getdiskfree`, INT 21h AH=36h)
+
+- Jediny volajici: `GetFreeDiskSpace_111763` (drive `sub_111763`,
+  orion_part_18.c) - vraci volne misto na disku v bajtech, hra s nim na
+  jedinem miste (orion_part_20.c, srovnani s `dword_1BF35C`) testuje,
+  jestli se jeste vejde ulozena pozice.
+- **Layout OVEREN z volajiciho**: buffer 4x `uint16_t` na ofsetech 0/2/4/6,
+  volajici pocita `pole+6 * pole+4 * pole+2` - presne Watcom poradi
+  `total/avail_clusters, sectors_per_cluster, bytes_per_sector`
+  (avail*spc*bps = volne bajty). Vytknuta struktura `DosDiskFree`.
+- Puvodni dekompilat mel misto struktury 4 NEZAVISLE 16bitove lokaly
+  (`v1[2]`, `v2`, `v3`, `v4`) - v originale nahodou spravne za sebou na
+  zasobniku, ale v prekompilovanem C by zapis 8 bajtu pres `v1` byl
+  out-of-bounds a `v2..v4` by zustaly nevyplnene (kompilator lokaly
+  NEMUSI pokladat za sebe). Vytknuti struktury tohle spravilo.
+- Implementace meri REALNE volne misto (`std::filesystem::space` na
+  aktualnim adresari) a koduje ho do 16bitovych DOS poli: pevne 512 B/sektor,
+  64 sektoru/cluster (32KiB cluster, max bezna FAT16 hodnota), pocty
+  clusteru zastropovane na 0xFFFF -> hlasene maximum ~2 GiB a soucin
+  0x7FFF8000 se VZDY vejde do `int` nasobeni volajiciho bez preteceni.
+- Navratova konvence 0=uspech (DOS "errno" styl - ponauceni z vlny 08
+  aplikovano rovnou, volajici pri nenule vraci 0 volnych bajtu).
+
+### dos_getvect/dos_setvect (Watcom `_dos_getvect/_dos_setvect`, INT 21h AH=35h/25h)
+
+- Volajici: `InstallKeyboardIsr_12C420` (drive `sub_12C420`) mezi
+  CLI/STI (`sub_144A46/48` = `_disable/_enable`) uklada puvodni INT 9
+  (klavesnice) vektor a instaluje vlastni handler `KeyboardIsr_12C4D8`
+  (plni 10slotovy kruhovy buffer `dword_1BC2AC`, indexy `byte_1BC2E2/E3`);
+  `RestoreKeyboardIsr_12C493` (drive `sub_12C493`) ho pri exitu (atexit
+  retez `sub_113DBD`) vraci zpet.
+- **Vytknuta struktura `DosFarPointer`** (uint32 offset + uint16 segment,
+  48bit DOS4GW far pointer) pro ulozeny vektor `savedKeyboardVector_1BC2DC`
+  (drive `byte_1BC2DC`). NUTNE, ne jen kosmetika: IDA promennou mylne
+  typovala jako ukazatel na funkci, takze puvodni dekompilovany vyraz
+  `*(_DWORD *)byte_1BC2DC` pri obnove by v C DEREFERENCOVAL ulozenou
+  hodnotu (s no-op stubem getvect = NULL -> jisty pad pri kazdem ukonceni
+  hry) misto precteni ulozenych bajtu.
+- **Artefakt dekompilace zdokumentovan primo v kodu**: `_dos_getvect`
+  vracel 48bit far pointer v DX:EAX - segmentovou cast (DX) dekompiler
+  ztotoznil s parametrem `a2` (`segment = a2` ponechano 1:1 dle originalu).
+  Druhy parametr `dos_setvect(9, 9, ...)` je obdobny duplikat cisla
+  vektoru v dalsim registru - signatura ponechana, aby sedela na
+  dekompilovana volajici mista.
+- Implementace: emulovana 256polozkova tabulka vektoru v `port_dos.cpp` -
+  JEN uloziste, handler se nikdy nevykonava (klavesove udalosti dodava
+  SDL3). Parova sekvence "uloz -> instaluj -> obnov" tak funguje presne
+  jako v originale, bez vedlejsich ucinku.
+- Pri instalaci se do `dword_1BC2D8/1BC2D4` ukladaji adresy 1050/1052 =
+  **0x41A/0x41C, hlava/ocas klavesoveho bufferu v BIOS data area** - viz
+  novy DECOMP_TODO nize (sub_12C3D3 je primo dereferencuje!).
+
+### Prejmenovani (vsechna volajici mista prosla, viz konvence)
+
+- `sub_111763` -> `GetFreeDiskSpace_111763`
+- `sub_12C420` -> `InstallKeyboardIsr_12C420`
+- `sub_12C493` -> `RestoreKeyboardIsr_12C493`
+- `sub_12C4D8` -> `KeyboardIsr_12C4D8` (telo je zatim jen `_GETDS` stub -
+  dekompilace ISR selhala, skutecne plneni kruhoveho bufferu chybi)
+- `byte_1BC2DC` -> `savedKeyboardVector_1BC2DC` (typ `DosFarPointer`)
+
+Struktury `DosDiskFree`/`DosFarPointer` jsou definovane v OBOU hlavickach
+(`port_dos.h` pro port, `hexrays_compat.h` pro cisty C herni kod) pod
+sdilenym guardem `REORION2_DOS_STRUCTS_DEFINED`, protoze `reorion2.cpp`
+includuje obe najednou (u DosDta z vlny 08 se to neprojevilo jen proto,
+ze `port_file.h` zadny .cpp spolu s `orion_common.h` neincluduje).
+
+**Overeno plnym MSBuild buildem** (Debug x64, `reorion2.exe` slinkovan -
+gcc na tomto stroji neni) a **funkcnim testem** (12 kontrol, vse OK):
+realne volne misto > 0 a zastropovane pod `INT_MAX` soucin, NULL buffer =
+chyba, presna herni sekvence uloz/instaluj/obnov INT 9 vektoru vcetne
+segmentove casti, cteni/zapis mimo rozsah tabulky (vektor 9999) bezpecne
+vraci 0 / nic nedela.
+
+### DECOMP_TODO objevene pri teto vlne (zatim NEresene)
+
+- `sub_12C3D3` porovnava `*(_WORD *)dword_1BC2D8 != *(_WORD *)dword_1BC2D4`,
+  tj. dereferencuje surove adresy 0x41A/0x41C (BIOS "klavesa ceka ve
+  fronte?") - na modernim behu jisty pad, az se ta funkce zacne volat.
+  Patri do budouci klavesove vlny spolu s napojenim kruhoveho bufferu
+  `dword_1BC2AC` na SDL3 udalosti (port_mouse/port_vga vrstva).
+- `sub_12C2A0/sub_12C2C6` ctou `MEMORY[0x46C]` (BIOS timer tick) - dnes
+  jde do `HEXRAYS_MEMORY_STUB`, takze cekaci smycka `sub_12C2C6` by se
+  tocila donekonecna; potrebuje napojit na SDL_GetTicks ekvivalent.
+
+## Hotovo - vlna 10: falesne "adresy" v alokacich sub_10CB5 + DUMPREGS testovaci body v DOSBox-X
+
+### Problem
+
+Alokace v `sub_10CB5` (orion_part_01.c) pouzivaly jako velikost ADRESY
+symbolu: `PoolAlloc_110B89((int)&unk_1B5030, ...)`, `(int)&loc_16085 + 5`,
+`(int)&loc_3E7FB + 5`, prah `v2 <= (int)&unk_1B5418` a odecet
+`v2 -= (int)&loc_40F0D + 3`. Na modernim buildu (64bit adresy stub
+promennych oriznutne do int) z toho vznikala nesmyslna obri/nahodna cisla.
+
+### Overeni 1 - staticke (hodnoty a krizove reference)
+
+Vsech 5 vyrazu prevedeno na cisla dava PRESNE kulate dekadicke hodnoty:
+1790000 / 90250 / 1791000 / 256000 / 266000 - stejny IDA false-positive
+jako 0x64000 ve vlne 06 (konstanta v rozsahu adres -> "offset symbol+delta").
+Krizove dukazy: 90250 = 361*250 presne sedi na smycku v `sub_10E2F`
+(cte 250 zaznamu po 361 B do tehoz bufferu `dword_192B18`, konec porovnava
+s tymz "ukazatelem") i na `memset(dword_192B18, 0, ...)` tamtez;
+`sub_110F89` vraci volnou pamet v KiB (`>>10`), takze
+`1000*sub_110F89() <= 1791000` je porovnani bajtu s bajty (prah = hlavni
+buffer 1790000 + rezerva); `sub_1279AF` hlasi "Not enough space" pod
+226488 B.
+
+### Overeni 2 - ZA BEHU originalu v upravenem DOSBox-X (testovaci body)
+
+Do `src/engine/engine.cpp` v dosbox-x-remc2 pridano rozsireni **DUMPREGS**
+(dokumentace v `genCompare/DOSBOX_CTL_PROTOCOL.md`, konfigurace behu
+`genCompare/dosbox_ctl_alloc10CB5.cfg`):
+- `DUMPREGS cond=eip:0xADDR` - dump vsech registru + `ret=[ESP]`
+  (navratova adresa -> identifikace volajiciho) pri zasahu EIP,
+- `DUMPREGS cond=eax:0xVAL` - hranovy trigger "EAX prave nabyl hodnotu" -
+  NEZAVISLY na adresach (chyti uz `mov eax, imm` u volajiciho).
+
+Prvni kolo (eip: watche na IDA adresach) nechytlo nic -> objeven a zmeren
+**konstantni posun runtime EIP = IDA adresa + 0x224000** (kalibrace pres
+znamou konstantu 0x64000 z GameMain + cela sekvence nize; sedi i s
+`TURN_ADVANCE_EIP=0x232d2f` v puvodnim engine.cpp). Pozor: `engine_call`
+(cond `call:`) vidi jen FAR volani, near volani ve flat segmentu ne -
+proto na vstupy funkci pouzivat `DUMPREGS cond=eip:`.
+
+Druhe kolo (hranove eax: watche) - hra Orion2.exe (C:\prenos\mastori2)
+pri startu skutecne provedla presne sekvenci z dekompilatu, vsechna
+volaci mista v tesnem sledu a spravnem poradi uvnitr sub_10CB5:
+
+| runtime EIP | -0x224000 | EAX (velikost) | dekompilat |
+|---|---|---|---|
+| 0x2340AF | 0x100AF (GameMain) | 0x64000 | kotva z vlny 06 |
+| 0x234CBB | 0x10CBB | 0x1B5030 = 1790000 | (int)&unk_1B5030 |
+| 0x234CCA | 0x10CCA | 30000 | konstanta |
+| 0x234CE8 | 0x10CE8 | 6120 | konstanta |
+| 0x234D01 | 0x10D01 | 30024 | konstanta |
+| 0x234D1A | 0x10D1A | 0x1608A = 90250 | (int)&loc_16085+5 |
+| 0x234D6F | 0x10D6F | 0x3E800 = 256000 | (int)&loc_3E7FB+5 |
+
+U alokace 256000 mel EDX (=v2) hodnotu 0x188AB70 (~25.7 MB pri
+memsize=32) > 1791000 -> prosla presne ta vetev, kterou ukazuje dekompilat.
+(Pozdejsi zasahy 0x174508/0x1B5418 na EIP 0x36DB86 = AIL timer aritmetika
+1525*1000 / 1791*1000 v runtime knihovne - s alokacemi nesouvisi.)
+
+### Oprava v reorion2
+
+- `orion_part_01.c` (sub_10CB5): vsech 5 vyrazu nahrazeno overenymi
+  konstantami (1790000 / 90250 / 1791000 / 256000 / 266000) + komentar
+  s metodikou; stejne tak konec smycky a memset v `sub_10E2F`.
+- Falesne symboly `unk_1B5030`, `unk_1B5418`, `loc_16085`, `loc_3E7FB`,
+  `loc_40F0D` ODSTRANENY z orion_data.c i orion_common.h (nulove zbyvajici
+  pouziti - aby je uz nikdo omylem nepouzil).
+- Overeno plnym MSBuild buildem (Debug x64, reorion2.exe slinkovan).
+
+### Infrastruktura pro dalsi srovnavani (pripraveno)
+
+- DOSBox-X (Release x64) preložen s DUMPREGS, beh je plne automaticky:
+  config ma `STOP cond=cycle_ge:120000000` (sub_10CB5 alokace probehnou
+  ~83M cyklu po startu), takze se DOSBox sam ukonci a NEBEZI donekonecna.
+- Vzorovy config: `genCompare/dosbox_ctl_alloc10CB5.cfg`; postup a zjisteny
+  adresni posun zdokumentovan v `genCompare/DOSBOX_CTL_PROTOCOL.md`.
+- Šablona `genCompare/engine.cpp` synchronizovana se `src/engine/engine.cpp`.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 1. **fseek/ftell dluh (25 mist)** - viz vyse, nejvyssi priorita, protoze

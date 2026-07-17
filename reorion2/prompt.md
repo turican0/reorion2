@@ -6,3 +6,4 @@ Potrebujeme ty funkce postupne prevest do citelneho kodu.
 -take je treba vyresit inicializacaci pameti, ta bude v port_memory narozdil od dosu nebude treba hledat volny usek pameti ani resit offse,segment, bud to bude pomoci malloc/dispoze nebo new/free, pripadne nejaky modernejsi zpusob, ktery bude kompaktibilni ale odolny vuci memory leakum
 -kdyz bude jasne pod jakou skupinu dany kod patri vyclen pro nej specielni soubor, aby se postupne tvořila rozumna struktura kodu
 -z funkci odebirej __usercall __fastcall a podobne informace, ktere zjevne uz nejsou potreba
+-vzdy porovnavej kod s puvodnim diassemblovanym, a tam, kde to neni kvuli kompaktibilite a kvuli cisteni kodu, se rid tim puvodnim kodem, tak porrovnavej c++ dissasemblovany kod s asm kodem, tam kde to neni jasne

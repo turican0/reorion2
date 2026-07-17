@@ -129,6 +129,43 @@ int unknown_libname_2(struct DosDta* dta); /* FINDNEXT */
 }
 #endif
 
+/* ---- DOS diskfree + interrupt vektory (vlna 09) ----
+   dos_getdiskfree/dos_getvect/dos_setvect jsou Watcom runtime funkce
+   (_dos_getdiskfree = INT 21h AH=36h, _dos_getvect/AH=35h,
+   _dos_setvect/AH=25h). Skutecna implementace je v src/port/port_dos.cpp
+   (emulovana tabulka vektoru + realne volne misto na disku pres
+   std::filesystem) - struktury a deklarace jsou zrcadlene z port_dos.h,
+   viz komentare tam (layout DosDiskFree OVEREN z GetFreeDiskSpace_111763,
+   navratova konvence 0=uspech je klasicky DOS "errno" styl - stejne
+   ponauceni jako FINDFIRST ve vlne 08). Sdileny guard s port_dos.h -
+   reorion2.cpp includuje obe hlavicky najednou. */
+#ifndef REORION2_DOS_STRUCTS_DEFINED
+#define REORION2_DOS_STRUCTS_DEFINED
+#pragma pack(push, 1)
+struct DosDiskFree {
+    uint16_t total_clusters;      /* +0 - DX */
+    uint16_t avail_clusters;      /* +2 - BX */
+    uint16_t sectors_per_cluster; /* +4 - AX */
+    uint16_t bytes_per_sector;    /* +6 - CX */
+};
+struct DosFarPointer {
+    uint32_t offset;  /* +0 */
+    uint16_t segment; /* +4 - selektor/segment puvodniho 48bit far ptr */
+};
+#pragma pack(pop)
+#endif /* REORION2_DOS_STRUCTS_DEFINED */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+int dos_getdiskfree(unsigned int drive, struct DosDiskFree* out); /* 0 = uspech */
+unsigned int dos_getvect(unsigned int vectorNumber); /* vraci offset handleru */
+int dos_setvect(unsigned int vectorNumber, unsigned int vectorNumberDup,
+                unsigned int handlerOffset, unsigned int handlerSegment);
+#ifdef __cplusplus
+}
+#endif
+
 /* DECOMP_TODO - DLUH (vlna 07, castecne vyreseno): z 20 fseek + 1 mylne
    pojmenovaneho ftell (celkem 21 mist) je ted 19 opraveno na spravny
    3parametrovy tvar (handle, offset, origin) na zaklade rozpoznaneho LBX

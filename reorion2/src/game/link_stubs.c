@@ -125,9 +125,11 @@ int byte_1BD35D;
 int byte_1BD35E;
 int byte_1BE355;
 int byte_1BE356;
-int dos_getdiskfree(void) { return 0; }
-int dos_getvect(void) { return 0; }
-int dos_setvect(void) { return 0; }
+/* dos_getdiskfree/dos_getvect/dos_setvect (Watcom _dos_* runtime, INT 21h
+   AH=36h/35h/25h) UZ NEJSOU stubovane - skutecna implementace (realne volne
+   misto na disku pres std::filesystem + emulovana tabulka interrupt vektoru)
+   je v src/port/port_dos.cpp, deklarace v port_dos.h a zrcadlene v
+   hexrays_compat.h. Viz PROGRESS.md vlna 09. */
 int dword_184532;
 int dword_184536;
 int dword_18F4B0;

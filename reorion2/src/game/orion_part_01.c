@@ -693,15 +693,27 @@ _BYTE *__fastcall sub_10CB5(int a1, int a2)
   _DWORD *v4; // eax
   _BYTE *result; // eax
 
-  dword_192EF4 = (int)PoolAlloc_110B89((int)&unk_1B5030, a2);
+  // DECOMP_TODO (vyreseno ve vlne 10): puvodni vyrazy "(int)&unk_1B5030",
+  // "(int)&loc_16085 + 5", "(int)&loc_3E7FB + 5" a "(int)&loc_40F0D + 3"
+  // jsou stejny IDA false-positive jako 0x64000 ve vlne 06: 32bit KONSTANTY
+  // velikosti alokaci, ktere nahodou padly do rozsahu adres programu, takze
+  // je IDA prevedla na "offset symbol + delta". Hodnoty prevedene zpet jsou
+  // presna kulata cisla (1790000 / 90250 / 256000 / 266000) a 90250 =
+  // 361*250 presne odpovida smycce cteni 250 zaznamu po 361 bajtech v
+  // sub_10E2F nize. OVERENO ZA BEHU originalu v upravenem DOSBox-X
+  // (DUMPREGS testovaci body, viz PROGRESS.md vlna 10): hra pri startu
+  // skutecne vola PoolAlloc_110B89 postupne s EAX = 1790000, 30000, 1000,
+  // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
+  // (runtime EIP = IDA adresa + 0x224000).
+  dword_192EF4 = (int)PoolAlloc_110B89(1790000, a2);
   dword_193178 = (int)PoolAlloc_110B89(30000, a2);
   dword_19A00C = (int)PoolAlloc_110B89(1000, a2);
   dword_1930D4 = (int)PoolAlloc_110B89(6120, 6120);
   sub_127776((_BYTE *)dword_1930D4, 0x17E8u);
   dword_197F98 = (int)PoolAlloc_110B89(30024, 30024);
   sub_127776((_BYTE *)dword_197F98, 0x7548u);
-  dword_192B18 = (int)PoolAlloc_110B89((int)&loc_16085 + 5, (int)&loc_16085 + 5);
-  v2 = sub_127776((_BYTE *)dword_192B18, (unsigned int)&loc_16085 + 5);
+  dword_192B18 = (int)PoolAlloc_110B89(90250, 90250);
+  v2 = sub_127776((_BYTE *)dword_192B18, 90250u);
   if ( sub_127880() )
   {
     dword_192EF0 = 0;
@@ -711,16 +723,20 @@ LABEL_6:
     dword_193174 = (int)v3;
     goto LABEL_7;
   }
+  // v2 = volna pamet v bajtech (sub_110F89 vraci KiB, hra nasobi 1000);
+  // prah 1791000 = velikost hlavniho zvukoveho bufferu 1790000 + rezerva.
+  // Za behu originalu (32MB stroj) tudy proslo v2 = 0x188AB70 (~25.7 MB)
+  // -> vetev s PoolAlloc(256000) nize, presne dle tohoto kodu.
   v2 = 1000 * sub_110F89();
-  if ( v2 <= (int)&unk_1B5418 )
+  if ( v2 <= 1791000 )
   {
     dword_192EF0 = 0;
     dword_193170 = 1000 * (sub_110F89() - 50);
     v3 = sub_1279AF(dword_193170, v2);
     goto LABEL_6;
   }
-  v4 = PoolAlloc_110B89((int)&loc_3E7FB + 5, v2);
-  v2 -= (int)&loc_40F0D + 3;
+  v4 = PoolAlloc_110B89(256000, v2);
+  v2 -= 266000;
   dword_192EF0 = (int)v4;
   dword_193174 = (int)sub_1279AF(v2, v2);
   dword_193170 = v2;
@@ -890,7 +906,9 @@ char __fastcall sub_10E2F(int a1, int a2, int a3, int a4)
     v14 = (int16_t *)((char *)v14 + 361);
     v16 = fread(v15, 361, 1, v10);
   }
-  while ( v14 != (int16_t *)((char *)&loc_16085 + 5) );
+  // 90250 = 361*250: konec bufferu dword_192B18 (250 zaznamu po 361 B),
+  // v14 je bezici bytovy offset - viz vlna 10 (drive "(char*)&loc_16085+5").
+  while ( v14 != (int16_t *)90250 );
   sub_FE8BE(v16, 361, 1, v14);
   fread(&word_1999A2, 2, 1, v10);
   for ( i = 0; i != 6120; i += 17 )
@@ -1824,7 +1842,7 @@ int sub_1241A()
   int result; // eax
   int v1; // edx
 
-  memset(dword_192B18, 0, (char *)&loc_16085 + 5);
+  memset(dword_192B18, 0, 90250); // cely buffer 250x361 B, viz vlna 10
   word_199996 = 0;
   do
   {

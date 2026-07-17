@@ -11,7 +11,8 @@ char byte_14A8A[] = { '\0' }; // weak
 int16_t word_14A9A = 0; // weak
 char byte_14A9C[] = { '\0' }; // weak
 _UNKNOWN loc_14C05; // weak
-_UNKNOWN loc_16085; // weak
+// loc_16085 ODSTRANENO (vlna 10): nebyl to symbol, ale IDA false-positive
+// z konstanty 90250 (0x1608A = "&loc_16085 + 5") - viz orion_part_01.c.
 _UNKNOWN loc_186A0; // weak
 _UNKNOWN loc_1D4BC; // weak
 int16_t word_1DE96 = 1013; // weak
@@ -42,8 +43,8 @@ int16_t word_3BA45[] = { -12 }; // weak
 int16_t word_3BA47[] = { 12 }; // weak
 int16_t word_3BA49[] = { -12 }; // weak
 int16_t word_3BA4B[] = { -12 }; // weak
-_UNKNOWN loc_3E7FB; // weak
-_UNKNOWN loc_40F0D; // weak
+// loc_3E7FB/loc_40F0D ODSTRANENO (vlna 10): IDA false-positive z konstant
+// 256000/266000 ("&loc_3E7FB + 5" / "&loc_40F0D + 3") - viz orion_part_01.c.
 _UNKNOWN loc_61A80; // weak
 //_UNKNOWN loc_63FFB; // weak
 int dword_649E0[2] = { 167773440, 335548160 }; // weak
@@ -17683,8 +17684,8 @@ int16_t word_1B43C8[8]; // weak
 char byte_1B43D8[32]; // weak
 char byte_1B43F8[1504]; // weak
 int dword_1B49D8[406]; // weak
-_UNKNOWN unk_1B5030; // weak
-_UNKNOWN unk_1B5418; // weak
+// unk_1B5030/unk_1B5418 ODSTRANENO (vlna 10): IDA false-positive z konstant
+// 1790000/1791000 (velikost zvukoveho bufferu + prah) - viz orion_part_01.c.
 char byte_1B61D8[]; // weak
 int dword_1B61E0; // weak
 int dword_1B61E4; // weak
@@ -17814,7 +17815,11 @@ int dword_1BC2A8; // weak
 int dword_1BC2AC[10]; // weak
 int dword_1BC2D4; // weak
 int dword_1BC2D8; // weak
-int (__stdcall *byte_1BC2DC)(_DWORD, _DWORD, _DWORD); // weak
+// Puvodni INT 9 (klavesnice) vektor ulozeny pred instalaci vlastniho
+// handleru - 6 bajtu na adrese 1BC2DC (dword offset + word segment),
+// IDA je mylne typovala jako ukazatel na funkci. Viz InstallKeyboardIsr_12C420/RestoreKeyboardIsr_12C493
+// v orion_part_20.c a struct DosFarPointer v hexrays_compat.h/port_dos.h.
+struct DosFarPointer savedKeyboardVector_1BC2DC; // weak
 char byte_1BC2E2; // weak
 char byte_1BC2E3; // weak
 char byte_1BC2E4; // weak

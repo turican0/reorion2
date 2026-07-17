@@ -3211,18 +3211,22 @@ int *__fastcall sub_111660(int a1)
 
 
 //----- (00111763) --------------------------------------------------------
-int sub_111763()
+// Vrati volne misto na aktualnim disku v bajtech (0 = chyba nebo nic) -
+// hra s tim testuje, jestli se jeste vejde ulozena pozice (orion_part_20.c,
+// srovnani s dword_1BF35C). Puvodni dekompilat mel misto struktury 4 volne
+// 16bitove lokaly (v1..v4) lezici nahodou spravne za sebou na zasobniku -
+// vytknuto do DosDiskFree (layout viz port_dos.h), soucin poli odpovida
+// puvodnimu "v4 * v3 * v2" (bytes_per_sector * sectors_per_cluster *
+// avail_clusters). Diky 16bitovym stropum v dos_getdiskfree se soucin
+// vzdy vejde do int bez preteceni.
+int GetFreeDiskSpace_111763()
 {
-  _BYTE v1[2]; // [esp+0h] [ebp-10h] BYREF
-  uint16_t v2; // [esp+2h] [ebp-Eh]
-  uint16_t v3; // [esp+4h] [ebp-Ch]
-  uint16_t v4; // [esp+6h] [ebp-Ah]
+  struct DosDiskFree v1; // [esp+0h] [ebp-10h] BYREF
 
-  if ( dos_getdiskfree(0, v1) )
+  if ( dos_getdiskfree(0, &v1) )
     return 0;
-  return v4 * v3 * v2;
+  return v1.bytes_per_sector * v1.sectors_per_cluster * v1.avail_clusters;
 }
-// 13F3CC: using guessed type int __fastcall dos_getdiskfree(_DWORD, _DWORD);
 
 
 //----- (001117BF) --------------------------------------------------------
@@ -3622,7 +3626,7 @@ void sub_111F3E()
 //----- (0011215B) --------------------------------------------------------
 int sub_11215B()
 {
-  int result; // eax
+  int result=0; // eax
 
   if ( dword_18439C )
   {
@@ -4904,7 +4908,7 @@ void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2)
   sub_113E08(a1, (int)a2);
   sub_1248AB(v3);
   LOBYTE(v2) = sub_13372A();
-  sub_12C420(v2, (int16_t)a2);
+  InstallKeyboardIsr_12C420(v2, (int16_t)a2);
   sub_117262();
   sub_111F3E();
   if ( *a2 )
@@ -4928,7 +4932,7 @@ int sub_113DBD()
   {
     sub_123DD9();
     sub_124ACE();
-    sub_12C493();
+    RestoreKeyboardIsr_12C493();
     sub_11215B();
     result = sub_139062();
   }

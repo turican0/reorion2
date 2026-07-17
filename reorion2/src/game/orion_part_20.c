@@ -551,45 +551,53 @@ _BOOL1 sub_12C3D3()
 
 
 //----- (0012C420) --------------------------------------------------------
-void __fastcall sub_12C420(int a1, int a2)
+// Instalace vlastniho klavesnicoveho INT 9 handleru (KeyboardIsr_12C4D8): mezi
+// CLI/STI (sub_144A46/48 = _disable/_enable) si ulozi puvodni vektor do
+// savedKeyboardVector_1BC2DC a nastavi svuj. Puvodni dekompilat pristupoval
+// k ulozenemu vektoru pres rucni bytove offsety do promenne mylne typovane
+// jako ukazatel na funkci - vytknuto do struktury DosFarPointer (offset +
+// segment, viz port_dos.h), jinak by "*(_DWORD *)byte_1BC2DC" pri obnove
+// v RestoreKeyboardIsr_12C493 DEREFERENCOVALO hodnotu misto cteni ulozenych bajtu.
+// Artefakt dekompilace: segmentova cast puvodniho vektoru prisla z DX
+// (48bit navratova hodnota _dos_getvect v DX:EAX), ktery dekompiler
+// ztotoznil s parametrem a2 - zapis "segment = a2" je proto ponechan
+// 1:1 dle puvodniho kodu.
+// 1050/1052 (0x41A/0x41C) jsou adresy hlavy/ocasu klavesniceho bufferu
+// v BIOS data area - viz DECOMP_TODO u sub_12C3D3.
+void __fastcall InstallKeyboardIsr_12C420(int a1, int a2)
 {
-  int (__stdcall *v2)(_DWORD, _DWORD, _DWORD); // eax
-
   sub_144A46();
-  v2 = (int (__stdcall *)(_DWORD, _DWORD, _DWORD))dos_getvect(9);
-  *((_WORD *)&byte_1BC2DC + 2) = a2;
-  byte_1BC2DC = v2;
-  dos_setvect(9, 9, sub_12C4D8, __CS__);
+  savedKeyboardVector_1BC2DC.offset = dos_getvect(9);
+  savedKeyboardVector_1BC2DC.segment = (uint16_t)a2;
+  dos_setvect(9, 9, (unsigned int)(uintptr_t)KeyboardIsr_12C4D8, __CS__);
   dword_1BC2D8 = 1050;
   dword_1BC2D4 = 1052;
   sub_144A48();
 }
-// 1497D9: using guessed type int __fastcall dos_getvect(_DWORD);
-// 14980B: using guessed type int __fastcall dos_setvect(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1BC2D4: using guessed type int dword_1BC2D4;
 // 1BC2D8: using guessed type int dword_1BC2D8;
-// 1BC2DC: using guessed type int (__stdcall *byte_1BC2DC)(_DWORD, _DWORD, _DWORD);
 
 
 //----- (0012C493) --------------------------------------------------------
-void sub_12C493()
+// Obnova puvodniho INT 9 vektoru ulozeneho v InstallKeyboardIsr_12C420 - vola se pri
+// ukonceni hry (atexit retez sub_113DBD v orion_part_18.c).
+void RestoreKeyboardIsr_12C493()
 {
   sub_144A46();
-  dos_setvect(9, 9, *(_DWORD *)byte_1BC2DC, *(_WORD *)&((unsigned char*)byte_1BC2DC)[4]);
+  dos_setvect(9, 9, savedKeyboardVector_1BC2DC.offset, savedKeyboardVector_1BC2DC.segment);
   sub_144A48();
 }
-// 14980B: using guessed type int __fastcall dos_setvect(_DWORD, _DWORD, _DWORD, _DWORD);
 
 
 //----- (0012C4D8) --------------------------------------------------------
-void __noreturn sub_12C4D8()
+void __noreturn KeyboardIsr_12C4D8()
 {
   ((void (__noreturn *)(void))_GETDS)();
 }
 // 1BC2DC: invalid function type '?' has been ignored
 // 1BC2D4: using guessed type int dword_1BC2D4;
 // 1BC2D8: using guessed type int dword_1BC2D8;
-// 1BC2DC: using guessed type int (__stdcall *byte_1BC2DC)(_DWORD, _DWORD, _DWORD);
+// 1BC2DC: savedKeyboardVector_1BC2DC (puvodne guessed ukazatel na funkci)
 // 1BC2E2: using guessed type char byte_1BC2E2;
 // 1BC2E4: using guessed type char byte_1BC2E4;
 
@@ -6382,7 +6390,7 @@ int __fastcall sub_138F3B(int a1, int a2, int (__fastcall *a3)(_DWORD, _DWORD, _
 //----- (00139062) --------------------------------------------------------
 int sub_139062()
 {
-  int result; // eax
+  int result=0; // eax
 
   if ( dword_1BD150 )
   {
@@ -7290,7 +7298,7 @@ int __fastcall sub_13B9BD(int a1, int a2)
   v2 = a2 + 24;
   if ( v2 > *(_DWORD *)(a1 - 12 + 4) )
     sub_126487(aDriveSwapReqdT, v2);
-  if ( sub_111763() < dword_1BF35C )
+  if ( GetFreeDiskSpace_111763() < dword_1BF35C )
     sub_126487(aInsufficientDi, v2);
   v6 = fopen(aTempTmp, aWb_6);
   if ( !v6 )

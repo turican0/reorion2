@@ -6971,8 +6971,8 @@ extern int __fastcall FindMoxSetPath_1114D7();
 extern int __fastcall sub_111610();
 // plna signatura: int *__fastcall sub_111660(int a1);
 extern int *__fastcall sub_111660();
-// plna signatura: int sub_111763();
-extern int sub_111763();
+// plna signatura: int GetFreeDiskSpace_111763();
+extern int GetFreeDiskSpace_111763();
 // plna signatura: int __fastcall sub_1117BF(int a1);
 extern int __fastcall sub_1117BF();
 // plna signatura: bool __fastcall sub_11181C(int a1);
@@ -7669,12 +7669,12 @@ extern int sub_12C35B();
 extern char sub_12C392();
 // plna signatura: _BOOL1 sub_12C3D3();
 extern _BOOL1 sub_12C3D3();
-// plna signatura: void __fastcall sub_12C420(int a1, int a2);
-extern void __fastcall sub_12C420();
-// plna signatura: void sub_12C493();
-extern void sub_12C493();
-// plna signatura: void __noreturn sub_12C4D8();
-extern void __noreturn sub_12C4D8();
+// plna signatura: void __fastcall InstallKeyboardIsr_12C420(int a1, int a2);
+extern void __fastcall InstallKeyboardIsr_12C420();
+// plna signatura: void RestoreKeyboardIsr_12C493();
+extern void RestoreKeyboardIsr_12C493();
+// plna signatura: void __noreturn KeyboardIsr_12C4D8();
+extern void __noreturn KeyboardIsr_12C4D8();
 // plna signatura: int sub_12C574();
 extern int sub_12C574();
 // plna signatura: int sub_12C5AE();
@@ -13735,7 +13735,7 @@ int __fastcall sub_111499(int a1);
 int __fastcall FindMoxSetPath_1114D7(_BYTE *a1, _BYTE *a2);
 int __fastcall sub_111610(int a1);
 int *__fastcall sub_111660(int a1);
-int sub_111763();
+int GetFreeDiskSpace_111763();
 int __fastcall sub_1117BF(int a1);
 bool __fastcall sub_11181C(int a1);
 int __fastcall sub_11190B(int a1);
@@ -14098,9 +14098,9 @@ int sub_12C2E1();
 int sub_12C35B();
 char sub_12C392();
 _BOOL1 sub_12C3D3();
-void __fastcall sub_12C420(int a1, int16_t a2);
-void sub_12C493();
-void __noreturn sub_12C4D8();
+void __fastcall InstallKeyboardIsr_12C420(int a1, int16_t a2);
+void RestoreKeyboardIsr_12C493();
+void __noreturn KeyboardIsr_12C4D8();
 int sub_12C574();
 int sub_12C5AE();
 int __fastcall sub_12C607(int a1, int a2, int a3, int a4);
@@ -14320,7 +14320,7 @@ int __fastcall j___delay(_DWORD); // weak
 // int __fastcall memavl(_DWORD); weak
 // int __fastcall memcpy(_DWORD, _DWORD, _DWORD); weak
 // int __fastcall strcpy(_DWORD, _DWORD); weak
-// int __fastcall dos_getdiskfree(_DWORD, _DWORD); weak
+// dos_getdiskfree: realna deklarace v hexrays_compat.h, implementace v port_dos.cpp (vlna 09)
 int __fastcall j_unlink(_DWORD); // weak
 bool sub_13F486();
 int sub_13F52E();
@@ -14535,8 +14535,7 @@ int __fastcall sub_1487E0(int a1, int a2, _BYTE *a3);
 int __fastcall sub_1489F4(int a1, int a2, int *a3);
 int __fastcall sub_148C33(int a1, int a2, int *a3);
 int __fastcall sub_148F57(int16_t a1, int16_t a2, int a3);
-// int __fastcall dos_getvect(_DWORD); weak
-// int __fastcall dos_setvect(_DWORD, _DWORD, _DWORD, _DWORD); weak
+// dos_getvect/dos_setvect: realne deklarace v hexrays_compat.h, implementace v port_dos.cpp (vlna 09)
 char __stdcall sub_149890(unsigned int a1, int a2);
 int __stdcall sub_149950(int, int, int); // weak
 int sub_1499C0(); // weak
@@ -15478,7 +15477,7 @@ extern char byte_14A8A[];
 extern int16_t word_14A9A;
 extern char byte_14A9C[];
 extern _UNKNOWN loc_14C05;
-extern _UNKNOWN loc_16085;
+// loc_16085 odstraneno - IDA false-positive z konstanty 90250 (vlna 10)
 extern _UNKNOWN loc_186A0;
 extern _UNKNOWN loc_1D4BC;
 extern int16_t word_1DE96;
@@ -15509,8 +15508,7 @@ extern int16_t word_3BA45[];
 extern int16_t word_3BA47[];
 extern int16_t word_3BA49[];
 extern int16_t word_3BA4B[];
-extern _UNKNOWN loc_3E7FB;
-extern _UNKNOWN loc_40F0D;
+// loc_3E7FB/loc_40F0D odstraneno - IDA false-positive z konstant 256000/266000 (vlna 10)
 extern _UNKNOWN loc_61A80;
 extern _UNKNOWN loc_63FFB;
 extern int dword_649E0[2];
@@ -20432,8 +20430,7 @@ extern int16_t word_1B43C8[8];
 extern char byte_1B43D8[32];
 extern char byte_1B43F8[1504];
 extern int dword_1B49D8[406];
-extern _UNKNOWN unk_1B5030;
-extern _UNKNOWN unk_1B5418;
+// unk_1B5030/unk_1B5418 odstraneno - IDA false-positive z konstant 1790000/1791000 (vlna 10)
 extern char byte_1B61D8[];
 extern int dword_1B61E0;
 extern int dword_1B61E4;
@@ -20563,7 +20560,7 @@ extern int dword_1BC2A8;
 extern int dword_1BC2AC[10];
 extern int dword_1BC2D4;
 extern int dword_1BC2D8;
-extern int (__stdcall *byte_1BC2DC)(_DWORD, _DWORD, _DWORD);
+extern struct DosFarPointer savedKeyboardVector_1BC2DC; // puvodni INT 9 vektor (offset+segment), viz orion_part_20.c
 extern char byte_1BC2E2;
 extern char byte_1BC2E3;
 extern char byte_1BC2E4;
