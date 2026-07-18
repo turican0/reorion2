@@ -68,6 +68,13 @@ void Shutdown()
             std::fprintf(stderr, "  %p  %zu bajtu  tag=%s\n", ptr, info.size,
                           info.debugTag ? info.debugTag : "(bez popisku)");
         }
+        // OVERENO proti originalu (vlna 14): pri ukonceni hry je tento vypis
+        // OCEKAVANY - puvodni DOS kod trvale zive bloky (resource buffer
+        // 0x64000, VGA stranky, fonty...) NIKDY neuvolnoval a spolehal na
+        // zanik procesu (v celem dumpu neexistuje jedine nfree na tyto
+        // globaly, exit retez sub_113DBD jen resetuje mys/video/AIL).
+        // Vyznam ma tento report pro bloky, ktere by rostly BEHEM hrani.
+        std::fprintf(stderr, "  (pozn.: trvale bloky hry se pri exitu neuvolnuji ani v originale - viz PROGRESS.md vlna 14)\n");
     }
     g_trackingEnabled = false;
 }

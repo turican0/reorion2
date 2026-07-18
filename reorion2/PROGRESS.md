@@ -1024,6 +1024,42 @@ misto vstupu do menu ukonci proto, ze menu zije v uriznutem tele
 GameMain - rekonstrukce dle `ref/GameMain_10057.orig.asm.txt` je dalsi
 velky krok.
 
+## Hotovo - vlna 14: audit "neuvolnenych bloku" pri exitu - shoda s originalem
+
+Otazka: 8 zivych bloku (1 096 113 B) v leak-reportu Port::Memory pri
+ukonceni - je v portu neco jinak nez v originale, ze se neuvolni?
+
+### Identifikace bloku (velikost = pozadavek zaokrouhleny na 4 + 12 B
+### hlavicka PoolAlloc/sub_110C62)
+
+| bajtu | alokace | co to je |
+|---|---|---|
+| 409612 | PoolAlloc(0x64000) v GameMain | buffer resource modulu (dword_19916C) |
+| 307260 x2 | PoolAlloc(307246) | VGA stranky dword_1BB90C + dword_1BB8FC (640x480+46) |
+| 1932 x2 | PoolAlloc(4*480) | radkove tabulky dword_1BB908 + dword_1BB8C0 |
+| 8204 | sub_110C62(0x2000) v sub_113E08 | (puvodne DOS/real-mode) 8KiB buffer |
+| 47257 | sub_126ABD v sub_120526 | nacteny obsah fonts.lbx (dword_184514) |
+| 12656 | PoolAlloc(12644) v sub_120526 | metadata fontu (dword_1B3E78) |
+
+### Zaver: ZADNA divergence
+
+- V CELEM dekompilovanem dumpu neexistuje jedine `nfree` na tyto globaly
+  (grep pres vsech 41 nfree volani; dword_19916C/1BB90C/1BB8FC/1BB908/
+  1BB8C0/1B3E78/1B06F8 maji 0 zasahu).
+- `dword_184514` (fonty) se uvolnuje JEN pri opakovanem volani
+  sub_120526 (vymena fontu za behu), ne pri exitu.
+- Exit retez sub_113DBD (sub_123DD9 = reset mysi, sub_124ACE = INT 10h
+  mod 3, RestoreKeyboardIsr, sub_11215B = AIL shutdown, sub_139062) ani
+  epilog puvodniho GameMain (ref/GameMain_10057.orig.asm.txt) nic
+  z toho neuvolnuji.
+- Original spolehal na zanik DOS procesu - presne jak predvidal komentar
+  v port_memory.h uz od vlny 06. Windows pamet pri exitu vraci stejne.
+
+Leak-report tedy pri ukonceni hry ukazuje OCEKAVANY stav; do vypisu
+pridana vysvetlujici poznamka. Skutecnou hodnotu ma report pro bloky
+pribyvajici BEHEM hrani (az pobezi herni smycka) - tam by kazdy novy
+zaznam znamenal skutecny leak oproti originalu.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
