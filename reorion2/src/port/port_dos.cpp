@@ -1,5 +1,8 @@
 #include "port_dos.h"
+#include "port_mouse.h"
 #include "port_vga.h"
+
+#include <cstring>
 
 #include <cstdio>
 #include <cstdlib>
@@ -141,6 +144,63 @@ int dos_setvect(unsigned int vectorNumber, unsigned int vectorNumberDup,
     Port::Dos::SetInterruptVector(
         vectorNumber, DosFarPointer{handlerOffset, uint16_t(handlerSegment)});
     return 0;
+}
+
+// ---------------------------------------------------------------------
+// int386 - Watcom wrapper nad softwarovymi interrupty (vlna 13). Drive
+// no-op stub v link_stubs.c, ktery NEZAPISOVAL do vystupnich registru
+// (neinicializovana pamet -> nahodne chovani, napr. falesne "Mouse
+// driver required" v MouseInit sub_123491). Emulace:
+//   - INT 33h (mys) se preklada na Port::Mouse (SDL3),
+//   - ostatni interrupty (10h video, 21h DOS, 31h DPMI...) zatim vraci
+//     vstupni registry beze zmeny (deterministicke; konkretni sluzby se
+//     napoji az na ne herni kod skutecne narazi - DECOMP_TODO).
+// Layout Watcom "union REGS" (386): eax,ebx,ecx,edx,esi,edi,cflag -
+// 7x uint32 na ofsetech 0/4/8/12/16/20/24 - presne tak k nim
+// dekompilovany kod pristupuje (dword_1BB8E0 = eax, +4 = ebx, ...).
+struct WatcomRegs {
+    uint32_t eax, ebx, ecx, edx, esi, edi, cflag;
+};
+
+extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
+{
+    WatcomRegs regs{};
+    std::memcpy(&regs, inRegs, sizeof(regs));
+    regs.cflag = 0;
+
+    if (intNum == 0x33) {
+        const uint16_t fn = (uint16_t)regs.eax;
+        switch (fn) {
+        case 0x00: // reset/detekce driveru: AX=FFFF pokud nainstalovan, BX=pocet tlacitek
+            regs.eax = 0xFFFF;
+            regs.ebx = 2;
+            break;
+        case 0x03: { // precti pozici a tlacitka: BX=tlacitka, CX=x, DX=y
+            Port::Mouse::Poll();
+            const Port::Mouse::State& s = Port::Mouse::GetState();
+            regs.ebx = (s.leftButton ? 1u : 0u) | (s.rightButton ? 2u : 0u);
+            regs.ecx = (uint32_t)s.x;
+            regs.edx = (uint32_t)s.y;
+            break;
+        }
+        default:
+            // 01/02 (zobraz/schovej kurzor), 04 (nastav pozici), 07/08
+            // (rozsahy), 0Fh (mickey ratio)... - v SDL vrstve zatim neni
+            // co nastavovat, tiche prijeti je bezpecne (DECOMP_TODO: az
+            // hra bude kurzor skutecne ridit, napojit na Port::Mouse).
+            break;
+        }
+    }
+
+    // POZOR: zapisujeme jen 6 GP registru (24 B), NE cflag (ofset 24) -
+    // dekompilovane volajici funkce mivaji vystupni buffer jen _BYTE[24]
+    // (IDA rekonstrukce stacku) a zapis cflag by prepsal sousedni lokal
+    // (Debug RTC guard -> "zamrznuti" v assert dialogu). Volajici, ktere
+    // cflag ctou, maji vlastni (typicky nulou inicializovany) slot -
+    // DECOMP_TODO: az bude nejaka sluzba potrebovat vracet chybu pres
+    // cflag, vyresit cilene u ni.
+    std::memcpy(outRegs, &regs, 24);
+    return (int)regs.eax; // Watcom int386 vraci AX/EAX po preruseni
 }
 
 void PortDebug_Checkpoint(const char* name, int value)

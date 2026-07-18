@@ -7107,8 +7107,9 @@ extern int __fastcall sub_113CBD();
 extern void sub_113CFB();
 // plna signatura: int sub_113D23();
 extern int sub_113D23();
-// plna signatura: void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2);
-extern void __fastcall __noreturn RunGameAndExit_113D47();
+// plna signatura: void __fastcall RunGameAndExit_113D47(int a1, _BYTE *a2);
+// vlna 13: __noreturn ODEBRAN - funkce se normalne vraci (viz orion_part_18.c)
+extern void __fastcall RunGameAndExit_113D47();
 // plna signatura: int sub_113DBD();
 extern int sub_113DBD();
 // plna signatura: int __fastcall sub_113E08(int a1, int a2);
@@ -7813,8 +7814,9 @@ extern void __fastcall sub_132869();
 extern void sub_1329D4();
 // plna signatura: int sub_132A11();
 extern int sub_132A11();
-// plna signatura: void __noreturn sub_132AA4();
-extern void __noreturn sub_132AA4();
+// plna signatura: void CalibrateCpuTick_132AA4();
+// vlna 13: __noreturn ODEBRAN - selhana dekompilace, skutecne telo se vraci
+extern void CalibrateCpuTick_132AA4();
 // plna signatura: int64_t __fastcall sub_132AF8(int64_t a1, int a2);
 extern int64_t __fastcall sub_132AF8();
 // plna signatura: void sub_132B27();
@@ -13803,7 +13805,7 @@ int sub_113C9B();
 int __fastcall sub_113CBD(int result);
 void sub_113CFB();
 int sub_113D23();
-void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2);
+void __fastcall RunGameAndExit_113D47(int a1, _BYTE *a2); // vlna 13: __noreturn odebran
 int sub_113DBD();
 int __fastcall sub_113E08(int a1, int a2);
 int16_t sub_113E65();
@@ -14170,7 +14172,7 @@ int sub_132825();
 void __fastcall sub_132869(int a1, int a2, int a3, int a4);
 void sub_1329D4();
 int sub_132A11();
-void __noreturn sub_132AA4();
+void CalibrateCpuTick_132AA4(); // vlna 13: __noreturn odebran
 int64_t __fastcall sub_132AF8(int64_t a1, int a2);
 void sub_132B27();
 void sub_132B41();

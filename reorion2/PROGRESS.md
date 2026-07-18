@@ -962,6 +962,68 @@ hlavni vetev (`RunGame.after_mainloop`) a BEZI (ukoncena az 20s timeoutem
 testu, zadny pad). Dalsi krok: overit, co se skutecne deje v bezici
 smycce (sub_132AA4?) a napojit VGA vystup, aby bylo neco videt.
 
+## Hotovo - vlna 13: sub_132AA4 nebyla nekonecna smycka - selhana dekompilace a kaskada uriznutych funkci
+
+### Overeni v puvodnim ASM (nova technika: DUMPMEM)
+
+Do DOSBox-X engine.cpp pridana akce **DUMPMEM** (`DUMPMEM cond=eip:0xA
+addr=0xB size=N label=x`) - pri zasahu EIP vypise hex obsah pameti do
+trace. Tim jde vytahnout PUVODNI STROJOVY KOD primo z bezici hry a
+disassemblovat (capstone pres pip). Pri tom zmereno: **kod = IDA+0x224000,
+DATA = IDA+0x216000** (ruzne baze segmentu!).
+
+### Co sub_132AA4 skutecne je
+
+Dekompilat: `while(1);` + __noreturn + varovani "could not find valid
+save-restore pair" = SELHANA dekompilace. Skutecne telo (disassemblovano
+z originalu): kalibrace rychlosti CPU - pockej na hranu BIOS ticku
+(dword [0x46C]), spocitej busy-smycky behem jednoho ticku, vysledek v
+TETO verzi binarky ZAHOZEN (prepsan mov edx,1500; obe vetve zapisuji
+totez) a jediny efekt je `dword_1BC798 = 0`; pak `popal; ret` - funkce
+se NORMALNE VRACI. Port: `CalibrateCpuTick_132AA4()` = jen ten zapis
+(cekani na BIOS tick by v portu viselo - presne to bylo nahlasene
+"zaseknuti"; MEMORY[0x46C] je stub).
+
+### Kaskada skod ze spatneho __noreturn
+
+1. IDA oznacila sub_132AA4 za noreturn -> **uriznut konec
+   RunGameAndExit_113D47**: chybelo volani `sub_123491` (inicializace
+   mysi, INT 33h "Mouse driver required") a normalni navrat. Doplneno
+   dle disassemblingu (ref niz), __noreturn odebran z obou funkci.
+2. RunGameAndExit noreturn -> **uriznut i konec GameMain_10057**: cely
+   zbytek (~810 instrukci, 0x1010A..0x10CB5) IDA zahodila! Obsahuje mj.
+   dosud zahadne volani `sub_10CB5` (vlna 10 - "nema volajiciho"),
+   inicializacni sekvenci (sub_10A72, sub_11919E, sub_1205E6,
+   sub_123E6C, sub_123387, sub_7A06C) a HLAVNI STAVOVY AUTOMAT hry.
+   Kompletni anotovany disassembling ulozen do
+   **`ref/GameMain_10057.orig.asm.txt`** - podklad pro rekonstrukci
+   (nejcistsi cesta: v IDA zrusit noreturn u 132AA4/113D47 a nechat
+   GameMain_10057 predekompilovat, pak preneset).
+
+### Dalsi opravy teto vlny
+
+- **int386 ma konecne emulaci** (port_dos.cpp `PortDos_Int386`, stub v
+  link_stubs presmerovan): INT 33h (mys) -> Port::Mouse (fn 0 = driver
+  nainstalovan, fn 3 = pozice+tlacitka pres SDL3), ostatni preruseni
+  deterministicky vraci vstupni registry. PONAUCENI: vystupni REGS se
+  zapisuje jen 24 B (6 GP registru, BEZ cflag na ofsetu 24) -
+  dekompilovane lokaly maji casto `_BYTE v6[24]` a zapis cflag prepisoval
+  Debug RTC guard za nimi ("zamrznuti" v assert dialogu).
+- **Vsync cekani** sub_132B27/sub_132B41 (busy-wait na VGA portu 0x3DA,
+  s hr_inbyte stubem nekonecne) -> `PortVga_WaitVsync()` =
+  Port::Vga::Present() + SDL_Delay(14) - snimek se vykresli a smycka se
+  taktuje na ~70 Hz jako puvodni VGA refresh. Telo overeno i v ASM.
+- MouseInit (sub_123491) diky int386 emulaci prochazi.
+
+### Stav po vlne
+
+Zadne zaseknuti: beh projde kompletni inicializaci vcetne mysi a CISTE
+se ukonci (leak-report Port::Memory na konci - 8 zivych bloku, herni
+zdroje se u exitu neuvolnuji, na DOSu to resil zanik procesu). Hra se
+misto vstupu do menu ukonci proto, ze menu zije v uriznutem tele
+GameMain - rekonstrukce dle `ref/GameMain_10057.orig.asm.txt` je dalsi
+velky krok.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

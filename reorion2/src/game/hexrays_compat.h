@@ -139,6 +139,8 @@ int unknown_libname_2(struct DosDta* dta); /* FINDNEXT */
 extern "C" {
 #endif
 void PortDebug_Checkpoint(const char* name, int value);
+/* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
+void PortVga_WaitVsync(void);
 #ifdef __cplusplus
 }
 #endif

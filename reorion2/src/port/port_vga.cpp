@@ -111,3 +111,21 @@ void Present()
 }
 
 } // namespace Port::Vga
+
+// ---------------------------------------------------------------------
+// C-linkage most pro dekompilovany herni kod (vlna 13).
+extern "C" {
+
+// Nahrada za VGA "cekani na vertical retrace" (busy-wait na portu 0x3DA,
+// bit 8 - sub_132B27/sub_132B41 v orion_part_20.c). V portu zadny VGA
+// port neni (hr_inbyte stub vracel 0 -> druha smycka cekala DONEKONECNA).
+// Misto toho se snimek VYKRESLI (Present - vsync je prirozeny okamzik,
+// kdy ma byt framebuffer na obrazovce) a kratce se pocka, cimz se herni
+// smycka taktuje zhruba na puvodnich ~70 Hz VGA a netoci 100 % CPU.
+void PortVga_WaitVsync(void)
+{
+    Port::Vga::Present();
+    SDL_Delay(14); // ~70 Hz VGA refresh
+}
+
+} // extern "C"

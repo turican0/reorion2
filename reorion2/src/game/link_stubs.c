@@ -213,7 +213,14 @@ int dword_1C9540;
    CRT knihovna (SDL3 zavislosti, port_memory.cpp pouzivajici <cstdio>). */
 int HEXRAYS_MEMORY_STUB;
 int HEXRAYS_STACK_STUB;
-int int386(void) { return 0; }
+/* int386 UZ NENI no-op stub - emulace je v src/port/port_dos.cpp
+   (INT 33h/mys -> Port::Mouse, ostatni preruseni deterministicky vraci
+   vstupni registry). Stub, ktery do vystupniho REGS bufferu nic nezapsal,
+   zpusoboval cteni neinicializovane pameti - viz PROGRESS.md vlna 13. */
+int PortDos_Int386(int intNum, const void* inRegs, void* outRegs);
+int int386(int inum, void* inregs, void* outregs) {
+    return PortDos_Int386(inum, inregs, outregs);
+}
 int int386x(void) { return 0; }
 int j___clock(void) { return 0; }
 int j___delay(void) { return 0; }

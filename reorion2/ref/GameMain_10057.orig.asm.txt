@@ -1,0 +1,859 @@
+; GameMain_10057 - KOMPLETNI puvodni disassembling (vlna 13)
+; Ziskano z bezici hry Orion2.exe v upravenem DOSBox-X (DUMPMEM,
+; runtime 0x234057..0x234CB6, runtime = IDA + 0x224000 pro kod,
+; IDA + 0x216000 pro data). Dekompilovany dump v orion_part_01.c OBSAHUJE
+; JEN ZACATEK po "call 0x113D47" (RunGameAndExit) - vsechno za nim IDA
+; zahodila jako nedosazitelne kvuli spatnemu __noreturn na sub_132AA4
+; (selhana dekompilace, viz PROGRESS.md vlna 13). Tento soubor je
+; referencni podklad pro rekonstrukci chybejiciho tela.
+; Adresy v levem sloupci jsou IDA adresy (runtime - 0x224000).
+;
+010057  53                   push ebx
+010058  51                   push ecx
+010059  56                   push esi
+01005A  57                   push edi
+01005B  c8ac0000             enter 0xac, 0
+01005F  50                   push eax
+010060  52                   push edx
+010061  81ed86000000         sub ebp, 0x86
+010067  c60519ff3a00ff       mov byte ptr [0x3aff19], 0xff
+01006E  c60536ff3a0001       mov byte ptr [0x3aff36], 1
+010075  66c705ecf93a000100   mov word ptr [0x3af9ec], 1
+01007E  66c705eaf93a001400   mov word ptr [0x3af9ea], 0x14
+010087  66c705eef93a001400   mov word ptr [0x3af9ee], 0x14
+010090  0fbf45d6             movsx eax, word ptr [ebp - 0x2a]
+010094  c60506003b00ff       mov byte ptr [0x3b0006], 0xff
+01009B  e846070000           call 0x2347e6 ; -> IDA 0x107E6
+0100A0  e819e80e00           call 0x3228be ; -> IDA 0xFE8BE
+0100A5  e88a0a1000           call 0x334b34 ; -> IDA 0x110B34
+0100AA  b800400600           mov eax, 0x64000
+0100AF  8d553e               lea edx, [ebp + 0x3e]
+0100B2  e8d20a1000           call 0x334b89 ; -> IDA 0x110B89
+0100B7  a36cf13a00           mov dword ptr [0x3af16c], eax
+0100BC  b899e03800           mov eax, 0x38e099
+0100C1  e811141000           call 0x3354d7 ; -> IDA 0x1114D7
+0100C6  85c0                 test eax, eax
+0100C8  7417                 je 0x2340e1 ; -> IDA 0x100E1
+0100CA  e86a1b0000           call 0x235c39 ; -> IDA 0x11C39
+0100CF  66813dbefc3a008200   cmp word ptr [0x3afcbe], 0x82
+0100D8  740c                 je 0x2340e6 ; -> IDA 0x100E6
+0100DA  e848210000           call 0x236227 ; -> IDA 0x12227
+0100DF  eb05                 jmp 0x2340e6 ; -> IDA 0x100E6
+0100E1  e8fb260000           call 0x2367e1 ; -> IDA 0x127E1
+0100E6  e8440b0000           call 0x234c2f ; -> IDA 0x10C2F
+0100EB  8d456e               lea eax, [ebp + 0x6e]
+0100EE  e840a90600           call 0x29ea33 ; -> IDA 0x7AA33
+0100F3  a16cf13a00           mov eax, dword ptr [0x3af16c]
+0100F8  8d556e               lea edx, [ebp + 0x6e]
+0100FB  e859181000           call 0x335959 ; -> IDA 0x111959
+010100  b804000000           mov eax, 4
+010105  e83d3c1000           call 0x337d47 ; -> IDA 0x113D47
+01010A  e863090000           call 0x234a72 ; -> IDA 0x10A72
+01010F  b8be283200           mov eax, 0x3228be
+010114  bbff000000           mov ebx, 0xff
+010119  e880901000           call 0x33d19e ; -> IDA 0x11919E
+01011E  31d2                 xor edx, edx
+010120  b805000000           mov eax, 5
+010125  e8bc041100           call 0x3445e6 ; -> IDA 0x1205E6
+01012A  ba01000000           mov edx, 1
+01012F  b8002f3900           mov eax, 0x392f00
+010134  e8333d1100           call 0x347e6c ; -> IDA 0x123E6C
+010139  b802000000           mov eax, 2
+01013E  e844321100           call 0x347387 ; -> IDA 0x123387
+010143  c6053aff3a0000       mov byte ptr [0x3aff3a], 0
+01014A  e81d9f0600           call 0x29e06c ; -> IDA 0x7A06C
+01014F  e8610b0000           call 0x234cb5 ; -> IDA 0x10CB5
+010154  c60505003b0001       mov byte ptr [0x3b0005], 1
+01015B  803d04003b0000       cmp byte ptr [0x3b0004], 0
+010162  752f                 jne 0x234193 ; -> IDA 0x10193
+010164  e86a4d0100           call 0x248ed3 ; -> IDA 0x24ED3
+010169  b8be283200           mov eax, 0x3228be
+01016E  bbff000000           mov ebx, 0xff
+010173  e826901000           call 0x33d19e ; -> IDA 0x11919E
+010178  31d2                 xor edx, edx
+01017A  b805000000           mov eax, 5
+01017F  e862041100           call 0x3445e6 ; -> IDA 0x1205E6
+010184  ba01000000           mov edx, 1
+010189  b8002f3900           mov eax, 0x392f00
+01018E  e8d93c1100           call 0x347e6c ; -> IDA 0x123E6C
+010193  e8b7460100           call 0x24884f ; -> IDA 0x2484F
+010198  e821e70e00           call 0x3228be ; -> IDA 0xFE8BE
+01019D  e8ba091000           call 0x334b5c ; -> IDA 0x110B5C
+0101A2  833d7c923a0000       cmp dword ptr [0x3a927c], 0
+0101A9  740c                 je 0x2341b7 ; -> IDA 0x101B7
+0101AB  a17c923a00           mov eax, dword ptr [0x3a927c]
+0101B0  e86b461100           call 0x348820 ; -> IDA 0x124820
+0101B5  eb05                 jmp 0x2341bc ; -> IDA 0x101BC
+0101B7  e8bc461100           call 0x348878 ; -> IDA 0x124878
+0101BC  c60505ff3a0000       mov byte ptr [0x3aff05], 0
+0101C3  bbdc000000           mov ebx, 0xdc
+0101C8  bad3000000           mov edx, 0xd3
+0101CD  b908000000           mov ecx, 8
+0101D2  8d7d7e               lea edi, [ebp + 0x7e]
+0101D5  e88b491100           call 0x348b65 ; -> IDA 0x124B65
+0101DA  b804000000           mov eax, 4
+0101DF  c60534ff3a0075       mov byte ptr [0x3aff34], 0x75
+0101E6  e8dae30700           call 0x2b25c5 ; -> IDA 0x8E5C5
+0101EB  8d557e               lea edx, [ebp + 0x7e]
+0101EE  89c6                 mov esi, eax
+0101F0  b804000000           mov eax, 4
+0101F5  57                   push edi
+0101F6  f2a4                 repne movsb byte ptr es:[edi], byte ptr [esi]
+0101F8  5f                   pop edi
+0101F9  e8b7091100           call 0x344bb5 ; -> IDA 0x120BB5
+0101FE  e83e4b1100           call 0x348d41 ; -> IDA 0x124D41
+010203  a0aefc3a00           mov al, byte ptr [0x3afcae]
+010208  3c04                 cmp al, 4
+01020A  770b                 ja 0x234217 ; -> IDA 0x10217
+01020C  0fb6c0               movzx eax, al
+01020F  2eff24852f402300     jmp dword ptr cs:[eax*4 + 0x23402f]
+010217  b90b000000           mov ecx, 0xb
+01021C  8d7dda               lea edi, [ebp - 0x26]
+01021F  bea1e03800           mov esi, 0x38e0a1
+010224  f3a5                 rep movsd dword ptr es:[edi], dword ptr [esi]
+010226  eb3c                 jmp 0x234264 ; -> IDA 0x10264
+010228  b932000000           mov ecx, 0x32
+01022D  8d7dda               lea edi, [ebp - 0x26]
+010230  becde03800           mov esi, 0x38e0cd
+010235  eb2b                 jmp 0x234262 ; -> IDA 0x10262
+010237  b942000000           mov ecx, 0x42
+01023C  8d7dda               lea edi, [ebp - 0x26]
+01023F  beffe03800           mov esi, 0x38e0ff
+010244  eb1c                 jmp 0x234262 ; -> IDA 0x10262
+010246  b932000000           mov ecx, 0x32
+01024B  8d7dda               lea edi, [ebp - 0x26]
+01024E  be41e13800           mov esi, 0x38e141
+010253  eb0d                 jmp 0x234262 ; -> IDA 0x10262
+010255  b937000000           mov ecx, 0x37
+01025A  8d7dda               lea edi, [ebp - 0x26]
+01025D  be73e13800           mov esi, 0x38e173
+010262  f3a4                 rep movsb byte ptr es:[edi], byte ptr [esi]
+010264  8d5dda               lea ebx, [ebp - 0x26]
+010267  ba0a000000           mov edx, 0xa
+01026C  b805000000           mov eax, 5
+010271  e83d101100           call 0x3452b3 ; -> IDA 0x1212B3
+010276  e843e60e00           call 0x3228be ; -> IDA 0xFE8BE
+01027B  e84b4c1100           call 0x348ecb ; -> IDA 0x124ECB
+010280  e8ef2e0000           call 0x237174 ; -> IDA 0x13174
+010285  e88ca50600           call 0x29e816 ; -> IDA 0x7A816
+01028A  e84bea0e00           call 0x322cda ; -> IDA 0xFECDA
+01028F  e8d1dc0b00           call 0x2f1f65 ; -> IDA 0xCDF65
+010294  e825e60e00           call 0x3228be ; -> IDA 0xFE8BE
+010299  837dd602             cmp dword ptr [ebp - 0x2a], 2
+01029D  7d09                 jge 0x2342a8 ; -> IDA 0x102A8
+01029F  c605785f3a0000       mov byte ptr [0x3a5f78], 0
+0102A6  eb15                 jmp 0x2342bd ; -> IDA 0x102BD
+0102A8  8b75d2               mov esi, dword ptr [ebp - 0x2e]
+0102AB  bf785f3a00           mov edi, 0x3a5f78
+0102B0  8b7604               mov esi, dword ptr [esi + 4]
+0102B3  57                   push edi
+0102B4  ac                   lodsb al, byte ptr [esi]
+0102B5  8807                 mov byte ptr [edi], al
+0102B7  47                   inc edi
+0102B8  3c00                 cmp al, 0
+0102BA  75f8                 jne 0x2342b4 ; -> IDA 0x102B4
+0102BC  5f                   pop edi
+0102BD  803d07003b0000       cmp byte ptr [0x3b0007], 0
+0102C4  7464                 je 0x23432a ; -> IDA 0x1032A
+0102C6  0fbf059cf93a00       movsx eax, word ptr [0x3af99c]
+0102CD  69d0a90e0000         imul edx, eax, 0xea9
+0102D3  a198df3a00           mov eax, dword ptr [0x3adf98]
+0102D8  01d0                 add eax, edx
+0102DA  e84e1d0000           call 0x23602d ; -> IDA 0x1202D
+0102DF  84c0                 test al, al
+0102E1  743c                 je 0x23431f ; -> IDA 0x1031F
+0102E3  0fb605b5fc3a00       movzx eax, byte ptr [0x3afcb5]
+0102EA  0fb60db1fc3a00       movzx ecx, byte ptr [0x3afcb1]
+0102F1  0fb61db3fc3a00       movzx ebx, byte ptr [0x3afcb3]
+0102F8  50                   push eax
+0102F9  0fb605b4fc3a00       movzx eax, byte ptr [0x3afcb4]
+010300  0fb615b2fc3a00       movzx edx, byte ptr [0x3afcb2]
+010307  50                   push eax
+010308  0fb605b0fc3a00       movzx eax, byte ptr [0x3afcb0]
+01030F  e865210000           call 0x236479 ; -> IDA 0x12479
+010314  66c70508fa3a002700   mov word ptr [0x3afa08], 0x27
+01031D  eb41                 jmp 0x234360 ; -> IDA 0x10360
+01031F  66c70508fa3a000a00   mov word ptr [0x3afa08], 0xa
+010328  eb36                 jmp 0x234360 ; -> IDA 0x10360
+01032A  803d785f3a0071       cmp byte ptr [0x3a5f78], 0x71
+010331  75ec                 jne 0x23431f ; -> IDA 0x1031F
+010333  8d555e               lea edx, [ebp + 0x5e]
+010336  b8aae13800           mov eax, 0x38e1aa
+01033B  e897111000           call 0x3354d7 ; -> IDA 0x1114D7
+010340  85c0                 test eax, eax
+010342  74db                 je 0x23431f ; -> IDA 0x1031F
+010344  b809000000           mov eax, 9
+010349  e8e10a0000           call 0x234e2f ; -> IDA 0x10E2F
+01034E  803d3aff3a0001       cmp byte ptr [0x3aff3a], 1
+010355  7509                 jne 0x234360 ; -> IDA 0x10360
+010357  66c70508fa3a001100   mov word ptr [0x3afa08], 0x11
+010360  e86e830400           call 0x27c6d3 ; -> IDA 0x586D3
+010365  e831010000           call 0x23449b ; -> IDA 0x1049B
+01036A  a0aefc3a00           mov al, byte ptr [0x3afcae]
+01036F  3c04                 cmp al, 4
+010371  770b                 ja 0x23437e ; -> IDA 0x1037E
+010373  0fb6c0               movzx eax, al
+010376  2eff248543402300     jmp dword ptr cs:[eax*4 + 0x234043]
+01037E  b926000000           mov ecx, 0x26
+010383  bf3cff3a00           mov edi, 0x3aff3c
+010388  beb5e13800           mov esi, 0x38e1b5
+01038D  eb44                 jmp 0x2343d3 ; -> IDA 0x103D3
+01038F  b931000000           mov ecx, 0x31
+010394  bf3cff3a00           mov edi, 0x3aff3c
+010399  bedbe13800           mov esi, 0x38e1db
+01039E  eb33                 jmp 0x2343d3 ; -> IDA 0x103D3
+0103A0  b909000000           mov ecx, 9
+0103A5  bf3cff3a00           mov edi, 0x3aff3c
+0103AA  be0ce23800           mov esi, 0x38e20c
+0103AF  f3a5                 rep movsd dword ptr es:[edi], dword ptr [esi]
+0103B1  eb22                 jmp 0x2343d5 ; -> IDA 0x103D5
+0103B3  b929000000           mov ecx, 0x29
+0103B8  bf3cff3a00           mov edi, 0x3aff3c
+0103BD  be30e23800           mov esi, 0x38e230
+0103C2  eb0f                 jmp 0x2343d3 ; -> IDA 0x103D3
+0103C4  b92f000000           mov ecx, 0x2f
+0103C9  bf3cff3a00           mov edi, 0x3aff3c
+0103CE  be59e23800           mov esi, 0x38e259
+0103D3  f3a4                 rep movsb byte ptr es:[edi], byte ptr [esi]
+0103D5  b83cff3a00           mov eax, 0x3aff3c
+0103DA  e8a8601100           call 0x34a487 ; -> IDA 0x126487
+0103DF  8da586000000         lea esp, [ebp + 0x86]
+0103E5  5d                   pop ebp
+0103E6  5f                   pop edi
+0103E7  5e                   pop esi
+0103E8  59                   pop ecx
+0103E9  5b                   pop ebx
+0103EA  c3                   ret 
+0103EB  b744                 mov bh, 0x44
+0103ED  2300                 and eax, dword ptr [eax]
+0103EF  ea442300874623       ljmp 0x2346:0x87002344
+0103F6  002e                 add byte ptr [esi], ch
+0103F8  45                   inc ebp
+0103F9  2300                 and eax, dword ptr [eax]
+0103FB  3f                   aas 
+0103FC  45                   inc ebp
+0103FD  2300                 and eax, dword ptr [eax]
+0103FF  874623               xchg dword ptr [esi + 0x23], eax
+010402  006145               add byte ptr [ecx + 0x45], ah
+010405  2300                 and eax, dword ptr [eax]
+010407  7245                 jb 0x23444e ; -> IDA 0x1044E
+010409  2300                 and eax, dword ptr [eax]
+01040B  a6                   cmpsb byte ptr [esi], byte ptr es:[edi]
+01040C  44                   inc esp
+01040D  2300                 and eax, dword ptr [eax]
+01040F  c8442300             enter 0x2344, 0
+010413  7c45                 jl 0x23445a ; -> IDA 0x1045A
+010415  2300                 and eax, dword ptr [eax]
+010417  874623               xchg dword ptr [esi + 0x23], eax
+01041A  008d4523009e         add byte ptr [ebp - 0x61ffdcbb], cl
+010420  45                   inc ebp
+010421  2300                 and eax, dword ptr [eax]
+010423  234723               and eax, dword ptr [edi + 0x23]
+010426  001b                 add byte ptr [ebx], bl
+010428  46                   inc esi
+010429  2300                 and eax, dword ptr [eax]
+01042B  294623               sub dword ptr [esi + 0x23], eax
+01042E  0037                 add byte ptr [edi], dh
+010430  46                   inc esi
+010431  2300                 and eax, dword ptr [eax]
+010433  45                   inc ebp
+010434  46                   inc esi
+010435  2300                 and eax, dword ptr [eax]
+010437  874623               xchg dword ptr [esi + 0x23], eax
+01043A  000c4523005346       add byte ptr [eax*2 + 0x46530023], cl
+010441  2300                 and eax, dword ptr [eax]
+010443  6e                   outsb dx, byte ptr [esi]
+010444  46                   inc esi
+010445  2300                 and eax, dword ptr [eax]
+010447  874623               xchg dword ptr [esi + 0x23], eax
+01044A  00874623001d         add byte ptr [edi + 0x1d002346], al
+010450  45                   inc ebp
+010451  2300                 and eax, dword ptr [eax]
+010453  874623               xchg dword ptr [esi + 0x23], eax
+010456  0087462300cb         add byte ptr [edi - 0x34ffdcba], al
+01045C  46                   inc esi
+01045D  2300                 and eax, dword ptr [eax]
+01045F  50                   push eax
+010460  45                   inc ebp
+010461  2300                 and eax, dword ptr [eax]
+010463  e546                 in eax, 0x46
+010465  2300                 and eax, dword ptr [eax]
+010467  f346                 inc esi
+010469  2300                 and eax, dword ptr [eax]
+01046B  42                   inc edx
+01046C  47                   inc edi
+01046D  2300                 and eax, dword ptr [eax]
+01046F  fb                   sti 
+010470  44                   inc esp
+010471  2300                 and eax, dword ptr [eax]
+010473  014723               add dword ptr [edi + 0x23], eax
+010476  0012                 add byte ptr [edx], dl
+010478  47                   inc edi
+010479  2300                 and eax, dword ptr [eax]
+01047B  bd46230053           mov ebp, 0x53002346
+010480  47                   inc edi
+010481  2300                 and eax, dword ptr [eax]
+010483  874623               xchg dword ptr [esi + 0x23], eax
+010486  00d9                 add cl, bl
+010488  44                   inc esp
+010489  2300                 and eax, dword ptr [eax]
+01048B  5d                   pop ebp
+01048C  47                   inc edi
+01048D  2300                 and eax, dword ptr [eax]
+01048F  6e                   outsb dx, byte ptr [esi]
+010490  47                   inc edi
+010491  2300                 and eax, dword ptr [eax]
+010493  874623               xchg dword ptr [esi + 0x23], eax
+010496  00af46230053         add byte ptr [edi + 0x53002346], ch
+01049C  51                   push ecx
+01049D  52                   push edx
+01049E  56                   push esi
+01049F  31f6                 xor esi, esi
+0104A1  e9e1010000           jmp 0x234687 ; -> IDA 0x10687
+0104A6  e884fc0600           call 0x2a412f ; -> IDA 0x8012F
+0104AB  c60519ff3a0008       mov byte ptr [0x3aff19], 8
+0104B2  e9d0010000           jmp 0x234687 ; -> IDA 0x10687
+0104B7  e8cc5c0700           call 0x2aa188 ; -> IDA 0x86188
+0104BC  c60519ff3a0000       mov byte ptr [0x3aff19], 0
+0104C3  e9bf010000           jmp 0x234687 ; -> IDA 0x10687
+0104C8  e8df670f00           call 0x32acac ; -> IDA 0x106CAC
+0104CD  c60519ff3a0009       mov byte ptr [0x3aff19], 9
+0104D4  e9ae010000           jmp 0x234687 ; -> IDA 0x10687
+0104D9  e878b40700           call 0x2af956 ; -> IDA 0x8B956
+0104DE  c60519ff3a0027       mov byte ptr [0x3aff19], 0x27
+0104E5  e99d010000           jmp 0x234687 ; -> IDA 0x10687
+0104EA  e89b000b00           call 0x2e458a ; -> IDA 0xC058A
+0104EF  c60519ff3a0001       mov byte ptr [0x3aff19], 1
+0104F6  e98c010000           jmp 0x234687 ; -> IDA 0x10687
+0104FB  e802930a00           call 0x2dd802 ; -> IDA 0xB9802
+010500  c60519ff3a0021       mov byte ptr [0x3aff19], 0x21
+010507  e97b010000           jmp 0x234687 ; -> IDA 0x10687
+01050C  e851400b00           call 0x2e8562 ; -> IDA 0xC4562
+010511  c60519ff3a0014       mov byte ptr [0x3aff19], 0x14
+010518  e96a010000           jmp 0x234687 ; -> IDA 0x10687
+01051D  e81f3b0a00           call 0x2d8041 ; -> IDA 0xB4041
+010522  c60519ff3a0019       mov byte ptr [0x3aff19], 0x19
+010529  e959010000           jmp 0x234687 ; -> IDA 0x10687
+01052E  e87fb40500           call 0x28f9b2 ; -> IDA 0x6B9B2
+010533  c60519ff3a0003       mov byte ptr [0x3aff19], 3
+01053A  e948010000           jmp 0x234687 ; -> IDA 0x10687
+01053F  e83c340600           call 0x297980 ; -> IDA 0x73980
+010544  c60519ff3a0004       mov byte ptr [0x3aff19], 4
+01054B  e937010000           jmp 0x234687 ; -> IDA 0x10687
+010550  e8c8460800           call 0x2b8c1d ; -> IDA 0x94C1D
+010555  c60519ff3a001d       mov byte ptr [0x3aff19], 0x1d
+01055C  e926010000           jmp 0x234687 ; -> IDA 0x10687
+010561  e854a70f00           call 0x32ecba ; -> IDA 0x10ACBA
+010566  c60519ff3a0006       mov byte ptr [0x3aff19], 6
+01056D  e915010000           jmp 0x234687 ; -> IDA 0x10687
+010572  be01000000           mov esi, 1
+010577  e90b010000           jmp 0x234687 ; -> IDA 0x10687
+01057C  e871110700           call 0x2a56f2 ; -> IDA 0x816F2
+010581  c60519ff3a000a       mov byte ptr [0x3aff19], 0xa
+010588  e9fa000000           jmp 0x234687 ; -> IDA 0x10687
+01058D  e8de320000           call 0x237870 ; -> IDA 0x13870
+010592  c60519ff3a000c       mov byte ptr [0x3aff19], 0xc
+010599  e9e9000000           jmp 0x234687 ; -> IDA 0x10687
+01059E  803d3aff3a0000       cmp byte ptr [0x3aff3a], 0
+0105A5  755a                 jne 0x234601 ; -> IDA 0x10601
+0105A7  e889ce0b00           call 0x2f1435 ; -> IDA 0xCD435
+0105AC  6685c0               test ax, ax
+0105AF  7445                 je 0x2345f6 ; -> IDA 0x105F6
+0105B1  660fb605b5fc3a00     movzx ax, byte ptr [0x3afcb5]
+0105B9  98                   cwde 
+0105BA  50                   push eax
+0105BB  660fb605b4fc3a00     movzx ax, byte ptr [0x3afcb4]
+0105C3  98                   cwde 
+0105C4  50                   push eax
+0105C5  660fb605b1fc3a00     movzx ax, byte ptr [0x3afcb1]
+0105CD  0fbfc8               movsx ecx, ax
+0105D0  660fb605b3fc3a00     movzx ax, byte ptr [0x3afcb3]
+0105D8  0fbfd8               movsx ebx, ax
+0105DB  660fb605b2fc3a00     movzx ax, byte ptr [0x3afcb2]
+0105E3  0fbfd0               movsx edx, ax
+0105E6  660fb605b0fc3a00     movzx ax, byte ptr [0x3afcb0]
+0105EE  98                   cwde 
+0105EF  e8851e0000           call 0x236479 ; -> IDA 0x12479
+0105F4  eb19                 jmp 0x23460f ; -> IDA 0x1060F
+0105F6  66c70508fa3a000a00   mov word ptr [0x3afa08], 0xa
+0105FF  eb0e                 jmp 0x23460f ; -> IDA 0x1060F
+010601  66c70510fa3a000f00   mov word ptr [0x3afa10], 0xf
+01060A  e826ce0b00           call 0x2f1435 ; -> IDA 0xCD435
+01060F  c60519ff3a000d       mov byte ptr [0x3aff19], 0xd
+010616  e96c000000           jmp 0x234687 ; -> IDA 0x10687
+01061B  e879470e00           call 0x318d99 ; -> IDA 0xF4D99
+010620  c60519ff3a000f       mov byte ptr [0x3aff19], 0xf
+010627  eb5e                 jmp 0x234687 ; -> IDA 0x10687
+010629  e8b4220500           call 0x2868e2 ; -> IDA 0x628E2
+01062E  c60519ff3a0010       mov byte ptr [0x3aff19], 0x10
+010635  eb50                 jmp 0x234687 ; -> IDA 0x10687
+010637  e8a8340e00           call 0x317ae4 ; -> IDA 0xF3AE4
+01063C  c60519ff3a0011       mov byte ptr [0x3aff19], 0x11
+010643  eb42                 jmp 0x234687 ; -> IDA 0x10687
+010645  e8d2950600           call 0x29dc1c ; -> IDA 0x79C1C
+01064A  c60519ff3a0012       mov byte ptr [0x3aff19], 0x12
+010651  eb34                 jmp 0x234687 ; -> IDA 0x10687
+010653  e88db10e00           call 0x31f7e5 ; -> IDA 0xFB7E5
+010658  84c0                 test al, al
+01065A  7409                 je 0x234665 ; -> IDA 0x10665
+01065C  66c70508fa3a002700   mov word ptr [0x3afa08], 0x27
+010665  c60519ff3a0015       mov byte ptr [0x3aff19], 0x15
+01066C  eb19                 jmp 0x234687 ; -> IDA 0x10687
+01066E  e868a80e00           call 0x31eedb ; -> IDA 0xFAEDB
+010673  84c0                 test al, al
+010675  7409                 je 0x234680 ; -> IDA 0x10680
+010677  66c70508fa3a002700   mov word ptr [0x3afa08], 0x27
+010680  c60519ff3a0016       mov byte ptr [0x3aff19], 0x16
+010687  85f6                 test esi, esi
+010689  0f85e9000000         jne 0x234778 ; -> IDA 0x10778
+01068F  66a108fa3a00         mov ax, word ptr [0x3afa08]
+010695  66c7050efa3a000000   mov word ptr [0x3afa0e], 0
+01069E  663d2b00             cmp ax, 0x2b
+0106A2  77e3                 ja 0x234687 ; -> IDA 0x10687
+0106A4  0fb7c0               movzx eax, ax
+0106A7  2eff2485eb432300     jmp dword ptr cs:[eax*4 + 0x2343eb]
+0106AF  e805b40700           call 0x2afab9 ; -> IDA 0x8BAB9
+0106B4  c60519ff3a002b       mov byte ptr [0x3aff19], 0x2b
+0106BB  ebca                 jmp 0x234687 ; -> IDA 0x10687
+0106BD  e80cd50f00           call 0x331bce ; -> IDA 0x10DBCE
+0106C2  c60519ff3a0024       mov byte ptr [0x3aff19], 0x24
+0106C9  ebbc                 jmp 0x234687 ; -> IDA 0x10687
+0106CB  e89da40700           call 0x2aeb6d ; -> IDA 0x8AB6D
+0106D0  66a110fa3a00         mov ax, word ptr [0x3afa10]
+0106D6  c60519ff3a001c       mov byte ptr [0x3aff19], 0x1c
+0106DD  66a308fa3a00         mov word ptr [0x3afa08], ax
+0106E3  eba2                 jmp 0x234687 ; -> IDA 0x10687
+0106E5  e8f4ab0700           call 0x2af2de ; -> IDA 0x8B2DE
+0106EA  c60519ff3a001e       mov byte ptr [0x3aff19], 0x1e
+0106F1  eb94                 jmp 0x234687 ; -> IDA 0x10687
+0106F3  e882a20700           call 0x2ae97a ; -> IDA 0x8A97A
+0106F8  c60519ff3a001f       mov byte ptr [0x3aff19], 0x1f
+0106FF  eb86                 jmp 0x234687 ; -> IDA 0x10687
+010701  e89fb00700           call 0x2af7a5 ; -> IDA 0x8B7A5
+010706  c60519ff3a0022       mov byte ptr [0x3aff19], 0x22
+01070D  e975ffffff           jmp 0x234687 ; -> IDA 0x10687
+010712  e802ae0700           call 0x2af519 ; -> IDA 0x8B519
+010717  c60519ff3a0023       mov byte ptr [0x3aff19], 0x23
+01071E  e964ffffff           jmp 0x234687 ; -> IDA 0x10687
+010723  b8ffffffff           mov eax, 0xffffffff
+010728  e859eb0800           call 0x2c3286 ; -> IDA 0x9F286
+01072D  66c70508fa3a000a00   mov word ptr [0x3afa08], 0xa
+010736  c60519ff3a000e       mov byte ptr [0x3aff19], 0xe
+01073D  e945ffffff           jmp 0x234687 ; -> IDA 0x10687
+010742  e80bcb0800           call 0x2c1252 ; -> IDA 0x9D252
+010747  c60519ff3a0020       mov byte ptr [0x3aff19], 0x20
+01074E  e934ffffff           jmp 0x234687 ; -> IDA 0x10687
+010753  e818bd0e00           call 0x320470 ; -> IDA 0xFC470
+010758  e92affffff           jmp 0x234687 ; -> IDA 0x10687
+01075D  e8a0f30f00           call 0x333b02 ; -> IDA 0x10FB02
+010762  c60519ff3a0028       mov byte ptr [0x3aff19], 0x28
+010769  e919ffffff           jmp 0x234687 ; -> IDA 0x10687
+01076E  e808ab0e00           call 0x31f27b ; -> IDA 0xFB27B
+010773  e9fbfeffff           jmp 0x234673 ; -> IDA 0x10673
+010778  5e                   pop esi
+010779  5a                   pop edx
+01077A  59                   pop ecx
+01077B  5b                   pop ebx
+01077C  c3                   ret 
+01077D  e83ce10e00           call 0x3228be ; -> IDA 0xFE8BE
+010782  e944471100           jmp 0x348ecb ; -> IDA 0x124ECB
+010787  803d05ff3a0000       cmp byte ptr [0x3aff05], 0
+01078E  0f84d1431100         je 0x348b65 ; -> IDA 0x124B65
+010794  803d05ff3a0001       cmp byte ptr [0x3aff05], 1
+01079B  0f84fa441100         je 0x348c9b ; -> IDA 0x124C9B
+0107A1  803d05ff3a0002       cmp byte ptr [0x3aff05], 2
+0107A8  75d2                 jne 0x23477c ; -> IDA 0x1077C
+0107AA  e959441100           jmp 0x348c08 ; -> IDA 0x124C08
+0107AF  52                   push edx
+0107B0  8b1540683c00         mov edx, dword ptr [0x3c6840]
+0107B6  8910                 mov dword ptr [eax], edx
+0107B8  5a                   pop edx
+0107B9  c3                   ret 
+0107BA  8b00                 mov eax, dword ptr [eax]
+0107BC  a340683c00           mov dword ptr [0x3c6840], eax
+0107C1  c3                   ret 
+0107C2  833800               cmp dword ptr [eax], 0
+0107C5  7402                 je 0x2347c9 ; -> IDA 0x107C9
+0107C7  ff10                 call dword ptr [eax]
+0107C9  c3                   ret 
+0107CA  e88d031000           call 0x334b5c ; -> IDA 0x110B5C
+0107CF  833d7c923a0000       cmp dword ptr [0x3a927c], 0
+0107D6  0f849c401100         je 0x348878 ; -> IDA 0x124878
+0107DC  a17c923a00           mov eax, dword ptr [0x3a927c]
+0107E1  e93a401100           jmp 0x348820 ; -> IDA 0x124820
+0107E6  53                   push ebx
+0107E7  51                   push ecx
+0107E8  56                   push esi
+0107E9  57                   push edi
+0107EA  c8b40000             enter 0xb4, 0
+0107EE  50                   push eax
+0107EF  52                   push edx
+0107F0  81ed86000000         sub ebp, 0x86
+0107F6  8d7d72               lea edi, [ebp + 0x72]
+0107F9  c60507003b0000       mov byte ptr [0x3b0007], 0
+010800  c60504003b0000       mov byte ptr [0x3b0004], 0
+010807  be1d402300           mov esi, 0x23401d
+01080C  c7057c923a0000000000 mov dword ptr [0x3a927c], 0
+010816  c6052aff3a0000       mov byte ptr [0x3aff2a], 0
+01081D  a5                   movsd dword ptr es:[edi], dword ptr [esi]
+01081E  a5                   movsd dword ptr es:[edi], dword ptr [esi]
+01081F  66a5                 movsw word ptr es:[edi], word ptr [esi]
+010821  66c705e4f93a000000   mov word ptr [0x3af9e4], 0
+01082A  8d7d7e               lea edi, [ebp + 0x7e]
+01082D  be27402300           mov esi, 0x234027
+010832  66c705e0f93a000000   mov word ptr [0x3af9e0], 0
+01083B  31c9                 xor ecx, ecx
+01083D  a5                   movsd dword ptr es:[edi], dword ptr [esi]
+01083E  a5                   movsd dword ptr es:[edi], dword ptr [esi]
+01083F  e9bb010000           jmp 0x2349ff ; -> IDA 0x109FF
+010844  8b5dca               mov ebx, dword ptr [ebp - 0x36]
+010847  0fbfc1               movsx eax, cx
+01084A  8d7d22               lea edi, [ebp + 0x22]
+01084D  8b3483               mov esi, dword ptr [ebx + eax*4]
+010850  ba88e23800           mov edx, 0x38e288
+010855  57                   push edi
+010856  ac                   lodsb al, byte ptr [esi]
+010857  8807                 mov byte ptr [edi], al
+010859  47                   inc edi
+01085A  3c00                 cmp al, 0
+01085C  75f8                 jne 0x234856 ; -> IDA 0x10856
+01085E  5f                   pop edi
+01085F  8d4522               lea eax, [ebp + 0x22]
+010862  e8ba5c1100           call 0x34a521 ; -> IDA 0x126521
+010867  85c0                 test eax, eax
+010869  0f848f000000         je 0x2348fe ; -> IDA 0x108FE
+01086F  8d5522               lea edx, [ebp + 0x22]
+010872  b892e23800           mov eax, 0x38e292
+010877  e892010000           call 0x234a0e ; -> IDA 0x10A0E
+01087C  0fbff0               movsx esi, ax
+01087F  56                   push esi
+010880  89c3                 mov ebx, eax
+010882  689be23800           push 0x38e29b
+010887  89c7                 mov edi, eax
+010889  8d45d2               lea eax, [ebp - 0x2e]
+01088C  50                   push eax
+01088D  e8605d1100           call 0x34a5f2 ; -> IDA 0x1265F2
+010892  83c40c               add esp, 0xc
+010895  8d55d2               lea edx, [ebp - 0x2e]
+010898  8d45d2               lea eax, [ebp - 0x2e]
+01089B  e8370c1000           call 0x3354d7 ; -> IDA 0x1114D7
+0108A0  85c0                 test eax, eax
+0108A2  740b                 je 0x2348af ; -> IDA 0x108AF
+0108A4  4b                   dec ebx
+0108A5  0fbfc3               movsx eax, bx
+0108A8  e882050000           call 0x234e2f ; -> IDA 0x10E2F
+0108AD  eb1a                 jmp 0x2348c9 ; -> IDA 0x108C9
+0108AF  56                   push esi
+0108B0  68a6e23800           push 0x38e2a6
+0108B5  8d45d2               lea eax, [ebp - 0x2e]
+0108B8  50                   push eax
+0108B9  e8345d1100           call 0x34a5f2 ; -> IDA 0x1265F2
+0108BE  83c40c               add esp, 0xc
+0108C1  8d45d2               lea eax, [ebp - 0x2e]
+0108C4  e8be5b1100           call 0x34a487 ; -> IDA 0x126487
+0108C9  0fbfdf               movsx ebx, di
+0108CC  bac0e23800           mov edx, 0x38e2c0
+0108D1  89d8                 mov eax, ebx
+0108D3  e839160000           call 0x235f11 ; -> IDA 0x11F11
+0108D8  84c0                 test al, al
+0108DA  741a                 je 0x2348f6 ; -> IDA 0x108F6
+0108DC  53                   push ebx
+0108DD  68c8e23800           push 0x38e2c8
+0108E2  8d45d2               lea eax, [ebp - 0x2e]
+0108E5  50                   push eax
+0108E6  e8075d1100           call 0x34a5f2 ; -> IDA 0x1265F2
+0108EB  83c40c               add esp, 0xc
+0108EE  8d45d2               lea eax, [ebp - 0x2e]
+0108F1  e903010000           jmp 0x2349f9 ; -> IDA 0x109F9
+0108F6  53                   push ebx
+0108F7  68f2e23800           push 0x38e2f2
+0108FC  ebe4                 jmp 0x2348e2 ; -> IDA 0x108E2
+0108FE  ba21e33800           mov edx, 0x38e321
+010903  8d4522               lea eax, [ebp + 0x22]
+010906  e8165c1100           call 0x34a521 ; -> IDA 0x126521
+01090B  85c0                 test eax, eax
+01090D  0f85eb000000         jne 0x2349fe ; -> IDA 0x109FE
+010913  ba28e33800           mov edx, 0x38e328
+010918  8d4522               lea eax, [ebp + 0x22]
+01091B  e8015c1100           call 0x34a521 ; -> IDA 0x126521
+010920  85c0                 test eax, eax
+010922  7417                 je 0x23493b ; -> IDA 0x1093B
+010924  8d5522               lea edx, [ebp + 0x22]
+010927  b828e33800           mov eax, 0x38e328
+01092C  e8dd000000           call 0x234a0e ; -> IDA 0x10A0E
+010931  a37c923a00           mov dword ptr [0x3a927c], eax
+010936  e9c3000000           jmp 0x2349fe ; -> IDA 0x109FE
+01093B  ba2fe33800           mov edx, 0x38e32f
+010940  8d4522               lea eax, [ebp + 0x22]
+010943  e8d95b1100           call 0x34a521 ; -> IDA 0x126521
+010948  85c0                 test eax, eax
+01094A  740c                 je 0x234958 ; -> IDA 0x10958
+01094C  c60593103c0001       mov byte ptr [0x3c1093], 1
+010953  e9a6000000           jmp 0x2349fe ; -> IDA 0x109FE
+010958  ba36e33800           mov edx, 0x38e336
+01095D  8d4522               lea eax, [ebp + 0x22]
+010960  e8bc5b1100           call 0x34a521 ; -> IDA 0x126521
+010965  85c0                 test eax, eax
+010967  0f8591000000         jne 0x2349fe ; -> IDA 0x109FE
+01096D  8d5572               lea edx, [ebp + 0x72]
+010970  8d4522               lea eax, [ebp + 0x22]
+010973  e8a95b1100           call 0x34a521 ; -> IDA 0x126521
+010978  85c0                 test eax, eax
+01097A  0f857e000000         jne 0x2349fe ; -> IDA 0x109FE
+010980  8d557e               lea edx, [ebp + 0x7e]
+010983  8d4522               lea eax, [ebp + 0x22]
+010986  e8965b1100           call 0x34a521 ; -> IDA 0x126521
+01098B  85c0                 test eax, eax
+01098D  0f856b000000         jne 0x2349fe ; -> IDA 0x109FE
+010993  ba3ce33800           mov edx, 0x38e33c
+010998  8d4522               lea eax, [ebp + 0x22]
+01099B  e8815b1100           call 0x34a521 ; -> IDA 0x126521
+0109A0  85c0                 test eax, eax
+0109A2  755a                 jne 0x2349fe ; -> IDA 0x109FE
+0109A4  ba48e33800           mov edx, 0x38e348
+0109A9  8d4522               lea eax, [ebp + 0x22]
+0109AC  e8705b1100           call 0x34a521 ; -> IDA 0x126521
+0109B1  85c0                 test eax, eax
+0109B3  7409                 je 0x2349be ; -> IDA 0x109BE
+0109B5  c60504003b0001       mov byte ptr [0x3b0004], 1
+0109BC  eb40                 jmp 0x2349fe ; -> IDA 0x109FE
+0109BE  ba53e33800           mov edx, 0x38e353
+0109C3  8d4522               lea eax, [ebp + 0x22]
+0109C6  e8565b1100           call 0x34a521 ; -> IDA 0x126521
+0109CB  85c0                 test eax, eax
+0109CD  7414                 je 0x2349e3 ; -> IDA 0x109E3
+0109CF  8d5522               lea edx, [ebp + 0x22]
+0109D2  b853e33800           mov eax, 0x38e353
+0109D7  e832000000           call 0x234a0e ; -> IDA 0x10A0E
+0109DC  a206003b00           mov byte ptr [0x3b0006], al
+0109E1  eb1b                 jmp 0x2349fe ; -> IDA 0x109FE
+0109E3  ba5ee33800           mov edx, 0x38e35e
+0109E8  8d4522               lea eax, [ebp + 0x22]
+0109EB  e8315b1100           call 0x34a521 ; -> IDA 0x126521
+0109F0  85c0                 test eax, eax
+0109F2  740a                 je 0x2349fe ; -> IDA 0x109FE
+0109F4  b864e33800           mov eax, 0x38e364
+0109F9  e8895a1100           call 0x34a487 ; -> IDA 0x126487
+0109FE  41                   inc ecx
+0109FF  663b4dce             cmp cx, word ptr [ebp - 0x32]
+010A03  0f8c3bfeffff         jl 0x234844 ; -> IDA 0x10844
+010A09  e9d1f9ffff           jmp 0x2343df ; -> IDA 0x103DF
+010A0E  53                   push ebx
+010A0F  51                   push ecx
+010A10  56                   push esi
+010A11  57                   push edi
+010A12  c8c80000             enter 0xc8, 0
+010A16  89d3                 mov ebx, edx
+010A18  89c7                 mov edi, eax
+010A1A  29c9                 sub ecx, ecx
+010A1C  49                   dec ecx
+010A1D  31c0                 xor eax, eax
+010A1F  f2ae                 repne scasb al, byte ptr es:[edi]
+010A21  f7d1                 not ecx
+010A23  49                   dec ecx
+010A24  31d2                 xor edx, edx
+010A26  89ce                 mov esi, ecx
+010A28  eb19                 jmp 0x234a43 ; -> IDA 0x10A43
+010A2A  6681fac700           cmp dx, 0xc7
+010A2F  7f25                 jg 0x234a56 ; -> IDA 0x10A56
+010A31  0fbfc6               movsx eax, si
+010A34  0fbffa               movsx edi, dx
+010A37  42                   inc edx
+010A38  8a0403               mov al, byte ptr [ebx + eax]
+010A3B  46                   inc esi
+010A3C  88842f38ffffff       mov byte ptr [edi + ebp - 0xc8], al
+010A43  89df                 mov edi, ebx
+010A45  29c9                 sub ecx, ecx
+010A47  49                   dec ecx
+010A48  31c0                 xor eax, eax
+010A4A  f2ae                 repne scasb al, byte ptr es:[edi]
+010A4C  f7d1                 not ecx
+010A4E  49                   dec ecx
+010A4F  0fbfc6               movsx eax, si
+010A52  39c8                 cmp eax, ecx
+010A54  72d4                 jb 0x234a2a ; -> IDA 0x10A2A
+010A56  0fbfc2               movsx eax, dx
+010A59  c6842838ffffff00     mov byte ptr [eax + ebp - 0xc8], 0
+010A61  8d8538ffffff         lea eax, [ebp - 0xc8]
+010A67  e8b65b1100           call 0x34a622 ; -> IDA 0x126622
+010A6C  c9                   leave 
+010A6D  5f                   pop edi
+010A6E  5e                   pop esi
+010A6F  59                   pop ecx
+010A70  5b                   pop ebx
+010A71  c3                   ret 
+010A72  53                   push ebx
+010A73  51                   push ecx
+010A74  52                   push edx
+010A75  56                   push esi
+010A76  57                   push edi
+010A77  c8680100             enter 0x168, 0
+010A7B  81ed1e010000         sub ebp, 0x11e
+010A81  8d557e               lea edx, [ebp + 0x7e]
+010A84  b870e33800           mov eax, 0x38e370
+010A89  e8490a1000           call 0x3354d7 ; -> IDA 0x1114D7
+010A8E  85c0                 test eax, eax
+010A90  0f842a010000         je 0x234bc0 ; -> IDA 0x10BC0
+010A96  ba7ce33800           mov edx, 0x38e37c
+010A9B  b870e33800           mov eax, 0x38e370
+010AA0  e8b85d1100           call 0x34a85d ; -> IDA 0x12685D
+010AA5  ba3c000000           mov edx, 0x3c
+010AAA  89c1                 mov ecx, eax
+010AAC  89c3                 mov ebx, eax
+010AAE  8d457e               lea eax, [ebp + 0x7e]
+010AB1  e85b5e1100           call 0x34a911 ; -> IDA 0x126911
+010AB6  89c8                 mov eax, ecx
+010AB8  8d7d7e               lea edi, [ebp + 0x7e]
+010ABB  e8ba5e1100           call 0x34a97a ; -> IDA 0x12697A
+010AC0  c685ba00000000       mov byte ptr [ebp + 0xba], 0
+010AC7  29c9                 sub ecx, ecx
+010AC9  49                   dec ecx
+010ACA  31c0                 xor eax, eax
+010ACC  f2ae                 repne scasb al, byte ptr es:[edi]
+010ACE  f7d1                 not ecx
+010AD0  49                   dec ecx
+010AD1  0fbfc1               movsx eax, cx
+010AD4  89ca                 mov edx, ecx
+010AD6  807c287d0d           cmp byte ptr [eax + ebp + 0x7d], 0xd
+010ADB  7506                 jne 0x234ae3 ; -> IDA 0x10AE3
+010ADD  49                   dec ecx
+010ADE  c644287d00           mov byte ptr [eax + ebp + 0x7d], 0
+010AE3  0fbfc1               movsx eax, cx
+010AE6  807c287d0a           cmp byte ptr [eax + ebp + 0x7d], 0xa
+010AEB  7506                 jne 0x234af3 ; -> IDA 0x10AF3
+010AED  49                   dec ecx
+010AEE  c644287d00           mov byte ptr [eax + ebp + 0x7d], 0
+010AF3  8d457e               lea eax, [ebp + 0x7e]
+010AF6  e8986a1100           call 0x34b593 ; -> IDA 0x127593
+010AFB  0fbfc1               movsx eax, cx
+010AFE  807c287d5c           cmp byte ptr [eax + ebp + 0x7d], 0x5c
+010B03  7419                 je 0x234b1e ; -> IDA 0x10B1E
+010B05  be7fe33800           mov esi, 0x38e37f
+010B0A  8d7d7e               lea edi, [ebp + 0x7e]
+010B0D  57                   push edi
+010B0E  4f                   dec edi
+010B0F  47                   inc edi
+010B10  803f00               cmp byte ptr [edi], 0
+010B13  75fa                 jne 0x234b0f ; -> IDA 0x10B0F
+010B15  ac                   lodsb al, byte ptr [esi]
+010B16  8807                 mov byte ptr [edi], al
+010B18  47                   inc edi
+010B19  3c00                 cmp al, 0
+010B1B  75f8                 jne 0x234b15 ; -> IDA 0x10B15
+010B1D  5f                   pop edi
+010B1E  8d457e               lea eax, [ebp + 0x7e]
+010B21  50                   push eax
+010B22  6881e33800           push 0x38e381
+010B27  8d85ce000000         lea eax, [ebp + 0xce]
+010B2D  50                   push eax
+010B2E  e8bf5a1100           call 0x34a5f2 ; -> IDA 0x1265F2
+010B33  83c40c               add esp, 0xc
+010B36  8d557e               lea edx, [ebp + 0x7e]
+010B39  b890e33800           mov eax, 0x38e390
+010B3E  e894091000           call 0x3354d7 ; -> IDA 0x1114D7
+010B43  85c0                 test eax, eax
+010B45  0f85d7000000         jne 0x234c22 ; -> IDA 0x10C22
+010B4B  8d557e               lea edx, [ebp + 0x7e]
+010B4E  8d85ce000000         lea eax, [ebp + 0xce]
+010B54  e87e091000           call 0x3354d7 ; -> IDA 0x1114D7
+010B59  85c0                 test eax, eax
+010B5B  0f85c1000000         jne 0x234c22 ; -> IDA 0x10C22
+010B61  803daefc3a0000       cmp byte ptr [0x3afcae], 0
+010B68  7507                 jne 0x234b71 ; -> IDA 0x10B71
+010B6A  689de33800           push 0x38e39d
+010B6F  eb3e                 jmp 0x234baf ; -> IDA 0x10BAF
+010B71  803daefc3a0001       cmp byte ptr [0x3afcae], 1
+010B78  7507                 jne 0x234b81 ; -> IDA 0x10B81
+010B7A  68dce33800           push 0x38e3dc
+010B7F  eb2e                 jmp 0x234baf ; -> IDA 0x10BAF
+010B81  803daefc3a0002       cmp byte ptr [0x3afcae], 2
+010B88  7507                 jne 0x234b91 ; -> IDA 0x10B91
+010B8A  6829e43800           push 0x38e429
+010B8F  eb1e                 jmp 0x234baf ; -> IDA 0x10BAF
+010B91  803daefc3a0003       cmp byte ptr [0x3afcae], 3
+010B98  7507                 jne 0x234ba1 ; -> IDA 0x10BA1
+010B9A  6886e43800           push 0x38e486
+010B9F  eb0e                 jmp 0x234baf ; -> IDA 0x10BAF
+010BA1  803daefc3a0004       cmp byte ptr [0x3afcae], 4
+010BA8  7511                 jne 0x234bbb ; -> IDA 0x10BBB
+010BAA  68e9e43800           push 0x38e4e9
+010BAF  8d45b6               lea eax, [ebp - 0x4a]
+010BB2  50                   push eax
+010BB3  e83a5a1100           call 0x34a5f2 ; -> IDA 0x1265F2
+010BB8  83c408               add esp, 8
+010BBB  8d45b6               lea eax, [ebp - 0x4a]
+010BBE  eb5d                 jmp 0x234c1d ; -> IDA 0x10C1D
+010BC0  803daefc3a0000       cmp byte ptr [0x3afcae], 0
+010BC7  7507                 jne 0x234bd0 ; -> IDA 0x10BD0
+010BC9  683ee53800           push 0x38e53e
+010BCE  eb3e                 jmp 0x234c0e ; -> IDA 0x10C0E
+010BD0  803daefc3a0001       cmp byte ptr [0x3afcae], 1
+010BD7  7507                 jne 0x234be0 ; -> IDA 0x10BE0
+010BD9  6871e53800           push 0x38e571
+010BDE  eb2e                 jmp 0x234c0e ; -> IDA 0x10C0E
+010BE0  803daefc3a0002       cmp byte ptr [0x3afcae], 2
+010BE7  7507                 jne 0x234bf0 ; -> IDA 0x10BF0
+010BE9  68aee53800           push 0x38e5ae
+010BEE  eb1e                 jmp 0x234c0e ; -> IDA 0x10C0E
+010BF0  803daefc3a0003       cmp byte ptr [0x3afcae], 3
+010BF7  7507                 jne 0x234c00 ; -> IDA 0x10C00
+010BF9  68e6e53800           push 0x38e5e6
+010BFE  eb0e                 jmp 0x234c0e ; -> IDA 0x10C0E
+010C00  803daefc3a0004       cmp byte ptr [0x3afcae], 4
+010C07  7511                 jne 0x234c1a ; -> IDA 0x10C1A
+010C09  6823e63800           push 0x38e623
+010C0E  8d451a               lea eax, [ebp + 0x1a]
+010C11  50                   push eax
+010C12  e8db591100           call 0x34a5f2 ; -> IDA 0x1265F2
+010C17  83c408               add esp, 8
+010C1A  8d451a               lea eax, [ebp + 0x1a]
+010C1D  e865581100           call 0x34a487 ; -> IDA 0x126487
+010C22  8da51e010000         lea esp, [ebp + 0x11e]
+010C28  5d                   pop ebp
+010C29  5f                   pop edi
+010C2A  5e                   pop esi
+010C2B  5a                   pop edx
+010C2C  59                   pop ecx
+010C2D  5b                   pop ebx
+010C2E  c3                   ret 
+010C2F  53                   push ebx
+010C30  51                   push ecx
+010C31  52                   push edx
+010C32  c8a00000             enter 0xa0, 0
+010C36  8d55b0               lea edx, [ebp - 0x50]
+010C39  b898383900           mov eax, 0x393898
+010C3E  e894081000           call 0x3354d7 ; -> IDA 0x1114D7
+010C43  85c0                 test eax, eax
+010C45  744c                 je 0x234c93 ; -> IDA 0x10C93
+010C47  ba7ce33800           mov edx, 0x38e37c
+010C4C  b898383900           mov eax, 0x393898
+010C51  e8075c1100           call 0x34a85d ; -> IDA 0x12685D
+010C56  ba3c000000           mov edx, 0x3c
+010C5B  89c1                 mov ecx, eax
+010C5D  89c3                 mov ebx, eax
+010C5F  8d8560ffffff         lea eax, [ebp - 0xa0]
+010C65  e8a75c1100           call 0x34a911 ; -> IDA 0x126911
+010C6A  89c8                 mov eax, ecx
+010C6C  e8095d1100           call 0x34a97a ; -> IDA 0x12697A
+010C71  8d8560ffffff         lea eax, [ebp - 0xa0]
+010C77  e88f691100           call 0x34b60b ; -> IDA 0x12760B
+010C7C  89c1                 mov ecx, eax
+010C7E  6685c0               test ax, ax
+010C81  7c06                 jl 0x234c89 ; -> IDA 0x10C89
+010C83  663d0500             cmp ax, 5
+010C87  7e02                 jle 0x234c8b ; -> IDA 0x10C8B
+010C89  31c9                 xor ecx, ecx
+010C8B  880daefc3a00         mov byte ptr [0x3afcae], cl
+010C91  eb07                 jmp 0x234c9a ; -> IDA 0x10C9A
+010C93  c605aefc3a0000       mov byte ptr [0x3afcae], 0
+010C9A  c605aefc3a0000       mov byte ptr [0x3afcae], 0
+010CA1  c9                   leave 
+010CA2  5a                   pop edx
+010CA3  59                   pop ecx
+010CA4  5b                   pop ebx
+010CA5  c3                   ret 
+010CA6  e86b9b0600           call 0x29e816 ; -> IDA 0x7A816
+010CAB  e82ae00e00           call 0x322cda ; -> IDA 0xFECDA
+010CB0  e9b0d20b00           jmp 0x2f1f65 ; -> IDA 0xCDF65
+010CB5  52                   push edx
+010CB6  b8                   .byte 0xb8

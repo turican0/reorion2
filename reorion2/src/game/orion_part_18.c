@@ -4914,7 +4914,7 @@ int sub_113D23()
 
 
 //----- (00113D47) --------------------------------------------------------
-void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2)
+void __fastcall RunGameAndExit_113D47(int a1, _BYTE *a2) // vlna 13: __noreturn odebran, funkce se vraci
 {
   int v2; // eax
   int16_t v3; // [esp+0h] [ebp-8h]
@@ -4939,7 +4939,17 @@ void __fastcall __noreturn RunGameAndExit_113D47(int a1, _BYTE *a2)
   PortDebug_Checkpoint("RunGame.after_mainloop", 0);
   sub_12D78E();
   atexit(sub_113DBD);
-  sub_132AA4();
+  CalibrateCpuTick_132AA4();
+  // VLNA 13: nasledujici dve akce v dekompilatu CHYBELY - Hex-Rays je
+  // zahodil jako nedosazitelne, protoze CalibrateCpuTick_132AA4 mylne oznacil za
+  // __noreturn (selhana dekompilace, viz komentar u ni). Overeno
+  // disassemblovanim originalu (DOSBox DUMPMEM, runtime 0x337D47):
+  //   call 0x356AA4 (CalibrateCpuTick_132AA4)  ; kalibrace - VRACI SE
+  //   call 0x347491 (sub_123491)  ; inicializace mysi (INT 33h)
+  //   mov esp,ebp; pop ...; ret   ; normalni navrat!
+  PortDebug_Checkpoint("RunGame.before_MouseInit", 0);
+  sub_123491();
+  PortDebug_Checkpoint("RunGame.after_MouseInit", 0);
 }
 // 113D76: variable 'v2' is possibly undefined
 // 144906: using guessed type int __fastcall atexit(_DWORD);

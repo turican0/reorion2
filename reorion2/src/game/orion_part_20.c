@@ -3644,15 +3644,33 @@ int sub_132A11()
 
 
 //----- (00132AA4) --------------------------------------------------------
-void __noreturn sub_132AA4()
+// VLNA 13: dekompilace teto funkce SELHALA ("could not find valid
+// save-restore pair") a Hex-Rays vypustil telo jako "while(1);" s
+// __noreturn - coz (a) byla nekonecna smycka v portu a (b) zpusobilo
+// URIZNUTI zbytku volajici RunGameAndExit_113D47 (vse za volanim
+// dekompiler zahodil jako nedosazitelne, vcetne volani MouseInit
+// sub_123491 a normalniho navratu!).
+// Skutecne telo ZISKANO Z BEZICIHO ORIGINALU (DOSBox DUMPMEM na
+// runtime 0x356AA4, viz PROGRESS.md vlna 13) a disassemblovano:
+//   pushal
+//   ; pockej na hranu BIOS ticku (dword na 0x46C, 18.2 Hz)
+//   L0: ebx = [0x46C]
+//   L1: eax = [0x46C]; cmp eax,ebx; je L1
+//   ; kalibrace: pocitej 255-nasobna cteni pameti behem JEDNOHO ticku
+//   ebx = [0x46C]; edx = 0
+//   L2: ecx = 255
+//   L3: eax = [dword_1845F8]; loop L3
+//       edx++; eax = [0x46C]; cmp eax,ebx; je L2
+//   ; vysledek edx je v TETO verzi binarky ZAHOZEN (mov edx,1500 ho
+//   ; prepise) a OBE vetve jb zapisuji totez -> jediny efekt funkce:
+//   dword_1BC798 = 0
+//   popal; ret            ; <- funkce se NORMALNE VRACI
+// Port: cekani na BIOS tick nema smysl (MEMORY[0x46C] je stub a presne
+// tady se beh zasekaval) - zustava jen skutecny efekt.
+void CalibrateCpuTick_132AA4()
 {
-  while ( 1 )
-    ;
+  dword_1BC798 = 0; // 0 = "pouzivej cekani na vertical retrace" (viz sub_132B27)
 }
-// 132AA4: could not find valid save-restore pair for ebx
-// 132AA4: could not find valid save-restore pair for ebp
-// 132AA4: could not find valid save-restore pair for edi
-// 132AA4: could not find valid save-restore pair for esi
 // 1BC798: using guessed type int dword_1BC798;
 
 
@@ -3692,36 +3710,28 @@ int64_t __fastcall sub_132AF8(int64_t a1, int a2)
 
 
 //----- (00132B27) --------------------------------------------------------
+// Cekani na VGA vertical retrace (port 0x3DA, bit 8), pokud je zapnute
+// (dword_1BC798 == 0, nastavuje CalibrateCpuTick_132AA4). VLNA 13: v
+// portu zadny VGA port neni (hr_inbyte stub vracel 0 -> druha smycka by
+// cekala donekonecna) - misto toho se snimek vykresli pres SDL3 a herni
+// smycka se taktuje na ~70 Hz, viz PortVga_WaitVsync v port_vga.cpp.
+// Puvodni telo (overeno i v ASM originalu, DUMPMEM vlna 13):
+//   do v0 = in(0x3DA); while (v0 & 8);   // pockej na KONEC retrace
+//   do v1 = in(0x3DA); while (!(v1 & 8)); // pockej na ZACATEK retrace
 void sub_132B27()
 {
-  uint8_t v0; // al
-  uint8_t v1; // al
-
   if ( !dword_1BC798 )
-  {
-    do
-      v0 = hr_inbyte(0x3DAu);
-    while ( (v0 & 8) != 0 );
-    do
-      v1 = hr_inbyte(0x3DAu);
-    while ( (v1 & 8) == 0 );
-  }
+    PortVga_WaitVsync();
 }
 // 1BC798: using guessed type int dword_1BC798;
 
 
 //----- (00132B41) --------------------------------------------------------
+// Bezpodminecna varianta cekani na vertical retrace - viz sub_132B27
+// (stejna nahrada, vlna 13).
 void sub_132B41()
 {
-  uint8_t v0; // al
-  uint8_t v1; // al
-
-  do
-    v0 = hr_inbyte(0x3DAu);
-  while ( (v0 & 8) != 0 );
-  do
-    v1 = hr_inbyte(0x3DAu);
-  while ( (v1 & 8) == 0 );
+  PortVga_WaitVsync();
 }
 
 
