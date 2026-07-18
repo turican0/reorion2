@@ -1214,7 +1214,14 @@ void sub_140979()
   v0 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v0 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_DIG_INI()\n");
-  sub_157570();
+  // DECOMP_TODO (vlna 12): sub_157570 = skutecna instalace DOS zvukoveho
+  // driveru dle DIG.INI (real-mode .DIG driver, INT volani) - v portu
+  // padala a zadny DOS driver stejne neexistuje. Preskoceno = "zadny
+  // zvukovy driver nenalezen"; volajici sub_111F3E (pres v1=0 placeholder)
+  // pak bezi TISE a preskoci nacitani SOUND.LBX. Az vznikne port_sound
+  // (SDL3), napoji se sem.
+  PortDebug_Checkpoint("AIL.install_DIG_INI.skipped", 0);
+  // sub_157570();
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )

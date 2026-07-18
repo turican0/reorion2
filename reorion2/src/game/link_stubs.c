@@ -197,15 +197,9 @@ int dword_1AAB70;
 int dword_1ACEBC;
 int dword_1ACFC0;
 int dword_1AD6C4;
-int dword_1AE0A4;
-int dword_1AE0AC;
-int dword_1AE0B0;
-int dword_1AE0B4;
-int dword_1AE0C8;
-int dword_1AE0CC;
-int dword_1AE0D0;
 int dword_1BB910;
-int dword_1BBA74;
+/* dword_1BBA74 odstraneno (vlna 12) - je soucasti prekryvoveho bloku
+   lbxHeader_1BBA6A, viz orion_data.c/orion_common.h. */
 int dword_1BD352;
 int dword_1C9400;
 int dword_1C9540;

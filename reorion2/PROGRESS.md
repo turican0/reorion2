@@ -903,6 +903,65 @@ az v `sub_111F3E` = **inicializace zvuku AIL/Miles** ("Could not register
 timer with AIL", sub_13F640/sub_1400A9/SOUND.LBX) - to je prirozeny dalsi
 krok pro port_sound (viz nize). Zadne zaseknuti, cisty exit.
 
+## Hotovo - vlna 12: "fonts.lbx could not be found" + prekryvove bloky + tichy zvuk
+
+### Nahlaseny problem a jeho skutecne priciny (postupne odlupovane)
+
+1. **"fonts.lbx [entry 0] could not be found."** = fopen selhal. Hra hleda
+   VSECHNY soubory v aktualnim pracovnim adresari - pri spusteni odjinud
+   (F5 z VS, dvojklik na exe) nenasla nic. Reseni dvojite:
+   - `reorion2.vcxproj.user`: `LocalDebuggerWorkingDirectory = C:\prenos\mastori2`
+     pro vsechny konfigurace (F5 z VS ted bezi primo v adresari hry).
+   - `port_file.cpp`: fallback retez pro relativni cesty, kdyz soubor
+     v cwd neni: `REORION2_DATA_DIR` (env) -> adresar exe (pokryva
+     "nakopiroval jsem LBX k exe") -> `C:/prenos/mastori2` (posledni
+     zachrana pro tento stroj). Aplikovano v PortFile_Open, PortFile_Access
+     i Port::File::FindFirst (jinak by mox.set/savy nesly najit, zatimco
+     fopen by je otevrel). Cwd ma VZDY prednost.
+2. Po vyreseni cest se ukazalo, ze pres sub_111F3E (AIL init) se ze
+   spravneho adresare vubec nedalo projit - pad v `sub_157570`
+   (AIL_install_DIG_INI = instalace real-mode DOS zvukoveho driveru dle
+   DIG.INI). **Instalace driveru preskocena** (sub_140979, DECOMP_TODO) -
+   s `v1 = 0` placeholderem v sub_111F3E hra bezi TISE a preskakuje
+   SOUND.LBX; napoji se az na port_sound (SDL3).
+3. **"fonts.lbx [entry 0] is not an LBX file"** - dalsi vrstva: fread
+   2048B LBX hlavicky pres `&unk_1BBA6C` nikdy nenaplnil ODDELENOU
+   promennou `word_1BBA6E` (magic 0xFEAD) ani tabulku offsetu
+   `dword_1BBA74/78`. IDA symboly jsou totiz PREKRYVY jednoho bloku.
+
+### Nova technika: prekryvove bloky (overlay makra)
+
+Kdyz dekompilat pristupuje k JEDNOMU souvislemu useku pameti pres nekolik
+symbolu zaroven (fread/memset pres jeden + cteni poli pres jine, stridove
+indexovani `dword_X[10*slot]`), oddelene C promenne rozbiji semantiku.
+Reseni: jeden backing `uint8_t blok_ADRESA[N]` v orion_data.c + `#define`
+makra v orion_common.h mapujici puvodni symboly na presne offsety - vsechny
+dekompilovane vyrazy zustavaji beze zmeny. Zavedeno pro:
+- `soundSlots_1AE0AC[1320]` - 33 zvukovych slotu po 40 B (dword_1AE0AC/
+  B0/B4/C8/CC/D0 + byte_1AE0B8 + skalary D8/F8),
+- `lbxHeader_1BBA6A[2050]` - cache LBX hlavicky (unk_1BBA6A/byte_1BBA6B/
+  unk_1BBA6C/word_1BBA6E/dword_1BBA74/dword_1BBA78).
+
+### Dalsi opravene sirky/konstanty (stejne tridy jako vlny 10/11)
+
+- `unk_1AF620`: 1 bajt -> `uint8_t[4172]` (AIL struktura, memset 4172 =
+  presne vzdalenost k dalsimu symbolu; prepisovala sousedni globaly).
+- `unk_1BC270`: 1 bajt -> `char[16]` (jmeno otevreneho LBX, strcpy cile).
+- `loc_F4240` = **konstanta 1000000** (0xF4240, AIL mikrosekundy) - IDA
+  false-positive, 6 mist v orion_part_18/23.c; symbol odstranen.
+- `dword_1AE0A4`: tentativni `int[]` nevytvarel definici (LNK2001 po
+  odstraneni duplikatu z link_stubs.c) -> `int[1]` + DECOMP_TODO.
+- Duplicitni stuby dword_1AE0xx a dword_1BBA74 odstranene z link_stubs.c
+  (kolidovaly s prekryvovymi bloky).
+
+### Vysledek (overeno behem)
+
+Ze spravneho i spatneho cwd identicky: cely init vcetne AIL (ticheho),
+fonts.lbx se najde, otevre a PROJDE magic kontrolou, hra pokracuje pres
+hlavni vetev (`RunGame.after_mainloop`) a BEZI (ukoncena az 20s timeoutem
+testu, zadny pad). Dalsi krok: overit, co se skutecne deje v bezici
+smycce (sub_132AA4?) a napojit VGA vystup, aby bylo neco videt.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

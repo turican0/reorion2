@@ -72,7 +72,7 @@ void __cdecl sub_1556A4(int a1, int a2)
 void __cdecl sub_1556D4(int a1, unsigned int a2)
 {
   sub_13F949();
-  sub_140287(a1, (unsigned int)&loc_F4240 / a2);
+  sub_140287(a1, 1000000u / a2); // vlna 12: "&loc_F4240" = konstanta 1e6 (us/Hz)
   sub_13F94E();
 }
 
@@ -2094,7 +2094,7 @@ void __cdecl sub_157D3C(_DWORD *a1, int a2)
           goto LABEL_39;
         v4 = sub_157CD4((_DWORD *)a1[542]);
         sub_140F6F(a1, v3 + 6, v4 - 2);
-        sub_141227((int)a1, (unsigned int)&loc_F4240 / (256 - (unsigned int)*(uint8_t *)(v3 + 4)));
+        sub_141227((int)a1, 1000000u / (256 - (unsigned int)*(uint8_t *)(v3 + 4))); // vlna 12: "&loc_F4240" = 1e6
         sub_140FF1((int)a1, 0, 0);
         goto LABEL_8;
       case 4:
@@ -3874,8 +3874,8 @@ int *__cdecl sub_159CA0(int a1, void *a2)
               }
               while ( v20 < v3[7] );
             }
-            LODWORD(v23) = &loc_F4240;
-            HIDWORD(v23) = (int)&loc_F4240 >> 31;
+            LODWORD(v23) = 1000000; // vlna 12: "&loc_F4240" = konstanta 1e6
+            HIDWORD(v23) = 0;      // (1000000 >> 31 == 0)
             v22 = v23 / dword_1C9568;
             v3[104] = 0;
             v3[105] = 0;

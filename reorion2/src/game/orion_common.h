@@ -15603,7 +15603,7 @@ extern int16_t word_EB4C5[];
 extern int16_t word_EB4C7[];
 extern _UNKNOWN locret_ED903;
 extern _UNKNOWN *off_EDB2D;
-extern _UNKNOWN loc_F4240;
+// loc_F4240 odstraneno - IDA false-positive z konstanty 1000000 (vlna 12)
 extern int dword_F594C[16];
 extern _UNKNOWN loc_FFFF8;
 extern _UNKNOWN loc_100000;
@@ -20361,17 +20361,22 @@ extern _UNKNOWN unk_1AD854;
 extern char byte_1AE054[80];
 extern int dword_1AE0A4[];
 extern int dword_1AE0A8;
-extern int dword_1AE0AC[];
-extern int dword_1AE0B0[];
-extern int dword_1AE0B4[];
-extern char byte_1AE0B8[16];
-extern int dword_1AE0C8[];
-extern int dword_1AE0CC[];
-extern int dword_1AE0D0[];
-extern int dword_1AE0D8;
-extern int dword_1AE0F8;
+// VLNA 12: tabulka zvukovych slotu - jeden souvisly blok 1320 B, puvodni
+// IDA symboly jsou PREKRYVY do nej (viz komentar v orion_data.c). Makra
+// zachovavaji vsechny dekompilovane vyrazy (dword_1AE0B4[10*slot] apod.)
+// beze zmeny, ale zapisy uz nesahaji mimo pamet.
+extern uint8_t soundSlots_1AE0AC[1320];
+#define dword_1AE0AC ((int *)(soundSlots_1AE0AC + 0x00))
+#define dword_1AE0B0 ((int *)(soundSlots_1AE0AC + 0x04))
+#define dword_1AE0B4 ((int *)(soundSlots_1AE0AC + 0x08))
+#define byte_1AE0B8  ((char *)(soundSlots_1AE0AC + 0x0C))
+#define dword_1AE0C8 ((int *)(soundSlots_1AE0AC + 0x1C))
+#define dword_1AE0CC ((int *)(soundSlots_1AE0AC + 0x20))
+#define dword_1AE0D0 ((int *)(soundSlots_1AE0AC + 0x24))
+#define dword_1AE0D8 (*(int *)(soundSlots_1AE0AC + 0x2C))
+#define dword_1AE0F8 (*(int *)(soundSlots_1AE0AC + 0x4C))
 extern int16_t word_1AE5D4[2086];
-extern _UNKNOWN unk_1AF620;
+extern uint8_t unk_1AF620[4172]; // AIL blok - drive mylne _UNKNOWN/1 bajt, viz orion_data.c (vlna 12)
 extern int dword_1B066C;
 extern int dword_1B0670[17];
 extern int dword_1B06B4[17];
@@ -20537,14 +20542,17 @@ extern _UNKNOWN unk_1BBA60;
 extern int16_t word_1BBA62;
 extern int dword_1BBA64;
 extern int16_t word_1BBA68;
-extern _UNKNOWN unk_1BBA6A;
-extern char byte_1BBA6B;
-extern _UNKNOWN unk_1BBA6C;
-extern int16_t word_1BBA6E;
-extern int dword_1BBA74[];
-extern int dword_1BBA78[509];
+// VLNA 12: cache LBX hlavicky - jeden souvisly blok, puvodni IDA symboly
+// jsou prekryvy (viz komentar v orion_data.c).
+extern uint8_t lbxHeader_1BBA6A[2050];
+#define unk_1BBA6A   (*(int32_t *)(lbxHeader_1BBA6A + 0x0))
+#define byte_1BBA6B  (*(char *)(lbxHeader_1BBA6A + 0x1))
+#define unk_1BBA6C   (*(uint8_t *)(lbxHeader_1BBA6A + 0x2))
+#define word_1BBA6E  (*(int16_t *)(lbxHeader_1BBA6A + 0x4))
+#define dword_1BBA74 ((int *)(lbxHeader_1BBA6A + 0x0A))
+#define dword_1BBA78 ((int *)(lbxHeader_1BBA6A + 0x0E))
 extern int dword_1BC26C;
-extern _UNKNOWN unk_1BC270;
+extern char unk_1BC270[16]; // jmeno otevreneho LBX - drive _UNKNOWN/1 bajt (vlna 12)
 extern int dword_1BC280;
 extern int dword_1BC284;
 extern int dword_1BC288;

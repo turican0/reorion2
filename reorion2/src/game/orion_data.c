@@ -243,7 +243,8 @@ int16_t word_EB4C5[] = { 464 }; // weak
 int16_t word_EB4C7[] = { 242 }; // weak
 _UNKNOWN locret_ED903; // weak
 _UNKNOWN *off_EDB2D = &loc_93D66; // weak
-_UNKNOWN loc_F4240; // weak
+// loc_F4240 ODSTRANENO (vlna 12): IDA false-positive z konstanty 1000000
+// (0xF4240 - AIL mikrosekundy), viz orion_part_18.c/orion_part_23.c.
 int dword_F594C[16] =
 {
   1111704676,
@@ -17617,19 +17618,31 @@ int dword_1AD842; // weak
 _UNKNOWN unk_1AD846; // weak
 _UNKNOWN unk_1AD854; // weak
 char byte_1AE054[80]; // weak
-int dword_1AE0A4[]; // weak
+// vlna 12: tentativni "int dword_1AE0A4[]" nevytvarel definici (LNK2001
+// po odstraneni duplikatu z link_stubs.c). V puvodnich datech ma symbol
+// 4 bajty (0x1AE0A4..0x1AE0A8). DECOMP_TODO: pouziva se i s indexem
+// [v3]/[v10] (streamovani zvukovych samplu, sub_113xxx) - presna sirka
+// se doresi az se zvukovou vlnou (kod ted nebezi, zvuk je vypnuty).
+int dword_1AE0A4[1]; // weak
 int dword_1AE0A8; // weak
-int dword_1AE0AC[]; // weak
-int dword_1AE0B0[]; // weak
-int dword_1AE0B4[]; // weak
-char byte_1AE0B8[16]; // weak
-int dword_1AE0C8[]; // weak
-int dword_1AE0CC[]; // weak
-int dword_1AE0D0[]; // weak
-int dword_1AE0D8; // weak
-int dword_1AE0F8; // weak
+// VLNA 12: blok 0x1AE0AC..0x1AE5D4 = tabulka 33 zvukovych slotu po 40 B
+// (10 int) - sub_111F3E ji nuluje memset(..., 1320) a kod k ni pristupuje
+// striden "dword_1AE0XX[10 * slot]" pres NEKOLIK ruznych symbolu zaroven
+// (dword_1AE0AC=+0, ...B0=+4, ...B4=+8, byte_1AE0B8=+0xC, ...C8=+0x1C,
+// ...CC=+0x20, ...D0=+0x24; navic aliasy pres &dword_1AE0AC[10*i] a
+// v2[8]). Jako oddelene C promenne se NEPREKRYVALY -> zapisy si stouply
+// na sousedni globaly (pad v sub_111F3E). Jeden souvisly backing blok +
+// prekryvova makra v orion_common.h zachovavaji puvodni layout presne.
+// dword_1AE0D8 (+0x2C) a dword_1AE0F8 (+0x4C) jsou pole slotu 0 a 1.
+uint8_t soundSlots_1AE0AC[1320]; // weak
 int16_t word_1AE5D4[2086]; // weak
-_UNKNOWN unk_1AF620; // weak
+// VLNA 12: drive "_UNKNOWN unk_1AF620" (= 1 bajt!) - AIL/zvukova struktura,
+// hra ji nuluje memset(&unk_1AF620, 0, 4172) a predava do sub_13AE74/
+// sub_13AFD2. 4172 = 0x104C = presne vzdalenost k dalsimu symbolu
+// (0x1B066C - 0x1AF620), takze jde o souvisly 4172bajtovy blok. Jako
+// 1bajtova promenna memset prepisoval sousedni globaly -> pad/abort
+// v sub_111F3E jeste pred nactenim fontu.
+uint8_t unk_1AF620[4172]; // weak
 int dword_1B066C; // weak
 int dword_1B0670[17]; // weak
 int dword_1B06B4[17]; // weak
@@ -17796,14 +17809,20 @@ _UNKNOWN unk_1BBA60; // weak
 int16_t word_1BBA62; // weak
 int dword_1BBA64; // weak
 int16_t word_1BBA68; // weak
-_UNKNOWN unk_1BBA6A; // weak
-char byte_1BBA6B; // weak
-_UNKNOWN unk_1BBA6C; // weak
-int16_t word_1BBA6E; // weak
-int dword_1BBA74[]; // weak
-int dword_1BBA78[509]; // weak
+// VLNA 12: blok 0x1BBA6A..0x1BC26C = cache LBX hlavicky (2048 B nacitane
+// pres "fread(&unk_1BBA6C, 2048, ...)" v sub_127233 a spol.) + 2 bajty
+// pred ni (byte_1BBA6B flag; "(int)unk_1BBA6A >> 16" cte pocet zaznamu =
+// word na 0x1BBA6C). Symboly uvnitr: word_1BBA6E (+4 od zacatku bloku) =
+// LBX magic 0xFEAD, dword_1BBA74/78 (+0x0A/+0x0E) = tabulka offsetu
+// zaznamu. Jako oddelene promenne fread nikdy nenaplnil word_1BBA6E ->
+// "fonts.lbx [entry 0] is not an LBX file". Prekryvova makra v
+// orion_common.h drzi puvodni layout.
+uint8_t lbxHeader_1BBA6A[2050]; // weak
 int dword_1BC26C; // weak
-_UNKNOWN unk_1BC270; // weak
+// vlna 12: drive _UNKNOWN (1 bajt) - buffer jmena aktualne otevreneho LBX
+// (strcpy nazvu "fonts.lbx" apod. v sub_127233); 16 B = vzdalenost k
+// dalsimu symbolu dword_1BC280.
+char unk_1BC270[16]; // weak
 int dword_1BC280; // weak
 int dword_1BC284; // weak
 int dword_1BC288; // weak

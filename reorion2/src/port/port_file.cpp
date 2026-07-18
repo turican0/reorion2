@@ -1,6 +1,7 @@
 #include "port_file.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <cstring>
 #include <cctype>
@@ -12,6 +13,8 @@
 
 #ifdef _WIN32
 #include <io.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // GetModuleFileNameA - fallback datovy adresar (vlna 12)
 #else
 #include <dirent.h>
 #include <unistd.h>
@@ -34,6 +37,68 @@ namespace {
 
 std::mutex g_cacheMutex;
 std::unordered_map<std::string, std::string> g_resolveCache;
+
+// ---------------------------------------------------------------------
+// Fallback datove adresare (vlna 12). Hra hleda VSECHNY soubory
+// (fonts.lbx, sound.lbx, mox.set, savy...) v aktualnim pracovnim
+// adresari - kdyz se exe spusti odjinud (F5 z Visual Studia, dvojklik
+// na exe v x64/Debug, cmd z jineho adresare), skoncila hned na
+// "fonts.lbx [entry 0] could not be found.". Kdyz soubor v cwd neni
+// (cwd ma VZDY prednost - napr. cerstve zapsane savy), zkusi se poporade:
+//   1. REORION2_DATA_DIR (env promenna, explicitni prepis),
+//   2. adresar, kde lezi samotne exe (pokryva "nakopiroval jsem LBX
+//      k exe do vystupni slozky"),
+//   3. C:/prenos/mastori2 - znama instalace hry na tomto stroji
+//      (posledni zachrana; pro jine stroje slouzi env promenna vyse).
+// Pro F5 z VS je navic nastaveny LocalDebuggerWorkingDirectory v
+// reorion2.vcxproj.user, takze fallback vetsinou ani neni potreba.
+std::vector<std::string> BuildDataDirPrefixes()
+{
+    std::vector<std::string> dirs;
+    auto add = [&dirs](std::string p) {
+        if (p.empty())
+            return;
+        if (p.back() != '/' && p.back() != '\\')
+            p += '/';
+        dirs.push_back(std::move(p));
+    };
+
+    if (const char* env = std::getenv("REORION2_DATA_DIR"))
+        add(env);
+
+#ifdef _WIN32
+    char exePath[MAX_PATH];
+    DWORD n = GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+    if (n > 0 && n < MAX_PATH) {
+        std::string p(exePath);
+        size_t slash = p.find_last_of("/\\");
+        if (slash != std::string::npos)
+            add(p.substr(0, slash));
+    }
+#endif
+
+    add("C:/prenos/mastori2");
+    return dirs;
+}
+
+const std::vector<std::string>& DataDirPrefixes()
+{
+    static const std::vector<std::string> dirs = BuildDataDirPrefixes();
+    return dirs;
+}
+
+// Fallback ma smysl jen pro relativni cesty (bez uvodniho lomitka a bez
+// "X:" prefixu) - absolutni cestu uz nekdo slozil vedome.
+bool IsRelativePath(const char* path)
+{
+    if (!path || !*path)
+        return false;
+    if (path[0] == '/' || path[0] == '\\')
+        return false;
+    if (path[1] == ':')
+        return false;
+    return true;
+}
 
 #ifndef _WIN32
 // Rozdeli "path" na segmenty podle '/' NEBO '\\' (puvodni DOS kod ma
@@ -237,20 +302,39 @@ bool FindFirst(const char* pattern, int attrMask, DosDta* dta)
     std::string dirPart = (slashPos == std::string::npos) ? "." : patternStr.substr(0, slashPos);
     std::string wildcardPart = (slashPos == std::string::npos) ? patternStr : patternStr.substr(slashPos + 1);
 
-    const char* resolvedDir = ResolveCaseInsensitivePath(dirPart.c_str());
+    // Kandidatni adresare: nejdriv ten ze vzoru (cwd-relativni), pak
+    // fallback datove adresare (vlna 12, viz BuildDataDirPrefixes) -
+    // jinak by FindMoxSetPath ("mox.set") a vypis savu (*.GAM) nenasly
+    // nic, kdyz exe nebezi primo z adresare hry, zatimco fopen by diky
+    // svemu fallbacku stejny soubor otevrel.
+    std::vector<std::string> candidateDirs;
+    candidateDirs.push_back(dirPart);
+    if (IsRelativePath(patternStr.c_str())) {
+        for (const std::string& prefix : DataDirPrefixes())
+            candidateDirs.push_back(prefix + ((dirPart == ".") ? std::string() : dirPart));
+    }
 
     FindState state;
-    state.directory = resolvedDir;
     state.wildcard = wildcardPart;
+    bool found = false;
+    for (const std::string& cand : candidateDirs) {
+        state.directory = ResolveCaseInsensitivePath(cand.empty() ? "." : cand.c_str());
+        state.entries.clear();
+        state.nextIndex = 0;
 
-    std::error_code ec;
-    fs::directory_iterator it(state.directory, ec);
-    if (ec)
-        return false;
-    for (const auto& entry : it)
-        state.entries.push_back(entry);
+        std::error_code ec;
+        fs::directory_iterator it(state.directory, ec);
+        if (ec)
+            continue;
+        for (const auto& entry : it)
+            state.entries.push_back(entry);
 
-    if (!AdvanceFind(state, attrMask, dta))
+        if (AdvanceFind(state, attrMask, dta)) {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
         return false;
 
     // Ulozit stav pro nasledne FindNext - handle (index do g_findStates)
@@ -307,6 +391,16 @@ int PortFile_Open(const char* path, const char* mode)
 {
     const char* resolved = Port::File::ResolveCaseInsensitivePath(path);
     FILE* f = std::fopen(resolved, mode);
+    if (!f && Port::File::IsRelativePath(path)) {
+        // Soubor v cwd neni - zkus fallback datove adresare (viz komentar
+        // u BuildDataDirPrefixes vyse: env -> adresar exe -> mastori2).
+        for (const std::string& prefix : Port::File::DataDirPrefixes()) {
+            const std::string prefixed = prefix + path;
+            f = std::fopen(Port::File::ResolveCaseInsensitivePath(prefixed.c_str()), mode);
+            if (f)
+                break;
+        }
+    }
     if (!f)
         return 0;
 
@@ -376,10 +470,26 @@ int PortFile_Access(const char* path, int mode)
 {
     const char* resolved = Port::File::ResolveCaseInsensitivePath(path);
 #ifdef _WIN32
-    return _access(resolved, mode);
+    int rc = _access(resolved, mode);
 #else
-    return access(resolved, mode);
+    int rc = access(resolved, mode);
 #endif
+    if (rc != 0 && Port::File::IsRelativePath(path)) {
+        // Stejny fallback jako v PortFile_Open - jinak by "existuje soubor?"
+        // kontroly nesouhlasily s tim, co pak fopen skutecne otevre.
+        for (const std::string& prefix : Port::File::DataDirPrefixes()) {
+            const std::string prefixed = prefix + path;
+            const char* r2 = Port::File::ResolveCaseInsensitivePath(prefixed.c_str());
+#ifdef _WIN32
+            rc = _access(r2, mode);
+#else
+            rc = access(r2, mode);
+#endif
+            if (rc == 0)
+                break;
+        }
+    }
+    return rc;
 }
 
 } // extern "C"

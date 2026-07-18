@@ -3560,8 +3560,11 @@ void sub_111F3E()
     memset(word_1AE5D4, 0, sizeof(word_1AE5D4));
     memset(&unk_1AF620, 0, 4172);
     memset(dword_1B06B4, 0, sizeof(dword_1B06B4));
+    PortDebug_Checkpoint("111F3E.after_memsets", 0);
     sub_13F640();
+    PortDebug_Checkpoint("111F3E.after_13F640", 0);
     sub_1400A9((int)sub_111ACD);
+    PortDebug_Checkpoint("111F3E.after_1400A9", 0);
     v5 = v0;
     if ( v0 == -1 )
     {
@@ -3570,13 +3573,17 @@ void sub_111F3E()
       exit(255, 0);
     }
     sub_1402FD(v0, 0x3Cu);
+    PortDebug_Checkpoint("111F3E.after_1402FD", 0);
     sub_1404C7(v5);
+    PortDebug_Checkpoint("111F3E.after_1404C7", 0);
     sub_13F84F(4, 17);
     sub_13F84F(7, 1);
     sub_13F84F(1, 22050);
     sub_13F84F(8, 0);
     sub_13F84F(0, 80);
+    PortDebug_Checkpoint("111F3E.after_13F84F", 0);
     sub_140979();
+    PortDebug_Checkpoint("111F3E.after_140979", 0);
     dword_184388 = v1;
     if ( v1 )
     {
@@ -3595,6 +3602,7 @@ void sub_111F3E()
       dword_184398 = sub_111499(dword_184394);
       memset(dword_184394, 0, dword_184398);
     }
+    PortDebug_Checkpoint("111F3E.before_slots_memset", 0);
     memset(dword_1AE0AC, 0, 1320);
     for ( j = 0; j < 33; ++j )
     {
@@ -3603,7 +3611,7 @@ void sub_111F3E()
     }
     dword_1AE0CC[0] = 1;
     dword_1AE0C8[0] = -1;
-    dword_1AE0B4[0] = (int)&loc_F4240;
+    dword_1AE0B4[0] = 1000000; // vlna 12: IDA false-positive "&loc_F4240" = konstanta 1e6 (AIL us)
     dword_1AE0D8 = dword_184398;
     dword_1AE0F8 = 0;
   }
@@ -3670,7 +3678,7 @@ int sub_1121BA()
   }
   dword_1AE0CC[0] = 1;
   dword_1AE0C8[0] = -1;
-  dword_1AE0B4[0] = (int)&loc_F4240;
+  dword_1AE0B4[0] = 1000000; // vlna 12: IDA false-positive "&loc_F4240" = konstanta 1e6 (AIL us)
   result = dword_184398;
   dword_1AE0D8 = dword_184398;
   dword_1AE0F8 = 0;
