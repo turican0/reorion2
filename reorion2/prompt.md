@@ -7,3 +7,5 @@ Potrebujeme ty funkce postupne prevest do citelneho kodu.
 -kdyz bude jasne pod jakou skupinu dany kod patri vyclen pro nej specielni soubor, aby se postupne tvořila rozumna struktura kodu
 -z funkci odebirej __usercall __fastcall a podobne informace, ktere zjevne uz nejsou potreba
 -vzdy porovnavej kod s puvodnim diassemblovanym, a tam, kde to neni kvuli kompaktibilite a kvuli cisteni kodu, se rid tim puvodnim kodem, tak porrovnavej c++ dissasemblovany kod s asm kodem, tam kde to neni jasne
+-veskere komentare v souborech pis anglicky
+-stejne tak vsechny .md soubory pis anglicky
