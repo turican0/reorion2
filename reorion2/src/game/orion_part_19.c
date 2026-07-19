@@ -4024,8 +4024,17 @@ void sub_123491()
   LOWORD(dword_1BBA38) = 0;
   dword_1BBA46 = 0;
   HIWORD(dword_1BBA34) = 0;
-  dword_1BB8B0 = (int)&unk_1B9E38;
-  dword_1BB8B8 = (int)&unk_1BA0A8;
+  // VLNA 17: unk_1B9E38/unk_1BA0A8 jsou "cursor background" buffery (26x24 =
+  // 624 B), do kterych render mysi (sub_144A91/sub_14529D) ZAPISUJE. IDA je
+  // ale zdekompilovala jako _UNKNOWN (1 bajt) -> zapis 624 B pretekal a
+  // KORUPTOVAL render vtable (dword_1B920C/1B9210...) i sousedni globaly ->
+  // pad. Misto zvetsovani statickych globalu (posunulo by BSS layout a
+  // rozbilo jine mis-sized buffery) alokujeme 624B buffery na halde -
+  // dword_1BB8B0/8B8 stejne drzi jen (int) ukazatel (LAA:NO -> < 2GB).
+  dword_1BB8B0 = (int)(intptr_t)nmalloc(624);
+  dword_1BB8B8 = (int)(intptr_t)nmalloc(624);
+  (void)&unk_1B9E38;
+  (void)&unk_1BA0A8;
   LOWORD(dword_1BB8E0) = 0;
   LOWORD(dword_1BB8E4) = 0;
   LOWORD(dword_1BB8E8) = 0;
@@ -4518,7 +4527,8 @@ int sub_12435C()
 //----- (0012439D) --------------------------------------------------------
 int sub_12439D()
 {
-  int result; // eax
+  int result = 0; // eax  // vlna 17: Hex-Rays artefakt neinicializovaneho
+                          // navratu (word_1BBA3C <= 0 -> return result). Debug RTC jinak pada.
 
   if ( word_1BBA3C > 0 )
   {
@@ -4611,16 +4621,19 @@ int16_t __fastcall sub_1248AB( int a1)
   PortDebug_Checkpoint("1248AB.before_12537D", dword_18453C);
   sub_12537D(screenHeight_184538 * HIDWORD(qword_184530), screenHeight_184538);
   PortDebug_Checkpoint("1248AB.after_12537D", 0);
-  if ( *(int *)((char *)&dword_1BBA64 + 2) >> 16 == 4 )
-  {
-    HIWORD(dword_1BBA52) = sub_1252C2();
-    if ( dword_1BBA52 >> 16 == -1 )
-      sub_126487(aYouMustRunVesa, v1);
-  }
-  else
-  {
-    HIWORD(dword_1BBA52) = word_1BBA68;
-  }
+  // VLNA 16 - PORT: vzdy VESA linearni cesta (video mod 5). Port renderuje
+  // pres SDL do LINEARNIHO 640x480 bufferu (Port::Vga) - to presne odpovida
+  // VESA linearnimu modu, ve kterem bezi i original (OVERENO dumpem:
+  // HIWORD(dword_1BBA52)==5). Puvodne se VESA cesta brala jen kdyz
+  // HIWORD(dword_1BBA64)==4 (SVGA priznak z konfigurace/detekce); v portu
+  // zadna hardwarova VESA detekce neni, takze cestu vynutime. Jinak by mod
+  // zustal word_1BBA68 (=4), pro ktery render vtable sub_125064 NEMA case
+  // -> vsechny funkcni ukazatele (dword_1BB89C/1BB894/1BB88C...) zustanou
+  // NULL -> pad pri prvnim vykresleni. Viz PROGRESS.md vlna 16.
+  (void)word_1BBA68;
+  HIWORD(dword_1BBA52) = sub_1252C2();   // sub_145FD2()==true -> vraci 5
+  if ( dword_1BBA52 >> 16 == -1 )
+    sub_126487(aYouMustRunVesa, v1);
   HIWORD(dword_1BBA64) = 0;
   dword_1BB910[0] = (int)&loc_9FFFD + 3;
   PortDebug_Checkpoint("1248AB.before_12542A", 0);
@@ -4631,7 +4644,7 @@ int16_t __fastcall sub_1248AB( int a1)
   word_1BBA56 = sub_1254C0();
   word_1BBA5C = 64 / (uint16_t)word_1BBA56;
   dword_1BB904 = dword_1BB90C;
-  PortDebug_Checkpoint("1248AB.before_125064", dword_1BB90C);
+  PortDebug_Checkpoint("1248AB.videoMode", HIWORD(dword_1BBA52)); // vlna 16: ma byt 5
   sub_125064(dword_1BB90C);
   PortDebug_Checkpoint("1248AB.before_125300", 0);
   sub_125300();

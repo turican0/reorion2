@@ -4427,7 +4427,12 @@ bool sub_145FD2()
   word_1BBA1C[0] = __SS__;
   dword_1BB8F4 = (int)v1;
   int386x(49, &dword_1BB8E0);
-  return (_BYTE)v2 == 79;
+  // VLNA 16 - PORT: puvodne VESA BIOS detekce (INT 10h AX=4F00h pres int386x,
+  // test AX==0x004F). int386x je v portu stub, takze by vzdy vratila false.
+  // Port ale VESA-linearni framebuffer POSKYTUJE (Port::Vga pres SDL), takze
+  // hlasime "VESA dostupne" -> sub_1252C2 vrati mod 5 (linearni). Viz vlna 16.
+  (void)v2;
+  return true;
 }
 // 144A4A: using guessed type int __fastcall int386x(_DWORD, _DWORD);
 // 1B06F8: using guessed type int dword_1B06F8;

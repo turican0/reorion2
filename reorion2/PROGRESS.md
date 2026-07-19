@@ -1130,6 +1130,97 @@ nejspis mis-sized font buffer nebo out-of-bounds glyph. Pak menu
 (sub_24ED3) a nakonec vstup (SDL klavesnice -> ring buffer dword_1BC2AC /
 INT 9 emulace, aby menu reagovalo - mys uz funguje pres int386/INT 33h).
 
+## Hotovo - vlna 16: NULL render vtable (dword_1BB89C/1BB894/1BB88C...) -> video mod 5
+
+### Pricina
+
+Render backend hry je VTABLE funkcnich ukazatelu (dword_1BB89C = render
+snimku, dword_1BB894, dword_1BB88C, dword_1BB898, dword_1BB8A0,
+dword_1B920C/9208/9210, dword_1BB884/888/890...), kterou plni sub_125064
+podle video modu `HIWORD(dword_1BBA52)` (switch case 0/1/2/3/5). Mod se
+vybira v sub_1248AB:
+- puvodne: VESA cesta (`HIWORD(dword_1BBA64)==4`) -> sub_1252C2() -> 5;
+  jinak `HIWORD(dword_1BBA52) = word_1BBA68` (= a1 = 4).
+- V portu VESA detekce (sub_145FD2 pres int386x VESA BIOS) je stub ->
+  false, a SVGA priznak dword_1BBA64 taky neni -> mod skoncil na **4**.
+- sub_125064 NEMA case 4 -> default -> vtable ZUSTALA NULL -> prvni
+  vykresleni (dword_1BB89C() apod.) spadlo na NULL ukazatel.
+
+### Oprava (port: SDL linearni framebuffer = VESA linearni mod 5)
+
+Overeno DUMPMEM z originalu: `HIWORD(dword_1BBA52) == 5` (mod 5, VESA
+linear). Port renderuje pres SDL do LINEARNIHO 640x480 bufferu
+(Port::Vga) - presne VESA linearni mod. Proto:
+- `sub_145FD2()` (VESA available?) v portu vraci **true** (misto
+  stub-int386x false) - port VESA-linearni framebuffer poskytuje.
+- `sub_1248AB` vzdy pouzije VESA cestu (sub_1252C2() -> 5), nezavisle na
+  hardwarovem SVGA priznaku, ktery v portu neexistuje.
+-> sub_125064 hit case 5 -> vtable naplnena (overeno checkpointem
+   `1248AB.videoMode`==5 / dword_1BB89C != NULL).
+
+Tim padly NULL-vtable pady. Intro (sub_24ED3) i menu render ted volaji
+skutecne mode-5 render funkce (sub_1255DF, sub_146348, sub_138Cxx...).
+
+### Stav
+
+Vtable OK, hra pokracuje dal do mode-5 render funkci, kde narazi na dalsi
+latentni chyby (intro sub_24ED3 interne; skipintro cesta font render
+sub_1212B3/sub_122309). Stejna trida (mis-sized buffery / uninit), resi
+se dal. Ladici: `1248AB.videoMode` (ma byt 5).
+
+## Hotovo - vlna 17: KORENOVA pricina korupce render vtable (dword_1BB89C/894/88C -> dword_1B9210)
+
+### Pricina (navazuje na vlnu 16)
+
+Po naplneni vtable (vlna 16) padalo volani `dword_1B9210(v0)` v sub_124ECB
+(v0 = nesmyslne cislo, napr. -387171584). Diagnostika checkpointy zjistila:
+- vtable je SPRAVNE naplnena hned po sub_125064 (`dword_1B9210 == sub_12439D`),
+- ale POZDEJI (v sub_124ECB) uz NE -> nekdo ji PREPSAL (memory corruption),
+- korupce nastava PRESNE behem volani `dword_1B920C()` = **sub_144A91**
+  (render kurzoru mysi, mode 5), mezi checkpointy before/after.
+
+`v0` samotne je neskodne: sub_144A91 je `void` (IDA minula navrat), takze
+"v0 = ...()" jen precte smeti z eax, a sub_12439D svuj argument ignoruje.
+Nesmyslne cislo bylo jen SYMPTOM, ne pricina.
+
+### Korenova pricina: mis-sized cursor buffery
+
+sub_144A91 zapisuje obraz kurzoru (26x24 = **624 bajtu**) do bufferu
+`dword_1BB8B0`, ktery MouseInit (sub_123491) nastavuje na `&unk_1B9E38`.
+Jenze `unk_1B9E38` (a druhy buffer `unk_1BA0A8`) byly zdekompilovane jako
+`_UNKNOWN` = **1 bajt**! Vzdalenost k dalsimu symbolu = 0x270 = 624 -
+presne velikost kurzoroveho bufferu. Zapis 624 B do 1B globalu pretekl o
+~623 B a KORUPTOVAL sousedni globaly vcetne render vtable (dword_1B920C/
+1B9210) -> pad.
+
+### Oprava
+
+MouseInit ted alokuje oba 624B cursor buffery na HALDE
+(`dword_1BB8B0/8B8 = (int)(intptr_t)nmalloc(624)`) misto 1B statickych
+globalu. Zamerne NErozsiruji staticke globaly na char[624] - posunulo by
+to BSS layout a rozbilo jine mis-sized buffery (overeno: takova zmena
+zpusobila jiny pad). Halda = zadny posun layoutu, buffer spravne velky ->
+sub_144A91 uz nepretika, vtable zustava intaktni.
+
+Take opraven Hex-Rays uninit-return v `sub_12439D` (`int result = 0`).
+
+### Poznamka k overeni / divergence
+
+Muj lokalni build ma jeste JEDEN pad DRIV nez se sem dostane - v
+`sub_128C32` (clear-rect) uvnitr intra (sub_24ED3), pravdepodobne
+planarni (mode-X) adresace na plochem SDL framebufferu nebo dalsi
+mis-sized/uninit video stav odhaleny mode-5 renderem (vlna 16). Uzivateluv
+build se pres sub_128C32 dostane (dosahuje sub_124ECB) - stavy se
+rozchazeji. Korekce vtable je ale analyticky prokazana (korupce zmerena
+checkpointy) a je to prima oprava nahlaseneho padu dword_1BB89C/894/88C.
+
+### Dalsi krok
+
+Render pipeline v mode 5: sub_128C32 (clear-rect) - overit planarni vs
+linearni adresaci na Port::Vga bufferu, clip bounds (dword_1BBA4A/4E/52,
+word_1845D8) a screen pitch dword_184532 (stub 0 v link_stubs.c - meho by
+mel byt 640/nasobek). Pak dalsi render funkce mode 5.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

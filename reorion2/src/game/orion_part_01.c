@@ -100,7 +100,6 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
     int16_t menuBuf[128];     // [ebp+0x7e] - pracovni/zpravovy buffer menu (a6)
     unsigned int lang;
 
-    PortDebug_Checkpoint("tail.enter", 0);
     sub_10A72();                              // 01010A
     PortDebug_Checkpoint("tail.after_10A72", 0);
     sub_11919E((int)sub_FE8BE);               // 010119 (eax=&sub_FE8BE)
@@ -112,7 +111,6 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
     sub_7A06C();                              // 01014A
     PortDebug_Checkpoint("tail.before_10CB5", 0);
     resBuf = sub_10CB5(16, 1);                // 01014F (eax=0x10,edx=1)
-    PortDebug_Checkpoint("tail.after_10CB5", (int)(intptr_t)resBuf);
     byte_19A005 = 1;                          // 010154
     // DOCASNE (ladeni vlny 15): intro sub_24ED3 zatim pada v grafickem
     // pipeline (dalsi mis-sized buffery) - preskoceni pres env REORION2_SKIPINTRO
