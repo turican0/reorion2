@@ -71,6 +71,14 @@ int    PortFile_Seek(int handle, long offset, int origin);
 long   PortFile_Tell(int handle);
 int    PortFile_Flush(int handle);
 int    PortFile_Access(const char* path, int mode);
+/* Znakove/textove stdio - vlna 15 (viz port_file.cpp). Stream = int handle. */
+char*  PortFile_Gets(char* buffer, int n, int handle);
+int    PortFile_Getc(int handle);
+int    PortFile_Putc(int c, int handle);
+int    PortFile_Puts(const char* s, int handle);
+int    PortFile_Setbuf(int handle, char* buf);
+int    PortFile_Printf(int handle, const char* fmt, ...);
+int    PortFile_Scanf(int handle, const char* fmt, ...);
 #ifdef __cplusplus
 }
 #endif
@@ -97,6 +105,19 @@ int    PortFile_Access(const char* path, int mode);
 #define ftell(str)                 PortFile_Tell(str)
 #define fflush(str)                PortFile_Flush(str)
 #define access(path, mode)         PortFile_Access((path), (mode))
+
+/* Znakove/textove stdio (vlna 15) - stream je int handle z PortFile_Open,
+   ne FILE*. fgets/fscanf/fprintf maji v dekompilaci casto navic zdvojeny
+   posledni argument (Hex-Rays artefakt) - variadicka makra ho zahodi.
+   fprintf smeruje vyhradne na herni handle (AIL debug log dword_1C0E50 /
+   dword_1849E6), nikdy na stdout/stderr - viz analyza vlny 15. */
+#define fgets(buf, n, str, ...)    PortFile_Gets((buf), (n), (str))
+#define fgetc(str)                 PortFile_Getc(str)
+#define fputc(c, str)              PortFile_Putc((c), (str))
+#define fputs(s, str)              PortFile_Puts((s), (str))
+#define setbuf(str, buf)           PortFile_Setbuf((str), (buf))
+#define fscanf(str, ...)           PortFile_Scanf((str), __VA_ARGS__)
+#define fprintf(str, ...)          PortFile_Printf((str), __VA_ARGS__)
 
 /* ---- DOS FINDFIRST/FINDNEXT (vlna 08) ----
    "unknown_libname_1"/"unknown_libname_2" jsou puvodni Watcom v9.x DOS
@@ -141,6 +162,8 @@ extern "C" {
 void PortDebug_Checkpoint(const char* name, int value);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
+/* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */
+unsigned int PortDos_BiosTick(void);
 #ifdef __cplusplus
 }
 #endif

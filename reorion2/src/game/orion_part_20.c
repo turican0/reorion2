@@ -490,7 +490,7 @@ int __fastcall sub_12C117(int a1, int a2, int a3, int a4)
 //----- (0012C2A0) --------------------------------------------------------
 void sub_12C2A0()
 {
-  dword_1845DC = MEMORY[0x46C];
+  dword_1845DC = PortDos_BiosTick(); // vlna 15: drive MEMORY[0x46C] (BIOS tick)
 }
 // 1845DC: using guessed type int dword_1845DC;
 
@@ -498,8 +498,12 @@ void sub_12C2A0()
 //----- (0012C2C6) --------------------------------------------------------
 int __fastcall sub_12C2C6(int result)
 {
-  while ( MEMORY[0x46C] - dword_1845DC >= 0 && MEMORY[0x46C] - dword_1845DC - result < 0 )
-    ;
+  // Cekej `result` BIOS ticku od posledniho snapshotu (sub_12C2A0). VLNA 15:
+  // drive busy-wait na MEMORY[0x46C] - v portu mrtvy stub (nekonecna smycka).
+  // Ted realny cas pres PortDos_BiosTick + prubezne vykreslovani, aby byla
+  // animace videt a okno reagovalo.
+  while ( (int)(PortDos_BiosTick() - dword_1845DC) < result )
+    PortVga_WaitVsync();
   return result;
 }
 // 1845DC: using guessed type int dword_1845DC;

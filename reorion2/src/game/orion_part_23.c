@@ -5749,7 +5749,7 @@ char sub_15C730()
     else
     {
       dword_18A5AC = (int (__fastcall *)(_DWORD))&off_15C810;
-      dword_18A5B0 = -MEMORY[0x46C];
+      dword_18A5B0 = -(int)PortDos_BiosTick(); // vlna 15: drive MEMORY[0x46C]
       hr_outbyte(0x43u, 0x34u);
       hr_outbyte(0x40u, 0);
       result = 0;

@@ -1060,6 +1060,76 @@ pridana vysvetlujici poznamka. Skutecnou hodnotu ma report pro bloky
 pribyvajici BEHEM hrani (az pobezi herni smycka) - tam by kazdy novy
 zaznam znamenal skutecny leak oproti originalu.
 
+## Hotovo - vlna 15: rekonstrukce OCASU GameMain_10057 - proc hra "skoncila"
+
+### Pricina (navazuje na vlnu 13)
+
+Hra po startu hned skoncila (GameMain se vratil do main() -> shutdown).
+Duvod: IDA zahodila CELY ocas GameMain_10057 za volanim
+RunGameAndExit_113D47 jako nedosazitelny (spatny __noreturn na
+CalibrateCpuTick_132AA4, viz vlna 13). V tom ocasu je ale intro
+(sub_24ED3) a **hlavni menu/herni smycka sub_1049B** - bez nej hra nemela
+co delat a vratila se.
+
+### Rekonstrukce ocasu (ref/GameMain_10057.orig.asm.txt)
+
+Kompletni ocas prelozen z disassemblingu bezici hry (nova DOSBox akce
+DUMPMEM z vlny 13). Registrove argumenty ~15 volani OVERENY DUMPREGS
+primo z originalu (eip = IDA+0x224000). Klice:
+- default (bez argv) nastavi `word_199A08 = 10` -> menu stav sub_816F2
+  (MAINMENU.LBX). sub_1049B je soberstacna smycka (bezi dokud
+  word_199A08 != 7 = quit).
+- sub_24ED3 dostava jako a1 navrat sub_10CB5 (buffer intra).
+- konec: lokalizovane "Thanks for playing" (byte_199CAE=jazyk) + exit
+  (sub_126487, noreturn). switche = lokalizovane hlasky ("Loading..." /
+  "Thanks for playing"), obsah nacten DUMPMEM.
+GameMain zustava spravne __noreturn (konci pres sub_126487->exit).
+
+### Doprovodne opravy (nutne, aby ocas vubec bezel)
+
+1. **BIOS tick** (`PortDos_BiosTick`, port_dos.cpp): MEMORY[0x46C] byl
+   mrtvy stub -> cekaci smycky (intro, pacing sub_12C2C6, casovani
+   orion_part_23) se tocily donekonecna. Ted odvozeno z realneho casu
+   (SDL_GetTicks, ~18.2 Hz). sub_12C2C6 navic prubezne vykresluje.
+2. **Nepresmerovane stdio** (port_file.cpp + hexrays_compat.h): fgets/
+   fgetc/fputc/fputs/fscanf/fprintf/setbuf dostavaly INT handle (z
+   PortFile_Open) misto FILE* -> pad hned pri cteni ORIONCD.INI v
+   sub_10A72. Presmerovano na PortFile_Gets/Getc/Putc/Puts/Scanf/Printf/
+   Setbuf (variadicka makra zahodi Hex-Rays zdvojeny stream argument).
+   Vsechny fprintf smeruji na herni handle (AIL debug), nikdy stdout.
+3. **Mis-sized buffery**: `unk_1B3E20` (1B -> char[84], filename buffer);
+   `byte_1BB358` (nedokoncene pole -> char[1024], cil 1024B kopie v
+   sub_1205E6; DECOMP_TODO: cely usek 0x1BB358..0x1BB758 je ve
+   skutecnosti jeden buffer rozsekany IDA na ~19 symbolu - zatim
+   standalone, palety necti pres aliasy).
+4. **Uninit-return** `sub_2484F` (`int result;` -> `= 0`, Hex-Rays
+   artefakt, Debug RTC jinak pada; stejna trida jako vlna 02).
+
+### Stav: hra bezi VYRAZNE dal, ale jeste ne do menu
+
+Overeno (REORION2_TRACE=1 checkpointy): po pridani ocasu hra prochazi
+CELOU init sekvenci - sub_10A72 (ORIONCD.INI), sub_1205E6, sub_10CB5,
+sub_2484F, sub_FE8BE, sub_124878, sub_124B65, sub_8E5C5, sub_120BB5,
+sub_124D41 - az k **vykreslovani textu** (sub_1212B3 "Loading..." ->
+sub_122309 render znaku), kde pada. Drive skoncila hned po
+RunGameAndExit.
+
+Zbyvajici pady jsou LATENTNI chyby (mis-sized buffery / uninit-return /
+IDA-rozsekane regiony) v kodu, ktery se DRIVE NIKDY nespustil (font/
+grafika render pipeline, pak menu). Jde o stejnou tridu jako vlny 11/12/
+tato - resi se postupne. Ladici pomucky ponechany:
+- `REORION2_TRACE=1` -> DIAG checkpointy (vc. jemnych "tail.*" v ocasu),
+- `REORION2_SKIPINTRO=1` -> preskoci intro (sub_24ED3, nastavi byte_19A004),
+  aby slo testovat menu cestu nezavisle na intru.
+
+### Dalsi krok
+
+Pokracovat v bisekci render pipeline od sub_122309 (font glyph render):
+nejspis mis-sized font buffer nebo out-of-bounds glyph. Pak menu
+(sub_816F2 -> MAINMENU.LBX). Az bude menu videt, doresit intro
+(sub_24ED3) a nakonec vstup (SDL klavesnice -> ring buffer dword_1BC2AC /
+INT 9 emulace, aby menu reagovalo - mys uz funguje pres int386/INT 33h).
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

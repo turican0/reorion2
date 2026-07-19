@@ -879,7 +879,8 @@ int sub_2484F()
   int16_t v0; // dx
   int v1; // eax
   int v2; // eax
-  int result; // eax
+  int result = 0; // eax  // vlna 15: Hex-Rays artefakt neinicializovaneho navratu
+                          // (byte_199BEF != 1 -> return result). Debug RTC jinak pada.
 
   if ( byte_199BEF == 1 )
   {

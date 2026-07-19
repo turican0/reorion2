@@ -20413,7 +20413,7 @@ extern char byte_1B3E18;
 extern char byte_1B3E1B;
 extern char byte_1B3E1C;
 extern char byte_1B3E1D;
-extern _UNKNOWN unk_1B3E20;
+extern char unk_1B3E20[84]; // vlna 15
 extern int dword_1B3E74;
 extern int dword_1B3E78;
 extern char byte_1B3E7C[6];

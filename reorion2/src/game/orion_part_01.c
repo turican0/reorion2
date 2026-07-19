@@ -65,6 +65,155 @@ void __usercall __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   SelectResourceModule_111959(dword_19916C);
   PortDebug_Checkpoint("GameMain.beforeRunGame", 0);
   RunGameAndExit_113D47(4, v6);
+
+  // =================== OCAS GameMain_10057 (vlna 15) ===================
+  // Vse za timto bodem IDA ZAHODILA jako nedosazitelne kvuli spatnemu
+  // __noreturn na CalibrateCpuTick_132AA4 (selhana dekompilace, viz vlna
+  // 13). RunGameAndExit_113D47 se ale VRACI a GameMain pokracuje:
+  // doinicializuje, prehraje intro (sub_24ED3 = MicroProse/SimTex loga),
+  // spusti hlavni menu smycku (sub_1049B) a na konci vypise lokalizovane
+  // "Thanks for playing" a ukonci hru (sub_126487 = noreturn). Bez tohoto
+  // ocasu se GameMain hned vratil do main() a hra "skoncila".
+  // Rekonstruovano z ref/GameMain_10057.orig.asm.txt (kompletni
+  // disassembling z bezici hry). Registrove argumenty overeny DUMPREGS.
+  // Adresy kodu = IDA+0x224000, data = IDA+0x216000.
+  {
+    // Lokalizovane retezce (byte_199CAE = jazyk: 0=EN,1=DE,2=FR,3=ES,4=IT).
+    // Puvodne kopirovane rep-movs ze switche do bufferu (0x1780a1.., 0x1781b5..),
+    // presny obsah nacten DUMPMEM z originalu.
+    static const char *const kLoadingMsg[5] = {
+      "Loading Master of Orion II, please wait....",
+      "Master of Orion II wird geladen, bitte warten....",
+      "Chargement de Master of Orion II en cours, veuillez patienter....",
+      "Cargando Master of Orion II, espera, por favor...",
+      "Caricamento di Master of Orion II. Attendere, prego..." };
+    static const char *const kThanksMsg[5] = {
+      "Thanks for playing Master of Orion ][",
+      "Danke, da\x9f Sie Master of Orion II gew\x84" "hlt haben.",
+      "Merci de jouer \x85 Master of Orion II",
+      "Gracias por jugar con Master of Orion II",
+      "Grazie per aver giocato a Master of Orion II !" };
+    _BYTE *resBuf;            // navratova hodnota sub_10CB5 (buffer intra)
+    char loadingBuf[80];      // [ebp-0x26] - pracovni buffer hlasky "Loading"
+    char thanksBuf[80];       // byte_199F3C - buffer zaverecne hlasky
+    char saveNameBuf[16];     // [ebp+0x5e] - rozresena cesta save10.gam
+    int16_t menuBuf[128];     // [ebp+0x7e] - pracovni/zpravovy buffer menu (a6)
+    unsigned int lang;
+
+    PortDebug_Checkpoint("tail.enter", 0);
+    sub_10A72();                              // 01010A
+    PortDebug_Checkpoint("tail.after_10A72", 0);
+    sub_11919E((int)sub_FE8BE);               // 010119 (eax=&sub_FE8BE)
+    sub_1205E6(5, 0, 255);                    // 010125 (eax=5,edx=0,ebx=0xFF)
+    PortDebug_Checkpoint("tail.after_1205E6", 0);
+    sub_123E6C((int)&unk_17CF00, 1);          // 010134 (eax=&unk_17CF00,edx=1)
+    sub_123387(2);                            // 01013E
+    byte_199F3A = 0;                          // 010143
+    sub_7A06C();                              // 01014A
+    PortDebug_Checkpoint("tail.before_10CB5", 0);
+    resBuf = sub_10CB5(16, 1);                // 01014F (eax=0x10,edx=1)
+    PortDebug_Checkpoint("tail.after_10CB5", (int)(intptr_t)resBuf);
+    byte_19A005 = 1;                          // 010154
+    // DOCASNE (ladeni vlny 15): intro sub_24ED3 zatim pada v grafickem
+    // pipeline (dalsi mis-sized buffery) - preskoceni pres env REORION2_SKIPINTRO
+    // dovoluje otestovat menu. Bez env se chova jako original (intro bezi).
+    if ( getenv("REORION2_SKIPINTRO") )
+      byte_19A004 = 1;
+    if ( !byte_19A004 )                       // 01015B (default: byte_19A004==0)
+    {
+      PortDebug_Checkpoint("tail.before_intro", 0);
+      sub_24ED3((int16_t *)resBuf);           // 010164 (a1 = navrat sub_10CB5) -> INTRO
+      PortDebug_Checkpoint("tail.after_intro", 0);
+      sub_11919E((int)sub_FE8BE);             // 010173
+      sub_1205E6(5, 0, 255);                  // 01017F
+      sub_123E6C((int)&unk_17CF00, 1);        // 01018E
+    }
+    PortDebug_Checkpoint("tail.before_2484F", 0);
+    sub_2484F();                              // 010193
+    PortDebug_Checkpoint("tail.after_2484F", 0);
+    // DECOMP_TODO: sub_FE8BE/sub_CDF65 zde dostavaji leftover registry (zadne
+    // explicitni nastaveni v asm) - predano 0; sub_FE8BE je bezny "update"
+    // volany 700x jinde, nuly jsou bezpecne.
+    sub_FE8BE(0, 0, 0, 0);                    // 010198
+    PortDebug_Checkpoint("tail.after_FE8BE", 0);
+    IsMemPoolReady_110B5C();                  // 01019D
+    if ( dword_19327C )                       // 0101A2
+      sub_124820(dword_19327C);               // 0101B0
+    else
+      sub_124878();                           // 0101B7
+    PortDebug_Checkpoint("tail.after_124878", 0);
+    byte_199F05 = 0;                          // 0101BC
+    sub_124B65();                             // 0101D5 (ebx/edx/ecx/edi telo ignoruje)
+    PortDebug_Checkpoint("tail.after_124B65", 0);
+    byte_199F34 = 0x75;                       // 0101DF
+    PortDebug_Checkpoint("tail.before_8E5C5", 0);
+    resBuf = (_BYTE *)sub_8E5C5(4, 0, 0);     // 0101E6 (a1=4) - vrati buffer barvy
+    sub_120BB5(4, (int)resBuf);               // 0101F9 (cte 8 bajtu z bufferu)
+    sub_124D41();                             // 0101FE
+    PortDebug_Checkpoint("tail.before_switch1", (uint8_t)byte_199CAE);
+
+    // switch1 (010203): lokalizovana hlaska "Loading..." -> sub_1212B3
+    lang = (unsigned int)(uint8_t)byte_199CAE <= 4u ? (uint8_t)byte_199CAE : 0u;
+    strcpy(loadingBuf, kLoadingMsg[lang]);
+    sub_1212B3(5, 10, (int)loadingBuf);       // 010271 (eax=5,edx=0xa,ebx=&buf)
+    PortDebug_Checkpoint("tail.after_1212B3", 0);
+
+    sub_FE8BE(0, 0, 0, 0);                    // 010276
+    sub_124ECB();                             // 01027B
+    sub_13174(0, 0, menuBuf);                 // 010280 (a3=buffer)
+    PortDebug_Checkpoint("tail.after_13174", 0);
+    sub_7A816();                              // 010285
+    sub_FECDA();                              // 01028A
+    sub_CDF65(0, 0, 0);                       // 01028F
+    sub_FE8BE(0, 0, 0, 0);                    // 010294
+    PortDebug_Checkpoint("tail.after_294", 0);
+
+    // Prekopirovani argv[1] do jmena savu (jen kdyz argc>=2) - 010299.
+    // DECOMP_TODO: word_18FF78 je puvodne vetsi buffer (IDA ho zmensila na
+    // int16_t); pri argc>=2 se sem strcpy jmeno savu. Default argc==1.
+    if ( a1 < 2 )
+      *(char *)&word_18FF78 = 0;
+    else
+      strcpy((char *)&word_18FF78, ((char **)a2)[1]);
+
+    // Vyber pocatecniho herniho stavu (word_199A08) - 0102BD..010360.
+    if ( byte_19A007 )
+    {
+      // DECOMP_TODO: vetev ladeni/editoru (byte_19A007 nastavi jen prepinac
+      // prikazove radky, default 0 -> preskoceno). Rekonstruovano best-effort.
+      if ( sub_1202D() )
+      {
+        sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB1);
+        word_199A08 = 0x27;
+      }
+      else
+      {
+        word_199A08 = 10;
+      }
+    }
+    else if ( *(char *)&word_18FF78 == 'q'
+              && FindMoxSetPath_1114D7("save10.gam", saveNameBuf) )
+    {
+      // Rychle nacteni savu z prikazove radky (nedefaultni).
+      sub_10E2F(9, 0, 0, 0);
+      if ( byte_199F3A == 1 )
+        word_199A08 = 17;
+    }
+    else
+    {
+      word_199A08 = 10;   // <<< NORMALNI START: hlavni menu (sub_816F2)
+    }
+
+    nullsub_3(0);                             // 010360
+    PortDebug_Checkpoint("GameMain.beforeMenu", word_199A08);
+    sub_1049B(0, 0, 0, 0, 0, (char *)menuBuf);   // <<< HLAVNI MENU/HERNI SMYCKA
+    PortDebug_Checkpoint("GameMain.afterMenu", 0);
+
+    // switch2 (01036A): lokalizovane "Thanks for playing" + ukonceni hry.
+    lang = (unsigned int)(uint8_t)byte_199CAE <= 4u ? (uint8_t)byte_199CAE : 0u;
+    strcpy(thanksBuf, kThanksMsg[lang]);
+    sub_126487(thanksBuf, 0);                 // noreturn: printf + exit
+  }
 }
 // 100A0: variable 'v3' is possibly undefined
 // 12479: using guessed type _DWORD __stdcall sub_12479(_DWORD, _DWORD);

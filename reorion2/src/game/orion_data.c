@@ -17677,7 +17677,7 @@ char byte_1B3E18; // weak
 char byte_1B3E1B; // weak
 char byte_1B3E1C; // weak
 char byte_1B3E1D; // weak
-_UNKNOWN unk_1B3E20; // weak
+char unk_1B3E20[84]; // vlna 15: filename buffer (0x1B3E20..0x1B3E74), drive _UNKNOWN/1B
 int dword_1B3E74; // weak
 int dword_1B3E78; // weak
 char byte_1B3E7C[6]; // weak
@@ -17735,7 +17735,14 @@ char byte_1BB354[]; // weak
 char byte_1BB355[]; // weak
 char byte_1BB356[]; // weak
 char byte_1BB357[]; // weak
-char byte_1BB358[]; // weak
+// VLNA 15: puvodne "char byte_1BB358[]" (nedokoncene pole). sub_1205E6
+// do nej kopiruje 1024 bajtu (paletova/barevna tabulka 0x1BB358..0x1BB758).
+// IDA cely 1024B usek rozsekala na desitky jednotlivych symbolu (byte_1BB359,
+// 35B[318], 499, 49B[253]...), takze kopie by prepisovala sousedni globaly
+// -> pad. Standalone 1024B buffer prepis zastavi. DECOMP_TODO: jednotlive
+// byte_1BB35x/49x/59x/61x/65x symboly do nej zatim NEaliasuji (paletova data
+// se pres ne necti) - plny overlay az bude potreba barevna presnost.
+char byte_1BB358[1024]; // weak
 char byte_1BB359[]; // weak
 char byte_1BB35A[]; // weak
 char byte_1BB35B[318]; // weak

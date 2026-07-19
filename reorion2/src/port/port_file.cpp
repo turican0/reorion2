@@ -1,6 +1,7 @@
 #include "port_file.h"
 
 #include <cstdio>
+#include <cstdarg>
 #include <cstdlib>
 #include <string>
 #include <cstring>
@@ -464,6 +465,72 @@ int PortFile_Flush(int handle)
 {
     FILE* f = PortFile_Resolve(handle);
     return f ? std::fflush(f) : -1;
+}
+
+// ---------------------------------------------------------------------
+// Znakove/textove stdio (vlna 15). Dekompilovany kod vola fgets/fgetc/
+// fputc/fputs/fscanf/fprintf/setbuf s INT handlem (z PortFile_Open), ale
+// tyto funkce NEBYLY presmerovane - jako skutecne CRT funkce ocekavaji
+// FILE* a int handle predany jako FILE* je zpusobil pad (napr. cteni
+// ORIONCD.INI v sub_10A72 pres fgets). Presmerovano sem, stejny handle
+// system jako fread/fwrite. Prvni "stream" argument je vzdy int handle.
+char* PortFile_Gets(char* buffer, int n, int handle)
+{
+    FILE* f = PortFile_Resolve(handle);
+    return f ? std::fgets(buffer, n, f) : nullptr;
+}
+
+int PortFile_Getc(int handle)
+{
+    FILE* f = PortFile_Resolve(handle);
+    return f ? std::fgetc(f) : EOF;
+}
+
+int PortFile_Putc(int c, int handle)
+{
+    FILE* f = PortFile_Resolve(handle);
+    return f ? std::fputc(c, f) : EOF;
+}
+
+int PortFile_Puts(const char* s, int handle)
+{
+    FILE* f = PortFile_Resolve(handle);
+    return f ? std::fputs(s, f) : EOF;
+}
+
+int PortFile_Setbuf(int handle, char* buf)
+{
+    FILE* f = PortFile_Resolve(handle);
+    if (f)
+        std::setbuf(f, buf);
+    return 0;
+}
+
+int PortFile_Vfprintf(int handle, const char* fmt, va_list ap)
+{
+    FILE* f = PortFile_Resolve(handle);
+    return f ? std::vfprintf(f, fmt, ap) : 0;
+}
+
+int PortFile_Printf(int handle, const char* fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    int r = PortFile_Vfprintf(handle, fmt, ap);
+    va_end(ap);
+    return r;
+}
+
+int PortFile_Scanf(int handle, const char* fmt, ...)
+{
+    FILE* f = PortFile_Resolve(handle);
+    if (!f)
+        return -1; // EOF
+    va_list ap;
+    va_start(ap, fmt);
+    int r = std::vfscanf(f, fmt, ap);
+    va_end(ap);
+    return r;
 }
 
 int PortFile_Access(const char* path, int mode)

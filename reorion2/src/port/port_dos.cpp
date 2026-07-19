@@ -2,6 +2,7 @@
 #include "port_mouse.h"
 #include "port_vga.h"
 
+#include <SDL3/SDL.h>
 #include <cstring>
 
 #include <cstdio>
@@ -201,6 +202,16 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
     // cflag, vyresit cilene u ni.
     std::memcpy(outRegs, &regs, 24);
     return (int)regs.eax; // Watcom int386 vraci AX/EAX po preruseni
+}
+
+unsigned int PortDos_BiosTick(void)
+{
+    // Nahrada za BIOS tick counter na adrese 0x0040:006C (MEMORY[0x46C]),
+    // ktery na PC inkrementuje 1193182/65536 = ~18.2065x za sekundu (vlna 15).
+    // V portu je MEMORY[] mrtvy stub - herni cekaci smycky (intro sub_24ED3,
+    // pacing sub_12C2C6, casovani v orion_part_23) se na nem tocily donekonecna
+    // nebo hned protekly. Odvozeno z realneho casu (SDL_GetTicks, ms).
+    return (unsigned int)((uint64_t)SDL_GetTicks() * 1193182ull / 65536000ull);
 }
 
 void PortDebug_Checkpoint(const char* name, int value)
