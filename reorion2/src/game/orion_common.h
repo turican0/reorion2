@@ -19,6 +19,130 @@ typedef struct
 #pragma pack(pop)
 //static_assert(sizeof(SaveSlotInfo) == 37, "SaveSlotInfo musi mit 37 bajtu");
 
+// ==== State/settings block 0x199BDC..0x199E05 (553 bytes) - wave 18. ====
+// Extracted from ~52 individual IDA globals into one packed struct so the
+// original contiguous memory layout is preserved and the region is easier to
+// navigate. Member names keep the absolute address (e.g. b_199CAE = language
+// byte at 0x199CAE). Old symbol names stay valid through the #define macros
+// below, so existing decompiled code compiles unchanged. reserved_* are gaps
+// (unmapped bytes) present in the original layout.
+#pragma pack(push, 1)
+typedef struct
+{
+    char     b_199BDC;
+    char     b_199BDD;
+    char     b_199BDE;
+    char     b_199BDF;
+    char     b_199BE0;
+    char     b_199BE1;
+    char     b_199BE2;
+    char     b_199BE3;
+    char     b_199BE4;
+    char     b_199BE5;
+    char     b_199BE6;
+    char     b_199BE7;
+    char     b_199BE8;
+    char     b_199BE9;
+    char     b_199BEA;
+    char     b_199BEB;
+    char     reserved_199BEC[1];
+    char     b_199BED;
+    char     b_199BEE;
+    char     b_199BEF;
+    char     b_199BF0;
+    char     b_199BF1;
+    char     b_199BF2;
+    char     b_199BF3;
+    char     reserved_199BF4[5];
+    char     b_199BF9;
+    _BYTE    algn_m_199BFA[2];
+    int      d_199BFC;
+    int      d_199C00;
+    char     b_199C04;
+    int      d_199C05;
+    int      d_199C09;
+    int      d_199C0D;
+    char     reserved_199C11[26];
+    char     b_199C2B[30];
+    char     b_199C49[30];
+    char     b_199C67[40];
+    char     b_199C8F;
+    char     b_199C90;
+    char     b_199C91;
+    char     b_199C92;
+    char     b_199C93;
+    char     b_199C94;
+    char     reserved_199C95[25];
+    char     b_199CAE;
+    char     b_199CAF;
+    char     b_199CB0;
+    char     b_199CB1;
+    char     b_199CB2;
+    char     b_199CB3;
+    char     b_199CB4;
+    char     b_199CB5;
+    int      d_199CB6;
+    int16_t  w_199CBA;
+    int16_t  w_199CBC;
+    int16_t  w_199CBE;
+    char     reserved_199CC0[325];
+} TypeStateBlock_199BDC;
+#pragma pack(pop)
+extern TypeStateBlock_199BDC stateBlock_199BDC;
+
+#define byte_199BDC stateBlock_199BDC.b_199BDC
+#define byte_199BDD stateBlock_199BDC.b_199BDD
+#define byte_199BDE stateBlock_199BDC.b_199BDE
+#define byte_199BDF stateBlock_199BDC.b_199BDF
+#define byte_199BE0 stateBlock_199BDC.b_199BE0
+#define byte_199BE1 stateBlock_199BDC.b_199BE1
+#define byte_199BE2 stateBlock_199BDC.b_199BE2
+#define byte_199BE3 stateBlock_199BDC.b_199BE3
+#define byte_199BE4 stateBlock_199BDC.b_199BE4
+#define byte_199BE5 stateBlock_199BDC.b_199BE5
+#define byte_199BE6 stateBlock_199BDC.b_199BE6
+#define byte_199BE7 stateBlock_199BDC.b_199BE7
+#define byte_199BE8 stateBlock_199BDC.b_199BE8
+#define byte_199BE9 stateBlock_199BDC.b_199BE9
+#define byte_199BEA stateBlock_199BDC.b_199BEA
+#define byte_199BEB stateBlock_199BDC.b_199BEB
+#define byte_199BED stateBlock_199BDC.b_199BED
+#define byte_199BEE stateBlock_199BDC.b_199BEE
+#define byte_199BEF stateBlock_199BDC.b_199BEF
+#define byte_199BF0 stateBlock_199BDC.b_199BF0
+#define byte_199BF1 stateBlock_199BDC.b_199BF1
+#define byte_199BF2 stateBlock_199BDC.b_199BF2
+#define byte_199BF3 stateBlock_199BDC.b_199BF3
+#define byte_199BF9 stateBlock_199BDC.b_199BF9
+#define algn_199BFA stateBlock_199BDC.algn_m_199BFA
+#define dword_199BFC stateBlock_199BDC.d_199BFC
+#define dword_199C00 stateBlock_199BDC.d_199C00
+#define byte_199C04 stateBlock_199BDC.b_199C04
+#define dword_199C05 stateBlock_199BDC.d_199C05
+#define dword_199C09 stateBlock_199BDC.d_199C09
+#define dword_199C0D stateBlock_199BDC.d_199C0D
+#define byte_199C2B stateBlock_199BDC.b_199C2B
+#define byte_199C49 stateBlock_199BDC.b_199C49
+#define byte_199C67 stateBlock_199BDC.b_199C67
+#define byte_199C8F stateBlock_199BDC.b_199C8F
+#define byte_199C90 stateBlock_199BDC.b_199C90
+#define byte_199C91 stateBlock_199BDC.b_199C91
+#define byte_199C92 stateBlock_199BDC.b_199C92
+#define byte_199C93 stateBlock_199BDC.b_199C93
+#define byte_199C94 stateBlock_199BDC.b_199C94
+#define byte_199CAE stateBlock_199BDC.b_199CAE
+#define byte_199CAF stateBlock_199BDC.b_199CAF
+#define byte_199CB0 stateBlock_199BDC.b_199CB0
+#define byte_199CB1 stateBlock_199BDC.b_199CB1
+#define byte_199CB2 stateBlock_199BDC.b_199CB2
+#define byte_199CB3 stateBlock_199BDC.b_199CB3
+#define byte_199CB4 stateBlock_199BDC.b_199CB4
+#define byte_199CB5 stateBlock_199BDC.b_199CB5
+#define dword_199CB6 stateBlock_199BDC.d_199CB6
+#define word_199CBA stateBlock_199BDC.w_199CBA
+#define word_199CBC stateBlock_199BDC.w_199CBC
+#define word_199CBE stateBlock_199BDC.w_199CBE
+
 /* ==== deklarace vsech funkci - odvozene primo z definic, aby typy
    vzdy presne sedely (puvodni Hex-Rays hlavicka byla u cca 700
    funkci s registrovymi anotacemi jen v komentari a neshodovala
@@ -18653,58 +18777,6 @@ extern int16_t word_199BCD;
 extern char byte_199BCF[4];
 extern int16_t word_199BD3;
 extern char byte_199BD5;
-extern char byte_199BDC;
-extern char byte_199BDD;
-extern char byte_199BDE;
-extern char byte_199BDF;
-extern char byte_199BE0;
-extern char byte_199BE1;
-extern char byte_199BE2;
-extern char byte_199BE3;
-extern char byte_199BE4;
-extern char byte_199BE5;
-extern char byte_199BE6;
-extern char byte_199BE7;
-extern char byte_199BE8;
-extern char byte_199BE9;
-extern char byte_199BEA;
-extern char byte_199BEB;
-extern char byte_199BED;
-extern char byte_199BEE;
-extern char byte_199BEF;
-extern char byte_199BF0;
-extern char byte_199BF1;
-extern char byte_199BF2;
-extern char byte_199BF3;
-extern char byte_199BF9;
-extern _BYTE algn_199BFA[2];
-extern int dword_199BFC;
-extern int dword_199C00;
-extern char byte_199C04;
-extern int dword_199C05;
-extern int dword_199C09;
-extern int dword_199C0D;
-extern char byte_199C2B[30];
-extern char byte_199C49[30];
-extern char byte_199C67[40];
-extern char byte_199C8F;
-extern char byte_199C90;
-extern char byte_199C91;
-extern char byte_199C92;
-extern char byte_199C93;
-extern char byte_199C94;
-extern char byte_199CAE;
-extern char byte_199CAF;
-extern char byte_199CB0;
-extern char byte_199CB1;
-extern char byte_199CB2;
-extern char byte_199CB3;
-extern char byte_199CB4;
-extern char byte_199CB5;
-extern int dword_199CB6;
-extern int16_t word_199CBA;
-extern int16_t word_199CBC;
-extern int16_t word_199CBE;
 extern char byte_199E05[63];
 extern char byte_199E44[126];
 extern char byte_199EC2[];

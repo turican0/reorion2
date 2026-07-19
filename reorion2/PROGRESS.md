@@ -1221,6 +1221,41 @@ linearni adresaci na Port::Vga bufferu, clip bounds (dword_1BBA4A/4E/52,
 word_1845D8) a screen pitch dword_184532 (stub 0 v link_stubs.c - meho by
 mel byt 640/nasobek). Pak dalsi render funkce mode 5.
 
+## Done - wave 18: extracted state/settings block 0x199BDC..0x199E05 into a struct
+
+(From this wave on, PROGRESS.md entries are written in English, per the
+updated prompt.md rule. Older Czech entries are kept as-is.)
+
+Refactoring task (readability, not a bug fix), same spirit as
+`TypeSaveSlotInfo_199699`: the 553-byte region `0x199BDC..0x199E05`
+(byte_199E05 is the next symbol; 0x199E05-0x199BDC = 0x229 = 553) was a
+long list of ~52 individual IDA globals (byte_/word_/dword_/algn_) with
+gaps. Extracted into one packed struct **`TypeStateBlock_199BDC`** in
+orion_common.h, with a single instance `stateBlock_199BDC` in orion_data.c.
+
+- **Member names keep the absolute address** for future navigation:
+  `b_199CAE` (language byte), `d_199BFC`, `w_199CBA`, arrays `b_199C2B[30]`
+  etc. IDA gaps are `reserved_XXXXXX[N]`; the one alignment filler is
+  `algn_m_199BFA[2]`.
+- **Old symbol names stay valid** via `#define byte_199CAE
+  stateBlock_199BDC.b_199CAE` (52 macros), so all existing decompiled code
+  compiles unchanged - same overlay technique as waves 11/12/17.
+- `#pragma pack(push,1)` guarantees the exact original layout; the 52
+  `extern` declarations were removed from orion_common.h.
+
+Safety checks before the change: no link_stubs.c duplicates, no
+cross-symbol pointer arithmetic (`&byte_199... +/- N`), arrays only used
+by address. Build is clean and runtime behavior is **identical** - the
+game reaches the exact same point (sub_128C32 in the intro, wave 17), so
+the extraction introduced no regression. Making the region contiguous
+(as it was in the original binary) is also safer than separate globals
+for any future raw-offset access.
+
+DECOMP_TODO: the block mixes settings loaded from MOX.SET (language
+b_199CAE, palette b_199CB0..b_199CB5, flags), so a good future step is to
+rename members to their meaning once each is understood, keeping the
+address suffix.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
