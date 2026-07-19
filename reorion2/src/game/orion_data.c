@@ -17732,11 +17732,13 @@ int dword_1BB8B8; // weak
 int dword_1BB8BC; // weak
 int dword_1BB8C0; // weak
 char byte_1BB8C4[28]; // weak
-int dword_1BB8E0; // weak
-int dword_1BB8E4; // weak
-int dword_1BB8E8; // weak
-int dword_1BB8EC; // weak
-int dword_1BB8F4; // weak
+// REGS union buffer 0x1BB8E0..0x1BB8FC (28 bytes) - wave 19. int386 (INT 33h
+// mouse, INT 10h) writes back the full register set (24 bytes) to &dword_1BB8E0.
+// IDA split the union into separate 4-byte globals (eax/ebx/ecx/edx at +0/+4/+8/
+// +C, edi at +0x14) which the port packs consecutively, so the 24-byte write
+// overflowed neighbouring globals (e.g. zeroed dword_1BB8FC / dword_1BB8C0).
+// One contiguous buffer keeps the exact union layout; old names map via macros.
+int regsBlock_1BB8E0[7]; // weak
 int dword_1BB8FC; // weak
 int dword_1BB900; // weak
 int dword_1BB904; // weak

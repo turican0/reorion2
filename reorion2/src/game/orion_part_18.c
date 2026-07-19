@@ -4931,7 +4931,7 @@ void __fastcall RunGameAndExit_113D47(int a1, _BYTE *a2) // vlna 13: __noreturn 
   sub_117262();
   PortDebug_Checkpoint("RunGame.after_117262", 0);
   sub_111F3E();
-  PortDebug_Checkpoint("RunGame.after_111F3E", *a2);
+  PortDebug_Checkpoint("RunGame.after_111F3E", 0);
   if ( *a2 )
     sub_120526((int)a2);
   else

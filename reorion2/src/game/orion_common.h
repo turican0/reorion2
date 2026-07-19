@@ -20581,11 +20581,13 @@ extern int dword_1BB8B8;
 extern int dword_1BB8BC;
 extern int dword_1BB8C0;
 extern char byte_1BB8C4[28];
-extern int dword_1BB8E0;
-extern int dword_1BB8E4;
-extern int dword_1BB8E8;
-extern int dword_1BB8EC;
-extern int dword_1BB8F4;
+// REGS union buffer - see regsBlock_1BB8E0 in orion_data.c (wave 19).
+extern int regsBlock_1BB8E0[7];
+#define dword_1BB8E0 regsBlock_1BB8E0[0]
+#define dword_1BB8E4 regsBlock_1BB8E0[1]
+#define dword_1BB8E8 regsBlock_1BB8E0[2]
+#define dword_1BB8EC regsBlock_1BB8E0[3]
+#define dword_1BB8F4 regsBlock_1BB8E0[5]
 extern int dword_1BB8FC;
 extern int dword_1BB900;
 extern int dword_1BB904;

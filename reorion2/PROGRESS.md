@@ -1256,6 +1256,53 @@ b_199CAE, palette b_199CB0..b_199CB5, flags), so a good future step is to
 rename members to their meaning once each is understood, keeping the
 address suffix.
 
+## Done - wave 19: int386 REGS-buffer overflow zeroed dword_1BB8C0 (crash in sub_138CEE)
+
+### Symptom
+
+Crash in `sub_138CEE` (per-row clip-span writer): it takes the
+`dword_1BBA28 != 2` branch and writes to `v7 = dword_1BB8C0 + 4*a2`, but
+**dword_1BB8C0 was 0 (NULL)** -> write to NULL -> crash. Both clip buffers
+(dword_1BB908, dword_1BB8C0) are allocated only in `sub_12537D`.
+
+### Diagnosis (checkpoints + DOSBox compare)
+
+- Right after `sub_12537D` both pointers are valid (checkpoint).
+- By `sub_138CEE` dword_1BB8C0 is 0 -> **memory corruption** zeroes it.
+- DOSBox DUMPMEM confirmed the original keeps dword_1BB8C0 valid
+  (0x00451054), so the port corrupts it - not a control-flow difference.
+- Bisected the corruption to **MouseInit (sub_123491)**.
+
+### Root cause
+
+MouseInit calls `int386(51, &dword_1BB8E0, &dword_1BB8E0)` (INT 33h mouse)
+~15 times. The port's `PortDos_Int386` (wave 13) writes the full register
+set back - **24 bytes** - to the output buffer `&dword_1BB8E0`. In the
+original, dword_1BB8E0 is the start of a Watcom `union REGS` (28 bytes:
+eax/ebx/ecx/edx/esi/edi/cflag). IDA split it into separate 4-byte globals
+(dword_1BB8E0/8E4/8E8/8EC/8F4) which the port packs consecutively, so the
+24-byte write overflowed past them into neighbouring globals (dword_1BB8FC
+framebuffer ptr, and - via the port's BSS layout - dword_1BB8C0).
+
+### Fix (overlay, same technique as waves 11/12/17/18)
+
+Replaced the 5 fragmented REGS globals with one contiguous
+`int regsBlock_1BB8E0[7]` (28 bytes = 0x1BB8E0..0x1BB8FC), old names mapped
+by macros (dword_1BB8E0 -> [0], ...E4 -> [1], ...E8 -> [2], ...EC -> [3],
+...F4 -> [5]). Now `&dword_1BB8E0` is a 28-byte buffer and int386's 24-byte
+write is fully contained. dword_1BB8FC (a separate framebuffer pointer) is
+left as its own global just past the buffer.
+
+Note: the other global REGS buffer passed to int386, `byte_1BB8C4`, is
+already `char[28]` - big enough, no change needed.
+
+### Result
+
+dword_1BB8C0 now stays valid; **sub_138CEE runs and completes** (both
+intro calls). The crash moved further into the intro render fill
+(sub_128C32 -> sub_14759C, which uses screen pitch `dword_184532` - still a
+stub 0 in link_stubs.c; should be the row stride). That is the next item.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
