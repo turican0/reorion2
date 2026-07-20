@@ -17631,27 +17631,15 @@ char byte_1B3E1D; // weak
 char unk_1B3E20[84]; // vlna 15: filename buffer (0x1B3E20..0x1B3E74), drive _UNKNOWN/1B
 int dword_1B3E74; // weak
 int dword_1B3E78; // weak
-char byte_1B3E7C[6]; // weak
-int dword_1B3E82; // weak
-int16_t word_1B3E86; // weak
-char byte_1B3E88[]; // weak
-char byte_1B3E90[]; // weak
-char byte_1B3E98[]; // weak
-int16_t word_1B3EA0; // weak
-int16_t word_1B3EA2; // weak
-int16_t word_1B3EA4; // weak
-int16_t word_1B3EA6; // weak
-char byte_1B3EA8[32]; // weak
-char byte_1B3EC8; // weak
-char byte_1B3ED5; // weak
-int dword_1B3FA8[256]; // weak
-int16_t word_1B43A8[8]; // weak
-int16_t word_1B43B8[]; // weak
-int16_t word_1B43BC; // weak
-int16_t word_1B43C8[8]; // weak
-char byte_1B43D8[32]; // weak
-char byte_1B43F8[1504]; // weak
-int dword_1B49D8[406]; // weak
+// Font data block 0x1B3E7C..0x1B61D8 (9052 bytes) - wave 20.
+// sub_120526 loads the whole 9052-byte font record into byte_1B3E7C with
+// sub_12779E(byte_1B3E7C, v4, 0x235C). IDA had split the block into ~21
+// individually used globals (byte_1B3E7C was even declared char[6]), so that
+// copy overflowed and wiped everything after it - including dword_1B3E78
+// (font sub-pool), which then crashed sub_1205E6/sub_126CEB with a NULL pool.
+// One contiguous backing buffer keeps the original layout; every old symbol
+// name is mapped onto its exact offset by the macros in orion_common.h.
+char fontBlock_1B3E7C[9052]; // weak
 // unk_1B5030/unk_1B5418 ODSTRANENO (vlna 10): IDA false-positive z konstant
 // 1790000/1791000 (velikost zvukoveho bufferu + prah) - viz orion_part_01.c.
 char byte_1B61D8[]; // weak

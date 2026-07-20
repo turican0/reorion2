@@ -7578,10 +7578,10 @@ int __fastcall sub_129FF9( int a1, int a2, int a3)
       switch ( (char)v6 )
       {
         case 0:
-          sub_14852C(v5, (int)v6);
+          sub_14852C((int16_t)a1, (int16_t)a2, (int)(intptr_t)v8); // wave 20: args from original asm
           break;
         case 1:
-          sub_1485B3(v5, v6);
+          sub_1485B3((int16_t)a1, (int16_t)a2, (char *)v8); // wave 20
           break;
         case 2:
           if ( dword_1BBA42 >> 16 == 1 )
@@ -7761,10 +7761,10 @@ int __fastcall sub_12A478( int a1, int a2, int a3)
       switch ( (char)v6 )
       {
         case 0:
-          sub_14852C(v5, (int)v6);
+          sub_14852C((int16_t)a1, (int16_t)a2, (int)(intptr_t)v8); // wave 20: args from original asm
           break;
         case 1:
-          sub_1485B3(v5, v6);
+          sub_1485B3((int16_t)a1, (int16_t)a2, (char *)v8); // wave 20
           break;
         case 2:
           if ( dword_1BBA42 >> 16 == 1 )

@@ -158,10 +158,7 @@ void sub_14852C(int x, int y, int a2)
 
 
 //----- (001485B3) --------------------------------------------------------
-// Wave 20: transparent (color-key 0) blitter - same recovered register
-// signature as sub_14852C: eax = x, edx = y, ebx = pixel data. Same int64
-// fusion problem, see the comment at sub_14852C.
-void sub_1485B3(int x, int y, char *a2)
+int64_t __fastcall sub_1485B3(int64_t a1, char *a2)
 {
   int v3; // edi
   int v4; // ecx
@@ -170,10 +167,10 @@ void sub_1485B3(int x, int y, char *a2)
   int i; // ebx
   char v8; // al
 
-  v3 = x + (y << 7) + (y << 9) + dword_1BB904;
+  v3 = a1 + (HIDWORD(a1) << 7) + (HIDWORD(a1) << 9) + dword_1BB904;
   v4 = *(uint16_t *)dword_1BC2A8;
   v5 = *(uint16_t *)(dword_1BC2A8 + 2);
-  v6 = (_BYTE *)(intptr_t)(v4 + v3 - 640);
+  v6 = (_BYTE *)(v4 + v3 - 640);
   while ( v5 )
   {
     --v5;
@@ -188,6 +185,7 @@ void sub_1485B3(int x, int y, char *a2)
         *v6 = v8;
     }
   }
+  return a1;
 }
 // 1485B3: could not find valid save-restore pair for ebx
 // 1BB904: using guessed type int dword_1BB904;

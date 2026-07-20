@@ -3,6 +3,7 @@
  * They make the project linkable; they do not implement the original DOS/Watcom runtime.
  */
 #include <stddef.h> /* size_t - potreba pro PortMemory_* deklarace nize (vlna 06) */
+#include <string.h> /* memcpy - realny qmemcpy, wave 20 */
 
 int __CS__;
 int __DS__;
@@ -284,7 +285,13 @@ int nullsub_7(void) { return 0; }
 int nullsub_8(void) { return 0; }
 int nullsub_9(void) { return 0; }
 /* printf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
-int qmemcpy(void) { return 0; }
+/* qmemcpy is Hex-Rays' name for a plain memcpy (rep movsd/movsb). It was a
+   no-op stub returning 0, which SILENTLY dropped every graphics blit that
+   used it (100+ call sites, e.g. the RLE blitter sub_14852C) - the screen
+   would stay empty even with everything else fixed. Wave 20. */
+void* qmemcpy(void* dst, const void* src, size_t n) {
+    return memcpy(dst, src, n);
+}
 int SBYTE4(void) { return 0; }
 int SDWORD1(void) { return 0; }
 int SDWORD2(void) { return 0; }

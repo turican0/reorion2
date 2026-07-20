@@ -8565,10 +8565,10 @@ extern void __fastcall sub_14814C();
 extern int64_t __fastcall sub_14818E();
 // plna signatura: int64_t __fastcall sub_1481C2(int64_t a1);
 extern int64_t __fastcall sub_1481C2();
-// plna signatura: int64_t __fastcall sub_14852C(int64_t a1, int a2);
-extern int64_t __fastcall sub_14852C();
-// plna signatura: int64_t __fastcall sub_1485B3(int64_t a1, char *a2);
-extern int64_t __fastcall sub_1485B3();
+// wave 20: real register signature recovered from the original (x=eax, y=edx, data=ebx)
+extern void sub_14852C();
+// wave 20: real register signature recovered from the original (x=eax, y=edx, data=ebx)
+extern void sub_1485B3();
 // plna signatura: char *__fastcall sub_148605(char *a1, int a2, int a3);
 extern char *__fastcall sub_148605();
 // plna signatura: int __fastcall sub_14861D( int a1, int a2, char *a3);
@@ -14653,8 +14653,8 @@ void __fastcall sub_14814C(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, 
 int64_t __fastcall sub_14818E(int64_t a1, int a2);
 int64_t __fastcall sub_1481C2(int64_t a1);
 // int __fastcall fputc(_DWORD, _DWORD); weak
-int64_t __fastcall sub_14852C(int64_t a1, int a2);
-int64_t __fastcall sub_1485B3(int64_t a1, char *a2);
+void sub_14852C(int x, int y, int a2); // wave 20
+void sub_1485B3(int x, int y, char *a2); // wave 20
 char *__fastcall sub_148605(char *a1, int a2, int a3);
 int __fastcall sub_14861D(int16_t a1, int16_t a2, char *a3);
 int __fastcall sub_1487E0(int a1, int a2, _BYTE *a3);
@@ -20488,27 +20488,29 @@ extern char byte_1B3E1D;
 extern char unk_1B3E20[84]; // vlna 15
 extern int dword_1B3E74;
 extern int dword_1B3E78;
-extern char byte_1B3E7C[6];
-extern int dword_1B3E82;
-extern int16_t word_1B3E86;
-extern char byte_1B3E88[];
-extern char byte_1B3E90[];
-extern char byte_1B3E98[];
-extern int16_t word_1B3EA0;
-extern int16_t word_1B3EA2;
-extern int16_t word_1B3EA4;
-extern int16_t word_1B3EA6;
-extern char byte_1B3EA8[32];
-extern char byte_1B3EC8;
-extern char byte_1B3ED5;
-extern int dword_1B3FA8[256];
-extern int16_t word_1B43A8[8];
-extern int16_t word_1B43B8[];
-extern int16_t word_1B43BC;
-extern int16_t word_1B43C8[8];
-extern char byte_1B43D8[32];
-extern char byte_1B43F8[1504];
-extern int dword_1B49D8[406];
+// Font data block - see fontBlock_1B3E7C in orion_data.c (wave 20).
+extern char fontBlock_1B3E7C[9052];
+#define byte_1B3E7C ((char *)(fontBlock_1B3E7C + 0))
+#define dword_1B3E82 (*(int *)(fontBlock_1B3E7C + 6))
+#define word_1B3E86 (*(int16_t *)(fontBlock_1B3E7C + 10))
+#define byte_1B3E88 ((char *)(fontBlock_1B3E7C + 12))
+#define byte_1B3E90 ((char *)(fontBlock_1B3E7C + 20))
+#define byte_1B3E98 ((char *)(fontBlock_1B3E7C + 28))
+#define word_1B3EA0 (*(int16_t *)(fontBlock_1B3E7C + 36))
+#define word_1B3EA2 (*(int16_t *)(fontBlock_1B3E7C + 38))
+#define word_1B3EA4 (*(int16_t *)(fontBlock_1B3E7C + 40))
+#define word_1B3EA6 (*(int16_t *)(fontBlock_1B3E7C + 42))
+#define byte_1B3EA8 ((char *)(fontBlock_1B3E7C + 44))
+#define byte_1B3EC8 (*(char *)(fontBlock_1B3E7C + 76))
+#define byte_1B3ED5 (*(char *)(fontBlock_1B3E7C + 89))
+#define dword_1B3FA8 ((int *)(fontBlock_1B3E7C + 300))
+#define word_1B43A8 ((int16_t *)(fontBlock_1B3E7C + 1324))
+#define word_1B43B8 ((int16_t *)(fontBlock_1B3E7C + 1340))
+#define word_1B43BC (*(int16_t *)(fontBlock_1B3E7C + 1344))
+#define word_1B43C8 ((int16_t *)(fontBlock_1B3E7C + 1356))
+#define byte_1B43D8 ((char *)(fontBlock_1B3E7C + 1372))
+#define byte_1B43F8 ((char *)(fontBlock_1B3E7C + 1404))
+#define dword_1B49D8 ((int *)(fontBlock_1B3E7C + 2908))
 // unk_1B5030/unk_1B5418 odstraneno - IDA false-positive z konstant 1790000/1791000 (vlna 10)
 extern char byte_1B61D8[];
 extern int dword_1B61E0;

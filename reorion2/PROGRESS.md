@@ -1303,6 +1303,64 @@ intro calls). The crash moved further into the intro render fill
 (sub_128C32 -> sub_14759C, which uses screen pitch `dword_184532` - still a
 stub 0 in link_stubs.c; should be the row stride). That is the next item.
 
+## Done - wave 20: sub_14852C int64 argument fusion + qmemcpy stub + font block overlay
+
+Reported symptom: access violation in `sub_14852C` with a nonsensical `a1`
+(int64) and a read at address 0x2. Three independent root causes were found.
+
+### 1. sub_14852C / sub_1485B3 - fake int64 parameter (the reported crash)
+
+IDA typed both blitters as `int64_t __fastcall sub_14852C(int64_t a1, int a2)`.
+The original register signature, **recovered from the running game**
+(DUMPREGS at the entry point + disassembly of the function and of all four
+call sites), is actually three separate register arguments:
+
+```
+eax = x, edx = y, ebx = pointer to the sprite data    (return value unused)
+```
+
+IDA fused eax:edx into one fake `int64` and then **lost the argument setup at
+every call site** - the decompiled callers passed unrelated leftover locals
+(`sub_14852C(v3, (int)v4)`, both "possibly undefined"), which is where the
+garbage pointer came from. On x64 the fused form was broken anyway, because
+`(char *)(a1 + ...)` keeps `y << 32` inside the 64-bit pointer (the original
+32-bit code truncated it naturally into `edi`).
+
+Fixed: both functions now take `(int x, int y, <data>)` and return `void`;
+all 8 call sites were rewritten from the original asm
+(`sub_12C7CC`/`sub_12D408`: x=0, y=0; `sub_129FF9`/`sub_12A478`: x=(int16)a1,
+y=(int16)a2). Pointer arithmetic goes through `intptr_t`.
+
+### 2. qmemcpy was a no-op stub
+
+`int qmemcpy(void) { return 0; }` in link_stubs.c - but qmemcpy is just
+Hex-Rays' name for `memcpy` (rep movsd/movsb), used at 100+ sites including
+the RLE blitter above. Every one of those copies silently did nothing, so
+even a fully fixed blitter would have drawn an empty screen. Now a real
+`memcpy` wrapper.
+
+### 3. Font data block 0x1B3E7C..0x1B61D8 (9052 bytes) - overlay
+
+`sub_120526` loads a whole 9052-byte font record with
+`sub_12779E(byte_1B3E7C, v4, 0x235C)`, but IDA had split that region into ~21
+separately used globals and declared `byte_1B3E7C` as **`char[6]`**. The copy
+therefore overflowed and wiped everything behind it - including
+`dword_1B3E78` (the font sub-pool), which was then passed as NULL into
+`sub_126AFD -> sub_126CEB -> sub_111188`, whose first statement is
+`*(_DWORD *)(a1 - 12) = 0` -> write near address 0 -> crash.
+
+Verified against DOSBox: the original keeps `dword_1B3E78 = 0x004EE05C`.
+Fixed with one contiguous `char fontBlock_1B3E7C[9052]` plus offset macros for
+all 21 old names (same technique as waves 18/19). Layout verified: every
+symbol span matches its successor's address, total exactly 9052.
+
+### Result
+
+`dword_1B3E78` now survives (checked at allocation, after RunGameAndExit and
+at the tail), `sub_1205E6` completes, and execution reaches the intro again -
+back to the known frontier inside `sub_24ED3` (wave 17/19 territory), which is
+the next item.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

@@ -703,7 +703,7 @@ int sub_12C7CC()
   int v1; // edx
   int result; // eax
   int64_t v3; // [esp+0h] [ebp-34h]
-  char *v4; // [esp+8h] [ebp-2Ch]
+  char *v4 = 0; // [esp+8h] [ebp-2Ch]
   int v5; // [esp+14h] [ebp-20h]
   int v6; // [esp+24h] [ebp-10h]
 
@@ -756,10 +756,10 @@ int sub_12C7CC()
     switch ( (char)v3 )
     {
       case 0:
-        sub_14852C(v3, (int)v4);
+        sub_14852C(0, 0, v5); // wave 20: args recovered from original asm (x=0,y=0,data=v5)
         break;
       case 1:
-        sub_1485B3(v3, v4);
+        sub_1485B3(0, 0, (char *)(intptr_t)v5); // wave 20
         break;
       case 2:
         if ( dword_1BBA42 >> 16 == 1 )
@@ -1076,10 +1076,10 @@ int __fastcall sub_12D408( int a1)
   switch ( (char)v5 )
   {
     case 0:
-      sub_14852C(v5, (int)v6);
+      sub_14852C(0, 0, v8); // wave 20: args recovered from original asm (x=0,y=0,data=v8)
       break;
     case 1:
-      sub_1485B3(v5, v6);
+      sub_1485B3(0, 0, (char *)(intptr_t)v8); // wave 20
       break;
     case 2:
       if ( dword_1BBA42 >> 16 == 1 )
