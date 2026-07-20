@@ -7,20 +7,30 @@
 namespace Port::Vga {
 
 namespace {
-constexpr int kModeWidth = 320;
-constexpr int kModeHeight = 200;
+// Vlna 21: 640x480 - hra bezi ve vynucenem VESA modu 5 (viz sub_1248AB).
+constexpr int kModeWidth = 640;
+constexpr int kModeHeight = 480;
+// Zaloha = 5 celych VESA bank po 64 KiB (327680 B > 640*480 = 307200 B):
+// bankovane kopie originalu (sub_1255DF, sub_125814...) smely sahat az na
+// konec posledniho 64KiB okna, ne jen na konec viditelneho obrazu.
+constexpr size_t kFramebufferBytes = 5 * 0x10000;
 
 SDL_Window* g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_Texture* g_texture = nullptr;
 
 // Vlastni 8bpp framebuffer + 256barevna paleta - stejny model dat, jaky mel
-// puvodni VGA rezim 13h (segment A000, 1 byte na pixel + samostatny DAC).
-std::array<uint8_t, kModeWidth * kModeHeight> g_framebuffer{};
+// puvodni VESA rezim (1 byte na pixel + samostatny DAC).
+std::array<uint8_t, kFramebufferBytes> g_framebuffer{};
 std::array<uint32_t, 256> g_palette{}; // ulozeno uz jako ARGB8888 pro SDL
 
 bool g_initialized = false;
 } // namespace
+
+uint8_t* Framebuffer()
+{
+    return g_framebuffer.data();
+}
 
 bool Init()
 {
@@ -32,7 +42,7 @@ bool Init()
         return false;
     }
 
-    g_window = SDL_CreateWindow("Orion", kModeWidth * 3, kModeHeight * 3, 0);
+    g_window = SDL_CreateWindow("Orion", kModeWidth * 2, kModeHeight * 2, 0);
     if (!g_window) {
         SDL_Log("Port::Vga::Init - SDL_CreateWindow selhalo: %s", SDL_GetError());
         return false;
@@ -115,6 +125,14 @@ void Present()
 // ---------------------------------------------------------------------
 // C-linkage most pro dekompilovany herni kod (vlna 13).
 extern "C" {
+
+// Linearni framebuffer pro dekompilovany kod (mode-5 prezentacni funkce
+// kopiruji backbuffer dword_1BB90C -> tento buffer; Present() ho pak
+// prevede pres paletu do SDL textury).
+unsigned char* PortVga_Framebuffer(void)
+{
+    return Port::Vga::Framebuffer();
+}
 
 // Nahrada za VGA "cekani na vertical retrace" (busy-wait na portu 0x3DA,
 // bit 8 - sub_132B27/sub_132B41 v orion_part_20.c). V portu zadny VGA

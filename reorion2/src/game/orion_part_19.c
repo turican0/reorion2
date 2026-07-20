@@ -4635,7 +4635,12 @@ int16_t __fastcall sub_1248AB( int a1)
   if ( dword_1BBA52 >> 16 == -1 )
     sub_126487(aYouMustRunVesa, v1);
   HIWORD(dword_1BBA64) = 0;
-  dword_1BB910[0] = (int)&loc_9FFFD + 3;
+  // PORT (vlna 21): original zde ukladal adresu VESA okna A000:0000 (vyraz
+  // "&loc_9FFFD + 3" = 0xA0000). V portu je loc_9FFFD 1B symbol v BSS - 300KB
+  // prezentacni kopie by prepisovaly sousedni globaly ("dword_1BB90C ma spatne
+  // hodnoty" byl ve skutecnosti tenhle zapis mimo). Misto toho linearni
+  // 640x480 framebuffer portu; bankovani (dword_1BB8A4) je no-op.
+  dword_1BB910[0] = (int)PortVga_Framebuffer();
   PortDebug_Checkpoint("1248AB.before_12542A", 0);
   word_1BBA62 = sub_12542A();
   LOWORD(dword_1BBA4A) = (int)unk_1BBA60 >> 16 >= (2 * dword_18453C
@@ -5143,231 +5148,93 @@ int sub_1254C0()
 
 
 //----- (001255DF) --------------------------------------------------------
+// PORT (vlna 21): prezentace celeho obrazu (mode 5). Original kopiroval
+// backbuffer dword_1BB90C do VESA okna A0000 po 64KiB bankach: 4x64 + 44 KiB
+// = 307200 B = presne 640x480 (sub_138CE0 kopiruje "a3 << 10" bajtu!).
+// "v2 += (int)sub_10000" byl IDA artefakt - konstanta 0x10000 (krok banky)
+// prelozena jako adresa funkce. Na linearnim framebufferu portu je to jedno
+// souvisle kopirovani; bankovaci volani dword_1BB8A4 (no-op) vynechana.
 void *sub_1255DF()
 {
-  int i; // [esp+0h] [ebp-8h]
-  int v2; // [esp+4h] [ebp-4h]
-
-  v2 = 0;
-  for ( i = 0; i < 4; ++i )
-  {
-    dword_1BB8A4(i + 5 * (dword_1BBA64 >> 16));
-    sub_138CE0((void *)dword_1BB910[0], (void *)(v2 + dword_1BB90C), 64);
-    v2 += (int)sub_10000;
-  }
-  dword_1BB8A4(5 * (dword_1BBA64 >> 16) + 4);
-  return sub_138CE0((void *)dword_1BB910[0], (void *)(v2 + dword_1BB90C), 44);
+  return sub_138CE0((void *)dword_1BB910[0], (void *)dword_1BB90C, 300);
 }
-// 10000: using guessed type void __noreturn sub_10000();
-// 1BB8A4: using guessed type int (__fastcall *dword_1BB8A4)(_DWORD);
 // 1BB90C: using guessed type int dword_1BB90C;
 // 1BB910: using guessed type int dword_1BB910[];
-// 1BBA64: using guessed type int dword_1BBA64;
 
 
 //----- (0012567F) --------------------------------------------------------
+// PORT (vlna 21): prezentace spinavych useku (mode 5). Tabulka dword_1BB8BC
+// je posloupnost dvojic [preskocit, zkopirovat] v DWORDech, ukoncena -1.
+// Original vedl zvlast offset v okne (wrap po 0x4000 DWORDech = 64 KiB banka,
+// s prepnutim banky pres dword_1BB8A4) a zvlast offset ve zdroji; na
+// linearnim framebufferu jsou oba offsety totozne a wrap odpada.
 _DWORD *sub_12567F()
 {
   _DWORD *result; // eax
-  int v1; // [esp+8h] [ebp-38h]
-  int v2; // [esp+8h] [ebp-38h]
-  int v3; // [esp+Ch] [ebp-34h]
-  int v4; // [esp+14h] [ebp-2Ch]
-  int v5; // [esp+14h] [ebp-2Ch]
-  int v6; // [esp+18h] [ebp-28h]
-  int v7; // [esp+1Ch] [ebp-24h]
-  int v8; // [esp+1Ch] [ebp-24h]
-  int v9; // [esp+1Ch] [ebp-24h]
-  int v10; // [esp+20h] [ebp-20h]
-  int v11; // [esp+2Ch] [ebp-14h]
-  int v12; // [esp+30h] [ebp-10h]
-  int v13; // [esp+34h] [ebp-Ch]
+  int v4; // [esp+14h] [ebp-2Ch] - index v tabulce
+  int v7; // [esp+1Ch] [ebp-24h] - linearni offset v DWORDech
+  int v10; // [esp+20h] [ebp-20h] - delka useku v DWORDech
   char *v14; // [esp+38h] [ebp-8h]
   int v15; // [esp+3Ch] [ebp-4h]
 
   v14 = (char *)dword_1BB910[0];
   v15 = dword_1BB90C;
-  v3 = 5 * (dword_1BBA64 >> 16);
-  v1 = 0;
   v7 = 0;
   v4 = 0;
-  v6 = 0;
-  dword_1BB8A4(v3);
   while ( 1 )
   {
     result = (_DWORD *)(dword_1BB8BC + 4 * v4);
     if ( *result == -1 )
       break;
-    v11 = *(_DWORD *)(dword_1BB8BC + 4 * v4);
-    v2 = v11 + v1;
-    v8 = v11 + v7;
-    v5 = v4 + 1;
-    if ( v2 >= 0x4000 )
-    {
-      dword_1BB8A4(++v6 + v3);
-      v2 -= 0x4000;
-    }
-    v10 = *(_DWORD *)(4 * v5 + dword_1BB8BC);
-    if ( v10 + v2 < 0x4000 )
-    {
-      sub_1276BD(&v14[4 * v2], (void *)(v15 + 4 * v8), v10);
-      v1 = v10 + v2;
-      v7 = v10 + v8;
-    }
-    else
-    {
-      v12 = 0x4000 - v2;
-      v13 = v10 - (0x4000 - v2);
-      if ( v2 != 0x4000 )
-        sub_1276BD(&v14[4 * v2], (void *)(v15 + 4 * v8), v12);
-      v9 = v12 + v8;
-      dword_1BB8A4(++v6 + v3);
-      sub_1276BD(v14, (void *)(v15 + 4 * v9), v13);
-      v1 = v10 - (0x4000 - v2);
-      v7 = v13 + v9;
-    }
-    v4 = v5 + 1;
+    v7 += *result;
+    v10 = *(_DWORD *)(dword_1BB8BC + 4 * (v4 + 1));
+    sub_1276BD(&v14[4 * v7], (void *)(v15 + 4 * v7), v10);
+    v7 += v10;
+    v4 += 2;
   }
   return result;
 }
-// 1BB8A4: using guessed type int (__fastcall *dword_1BB8A4)(_DWORD);
 // 1BB8BC: using guessed type int dword_1BB8BC;
 // 1BB90C: using guessed type int dword_1BB90C;
 // 1BB910: using guessed type int dword_1BB910[];
-// 1BBA64: using guessed type int dword_1BBA64;
 
 
 //----- (00125814) --------------------------------------------------------
+// PORT (vlna 21): radkovy dirty-present (mode 5, 640x480 = 480 radku po
+// 160 DWORDech). Tabulka dword_1BB908 ma 1 DWORD na radek: dolni word =
+// prvni spinavy sloupec (DWORD index, -1 = cisty radek), horni word =
+// posledni. Original delil obraz na 5 VESA bank a radky prechazejici
+// hranici banky kopiroval napevno po kusech (offsety 0x10000/0x20000/
+// 0x30000/0x40000; IDA je zkomolila na "sub_10000"/"loc_20000"). Na
+// linearnim framebufferu staci jednotna smycka pres vsechny radky.
 void *sub_125814()
 {
   int16_t v0; // ax
-  int16_t v1; // ax
-  int16_t v2; // ax
-  int16_t v3; // ax
   void *result; // eax
-  int16_t v5; // ax
-  int v6; // [esp+4h] [ebp-1Ch]
-  int v7; // [esp+4h] [ebp-1Ch]
-  int v8; // [esp+4h] [ebp-1Ch]
-  int v9; // [esp+4h] [ebp-1Ch]
-  int v10; // [esp+4h] [ebp-1Ch]
-  int v11; // [esp+Ch] [ebp-14h]
   int i; // [esp+10h] [ebp-10h]
-  int j; // [esp+10h] [ebp-10h]
-  int k; // [esp+10h] [ebp-10h]
-  int m; // [esp+10h] [ebp-10h]
-  int n; // [esp+10h] [ebp-10h]
+  int v6; // [esp+4h] [ebp-1Ch] - zacatek radku v DWORDech
   char *v17; // [esp+14h] [ebp-Ch]
   int v18; // [esp+18h] [ebp-8h]
 
   v17 = (char *)dword_1BB910[0];
   v18 = dword_1BB90C;
-  v11 = 5 * (dword_1BBA64 >> 16);
+  result = 0;
   v6 = 0;
-  dword_1BB8A4(v11);
-  for ( i = 0; i < 102; ++i )
+  for ( i = 0; i < 480; ++i )
   {
     v0 = *(_WORD *)(4 * i + dword_1BB908);
     if ( v0 != -1 )
-      sub_1694D9(
+      result = sub_1694D9(
         &v17[4 * v0 + 4 * v6],
         (void *)(v18 + 4 * (v0 + v6)),
         (*(int *)(4 * i + dword_1BB908) >> 16) - v0 + 1);
     v6 += 160;
   }
-  if ( *(int *)(dword_1BB908 + 406) >> 16 == -1 )
-  {
-    dword_1BB8A4(v11 + 1);
-  }
-  else
-  {
-    sub_1694D9(&v17[4 * v6], (void *)(v18 + 4 * v6), 64);
-    dword_1BB8A4(v11 + 1);
-    sub_1694D9(v17, (char *)sub_10000 + v18, 96);
-  }
-  v7 = 96;
-  for ( j = 103; j < 204; ++j )
-  {
-    v1 = *(_WORD *)(4 * j + dword_1BB908);
-    if ( v1 != -1 )
-      sub_1694D9(
-        &v17[4 * v1 + 4 * v7],
-        (char *)sub_10000 + 4 * v1 + 4 * v7 + v18,
-        (*(int *)(dword_1BB908 + 4 * j) >> 16) - v1 + 1);
-    v7 += 160;
-  }
-  if ( *(int *)(dword_1BB908 + 814) >> 16 == -1 )
-  {
-    dword_1BB8A4(v11 + 2);
-  }
-  else
-  {
-    sub_1694D9(&v17[4 * v7], (char *)sub_10000 + 4 * v7 + v18, 128);
-    dword_1BB8A4(v11 + 2);
-    sub_1694D9(v17, (char *)&loc_20000 + v18, 32);
-  }
-  v8 = 32;
-  for ( k = 205; k < 307; ++k )
-  {
-    v2 = *(_WORD *)(4 * k + dword_1BB908);
-    if ( v2 != -1 )
-      sub_1694D9(
-        &v17[4 * v2 + 4 * v8],
-        (char *)&loc_20000 + 4 * v2 + 4 * v8 + v18,
-        (*(int *)(dword_1BB908 + 4 * k) >> 16) - v2 + 1);
-    v8 += 160;
-  }
-  if ( *(int *)(dword_1BB908 + 1226) >> 16 == -1 )
-  {
-    dword_1BB8A4(v11 + 3);
-  }
-  else
-  {
-    sub_1694D9(&v17[4 * v8], (char *)&loc_20000 + 4 * v8 + v18, 32);
-    dword_1BB8A4(v11 + 3);
-    sub_1694D9(v17, (void *)(v18 + 196608), 128);
-  }
-  v9 = 128;
-  for ( m = 308; m < 409; ++m )
-  {
-    v3 = *(_WORD *)(4 * m + dword_1BB908);
-    if ( v3 != -1 )
-      sub_1694D9(
-        &v17[4 * v3 + 4 * v9],
-        (void *)(4 * (v3 + v9) + 196608 + v18),
-        (*(int *)(dword_1BB908 + 4 * m) >> 16) - v3 + 1);
-    v9 += 160;
-  }
-  if ( *(int *)(dword_1BB908 + 1634) >> 16 == -1 )
-  {
-    result = (void *)dword_1BB8A4(v11 + 4);
-  }
-  else
-  {
-    sub_1694D9(&v17[4 * v9], (void *)(v18 + 4 * v9 + 196608), 96);
-    dword_1BB8A4(v11 + 4);
-    result = sub_1694D9(v17, (void *)(v18 + 0x40000), 64);
-  }
-  v10 = 64;
-  for ( n = 410; n < 480; ++n )
-  {
-    v5 = *(_WORD *)(4 * n + dword_1BB908);
-    if ( v5 != -1 )
-      sub_1694D9(
-        &v17[4 * v5 + 4 * v10],
-        (void *)(4 * (v5 + v10) + 0x40000 + v18),
-        (*(int *)(dword_1BB908 + 4 * n) >> 16) - v5 + 1);
-    result = (void *)n;
-    v10 += 160;
-  }
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
-// 1BB8A4: using guessed type int (__fastcall *dword_1BB8A4)(_DWORD);
 // 1BB908: using guessed type int dword_1BB908;
 // 1BB90C: using guessed type int dword_1BB90C;
 // 1BB910: using guessed type int dword_1BB910[];
-// 1BBA64: using guessed type int dword_1BBA64;
 
 
 //----- (00125CE1) --------------------------------------------------------

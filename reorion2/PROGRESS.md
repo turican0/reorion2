@@ -1361,6 +1361,37 @@ at the tail), `sub_1205E6` completes, and execution reaches the intro again -
 back to the known frontier inside `sub_24ED3` (wave 17/19 territory), which is
 the next item.
 
+## Done - wave 21: mode-5 prezentace psala 300 KB pres 1B symbol loc_9FFFD
+
+Symptom: "dword_1BB90C neni naplneno spravnymi hodnotami" v sub_1255DF. Skutecna
+pricina byla na druhe strane kopie: `dword_1BB910[0] = &loc_9FFFD + 3` (=0xA0000,
+VESA okno A000:0000), jenze loc_9FFFD je v portu 1bajtovy `_UNKNOWN` v BSS -
+prezentacni funkce pres nej kopirovaly cely obraz a prepisovaly sousedni globaly.
+K tomu dva dalsi IDA artefakty stejne tridy jako drive: konstanty 0x10000/0x20000
+prelozene jako `sub_10000`/`loc_20000` (krok VESA banky, zdrojove offsety).
+
+Reseni (linearni framebuffer misto bankovaneho okna):
+- `port_vga` povysen na 640x480 (vynuceny VESA mod 5, vlna 16); novy pristup
+  `Port::Vga::Framebuffer()` / `PortVga_Framebuffer()`. Zaloha 5x64 KiB
+  (327680 B) - bankovane kopie smely adresovat cele posledni okno.
+- `dword_1BB910[0]` (sub_1248AB) ukazuje na tento framebuffer.
+- Mode-5 prezentacni trojice prepsana linearne (bankovani dword_1BB8A4 je
+  v portu no-op int10h stub, NELZE ho emulovat zmenou dword_1BB910 - funkce
+  si ukazatel okna cachuji pred prepnutim banky):
+  - `sub_1255DF` (cely obraz): 4x64+44 KiB pres banky -> jedno memcpy 307200 B
+    (`sub_138CE0(dst,src,n)` kopiruje `n<<10` bajtu; 300<<10 = presne 640x480).
+  - `sub_12567F` (spinave useky, tabulka dword_1BB8BC [skip,len]* v DWORDech):
+    dst offset == src offset, wrap po 0x4000 DWORDech odpadl.
+  - `sub_125814` (radkovy dirty-present, dword_1BB908 = min/max sloupec na
+    radek): jednotna smycka pres 480 radku misto 5 rucne delenych bank.
+- Smoke test: hra nyni projde inicializaci az do smycky hlavniho menu
+  (tail.before_switch1) bez padu; predchozi pad v sub_128C32 zmizel (zapisy
+  smerovaly do tehoz rozbitteho okna).
+
+Zbyva ze stejne tridy: prime pouziti `&loc_9FFFD` a `sub_10000`-jako-0x10000
+v orion_part_21.c (~3473-3740, cinematic/SMK prehravac, 16bit aritmetika nad
+ukazateli) - potreba az pro intro bez REORION2_SKIPINTRO.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

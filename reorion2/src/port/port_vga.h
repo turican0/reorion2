@@ -11,10 +11,15 @@
 
 namespace Port::Vga {
 
-// Vytvori SDL3 okno + renderer. Rozliseni 320x200 (rezim 13h) je puvodni
-// cilova hra nejpravdepodobnejsi rezim - az narazime na konkretni volani
-// nastavujici video mod, upresnime.
+// Vytvori SDL3 okno + renderer. Vlna 21: rozliseni 640x480 - hra bezi ve
+// vynucenem VESA modu 5 (640x480x8bpp, viz sub_1248AB vlna 16); mode-5
+// prezentacni funkce (sub_1255DF a spol.) kopiruji cely 307200B obraz.
 bool Init();
+
+// Linearni 8bpp framebuffer 640x480 (nahrada VESA okna na A000:0000).
+// Zaloha ma velikost 5 celych 64KiB bank (327680 B) - bankovane kopie
+// originalu smely adresovat i zbytek posledniho okna za koncem obrazu.
+uint8_t* Framebuffer();
 
 void Shutdown();
 
