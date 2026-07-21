@@ -114,6 +114,25 @@ void sub_14852C(int x, int y, int a2)
   char *v12; // esi
   int rc; // run byte counter (was scratch reuse of the a2 slot)
 
+  // DIAG (wave 22e): the blitter body matches the asm exactly, so a bad dest
+  // pointer means a bad INPUT. Dump the three candidates once so the offender
+  // can be seen (compare with dosbox DUMPREGS at 0x14852C+0x224000 = 0x36C52C):
+  //   destBase = dword_1BB904 (active draw buffer), data = a2 (RLE source),
+  //   header = dword_1BC2A8, startRow = *(u16)(a2+2), width = *(u16)(hdr+2).
+  {
+    static int diagOnce;
+    if ( !diagOnce )
+    {
+      diagOnce = 1;
+      PortDebug_Checkpoint("14852C.destBase_1BB904", dword_1BB904);
+      PortDebug_Checkpoint("14852C.data_a2", a2);
+      PortDebug_Checkpoint("14852C.header_1BC2A8", dword_1BC2A8);
+      PortDebug_Checkpoint("14852C.x", x);
+      PortDebug_Checkpoint("14852C.y", y);
+      PortDebug_Checkpoint("14852C.startRow", *(uint16_t *)(a2 + 2));
+      PortDebug_Checkpoint("14852C.width", *(uint16_t *)(dword_1BC2A8 + 2));
+    }
+  }
   v2 = (char *)(intptr_t)(x
               + ((y + *(uint16_t *)(a2 + 2)) << 7)
               + ((y + *(uint16_t *)(a2 + 2)) << 9)
