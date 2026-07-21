@@ -6246,8 +6246,26 @@ int __fastcall sub_138CB0(int a1, int a2)
 
 
 //----- (00138CE0) --------------------------------------------------------
+// PORT (vlna 21): kopie "a3 << 10" bajtu (kilobajty!) mezi obrazovymi
+// buffery. DIAG: zalogovat prva volani a KAZDE volani s nulovym ukazatelem
+// (hlaseno "result=0, a2=0xCD..."); nulove kopirovani preskocit misto padu
+// 300KB memcpy na NULL - checkpoint prozradi volajiciho drive nez crash.
 void *__fastcall sub_138CE0(void *result, void *a2, int a3)
 {
+  static int diagCalls;
+  if ( diagCalls < 3 )
+  {
+    ++diagCalls;
+    PortDebug_Checkpoint("138CE0.dst", (int)(intptr_t)result);
+    PortDebug_Checkpoint("138CE0.src", (int)(intptr_t)a2);
+    PortDebug_Checkpoint("138CE0.kb", a3);
+  }
+  if ( !result || !a2 )
+  {
+    PortDebug_Checkpoint("138CE0.NULL_PTR_dst", (int)(intptr_t)result);
+    PortDebug_Checkpoint("138CE0.NULL_PTR_src", (int)(intptr_t)a2);
+    return result;
+  }
   qmemcpy(result, a2, a3 << 10);
   return result;
 }

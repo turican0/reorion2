@@ -1374,6 +1374,14 @@ Reseni (linearni framebuffer misto bankovaneho okna):
 - `port_vga` povysen na 640x480 (vynuceny VESA mod 5, vlna 16); novy pristup
   `Port::Vga::Framebuffer()` / `PortVga_Framebuffer()`. Zaloha 5x64 KiB
   (327680 B) - bankovane kopie smely adresovat cele posledni okno.
+- OPRAVA (nasledny nalez): framebuffer NESMI byt staticke C++ pole! Ukazatel se
+  uklada do 32bit intu (`dword_1BB910[0] = (int)PortVga_Framebuffer()`), ale
+  staticke pole zije v datovem segmentu modulu (x64 image base ~0x140000000 =
+  >2 GB) -> `(int)` cast ho oreze na 0 -> sub_138CE0 dostal `result=0` a
+  kopiroval 300 KB na NULL. Fix: framebuffer z HALDY (`calloc`), ktera pod
+  /LARGEADDRESSAWARE:NO lezi v dolnich 2 GB - stejne jako dword_1BB90C z
+  PoolAlloc. Overeno: `1248AB.fb_ptr_as_int = 0x18398000` (nenulove, <2 GB).
+  Toto je tretí vyskyt "32bit int drzi pointer" pravidla (viz LAA:NO v hlavicce).
 - `dword_1BB910[0]` (sub_1248AB) ukazuje na tento framebuffer.
 - Mode-5 prezentacni trojice prepsana linearne (bankovani dword_1BB8A4 je
   v portu no-op int10h stub, NELZE ho emulovat zmenou dword_1BB910 - funkce

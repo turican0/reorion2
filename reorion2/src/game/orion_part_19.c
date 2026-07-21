@@ -4641,6 +4641,7 @@ int16_t __fastcall sub_1248AB( int a1)
   // hodnoty" byl ve skutecnosti tenhle zapis mimo). Misto toho linearni
   // 640x480 framebuffer portu; bankovani (dword_1BB8A4) je no-op.
   dword_1BB910[0] = (int)PortVga_Framebuffer();
+  PortDebug_Checkpoint("1248AB.fb_ptr_as_int", dword_1BB910[0]); // musi byt != 0
   PortDebug_Checkpoint("1248AB.before_12542A", 0);
   word_1BBA62 = sub_12542A();
   LOWORD(dword_1BBA4A) = (int)unk_1BBA60 >> 16 >= (2 * dword_18453C
@@ -5156,6 +5157,15 @@ int sub_1254C0()
 // souvisle kopirovani; bankovaci volani dword_1BB8A4 (no-op) vynechana.
 void *sub_1255DF()
 {
+  // DIAG (vlna 21): jednorazove zalogovat cil/zdroj prezentace - hlaseny stav
+  // "result=0, src=0xCD..." znamena volani pred initem nebo prepsany globall
+  static int diagOnce;
+  if ( !diagOnce )
+  {
+    diagOnce = 1;
+    PortDebug_Checkpoint("1255DF.first_dst", dword_1BB910[0]);
+    PortDebug_Checkpoint("1255DF.first_src", dword_1BB90C);
+  }
   return sub_138CE0((void *)dword_1BB910[0], (void *)dword_1BB90C, 300);
 }
 // 1BB90C: using guessed type int dword_1BB90C;
@@ -5179,6 +5189,10 @@ _DWORD *sub_12567F()
 
   v14 = (char *)dword_1BB910[0];
   v15 = dword_1BB90C;
+  {
+    static int diagOnce;
+    if ( !diagOnce ) { diagOnce = 1; PortDebug_Checkpoint("12567F.first_dst", (int)(intptr_t)v14); }
+  }
   v7 = 0;
   v4 = 0;
   while ( 1 )
@@ -5218,6 +5232,10 @@ void *sub_125814()
 
   v17 = (char *)dword_1BB910[0];
   v18 = dword_1BB90C;
+  {
+    static int diagOnce;
+    if ( !diagOnce ) { diagOnce = 1; PortDebug_Checkpoint("125814.first_dst", (int)(intptr_t)v17); }
+  }
   result = 0;
   v6 = 0;
   for ( i = 0; i < 480; ++i )

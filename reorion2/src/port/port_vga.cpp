@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 #include <array>
+#include <cstdlib>
 #include <cstring>
 
 namespace Port::Vga {
@@ -19,17 +20,40 @@ SDL_Window* g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_Texture* g_texture = nullptr;
 
-// Vlastni 8bpp framebuffer + 256barevna paleta - stejny model dat, jaky mel
-// puvodni VESA rezim (1 byte na pixel + samostatny DAC).
-std::array<uint8_t, kFramebufferBytes> g_framebuffer{};
+// Framebuffer NENI staticke pole. Dekompilovany kod ho uklada do 32bit intu
+// (dword_1BB910[0] = (int)PortVga_Framebuffer()); staticke pole zije v datovem
+// segmentu modulu, ktery na x64 lezi vysoko (image base ~0x140000000) - cast
+// na int ho orezal na 0/garbage (odtud hlaseny "result=0" v sub_138CE0).
+// Proto ho bereme z HALDY pres malloc: pod /LARGEADDRESSAWARE:NO lezi heap v
+// dolnich 2 GB a ukazatel round-tripuje pres int - stejne jako vsechny ostatni
+// buffery portu (dword_1BB90C z PoolAlloc funguje presne z tohoto duvodu).
+uint8_t* g_framebuffer = nullptr;
 std::array<uint32_t, 256> g_palette{}; // ulozeno uz jako ARGB8888 pro SDL
 
 bool g_initialized = false;
+
+uint8_t* EnsureFramebuffer()
+{
+    if (g_framebuffer)
+        return g_framebuffer;
+    g_framebuffer = static_cast<uint8_t*>(std::calloc(kFramebufferBytes, 1));
+    if (!g_framebuffer) {
+        SDL_Log("Port::Vga: calloc framebufferu (%zu B) selhal", kFramebufferBytes);
+        return nullptr;
+    }
+    // Kontrola, ze ukazatel opravdu padne do 32bit (round-trip pres int, ktery
+    // dela dekompilovany kod). Pod LAA:NO ma platit vzdy; kdyby ne, hlasime.
+    auto asInt = static_cast<uintptr_t>(reinterpret_cast<uintptr_t>(g_framebuffer));
+    if (asInt > 0x7FFFFFFFu)
+        SDL_Log("Port::Vga: VAROVANI - framebuffer na %p NEsedi do 32bit intu!",
+                static_cast<void*>(g_framebuffer));
+    return g_framebuffer;
+}
 } // namespace
 
 uint8_t* Framebuffer()
 {
-    return g_framebuffer.data();
+    return EnsureFramebuffer();
 }
 
 bool Init()
@@ -61,7 +85,7 @@ bool Init()
         return false;
     }
 
-    g_framebuffer.fill(0);
+    EnsureFramebuffer(); // uz mohl byt alokovan drive (sub_1248AB volal Framebuffer())
     g_palette.fill(0xFF000000u); // vychozi cerna, dokud SetPaletteEntry nedorazi
 
     g_initialized = true;
@@ -82,12 +106,18 @@ void Shutdown()
         SDL_DestroyWindow(g_window);
         g_window = nullptr;
     }
+    if (g_framebuffer) {
+        std::free(g_framebuffer);
+        g_framebuffer = nullptr;
+    }
     g_initialized = false;
 }
 
 void SetPixel8(int x, int y, uint8_t colorIndex)
 {
     if (x < 0 || x >= kModeWidth || y < 0 || y >= kModeHeight)
+        return;
+    if (!EnsureFramebuffer())
         return;
     g_framebuffer[static_cast<size_t>(y) * kModeWidth + x] = colorIndex;
 }
@@ -100,7 +130,7 @@ void SetPaletteEntry(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
 
 void Present()
 {
-    if (!g_initialized)
+    if (!g_initialized || !g_framebuffer)
         return;
 
     void* pixels = nullptr;
