@@ -272,7 +272,8 @@ char byte_10357B = '\x03';// weak
 // extern _UNKNOWN _GETDS; weak
 /* strstr: FLIRT rozpoznal jako staticky linkovanou CRT funkci, Hex-Rays ji ale nedekompiloval jako kod - pouziva se realna deklarace z <string.h> misto vlastni extern deklarace. */
  // weak
-int dword_1276EC = 0; // weak
+// dword_1276EC removed: was only a pusha/popa register-stash artifact inside
+// sub_1276F0, which now returns its bit directly (see orion_part_19.c).
 _UNKNOWN loc_1310FD; // weak
 _UNKNOWN loc_1381E8; // weak
 _UNKNOWN loc_13829B; // weak

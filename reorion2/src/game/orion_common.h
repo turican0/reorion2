@@ -15736,7 +15736,6 @@ extern _UNKNOWN loc_100000;
 extern char byte_100A36[];
 extern _UNKNOWN loc_103428;
 extern char byte_10357B;
-extern int dword_1276EC;
 extern _UNKNOWN loc_1310FD;
 extern _UNKNOWN loc_1381E8;
 extern _UNKNOWN loc_13829B;

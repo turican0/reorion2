@@ -6108,14 +6108,18 @@ void *__fastcall sub_1276BD(void *result, void *a2, int a3)
 
 
 //----- (001276F0) --------------------------------------------------------
-// write access to memory has been detected, the output may be wrong!
+// Bit test: returns bit number a2 of the bit-array at base a1 (0 or 1).
+// Original asm used pusha/popa around the computation, so it stashed the
+// result in a global (dword_1276EC) and reloaded it into eax after popa
+// restored the registers. That global was purely a register-preservation
+// artifact of the pusha/popa trick and is read nowhere else, so in C we
+// simply return the bit directly. Hex-Rays had mis-modeled this as
+// "dword_1276EC = bit; return 0;" — i.e. every caller's bit test was
+// silently reading 0. Verified against Orion2.exe.asm (sub_1276F0).
 int __fastcall sub_1276F0(int a1, unsigned int a2)
 {
-  dword_1276EC = (*(uint8_t *)(a1 + (a2 >> 3)) >> (a2 & 7)) & 1;
-  return 0;
+  return (*(uint8_t *)(a1 + (a2 >> 3)) >> (a2 & 7)) & 1;
 }
-// 127706: write access to memory at 1276EC has been detected
-// 1276EC: using guessed type int dword_1276EC;
 
 
 //----- (00127712) --------------------------------------------------------

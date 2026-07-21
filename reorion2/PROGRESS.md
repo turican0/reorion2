@@ -1400,6 +1400,40 @@ Zbyva ze stejne tridy: prime pouziti `&loc_9FFFD` a `sub_10000`-jako-0x10000
 v orion_part_21.c (~3473-3740, cinematic/SMK prehravac, 16bit aritmetika nad
 ukazateli) - potreba az pro intro bez REORION2_SKIPINTRO.
 
+## Done - wave 22: sub_1276F0 bit-test returned 0 (pusha/popa artifact) + fb heap
+
+Two fixes this session.
+
+1. **Framebuffer must be heap, not a static array** (follow-up to wave 21):
+   `dword_1BB910[0] = (int)PortVga_Framebuffer()` stores a pointer in a 32-bit
+   int. A static `std::array` lives in the module data segment (x64 image base
+   ~0x140000000 > 2 GB) so `(int)` truncated it -> sub_138CE0 got result=0 and
+   memcpy'd 300 KB to NULL. Fixed: framebuffer via `calloc` (low heap under
+   /LARGEADDRESSAWARE:NO, round-trips through int like every other port buffer).
+   Verified `1248AB.fb_ptr_as_int = 0x18398000` (nonzero, < 2 GB).
+
+2. **sub_1276F0 (bit test) returned 0 instead of the bit.** Original asm wraps
+   the computation in pusha/popa, which restores eax, so the real function
+   stashes the bit in a global (dword_1276EC) and reloads it into eax after
+   popa. That global is a register-preservation artifact, read nowhere else.
+   Hex-Rays mis-modeled it as `dword_1276EC = bit; return 0;` — so ALL ~30
+   callers `(uint16_t)sub_1276F0(base, bit)` were silently reading 0 (every
+   bit test in the game returned false). Fixed to `return (*(u8*)(a1 +
+   (a2>>3)) >> (a2&7)) & 1;` per Orion2.exe.asm; dropped the artifact global
+   dword_1276EC (orion_part_19.c, orion_data.c, orion_common.h).
+
+Note on the user-reported `result=0xCCCCCCCC` in sub_1276F0: 0xCC is
+uninitialized STACK (Hex-Rays "possibly undefined" local), distinct from the
+0xCD heap fill. It means a caller passes an uninitialized base address; the
+exact caller needs the user's build call stack (my build diverges — it hangs
+earlier in the font renderer sub_1212B3/sub_122309, never reaching that path).
+
+Current frontier (my build): hangs in sub_1212B3 -> sub_122309 glyph loop
+(while(1) over string a3; runs forever if the string is not NUL-terminated or
+the packed x/y cursor pair dword_1B61E8/dword_1B61E0 is wrong). Next: verify
+loadingBuf/kLoadingMsg NUL-termination and the dword_1B61E8/1B61E0 word-pair
+overlay (LOWORD=x cursor, HIWORD=y) in sub_122309.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
