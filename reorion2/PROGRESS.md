@@ -1450,11 +1450,60 @@ mis-modeled data flow, not a real game bug.
 My build still hangs earlier in the font renderer (sub_1212B3/sub_122309) and
 never reaches sub_125D4F, so the 125D4F dump only fires on the user's build.
 
+## Done - wave 22c: AIL_allocate_sample_handle wrapper dropped its return value
+
+Access violation in sub_1579F0 (AIL_register_EOS_callback) writing *(a1+0x850)
+with a1 = uninitialized stack garbage. Traced the handle back:
+  sub_140C96 (AIL_allocate_file_sample trace wrapper)
+   -> sub_1580A3 (impl): `sub_140BB1(a1); v5 = v4;`  <- v4 "possibly undefined"
+   -> sub_140BB1 (AIL_allocate_sample_handle trace wrapper)
+   -> sub_157610 (real allocator, returns int* sample slot or 0)
+Root cause: sub_140BB1 was typed `void __cdecl` and its two JUMPOUTs (0x13FA33 /
+0x13FCD2) hid the shared trace epilogue `dec dword_1C0E40; mov eax,esi; retn`
+(Orion2.exe.asm) — so it never returned sub_157610's handle. sub_1580A3 then read
+an unassigned v4 (eax leftover) as the sample handle and passed the garbage to
+sub_141F1F -> sub_1579F0. Fixes: (1) sub_140BB1 now returns int (captures the
+handle, `--dword_1C0E40` for the epilogue, JUMPOUTs removed); (2) sub_1580A3 does
+`v4 = (int*)sub_140BB1(a1)`; (3) header decl void->int. Verified against asm;
+other 3 callers ignore the return (fine). With sub_157610 returning 0 when the
+driver is exhausted/invalid, sub_1579F0's `if(a1)` guard now safely no-ops
+instead of writing through junk.
+
+Class reminder: a wrapper typed `void` that ends in JUMPOUT to a shared epilogue
+usually DID return a value (eax/esi) via that epilogue — check the asm epilogue
+(`mov eax, <reg>; retn`) and restore the return type + value.
+
+Follow-up (same wave): started retyping the AIL sample handle from `int` to a
+real pointer. Extracted a rough `AilSample` struct (2196 bytes) in
+orion_common.h with the fields identified so far (alloc_flag@+4,
+eob_callback@+2124, eos_callback@+2128, and the +2164..+2188 fields set by
+sub_1580A3); the rest is reserved padding, filled in progressively. Retyped the
+self-contained accessors sub_1579D0 / sub_1579F0 (AIL_register_EOB/EOS_callback)
+and the sample setup sub_1580A3 to use the struct (`*(_DWORD*)(h+2128)` ->
+`sample->eos_callback`, `v5[547]` -> `v5->status_2188`, ...). Method (per the
+user's guidance): when an `int` is clearly a pointer, retype it and pull out a
+struct — exactly if the layout is evident, roughly otherwise, and keep adding
+members as more access sites are decoded. Casts at the `int`-typed boundaries
+(sub_140DFC/sub_157FB9/sub_157D3C helpers, the sub_140BB1 return) keep the rest
+compiling until they too are retyped.
+
 Current frontier (my build): hangs in sub_1212B3 -> sub_122309 glyph loop
 (while(1) over string a3; runs forever if the string is not NUL-terminated or
 the packed x/y cursor pair dword_1B61E8/dword_1B61E0 is wrong). Next: verify
 loadingBuf/kLoadingMsg NUL-termination and the dword_1B61E8/1B61E0 word-pair
 overlay (LOWORD=x cursor, HIWORD=y) in sub_122309.
+
+## Done - wave 22d: stripped IDA calling-convention decorators
+
+Removed all 16858 `__fastcall` / `__cdecl` / `__stdcall` / `__thiscall` /
+`__usercall` / `__userpurge` tokens from the decompiled sources (orion_part_*.c,
+orion_common.h, orion_data.c) via a scripted regex replace. Safe by two
+independent reasons: (1) this is an x64 build where MSVC ignores all of these
+conventions anyway, and (2) hexrays_compat.h already `#define`s them to nothing.
+The #defines are kept as a safety net. Verified: 0 build errors, no runtime
+regression, none remain outside the compat header. Signatures now read e.g.
+`int sub_1579F0(int a1, int a2)` instead of `int __cdecl sub_1579F0(...)`.
+Ongoing: keep new/edited functions decorator-free.
 
 ## Dalsi rozumny krok (navrh pro pristi session)
 

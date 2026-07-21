@@ -8035,7 +8035,7 @@ int dword_18447A = -1; // weak
 int16_t word_18447E = 250; // weak
 _UNKNOWN *off_184480 = &unk_1B0848; // weak
 _UNKNOWN *off_184484 = &unk_1B0848; // weak
-int (__fastcall *dword_184488)(_DWORD) = NULL; // weak
+int (*dword_184488)(_DWORD) = NULL; // weak
 int16_t word_18448C = 0; // weak
 int dword_18448E = -65536; // weak
 int dword_184492 = -65535; // weak
@@ -13371,10 +13371,10 @@ int dword_189154 = 0; // weak
 int dword_189158 = 0; // weak
 int dword_18915C = 0; // weak
 int dword_189160 = 0; // weak
-int (__stdcall *dword_189164)(_DWORD, _DWORD) = NULL; // weak
-int (__stdcall *dword_189168)(_DWORD) = NULL; // weak
-int (__stdcall *dword_18916C)(_DWORD) = NULL; // weak
-int (__stdcall *dword_189170)(_DWORD, _DWORD, _DWORD) = NULL; // weak
+int (*dword_189164)(_DWORD, _DWORD) = NULL; // weak
+int (*dword_189168)(_DWORD) = NULL; // weak
+int (*dword_18916C)(_DWORD) = NULL; // weak
+int (*dword_189170)(_DWORD, _DWORD, _DWORD) = NULL; // weak
 int dword_189174 = 0; // weak
 char byte_1896F8 = '\0'; // weak
 char byte_1896F9 = '\0'; // weak
@@ -13390,7 +13390,7 @@ int dword_189718 = 0; // weak
 int16_t word_18971C = 0; // weak
 int dword_1897C0 = 0; // weak
 char *off_1897C4 = "OK"; // weak
-int (__fastcall *dword_1897C8)(_DWORD) = NULL; // weak
+int (*dword_1897C8)(_DWORD) = NULL; // weak
 int dword_1897CC = 65535; // weak
 int dword_1897D0 = 1050; // weak
 int dword_1897D4 = 1050; // weak
@@ -13401,8 +13401,8 @@ int dword_189838[8] = { 12, 11, 11, 11, 11, 11, 11, 11 }; // weak
 char byte_189858 = 'A'; // weak
 int dword_18985C = 1; // weak
 int dword_189860 = 0; // weak
-int (__fastcall *off_189864)(_DWORD) = &nmalloc; // weak
-int (__fastcall *off_189868)(_DWORD) = &nfree; // weak
+int (*off_189864)(_DWORD) = &nmalloc; // weak
+int (*off_189868)(_DWORD) = &nfree; // weak
 int dword_18986C[] = { 0 }; // weak
 int dword_1898AC[] = { 0 }; // weak
 int dword_1898E8 = 0; // weak
@@ -13569,7 +13569,7 @@ char byte_18A542 = '\xFF'; // weak
 char byte_18A543 = '\xFF'; // weak
 int dword_18A544 = 0; // weak
 void (*off_18A54C)(void) = &_no_support_loaded; // weak
-int (__fastcall *dword_18A5AC)(_DWORD) = NULL; // weak
+int (*dword_18A5AC)(_DWORD) = NULL; // weak
 int dword_18A5B0 = 0; // weak
 char (*off_18A5B8)() = &sub_15C730; // weak
 int dword_18A600 = 0; // weak
@@ -13607,7 +13607,7 @@ int dword_18A68C = 0; // weak
 int dword_18A690 = 0; // weak
 int dword_18A694 = 0; // weak
 int dword_18A698 = 0; // weak
-int (__fastcall *dword_18A69C)(_DWORD) = NULL; // weak
+int (*dword_18A69C)(_DWORD) = NULL; // weak
 int dword_18A6A0 = 0; // weak
 int dword_18A6A4 = 0; // weak
 int dword_18A6A8 = 0; // weak
@@ -17444,7 +17444,7 @@ int16_t word_1ACF1C; // weak
 int16_t word_1ACF1E; // weak
 int dword_1ACF20[16]; // weak
 char byte_1ACF60[]; // weak
-int (__fastcall *dword_1ACF70)(_DWORD, _DWORD, _DWORD); // weak
+int (*dword_1ACF70)(_DWORD, _DWORD, _DWORD); // weak
 char byte_1ACF74; // weak
 char byte_1ACF75; // weak
 int16_t word_1ACF76; // weak
@@ -17652,9 +17652,9 @@ int dword_1B91F0; // weak
 int dword_1B91F4; // weak
 int dword_1B91F8; // weak
 int dword_1B9204; // weak
-int (__cdecl *dword_1B9208)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
-int (__fastcall *dword_1B920C)(_DWORD); // weak
-int (__fastcall *dword_1B9210)(_DWORD); // weak
+int (*dword_1B9208)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
+int (*dword_1B920C)(_DWORD); // weak
+int (*dword_1B9210)(_DWORD); // weak
 int16_t word_1B921A; // weak
 int16_t word_1B921C; // weak
 int16_t word_1B921E; // weak
@@ -17706,15 +17706,15 @@ char byte_1BB759[254]; // weak
 _UNKNOWN unk_1BB857; // weak
 int dword_1BB880; // weak
 int dword_1BB884; // weak
-int (__fastcall *dword_1BB888)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD); // weak
+int (*dword_1BB888)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD); // weak
 int (*dword_1BB88C)(void); // weak
 int dword_1BB890; // weak
 int (*dword_1BB894)(void); // weak
-int (__fastcall *dword_1BB898)(_DWORD); // weak
+int (*dword_1BB898)(_DWORD); // weak
 int (*dword_1BB89C)(void); // weak
-int (__fastcall *dword_1BB8A0)(_DWORD); // weak
-int (__fastcall *dword_1BB8A4)(_DWORD); // weak
-int (__fastcall *dword_1BB8A8)(_DWORD); // weak
+int (*dword_1BB8A0)(_DWORD); // weak
+int (*dword_1BB8A4)(_DWORD); // weak
+int (*dword_1BB8A8)(_DWORD); // weak
 int dword_1BB8AC; // weak
 int dword_1BB8B0; // weak
 int dword_1BB8B8; // weak
@@ -17855,7 +17855,7 @@ char byte_1BE357[2045]; // weak
 int dword_1BEB54; // weak
 int dword_1BF358; // weak
 int dword_1BF35C; // weak
-int (__fastcall *dword_1BF388)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
+int (*dword_1BF388)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
 char byte_1BF38C; // weak
 _DWORD dword_1BF390[3]; // weak
 _UNKNOWN unk_1BF39C; // weak
@@ -17864,7 +17864,7 @@ char byte_1C0590[256]; // weak
 int dword_1C0690[128]; // weak
 char byte_1C0890[128]; // weak
 char byte_1C0910[128]; // weak
-int (__fastcall *dword_1C0990)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
+int (*dword_1C0990)(_DWORD, _DWORD, _DWORD, _DWORD); // weak
 _DWORD dword_1C0994[3]; // weak
 _UNKNOWN unk_1C09A0; // weak
 int16_t word_1C0AF4[4]; // weak
@@ -17895,17 +17895,17 @@ int dword_1C3C10; // weak
 int dword_1C3C18; // weak
 int dword_1C3C1C; // weak
 char byte_1C3C22[6]; // weak
-int (__stdcall *dword_1C3C30)(_DWORD); // weak
-int (__fastcall *dword_1C3C34)(_DWORD); // weak
-int (__stdcall *dword_1C3C38)(_DWORD); // weak
-int (__stdcall *dword_1C3C3C)(_DWORD); // weak
+int (*dword_1C3C30)(_DWORD); // weak
+int (*dword_1C3C34)(_DWORD); // weak
+int (*dword_1C3C38)(_DWORD); // weak
+int (*dword_1C3C3C)(_DWORD); // weak
 int dword_1C3C48; // weak
 int dword_1C3C4C; // weak
 int dword_1C3C50; // weak
 int dword_1C3C54; // weak
 _UNKNOWN unk_1C3C58; // weak
 int dword_1C3C5C; // weak
-int (__fastcall *dword_1C3C68)(_DWORD, _DWORD, _DWORD); // weak
+int (*dword_1C3C68)(_DWORD, _DWORD, _DWORD); // weak
 int dword_1C3C6C; // weak
 int dword_1C3C70; // weak
 int dword_1C3C78; // weak
@@ -17988,7 +17988,7 @@ int dword_1C9624; // weak
 _UNKNOWN unk_1C9628; // weak
 _UNKNOWN unk_1C962C; // weak
 uint8_t byte_1C962D[515]; // weak
-int (__fastcall *dword_1C9830)(_DWORD); // weak
+int (*dword_1C9830)(_DWORD); // weak
 char byte_1C9836[6]; // weak
 int dword_1C9840; // weak
 int dword_1C9844[256]; // weak

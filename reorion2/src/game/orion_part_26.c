@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x16615C - 0x1694D9  (98 funkci) */
 
 //----- (0016615C) --------------------------------------------------------
-int16_t __fastcall sub_16615C(int a1, int a2)
+int16_t sub_16615C(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -17,7 +17,7 @@ int16_t __fastcall sub_16615C(int a1, int a2)
 
 
 //----- (00166168) --------------------------------------------------------
-int16_t __fastcall sub_166168(int a1, int a2)
+int16_t sub_166168(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -28,7 +28,7 @@ int16_t __fastcall sub_166168(int a1, int a2)
 
 
 //----- (00166178) --------------------------------------------------------
-int __fastcall sub_166178(int a1, int a2)
+int sub_166178(int a1, int a2)
 {
   int v2; // eax
 
@@ -39,7 +39,7 @@ int __fastcall sub_166178(int a1, int a2)
 
 
 //----- (00166188) --------------------------------------------------------
-int __fastcall sub_166188(int a1, int a2)
+int sub_166188(int a1, int a2)
 {
   int v2; // eax
 
@@ -50,7 +50,7 @@ int __fastcall sub_166188(int a1, int a2)
 
 
 //----- (00166198) --------------------------------------------------------
-int __fastcall sub_166198(int a1, int a2)
+int sub_166198(int a1, int a2)
 {
   int v2; // eax
 
@@ -62,28 +62,28 @@ int __fastcall sub_166198(int a1, int a2)
 
 
 //----- (001661A8) --------------------------------------------------------
-char __fastcall sub_1661A8(int a1, int a2)
+char sub_1661A8(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001661B8) --------------------------------------------------------
-int __fastcall sub_1661B8(int a1, int a2)
+int sub_1661B8(int a1, int a2)
 {
   return __ROR4__(a2, 24);
 }
 
 
 //----- (001661C8) --------------------------------------------------------
-int16_t __fastcall sub_1661C8(int a1, int a2)
+int16_t sub_1661C8(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001661D8) --------------------------------------------------------
-int16_t __fastcall sub_1661D8(int a1, int a2)
+int16_t sub_1661D8(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -94,7 +94,7 @@ int16_t __fastcall sub_1661D8(int a1, int a2)
 
 
 //----- (001661E8) --------------------------------------------------------
-int16_t __fastcall sub_1661E8(int a1, int a2)
+int16_t sub_1661E8(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -105,7 +105,7 @@ int16_t __fastcall sub_1661E8(int a1, int a2)
 
 
 //----- (001661F4) --------------------------------------------------------
-int16_t __fastcall sub_1661F4(int a1, int a2)
+int16_t sub_1661F4(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -116,21 +116,21 @@ int16_t __fastcall sub_1661F4(int a1, int a2)
 
 
 //----- (00166200) --------------------------------------------------------
-int __fastcall sub_166200(int a1, int a2)
+int sub_166200(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (0016620C) --------------------------------------------------------
-char __usercall sub_16620C( int a1)
+char sub_16620C( int a1)
 {
   return a1;
 }
 
 
 //----- (00166218) --------------------------------------------------------
-int __fastcall sub_166218(int a1, int a2)
+int sub_166218(int a1, int a2)
 {
   int v2; // eax
 
@@ -142,7 +142,7 @@ int __fastcall sub_166218(int a1, int a2)
 
 
 //----- (00166224) --------------------------------------------------------
-int __fastcall sub_166224(int a1, int a2)
+int sub_166224(int a1, int a2)
 {
   int v2; // eax
 
@@ -153,7 +153,7 @@ int __fastcall sub_166224(int a1, int a2)
 
 
 //----- (00166230) --------------------------------------------------------
-int __fastcall sub_166230(int a1, int a2)
+int sub_166230(int a1, int a2)
 {
   int v2; // eax
 
@@ -164,7 +164,7 @@ int __fastcall sub_166230(int a1, int a2)
 
 
 //----- (0016623C) --------------------------------------------------------
-int16_t __fastcall sub_16623C(int a1, int a2)
+int16_t sub_16623C(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -178,7 +178,7 @@ int16_t __fastcall sub_16623C(int a1, int a2)
 
 
 //----- (00166248) --------------------------------------------------------
-int16_t __fastcall sub_166248(int a1, int a2)
+int16_t sub_166248(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -192,7 +192,7 @@ int16_t __fastcall sub_166248(int a1, int a2)
 
 
 //----- (00166258) --------------------------------------------------------
-int __fastcall sub_166258(int a1, int a2)
+int sub_166258(int a1, int a2)
 {
   int v2; // eax
 
@@ -203,7 +203,7 @@ int __fastcall sub_166258(int a1, int a2)
 
 
 //----- (00166268) --------------------------------------------------------
-int __fastcall sub_166268(int a1, int a2)
+int sub_166268(int a1, int a2)
 {
   int v2; // eax
 
@@ -214,7 +214,7 @@ int __fastcall sub_166268(int a1, int a2)
 
 
 //----- (00166278) --------------------------------------------------------
-int __fastcall sub_166278(int a1, int a2)
+int sub_166278(int a1, int a2)
 {
   int v2; // eax
 
@@ -226,7 +226,7 @@ int __fastcall sub_166278(int a1, int a2)
 
 
 //----- (00166288) --------------------------------------------------------
-int __fastcall sub_166288(int a1, int a2)
+int sub_166288(int a1, int a2)
 {
   int v2; // eax
 
@@ -237,21 +237,21 @@ int __fastcall sub_166288(int a1, int a2)
 
 
 //----- (00166298) --------------------------------------------------------
-int __fastcall sub_166298(int a1, int a2)
+int sub_166298(int a1, int a2)
 {
   return __ROR4__(a2, 8);
 }
 
 
 //----- (001662A8) --------------------------------------------------------
-char __fastcall sub_1662A8(int a1, int a2)
+char sub_1662A8(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001662B8) --------------------------------------------------------
-int __fastcall sub_1662B8(int a1, int a2)
+int sub_1662B8(int a1, int a2)
 {
   int v2; // eax
 
@@ -262,7 +262,7 @@ int __fastcall sub_1662B8(int a1, int a2)
 
 
 //----- (001662C8) --------------------------------------------------------
-int16_t __fastcall sub_1662C8(int a1, int a2)
+int16_t sub_1662C8(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -273,7 +273,7 @@ int16_t __fastcall sub_1662C8(int a1, int a2)
 
 
 //----- (001662D4) --------------------------------------------------------
-int16_t __fastcall sub_1662D4(int a1, int a2)
+int16_t sub_1662D4(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -284,28 +284,28 @@ int16_t __fastcall sub_1662D4(int a1, int a2)
 
 
 //----- (001662E0) --------------------------------------------------------
-int __fastcall sub_1662E0(int a1, int a2)
+int sub_1662E0(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001662EC) --------------------------------------------------------
-char __usercall sub_1662EC( int a1)
+char sub_1662EC( int a1)
 {
   return a1;
 }
 
 
 //----- (001662F8) --------------------------------------------------------
-char __fastcall sub_1662F8(int a1, int a2)
+char sub_1662F8(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (00166304) --------------------------------------------------------
-int __fastcall sub_166304(int a1, int a2)
+int sub_166304(int a1, int a2)
 {
   int v2; // eax
 
@@ -316,7 +316,7 @@ int __fastcall sub_166304(int a1, int a2)
 
 
 //----- (00166310) --------------------------------------------------------
-int __fastcall sub_166310(int a1, int a2)
+int sub_166310(int a1, int a2)
 {
   int v2; // eax
 
@@ -327,7 +327,7 @@ int __fastcall sub_166310(int a1, int a2)
 
 
 //----- (00166320) --------------------------------------------------------
-int16_t __fastcall sub_166320(int a1, int a2)
+int16_t sub_166320(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -341,7 +341,7 @@ int16_t __fastcall sub_166320(int a1, int a2)
 
 
 //----- (0016632C) --------------------------------------------------------
-int16_t __fastcall sub_16632C(int a1, int a2)
+int16_t sub_16632C(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -355,7 +355,7 @@ int16_t __fastcall sub_16632C(int a1, int a2)
 
 
 //----- (0016633C) --------------------------------------------------------
-int __fastcall sub_16633C(int a1, int a2)
+int sub_16633C(int a1, int a2)
 {
   int v2; // eax
 
@@ -366,7 +366,7 @@ int __fastcall sub_16633C(int a1, int a2)
 
 
 //----- (0016634C) --------------------------------------------------------
-int __fastcall sub_16634C(int a1, int a2)
+int sub_16634C(int a1, int a2)
 {
   int v2; // eax
 
@@ -377,7 +377,7 @@ int __fastcall sub_16634C(int a1, int a2)
 
 
 //----- (0016635C) --------------------------------------------------------
-int __fastcall sub_16635C(int a1, int a2)
+int sub_16635C(int a1, int a2)
 {
   int v2; // eax
 
@@ -389,7 +389,7 @@ int __fastcall sub_16635C(int a1, int a2)
 
 
 //----- (0016636C) --------------------------------------------------------
-int __fastcall sub_16636C(int a1, int a2)
+int sub_16636C(int a1, int a2)
 {
   int v2; // eax
 
@@ -400,21 +400,21 @@ int __fastcall sub_16636C(int a1, int a2)
 
 
 //----- (0016637C) --------------------------------------------------------
-int __fastcall sub_16637C(int a1, int a2)
+int sub_16637C(int a1, int a2)
 {
   return __ROR4__(a2, 8);
 }
 
 
 //----- (0016638C) --------------------------------------------------------
-char __fastcall sub_16638C(int a1, int a2)
+char sub_16638C(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (0016639C) --------------------------------------------------------
-int __fastcall sub_16639C(int a1, int a2)
+int sub_16639C(int a1, int a2)
 {
   int v2; // eax
 
@@ -425,7 +425,7 @@ int __fastcall sub_16639C(int a1, int a2)
 
 
 //----- (001663AC) --------------------------------------------------------
-int16_t __fastcall sub_1663AC(int a1, int a2)
+int16_t sub_1663AC(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -436,7 +436,7 @@ int16_t __fastcall sub_1663AC(int a1, int a2)
 
 
 //----- (001663B8) --------------------------------------------------------
-int16_t __fastcall sub_1663B8(int a1, int a2)
+int16_t sub_1663B8(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -447,21 +447,21 @@ int16_t __fastcall sub_1663B8(int a1, int a2)
 
 
 //----- (001663C4) --------------------------------------------------------
-int __fastcall sub_1663C4(int a1, int a2)
+int sub_1663C4(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001663D0) --------------------------------------------------------
-char __usercall sub_1663D0( int a1)
+char sub_1663D0( int a1)
 {
   return a1;
 }
 
 
 //----- (001663DC) --------------------------------------------------------
-int16_t __fastcall sub_1663DC(int a1, int a2)
+int16_t sub_1663DC(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -475,7 +475,7 @@ int16_t __fastcall sub_1663DC(int a1, int a2)
 
 
 //----- (001663E8) --------------------------------------------------------
-int __fastcall sub_1663E8(int a1, int a2)
+int sub_1663E8(int a1, int a2)
 {
   int v2; // eax
 
@@ -486,7 +486,7 @@ int __fastcall sub_1663E8(int a1, int a2)
 
 
 //----- (001663F8) --------------------------------------------------------
-int __fastcall sub_1663F8(int a1, int a2)
+int sub_1663F8(int a1, int a2)
 {
   int v2; // eax
 
@@ -497,14 +497,14 @@ int __fastcall sub_1663F8(int a1, int a2)
 
 
 //----- (00166404) --------------------------------------------------------
-char __usercall sub_166404( int a1)
+char sub_166404( int a1)
 {
   return a1;
 }
 
 
 //----- (00166410) --------------------------------------------------------
-int16_t __fastcall sub_166410(int a1, int a2)
+int16_t sub_166410(int a1, int a2)
 {
   int v2; // eax
   int v3; // ebx
@@ -521,7 +521,7 @@ int16_t __fastcall sub_166410(int a1, int a2)
 
 
 //----- (00166420) --------------------------------------------------------
-int __fastcall sub_166420(int a1, int a2)
+int sub_166420(int a1, int a2)
 {
   int v2; // eax
 
@@ -532,7 +532,7 @@ int __fastcall sub_166420(int a1, int a2)
 
 
 //----- (00166430) --------------------------------------------------------
-int __fastcall sub_166430(int a1, int a2)
+int sub_166430(int a1, int a2)
 {
   int v2; // eax
 
@@ -543,7 +543,7 @@ int __fastcall sub_166430(int a1, int a2)
 
 
 //----- (00166440) --------------------------------------------------------
-int __fastcall sub_166440(int a1, int a2)
+int sub_166440(int a1, int a2)
 {
   int v2; // eax
 
@@ -555,7 +555,7 @@ int __fastcall sub_166440(int a1, int a2)
 
 
 //----- (00166450) --------------------------------------------------------
-char __fastcall sub_166450(int a1, int a2)
+char sub_166450(int a1, int a2)
 {
   int v2; // ebx
 
@@ -566,14 +566,14 @@ char __fastcall sub_166450(int a1, int a2)
 
 
 //----- (00166460) --------------------------------------------------------
-int __fastcall sub_166460(int a1, int a2)
+int sub_166460(int a1, int a2)
 {
   return __ROR4__(a2, 8);
 }
 
 
 //----- (00166470) --------------------------------------------------------
-char __fastcall sub_166470(int a1, int a2)
+char sub_166470(int a1, int a2)
 {
   int v2; // eax
 
@@ -584,7 +584,7 @@ char __fastcall sub_166470(int a1, int a2)
 
 
 //----- (00166480) --------------------------------------------------------
-int __fastcall sub_166480(int a1, int a2)
+int sub_166480(int a1, int a2)
 {
   int v2; // eax
 
@@ -595,7 +595,7 @@ int __fastcall sub_166480(int a1, int a2)
 
 
 //----- (00166490) --------------------------------------------------------
-int16_t __fastcall sub_166490(int a1, int a2)
+int16_t sub_166490(int a1, int a2)
 {
   int16_t result; // ax
 
@@ -606,7 +606,7 @@ int16_t __fastcall sub_166490(int a1, int a2)
 
 
 //----- (0016649C) --------------------------------------------------------
-int16_t __fastcall sub_16649C(int a1, int a2)
+int16_t sub_16649C(int a1, int a2)
 {
   int v2; // eax
 
@@ -618,21 +618,21 @@ int16_t __fastcall sub_16649C(int a1, int a2)
 
 
 //----- (001664A8) --------------------------------------------------------
-int __fastcall sub_1664A8(int a1, int a2)
+int sub_1664A8(int a1, int a2)
 {
   return a2;
 }
 
 
 //----- (001664B4) --------------------------------------------------------
-char __usercall sub_1664B4( int a1)
+char sub_1664B4( int a1)
 {
   return a1;
 }
 
 
 //----- (001664C0) --------------------------------------------------------
-char __fastcall sub_1664C0(int a1, int a2)
+char sub_1664C0(int a1, int a2)
 {
   int v2; // eax
 
@@ -643,7 +643,7 @@ char __fastcall sub_1664C0(int a1, int a2)
 
 
 //----- (001664CC) --------------------------------------------------------
-int __fastcall sub_1664CC(int a1, int a2)
+int sub_1664CC(int a1, int a2)
 {
   int v2; // eax
 
@@ -654,7 +654,7 @@ int __fastcall sub_1664CC(int a1, int a2)
 
 
 //----- (001664D8) --------------------------------------------------------
-int __fastcall sub_1664D8(int a1, int a2)
+int sub_1664D8(int a1, int a2)
 {
   int v2; // eax
 
@@ -665,7 +665,7 @@ int __fastcall sub_1664D8(int a1, int a2)
 
 
 //----- (001664E4) --------------------------------------------------------
-int16_t __fastcall sub_1664E4(int a1, int a2)
+int16_t sub_1664E4(int a1, int a2)
 {
   int v2; // eax
   int16_t result; // ax
@@ -679,7 +679,7 @@ int16_t __fastcall sub_1664E4(int a1, int a2)
 
 
 //----- (001664F0) --------------------------------------------------------
-int __usercall sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
+int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
 {
   unsigned int v4; // ecx
   _BYTE *v5; // ebx
@@ -859,12 +859,12 @@ LABEL_27:
       HIWORD(v37) = HIWORD(v18);
       v38 = BYTE1(v18);
       LOWORD(v37) = __ROR4__(v18, 16);
-      LOWORD(v39) = ((int16_t (__fastcall *)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
+      LOWORD(v39) = ((int16_t (*)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
       *a3 = v39;
       v40 = (int **)((char *)a3 + dword_18A660);
       *v40 = v22;
       v41 = (int **)((char *)v40 + dword_18A660);
-      LOWORD(v42) = ((int16_t (__fastcall *)(int, int))funcs_164C45[v38])(v38, v37);
+      LOWORD(v42) = ((int16_t (*)(int, int))funcs_164C45[v38])(v38, v37);
       *v41 = v42;
       v43 = (int **)((char *)v41 + dword_18A660);
       *v43 = v22;
@@ -939,7 +939,7 @@ LABEL_45:
 // 18A678: using guessed type int dword_18A678;
 // 18A684: using guessed type int dword_18A684;
 // 18A688: using guessed type int dword_18A688;
-// 18A69C: using guessed type int (__fastcall *dword_18A69C)(_DWORD);
+// 18A69C: using guessed type int (*dword_18A69C)(_DWORD);
 // 18A6A0: using guessed type int dword_18A6A0;
 // 18A6A4: using guessed type int dword_18A6A4;
 // 18A6AC: using guessed type int dword_18A6AC;
@@ -952,7 +952,7 @@ LABEL_45:
 
 
 //----- (00167320) --------------------------------------------------------
-_BYTE *__cdecl sub_167320(unsigned int *a1, int a2, int a3)
+_BYTE *sub_167320(unsigned int *a1, int a2, int a3)
 {
   _DWORD *v3; // esi
   _DWORD *v4; // edi
@@ -1136,7 +1136,7 @@ LABEL_31:
     dword_18A664 = *(int *)((char *)&dword_18A6E0 + (v19 & 0xFC));
     /* __asm: jmp     dword_18A650[ecx*4] */ DECOMP_TODO("inline asm");
   }
-  dword_18A69C = *(int (__fastcall **)(_DWORD))(a3 + 4);
+  dword_18A69C = *(int (**)(_DWORD))(a3 + 4);
   v15 = *(uint16_t *)(a3 + 8);
   dword_18A680 = v15;
   dword_18A6A0 = a3 + 10;
@@ -1204,7 +1204,7 @@ LABEL_19:
 // 18A680: using guessed type int dword_18A680;
 // 18A684: using guessed type int dword_18A684;
 // 18A688: using guessed type int dword_18A688;
-// 18A69C: using guessed type int (__fastcall *dword_18A69C)(_DWORD);
+// 18A69C: using guessed type int (*dword_18A69C)(_DWORD);
 // 18A6A0: using guessed type int dword_18A6A0;
 // 18A6A4: using guessed type int dword_18A6A4;
 // 18A6A8: using guessed type int dword_18A6A8;
@@ -1218,7 +1218,7 @@ LABEL_19:
 
 
 //----- (001676F0) --------------------------------------------------------
-void __cdecl sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
+void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
 {
   unsigned int v6; // ebp
   unsigned int *v7; // esi
@@ -1825,14 +1825,14 @@ void __cdecl sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6
 
 
 //----- (00167F20) --------------------------------------------------------
-unsigned int __cdecl sub_167F20(int a1, int a2)
+unsigned int sub_167F20(int a1, int a2)
 {
   return ((unsigned int)(a2 * a1) >> 8) + 32;
 }
 
 
 //----- (00167F40) --------------------------------------------------------
-int __cdecl sub_167F40(int a1, unsigned int *a2)
+int sub_167F40(int a1, unsigned int *a2)
 {
   _WORD *v2; // edi
   unsigned int v3; // ebx
@@ -1934,7 +1934,7 @@ LABEL_20:
 
 
 //----- (00168060) --------------------------------------------------------
-int __cdecl sub_168060(int a1, _BYTE *a2)
+int sub_168060(int a1, _BYTE *a2)
 {
   int v2; // ebx
   int16_t v3; // cx
@@ -2014,27 +2014,27 @@ int sub_168545()
 
 
 //----- (00168549) --------------------------------------------------------
-int __cdecl sub_168549(int a1)
+int sub_168549(int a1)
 {
   uint8_t v1; // al
 
   v1 = hr_inbyte(a1);
   return (uint8_t)nullsub_22(v1, a1);
 }
-// 168692: using guessed type int __fastcall nullsub_22(_DWORD, _DWORD);
+// 168692: using guessed type int nullsub_22(_DWORD, _DWORD);
 
 
 //----- (00168560) --------------------------------------------------------
-int __cdecl sub_168560(int a1, int a2)
+int sub_168560(int a1, int a2)
 {
   hr_outbyte(a1, a2);
   return (uint8_t)nullsub_22(a2, a1);
 }
-// 168692: using guessed type int __fastcall nullsub_22(_DWORD, _DWORD);
+// 168692: using guessed type int nullsub_22(_DWORD, _DWORD);
 
 
 //----- (00168577) --------------------------------------------------------
-char __cdecl sub_168577(int a1, int a2)
+char sub_168577(int a1, int a2)
 {
   uint16_t v3; // dx
   int16_t v4; // cx
@@ -2086,12 +2086,12 @@ char __cdecl sub_168577(int a1, int a2)
   while ( a1 );
   return v9;
 }
-// 168692: using guessed type int __fastcall nullsub_22(_DWORD, _DWORD);
+// 168692: using guessed type int nullsub_22(_DWORD, _DWORD);
 
 
 //----- (001685E9) --------------------------------------------------------
 // positive sp value has been detected, the output may be wrong!
-void __fastcall sub_1685E9(int a1)
+void sub_1685E9(int a1)
 {
   int v1; // esi
   int v2; // [esp-14h] [ebp-2Ch]
@@ -2102,7 +2102,7 @@ void __fastcall sub_1685E9(int a1)
   v3 = *(_DWORD *)(a1 + *(_DWORD *)byte_18B040 + 42);
   v2 = *(_DWORD *)(a1 + *(_DWORD *)byte_18B040 + 46);
   ++*(_DWORD *)(v1 + 54);
-  (*(void (__cdecl **)(_DWORD, _DWORD))(v1 + 10))(*(_DWORD *)(v1 + 20), *(uint16_t *)(v1 + 24));
+  (*(void (**)(_DWORD, _DWORD))(v1 + 10))(*(_DWORD *)(v1 + 20), *(uint16_t *)(v1 + 24));
   if ( (_WORD)v2 )
     hr_outbyte(v2, 0x20u);
   if ( (_WORD)v3 )
@@ -2114,7 +2114,7 @@ void __fastcall sub_1685E9(int a1)
 
 
 //----- (00169020) --------------------------------------------------------
-int __fastcall sub_169020(int result, int a2, int a3)
+int sub_169020(int result, int a2, int a3)
 {
   if ( a3 == 1 )
     result -= 66154;
@@ -2123,7 +2123,7 @@ int __fastcall sub_169020(int result, int a2, int a3)
 
 
 //----- (001690CF) --------------------------------------------------------
-int __usercall sub_1690CF(int a1, int a2)
+int sub_1690CF(int a1, int a2)
 {
   int v3; // [esp-4h] [ebp-4h]
 
@@ -2136,7 +2136,7 @@ int __usercall sub_1690CF(int a1, int a2)
 
 
 //----- (001690F9) --------------------------------------------------------
-int __usercall sub_1690F9(int a1, int a2, uint16_t *a3, int a4)
+int sub_1690F9(int a1, int a2, uint16_t *a3, int a4)
 {
   int v4; // eax
   char v6; // [esp-1Ch] [ebp-20h]
@@ -2171,7 +2171,7 @@ int __usercall sub_1690F9(int a1, int a2, uint16_t *a3, int a4)
 
 
 //----- (0016915C) --------------------------------------------------------
-int __fastcall sub_16915C(int result, int a2)
+int sub_16915C(int result, int a2)
 {
   *(_BYTE *)(result + 108) = HIBYTE(a2);
   if ( *(_BYTE *)(result + 100) != 5 )
@@ -2181,7 +2181,7 @@ int __fastcall sub_16915C(int result, int a2)
 
 
 //----- (00169169) --------------------------------------------------------
-int __fastcall sub_169169(int a1, int a2)
+int sub_169169(int a1, int a2)
 {
   int v3; // [esp-8h] [ebp-Ch]
 
@@ -2201,7 +2201,7 @@ void sub_1691A0()
 
 
 //----- (001691E7) --------------------------------------------------------
-int __usercall sub_1691E7(int *a1, int a2)
+int sub_1691E7(int *a1, int a2)
 {
   int v3; // eax
 
@@ -2231,7 +2231,7 @@ void sub_169245()
 
 
 //----- (001692A2) --------------------------------------------------------
-_BOOL1 __fastcall sub_1692A2( int a1, int a2, _BYTE *a3)
+_BOOL1 sub_1692A2( int a1, int a2, _BYTE *a3)
 {
   _BOOL1 result; // al
 
@@ -2245,7 +2245,7 @@ _BOOL1 __fastcall sub_1692A2( int a1, int a2, _BYTE *a3)
 
 
 //----- (001692C7) --------------------------------------------------------
-void __usercall sub_1692C7( int a1, int a2, int a3)
+void sub_1692C7( int a1, int a2, int a3)
 {
   if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) != 0 )
     *(_BYTE *)(a3 + 40) = 0;
@@ -2254,7 +2254,7 @@ void __usercall sub_1692C7( int a1, int a2, int a3)
 
 
 //----- (001692E4) --------------------------------------------------------
-int __usercall sub_1692E4(int a1, int a2)
+int sub_1692E4(int a1, int a2)
 {
   char v2; // dh
   int v3; // eax
@@ -2276,7 +2276,7 @@ int __usercall sub_1692E4(int a1, int a2)
 
 
 //----- (0016933A) --------------------------------------------------------
-int __fastcall sub_16933A( int a1)
+int sub_16933A( int a1)
 {
   int v1; // eax
   _BYTE *v2; // eax
@@ -2293,7 +2293,7 @@ int __fastcall sub_16933A( int a1)
 
 
 //----- (0016937A) --------------------------------------------------------
-void __fastcall sub_16937A(char *a1)
+void sub_16937A(char *a1)
 {
   *(_WORD *)a1 = (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 2) == 0
               || a1 - (char *)((_BYTE *)GetGameFlagsTable_F4B81() != 136183);
@@ -2377,16 +2377,16 @@ int sub_1693B6()
 
 
 //----- (00169410) --------------------------------------------------------
-int __stdcall sub_169410(int a1, int a2)
+int sub_169410(int a1, int a2)
 {
   GetGameFlagsTable_F4B81();
   return sub_12479(a1, a2);
 }
-// 12479: using guessed type _DWORD __stdcall sub_12479(_DWORD, _DWORD);
+// 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD);
 
 
 //----- (0016945B) --------------------------------------------------------
-int __fastcall sub_16945B(int a1)
+int sub_16945B(int a1)
 {
   return *(_DWORD *)(a1 + 109455);
 }
@@ -2412,7 +2412,7 @@ void sub_16948F()
 // stays inside the 307200-byte (640x480) visible framebuffer; on overflow the
 // offset is clamped to 0 (start of buffer).
 //
-// PORT: the original was a __usercall thunk that read its destination base from
+// PORT: the original was a thunk that read its destination base from
 // a register the single caller (sub_125D4F) had loaded. Hex-Rays modeled that
 // register as "*(a3-4)" where a3 = &savedregs = ebp+0, i.e. it read *(ebp-4) of
 // the CALLER's frame - an uninitialized stack slot (debug fill 0xCCCCCCCC),
@@ -2429,7 +2429,7 @@ unsigned int sub_1694B7(int offset, int len, int destBase)
 
 
 //----- (001694B9) --------------------------------------------------------
-void __fastcall sub_1694B9( int a1)
+void sub_1694B9( int a1)
 {
   sub_4A4E4(a1);
   sub_4A5CE();
@@ -2437,7 +2437,7 @@ void __fastcall sub_1694B9( int a1)
 
 
 //----- (001694D9) --------------------------------------------------------
-void *__fastcall sub_1694D9(void *a1, void *a2, int a3)
+void *sub_1694D9(void *a1, void *a2, int a3)
 {
   void *v4; // [esp-20h] [ebp-20h]
 

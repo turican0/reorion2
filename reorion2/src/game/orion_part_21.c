@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x13DABB - 0x14814C  (200 funkci) */
 
 //----- (0013DABB) --------------------------------------------------------
-int16_t __fastcall sub_13DABB( int a1, unsigned int a2, int a3)
+int16_t sub_13DABB( int a1, unsigned int a2, int a3)
 {
   int v3; // eax
   bool v5; // [esp+0h] [ebp-2Ch]
@@ -108,7 +108,7 @@ LABEL_36:
   }
   return v3;
 }
-// 13F35A: using guessed type int __fastcall memcpy(_DWORD, _DWORD, _DWORD);
+// 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
 // 184984: using guessed type int dword_184984;
 // 184988: using guessed type int dword_184988;
 // 18499C: using guessed type int dword_18499C;
@@ -123,12 +123,12 @@ LABEL_36:
 // 1849DA: using guessed type int dword_1849DA;
 // 189708: using guessed type int16_t word_189708;
 // 1C0690: using guessed type int dword_1C0690[128];
-// 1C0990: using guessed type int (__fastcall *dword_1C0990)(_DWORD, _DWORD, _DWORD, _DWORD);
+// 1C0990: using guessed type int (*dword_1C0990)(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1C40EA: using guessed type int dword_1C40EA;
 
 
 //----- (0013DE7E) --------------------------------------------------------
-int __fastcall sub_13DE7E(int result, int a2, int a3)
+int sub_13DE7E(int result, int a2, int a3)
 {
   unsigned int v3; // [esp+Ch] [ebp-10h]
   signed int v4; // [esp+14h] [ebp-8h]
@@ -156,8 +156,8 @@ int __fastcall sub_13DE7E(int result, int a2, int a3)
   }
   return result;
 }
-// 13F2CC: using guessed type int __fastcall j___delay(_DWORD);
-// 13F35A: using guessed type int __fastcall memcpy(_DWORD, _DWORD, _DWORD);
+// 13F2CC: using guessed type int j___delay(_DWORD);
+// 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
 // 18498E: using guessed type int dword_18498E;
 // 184992: using guessed type int16_t word_184992;
 // 18499C: using guessed type int dword_18499C;
@@ -168,7 +168,7 @@ int __fastcall sub_13DE7E(int result, int a2, int a3)
 
 
 //----- (0013DFBF) --------------------------------------------------------
-int __fastcall sub_13DFBF( int a1, int a2, unsigned int a3, unsigned int a4)
+int sub_13DFBF( int a1, int a2, unsigned int a3, unsigned int a4)
 {
   int v6; // [esp+Ch] [ebp-14h]
   int v7; // [esp+10h] [ebp-10h]
@@ -216,9 +216,9 @@ int __fastcall sub_13DFBF( int a1, int a2, unsigned int a3, unsigned int a4)
     return 1;
   }
 }
-// 138B90: using guessed type int __fastcall strcmp(_DWORD, _DWORD);
+// 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 13D6D8: using guessed type int sub_13D6D8(void);
-// 13F35A: using guessed type int __fastcall memcpy(_DWORD, _DWORD, _DWORD);
+// 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
 // 184654: using guessed type char byte_184654;
 // 184984: using guessed type int dword_184984;
 // 18498C: using guessed type int16_t word_18498C;
@@ -238,7 +238,7 @@ int __fastcall sub_13DFBF( int a1, int a2, unsigned int a3, unsigned int a4)
 
 
 //----- (0013E186) --------------------------------------------------------
-int __cdecl sub_13E186(int a1, int a2)
+int sub_13E186(int a1, int a2)
 {
   int result; // eax
   char v3[500]; // [esp+0h] [ebp-1F8h] BYREF
@@ -257,14 +257,14 @@ int __cdecl sub_13E186(int a1, int a2)
   dword_1849E6 = result;
   return result;
 }
-// 12697A: using guessed type int __fastcall fclose(_DWORD);
-// 13C8F0: using guessed type int __fastcall vsprintf(_DWORD, _DWORD, _DWORD);
+// 12697A: using guessed type int fclose(_DWORD);
+// 13C8F0: using guessed type int vsprintf(_DWORD, _DWORD, _DWORD);
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1849E6: using guessed type int dword_1849E6;
 
 
 //----- (0013E47F) --------------------------------------------------------
-int __fastcall sub_13E47F(int a1, uint8_t *a2, int a3, int a4)
+int sub_13E47F(int a1, uint8_t *a2, int a3, int a4)
 {
   uint8_t *v4; // eax
   uint8_t *v5; // eax
@@ -418,7 +418,7 @@ int __fastcall sub_13E47F(int a1, uint8_t *a2, int a3, int a4)
 
 
 //----- (0013EBFE) --------------------------------------------------------
-int __fastcall sub_13EBFE(int a1)
+int sub_13EBFE(int a1)
 {
   int result; // eax
   int i; // [esp+4h] [ebp-4h]
@@ -436,7 +436,7 @@ int __fastcall sub_13EBFE(int a1)
 
 
 //----- (0013EE7E) --------------------------------------------------------
-int __fastcall sub_13EE7E( int a1, int a2, int a3, int a4, int a5)
+int sub_13EE7E( int a1, int a2, int a3, int a4, int a5)
 {
   int result; // eax
   int16_t i; // [esp+10h] [ebp-8h]
@@ -624,12 +624,12 @@ LABEL_2:
     sub_155F76(v1, (uint16_t)v0);
   }
 }
-// 13C905: using guessed type int64_t __fastcall time(_DWORD);
-// 13F37F: using guessed type int __fastcall strcpy(_DWORD, _DWORD);
+// 13C905: using guessed type int64_t time(_DWORD);
+// 13F37F: using guessed type int strcpy(_DWORD, _DWORD);
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
-// 155777: using guessed type int __fastcall getenv(_DWORD);
-// 156130: using guessed type int __fastcall isatty(_DWORD, _DWORD);
-// 156157: using guessed type int __fastcall setbuf(_DWORD, _DWORD);
+// 155777: using guessed type int getenv(_DWORD);
+// 156130: using guessed type int isatty(_DWORD, _DWORD);
+// 156157: using guessed type int setbuf(_DWORD, _DWORD);
 // 1C0E38: using guessed type int dword_1C0E38;
 // 1C0E3C: using guessed type int dword_1C0E3C;
 // 1C0E40: using guessed type int dword_1C0E40;
@@ -661,7 +661,7 @@ int sub_13F7BC()
   --dword_1C0E40;
   return result;
 }
-// 12697A: using guessed type int __fastcall fclose(_DWORD);
+// 12697A: using guessed type int fclose(_DWORD);
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -670,7 +670,7 @@ int sub_13F7BC()
 
 
 //----- (0013F84F) --------------------------------------------------------
-void __cdecl sub_13F84F(int a1, int a2)
+void sub_13F84F(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -700,7 +700,7 @@ void __cdecl sub_13F84F(int a1, int a2)
 
 
 //----- (0013F953) --------------------------------------------------------
-void __usercall sub_13F953(int a1, int a2, int a3)
+void sub_13F953(int a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -730,7 +730,7 @@ void __usercall sub_13F953(int a1, int a2, int a3)
 
 
 //----- (0013FA3E) --------------------------------------------------------
-void __cdecl sub_13FA3E(int a1, int a2)
+void sub_13FA3E(int a1, int a2)
 {
   int v2; // edx
 
@@ -749,7 +749,7 @@ void __cdecl sub_13FA3E(int a1, int a2)
 
 
 //----- (0013FAB7) --------------------------------------------------------
-void __cdecl sub_13FAB7(int a1, int a2, int a3)
+void sub_13FAB7(int a1, int a2, int a3)
 {
   int v3; // edx
 
@@ -768,7 +768,7 @@ void __cdecl sub_13FAB7(int a1, int a2, int a3)
 
 
 //----- (0013FB41) --------------------------------------------------------
-int __cdecl sub_13FB41(int a1)
+int sub_13FB41(int a1)
 {
   int v1; // edx
   int result; // eax
@@ -788,14 +788,14 @@ int __cdecl sub_13FB41(int a1)
 
 
 //----- (0013FBBA) --------------------------------------------------------
-void __cdecl sub_13FBBA(unsigned int a1)
+void sub_13FBBA(unsigned int a1)
 {
   sub_1553B8(a1);
 }
 
 
 //----- (0013FBC8) --------------------------------------------------------
-int __cdecl sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4)
+int sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4)
 {
   int v4; // edx
   int v6; // esi
@@ -825,7 +825,7 @@ int __cdecl sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4)
 
 
 //----- (0013FCDE) --------------------------------------------------------
-void __cdecl sub_13FCDE(int a1)
+void sub_13FCDE(int a1)
 {
   int v1; // edx
 
@@ -844,7 +844,7 @@ void __cdecl sub_13FCDE(int a1)
 
 
 //----- (0013FD50) --------------------------------------------------------
-int __cdecl sub_13FD50(int a1, char *a2)
+int sub_13FD50(int a1, char *a2)
 {
   int v2; // edx
   int v4; // edi
@@ -922,7 +922,7 @@ int __cdecl sub_13FD50(int a1, char *a2)
 
 
 //----- (001400A9) --------------------------------------------------------
-void __cdecl sub_1400A9(int a1)
+void sub_1400A9(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -952,7 +952,7 @@ void __cdecl sub_1400A9(int a1)
 
 
 //----- (00140194) --------------------------------------------------------
-void __cdecl sub_140194(int a1, int32_t a2)
+void sub_140194(int a1, int32_t a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -982,7 +982,7 @@ void __cdecl sub_140194(int a1, int32_t a2)
 
 
 //----- (00140287) --------------------------------------------------------
-void __cdecl sub_140287(int a1, int a2)
+void sub_140287(int a1, int a2)
 {
   int v2; // edx
 
@@ -1001,7 +1001,7 @@ void __cdecl sub_140287(int a1, int a2)
 
 
 //----- (001402FD) --------------------------------------------------------
-void __cdecl sub_1402FD(int a1, unsigned int a2)
+void sub_1402FD(int a1, unsigned int a2)
 {
   int v2; // edx
 
@@ -1050,7 +1050,7 @@ void sub_1403E9()
 
 
 //----- (001404C7) --------------------------------------------------------
-void __cdecl sub_1404C7(int a1)
+void sub_1404C7(int a1)
 {
   int v1; // edx
 
@@ -1069,7 +1069,7 @@ void __cdecl sub_1404C7(int a1)
 
 
 //----- (00140596) --------------------------------------------------------
-void __cdecl sub_140596(int a1)
+void sub_140596(int a1)
 {
   int v1; // edx
 
@@ -1088,7 +1088,7 @@ void __cdecl sub_140596(int a1)
 
 
 //----- (00140665) --------------------------------------------------------
-void __cdecl sub_140665(int a1)
+void sub_140665(int a1)
 {
   int v1; // edx
 
@@ -1126,7 +1126,7 @@ void sub_1406D2()
 
 
 //----- (00140734) --------------------------------------------------------
-void __cdecl sub_140734(int a1)
+void sub_140734(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1156,7 +1156,7 @@ void __cdecl sub_140734(int a1)
 
 
 //----- (00140819) --------------------------------------------------------
-void __cdecl sub_140819(int a1, int a2)
+void sub_140819(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1186,7 +1186,7 @@ void __cdecl sub_140819(int a1, int a2)
 
 
 //----- (0014090C) --------------------------------------------------------
-void __cdecl sub_14090C(unsigned int a1)
+void sub_14090C(unsigned int a1)
 {
   int v1; // edx
 
@@ -1242,7 +1242,7 @@ void sub_140979()
 
 
 //----- (00140A57) --------------------------------------------------------
-void __cdecl sub_140A57(char *a1, void *a2)
+void sub_140A57(char *a1, void *a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1272,28 +1272,35 @@ void __cdecl sub_140A57(char *a1, void *a2)
 
 
 //----- (00140BB1) --------------------------------------------------------
-void __cdecl sub_140BB1(int a1)
+// AIL_allocate_sample_handle trace wrapper: bumps the trace nesting depth
+// (dword_1C0E40), optionally logs, calls the real allocator sub_157610(a1) and
+// RETURNS its handle. The original's two JUMPOUTs (0x13FA33 / 0x13FCD2) were the
+// shared trace epilogue, which just does `dec dword_1C0E40; mov eax, esi; retn`
+// (Orion2.exe.asm) — i.e. drop the depth and return the handle held in esi.
+// Hex-Rays had typed this void and dropped sub_157610's return, so every caller
+// (e.g. sub_1580A3) received an uninitialized sample handle -> access violation
+// in sub_1579F0 (AIL_register_EOS_callback) writing *(handle+0x850).
+int sub_140BB1(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
+  int *handle; // esi
 
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_allocate_sample_handle(0x%X)\n", a1);
-  sub_157610(a1);
+  handle = sub_157610(a1);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FA33);
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40; // shared epilogue: dec trace depth
+  return (int)handle;
 }
-// 140C91: control flows out of bounds to 13FA33
-// 140C26: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1302,7 +1309,7 @@ void __cdecl sub_140BB1(int a1)
 
 
 //----- (00140C96) --------------------------------------------------------
-void __cdecl sub_140C96(int a1, int a2, int a3)
+void sub_140C96(int a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -1332,7 +1339,7 @@ void __cdecl sub_140C96(int a1, int a2, int a3)
 
 
 //----- (00140D8F) --------------------------------------------------------
-void __cdecl sub_140D8F(int a1)
+void sub_140D8F(int a1)
 {
   int v1; // edx
 
@@ -1351,7 +1358,7 @@ void __cdecl sub_140D8F(int a1)
 
 
 //----- (00140DFC) --------------------------------------------------------
-void __cdecl sub_140DFC(int *a1)
+void sub_140DFC(int *a1)
 {
   int v1; // edx
 
@@ -1370,7 +1377,7 @@ void __cdecl sub_140DFC(int *a1)
 
 
 //----- (00140E69) --------------------------------------------------------
-void __cdecl sub_140E69(_DWORD *a1, int a2, int a3)
+void sub_140E69(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -1400,7 +1407,7 @@ void __cdecl sub_140E69(_DWORD *a1, int a2, int a3)
 
 
 //----- (00140F6F) --------------------------------------------------------
-_DWORD *__cdecl sub_140F6F(_DWORD *a1, int a2, int a3)
+_DWORD *sub_140F6F(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   _DWORD *result; // eax
@@ -1420,7 +1427,7 @@ _DWORD *__cdecl sub_140F6F(_DWORD *a1, int a2, int a3)
 
 
 //----- (00140FF1) --------------------------------------------------------
-int *__cdecl sub_140FF1(int a1, int a2, int a3)
+int *sub_140FF1(int a1, int a2, int a3)
 {
   int v3; // edx
   int *result; // eax
@@ -1440,7 +1447,7 @@ int *__cdecl sub_140FF1(int a1, int a2, int a3)
 
 
 //----- (00141073) --------------------------------------------------------
-void __cdecl sub_141073(_DWORD *a1)
+void sub_141073(_DWORD *a1)
 {
   int v1; // edx
 
@@ -1459,7 +1466,7 @@ void __cdecl sub_141073(_DWORD *a1)
 
 
 //----- (001410E0) --------------------------------------------------------
-void __cdecl sub_1410E0(int a1)
+void sub_1410E0(int a1)
 {
   int v1; // edx
 
@@ -1478,7 +1485,7 @@ void __cdecl sub_1410E0(int a1)
 
 
 //----- (0014114D) --------------------------------------------------------
-void __cdecl sub_14114D(int a1)
+void sub_14114D(int a1)
 {
   int v1; // edx
 
@@ -1497,7 +1504,7 @@ void __cdecl sub_14114D(int a1)
 
 
 //----- (001411BA) --------------------------------------------------------
-void __cdecl sub_1411BA(int a1)
+void sub_1411BA(int a1)
 {
   int v1; // edx
 
@@ -1516,7 +1523,7 @@ void __cdecl sub_1411BA(int a1)
 
 
 //----- (00141227) --------------------------------------------------------
-void __cdecl sub_141227(int a1, int a2)
+void sub_141227(int a1, int a2)
 {
   int v2; // edx
 
@@ -1535,7 +1542,7 @@ void __cdecl sub_141227(int a1, int a2)
 
 
 //----- (0014129D) --------------------------------------------------------
-void __cdecl sub_14129D(int a1, int a2)
+void sub_14129D(int a1, int a2)
 {
   int v2; // edx
 
@@ -1554,7 +1561,7 @@ void __cdecl sub_14129D(int a1, int a2)
 
 
 //----- (00141313) --------------------------------------------------------
-void __cdecl sub_141313(int a1, int a2)
+void sub_141313(int a1, int a2)
 {
   int v2; // edx
 
@@ -1573,7 +1580,7 @@ void __cdecl sub_141313(int a1, int a2)
 
 
 //----- (00141389) --------------------------------------------------------
-void __cdecl sub_141389(int a1, int a2)
+void sub_141389(int a1, int a2)
 {
   int v2; // edx
 
@@ -1592,7 +1599,7 @@ void __cdecl sub_141389(int a1, int a2)
 
 
 //----- (001413FF) --------------------------------------------------------
-void __cdecl sub_1413FF(int a1)
+void sub_1413FF(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1622,7 +1629,7 @@ void __cdecl sub_1413FF(int a1)
 
 
 //----- (001414E4) --------------------------------------------------------
-void __cdecl sub_1414E4(int a1)
+void sub_1414E4(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1652,7 +1659,7 @@ void __cdecl sub_1414E4(int a1)
 
 
 //----- (001415D5) --------------------------------------------------------
-void __cdecl sub_1415D5(int a1)
+void sub_1415D5(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1682,7 +1689,7 @@ void __cdecl sub_1415D5(int a1)
 
 
 //----- (001416BA) --------------------------------------------------------
-void __cdecl sub_1416BA(int a1)
+void sub_1416BA(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1712,7 +1719,7 @@ void __cdecl sub_1416BA(int a1)
 
 
 //----- (0014179F) --------------------------------------------------------
-void __cdecl sub_14179F(int a1)
+void sub_14179F(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1742,7 +1749,7 @@ void __cdecl sub_14179F(int a1)
 
 
 //----- (00141884) --------------------------------------------------------
-void __cdecl sub_141884(int a1, int a2, void *a3)
+void sub_141884(int a1, int a2, void *a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -1772,7 +1779,7 @@ void __cdecl sub_141884(int a1, int a2, void *a3)
 
 
 //----- (0014197D) --------------------------------------------------------
-void __cdecl sub_14197D(_DWORD *a1, int a2, int a3)
+void sub_14197D(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -1805,7 +1812,7 @@ void __cdecl sub_14197D(_DWORD *a1, int a2, int a3)
 
 
 //----- (00141A76) --------------------------------------------------------
-void __cdecl sub_141A76(_DWORD *a1)
+void sub_141A76(_DWORD *a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1835,7 +1842,7 @@ void __cdecl sub_141A76(_DWORD *a1)
 
 
 //----- (00141B5B) --------------------------------------------------------
-void __cdecl sub_141B5B(int *a1, int a2, int a3, int a4)
+void sub_141B5B(int *a1, int a2, int a3, int a4)
 {
   int v4; // edx
 
@@ -1854,7 +1861,7 @@ void __cdecl sub_141B5B(int *a1, int a2, int a3, int a4)
 
 
 //----- (00141C60) --------------------------------------------------------
-void __cdecl sub_141C60(int a1)
+void sub_141C60(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1884,7 +1891,7 @@ void __cdecl sub_141C60(int a1)
 
 
 //----- (00141D45) --------------------------------------------------------
-void __cdecl sub_141D45(int a1, int a2)
+void sub_141D45(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1914,7 +1921,7 @@ void __cdecl sub_141D45(int a1, int a2)
 
 
 //----- (00141E32) --------------------------------------------------------
-void __cdecl sub_141E32(int a1, int a2)
+void sub_141E32(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1944,7 +1951,7 @@ void __cdecl sub_141E32(int a1, int a2)
 
 
 //----- (00141F1F) --------------------------------------------------------
-void __cdecl sub_141F1F(int a1, int a2)
+void sub_141F1F(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1974,7 +1981,7 @@ void __cdecl sub_141F1F(int a1, int a2)
 
 
 //----- (0014200C) --------------------------------------------------------
-void __cdecl sub_14200C(int a1, int a2)
+void sub_14200C(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2004,7 +2011,7 @@ void __cdecl sub_14200C(int a1, int a2)
 
 
 //----- (001420F9) --------------------------------------------------------
-int __cdecl sub_1420F9(int a1, int a2, int a3)
+int sub_1420F9(int a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2024,7 +2031,7 @@ int __cdecl sub_1420F9(int a1, int a2, int a3)
 
 
 //----- (0014217B) --------------------------------------------------------
-void __cdecl sub_14217B(int a1, int a2)
+void sub_14217B(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2054,7 +2061,7 @@ void __cdecl sub_14217B(int a1, int a2)
 
 
 //----- (00142268) --------------------------------------------------------
-void __cdecl sub_142268(int a1)
+void sub_142268(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2114,7 +2121,7 @@ void sub_14234D()
 
 
 //----- (00142425) --------------------------------------------------------
-void __cdecl sub_142425(char *a1, void *a2)
+void sub_142425(char *a1, void *a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2144,7 +2151,7 @@ void __cdecl sub_142425(char *a1, void *a2)
 
 
 //----- (0014257F) --------------------------------------------------------
-void __cdecl sub_14257F(int a1)
+void sub_14257F(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2174,7 +2181,7 @@ void __cdecl sub_14257F(int a1)
 
 
 //----- (001426D1) --------------------------------------------------------
-void __cdecl sub_1426D1(int **a1, int a2, int a3)
+void sub_1426D1(int **a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2204,7 +2211,7 @@ void __cdecl sub_1426D1(int **a1, int a2, int a3)
 
 
 //----- (001427CA) --------------------------------------------------------
-void __cdecl sub_1427CA(_DWORD *a1)
+void sub_1427CA(_DWORD *a1)
 {
   int v1; // edx
 
@@ -2223,7 +2230,7 @@ void __cdecl sub_1427CA(_DWORD *a1)
 
 
 //----- (00142837) --------------------------------------------------------
-void __cdecl sub_142837(_DWORD *a1)
+void sub_142837(_DWORD *a1)
 {
   int v1; // edx
 
@@ -2242,7 +2249,7 @@ void __cdecl sub_142837(_DWORD *a1)
 
 
 //----- (001428A4) --------------------------------------------------------
-void __cdecl sub_1428A4(_DWORD *a1)
+void sub_1428A4(_DWORD *a1)
 {
   int v1; // edx
 
@@ -2261,7 +2268,7 @@ void __cdecl sub_1428A4(_DWORD *a1)
 
 
 //----- (00142911) --------------------------------------------------------
-void __cdecl sub_142911(_DWORD *a1)
+void sub_142911(_DWORD *a1)
 {
   int v1; // edx
 
@@ -2280,7 +2287,7 @@ void __cdecl sub_142911(_DWORD *a1)
 
 
 //----- (0014297E) --------------------------------------------------------
-int __cdecl sub_14297E(_DWORD *a1, int a2, int a3)
+int sub_14297E(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2300,7 +2307,7 @@ int __cdecl sub_14297E(_DWORD *a1, int a2, int a3)
 
 
 //----- (00142A00) --------------------------------------------------------
-int __cdecl sub_142A00(_DWORD *a1, int a2, int a3)
+int sub_142A00(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2320,7 +2327,7 @@ int __cdecl sub_142A00(_DWORD *a1, int a2, int a3)
 
 
 //----- (00142A82) --------------------------------------------------------
-void __cdecl sub_142A82(int a1, int a2)
+void sub_142A82(int a1, int a2)
 {
   int v2; // edx
 
@@ -2339,7 +2346,7 @@ void __cdecl sub_142A82(int a1, int a2)
 
 
 //----- (00142AF8) --------------------------------------------------------
-void __cdecl sub_142AF8(int a1)
+void sub_142AF8(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2369,7 +2376,7 @@ void __cdecl sub_142AF8(int a1)
 
 
 //----- (00142BDD) --------------------------------------------------------
-void __cdecl sub_142BDD(int a1)
+void sub_142BDD(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2399,7 +2406,7 @@ void __cdecl sub_142BDD(int a1)
 
 
 //----- (00142CC2) --------------------------------------------------------
-void __cdecl sub_142CC2(int a1)
+void sub_142CC2(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2429,7 +2436,7 @@ void __cdecl sub_142CC2(int a1)
 
 
 //----- (00142DA7) --------------------------------------------------------
-void __cdecl sub_142DA7(int a1)
+void sub_142DA7(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2459,7 +2466,7 @@ void __cdecl sub_142DA7(int a1)
 
 
 //----- (00142E8C) --------------------------------------------------------
-void __cdecl sub_142E8C(int a1, int a2, void *a3)
+void sub_142E8C(int a1, int a2, void *a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2489,7 +2496,7 @@ void __cdecl sub_142E8C(int a1, int a2, void *a3)
 
 
 //----- (00142FF2) --------------------------------------------------------
-void __cdecl sub_142FF2(int *a1, int a2, int a3)
+void sub_142FF2(int *a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2519,7 +2526,7 @@ void __cdecl sub_142FF2(int *a1, int a2, int a3)
 
 
 //----- (001430EB) --------------------------------------------------------
-void __cdecl sub_1430EB(int *a1, int a2, int a3)
+void sub_1430EB(int *a1, int a2, int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2549,7 +2556,7 @@ void __cdecl sub_1430EB(int *a1, int a2, int a3)
 
 
 //----- (001431E4) --------------------------------------------------------
-int __cdecl sub_1431E4(int *a1, int a2, int a3)
+int sub_1431E4(int *a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2569,7 +2576,7 @@ int __cdecl sub_1431E4(int *a1, int a2, int a3)
 
 
 //----- (00143266) --------------------------------------------------------
-int __cdecl sub_143266(int *a1, int a2, int a3)
+int sub_143266(int *a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2589,7 +2596,7 @@ int __cdecl sub_143266(int *a1, int a2, int a3)
 
 
 //----- (001432E8) --------------------------------------------------------
-void __cdecl sub_1432E8(int a1)
+void sub_1432E8(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2619,7 +2626,7 @@ void __cdecl sub_1432E8(int a1)
 
 
 //----- (001433CD) --------------------------------------------------------
-void __cdecl sub_1433CD(int a1, int a2, unsigned int a3)
+void sub_1433CD(int a1, int a2, unsigned int a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2649,7 +2656,7 @@ void __cdecl sub_1433CD(int a1, int a2, unsigned int a3)
 
 
 //----- (001434C6) --------------------------------------------------------
-void __cdecl sub_1434C6(int a1, int a2)
+void sub_1434C6(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2679,7 +2686,7 @@ void __cdecl sub_1434C6(int a1, int a2)
 
 
 //----- (001435B3) --------------------------------------------------------
-void __cdecl sub_1435B3(_DWORD *a1, _DWORD *a2, int *a3)
+void sub_1435B3(_DWORD *a1, _DWORD *a2, int *a3)
 {
   int v3; // edx
   unsigned int i; // edx
@@ -2710,7 +2717,7 @@ void __cdecl sub_1435B3(_DWORD *a1, _DWORD *a2, int *a3)
 
 
 //----- (001436BB) --------------------------------------------------------
-void __cdecl sub_1436BB(_DWORD *a1, int a2)
+void sub_1436BB(_DWORD *a1, int a2)
 {
   int v2; // edx
 
@@ -2729,7 +2736,7 @@ void __cdecl sub_1436BB(_DWORD *a1, int a2)
 
 
 //----- (00143731) --------------------------------------------------------
-void __cdecl sub_143731(int a1, int a2)
+void sub_143731(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2759,7 +2766,7 @@ void __cdecl sub_143731(int a1, int a2)
 
 
 //----- (0014381E) --------------------------------------------------------
-void __cdecl sub_14381E(int a1, int a2)
+void sub_14381E(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2789,7 +2796,7 @@ void __cdecl sub_14381E(int a1, int a2)
 
 
 //----- (0014390B) --------------------------------------------------------
-void __cdecl sub_14390B(int a1, int a2)
+void sub_14390B(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2819,7 +2826,7 @@ void __cdecl sub_14390B(int a1, int a2)
 
 
 //----- (001439F8) --------------------------------------------------------
-void __cdecl sub_1439F8(int a1, int a2)
+void sub_1439F8(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2849,7 +2856,7 @@ void __cdecl sub_1439F8(int a1, int a2)
 
 
 //----- (00143AE5) --------------------------------------------------------
-void __cdecl sub_143AE5(int a1, int a2)
+void sub_143AE5(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2879,7 +2886,7 @@ void __cdecl sub_143AE5(int a1, int a2)
 
 
 //----- (00143BD2) --------------------------------------------------------
-int __cdecl sub_143BD2(int a1, int a2, int a3)
+int sub_143BD2(int a1, int a2, int a3)
 {
   int v3; // edx
   int result; // eax
@@ -2899,7 +2906,7 @@ int __cdecl sub_143BD2(int a1, int a2, int a3)
 
 
 //----- (00143C54) --------------------------------------------------------
-void __cdecl sub_143C54(int a1, int a2)
+void sub_143C54(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -2929,7 +2936,7 @@ void __cdecl sub_143C54(int a1, int a2)
 
 
 //----- (00143DB7) --------------------------------------------------------
-void __cdecl sub_143DB7(_DWORD *a1)
+void sub_143DB7(_DWORD *a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -2959,7 +2966,7 @@ void __cdecl sub_143DB7(_DWORD *a1)
 
 
 //----- (00143E9C) --------------------------------------------------------
-void __cdecl sub_143E9C(_DWORD *a1, int a2)
+void sub_143E9C(_DWORD *a1, int a2)
 {
   int v2; // edx
 
@@ -2978,7 +2985,7 @@ void __cdecl sub_143E9C(_DWORD *a1, int a2)
 
 
 //----- (00143F12) --------------------------------------------------------
-_DWORD *__cdecl sub_143F12(_DWORD *a1, int a2, int a3)
+_DWORD *sub_143F12(_DWORD *a1, int a2, int a3)
 {
   int v3; // edx
   _DWORD *result; // eax
@@ -2998,7 +3005,7 @@ _DWORD *__cdecl sub_143F12(_DWORD *a1, int a2, int a3)
 
 
 //----- (00143F94) --------------------------------------------------------
-void __cdecl sub_143F94(int a1, int a2)
+void sub_143F94(int a1, int a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -3028,7 +3035,7 @@ void __cdecl sub_143F94(int a1, int a2)
 
 
 //----- (00144081) --------------------------------------------------------
-void __cdecl sub_144081(int a1, int a2, int a3, unsigned int a4, int a5)
+void sub_144081(int a1, int a2, int a3, unsigned int a4, int a5)
 {
   int v5; // edx
 
@@ -3047,7 +3054,7 @@ void __cdecl sub_144081(int a1, int a2, int a3, unsigned int a4, int a5)
 
 
 //----- (00144190) --------------------------------------------------------
-void __cdecl sub_144190(int a1, int a2, int a3, int a4)
+void sub_144190(int a1, int a2, int a3, int a4)
 {
   int v4; // edx
   unsigned int i; // edx
@@ -3093,7 +3100,7 @@ bool sub_144305()
 
 
 //----- (00144348) --------------------------------------------------------
-_DWORD *__fastcall sub_144348(int a1, int a2)
+_DWORD *sub_144348(int a1, int a2)
 {
   _DWORD *result; // eax
   int v3; // [esp+0h] [ebp-3Ch]
@@ -3300,7 +3307,7 @@ int16_t sub_14475C()
 
 
 //----- (001449CC) --------------------------------------------------------
-int64_t __fastcall sub_1449CC(int64_t a1, int a2, int a3)
+int64_t sub_1449CC(int64_t a1, int a2, int a3)
 {
   int64_t v3; // rdi
   int v4; // eax
@@ -3350,7 +3357,7 @@ LABEL_7:
 
 
 //----- (00144A06) --------------------------------------------------------
-int64_t __fastcall sub_144A06(int64_t a1, int a2, int a3)
+int64_t sub_144A06(int64_t a1, int a2, int a3)
 {
   int64_t v3; // rdi
   int v4; // eax
@@ -4434,7 +4441,7 @@ bool sub_145FD2()
   (void)v2;
   return true;
 }
-// 144A4A: using guessed type int __fastcall int386x(_DWORD, _DWORD);
+// 144A4A: using guessed type int int386x(_DWORD, _DWORD);
 // 1B06F8: using guessed type int dword_1B06F8;
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BB8E0: using guessed type int dword_1BB8E0;
@@ -4476,8 +4483,8 @@ int sub_1460C1()
   else
     return 512;
 }
-// 13F253: using guessed type int __fastcall int386(_DWORD, _DWORD, _DWORD);
-// 144A4A: using guessed type int __fastcall int386x(_DWORD, _DWORD);
+// 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);
+// 144A4A: using guessed type int int386x(_DWORD, _DWORD);
 // 1B06F8: using guessed type int dword_1B06F8;
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BB8E0: using guessed type int dword_1BB8E0;
@@ -4523,7 +4530,7 @@ int sub_1461F0()
     word_1BBA58 = 1;
   return *(uint16_t *)(v6 + 4);
 }
-// 144A4A: using guessed type int __fastcall int386x(_DWORD, _DWORD);
+// 144A4A: using guessed type int int386x(_DWORD, _DWORD);
 // 1B06F8: using guessed type int dword_1B06F8;
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BB8E0: using guessed type int dword_1BB8E0;
@@ -4544,7 +4551,7 @@ int sub_146348()
   dword_1BB8E4 = 257;
   return int386(16, &dword_1BB8E0, byte_1BB8C4);
 }
-// 13F253: using guessed type int __fastcall int386(_DWORD, _DWORD, _DWORD);
+// 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);
 // 1BB8E0: using guessed type int dword_1BB8E0;
 // 1BB8E4: using guessed type int dword_1BB8E4;
 
@@ -4558,7 +4565,7 @@ int sub_14736A()
 
 
 //----- (0014759C) --------------------------------------------------------
-char __fastcall sub_14759C( int result, char *a2, unsigned int a3, int a4)
+char sub_14759C( int result, char *a2, unsigned int a3, int a4)
 {
   unsigned int v6; // edx
 
@@ -4576,7 +4583,7 @@ char __fastcall sub_14759C( int result, char *a2, unsigned int a3, int a4)
 
 
 //----- (001475BB) --------------------------------------------------------
-int __fastcall sub_1475BB(int a1, char *a2, int a3, int a4)
+int sub_1475BB(int a1, char *a2, int a3, int a4)
 {
   int16_t v4; // si
   int result; // eax
@@ -4604,7 +4611,7 @@ int __fastcall sub_1475BB(int a1, char *a2, int a3, int a4)
 
 
 //----- (001475EB) --------------------------------------------------------
-char __fastcall sub_1475EB( int a1, char *a2, unsigned int a3, int a4)
+char sub_1475EB( int a1, char *a2, unsigned int a3, int a4)
 {
   unsigned int v6; // edx
   char v7; // t0
@@ -4626,7 +4633,7 @@ char __fastcall sub_1475EB( int a1, char *a2, unsigned int a3, int a4)
 
 
 //----- (0014760C) --------------------------------------------------------
-int __fastcall sub_14760C(int a1, char *a2, int a3, int a4)
+int sub_14760C(int a1, char *a2, int a3, int a4)
 {
   int16_t v4; // si
   int32_t v5; // eax
@@ -4666,7 +4673,7 @@ int __fastcall sub_14760C(int a1, char *a2, int a3, int a4)
 
 
 //----- (0014765E) --------------------------------------------------------
-int __fastcall sub_14765E(int result, char *a2, unsigned int a3, int a4)
+int sub_14765E(int result, char *a2, unsigned int a3, int a4)
 {
   unsigned int v6; // edx
   char *v7; // edi
@@ -4701,7 +4708,7 @@ int __fastcall sub_14765E(int result, char *a2, unsigned int a3, int a4)
 
 
 //----- (00147698) --------------------------------------------------------
-int __fastcall sub_147698(int result, char *a2, int a3, int a4)
+int sub_147698(int result, char *a2, int a3, int a4)
 {
   int v5; // esi
   unsigned int v6; // ebx
@@ -4757,7 +4764,7 @@ int __fastcall sub_147698(int result, char *a2, int a3, int a4)
 
 
 //----- (00147723) --------------------------------------------------------
-char __fastcall sub_147723(int a1, _BYTE *a2, int a3, int a4)
+char sub_147723(int a1, _BYTE *a2, int a3, int a4)
 {
   _BYTE *v4; // edi
   _BYTE *v5; // esi
@@ -4795,7 +4802,7 @@ char __fastcall sub_147723(int a1, _BYTE *a2, int a3, int a4)
 
 
 //----- (00147760) --------------------------------------------------------
-char __fastcall sub_147760(int a1, _BYTE *a2, int a3, int a4)
+char sub_147760(int a1, _BYTE *a2, int a3, int a4)
 {
   _BYTE *v4; // edi
   _BYTE *v5; // esi
@@ -4847,7 +4854,7 @@ char __fastcall sub_147760(int a1, _BYTE *a2, int a3, int a4)
 
 
 //----- (001477B4) --------------------------------------------------------
-char *__fastcall sub_1477B4(char *result, int a2, int a3)
+char *sub_1477B4(char *result, int a2, int a3)
 {
   unsigned int v3; // ebx
 
@@ -4862,7 +4869,7 @@ char *__fastcall sub_1477B4(char *result, int a2, int a3)
 
 
 //----- (001477CF) --------------------------------------------------------
-int __fastcall sub_1477CF(int result, int a2, int a3)
+int sub_1477CF(int result, int a2, int a3)
 {
   _BYTE *v3; // edi
   _BYTE *v4; // esi
@@ -4882,7 +4889,7 @@ int __fastcall sub_1477CF(int result, int a2, int a3)
 
 
 //----- (001477ED) --------------------------------------------------------
-int __userpurge sub_1477ED(_BYTE *a1, int a2, int a3, int a4)
+int sub_1477ED(_BYTE *a1, int a2, int a3, int a4)
 {
   int v4; // ebx
   _BYTE *v5; // edi
@@ -4920,7 +4927,7 @@ int __userpurge sub_1477ED(_BYTE *a1, int a2, int a3, int a4)
 
 
 //----- (00147826) --------------------------------------------------------
-int64_t __fastcall sub_147826(int64_t a1, int a2, int a3)
+int64_t sub_147826(int64_t a1, int a2, int a3)
 {
   uint16_t v3; // kr00_2
   _BYTE *v4; // edi
@@ -4964,7 +4971,7 @@ int64_t __fastcall sub_147826(int64_t a1, int a2, int a3)
 
 
 //----- (0014787E) --------------------------------------------------------
-_BYTE *__fastcall sub_14787E(_BYTE *a1, unsigned int a2, int a3)
+_BYTE *sub_14787E(_BYTE *a1, unsigned int a2, int a3)
 {
   _BYTE *v3; // esi
   _BYTE *v4; // edi
@@ -5001,7 +5008,7 @@ _BYTE *__fastcall sub_14787E(_BYTE *a1, unsigned int a2, int a3)
 
 
 //----- (001478A6) --------------------------------------------------------
-_BYTE *__fastcall sub_1478A6(_BYTE *result, int a2, int a3, int a4)
+_BYTE *sub_1478A6(_BYTE *result, int a2, int a3, int a4)
 {
   _BYTE *v4; // esi
   _BYTE *v5; // edi
@@ -5029,7 +5036,7 @@ _BYTE *__fastcall sub_1478A6(_BYTE *result, int a2, int a3, int a4)
 
 
 //----- (001478C3) --------------------------------------------------------
-_BYTE *__fastcall sub_1478C3(_BYTE *a1, int a2, unsigned int a3)
+_BYTE *sub_1478C3(_BYTE *a1, int a2, unsigned int a3)
 {
   _BYTE *v3; // esi
   _BYTE *v4; // edi
@@ -5068,7 +5075,7 @@ _BYTE *__fastcall sub_1478C3(_BYTE *a1, int a2, unsigned int a3)
 
 
 //----- (001478EF) --------------------------------------------------------
-int __fastcall sub_1478EF(int result, unsigned int a2, int a3, char *a4)
+int sub_1478EF(int result, unsigned int a2, int a3, char *a4)
 {
   char *v4; // esi
   char *v6; // edi
@@ -5096,7 +5103,7 @@ int __fastcall sub_1478EF(int result, unsigned int a2, int a3, char *a4)
 
 
 //----- (0014791B) --------------------------------------------------------
-char *__fastcall sub_14791B(char *result, unsigned int a2, int a3, char *a4)
+char *sub_14791B(char *result, unsigned int a2, int a3, char *a4)
 {
   char *v5; // esi
 
@@ -5117,7 +5124,7 @@ char *__fastcall sub_14791B(char *result, unsigned int a2, int a3, char *a4)
 
 
 //----- (00147935) --------------------------------------------------------
-unsigned int __fastcall sub_147935(int a1, int a2, int a3, int a4, int a5, unsigned int a6, int a7, int a8)
+unsigned int sub_147935(int a1, int a2, int a3, int a4, int a5, unsigned int a6, int a7, int a8)
 {
   int v9; // edx
   int v10; // eax
@@ -5181,7 +5188,7 @@ unsigned int __fastcall sub_147935(int a1, int a2, int a3, int a4, int a5, unsig
 
 
 //----- (00147A12) --------------------------------------------------------
-int16_t __fastcall sub_147A12(int a1, int a2, int a3, _BYTE *a4, int a5, int a6, int a7, int a8)
+int16_t sub_147A12(int a1, int a2, int a3, _BYTE *a4, int a5, int a6, int a7, int a8)
 {
   _BYTE *v8; // esi
   unsigned int v10; // edx
@@ -5234,7 +5241,7 @@ int16_t __fastcall sub_147A12(int a1, int a2, int a3, _BYTE *a4, int a5, int a6,
 
 
 //----- (00147ABC) --------------------------------------------------------
-int __usercall sub_147ABC(int *a1, int a2, int *a3, unsigned int a4, unsigned int a5)
+int sub_147ABC(int *a1, int a2, int *a3, unsigned int a4, unsigned int a5)
 {
   int v7; // eax
   unsigned int v8; // eax
@@ -5304,7 +5311,7 @@ int __usercall sub_147ABC(int *a1, int a2, int *a3, unsigned int a4, unsigned in
 
 
 //----- (00147B89) --------------------------------------------------------
-char __usercall sub_147B89(char *a1, int a2, _BYTE *a3, int a4)
+char sub_147B89(char *a1, int a2, _BYTE *a3, int a4)
 {
   char *v4; // esi
   _BYTE *v5; // edi
@@ -5397,7 +5404,7 @@ char __usercall sub_147B89(char *a1, int a2, _BYTE *a3, int a4)
 
 
 //----- (00147C6A) --------------------------------------------------------
-uint8_t __usercall sub_147C6A(uint8_t *a1, int a2, _BYTE *a3, int a4)
+uint8_t sub_147C6A(uint8_t *a1, int a2, _BYTE *a3, int a4)
 {
   uint8_t *v4; // esi
   _BYTE *v5; // edi
@@ -5490,7 +5497,7 @@ uint8_t __usercall sub_147C6A(uint8_t *a1, int a2, _BYTE *a3, int a4)
 
 
 //----- (00147D53) --------------------------------------------------------
-char __fastcall sub_147D53(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6, int a7)
+char sub_147D53(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6, int a7)
 {
   int v9; // ebx
   char v10; // ah
@@ -5530,7 +5537,7 @@ char __fastcall sub_147D53(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6, 
 
 
 //----- (00147DB0) --------------------------------------------------------
-int __usercall sub_147DB0(_BYTE *a1, int a2, int a3, int a4)
+int sub_147DB0(_BYTE *a1, int a2, int a3, int a4)
 {
   int result; // eax
   int v6; // edx
@@ -5561,7 +5568,7 @@ int __usercall sub_147DB0(_BYTE *a1, int a2, int a3, int a4)
 
 
 //----- (00147DE7) --------------------------------------------------------
-int __usercall sub_147DE7(_BYTE *a1, int a2, int a3, int a4)
+int sub_147DE7(_BYTE *a1, int a2, int a3, int a4)
 {
   int result; // eax
   _BYTE *v6; // edi
@@ -5592,7 +5599,7 @@ int __usercall sub_147DE7(_BYTE *a1, int a2, int a3, int a4)
 
 
 //----- (00147E23) --------------------------------------------------------
-char __usercall sub_147E23(char *a1, int a2, _BYTE *a3, int a4, int a5)
+char sub_147E23(char *a1, int a2, _BYTE *a3, int a4, int a5)
 {
   int v7; // ecx
   int v9; // edx
@@ -5621,7 +5628,7 @@ char __usercall sub_147E23(char *a1, int a2, _BYTE *a3, int a4, int a5)
 
 
 //----- (00147E61) --------------------------------------------------------
-char __fastcall sub_147E61(char *a1, int a2, int a3, int a4, int a5)
+char sub_147E61(char *a1, int a2, int a3, int a4, int a5)
 {
   char *v5; // esi
   char *v6; // edi
@@ -5659,7 +5666,7 @@ char __fastcall sub_147E61(char *a1, int a2, int a3, int a4, int a5)
 
 
 //----- (00147E9F) --------------------------------------------------------
-int64_t __fastcall sub_147E9F(int a1, int a2, int a3, int a4, int a5, int a6)
+int64_t sub_147E9F(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   int v8; // ecx
   _BYTE *v9; // esi
@@ -5707,7 +5714,7 @@ int64_t __fastcall sub_147E9F(int a1, int a2, int a3, int a4, int a5, int a6)
 
 
 //----- (00147F3E) --------------------------------------------------------
-char __fastcall sub_147F3E(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
+char sub_147F3E(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 {
   int v9; // edx
   int v10; // ecx
@@ -5743,7 +5750,7 @@ char __fastcall sub_147F3E(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 
 
 //----- (00147F7B) --------------------------------------------------------
-char __fastcall sub_147F7B(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
+char sub_147F7B(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 {
   int v9; // edx
   int v10; // ecx
@@ -5784,7 +5791,7 @@ char __fastcall sub_147F7B(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 
 
 //----- (00147FDF) --------------------------------------------------------
-char __fastcall sub_147FDF(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
+char sub_147FDF(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 {
   int v9; // edx
   int v10; // ecx
@@ -5820,7 +5827,7 @@ char __fastcall sub_147FDF(char *a1, int a2, int a3, _BYTE *a4, int a5, int a6)
 
 
 //----- (0014801C) --------------------------------------------------------
-int __usercall sub_14801C(int *a1, int a2, int a3, int a4, int a5)
+int sub_14801C(int *a1, int a2, int a3, int a4, int a5)
 {
   int *v5; // esi
   int *v6; // edi
@@ -5866,7 +5873,7 @@ int __usercall sub_14801C(int *a1, int a2, int a3, int a4, int a5)
 
 
 //----- (00148086) --------------------------------------------------------
-void __fastcall sub_148086(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
+void sub_148086(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
 {
   _BYTE *v10; // esi
 
@@ -5892,7 +5899,7 @@ void __fastcall sub_148086(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, 
 
 
 //----- (001480C8) --------------------------------------------------------
-void __fastcall sub_1480C8(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
+void sub_1480C8(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
 {
   _BYTE *v10; // esi
 
@@ -5918,7 +5925,7 @@ void __fastcall sub_1480C8(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, 
 
 
 //----- (0014810A) --------------------------------------------------------
-void __fastcall sub_14810A(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
+void sub_14810A(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
 {
   _BYTE *v10; // esi
 
@@ -5944,7 +5951,7 @@ void __fastcall sub_14810A(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, 
 
 
 //----- (0014814C) --------------------------------------------------------
-void __fastcall sub_14814C(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
+void sub_14814C(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int a6, _BYTE *a7, int a8)
 {
   _BYTE *v10; // esi
 

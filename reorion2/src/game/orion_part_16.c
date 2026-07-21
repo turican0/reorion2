@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0xF53D7 - 0x102776  (200 funkci) */
 
 //----- (000F53D7) --------------------------------------------------------
-int __fastcall sub_F53D7( int a1)
+int sub_F53D7( int a1)
 {
   int v2; // eax
   int v3; // edi
@@ -38,7 +38,7 @@ int __fastcall sub_F53D7( int a1)
   JUMPOUT(0xF5204);
 }
 // F549B: control flows out of bounds to F5204
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192680: using guessed type int dword_192680;
 // 193174: using guessed type int dword_193174;
@@ -86,7 +86,7 @@ void sub_F54D9()
   sub_11C2F0();
   sub_F53D7(26);
   *(_BYTE *)(dword_192680 + 271) = 0;
-  sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v0, 11);
+  sub_8F1C4((void (*)(int, int))sub_F19C7, v0, 11);
 }
 // 192680: using guessed type int dword_192680;
 // 1AAE9F: using guessed type char byte_1AAE9F;
@@ -142,7 +142,7 @@ int sub_F5573()
 
 
 //----- (000F55A4) --------------------------------------------------------
-int __fastcall sub_F55A4(int a1, int a2, int a3, int a4)
+int sub_F55A4(int a1, int a2, int a3, int a4)
 {
   int v4; // edx
   int16_t v5; // bx
@@ -181,7 +181,7 @@ int __fastcall sub_F55A4(int a1, int a2, int a3, int a4)
   return sub_1077D(v8);
 }
 // F5679: variable 'v8' is possibly undefined
-// 1077D: using guessed type int __fastcall sub_1077D(_DWORD);
+// 1077D: using guessed type int sub_1077D(_DWORD);
 // 1844C6: using guessed type int dword_1844C6;
 // 1844CA: using guessed type int16_t word_1844CA;
 // 1844CE: using guessed type int dword_1844CE;
@@ -240,7 +240,7 @@ LABEL_6:
 
 
 //----- (000F5777) --------------------------------------------------------
-void __usercall sub_F5777(int16_t *a1)
+void sub_F5777(int16_t *a1)
 {
   int v1; // eax
   int v2; // ebx
@@ -295,16 +295,16 @@ void __usercall sub_F5777(int16_t *a1)
   while ( !v7 );
   sub_12030();
 }
-// 77433: using guessed type int __fastcall sub_77433(_DWORD);
-// FE8D4: using guessed type int __fastcall nullsub_15(_DWORD, _DWORD);
+// 77433: using guessed type int sub_77433(_DWORD);
+// FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 138B90: using guessed type int __fastcall strcmp(_DWORD, _DWORD);
+// 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 192680: using guessed type int dword_192680;
 // 199BF3: using guessed type char byte_199BF3;
 
 
 //----- (000F5883) --------------------------------------------------------
-unsigned int __fastcall sub_F5883(char *a1)
+unsigned int sub_F5883(char *a1)
 {
   dword_1AAEA4 = (int)a1;
   dword_1AAEAC = (int)&a1[strlen(a1) + 1];
@@ -327,7 +327,7 @@ unsigned int __fastcall sub_F5883(char *a1)
 
 
 //----- (000F5A9F) --------------------------------------------------------
-void __fastcall sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
+void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
 {
   int v7; // ecx
   int *v8; // edi
@@ -883,8 +883,8 @@ LABEL_51:
 // F5EE5: variable 'v32' is possibly undefined
 // F594C: using guessed type int dword_F594C[16];
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
-// 138B90: using guessed type int __fastcall strcmp(_DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
+// 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
 // 19306C: using guessed type int dword_19306C;
@@ -938,7 +938,7 @@ LABEL_51:
 
 
 //----- (000F67C1) --------------------------------------------------------
-void __fastcall sub_F67C1( unsigned int a1, unsigned int a2, unsigned int a3, char *a4)
+void sub_F67C1( unsigned int a1, unsigned int a2, unsigned int a3, char *a4)
 {
   int v4; // esi
   int v5; // eax
@@ -963,7 +963,7 @@ void __fastcall sub_F67C1( unsigned int a1, unsigned int a2, unsigned int a3, ch
 
 
 //----- (000F6816) --------------------------------------------------------
-int __fastcall sub_F6816(int a1, int a2, int a3, unsigned int a4)
+int sub_F6816(int a1, int a2, int a3, unsigned int a4)
 {
   char *v4; // edi
   int v5; // edx
@@ -1100,7 +1100,7 @@ int __fastcall sub_F6816(int a1, int a2, int a3, unsigned int a4)
 
 
 //----- (000F69FE) --------------------------------------------------------
-void __usercall sub_F69FE(int a1, int a2, int a3, int16_t *a4)
+void sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 {
   int v4; // eax
   int v5; // edx
@@ -1330,7 +1330,7 @@ void __usercall sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 }
 // F6F8B: control flows out of bounds to FA388
 // F6A72: variable 'v4' is possibly undefined
-// FE8BE: using guessed type int __fastcall sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int sub_FE8BE(_DWORD);
 // 183609: using guessed type char byte_183609;
 // 18360A: using guessed type char byte_18360A;
 // 19306C: using guessed type int dword_19306C;
@@ -1353,7 +1353,7 @@ void __usercall sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 
 
 //----- (000F6F90) --------------------------------------------------------
-int __fastcall sub_F6F90(int a1, int a2, int a3)
+int sub_F6F90(int a1, int a2, int a3)
 {
   // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
   // Hex-Rays artefakt jako jinde. Tato funkce je "virtualni stream"
@@ -1385,7 +1385,7 @@ int __fastcall sub_F6F90(int a1, int a2, int a3)
 
 
 //----- (000F6FD9) --------------------------------------------------------
-int __fastcall sub_F6FD9(int a1)
+int sub_F6FD9(int a1)
 {
   int v1; // edx
   uint8_t *v3; // ebx
@@ -1405,11 +1405,11 @@ int __fastcall sub_F6FD9(int a1)
   }
   return v1;
 }
-// 13C992: using guessed type int __fastcall fgetc(_DWORD, _DWORD);
+// 13C992: using guessed type int fgetc(_DWORD, _DWORD);
 
 
 //----- (000F7023) --------------------------------------------------------
-int __fastcall sub_F7023(void *a1, int a2, int a3, char *a4)
+int sub_F7023(void *a1, int a2, int a3, char *a4)
 {
   uint8_t v5; // dl
 
@@ -1427,11 +1427,11 @@ int __fastcall sub_F7023(void *a1, int a2, int a3, char *a4)
   else
     return 0;
 }
-// 1288DB: using guessed type int __fastcall fread(_DWORD, _DWORD, _DWORD, _DWORD);
+// 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
 
 
 //----- (000F707D) --------------------------------------------------------
-int __fastcall sub_F707D(void *a1, int a2, int a3, char *a4)
+int sub_F707D(void *a1, int a2, int a3, char *a4)
 {
   uint8_t v5; // dl
 
@@ -1449,11 +1449,11 @@ int __fastcall sub_F707D(void *a1, int a2, int a3, char *a4)
   else
     return 0;
 }
-// 129CAB: using guessed type int __fastcall fwrite(_DWORD, _DWORD, _DWORD, _DWORD);
+// 129CAB: using guessed type int fwrite(_DWORD, _DWORD, _DWORD, _DWORD);
 
 
 //----- (000F70EB) --------------------------------------------------------
-_BYTE *__fastcall sub_F70EB(int a1, uint8_t *a2, int16_t *a3, char *a4, int a5)
+_BYTE *sub_F70EB(int a1, uint8_t *a2, int16_t *a3, char *a4, int a5)
 {
   int16_t *v6; // edi
   int v7; // edx
@@ -1611,7 +1611,7 @@ LABEL_22:
 
 
 //----- (000F72D1) --------------------------------------------------------
-void __fastcall sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
+void sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
 {
   int v5; // edx
   char *v6; // eax
@@ -1682,7 +1682,7 @@ LABEL_3:
 
 
 //----- (000F73C2) --------------------------------------------------------
-char *__usercall sub_F73C2(int a1, int a2, int16_t *a3)
+char *sub_F73C2(int a1, int a2, int16_t *a3)
 {
   int v4; // eax
 
@@ -1713,8 +1713,8 @@ char *__usercall sub_F73C2(int a1, int a2, int16_t *a3)
   }
   return &byte_1AB0CE;
 }
-// 13CAF6: using guessed type int __fastcall nfree(_DWORD);
-// 13CB78: using guessed type int __fastcall nmalloc(_DWORD);
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 13CB78: using guessed type int nmalloc(_DWORD);
 // 1AAEA4: using guessed type int dword_1AAEA4;
 // 1AB0CE: using guessed type char byte_1AB0CE;
 // 1AB0CF: using guessed type int dword_1AB0CF;
@@ -1724,7 +1724,7 @@ char *__usercall sub_F73C2(int a1, int a2, int16_t *a3)
 
 
 //----- (000F747B) --------------------------------------------------------
-void __fastcall sub_F747B(char *a1, void *a2, int16_t *a3)
+void sub_F747B(char *a1, void *a2, int16_t *a3)
 {
   sub_FE8BE((int)a1, (int)a2, (int)a3, a3);
   if ( sub_F6F90((int)a1, 0, 0) )
@@ -1738,7 +1738,7 @@ void __fastcall sub_F747B(char *a1, void *a2, int16_t *a3)
 
 
 //----- (000F74CD) --------------------------------------------------------
-void __fastcall sub_F74CD( int a1, int a2, int a3)
+void sub_F74CD( int a1, int a2, int a3)
 {
   int v3; // eax
   int v4; // eax
@@ -1920,7 +1920,7 @@ void __fastcall sub_F74CD( int a1, int a2, int a3)
 // F7915: variable 'v11' is possibly undefined
 // F791A: variable 'v18' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 12697A: using guessed type int __fastcall fclose(_DWORD);
+// 12697A: using guessed type int fclose(_DWORD);
 // 17D634: using guessed type int16_t word_17D634;
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192B18: using guessed type int dword_192B18;
@@ -1958,7 +1958,7 @@ void __fastcall sub_F74CD( int a1, int a2, int a3)
 
 
 //----- (000F79F6) --------------------------------------------------------
-char __fastcall sub_F79F6(char *a1, int16_t *a2, int a3)
+char sub_F79F6(char *a1, int16_t *a2, int a3)
 {
   int16_t *v3; // edi
   char *v4; // ebx
@@ -2113,7 +2113,7 @@ char __fastcall sub_F79F6(char *a1, int16_t *a2, int a3)
 // F7A31: variable 'v7' is possibly undefined
 // F7A95: variable 'v9' is possibly undefined
 // F7ACE: variable 'v10' is possibly undefined
-// 12697A: using guessed type int __fastcall fclose(_DWORD);
+// 12697A: using guessed type int fclose(_DWORD);
 // 17D634: using guessed type int16_t word_17D634;
 // 192B18: using guessed type int dword_192B18;
 // 192FD8: using guessed type int dword_192FD8;
@@ -2380,7 +2380,7 @@ void sub_F7E95()
 // F8158: variable 'v18' is possibly undefined
 // F82F9: variable 'v23' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192B18: using guessed type int dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
@@ -2400,7 +2400,7 @@ void sub_F7E95()
 
 
 //----- (000F83D8) --------------------------------------------------------
-void __fastcall sub_F83D8(char *a1, int a2, int a3)
+void sub_F83D8(char *a1, int a2, int a3)
 {
   char *v3; // edx
   int v4; // eax
@@ -2664,7 +2664,7 @@ void __fastcall sub_F83D8(char *a1, int a2, int a3)
 
 
 //----- (000F88D8) --------------------------------------------------------
-_DWORD *__fastcall sub_F88D8(int a1, int a2, void *a3)
+_DWORD *sub_F88D8(int a1, int a2, void *a3)
 {
   int v3; // ebx
   int v4; // edx
@@ -2831,7 +2831,7 @@ _DWORD *__fastcall sub_F88D8(int a1, int a2, void *a3)
   }
   return sub_1113CC(dword_192ED4, v17);
 }
-// FE8BE: using guessed type int __fastcall sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int sub_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
 // 19306C: using guessed type int dword_19306C;
@@ -2847,7 +2847,7 @@ _DWORD *__fastcall sub_F88D8(int a1, int a2, void *a3)
 
 
 //----- (000F8C8E) --------------------------------------------------------
-void __fastcall sub_F8C8E(char *a1)
+void sub_F8C8E(char *a1)
 {
   int v1; // ebx
   void *v2; // eax
@@ -2968,7 +2968,7 @@ void __fastcall sub_F8C8E(char *a1)
   JUMPOUT(0xF88D2);
 }
 // F8F93: control flows out of bounds to F88D2
-// FE8BE: using guessed type int __fastcall sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int sub_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
@@ -2987,7 +2987,7 @@ void __fastcall sub_F8C8E(char *a1)
 
 
 //----- (000F8F98) --------------------------------------------------------
-void __fastcall sub_F8F98(int a1, int a2, int a3, int a4, int a5)
+void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
 {
   int v5; // ebx
   int v6; // edx
@@ -3164,7 +3164,7 @@ void __fastcall sub_F8F98(int a1, int a2, int a3, int a4, int a5)
   JUMPOUT(0xF72CB);
 }
 // F93DE: control flows out of bounds to F72CB
-// FE8BE: using guessed type int __fastcall sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int sub_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
 // 19306C: using guessed type int dword_19306C;
@@ -3179,7 +3179,7 @@ void __fastcall sub_F8F98(int a1, int a2, int a3, int a4, int a5)
 
 
 //----- (000F93E3) --------------------------------------------------------
-void __fastcall sub_F93E3(char *a1)
+void sub_F93E3(char *a1)
 {
   int16_t v1; // bx
   int16_t v2; // ax
@@ -3299,7 +3299,7 @@ void __fastcall sub_F93E3(char *a1)
 
 
 //----- (000F9711) --------------------------------------------------------
-int __fastcall sub_F9711(int a1, int a2, int a3)
+int sub_F9711(int a1, int a2, int a3)
 {
   _DWORD v4[3]; // [esp+0h] [ebp-Ch] BYREF
 
@@ -3315,7 +3315,7 @@ int __fastcall sub_F9711(int a1, int a2, int a3)
 
 
 //----- (000F975C) --------------------------------------------------------
-char __fastcall sub_F975C( int a1, int a2, int a3, int a4, int a5, int a6)
+char sub_F975C( int a1, int a2, int a3, int a4, int a5, int a6)
 {
   _WORD v7[6]; // [esp+0h] [ebp-Ch] BYREF
 
@@ -3334,7 +3334,7 @@ char __fastcall sub_F975C( int a1, int a2, int a3, int a4, int a5, int a6)
 
 
 //----- (000F97CD) --------------------------------------------------------
-_DWORD *__fastcall sub_F97CD(int a1, int a2, int a3, int a4, int a5, int a6)
+_DWORD *sub_F97CD(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   char *v6; // eax
   int16_t *v7; // edi
@@ -3568,7 +3568,7 @@ _DWORD *__fastcall sub_F97CD(int a1, int a2, int a3, int a4, int a5, int a6)
 
 
 //----- (000F9C58) --------------------------------------------------------
-void __fastcall sub_F9C58(char *a1)
+void sub_F9C58(char *a1)
 {
   void **v1; // eax
   int v2; // eax
@@ -3714,7 +3714,7 @@ void __fastcall sub_F9C58(char *a1)
 }
 // FA058: control flows out of bounds to F88D2
 // F9F21: variable 'v2' is possibly undefined
-// FE8BE: using guessed type int __fastcall sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int sub_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
@@ -3726,7 +3726,7 @@ void __fastcall sub_F9C58(char *a1)
 
 
 //----- (000FA05D) --------------------------------------------------------
-void __fastcall sub_FA05D(int a1)
+void sub_FA05D(int a1)
 {
   _DWORD *v1; // eax
 
@@ -3744,7 +3744,7 @@ void __fastcall sub_FA05D(int a1)
 
 
 //----- (000FA0D3) --------------------------------------------------------
-int __fastcall sub_FA0D3(int result)
+int sub_FA0D3(int result)
 {
   qmemcpy(&word_199998, (void *)result, sizeof(word_199998));
   qmemcpy((void *)dword_197F98, (void *)(result + 2), 3753 * word_199998);
@@ -3755,7 +3755,7 @@ int __fastcall sub_FA0D3(int result)
 
 
 //----- (000FA104) --------------------------------------------------------
-int __fastcall sub_FA104(int a1)
+int sub_FA104(int a1)
 {
   int v2; // [esp+0h] [ebp-4h] BYREF
 
@@ -3767,7 +3767,7 @@ int __fastcall sub_FA104(int a1)
 
 
 //----- (000FA16C) --------------------------------------------------------
-int __fastcall sub_FA16C(int a1)
+int sub_FA16C(int a1)
 {
   int result; // eax
   int v3; // edx
@@ -3788,7 +3788,7 @@ int __fastcall sub_FA16C(int a1)
 
 
 //----- (000FA1A3) --------------------------------------------------------
-void __fastcall sub_FA1A3(int a1)
+void sub_FA1A3(int a1)
 {
   int v1; // eax
   int v2; // edx
@@ -3851,13 +3851,13 @@ void __fastcall sub_FA1A3(int a1)
   JUMPOUT(0xFA388);
 }
 // FA26B: control flows out of bounds to FA388
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
 
 //----- (000FA270) --------------------------------------------------------
-int __fastcall sub_FA270( int a1)
+int sub_FA270( int a1)
 {
   int result; // eax
   char v2[4]; // [esp+0h] [ebp-4h] BYREF
@@ -3987,7 +3987,7 @@ char sub_FA3DC()
 
 
 //----- (000FA3F6) --------------------------------------------------------
-void __fastcall sub_FA3F6( int a1)
+void sub_FA3F6( int a1)
 {
   char v1; // dl
   int v2; // ecx
@@ -4044,7 +4044,7 @@ void __fastcall sub_FA3F6( int a1)
 
 
 //----- (000FA521) --------------------------------------------------------
-char __usercall sub_FA521( int a1)
+char sub_FA521( int a1)
 {
   if ( (uint8_t)byte_1AB03F < 0x29u )
   {
@@ -4098,7 +4098,7 @@ char sub_FA556()
 
 
 //----- (000FA5A3) --------------------------------------------------------
-char __fastcall sub_FA5A3(int a1)
+char sub_FA5A3(int a1)
 {
   return byte_1AAF7E[a1];
 }
@@ -4160,7 +4160,7 @@ int sub_FA5CE()
 
 
 //----- (000FA623) --------------------------------------------------------
-void __usercall sub_FA623(int a1, int16_t *a2)
+void sub_FA623(int a1, int16_t *a2)
 {
   char v2; // cl
   char v3; // al
@@ -4235,7 +4235,7 @@ LABEL_15:
 
 
 //----- (000FA728) --------------------------------------------------------
-void __fastcall sub_FA728( int a1)
+void sub_FA728( int a1)
 {
   char v1; // al
 
@@ -4286,7 +4286,7 @@ char sub_FA79B()
 
 
 //----- (000FA7B0) --------------------------------------------------------
-void __usercall sub_FA7B0(int a1, int a2, int a3)
+void sub_FA7B0(int a1, int a2, int a3)
 {
   int v4; // edx
   int v5; // eax
@@ -4357,7 +4357,7 @@ LABEL_11:
   }
 }
 // FA89D: control flows out of bounds to F88D2
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -4366,7 +4366,7 @@ LABEL_11:
 
 
 //----- (000FA8A2) --------------------------------------------------------
-void __fastcall sub_FA8A2(int a1, char *a2)
+void sub_FA8A2(int a1, char *a2)
 {
   int v3; // edx
   int v4; // esi
@@ -4415,7 +4415,7 @@ void __fastcall sub_FA8A2(int a1, char *a2)
 
 
 //----- (000FA97C) --------------------------------------------------------
-void __usercall sub_FA97C(int a1, int a2)
+void sub_FA97C(int a1, int a2)
 {
   sub_FA7B0(a1, 55, a2);
 }
@@ -4430,7 +4430,7 @@ void sub_FA989()
 
 
 //----- (000FA991) --------------------------------------------------------
-unsigned int __fastcall sub_FA991(char *a1)
+unsigned int sub_FA991(char *a1)
 {
   dword_1AB0E4 = (int)a1;
   dword_1AB0E8 = (int)&a1[strlen(a1) + 1];
@@ -4455,7 +4455,7 @@ unsigned int __fastcall sub_FA991(char *a1)
 
 
 //----- (000FAA71) --------------------------------------------------------
-int __userpurge sub_FAA71(int a1, int a2, int a3, int a4, int16_t *a5, int a6)
+int sub_FAA71(int a1, int a2, int a3, int a4, int16_t *a5, int a6)
 {
   int v7; // edx
 
@@ -4494,7 +4494,7 @@ int sub_FAAC3()
 
 
 //----- (000FAAD8) --------------------------------------------------------
-char __usercall sub_FAAD8(int16_t *a1)
+char sub_FAAD8(int16_t *a1)
 {
   int v1; // eax
   int v2; // ebx
@@ -4508,7 +4508,7 @@ char __usercall sub_FAAD8(int16_t *a1)
   sub_5C510(a1);
   *(_BYTE *)(dword_197F98 + 3753 * word_19999C + 40) = 100;
   sub_F53CB();
-  sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v9, 11);
+  sub_8F1C4((void (*)(int, int))sub_F19C7, v9, 11);
   v1 = sub_F19C7();
   sub_1077D(v1, (int)v9, 11, a1);
   word_1AAF70 = 0;
@@ -4551,10 +4551,10 @@ char __usercall sub_FAAD8(int16_t *a1)
   return 1;
 }
 // FAC6B: variable 'v7' is possibly undefined
-// 1279A: using guessed type int __fastcall sub_1279A(_DWORD);
-// 8CF09: using guessed type int64_t __fastcall sub_8CF09(_DWORD, _DWORD);
+// 1279A: using guessed type int sub_1279A(_DWORD);
+// 8CF09: using guessed type int64_t sub_8CF09(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192ED4: using guessed type int dword_192ED4;
 // 197F98: using guessed type int dword_197F98;
@@ -4572,7 +4572,7 @@ char __usercall sub_FAAD8(int16_t *a1)
 
 
 //----- (000FAC85) --------------------------------------------------------
-void __usercall sub_FAC85(int16_t *a1)
+void sub_FAC85(int16_t *a1)
 {
   int v1; // edx
   int v2; // eax
@@ -4654,7 +4654,7 @@ void __usercall sub_FAC85(int16_t *a1)
 // FAE7B: control flows out of bounds to FAC44
 // FAD7D: variable 'v3' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192ED4: using guessed type int dword_192ED4;
 // 197F98: using guessed type int dword_197F98;
@@ -4673,7 +4673,7 @@ void __usercall sub_FAC85(int16_t *a1)
 
 
 //----- (000FAE80) --------------------------------------------------------
-int __usercall sub_FAE80(int a1, int a2, int a3, int16_t *a4)
+int sub_FAE80(int a1, int a2, int a3, int16_t *a4)
 {
   int v4; // ebx
   int64_t v5; // rax
@@ -4704,12 +4704,12 @@ int __usercall sub_FAE80(int a1, int a2, int a3, int16_t *a4)
   LOBYTE(v5) = BYTE4(v5);
   return v5;
 }
-// 129FE4: using guessed type int64_t __fastcall j___clock(_DWORD, _DWORD, _DWORD);
+// 129FE4: using guessed type int64_t j___clock(_DWORD, _DWORD, _DWORD);
 // 1AB0E0: using guessed type int dword_1AB0E0;
 
 
 //----- (000FAEDB) --------------------------------------------------------
-char __usercall sub_FAEDB(int16_t *a1)
+char sub_FAEDB(int16_t *a1)
 {
   int v1; // eax
   int v2; // eax
@@ -4733,7 +4733,7 @@ char __usercall sub_FAEDB(int16_t *a1)
   sub_F54BE();
   sub_1191CA((int)sub_F19C7, 1);
   v16 = 0;
-  sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v15, 11);
+  sub_8F1C4((void (*)(int, int))sub_F19C7, v15, 11);
   v1 = sub_F19C7();
   v2 = sub_1077D(v1, (int)v15, 11, a1);
   if ( byte_1AAF58 || (v2 = sub_127880()) == 0 )
@@ -4749,7 +4749,7 @@ char __usercall sub_FAEDB(int16_t *a1)
   }
   v4 = (uint8_t)byte_1AAF58;
   sub_FE8BE(v3, 23, (int)sub_F67C1, a1);
-  v5 = sub_138F3B(v4, 23, (int (__fastcall *)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1, (int)&dword_1AAEC4);
+  v5 = sub_138F3B(v4, 23, (int (*)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1, (int)&dword_1AAEC4);
   sub_FE8BE(v5, v5, (int)sub_F67C1, a1);
   if ( !v5 )
   {
@@ -4845,7 +4845,7 @@ LABEL_19:
 // FAF87: variable 'v6' is possibly undefined
 // FB05C: variable 'v9' is possibly undefined
 // FB1A6: variable 'v13' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192EF0: using guessed type int dword_192EF0;
 // 197F98: using guessed type int dword_197F98;
 // 199A08: using guessed type int16_t word_199A08;
@@ -4863,7 +4863,7 @@ LABEL_19:
 
 
 //----- (000FB1F2) --------------------------------------------------------
-char __fastcall sub_FB1F2(int a1, int a2, int a3, int a4)
+char sub_FB1F2(int a1, int a2, int a3, int a4)
 {
   int v4; // ebx
   int64_t v5; // rax
@@ -4900,12 +4900,12 @@ char __fastcall sub_FB1F2(int a1, int a2, int a3, int a4)
   }
   return BYTE4(v5);
 }
-// 129FE4: using guessed type int64_t __fastcall j___clock(_DWORD, _DWORD, _DWORD);
+// 129FE4: using guessed type int64_t j___clock(_DWORD, _DWORD, _DWORD);
 // 1AB0FC: using guessed type int dword_1AB0FC;
 
 
 //----- (000FB27B) --------------------------------------------------------
-void __usercall sub_FB27B(int16_t *a1)
+void sub_FB27B(int16_t *a1)
 {
   int v1; // eax
   int v2; // eax
@@ -4950,7 +4950,7 @@ void __usercall sub_FB27B(int16_t *a1)
   sub_FC6A5();
   sub_F54BE();
   sub_1191CA((int)sub_F19C7, 1);
-  sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v38, 11);
+  sub_8F1C4((void (*)(int, int))sub_F19C7, v38, 11);
   v1 = sub_F19C7();
   v2 = sub_1077D(v1, (int)v38, 11, a1);
   if ( !byte_1AAF58 )
@@ -4970,7 +4970,7 @@ LABEL_4:
   v5 = (int)sub_F67C1;
   v6 = (uint8_t)byte_1AAF58;
   sub_FE8BE(v2, 23, (int)sub_F67C1, a1);
-  v7 = (int16_t *)sub_138F3B(v6, 23, (int (__fastcall *)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1, (int)&dword_1AAEC4);
+  v7 = (int16_t *)sub_138F3B(v6, 23, (int (*)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1, (int)&dword_1AAEC4);
   sub_FE8BE((int)v7, (int)v7, (int)sub_F67C1, a1);
   if ( !v7 )
   {
@@ -5169,10 +5169,10 @@ LABEL_41:
 // FB3D8: control flows out of bounds to FB1EC
 // FB5E2: variable 'v18' is possibly undefined
 // FB7D4: variable 'v31' is possibly undefined
-// 8CF09: using guessed type int64_t __fastcall sub_8CF09(_DWORD, _DWORD);
-// FE8D4: using guessed type int __fastcall nullsub_15(_DWORD, _DWORD);
+// 8CF09: using guessed type int64_t sub_8CF09(_DWORD, _DWORD);
+// FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1849E2: using guessed type int dword_1849E2;
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192680: using guessed type int dword_192680;
@@ -5203,7 +5203,7 @@ LABEL_41:
 
 
 //----- (000FB7E5) --------------------------------------------------------
-void __usercall sub_FB7E5(int16_t *a1)
+void sub_FB7E5(int16_t *a1)
 {
   int v1; // eax
   int v2; // eax
@@ -5267,7 +5267,7 @@ void __usercall sub_FB7E5(int16_t *a1)
   sub_FC6A5();
   sub_F54BE();
   sub_1191CA((int)sub_F19C7, 1);
-  sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v58, 11);
+  sub_8F1C4((void (*)(int, int))sub_F19C7, v58, 11);
   v1 = sub_F19C7();
   v2 = sub_1077D(v1, (int)v58, 11, a1);
   if ( byte_1AAF58 || (v2 = sub_127880()) == 0 )
@@ -5279,7 +5279,7 @@ void __usercall sub_FB7E5(int16_t *a1)
     v6 = (int16_t *)sub_138F3B(
                       v5,
                       23,
-                      (int (__fastcall *)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1,
+                      (int (*)(_DWORD, _DWORD, _DWORD, _DWORD))sub_F67C1,
                       (int)&dword_1AAEC4);
     sub_FE8BE((int)v6, (int)v6, (int)sub_F67C1, a1);
     if ( v6 )
@@ -5398,7 +5398,7 @@ void __usercall sub_FB7E5(int16_t *a1)
           sub_FE8BE(v22, v23, (int)&v43, a1);
           sub_F6816(32766, 0, (int)&v43, 0x60u);
           sub_F551B();
-          sub_8F1C4((void (__fastcall *)(int, int))sub_F19C7, v58, 11);
+          sub_8F1C4((void (*)(int, int))sub_F19C7, v58, 11);
           v24 = 0;
           byte_1AAF60[word_19999C] = 1;
           while ( v24 < (uint8_t)byte_1AAF5D )
@@ -5514,10 +5514,10 @@ LABEL_78:
 // FB9EF: variable 'v10' is possibly undefined
 // FBC8D: variable 'v25' is possibly undefined
 // FBE52: variable 'v40' is possibly undefined
-// 12479: using guessed type _DWORD __stdcall sub_12479(_DWORD, _DWORD);
-// 8CF09: using guessed type int64_t __fastcall sub_8CF09(_DWORD, _DWORD);
+// 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD);
+// 8CF09: using guessed type int64_t sub_8CF09(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1849E2: using guessed type int dword_1849E2;
 // 192EF0: using guessed type int dword_192EF0;
 // 197F98: using guessed type int dword_197F98;
@@ -5550,7 +5550,7 @@ LABEL_78:
 
 
 //----- (000FBE75) --------------------------------------------------------
-_BOOL1 __usercall sub_FBE75( unsigned int a1, int16_t *a2)
+_BOOL1 sub_FBE75( unsigned int a1, int16_t *a2)
 {
   _BYTE v3[4]; // [esp+0h] [ebp-4h] BYREF
 
@@ -5568,7 +5568,7 @@ _BOOL1 __usercall sub_FBE75( unsigned int a1, int16_t *a2)
 
 
 //----- (000FBEE1) --------------------------------------------------------
-_BOOL1 __usercall sub_FBEE1( int a1, int a2, int a3, int16_t *a4)
+_BOOL1 sub_FBEE1( int a1, int a2, int a3, int16_t *a4)
 {
   _BYTE v5[4]; // [esp+0h] [ebp-4h] BYREF
 
@@ -5591,7 +5591,7 @@ _BOOL1 __usercall sub_FBEE1( int a1, int a2, int a3, int16_t *a4)
 
 
 //----- (000FBF76) --------------------------------------------------------
-int __fastcall sub_FBF76( unsigned int a1)
+int sub_FBF76( unsigned int a1)
 {
   _BYTE v2[4]; // [esp+0h] [ebp-4h] BYREF
 
@@ -5605,7 +5605,7 @@ int __fastcall sub_FBF76( unsigned int a1)
 
 
 //----- (000FBFAF) --------------------------------------------------------
-unsigned int __fastcall sub_FBFAF(char *a1)
+unsigned int sub_FBFAF(char *a1)
 {
   dword_1AB108 = (int)a1;
   dword_1AB104 = (int)&a1[strlen(a1) + 1];
@@ -5616,7 +5616,7 @@ unsigned int __fastcall sub_FBFAF(char *a1)
 
 
 //----- (000FBFE2) --------------------------------------------------------
-int __fastcall sub_FBFE2(int a1, int a2, int a3, int a4)
+int sub_FBFE2(int a1, int a2, int a3, int a4)
 {
   int v4; // ebp
   int v5; // eax
@@ -5765,8 +5765,8 @@ int __fastcall sub_FBFE2(int a1, int a2, int a3, int a4)
   return result;
 }
 // FC180: variable 'v4' is possibly undefined
-// E5407: using guessed type int __fastcall nullsub_12(_DWORD);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// E5407: using guessed type int nullsub_12(_DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192ED4: using guessed type int dword_192ED4;
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -5807,7 +5807,7 @@ char sub_FC299()
 
 
 //----- (000FC2D2) --------------------------------------------------------
-void __usercall sub_FC2D2(int16_t *a1)
+void sub_FC2D2(int16_t *a1)
 {
   int v1; // eax
   char *v2; // eax
@@ -5875,7 +5875,7 @@ void __usercall sub_FC2D2(int16_t *a1)
 // FC46B: control flows out of bounds to FC292
 // FC31E: variable 'v2' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18FF78: using guessed type int16_t word_18FF78;
 // 192ED4: using guessed type int dword_192ED4;
 // 197F98: using guessed type int dword_197F98;
@@ -5895,7 +5895,7 @@ void __usercall sub_FC2D2(int16_t *a1)
 
 
 //----- (000FC470) --------------------------------------------------------
-void __fastcall sub_FC470(int a1, int a2, int a3, int a4)
+void sub_FC470(int a1, int a2, int a3, int a4)
 {
   int v4; // ebx
   int v5; // eax
@@ -6038,7 +6038,7 @@ LABEL_13:
   JUMPOUT(0xFC292);
 }
 // FC4BE: control flows out of bounds to FC292
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 // 19999C: using guessed type int16_t word_19999C;
@@ -6068,7 +6068,7 @@ int sub_FC6A5()
   memset(&byte_1AB072, 0, 8);
   return memset(&byte_1AB094, 0, 8);
 }
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1AAF76: using guessed type char byte_1AAF76;
 // 1AAF86: using guessed type int16_t word_1AAF86;
 // 1AAF88: using guessed type char byte_1AAF88;
@@ -6129,7 +6129,7 @@ int sub_FC734()
 
 
 //----- (000FC7AC) --------------------------------------------------------
-unsigned int __fastcall sub_FC7AC( int a1, int a2)
+unsigned int sub_FC7AC( int a1, int a2)
 {
   unsigned int v3; // ebx
   int v4; // ecx
@@ -6157,7 +6157,7 @@ unsigned int __fastcall sub_FC7AC( int a1, int a2)
 
 
 //----- (000FC845) --------------------------------------------------------
-void __fastcall sub_FC845( int a1, unsigned int a2)
+void sub_FC845( int a1, unsigned int a2)
 {
   int v3; // ecx
   int v4; // edi
@@ -6634,7 +6634,7 @@ LABEL_32:
 
 
 //----- (000FD199) --------------------------------------------------------
-void __fastcall sub_FD199( int a1, int a2)
+void sub_FD199( int a1, int a2)
 {
   int v2; // edx
   uint16_t v3; // bx
@@ -6676,7 +6676,7 @@ void __fastcall sub_FD199( int a1, int a2)
 
 
 //----- (000FD219) --------------------------------------------------------
-void __fastcall sub_FD219( int a1)
+void sub_FD219( int a1)
 {
   int16_t v2; // ax
   int16_t v3; // ax
@@ -6743,14 +6743,14 @@ void __fastcall sub_FD219( int a1)
 
 
 //----- (000FD2F9) --------------------------------------------------------
-_BOOL1 __fastcall sub_FD2F9(_BYTE *a1)
+_BOOL1 sub_FD2F9(_BYTE *a1)
 {
   return a1[251] == 3 && a1[219] == 3 && a1[253] == 3 && a1[225] == 3 && a1[218] == 3 && a1[224] == 3;
 }
 
 
 //----- (000FD335) --------------------------------------------------------
-int __fastcall sub_FD335( int a1)
+int sub_FD335( int a1)
 {
   int v2; // edi
   int v3; // ecx
@@ -6914,7 +6914,7 @@ LABEL_63:
 }
 // FD3F8: variable 'v17' is possibly undefined
 // FD408: variable 'v6' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17D916: using guessed type int dword_17D916;
 // 17E07F: using guessed type int16_t word_17E07F;
 // 197F98: using guessed type int dword_197F98;
@@ -6923,7 +6923,7 @@ LABEL_63:
 
 
 //----- (000FD5EE) --------------------------------------------------------
-unsigned int __fastcall sub_FD5EE(char *a1)
+unsigned int sub_FD5EE(char *a1)
 {
   dword_1AB12C = (int)a1;
   dword_1AB144 = (int)&a1[strlen(a1) + 1];
@@ -6946,7 +6946,7 @@ unsigned int __fastcall sub_FD5EE(char *a1)
 
 
 //----- (000FD69F) --------------------------------------------------------
-char __fastcall sub_FD69F(int64_t a1)
+char sub_FD69F(int64_t a1)
 {
   int v1; // ebx
   char v2; // al
@@ -7036,7 +7036,7 @@ int sub_FD7EA()
   byte_1991B5 = 0;
   return result;
 }
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1991B5: using guessed type char byte_1991B5;
 // 1AB50D: using guessed type char byte_1AB50D;
 // 1AB50E: using guessed type char byte_1AB50E;
@@ -7051,13 +7051,13 @@ void sub_FD81C()
   JUMPOUT(0xFD7F8);
 }
 // FD844: control flows out of bounds to FD7F8
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1AB124: using guessed type char byte_1AB124;
 // 1AB502: using guessed type int16_t word_1AB502;
 
 
 //----- (000FD846) --------------------------------------------------------
-int __fastcall sub_FD846(int result)
+int sub_FD846(int result)
 {
   char *v1; // edi
 
@@ -7081,7 +7081,7 @@ int __fastcall sub_FD846(int result)
 
 
 //----- (000FD875) --------------------------------------------------------
-char __fastcall sub_FD875(int a1, int a2)
+char sub_FD875(int a1, int a2)
 {
   char v2; // bl
   char result; // al
@@ -7141,7 +7141,7 @@ void sub_FD8ED()
 
 
 //----- (000FD911) --------------------------------------------------------
-char __usercall sub_FD911( int a1, int a2, int16_t *a3)
+char sub_FD911( int a1, int a2, int16_t *a3)
 {
   char v4; // dl
   int v5; // eax
@@ -7166,7 +7166,7 @@ char __usercall sub_FD911( int a1, int a2, int16_t *a3)
 
 
 //----- (000FD95A) --------------------------------------------------------
-void __fastcall sub_FD95A(int a1, int a2)
+void sub_FD95A(int a1, int a2)
 {
   unsigned int v2; // ebx
   char v3; // al
@@ -7209,14 +7209,14 @@ LABEL_13:
 }
 // FD98B: control flows out of bounds to FE2E2
 // FD97B: variable 'v7' is possibly undefined
-// 919A3: using guessed type int __fastcall nullsub_5(_DWORD);
+// 919A3: using guessed type int nullsub_5(_DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int dword_197F98;
 // 19999A: using guessed type int16_t word_19999A;
 
 
 //----- (000FDA3F) --------------------------------------------------------
-char *__fastcall sub_FDA3F( int a1, int a2)
+char *sub_FDA3F( int a1, int a2)
 {
   int16_t v4; // dx
   int v5; // eax
@@ -7249,7 +7249,7 @@ char *__fastcall sub_FDA3F( int a1, int a2)
 
 
 //----- (000FDAA7) --------------------------------------------------------
-unsigned int __fastcall sub_FDAA7( int a1, int a2, int a3, int a4)
+unsigned int sub_FDAA7( int a1, int a2, int a3, int a4)
 {
   unsigned int result; // eax
   int16_t v6; // di
@@ -7275,7 +7275,7 @@ unsigned int __fastcall sub_FDAA7( int a1, int a2, int a3, int a4)
 
 
 //----- (000FDB01) --------------------------------------------------------
-char __usercall sub_FDB01( int a1, int a2)
+char sub_FDB01( int a1, int a2)
 {
   char *v2; // esi
   int v3; // eax
@@ -7484,7 +7484,7 @@ LABEL_57:
 // FDCFF: variable 'v12' is possibly undefined
 // FDD4B: variable 'v13' is possibly undefined
 // FDD9E: variable 'v15' is possibly undefined
-// 919A3: using guessed type int __fastcall nullsub_5(_DWORD);
+// 919A3: using guessed type int nullsub_5(_DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 17EC16: using guessed type int dword_17EC16;
 // 192B18: using guessed type int dword_192B18;
@@ -7505,7 +7505,7 @@ LABEL_57:
 
 
 //----- (000FDF93) --------------------------------------------------------
-char __fastcall sub_FDF93( int a1, int a2)
+char sub_FDF93( int a1, int a2)
 {
   int16_t v2; // bx
   char *v3; // edx
@@ -7536,7 +7536,7 @@ char __fastcall sub_FDF93( int a1, int a2)
   }
   return 3;
 }
-// 919A3: using guessed type int __fastcall nullsub_5(_DWORD);
+// 919A3: using guessed type int nullsub_5(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 1930D4: using guessed type int dword_1930D4;
 // 199830: using guessed type int16_t word_199830;
@@ -7548,7 +7548,7 @@ char __fastcall sub_FDF93( int a1, int a2)
 
 
 //----- (000FE02C) --------------------------------------------------------
-char __usercall sub_FE02C( int a1, int a2, int16_t *a3)
+char sub_FE02C( int a1, int a2, int16_t *a3)
 {
   char *v5; // edx
   unsigned int v6; // ebx
@@ -7590,7 +7590,7 @@ char __usercall sub_FE02C( int a1, int a2, int16_t *a3)
   }
   return 0;
 }
-// 919A3: using guessed type int __fastcall nullsub_5(_DWORD);
+// 919A3: using guessed type int nullsub_5(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 1930D4: using guessed type int dword_1930D4;
 // 199830: using guessed type int16_t word_199830;
@@ -7601,7 +7601,7 @@ char __usercall sub_FE02C( int a1, int a2, int16_t *a3)
 
 
 //----- (000FE0EA) --------------------------------------------------------
-void __fastcall sub_FE0EA( int a1, int a2)
+void sub_FE0EA( int a1, int a2)
 {
   int v3; // esi
   _BOOL1 v4; // dh
@@ -7699,7 +7699,7 @@ LABEL_23:
 
 
 //----- (000FE251) --------------------------------------------------------
-char __fastcall sub_FE251(int a1, int a2)
+char sub_FE251(int a1, int a2)
 {
   int v3; // ecx
   int v4; // esi
@@ -7734,7 +7734,7 @@ char __fastcall sub_FE251(int a1, int a2)
 
 
 //----- (000FE2E8) --------------------------------------------------------
-char __usercall sub_FE2E8( int a1, int a2, int16_t *a3)
+char sub_FE2E8( int a1, int a2, int16_t *a3)
 {
   int v3; // ebx
   char result; // al
@@ -7757,7 +7757,7 @@ char __usercall sub_FE2E8( int a1, int a2, int16_t *a3)
 
 
 //----- (000FE31F) --------------------------------------------------------
-char __fastcall sub_FE31F( int a1, int a2)
+char sub_FE31F( int a1, int a2)
 {
   int v4; // eax
   char v5; // bl
@@ -7776,7 +7776,7 @@ char __fastcall sub_FE31F( int a1, int a2)
 
 
 //----- (000FE359) --------------------------------------------------------
-void __fastcall sub_FE359( int a1, int a2)
+void sub_FE359( int a1, int a2)
 {
   int16_t i; // bx
   int16_t v4; // ax
@@ -7808,13 +7808,13 @@ void __fastcall sub_FE359( int a1, int a2)
   JUMPOUT(0xFE2E2);
 }
 // FE403: control flows out of bounds to FE2E2
-// 919A3: using guessed type int __fastcall nullsub_5(_DWORD);
+// 919A3: using guessed type int nullsub_5(_DWORD);
 // 1AB14D: using guessed type int16_t word_1AB14D;
 // 1AB502: using guessed type int16_t word_1AB502;
 
 
 //----- (000FE408) --------------------------------------------------------
-void __fastcall sub_FE408(int16_t *a1, int a2)
+void sub_FE408(int16_t *a1, int a2)
 {
   int v3; // ebx
   int v4; // esi
@@ -7864,7 +7864,7 @@ void __fastcall sub_FE408(int16_t *a1, int a2)
 
 
 //----- (000FE514) --------------------------------------------------------
-char __usercall sub_FE514( int a1, int a2, int a3)
+char sub_FE514( int a1, int a2, int a3)
 {
   char v5; // dl
 
@@ -7887,7 +7887,7 @@ char __usercall sub_FE514( int a1, int a2, int a3)
 
 
 //----- (000FE552) --------------------------------------------------------
-char __usercall sub_FE552( int a1, int16_t *a2)
+char sub_FE552( int a1, int16_t *a2)
 {
   char v3; // dl
   int v4; // ecx
@@ -7938,7 +7938,7 @@ char __usercall sub_FE552( int a1, int16_t *a2)
 
 
 //----- (000FE63E) --------------------------------------------------------
-void __usercall sub_FE63E( int a1, int16_t *a2)
+void sub_FE63E( int a1, int16_t *a2)
 {
   char v2; // al
   char v3; // bh
@@ -8022,14 +8022,14 @@ void __usercall sub_FE63E( int a1, int16_t *a2)
 
 
 //----- (000FE785) --------------------------------------------------------
-void __usercall sub_FE785(int16_t *a1)
+void sub_FE785(int16_t *a1)
 {
   sub_FE63E(1, a1);
 }
 
 
 //----- (000FE793) --------------------------------------------------------
-char __fastcall sub_FE793(int a1)
+char sub_FE793(int a1)
 {
   int v2; // eax
   unsigned int v3; // ecx
@@ -8078,7 +8078,7 @@ char __fastcall sub_FE793(int a1)
 
 
 //----- (000FE86B) --------------------------------------------------------
-char __usercall sub_FE86B(int a1, int16_t *a2)
+char sub_FE86B(int a1, int16_t *a2)
 {
   int v3; // ebx
   int v4; // eax
@@ -8114,7 +8114,7 @@ char __usercall sub_FE86B(int a1, int16_t *a2)
 
 
 //----- (000FE8BE) --------------------------------------------------------
-int __usercall sub_FE8BE(int a1, int a2, int a3, int16_t *a4)
+int sub_FE8BE(int a1, int a2, int a3, int16_t *a4)
 {
   int v4=0; // eax
 
@@ -8125,18 +8125,18 @@ int __usercall sub_FE8BE(int a1, int a2, int a3, int16_t *a4)
 
 
 //----- (000FE8C8) --------------------------------------------------------
-int __fastcall sub_FE8C8(int a1, int a2)
+int sub_FE8C8(int a1, int a2)
 {
   _DWORD *v2; // eax
 
   v2 = sub_110CEE(a1, 1);
   return nullsub_15(v2, a2);
 }
-// FE8D4: using guessed type int __fastcall nullsub_15(_DWORD, _DWORD);
+// FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);
 
 
 //----- (000FE8DA) --------------------------------------------------------
-int __fastcall sub_FE8DA(int a1, int a2)
+int sub_FE8DA(int a1, int a2)
 {
   unsigned int v4; // eax
   int16_t i; // dx
@@ -8166,7 +8166,7 @@ int __fastcall sub_FE8DA(int a1, int a2)
 
 
 //----- (000FE92D) --------------------------------------------------------
-int __fastcall sub_FE92D(int a1, int a2)
+int sub_FE92D(int a1, int a2)
 {
   unsigned int v4; // eax
   int16_t i; // dx
@@ -8199,7 +8199,7 @@ int __fastcall sub_FE92D(int a1, int a2)
 
 
 //----- (000FE96F) --------------------------------------------------------
-int __fastcall sub_FE96F(int a1, int a2)
+int sub_FE96F(int a1, int a2)
 {
   unsigned int v4; // eax
   int16_t i; // dx
@@ -8229,7 +8229,7 @@ int __fastcall sub_FE96F(int a1, int a2)
 
 
 //----- (000FE9B5) --------------------------------------------------------
-_BYTE *__fastcall sub_FE9B5(_BYTE *result, int a2)
+_BYTE *sub_FE9B5(_BYTE *result, int a2)
 {
   _BYTE *v2; // esi
   int i; // ebx
@@ -8250,7 +8250,7 @@ _BYTE *__fastcall sub_FE9B5(_BYTE *result, int a2)
 
 
 //----- (000FE9F5) --------------------------------------------------------
-void __fastcall sub_FE9F5(int a1, int a2)
+void sub_FE9F5(int a1, int a2)
 {
   int i; // ebx
   int16_t v5; // dx
@@ -8269,7 +8269,7 @@ void __fastcall sub_FE9F5(int a1, int a2)
 
 
 //----- (000FEA3C) --------------------------------------------------------
-void __fastcall sub_FEA3C(int a1, int a2)
+void sub_FEA3C(int a1, int a2)
 {
   int i; // ebx
   int v4; // [esp+0h] [ebp-8h]
@@ -8288,7 +8288,7 @@ void __fastcall sub_FEA3C(int a1, int a2)
 
 
 //----- (000FEA82) --------------------------------------------------------
-void __fastcall sub_FEA82(_BYTE *a1, unsigned int a2, int a3)
+void sub_FEA82(_BYTE *a1, unsigned int a2, int a3)
 {
   int i; // ebx
   void *v4; // esi
@@ -8335,14 +8335,14 @@ void __fastcall sub_FEA82(_BYTE *a1, unsigned int a2, int a3)
 
 
 //----- (000FEB40) --------------------------------------------------------
-int __fastcall sub_FEB40( int a1)
+int sub_FEB40( int a1)
 {
   return a1 % 5 + 1;
 }
 
 
 //----- (000FEB51) --------------------------------------------------------
-char *__fastcall sub_FEB51(int a1)
+char *sub_FEB51(int a1)
 {
   if ( a1 >= word_19999A )
     return aAntares_1;
@@ -8354,7 +8354,7 @@ char *__fastcall sub_FEB51(int a1)
 
 
 //----- (000FEB70) --------------------------------------------------------
-int __fastcall sub_FEB70(unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4)
+int sub_FEB70(unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4)
 {
   int v6; // ecx
   int v7; // edx
@@ -8413,7 +8413,7 @@ LABEL_11:
 
 
 //----- (000FEC20) --------------------------------------------------------
-int __usercall sub_FEC20(int a1, int a2)
+int sub_FEC20(int a1, int a2)
 {
   char *v3; // ebx
 
@@ -8434,7 +8434,7 @@ int __usercall sub_FEC20(int a1, int a2)
 
 
 //----- (000FEC99) --------------------------------------------------------
-int16_t __usercall sub_FEC99(int a1)
+int16_t sub_FEC99(int a1)
 {
   int16_t result; // ax
 
@@ -8478,14 +8478,14 @@ unsigned int sub_FECDA()
 
 
 //----- (000FED3F) --------------------------------------------------------
-void __fastcall sub_FED3F(int a1, int a2, int a3)
+void sub_FED3F(int a1, int a2, int a3)
 {
   sub_EBEB7(a2, a3);
 }
 
 
 //----- (000FED77) --------------------------------------------------------
-_BOOL1 __fastcall sub_FED77(char *a1, int a2, int a3)
+_BOOL1 sub_FED77(char *a1, int a2, int a3)
 {
   int v4; // esi
   char *v5; // ebx
@@ -8529,7 +8529,7 @@ _BOOL1 __fastcall sub_FED77(char *a1, int a2, int a3)
 
 
 //----- (000FEE4C) --------------------------------------------------------
-void __fastcall sub_FEE4C(char *a1, int a2, int a3, _BYTE *a4)
+void sub_FEE4C(char *a1, int a2, int a3, _BYTE *a4)
 {
   char v5; // al
   int v6; // [esp+0h] [ebp-14h]
@@ -8600,7 +8600,7 @@ void __fastcall sub_FEE4C(char *a1, int a2, int a3, _BYTE *a4)
   }
 }
 // FF00E: variable 'v5' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
@@ -8608,7 +8608,7 @@ void __fastcall sub_FEE4C(char *a1, int a2, int a3, _BYTE *a4)
 
 
 //----- (000FF015) --------------------------------------------------------
-_BOOL1 __fastcall sub_FF015(unsigned int a1, int a2)
+_BOOL1 sub_FF015(unsigned int a1, int a2)
 {
   unsigned int v2; // esi
   int v4; // ebx
@@ -8676,7 +8676,7 @@ _BOOL1 __fastcall sub_FF015(unsigned int a1, int a2)
 
 
 //----- (000FF116) --------------------------------------------------------
-char *__fastcall sub_FF116(char *result, int a2, int a3, int a4)
+char *sub_FF116(char *result, int a2, int a3, int a4)
 {
   char *v4; // esi
   int v5; // edi
@@ -8836,8 +8836,8 @@ int sub_FF212()
   }
   return result;
 }
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
-// 1399FF: using guessed type int __fastcall memmove(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
+// 1399FF: using guessed type int memmove(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
@@ -8846,7 +8846,7 @@ int sub_FF212()
 
 
 //----- (000FF477) --------------------------------------------------------
-int __fastcall sub_FF477( int a1)
+int sub_FF477( int a1)
 {
   return *(int16_t *)(dword_197F98 + 3753 * a1 + 54) - 5 * *(int16_t *)(dword_197F98 + 3753 * a1 + 64);
 }
@@ -8854,7 +8854,7 @@ int __fastcall sub_FF477( int a1)
 
 
 //----- (000FF496) --------------------------------------------------------
-int __fastcall sub_FF496(int a1)
+int sub_FF496(int a1)
 {
   int v2; // ebx
 
@@ -8870,7 +8870,7 @@ int __fastcall sub_FF496(int a1)
 
 
 //----- (000FF4E9) --------------------------------------------------------
-char __fastcall sub_FF4E9(int a1, int a2, int a3)
+char sub_FF4E9(int a1, int a2, int a3)
 {
   int v4; // edx
   char v5; // ch
@@ -8906,7 +8906,7 @@ char __fastcall sub_FF4E9(int a1, int a2, int a3)
 
 
 //----- (000FF593) --------------------------------------------------------
-void __fastcall sub_FF593(int a1, int a2, int a3)
+void sub_FF593(int a1, int a2, int a3)
 {
   int v4; // eax
   int v5; // eax
@@ -8927,7 +8927,7 @@ void __fastcall sub_FF593(int a1, int a2, int a3)
 
 
 //----- (000FF5F8) --------------------------------------------------------
-char __fastcall sub_FF5F8(int a1, int a2, int a3)
+char sub_FF5F8(int a1, int a2, int a3)
 {
   char v4; // al
   int v5; // ecx
@@ -8957,7 +8957,7 @@ char __fastcall sub_FF5F8(int a1, int a2, int a3)
 
 
 //----- (000FF666) --------------------------------------------------------
-char __fastcall sub_FF666(int a1, int a2)
+char sub_FF666(int a1, int a2)
 {
   return sub_FF5F8(a1, a2, *(_WORD *)(3753 * a2 + dword_197F98 + 804));
 }
@@ -8965,7 +8965,7 @@ char __fastcall sub_FF666(int a1, int a2)
 
 
 //----- (000FF68A) --------------------------------------------------------
-char __fastcall sub_FF68A(int a1, int a2)
+char sub_FF68A(int a1, int a2)
 {
   return sub_FF5F8(a1, a2, 3 * *(int16_t *)(dword_197F98 + 3753 * a2 + 804) / 2);
 }
@@ -8973,7 +8973,7 @@ char __fastcall sub_FF68A(int a1, int a2)
 
 
 //----- (000FF6BE) --------------------------------------------------------
-char __fastcall sub_FF6BE(int a1)
+char sub_FF6BE(int a1)
 {
   uint8_t v2; // al
   _BYTE *v3; // edi
@@ -9025,7 +9025,7 @@ char __fastcall sub_FF6BE(int a1)
 
 
 //----- (000FF799) --------------------------------------------------------
-char __fastcall sub_FF799(int16_t *a1, int a2, _BYTE *a3)
+char sub_FF799(int16_t *a1, int a2, _BYTE *a3)
 {
   int v4; // edi
   int v5; // eax
@@ -9241,7 +9241,7 @@ LABEL_32:
   return v9;
 }
 // FF9F8: variable 'v19' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 1930DC: using guessed type int dword_1930DC;
 // 197F98: using guessed type int dword_197F98;
@@ -9250,7 +9250,7 @@ LABEL_32:
 
 
 //----- (000FFBD6) --------------------------------------------------------
-int __fastcall sub_FFBD6( int a1, int a2, int a3)
+int sub_FFBD6( int a1, int a2, int a3)
 {
   int v4; // ebx
   int v5; // esi
@@ -9318,7 +9318,7 @@ int __fastcall sub_FFBD6( int a1, int a2, int a3)
 
 
 //----- (000FFD08) --------------------------------------------------------
-int __fastcall sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
+int sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
 {
   int16_t v4; // si
   int v5; // eax
@@ -9381,7 +9381,7 @@ int __fastcall sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
 
 
 //----- (000FFDDA) --------------------------------------------------------
-int __fastcall sub_FFDDA(int a1, int a2)
+int sub_FFDDA(int a1, int a2)
 {
   int v3; // ecx
   int result; // eax
@@ -9518,7 +9518,7 @@ void sub_FFEEA()
 
 
 //----- (00100010) --------------------------------------------------------
-int __fastcall sub_100010(int a1, void *a2, int a3, int a4)
+int sub_100010(int a1, void *a2, int a3, int a4)
 {
   int v4; // eax
   int v5; // ecx
@@ -9563,7 +9563,7 @@ int __fastcall sub_100010(int a1, void *a2, int a3, int a4)
   return i;
 }
 // 1000CF: variable 'v11' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192FD8: using guessed type int dword_192FD8;
 // 197F9C: using guessed type int dword_197F9C;
 // 199994: using guessed type int16_t word_199994;
@@ -9718,7 +9718,7 @@ void sub_10011B()
   }
 }
 // 100305: control flows out of bounds to FF792
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 192FD8: using guessed type int dword_192FD8;
 // 197F98: using guessed type int dword_197F98;
@@ -9732,7 +9732,7 @@ void sub_10011B()
 
 
 //----- (0010034D) --------------------------------------------------------
-int16_t __fastcall sub_10034D(int a1)
+int16_t sub_10034D(int a1)
 {
   int v2; // eax
   int v3; // ebx
@@ -9777,7 +9777,7 @@ int16_t sub_10038C()
 
 
 //----- (001003F2) --------------------------------------------------------
-int __fastcall sub_1003F2(int a1, int a2)
+int sub_1003F2(int a1, int a2)
 {
   uint8_t v2; // al
 
@@ -9796,7 +9796,7 @@ int __fastcall sub_1003F2(int a1, int a2)
 
 
 //----- (0010041C) --------------------------------------------------------
-void __fastcall sub_10041C( int a1)
+void sub_10041C( int a1)
 {
   unsigned int v1; // esi
   uint8_t v2; // dl
@@ -9869,7 +9869,7 @@ void __fastcall sub_10041C( int a1)
 
 
 //----- (00100519) --------------------------------------------------------
-void __fastcall sub_100519(int a1, int a2)
+void sub_100519(int a1, int a2)
 {
   unsigned int v2; // esi
   int v3; // edi
@@ -9924,13 +9924,13 @@ void __fastcall sub_100519(int a1, int a2)
   JUMPOUT(0xFFEE4);
 }
 // 100613: control flows out of bounds to FFEE4
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F9C: using guessed type int dword_197F9C;
 // 199994: using guessed type int16_t word_199994;
 
 
 //----- (00100618) --------------------------------------------------------
-void __usercall sub_100618(int a1, int a2)
+void sub_100618(int a1, int a2)
 {
   unsigned int v2; // ebx
   int v3; // ecx
@@ -10151,7 +10151,7 @@ void sub_10087D()
   JUMPOUT(0xFF793);
 }
 // 1009BE: control flows out of bounds to FF793
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
@@ -10163,7 +10163,7 @@ void sub_10087D()
 
 
 //----- (001009C3) --------------------------------------------------------
-char __fastcall sub_1009C3(int a1, int a2)
+char sub_1009C3(int a1, int a2)
 {
   unsigned int v3; // eax
   int v5; // edx
@@ -10188,7 +10188,7 @@ char __fastcall sub_1009C3(int a1, int a2)
 
 
 //----- (00100A3E) --------------------------------------------------------
-int __fastcall sub_100A3E(_BYTE *a1)
+int sub_100A3E(_BYTE *a1)
 {
   int v1; // edx
 
@@ -10208,7 +10208,7 @@ int __fastcall sub_100A3E(_BYTE *a1)
 
 
 //----- (00100A83) --------------------------------------------------------
-_BYTE *__fastcall sub_100A83(_BYTE *a1, _WORD *a2, _WORD *a3)
+_BYTE *sub_100A83(_BYTE *a1, _WORD *a2, _WORD *a3)
 {
   int v4; // ebx
   int v5; // edi
@@ -10280,7 +10280,7 @@ LABEL_16:
 
 
 //----- (00100BC5) --------------------------------------------------------
-_BOOL1 __fastcall sub_100BC5( int a1, int a2, _WORD *a3, int a4)
+_BOOL1 sub_100BC5( int a1, int a2, _WORD *a3, int a4)
 {
   int v5; // ebx
   int v6; // edx
@@ -10367,13 +10367,13 @@ LABEL_25:
   }
   return v23 > 0;
 }
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
 
 //----- (00100D19) --------------------------------------------------------
-void __fastcall sub_100D19(_BYTE *a1)
+void sub_100D19(_BYTE *a1)
 {
   int v2; // esi
   int v3; // eax
@@ -10603,7 +10603,7 @@ LABEL_42:
 // 100D81: variable 'v3' is possibly undefined
 // 101028: variable 'v10' is possibly undefined
 // 101043: variable 'v11' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17D916: using guessed type int dword_17D916;
 // 17E07F: using guessed type int16_t word_17E07F;
 // 192FD8: using guessed type int dword_192FD8;
@@ -10616,7 +10616,7 @@ LABEL_42:
 
 
 //----- (0010119C) --------------------------------------------------------
-char __fastcall sub_10119C(int a1, int a2, int a3)
+char sub_10119C(int a1, int a2, int a3)
 {
   int v4; // edi
   int v5; // esi
@@ -10715,7 +10715,7 @@ char __fastcall sub_10119C(int a1, int a2, int a3)
 
 
 //----- (0010130A) --------------------------------------------------------
-int __fastcall sub_10130A( int a1, int a2, int a3)
+int sub_10130A( int a1, int a2, int a3)
 {
   int v4; // edi
   int v5; // ebx
@@ -10818,7 +10818,7 @@ int __fastcall sub_10130A( int a1, int a2, int a3)
 
 
 //----- (00101483) --------------------------------------------------------
-int __fastcall sub_101483(int a1)
+int sub_101483(int a1)
 {
   if ( a1 <= 5 )
     return 2 * a1;
@@ -10829,7 +10829,7 @@ int __fastcall sub_101483(int a1)
 
 
 //----- (001014A4) --------------------------------------------------------
-void __fastcall sub_1014A4(int a1)
+void sub_1014A4(int a1)
 {
   int v1; // esi
   int v2; // edi
@@ -10954,7 +10954,7 @@ void __fastcall sub_1014A4(int a1)
 }
 // 101763: control flows out of bounds to 101195
 // 1015A5: variable 'v18' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 // 199CB0: using guessed type char byte_199CB0;
@@ -10963,7 +10963,7 @@ void __fastcall sub_1014A4(int a1)
 
 
 //----- (00101768) --------------------------------------------------------
-void __fastcall sub_101768(int a1)
+void sub_101768(int a1)
 {
   int v1; // esi
   int v2; // ebx
@@ -11116,7 +11116,7 @@ void sub_10192B()
 
 
 //----- (001019F0) --------------------------------------------------------
-int16_t __fastcall sub_1019F0( int a1, int a2)
+int16_t sub_1019F0( int a1, int a2)
 {
   int16_t result; // ax
   int v5; // ebx
@@ -11191,7 +11191,7 @@ char *sub_101A42()
 
 
 //----- (00101B3C) --------------------------------------------------------
-int __fastcall sub_101B3C(int a1, int a2)
+int sub_101B3C(int a1, int a2)
 {
   int v3; // ebx
   int v4; // eax
@@ -11210,7 +11210,7 @@ int __fastcall sub_101B3C(int a1, int a2)
 
 
 //----- (00101BA4) --------------------------------------------------------
-void __fastcall sub_101BA4(int a1, int a2)
+void sub_101BA4(int a1, int a2)
 {
   unsigned int v3; // ebx
   int v4; // edx
@@ -11256,7 +11256,7 @@ LABEL_8:
 
 
 //----- (00101C93) --------------------------------------------------------
-int16_t __fastcall sub_101C93(int a1, int a2)
+int16_t sub_101C93(int a1, int a2)
 {
   int16_t v3; // dx
   int16_t v4; // ax
@@ -11271,7 +11271,7 @@ int16_t __fastcall sub_101C93(int a1, int a2)
 
 
 //----- (00101CC5) --------------------------------------------------------
-int __fastcall sub_101CC5(int a1, int a2)
+int sub_101CC5(int a1, int a2)
 {
   int v3; // ecx
   int v4; // eax
@@ -11314,7 +11314,7 @@ int __fastcall sub_101CC5(int a1, int a2)
 
 
 //----- (00101D53) --------------------------------------------------------
-void __fastcall sub_101D53(int a1, int a2)
+void sub_101D53(int a1, int a2)
 {
   int16_t v4; // ax
   int16_t v5; // di
@@ -11348,7 +11348,7 @@ void __fastcall sub_101D53(int a1, int a2)
 
 
 //----- (00101DE5) --------------------------------------------------------
-void __fastcall sub_101DE5(int a1, int a2)
+void sub_101DE5(int a1, int a2)
 {
   int16_t v4; // ax
   int16_t v5; // di
@@ -11406,7 +11406,7 @@ char *sub_101E77()
 
 
 //----- (00101EE3) --------------------------------------------------------
-void __fastcall sub_101EE3(int a1, int a2)
+void sub_101EE3(int a1, int a2)
 {
   int v3; // eax
   int v4; // edi
@@ -11436,7 +11436,7 @@ void __fastcall sub_101EE3(int a1, int a2)
 
 
 //----- (00101F82) --------------------------------------------------------
-void __fastcall sub_101F82(int a1, int a2)
+void sub_101F82(int a1, int a2)
 {
   int16_t v3; // cx
   int v4; // eax
@@ -11509,7 +11509,7 @@ unsigned int sub_10206E()
   }
   return result;
 }
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1838F7: using guessed type int16_t word_1838F7;
 // 199CB0: using guessed type char byte_199CB0;
 // 1ACF18: using guessed type int16_t word_1ACF18;
@@ -11642,7 +11642,7 @@ int sub_10208A()
   return result;
 }
 // 1020F9: variable 'v0' is possibly undefined
-// 129C70: using guessed type int __fastcall memset(_DWORD, _DWORD, _DWORD);
+// 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17D636: using guessed type int16_t word_17D636;
 // 17D638: using guessed type int16_t word_17D638;
 // 17D63A: using guessed type int16_t word_17D63A;
@@ -11655,7 +11655,7 @@ int sub_10208A()
 
 
 //----- (00102428) --------------------------------------------------------
-int __fastcall sub_102428( int a1, int a2)
+int sub_102428( int a1, int a2)
 {
   int v2; // eax
 
@@ -11667,7 +11667,7 @@ int __fastcall sub_102428( int a1, int a2)
 
 
 //----- (0010244D) --------------------------------------------------------
-int __fastcall sub_10244D( int a1, int a2)
+int sub_10244D( int a1, int a2)
 {
   int v2; // ebx
   int result; // eax
@@ -11681,7 +11681,7 @@ int __fastcall sub_10244D( int a1, int a2)
 
 
 //----- (0010248B) --------------------------------------------------------
-int __fastcall sub_10248B(int a1, int a2)
+int sub_10248B(int a1, int a2)
 {
   int result; // eax
   int v4; // esi
@@ -11722,7 +11722,7 @@ int __fastcall sub_10248B(int a1, int a2)
 
 
 //----- (00102547) --------------------------------------------------------
-int __fastcall sub_102547(int a1, int a2)
+int sub_102547(int a1, int a2)
 {
   int result; // eax
   int16_t v3; // bx
@@ -11749,7 +11749,7 @@ int __fastcall sub_102547(int a1, int a2)
 
 
 //----- (00102597) --------------------------------------------------------
-int __fastcall sub_102597(int a1, int a2)
+int sub_102597(int a1, int a2)
 {
   int result; // eax
   int16_t i; // dx
@@ -11785,7 +11785,7 @@ int __fastcall sub_102597(int a1, int a2)
 
 
 //----- (00102633) --------------------------------------------------------
-int __fastcall sub_102633(int a1, int a2)
+int sub_102633(int a1, int a2)
 {
   int result; // eax
   int16_t i; // dx
@@ -11827,7 +11827,7 @@ int __fastcall sub_102633(int a1, int a2)
 
 
 //----- (001026CF) --------------------------------------------------------
-int16_t __fastcall sub_1026CF( int a1, int a2)
+int16_t sub_1026CF( int a1, int a2)
 {
   return *(_BYTE *)(3753 * a1 + dword_197F98 + a2 + 3671) & 0x3F;
 }
@@ -11835,7 +11835,7 @@ int16_t __fastcall sub_1026CF( int a1, int a2)
 
 
 //----- (001026F1) --------------------------------------------------------
-int __fastcall sub_1026F1( int a1, int a2)
+int sub_1026F1( int a1, int a2)
 {
   return (int)*(uint8_t *)(3753 * a1 + dword_197F98 + a2 + 3671) >> 6;
 }
@@ -11843,7 +11843,7 @@ int __fastcall sub_1026F1( int a1, int a2)
 
 
 //----- (00102711) --------------------------------------------------------
-int16_t __fastcall sub_102711( int a1)
+int16_t sub_102711( int a1)
 {
   return *(_BYTE *)(dword_197F98 + 3753 * word_19999C + a1 + 3671) & 0x3F;
 }
@@ -11852,7 +11852,7 @@ int16_t __fastcall sub_102711( int a1)
 
 
 //----- (00102739) --------------------------------------------------------
-int __fastcall sub_102739( int a1)
+int sub_102739( int a1)
 {
   return (int)*(uint8_t *)(dword_197F98 + 3753 * word_19999C + a1 + 3671) >> 6;
 }
