@@ -5280,6 +5280,12 @@ int sub_125D18()
 
 
 //----- (00125D4F) --------------------------------------------------------
+// Dirty-rectangle flush (dword_1BBA28 == 3 path): for every row copies the
+// dirty span [min..max column] from the back buffer dword_1BB8FC into the
+// visible framebuffer dword_1BB910[0]. The per-row spans come from the table
+// dword_1BB8C0 (low word = first dirty column, high word = last, -1 = clean).
+// PORT: destination base is now passed explicitly to sub_1694B7 (see there);
+// the original scavenged it off an uninitialized stack slot.
 int sub_125D4F()
 {
   int result; // eax
@@ -5290,7 +5296,21 @@ int sub_125D4F()
   int v5; // [esp+14h] [ebp-10h]
   int v6; // [esp+18h] [ebp-Ch]
   int v7; // [esp+1Ch] [ebp-8h]
-  _DWORD savedregs[6]; // [esp+24h] [ebp+0h] BYREF
+  int destBase = dword_1BB910[0];
+
+  // DIAG (wave 22): dump candidate destination bases once, so the correct one
+  // can be confirmed against dosbox DUMPREGS at runtime EIP 0x1694B7+0x224000.
+  {
+    static int diagOnce;
+    if ( !diagOnce )
+    {
+      diagOnce = 1;
+      PortDebug_Checkpoint("125D4F.fb_1BB910", dword_1BB910[0]);
+      PortDebug_Checkpoint("125D4F.back_1BB8FC", dword_1BB8FC);
+      PortDebug_Checkpoint("125D4F.back_1BB90C", dword_1BB90C);
+      PortDebug_Checkpoint("125D4F.active_1BB904", dword_1BB904);
+    }
+  }
 
   v7 = dword_1BB8FC;
   v5 = (HIDWORD(qword_184530) - (__CFSHL__(SHIDWORD(qword_184530) >> 31, 2) + 4 * (SHIDWORD(qword_184530) >> 31))) >> 2;
@@ -5304,7 +5324,7 @@ int sub_125D4F()
     if ( v6 != -1 )
     {
       v1 = (*(int *)(4 * i + dword_1BB8C0) >> 16) - v6 + 1;
-      v2 = (void *)sub_1694B7(v6 + v3, v1, (int)savedregs);
+      v2 = (void *)sub_1694B7(v6 + v3, v1, destBase);
       sub_1276BD(v2, (void *)(v7 + 4 * (v6 + v3)), v1);
     }
     v3 += v5;
@@ -5315,6 +5335,7 @@ int sub_125D4F()
 // 1BB8C0: using guessed type int dword_1BB8C0;
 // 1BB8FC: using guessed type int dword_1BB8FC;
 // 1BB90C: using guessed type int dword_1BB90C;
+// 1BB904: using guessed type int dword_1BB904;
 
 
 //----- (00125E13) --------------------------------------------------------

@@ -2408,15 +2408,23 @@ void sub_16948F()
 
 
 //----- (001694B7) --------------------------------------------------------
-// attributes: thunk
-unsigned int __usercall sub_1694B7(int a1, int a2, int a3)
+// Returns destBase + 4*offset, clamped so the span [4*offset, 4*offset+4*len)
+// stays inside the 307200-byte (640x480) visible framebuffer; on overflow the
+// offset is clamped to 0 (start of buffer).
+//
+// PORT: the original was a __usercall thunk that read its destination base from
+// a register the single caller (sub_125D4F) had loaded. Hex-Rays modeled that
+// register as "*(a3-4)" where a3 = &savedregs = ebp+0, i.e. it read *(ebp-4) of
+// the CALLER's frame - an uninitialized stack slot (debug fill 0xCCCCCCCC),
+// which then flowed into sub_1276BD as a garbage destination pointer. The base
+// is now passed explicitly by the caller (destBase) instead of scavenged off
+// the stack.
+unsigned int sub_1694B7(int offset, int len, int destBase)
 {
-  unsigned int v3; // eax
-
-  v3 = 4 * a1;
-  if ( v3 >= 0x4B000 || a2 < 0 || (int)(v3 + 4 * a2) >= 307200 )
-    v3 = 0;
-  return *(_DWORD *)(a3 - 4) + v3;
+  unsigned int byteOff = 4 * offset;
+  if ( byteOff >= 0x4B000 || len < 0 || (int)(byteOff + 4 * len) >= 307200 )
+    byteOff = 0;
+  return destBase + byteOff;
 }
 
 

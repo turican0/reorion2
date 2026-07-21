@@ -1422,11 +1422,27 @@ Two fixes this session.
    (a2>>3)) >> (a2&7)) & 1;` per Orion2.exe.asm; dropped the artifact global
    dword_1276EC (orion_part_19.c, orion_data.c, orion_common.h).
 
-Note on the user-reported `result=0xCCCCCCCC` in sub_1276F0: 0xCC is
-uninitialized STACK (Hex-Rays "possibly undefined" local), distinct from the
-0xCD heap fill. It means a caller passes an uninitialized base address; the
-exact caller needs the user's build call stack (my build diverges — it hangs
-earlier in the font renderer sub_1212B3/sub_122309, never reaching that path).
+3. **sub_1694B7 read its destination base from an uninitialized stack slot**
+   (root of the user-reported `result=0xCCCCCCCC` in sub_1276BD). sub_1694B7 is
+   a __usercall "thunk" with one caller, sub_125D4F (the dword_1BBA28==3 dirty-
+   rect flush: copies dirty spans from back buffer dword_1BB8FC to the screen).
+   Its body returned `*(a3-4) + 4*offset`; the caller passed `a3 = &savedregs`
+   where `savedregs` is Hex-Rays' fake array at [ebp+0], so `*(a3-4)` = *(ebp-4)
+   = an uninitialized local of sub_125D4F (debug fill 0xCCCCCCCC). That garbage
+   became the destination pointer handed to sub_1276BD's qmemcpy. Fixed:
+   sub_1694B7 now takes the base as an explicit parameter (dropped __usercall +
+   the a3/savedregs scavenging); sub_125D4F passes the framebuffer dword_1BB910[0].
+   NEEDS DOSBOX CONFIRMATION which buffer is the real base: added one-shot DIAG
+   dump `125D4F.{fb_1BB910,back_1BB8FC,back_1BB90C,active_1BB904}` — compare with
+   dosbox DUMPREGS at runtime EIP 0x38D4B7 (=0x1694B7+0x224000). Either way the
+   0xCC crash is gone (destination is now a real 307200 B buffer, not stack junk).
+
+Note on 0xCC vs 0xCD: 0xCC = uninitialized STACK (Hex-Rays "possibly undefined"
+local / fake savedregs BYREF), 0xCD = uninitialized heap. Both point at
+mis-modeled data flow, not a real game bug.
+
+My build still hangs earlier in the font renderer (sub_1212B3/sub_122309) and
+never reaches sub_125D4F, so the 125D4F dump only fires on the user's build.
 
 Current frontier (my build): hangs in sub_1212B3 -> sub_122309 glyph loop
 (while(1) over string a3; runs forever if the string is not NUL-terminated or
