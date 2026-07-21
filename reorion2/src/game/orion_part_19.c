@@ -5281,11 +5281,15 @@ int sub_125D18()
 
 //----- (00125D4F) --------------------------------------------------------
 // Dirty-rectangle flush (dword_1BBA28 == 3 path): for every row copies the
-// dirty span [min..max column] from the back buffer dword_1BB8FC into the
-// visible framebuffer dword_1BB910[0]. The per-row spans come from the table
-// dword_1BB8C0 (low word = first dirty column, high word = last, -1 = clean).
-// PORT: destination base is now passed explicitly to sub_1694B7 (see there);
-// the original scavenged it off an uninitialized stack slot.
+// dirty span [min..max column] from the secondary back buffer dword_1BB8FC into
+// the primary back buffer dword_1BB90C (which the mode-5 present sub_1255DF then
+// blits to the screen). The per-row spans come from the table dword_1BB8C0
+// (low word = first dirty column, high word = last, -1 = clean).
+// PORT: the source (var_8) and destination base (var_4) are set from
+// dword_1BB8FC / dword_1BB90C at the top of the original (Orion2.exe.asm,
+// symbols shifted -0x8000: dword_1B38FC/dword_1B390C). Hex-Rays surfaced the
+// source as v7 but dropped the [ebp-4] destination-base local, so sub_1694B7
+// read it back as garbage *(ebp-4). Both are now explicit.
 int sub_125D4F()
 {
   int result; // eax
@@ -5296,21 +5300,7 @@ int sub_125D4F()
   int v5; // [esp+14h] [ebp-10h]
   int v6; // [esp+18h] [ebp-Ch]
   int v7; // [esp+1Ch] [ebp-8h]
-  int destBase = dword_1BB910[0];
-
-  // DIAG (wave 22): dump candidate destination bases once, so the correct one
-  // can be confirmed against dosbox DUMPREGS at runtime EIP 0x1694B7+0x224000.
-  {
-    static int diagOnce;
-    if ( !diagOnce )
-    {
-      diagOnce = 1;
-      PortDebug_Checkpoint("125D4F.fb_1BB910", dword_1BB910[0]);
-      PortDebug_Checkpoint("125D4F.back_1BB8FC", dword_1BB8FC);
-      PortDebug_Checkpoint("125D4F.back_1BB90C", dword_1BB90C);
-      PortDebug_Checkpoint("125D4F.active_1BB904", dword_1BB904);
-    }
-  }
+  int destBase = dword_1BB90C; // [ebp-4] in the original
 
   v7 = dword_1BB8FC;
   v5 = (HIDWORD(qword_184530) - (__CFSHL__(SHIDWORD(qword_184530) >> 31, 2) + 4 * (SHIDWORD(qword_184530) >> 31))) >> 2;

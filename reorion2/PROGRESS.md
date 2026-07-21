@@ -1431,11 +1431,17 @@ Two fixes this session.
    = an uninitialized local of sub_125D4F (debug fill 0xCCCCCCCC). That garbage
    became the destination pointer handed to sub_1276BD's qmemcpy. Fixed:
    sub_1694B7 now takes the base as an explicit parameter (dropped __usercall +
-   the a3/savedregs scavenging); sub_125D4F passes the framebuffer dword_1BB910[0].
-   NEEDS DOSBOX CONFIRMATION which buffer is the real base: added one-shot DIAG
-   dump `125D4F.{fb_1BB910,back_1BB8FC,back_1BB90C,active_1BB904}` — compare with
-   dosbox DUMPREGS at runtime EIP 0x38D4B7 (=0x1694B7+0x224000). Either way the
-   0xCC crash is gone (destination is now a real 307200 B buffer, not stack junk).
+   the a3/savedregs scavenging). CONFIRMED against Orion2.exe.asm (that dump's
+   data symbols are shifted -0x8000 vs the IDA/C build): sub_125D4F's prologue
+   does `mov [ebp+var_8], dword_1B38FC` (source = dword_1BB8FC) and
+   `mov [ebp+var_4], dword_1B390C` (dest base = dword_1BB90C). So the base is the
+   PRIMARY back buffer dword_1BB90C, NOT the framebuffer — sub_125D4F composites
+   the secondary buffer dword_1BB8FC into dword_1BB90C, which the mode-5 present
+   sub_1255DF later blits to screen. My first guess (framebuffer dword_1BB910[0])
+   was wrong and showed as result=0 in the user's build; corrected to dword_1BB90C.
+   Lesson: when Hex-Rays hides a base behind `*(a3-4)`/savedregs, the real init
+   (`mov [ebp+var_4], <global>`) is in the function prologue in the asm — read it
+   there rather than guessing.
 
 Note on 0xCC vs 0xCD: 0xCC = uninitialized STACK (Hex-Rays "possibly undefined"
 local / fake savedregs BYREF), 0xCD = uninitialized heap. Both point at
