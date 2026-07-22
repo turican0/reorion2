@@ -1306,7 +1306,7 @@ void sub_24ED3(int16_t *a1)
   int v14; // ebx
   int v15; // eax
   int v16; // eax
-  int v17; // eax
+  int v17 = 0; // eax
 
   sub_119281();
   v1 = 0;

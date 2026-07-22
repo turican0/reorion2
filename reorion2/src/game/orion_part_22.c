@@ -777,39 +777,20 @@ char sub_149890(unsigned int a1, int a2)
 
 
 //----- (00149A20) --------------------------------------------------------
+// Miles Sound System timer install (first call only). The original probed for a
+// Windows sound VxD via `int 2Fh` (AX=1684h): if one was present (ES:DI != 0) it
+// took the "VxD API found" path (loc_149A77 in Orion2.exe.asm) — just record the
+// timer callback in dword_18A5AC and return; otherwise it installed a raw DOS PIT
+// timer ISR (ports 0x43/0x40) and spun in `while(1)` until that interrupt fired.
+// PORT: int 2Fh, the PIT and hardware interrupts do not exist here, so the DOS
+// path would spin forever (the observed hang at the end of the intro). We take
+// the "VxD present" path unconditionally — a modern OS owns the timing. Actual
+// sound timing is not wired up yet (see port_sound); this only avoids the hang.
 void sub_149A20()
 {
-  int v0; // eax
-  uint8_t v1; // al
-  uint8_t v2; // ah
-
   if ( ++dword_18914C == 1 )
-  {
-    /* __asm: int     2Fh; - Multiplex - MS WINDOWS - GET DEVICE API ENTRY POINT */ DECOMP_TODO("inline asm");
-    *(_WORD *)byte_1C3C22 = 0;
-    *(_WORD *)&byte_1C3C22[2] = 0;
-    *(_WORD *)&byte_1C3C22[4] = 0;
-    if ( !*(_DWORD *)byte_1C3C22 )
-    {
-      sub_15421D((unsigned int)sub_149B30, (unsigned int)sub_149A20);
-      sub_1543A1((unsigned int)&dword_189148, 4);
-      sub_1400A9((int)sub_149BB0);
-      dword_1C3C10 = v0;
-      sub_1402FD(v0, dword_1C3C1C);
-      sub_1404C7(dword_1C3C10);
-      sub_1403E9();
-      hr_outbyte(0x43u, 0x34u);
-      hr_outbyte(0x40u, v1);
-      hr_outbyte(0x40u, v2);
-      while ( 1 )
-        ;
-    }
     dword_18A5AC = (int (*)(_DWORD))sub_149B10;
-  }
 }
-// 149AB3: variable 'v0' is possibly undefined
-// 149AEE: variable 'v1' is possibly undefined
-// 149AF4: variable 'v2' is possibly undefined
 // 149B10: using guessed type int sub_149B10();
 // 149B30: using guessed type int sub_149B30();
 // 149BB0: using guessed type int sub_149BB0(int);

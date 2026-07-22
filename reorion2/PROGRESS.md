@@ -1602,6 +1602,31 @@ Graphics-shift question (user): the shift was almost certainly the garbage frame
 data from the wrong fseek; with the base fixed the decode gets the real frames.
 Can't confirm visually from the headless build here — needs an eyes-on run.
 
+## Done - wave 22i: intro no longer hangs (Miles timer sub_149A20)
+
+The intro hung at the end in sub_149A20's `while(1)`. It is the Miles Sound
+System timer install: the original probed for a Windows sound VxD via `int 2Fh`
+(AX=1684h); if found (ES:DI != 0) it took loc_149A77 — record the timer callback
+in dword_18A5AC and return; otherwise it installed a raw DOS PIT timer ISR
+(out 0x43/0x40) and spun in `while(1)` until that interrupt fired. In the port
+int 2Fh is a stub, so byte_1C3C22 stayed 0 -> the DOS path -> infinite spin (no
+PIT, no ISR ever fires). Fixed: take the "VxD present" path unconditionally
+(`dword_18A5AC = sub_149B10; return;`) — a modern OS owns timing. The hang is
+gone; execution now proceeds past the intro (and hits the next present-path crash
+below). Sound timing itself is still not wired up (see port_sound) — that's issue
+#3 and expected for now.
+
+Open issues from the eyes-on run (user, wave 22i):
+- #1 graphics is shifted, and #2 animation frames are not smooth / some seem to
+  be missing. Both are rendering-correctness, most likely in the wave-21 LINEAR
+  present rewrites (sub_1255DF/12567F/125814 assume a flat 640x480 framebuffer;
+  the original was VESA-banked) or a decode stride. Needs a focused review of the
+  present path against the asm, with an eyes-on run.
+- New crash after the intro, again in the present path (last checkpoints
+  138CE0/125814). Next: strip the noisy wave-21/22 present diagnostics
+  (1248AB.fb_ptr, 1255DF.*, 138CE0.*, 125814.*, 12567F.*) for a clean trace,
+  then bisect.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
