@@ -2437,16 +2437,27 @@ void sub_1694B9( int a1)
 
 
 //----- (001694D9) --------------------------------------------------------
+// Copies a3 dwords a2 -> a1, clamped to stay inside the visible framebuffer.
+// PORT: the original clamped to the 0xA0000..0xBFFFC VGA window: out-of-range
+// a1 was snapped to `&loc_BFFF4 + 8` (= 0xBFFFC, the last valid address) and the
+// length forced to 1. In the port the framebuffer is a heap buffer far above
+// 0xBFFFC, so a1 was ALWAYS >= 0xBFFFC and every write went to the 1-byte BSS
+// symbol loc_BFFF4 instead of the screen — the sub_125814 dirty-span updates
+// were silently dropped (missing/torn frames) and loc_BFFF4's neighbours got
+// corrupted. Clamp against the real framebuffer [fb, fb+640*480) instead.
 void *sub_1694D9(void *a1, void *a2, int a3)
 {
-  void *v4; // [esp-20h] [ebp-20h]
+  void *v4 = a1;
+  unsigned char *fb = PortVga_Framebuffer();
+  unsigned char *fbEnd = fb + 640 * 480;
+  unsigned char *dst = (unsigned char *)a1;
 
-  v4 = a1;
-  if ( (unsigned int)a1 >= 0xBFFFC )
-    a1 = &loc_BFFF4 + 8;
-  if ( a3 <= 0 || (unsigned int)a1 + a3 >= 0xBFFFC )
-    a3 = 1;
-  qmemcpy(a1, a2, 4 * a3);
+  if ( dst < fb || dst >= fbEnd )
+    return v4; // fully outside the framebuffer -> drop (was: snap to loc_BFFF4)
+  if ( a3 > 0 && dst + 4 * a3 > fbEnd )
+    a3 = (int)(fbEnd - dst) / 4; // clamp length to the framebuffer end
+  if ( a3 > 0 )
+    qmemcpy(a1, a2, 4 * a3);
   return v4;
 }
 

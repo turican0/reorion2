@@ -5232,10 +5232,6 @@ void *sub_125814()
 
   v17 = (char *)dword_1BB910[0];
   v18 = dword_1BB90C;
-  {
-    static int diagOnce;
-    if ( !diagOnce ) { diagOnce = 1; PortDebug_Checkpoint("125814.first_dst", (int)(intptr_t)v17); }
-  }
   result = 0;
   v6 = 0;
   for ( i = 0; i < 480; ++i )

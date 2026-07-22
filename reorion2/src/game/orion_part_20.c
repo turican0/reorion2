@@ -6256,20 +6256,8 @@ int sub_138CB0(int a1, int a2)
 // 300KB memcpy na NULL - checkpoint prozradi volajiciho drive nez crash.
 void *sub_138CE0(void *result, void *a2, int a3)
 {
-  static int diagCalls;
-  if ( diagCalls < 3 )
-  {
-    ++diagCalls;
-    PortDebug_Checkpoint("138CE0.dst", (int)(intptr_t)result);
-    PortDebug_Checkpoint("138CE0.src", (int)(intptr_t)a2);
-    PortDebug_Checkpoint("138CE0.kb", a3);
-  }
-  if ( !result || !a2 )
-  {
-    PortDebug_Checkpoint("138CE0.NULL_PTR_dst", (int)(intptr_t)result);
-    PortDebug_Checkpoint("138CE0.NULL_PTR_src", (int)(intptr_t)a2);
-    return result;
-  }
+  if ( !result || !a2 || a3 < 0 || a3 > 512 )
+    return result; // NULL/garbage guard (no screen copy is negative or > 512 KB)
   qmemcpy(result, a2, a3 << 10);
   return result;
 }

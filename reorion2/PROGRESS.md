@@ -1627,6 +1627,32 @@ Open issues from the eyes-on run (user, wave 22i):
   (1248AB.fb_ptr, 1255DF.*, 138CE0.*, 125814.*, 12567F.*) for a clean trace,
   then bisect.
 
+## Done - wave 22j: sub_1694D9 clamped to the wrong (VGA-segment) address
+
+Found while chasing the post-hang intro crash / the graphics shift. sub_1694D9
+is the clamped dword-copy used by sub_125814 (the row/dirty-span present). The
+original clamped writes to the 0xA0000..0xBFFFC VGA window: an out-of-range dest
+was snapped to `&loc_BFFF4 + 8` (= 0xBFFFC, the last valid VGA address) and the
+length forced to 1. In the port the framebuffer is a heap buffer FAR above
+0xBFFFC, so `a1 >= 0xBFFFC` was ALWAYS true -> every sub_125814 dirty-span write
+went to the 1-byte BSS symbol loc_BFFF4 instead of the screen. Effect: the
+incremental (dirty-span) frame updates were silently dropped and loc_BFFF4's
+neighbours got corrupted -> exactly the user's #1 shifted / #2 missing-frames
+symptoms. Fixed: clamp against the real framebuffer [PortVga_Framebuffer(),
++640*480) instead of the hardcoded VGA window; out-of-range dest is dropped,
+length clamped to the framebuffer end. Verified sub_125814 now runs to
+completion (was implicitly crashing/corrupting before). This is the same family
+as sub_1694B7 (wave 22b) — VGA-segment helpers with hardcoded 0xA0000/0xBFFFC
+limits that must be re-based onto the port framebuffer.
+
+Status after this: the intro renders the first frame's presents cleanly and
+sub_125814 completes; a segfault still follows LATER (after the first frame, no
+checkpoint there — likely a subsequent frame or the intro loop sub_24ED3 body).
+Eyes-on check recommended: with the dirty-span present now hitting the real
+framebuffer, the shift/missing-frames (#1/#2) should look markedly better.
+Next: put a frame counter inside the intro loop sub_24ED3 (not sub_12CAD6 —
+that's never called on this path) to localise the remaining crash.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni
