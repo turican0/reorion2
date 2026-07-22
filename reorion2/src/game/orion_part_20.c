@@ -715,26 +715,14 @@ int sub_12C7CC()
   if ( sub_110C29(dword_1BC324) < v6 )
     sub_126487(aFileAnimationF, (int)v0);
   v5 = dword_1BC324;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
-  {
-    // DIAG (wave 22f): the blitted frame data stays 0xCD -> the fread below is
-    // not filling it. Dump the file handle, offset, size and the fread return.
-    static int diagOnce;
-    if ( !diagOnce )
-    {
-      diagOnce = 1;
-      PortDebug_Checkpoint("12C7CC.fileHandle_1BC338", dword_1BC338);
-      PortDebug_Checkpoint("12C7CC.destBuf_1BC324", dword_1BC324);
-      PortDebug_Checkpoint("12C7CC.frameOffset", *v0);
-      PortDebug_Checkpoint("12C7CC.frameSize", v6);
-      fseek(dword_1BC338, *v0, SEEK_SET);
-      PortDebug_Checkpoint("12C7CC.freadRet", (int)fread(v5, v6, 1, dword_1BC338));
-      PortDebug_Checkpoint("12C7CC.firstDword", *(int *)v5); // 0xCDCDCDCD = not loaded
-    }
-  }
-  fseek(dword_1BC338, *v0, SEEK_SET);
+  // Seek to the frame inside the LBX archive: the frame offset *v0 from the
+  // per-frame table is RELATIVE to this animation record's base offset
+  // dword_1BC328 (the record's start in the .LBX file, set in sub_12C6xx from
+  // the archive directory). The original adds them: file_pos = dword_1BC328 + *v0
+  // (Orion2.exe.asm sub_12C7CC: `mov eax, dword_1B4328; add eax, [edx]`). Wave 07
+  // reconstructed the fseek but dropped the base, so the fread landed at the
+  // wrong file position and the RLE decode in sub_14852C ran off into garbage.
+  fseek(dword_1BC338, dword_1BC328 + *v0, SEEK_SET);
   v1 = v6;
   fread(v5, v6, 1, dword_1BC338);
   if ( dword_1BBA28 >= 2 )
@@ -3277,32 +3265,36 @@ int sub_131E6B(int16_t *a1, int16_t *a2)
 
 
 //----- (00131F7B) --------------------------------------------------------
+// Uploads the dirty palette table byte_1BB358 (256 entries x 4 bytes; byte[0] =
+// "active" flag) to the DAC in runs of consecutive active entries (<=128 each).
+// PORT: the index was an int64_t whose HIGH dword IDA used as the counter (the
+// low dword was the fused-away sub_132AF8 pointer arg); it is now a plain int.
 int sub_131F7B()
 {
-  int64_t v1; // [esp+0h] [ebp-1Ch]
-  int v2; // [esp+Ch] [ebp-10h]
-  int i; // [esp+10h] [ebp-Ch]
+  int index; // start of the current run
+  int count;
+  int i;
 
-  HIDWORD(v1) = 0;
-  while ( SHIDWORD(v1) < 256 )
+  index = 0;
+  while ( index < 256 )
   {
-    while ( !byte_1BB358[4 * HIDWORD(v1)] && SHIDWORD(v1) < 256 )
-      ++HIDWORD(v1);
-    if ( SHIDWORD(v1) < 256 )
+    while ( !byte_1BB358[4 * index] && index < 256 )
+      ++index;
+    if ( index < 256 )
     {
-      v2 = 1;
-      for ( i = HIDWORD(v1) + 1; byte_1BB358[4 * i] && i < 256; ++i )
-        ++v2;
-      if ( v2 >= 128 )
-        v2 = 128;
+      count = 1;
+      for ( i = index + 1; byte_1BB358[4 * i] && i < 256; ++i )
+        ++count;
+      if ( count >= 128 )
+        count = 128;
       sub_132B27();
-      sub_132AF8(v1, SHIDWORD(v1));
-      HIDWORD(v1) += v2;
+      // original (asm): eax = &byte_1BB358[startIndex*4], ebx = count, edx = startIndex
+      sub_132AF8((unsigned int *)&byte_1BB358[4 * index], count, index);
+      index += count;
     }
   }
   return sub_131922(0, 255);
 }
-// 132040: variable 'v1' is possibly undefined
 
 
 //----- (00132065) --------------------------------------------------------
@@ -3695,38 +3687,32 @@ void CalibrateCpuTick_132AA4()
 
 
 //----- (00132AF8) --------------------------------------------------------
-int64_t sub_132AF8(int64_t a1, int a2)
+// Sets `count` DAC palette entries starting at `startIndex` from `paletteData`
+// (one packed dword per entry: byte0 = active flag/unused, byte1 = R, byte2 = G,
+// byte3 = B, each a 6-bit VGA DAC value).
+//
+// PORT: the original took three register args (eax = data ptr, ebx = count,
+// edx = start index) and streamed them to the VGA DAC ports 0x3C6/0x3C8/0x3C9
+// (Orion2.exe.asm sub_132AF8: `mov esi,eax; mov ecx,ebx; mov ebx,edx; ...
+// out dx,al; lodsd; ...`). IDA fused eax:edx into a fake `int64_t a1`, whose
+// low half (the data pointer) the single caller sub_131F7B never set -> the
+// pointer read 0xCCCCCCCC and crashed. The args are now explicit, and the DAC
+// port I/O is replaced by PortVga_SetPaletteEntry (the ports are no-ops in the
+// port). 6-bit DAC values are scaled to 8 bits for SDL: (v<<2)|(v>>4).
+void sub_132AF8(unsigned int *paletteData, int count, int startIndex)
 {
-  unsigned int *v2; // esi
-  int v4; // ebx
-  uint16_t v5; // dx
-  uint16_t v6; // dx
-  unsigned int v7; // eax
-
-  v2 = (unsigned int *)a1;
-  v4 = HIDWORD(a1);
-  hr_outbyte(0x3C6u, 0xFFu);
-  v5 = 968;
-  do
+  for ( int i = 0; i < count; ++i )
   {
-    _disable();
-    hr_outbyte(v5, v4);
-    v6 = v5 + 1;
-    v7 = *v2++;
-    v7 >>= 8;
-    hr_outbyte(v6, v7);
-    v7 >>= 8;
-    hr_outbyte(v6, v7);
-    hr_outbyte(v6, BYTE1(v7));
-    _enable();
-    v5 = v6 - 1;
-    ++v4;
-    --a2;
+    unsigned int entry = paletteData[i];
+    unsigned int r = (entry >> 8) & 0x3F;
+    unsigned int g = (entry >> 16) & 0x3F;
+    unsigned int b = (entry >> 24) & 0x3F;
+    PortVga_SetPaletteEntry(startIndex + i,
+                            (r << 2) | (r >> 4),
+                            (g << 2) | (g >> 4),
+                            (b << 2) | (b >> 4));
   }
-  while ( a2 );
-  return a1;
 }
-// 132AF8: could not find valid save-restore pair for ebx
 
 
 //----- (00132B27) --------------------------------------------------------

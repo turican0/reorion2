@@ -7967,8 +7967,7 @@ extern int sub_132A11();
 // plna signatura: void CalibrateCpuTick_132AA4();
 // vlna 13: __noreturn ODEBRAN - selhana dekompilace, skutecne telo se vraci
 extern void CalibrateCpuTick_132AA4();
-// plna signatura: int64_t sub_132AF8(int64_t a1, int a2);
-extern int64_t sub_132AF8();
+void sub_132AF8(unsigned int *paletteData, int count, int startIndex);
 // plna signatura: void sub_132B27();
 extern void sub_132B27();
 // plna signatura: void sub_132B41();
@@ -14322,7 +14321,7 @@ void sub_132869(int a1, int a2, int a3, int a4);
 void sub_1329D4();
 int sub_132A11();
 void CalibrateCpuTick_132AA4(); // vlna 13: __noreturn odebran
-int64_t sub_132AF8(int64_t a1, int a2);
+/* sub_132AF8 declared above (palette upload) */
 void sub_132B27();
 void sub_132B41();
 int sub_132C80(int a1);

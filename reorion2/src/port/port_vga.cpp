@@ -176,4 +176,12 @@ void PortVga_WaitVsync(void)
     SDL_Delay(14); // ~70 Hz VGA refresh
 }
 
+// Replaces the VGA DAC palette write (game sub_132AF8 wrote a 6-bit index/R/G/B
+// stream to ports 0x3C6/0x3C8/0x3C9, which are no-ops in the port). r/g/b are
+// already scaled to 8 bits by the caller.
+void PortVga_SetPaletteEntry(int index, int r, int g, int b)
+{
+    Port::Vga::SetPaletteEntry((uint8_t)index, (uint8_t)r, (uint8_t)g, (uint8_t)b);
+}
+
 } // extern "C"

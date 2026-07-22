@@ -1530,15 +1530,50 @@ first present (which read 0 -> present to NULL). Fixed with an overlay:
 Verified: the framebuffer pointer now survives into the intro
 (1255DF.first_dst is non-zero, the NULL-present is gone).
 
-**Remaining intro crash (still open):** after the framebuffer fix the segfault
-moved into sub_14852C blitting a fullscreen intro frame. Ruled OUT the earlier
-"data not loaded" theory: sub_12C7CC's fread of the frame works
-(12C7CC.freadRet=1, firstDword=0 not 0xCD, handle 4 valid, frameSize 309864).
-So the RLE data is valid; the crash is in the RLE decode walking past the
-~307200-byte backbuffer over 480 rows — a sub_14852C reconstruction subtlety or
-a dest-buffer-size issue. Next: row-by-row diagnostics in sub_14852C (dump v2,
-rc, v6 per iteration) to find where v2 leaves the buffer, and check the
-dword_1BB90C backbuffer allocation size in sub_12537D vs a full 640x480 frame.
+**Intro crash FIXED — sub_12C7CC fseek was missing the LBX record base.**
+sub_12C7CC loads an animation frame from the .LBX and blits it. The frame's
+file position is `dword_1BC328 + table[frameIndex]`: dword_1BC328 is the record's
+base offset in the archive (set from the LBX directory), table[frameIndex] is the
+frame offset relative to the record. The wave-07 fseek reconstruction used only
+`*v0` (= table[frameIndex]) and DROPPED the `dword_1BC328 +` base
+(Orion2.exe.asm sub_12C7CC: `mov eax, dword_1B4328; add eax, [edx]`). So every
+frame was read from the wrong file position -> garbage RLE -> sub_14852C decoded
+it and ran ~4 MB past the backbuffer -> segfault. Fixed:
+`fseek(dword_1BC338, dword_1BC328 + *v0, SEEK_SET)`. Verified: base 2048 + rel
+1048 now seeks to 3096, the loaded frame header/RLE is sane (first RLE word = 640
+= row width), and the intro runs to the 30 s timeout with zero segfaults. This is
+one instance of the known fseek/ftell debt — check the other ~24 for the same
+dropped-base pattern.
+
+**HOW TO REPRODUCE/TEST (critical):** build `-p:Platform=x86`, run from `Debug/`,
+no REORION2_SKIPINTRO. GOTCHA: a segfaulting reorion2.exe can linger and hold a
+file lock so MSBuild silently does NOT relink (exe timestamp stays old, stale
+binary runs). Always `Stop-Process -Name reorion2 -Force` before rebuilding, and
+check the exe timestamp is newer than the sources.
+
+## Done - wave 22g: sub_132AF8 palette upload (int64 fusion + DAC port redirect)
+
+Crash `v2 = 0xCCCCCCCC` in sub_132AF8 (VGA DAC palette set). Two problems, both
+as the user guessed: (1) `int64_t a1` was IDA's fusion of two register args, and
+(2) the hardware port writes went nowhere. Recovered the real signature from
+Orion2.exe.asm (`mov esi,eax; mov ecx,ebx; mov ebx,edx`): eax = palette data
+pointer, ebx = count, edx = start index. The single caller sub_131F7B never set
+the fused low half (the pointer), so it read 0xCCCCCCCC. Fixes:
+- sub_132AF8 signature -> `void sub_132AF8(unsigned int *paletteData, int count,
+  int startIndex)`; body replaced the 0x3C6/0x3C8/0x3C9 DAC I/O (hr_outbyte is a
+  no-op stub) with PortVga_SetPaletteEntry, scaling the 6-bit DAC values to 8-bit
+  ((v<<2)|(v>>4)). Entry layout: dword [flag, R, G, B].
+- new C bridge PortVga_SetPaletteEntry in port_vga.cpp (-> Port::Vga::SetPaletteEntry).
+- caller sub_131F7B: pass `&byte_1BB358[4*index], count, index` (from the asm);
+  its fused `int64_t v1` counter cleaned up to a plain `int index`.
+Verified vs asm; builds; the palette crash is gone and the intro now presents
+(the palette actually reaches the SDL framebuffer for the first time).
+
+**New crash after this (open):** with the palette set, the intro renders a few
+frames (multiple sub_138CE0 300 KB presents + sub_125814) and then segfaults in
+the present path — a fresh issue further along, no longer in sub_132AF8. Next:
+strip the now-noisy wave-21/22 present diagnostics (1248AB.fb_ptr, 1255DF.*,
+138CE0.*, 125814.*) for a clean trace, then bisect the present loop.
 
 ## Dalsi rozumny krok (navrh pro pristi session)
 

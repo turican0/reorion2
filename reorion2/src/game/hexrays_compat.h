@@ -163,6 +163,7 @@ void PortDebug_Checkpoint(const char* name, int value);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
 unsigned char *PortVga_Framebuffer(void);
+void PortVga_SetPaletteEntry(int index, int r, int g, int b);
 /* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */
 unsigned int PortDos_BiosTick(void);
 #ifdef __cplusplus
