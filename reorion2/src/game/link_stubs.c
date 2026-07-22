@@ -238,7 +238,21 @@ int loc_E40C7;
    rozpoctu pameti) je v src/port/port_memory.cpp. Stub vracejici 0 posilal
    hru do "Insufficient Memory!" vetve a nasledneho zaseknuti v nekonecne
    sondovaci smycce sub_110FE7. Viz PROGRESS.md vlna 11. */
-int memset32(void) { return 0; }
+/* Hex-Rays intrinsic memset32(dst, val, count): fill `count` DWORDs at dst with
+   the 32-bit value `val`. This was a no-op stub (returned 0, ignored its args),
+   so every buffer the game clears via sub_127678 (the backbuffers dword_1BB90C/
+   1BB8FC, the dirty-span tables dword_1BB908/1BB8C0, palette fills, ...) stayed
+   at the debug-heap fill 0xCDCDCDCD instead of 0. That surfaced as garbage top
+   rows (the "extra line") and wrong dirty spans (jumping top). Fixed in wave 22k;
+   verified against dosbox (original backbuffer top = 0x00000000, dirty entry =
+   0x009F0000; the port had 0xCDCDCDCD / 0x009FCF0D before this). */
+void *memset32(void *dst, unsigned int val, unsigned int count)
+{
+    unsigned int *p = (unsigned int *)dst;
+    while ( count-- )
+        *p++ = val;
+    return dst;
+}
 /* DULEZITA OPRAVA (vlna 06): tady drive bylo "int nfree;" - OBYCEJNA
    DATOVA promenna se stejnym jmenem, jako ma FUNKCE "nfree" deklarovana
    v orion_common.h ("extern int nfree(unsigned int);"). Zadna SKUTECNA

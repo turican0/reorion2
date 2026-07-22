@@ -4415,10 +4415,19 @@ void sub_145FB3()
 //----- (00145FD2) --------------------------------------------------------
 bool sub_145FD2()
 {
-  char v1[28]; // [esp+0h] [ebp-40h] BYREF
-  int v2; // [esp+1Ch] [ebp-24h]
-  int16_t v3; // [esp+22h] [ebp-1Eh]
-  int v4; // [esp+38h] [ebp-8h]
+  // IDA split ONE ~50-byte int386x register block into v1[28] + v2 + v3, all
+  // contiguous on the original stack ([ebp-40h]..[ebp-1Eh]). They are the SAME
+  // buffer: v2 lives at v1+28 ([ebp-24h]) and v3 at v1+34 ([ebp-1Eh]). The
+  // `sub_127678(v1, 0x32u, 0)` zeroes all 50 bytes; `dword_1BB8F4 = (int)v1`
+  // then hands that whole block to int386x. Keeping v2/v3 as separate locals
+  // would (a) put their writes outside the block int386x receives and (b), once
+  // memset32 became a real fill (wave 22k), overflow the 28-byte array and trip
+  // MSVC /RTC (looked like a hang). So v1 is the full 52-byte block and v2/v3
+  // are accessed as offsets inside it. v4 ([ebp-8h]) is past the block -> local.
+  char v1[52]; // [ebp-40h] BYREF - int386x register block (v2@+28, v3@+34)
+  int v4;      // [ebp-8h]
+#define v2 (*(int *)(v1 + 28))
+#define v3 (*(int16_t *)(v1 + 34))
 
   sub_127678((char *)&dword_1BB8E0, 0x1Cu, 0);
   sub_127678((char *)word_1BBA1C, 0xCu, 0);
