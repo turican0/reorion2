@@ -1575,6 +1575,33 @@ the present path — a fresh issue further along, no longer in sub_132AF8. Next:
 strip the now-noisy wave-21/22 present diagnostics (1248AB.fb_ptr, 1255DF.*,
 138CE0.*, 125814.*) for a clean trace, then bisect the present loop.
 
+## Done - wave 22h: three more fseek dropped-base bugs (sub_12A914 crash)
+
+Crash in sub_12A914 (`v13 = 0xffffd382`, a negative word index into a3). Verified
+sub_12A914's decode is FAITHFUL to Orion2.exe.asm (stride = HIDWORD(qword_184530)
+= 640, else-branch *640, `v13 += (v18+1)/2` with signed v18, v18/v4 reads all
+match). So the decode was fine; v13 only goes negative when v18 (a signed run
+length read from a3) is garbage -> the frame data a3 was wrong. Same class as
+the sub_12C7CC fseek-base bug. Traced a3 to its loaders and fixed three more
+dropped-base fseeks (all verified against asm):
+- sub_12CAD6: `fseek(dword_1BC310[a1], dword_1BC348[a1] + *v2, ...)` (per-file
+  base array dword_1BC348[a1], multi-file animation).
+- sub_12CD2D: `fseek(dword_1BC338, dword_1BC328 + *v0, ...)` (single base, like
+  sub_12C7CC).
+- sub_12D408: `fseek(dword_1BC310[a1], dword_1BC348[a1] + *v2, ...)` (twin of
+  sub_12CAD6).
+(Checked but CORRECT as-is: orion_part_20.c:1029 seeks to the record base v9 to
+read the 2730-byte record header — no relative frame offset there.)
+Result: the intro animation now runs the full timeout with ZERO segfaults (it was
+crashing on the very first frames). This is the biggest milestone yet — the intro
+plays. Note: dropped-base fseek is now fixed in FOUR functions
+(sub_12C7CC/12CAD6/12CD2D/12D408); the remaining fseek/ftell-debt sites use other
+handles (dword_1BC26C in orion_part_19) and still need per-site asm checks.
+
+Graphics-shift question (user): the shift was almost certainly the garbage frame
+data from the wrong fseek; with the base fixed the decode gets the real frames.
+Can't confirm visually from the headless build here — needs an eyes-on run.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

@@ -841,10 +841,13 @@ int sub_12CAD6( int a1)
   if ( sub_110C29(dword_1BC324) < v5 )
     sub_126487(aFileAnimationF_0, (int)v2);
   v6 = dword_1BC324;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
-  fseek(dword_1BC310[a1], *v2, SEEK_SET);
+  // Multi-file animation: frame `a1` lives in file dword_1BC310[a1]; its frame
+  // offset *v2 (from the per-frame table) is RELATIVE to that file's record base
+  // dword_1BC348[a1]. The original adds them (Orion2.exe.asm sub_12CAD6:
+  // `mov eax, dword_1B4348[eax]; add eax, [edx]`); wave 07 dropped the base, so
+  // the fread landed at the wrong position and sub_12A914 decoded garbage
+  // (v13 ran negative). Same class as sub_12C7CC.
+  fseek(dword_1BC310[a1], dword_1BC348[a1] + *v2, SEEK_SET);
   v3 = v5;
   fread(v6, v5, 1, dword_1BC310[a1]);
   if ( dword_1BBA28 >= 2 )
@@ -924,10 +927,9 @@ int sub_12CD2D()
   if ( sub_110C29(dword_1BC324) < v3 )
     sub_126487(aFileAnimationF_1, (int)v0);
   v4 = dword_1BC324;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
-  fseek(dword_1BC338, *v0, SEEK_SET);
+  // frame offset *v0 is relative to the record base dword_1BC328 (asm sub_12CD2D:
+  // `mov eax, dword_1B4328; add eax, [edx]`); same dropped-base bug as sub_12C7CC.
+  fseek(dword_1BC338, dword_1BC328 + *v0, SEEK_SET);
   fread(v4, v3, 1, dword_1BC338);
   if ( (*(_BYTE *)(dword_1BC2A8 + 11) & 8) != 0 )
     sub_126487(aDifferentailFi_1, v3);
@@ -1065,10 +1067,10 @@ int sub_12D408( int a1)
   if ( sub_110C29(dword_1BC324) < v7 )
     sub_126487(aFileAnimationF_3, (int)v2);
   v8 = dword_1BC324;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
-  fseek(dword_1BC310[a1], *v2, SEEK_SET);
+  // frame offset *v2 is relative to the per-file record base dword_1BC348[a1]
+  // (asm sub_12D408: `mov eax, dword_1B4348[eax]; ... var_1C`); same dropped-base
+  // bug as sub_12CAD6 (this function is its twin, the non-differential variant).
+  fseek(dword_1BC310[a1], dword_1BC348[a1] + *v2, SEEK_SET);
   v3 = v7;
   fread(v8, v7, 1, dword_1BC310[a1]);
   if ( dword_1BBA28 >= 2 )
