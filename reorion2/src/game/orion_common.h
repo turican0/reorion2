@@ -20619,8 +20619,16 @@ extern int dword_1BB900;
 extern int dword_1BB904;
 extern int dword_1BB908;
 extern int dword_1BB90C;
-extern int dword_1BB910[];
-extern int dword_1BB914[64];
+// Overlay 0x1BB910..0x1BBA13 (65 ints): the original is ONE contiguous array.
+// dword_1BB910[0] is the screen/framebuffer pointer AND element 0 of a 65-entry
+// colour/plane lookup table; dword_1BB914 aliases &table[1] (0x1BB914). Code
+// like `dword_1BB914[k] = dword_1BB910[k]` (orion_part_20.c) relies on that
+// adjacency (it is really table[k+1] = table[k] propagation). Splitting them
+// into separate globals made dword_1BB910[k>0] read/write out of bounds and
+// corrupt neighbours (observed: the framebuffer pointer in [0] getting zeroed).
+extern int screenPtrs_1BB910[65];
+#define dword_1BB910 screenPtrs_1BB910
+#define dword_1BB914 (screenPtrs_1BB910 + 1)
 extern int dword_1BBA14;
 extern int dword_1BBA18;
 extern int16_t word_1BBA1C[6];

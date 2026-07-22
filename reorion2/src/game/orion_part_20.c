@@ -718,6 +718,22 @@ int sub_12C7CC()
   // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
   // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
   // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
+  {
+    // DIAG (wave 22f): the blitted frame data stays 0xCD -> the fread below is
+    // not filling it. Dump the file handle, offset, size and the fread return.
+    static int diagOnce;
+    if ( !diagOnce )
+    {
+      diagOnce = 1;
+      PortDebug_Checkpoint("12C7CC.fileHandle_1BC338", dword_1BC338);
+      PortDebug_Checkpoint("12C7CC.destBuf_1BC324", dword_1BC324);
+      PortDebug_Checkpoint("12C7CC.frameOffset", *v0);
+      PortDebug_Checkpoint("12C7CC.frameSize", v6);
+      fseek(dword_1BC338, *v0, SEEK_SET);
+      PortDebug_Checkpoint("12C7CC.freadRet", (int)fread(v5, v6, 1, dword_1BC338));
+      PortDebug_Checkpoint("12C7CC.firstDword", *(int *)v5); // 0xCDCDCDCD = not loaded
+    }
+  }
   fseek(dword_1BC338, *v0, SEEK_SET);
   v1 = v6;
   fread(v5, v6, 1, dword_1BC338);

@@ -17733,8 +17733,10 @@ int dword_1BB900; // weak
 int dword_1BB904; // weak
 int dword_1BB908; // weak
 int dword_1BB90C; // weak
-int dword_1BB910[]; // weak
-int dword_1BB914[64]; // weak
+// Overlay: dword_1BB910 + dword_1BB914 are one contiguous 65-int array in the
+// original (0x1BB910..0x1BBA13). See orion_common.h for why they must not be
+// split. dword_1BB910/dword_1BB914 are now macros onto this backing array.
+int screenPtrs_1BB910[65]; // weak
 int dword_1BBA14; // weak
 int dword_1BBA18; // weak
 int16_t word_1BBA1C[6]; // weak

@@ -1505,6 +1505,41 @@ regression, none remain outside the compat header. Signatures now read e.g.
 `int sub_1579F0(int a1, int a2)` instead of `int __cdecl sub_1579F0(...)`.
 Ongoing: keep new/edited functions decorator-free.
 
+## Done - wave 22f: build divergence explained + framebuffer overlay fix
+
+**Why my build diverged from the user's:** the user builds **x86 (Win32)** and
+runs the exe **from `reorion2/reorion2/Debug/`** (where the 373 LBX data files
+live). I had been building **x64** and running from a different data dir. On x86
+pointers are natively 32-bit, so all the `int`-holds-a-pointer code works without
+truncation — my x64-only truncation theories (e.g. the wave-21 static-array
+framebuffer) did not apply to the user's build. Build `-p:Platform=x86` and run
+from `Debug/`; without REORION2_SKIPINTRO the intro runs and reproduces the
+user's crash exactly (segfault in the intro sprite blit).
+
+**Real bug found and fixed — dword_1BB910/dword_1BB914 must be one array.**
+The original 0x1BB910..0x1BBA13 is a contiguous 65-int table: [0] is the
+screen/framebuffer pointer, and dword_1BB914 aliases &table[1].
+`dword_1BB914[k] = dword_1BB910[k]` (orion_part_20.c ~4069) is really
+`table[k+1] = table[k]` propagation. IDA split it into `int dword_1BB910[]`
+(tentative -> int[1]) + `int dword_1BB914[64]`, non-adjacent in the port, so the
+indexing ran out of bounds and corrupted neighbours — including zeroing the
+framebuffer pointer in [0] between sub_1248AB (which set it) and the intro's
+first present (which read 0 -> present to NULL). Fixed with an overlay:
+`int screenPtrs_1BB910[65]` + `#define dword_1BB910 screenPtrs_1BB910` +
+`#define dword_1BB914 (screenPtrs_1BB910 + 1)` (orion_common.h, orion_data.c).
+Verified: the framebuffer pointer now survives into the intro
+(1255DF.first_dst is non-zero, the NULL-present is gone).
+
+**Remaining intro crash (still open):** after the framebuffer fix the segfault
+moved into sub_14852C blitting a fullscreen intro frame. Ruled OUT the earlier
+"data not loaded" theory: sub_12C7CC's fread of the frame works
+(12C7CC.freadRet=1, firstDword=0 not 0xCD, handle 4 valid, frameSize 309864).
+So the RLE data is valid; the crash is in the RLE decode walking past the
+~307200-byte backbuffer over 480 rows — a sub_14852C reconstruction subtlety or
+a dest-buffer-size issue. Next: row-by-row diagnostics in sub_14852C (dump v2,
+rc, v6 per iteration) to find where v2 leaves the buffer, and check the
+dword_1BB90C backbuffer allocation size in sub_12537D vs a full 640x480 frame.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

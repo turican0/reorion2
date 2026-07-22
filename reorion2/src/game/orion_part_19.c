@@ -7387,6 +7387,20 @@ int sub_129FF9( int a1, int a2, int a3)
     sub_12AE00();
   v3 = dword_1BC2A8;
   v8 = (int *)(dword_1BC2A8 + *(_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16)));
+  {
+    // DIAG (wave 22e): frame-data pointer v8 lands ~14 MB past the header.
+    static int diagOnce;
+    if ( !diagOnce ) {
+      diagOnce = 1;
+      PortDebug_Checkpoint("129FF9.header", (int)(intptr_t)a3);
+      PortDebug_Checkpoint("129FF9.w0", *(uint16_t *)a3);
+      PortDebug_Checkpoint("129FF9.h2", *(uint16_t *)(a3 + 2));
+      PortDebug_Checkpoint("129FF9.x4", *(uint16_t *)(a3 + 4));
+      PortDebug_Checkpoint("129FF9.n6", *(uint16_t *)(a3 + 6));
+      PortDebug_Checkpoint("129FF9.frameIdx", *(int *)(a3 + 2) >> 16);
+      PortDebug_Checkpoint("129FF9.tableOff", *(_DWORD *)(a3 + 12 + 4 * (*(int *)(a3 + 2) >> 16)));
+    }
+  }
   if ( word_1845D8 )
   {
     if ( a1 > (int16_t)dword_1BBA4E
