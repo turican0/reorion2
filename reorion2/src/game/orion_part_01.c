@@ -4163,10 +4163,15 @@ void sub_14DF7(int a1, int a2, int a3)
     sub_C5B94(100);
     sub_15085(3);
   }
+  PortDebug_Checkpoint("14DF7.before_1327E4", 0);
   v7 = sub_1327E4();
+  PortDebug_Checkpoint("14DF7.loop3.enter", v7);
   v8 = 0;
   while ( !(_WORD)v8 )
   {
+    static int loop3_iters = 0;
+    if ((++loop3_iters % 200) == 0)
+      PortDebug_Checkpoint("14DF7.loop3.tick", (sub_132825() << 16) | (uint16_t)v7);
     LOBYTE(v9) = sub_12C392();
     if ( v9 == 1 )
     {
@@ -4183,6 +4188,7 @@ void sub_14DF7(int a1, int a2, int a3)
     if ( (int16_t)sub_132825() == (int16_t)v7 - 1 )
       v8 = 1;
   }
+  PortDebug_Checkpoint("14DF7.loop3.exit", v8);
   sub_119281();
   if ( a3 == 1 )
   {
