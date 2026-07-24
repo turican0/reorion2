@@ -1346,8 +1346,12 @@ void sub_24ED3(int16_t *a1)
     v7 = 15;
     sub_123E6C((int)&unk_180EBC, 1);
     v8 = 0;
+    PortDebug_Checkpoint("24ED3.loop1.enter", v5);
     while ( !(_WORD)v8 && !v1 )
     {
+      static int loop1_iters = 0;
+      if ((++loop1_iters % 200) == 0)
+        PortDebug_Checkpoint("24ED3.loop1.tick", (sub_12D70B() << 16) | (uint16_t)v5);
       sub_12C2A0();
       LOBYTE(v9) = sub_12C392();
       if ( v9 == 1 )
@@ -1379,6 +1383,7 @@ void sub_24ED3(int16_t *a1)
       }
     }
   }
+  PortDebug_Checkpoint("24ED3.loop1.exit", (v1 << 16) | (uint16_t)v8);
   if ( !v1 )
   {
     sub_2518F(v8, v7, a1);
@@ -1394,8 +1399,12 @@ void sub_24ED3(int16_t *a1)
     v14 = 5;
     sub_123E6C((int)&unk_180EBC, 1);
     v8 = 0;
+    PortDebug_Checkpoint("24ED3.loop2.enter", v12);
     while ( !(_WORD)v8 )
     {
+      static int loop2_iters = 0;
+      if ((++loop2_iters % 200) == 0)
+        PortDebug_Checkpoint("24ED3.loop2.tick", (sub_12D70B() << 16) | (uint16_t)v12);
       sub_12C2A0();
       LOBYTE(v15) = sub_12C392();
       if ( v15 == 1 )
@@ -1426,16 +1435,28 @@ void sub_24ED3(int16_t *a1)
         sub_12C2C6(1);
       }
     }
+    PortDebug_Checkpoint("24ED3.loop2.exit", (v1 << 16) | (uint16_t)v8);
   }
+  PortDebug_Checkpoint("24ED3.after_loops", 0);
   sub_1113CC(dword_192EF4, v8);
+  PortDebug_Checkpoint("24ED3.after_1113CC", 0);
   sub_12D78E();
+  PortDebug_Checkpoint("24ED3.after_12D78E", 0);
   sub_2518F(v8, 639, a1);
+  PortDebug_Checkpoint("24ED3.after_2518F", 0);
   sub_FE8BE(v17, v8, 639, a1);
+  PortDebug_Checkpoint("24ED3.after_FE8BE", 0);
   sub_124D41();
+  PortDebug_Checkpoint("24ED3.after_124D41", 0);
   sub_128C32(0, 0, 639, 479, 0);
+  PortDebug_Checkpoint("24ED3.after_128C32", 0);
   sub_124DEC();
+  PortDebug_Checkpoint("24ED3.after_124DEC", v1);
   if ( !v1 )
+  {
     sub_14DF7((int)aIntroLbx, 0, 1);
+    PortDebug_Checkpoint("24ED3.after_14DF7", 0);
+  }
 }
 // 24FE5: variable 'v9' is possibly undefined
 // 250E0: variable 'v15' is possibly undefined

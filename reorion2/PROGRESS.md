@@ -1896,3 +1896,35 @@ segfault v sub_12760B (atoi-like parser volany na vysledek).
 
 **Novy frontier: `sub_12B726`** (jeste neanalyzovano). Pad postoupil skrz
 cely `LoadLanguageSetting`-navazany text-parsing kod az sem.
+
+## Rozpracovano - vlna 23c: intro se na konci zasekava (bez REORION2_SKIPINTRO)
+
+Uzivatel nahlasil: "konec intra je zaseknuty, samo to nepokracuje". Bisekce
+checkpointy v `sub_24ED3` (orion_part_02.c): **oba animacni while-loopy
+(SimTex/MicroProse logo, pak LOGO.LBX) normalne DOBEHNOU** (loop1.exit,
+loop2.exit obe s v8=1 = cisty exit). Cely ocas `sub_24ED3` (sub_1113CC,
+sub_12D78E, sub_2518F, sub_FE8BE, sub_124D41, sub_128C32, sub_124DEC) take
+probehne. **Zasek je uvnitr `sub_14DF7((int)aIntroLbx, 0, 1)`** (posledni
+volani, nacita hlavni intro cinematic data) - "24ED3.after_14DF7" checkpoint
+se nikdy nevypise. Tesne pred/pri vstupu se opakovane objevuje podezrely SEH
+zaznam `code=0xC0000005 addr=0x00007FFE...1800` s **fault-adresa ==
+data-adresa** (typicke pro EXECUTE-type access violation, ne read/write -
+nas SEH handler to zatim chybne popisuje jako "write", protoze
+`ExceptionInformation[0]` muze byt 8 (execute/DEP) ne jen 0/1) - naznacuje
+**skok pres poskozeny/spatny funkcni ukazatel**, ne obycejnou nekonecnou
+smycku.
+
+Podezrele misto v `sub_14DF7` (orion_part_01.c:4105): `sub_1191CA((int)sub_150E5, 0);`
+(radek 4132) - registruje `sub_150E5` jako callback, stejny vzor jako drive
+opraveny Miles-timer hang (`sub_149A20`, vlna 22i) - pokud port timer/interrupt
+substituce vola tenhle callback pres poskozeny/nespravne ulozeny ukazatel,
+vysledkem by byl presne execute-AV. Take na radku 4141: `((unsigned int)&loc_100000 & a2)`
+je DALSI instance "IDA spletla konstantu 0x100000 s adresou" (jako
+sub_10000/loc_20000 vyse) - v aktualnim volani `a2=0` takze se netrigne, ale
+stoji za opravu at nezpusobi problem pri jinych volani (sub_14DF7 se vola i
+z orion_part_13.c s ruznymi a2).
+
+**Dalsi krok:** rozebrat `sub_1191CA` (co presne registruje) a `sub_150E5`
+(co ten callback dela) - pravdepodobne dalsi instalace "timer/interrupt"
+mechanismu analogicka sub_149A20, potrebuje stejny typ fixu (vzit
+"VxD/modern-OS-timing" vetev misto DOS interrupt spin).
