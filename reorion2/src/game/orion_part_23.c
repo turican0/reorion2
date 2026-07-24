@@ -5780,33 +5780,40 @@ int sub_15C850( int a1, int a2, int a3, int a4)
 
 
 //----- (0015C8A9) --------------------------------------------------------
+// PORT (wave 23c): the decompiler could not follow the inline `int 21h`
+// (DOS AH=3Fh, READ FROM FILE WITH HANDLE) and left a DECOMP_TODO stub that
+// never actually read anything - every caller of sub_14CD50/sub_14BC40 (the
+// Smacker-style intro cinematic loader) silently got zero bytes back, so the
+// "SMK2" header magic check always failed and the intro animation spun
+// forever waiting on a resource that was never loaded (the end-of-intro
+// hang). Reconstructed from Debug/diss/Orion2.exe.asm (sub_15C8A9 @
+// 0x15C8A9): real params are a2=file handle, a3=dest buffer, a5=byte count,
+// a6=output actual-bytes-read; a1/a4 are the DOS DS segment / a decompiler
+// artifact duplicate and carry no information in a flat address space.
+// Chunked into <=0xF000-byte reads to mirror the original's 64KB-per-INT21h
+// -call limit (not load-bearing anymore, but keeps behavior identical); a
+// short read (or EOF/error) stops early exactly like the original's
+// "eax < ecx -> break" check.
 int sub_15C8A9( unsigned int a1, int a2, int a3, int a4, unsigned int a5, _DWORD *a6)
 {
-  int v6; // edx
-  unsigned int v7; // ecx
-  int result; // eax
-
-  v6 = a3;
-  do
+  unsigned char *dst = (unsigned char *)a3;
+  unsigned int total = 0;
+  (void)a1;
+  (void)a4;
+  while ( total < a5 )
   {
-    HIBYTE(a1) = 63;
-    v7 = a5;
-    if ( a5 > 0xFFFF )
-      v7 = 61440;
-    /* __asm: int     21h; DOS - 2+ - READ FROM FILE WITH HANDLE */ DECOMP_TODO("inline asm");
-    if ( a5 < 0xFFFF )
+    unsigned int chunk = a5 - total;
+    if ( chunk > 0xFFFF )
+      chunk = 0xF000;
+    size_t got = PortFile_Read(dst + total, 1, chunk, a2);
+    if ( !got )
       break;
-    if ( !a1 )
+    total += (unsigned int)got;
+    if ( got < chunk )
       break;
-    v6 += a1;
-    if ( a1 < v7 )
-      break;
-    a5 -= a1;
   }
-  while ( a5 );
-  result = v6 - a3;
-  *a6 = v6 - a3;
-  return result;
+  *a6 = total;
+  return (int)total;
 }
 
 

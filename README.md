@@ -33,7 +33,13 @@ Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave e
 
 ## Screenshots
 
-Progress screenshots live on the [`wiki`](https://github.com/turican0/reorion2/tree/wiki/screenshots) branch (kept separate so binary images don't bloat `main`'s history). Nothing playable yet, so there's nothing there today — this section gets updated with a picture as soon as there's a stable screen worth showing.
+Progress screenshots live on the [`wiki`](https://github.com/turican0/reorion2/tree/wiki/screenshots) branch (kept separate so binary images don't bloat `main`'s history).
+
+**2026-07-24 — intro cinematics render correctly:**
+
+![SimTex logo rendering during the intro](https://raw.githubusercontent.com/turican0/reorion2/wiki/screenshots/2026-07-24-intro-simtex-logo.png)
+
+The SimTex logo (first frame of the intro sequence) drawing correctly on real hardware/window — confirms the font/palette/framebuffer fixes from this wave are visually correct, not just crash-free.
 
 ## Architecture
 
