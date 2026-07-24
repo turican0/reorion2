@@ -31,7 +31,9 @@ Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave e
 - A cluster of **x64-only** bugs was found and fixed: a register-fusion trick that only works when a pointer fits in 32 bits (it doesn't on x64), a couple of "the decompiler mistook this integer constant for a function address" false positives, and a parser context pointer that silently truncated 64-bit stack addresses.
 - Known open issues right now: the intro sequence can get stuck right at the very end (loading the main intro cinematic data — under investigation), and there's a new crash just past the main-menu entry point.
 
-Nothing is playable yet — there's no in-game screenshot to show, because the game doesn't survive long enough to reach one. That will change as the crash frontier keeps moving forward; this section (and the changelog below) gets updated as it does.
+## Screenshots
+
+Progress screenshots live on the [`wiki`](https://github.com/turican0/reorion2/tree/wiki/screenshots) branch (kept separate so binary images don't bloat `main`'s history). Nothing playable yet, so there's nothing there today — this section gets updated with a picture as soon as there's a stable screen worth showing.
 
 ## Architecture
 

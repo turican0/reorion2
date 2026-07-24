@@ -2596,6 +2596,7 @@ _DWORD *sub_14BC40(unsigned int a1, int a2, _DWORD *a3)
     v66 = v8;
     v63 = 0;
   }
+  PortDebug_Checkpoint("14BC40.v66_after_open", v66);
   if ( v66 == -1 )
     goto LABEL_12;
   if ( (a2 & 0x2000000) == 0 )
@@ -2618,6 +2619,7 @@ _DWORD *sub_14BC40(unsigned int a1, int a2, _DWORD *a3)
   v63 = 0;
   *v3 = 0;
   v8 = sub_14CD50((int)v3, (char *)v3, 0x68u);
+  PortDebug_Checkpoint("14BC40.magic", *v3);
   if ( *v3 == 843795795 )
   {
     if ( (a2 & 0x80u) != 0 )
