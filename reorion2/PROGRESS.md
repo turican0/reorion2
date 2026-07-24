@@ -1653,6 +1653,41 @@ framebuffer, the shift/missing-frames (#1/#2) should look markedly better.
 Next: put a frame counter inside the intro loop sub_24ED3 (not sub_12CAD6 —
 that's never called on this path) to localise the remaining crash.
 
+## Done - wave 22k: memset32 was a no-op stub (root of the top-row garbage)
+
+Used the dosbox-x DUMPMEM harness (genCompare/, runtime = IDA + 0x224000 code /
++ 0x216000 data) to compare the first-frame state. Original backbuffer top rows =
+0x00000000, dirty table = 0x009F0000; the port had 0xCDCDCDCD backbuffer and
+0x009FCF0D dirty table. Cause: **`memset32` was a no-op stub in link_stubs.c**
+(`int memset32(void){return 0;}`), so every buffer the game clears via sub_127678
+(backbuffers, dirty tables, palette fills, VESA blocks) stayed at the debug-heap
+fill 0xCDCDCDCD -> garbage top rows (the "extra line"), wrong dirty spans, and the
+earlier intro crashes. Implemented it for real (fill count dwords with val).
+
+Making memset32 real exposed a cascade of latent bugs it had been masking, all
+now fixed:
+1. int386x register block (sub_145FD2/1460C1/1461F0): IDA split one ~50-byte
+   stack block into a short `char v1[]` + separate locals v2/v3/... which are
+   really FIELDS at v1+20/+24/+28/+34. The 0x32 (50-byte) memset overflowed the
+   undersized array -> MSVC /RTC stack-check blocked (looked like a hang).
+   Modeled as `Int386xRegs` struct (orion_common.h) so the fields sit at their
+   true offsets and the memset stays in bounds.
+2. VESA mode values: int386/int386x are no-op stubs, so the mode-info block stays
+   zeroed and sub_1460C1/sub_1461F0 returned 512/0 instead of the mode-5 values.
+   The 0 caused `word_1BBA5C = 64 / word_1BBA56` to divide by zero (exit 127).
+   Hardcoded the correct forced-mode-5 returns (2048 / 64), verified via dosbox
+   DUMPMEM (word_1BBA62 = 0x800, word_1BBA56 = 0x40). Consistent with wave 16.
+Result: the intro runs to timeout with ZERO crashes and the backbuffer is now
+correctly zeroed (verified: backbuf_dw0 = 0, matching dosbox) -> the "extra line"
+top garbage (#1) should be gone.
+
+Residual (open): the dirty table still reads 0x009EFF00 vs dosbox 0x009F0000 (low
+word 0xFF00 vs 0, high 158 vs 159) — a small dirty-span discrepancy that may still
+show as the #2 top-jump on incremental (sub_125814) frames. The full-frame present
+(sub_1255DF) is correct, so the first frame is right. Needs an eyes-on check now;
+if the top-jump persists, chase the dirty-tracking (sub_138CEE) that fills
+dword_1BB908.
+
 ## Dalsi rozumny krok (navrh pro pristi session)
 
 0. **AIL/Miles zvuk (sub_111F3E a sub_13Fxxx/140xxx rodina)** - aktualni

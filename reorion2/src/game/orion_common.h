@@ -19,6 +19,30 @@ typedef struct
 #pragma pack(pop)
 //static_assert(sizeof(SaveSlotInfo) == 37, "SaveSlotInfo musi mit 37 bajtu");
 
+// ==== int386x VESA/DPMI register block, 52 bytes ====
+// IDA decompiled the VESA-mode-set helpers (sub_145FD2/sub_1460C1/sub_1461F0)
+// with this ~50-byte stack buffer split into a short `char v1[]` plus several
+// separate locals (v2/v3/... at [ebp-2Ch]/[ebp-24h]/[ebp-1Eh]...). Those locals
+// are really FIELDS of this one block, which `dword_1BB8F4 = (int)&block` hands
+// to int386x. The functions zero the whole block with a 0x32 (50-byte) memset,
+// so the C buffer has to cover all of them (otherwise memset32 — real since
+// wave 22k — overflows the undersized array and trips MSVC /RTC). Modeled as a
+// struct so the fields sit at their true offsets; only the ones actually used
+// are named. int386x is a no-op stub in the port, so contents don't drive
+// behaviour, but the layout must still be correct.
+#pragma pack(push, 1)
+typedef struct Int386xRegs
+{
+    char    reserved0[20];
+    int     f20;      // +20 (sub_1461F0)
+    int     f24;      // +24 (sub_1461F0)
+    int     status;   // +28 (all three; low byte is the VESA AL==0x4F success code)
+    char    reserved32[2];
+    int16_t f34;      // +34 (all three)
+    char    reserved36[16]; // pad to 52 bytes (>= the 0x32 memset)
+} Int386xRegs;
+#pragma pack(pop)
+
 // ==== AIL (Miles Sound System) sample handle, 2196 bytes ====
 // The decompiler treats sample handles as plain `int`, but they are pointers to
 // this heap struct: allocated in slots of 2196 bytes by sub_157610, and

@@ -5159,19 +5159,6 @@ void *sub_1255DF()
 {
   // DIAG (vlna 21): jednorazove zalogovat cil/zdroj prezentace - hlaseny stav
   // "result=0, src=0xCD..." znamena volani pred initem nebo prepsany globall
-  static int diagOnce;
-  if ( !diagOnce )
-  {
-    diagOnce = 1;
-    // Compare with dosbox pass 2: backbuffer top rows were all-zero, dirty table
-    // rows were 0x009F0000 (span 0..159 = full row).
-    PortDebug_Checkpoint("1255DF.page_1BBA64", dword_1BBA64);
-    PortDebug_Checkpoint("1255DF.dirty0", *(int *)dword_1BB908);
-    PortDebug_Checkpoint("1255DF.dirty1", *(int *)(dword_1BB908 + 4));
-    PortDebug_Checkpoint("1255DF.backbuf_dw0", *(int *)dword_1BB90C);
-    PortDebug_Checkpoint("1255DF.backbuf_dw1", *(int *)(dword_1BB90C + 4));
-    PortDebug_Checkpoint("1255DF.backbuf_row1", *(int *)(dword_1BB90C + 640)); // start of row 1
-  }
   return sub_138CE0((void *)dword_1BB910[0], (void *)dword_1BB90C, 300);
 }
 // 1BB90C: using guessed type int dword_1BB90C;

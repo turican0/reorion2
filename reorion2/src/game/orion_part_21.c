@@ -4415,39 +4415,33 @@ void sub_145FB3()
 //----- (00145FD2) --------------------------------------------------------
 bool sub_145FD2()
 {
-  // IDA split ONE ~50-byte int386x register block into v1[28] + v2 + v3, all
-  // contiguous on the original stack ([ebp-40h]..[ebp-1Eh]). They are the SAME
-  // buffer: v2 lives at v1+28 ([ebp-24h]) and v3 at v1+34 ([ebp-1Eh]). The
-  // `sub_127678(v1, 0x32u, 0)` zeroes all 50 bytes; `dword_1BB8F4 = (int)v1`
-  // then hands that whole block to int386x. Keeping v2/v3 as separate locals
-  // would (a) put their writes outside the block int386x receives and (b), once
-  // memset32 became a real fill (wave 22k), overflow the 28-byte array and trip
-  // MSVC /RTC (looked like a hang). So v1 is the full 52-byte block and v2/v3
-  // are accessed as offsets inside it. v4 ([ebp-8h]) is past the block -> local.
-  char v1[52]; // [ebp-40h] BYREF - int386x register block (v2@+28, v3@+34)
-  int v4;      // [ebp-8h]
-#define v2 (*(int *)(v1 + 28))
-#define v3 (*(int16_t *)(v1 + 34))
+  // IDA split ONE int386x register block (see Int386xRegs in orion_common.h)
+  // into a short array plus separate locals; v2/v3 are really fields v1.status
+  // (+28) and v1.f34 (+34). The 0x32 (50-byte) memset zeroes the whole block,
+  // which `dword_1BB8F4 = (int)&v1` hands to int386x. v4 ([ebp-8h]) is past the
+  // block -> a real local.
+  Int386xRegs v1; // [ebp-40h] BYREF - int386x register block
+  int v4;         // [ebp-8h]
 
   sub_127678((char *)&dword_1BB8E0, 0x1Cu, 0);
   sub_127678((char *)word_1BBA1C, 0xCu, 0);
   v4 = dword_1B06FC;
   sub_127678((char *)dword_1B06FC, 0x102u, 0);
-  sub_127678(v1, 0x32u, 0);
-  v2 = 20224;
-  v3 = dword_1B06F8;
-  *(_DWORD *)v1 = 0;
+  sub_127678((char *)&v1, 0x32u, 0);
+  v1.status = 20224;
+  v1.f34 = dword_1B06F8;
+  *(int *)&v1 = 0;
   LOWORD(dword_1BB8E0) = 768;
   LOWORD(dword_1BB8E4) = 16;
   LOWORD(dword_1BB8E8) = 0;
   word_1BBA1C[0] = __SS__;
-  dword_1BB8F4 = (int)v1;
+  dword_1BB8F4 = (int)&v1;
   int386x(49, &dword_1BB8E0);
   // VLNA 16 - PORT: puvodne VESA BIOS detekce (INT 10h AX=4F00h pres int386x,
   // test AX==0x004F). int386x je v portu stub, takze by vzdy vratila false.
   // Port ale VESA-linearni framebuffer POSKYTUJE (Port::Vga pres SDL), takze
   // hlasime "VESA dostupne" -> sub_1252C2 vrati mod 5 (linearni). Viz vlna 16.
-  (void)v2;
+  (void)v1.status;
   return true;
 }
 // 144A4A: using guessed type int int386x(_DWORD, _DWORD);
@@ -4463,34 +4457,38 @@ bool sub_145FD2()
 //----- (001460C1) --------------------------------------------------------
 int sub_1460C1()
 {
-  char v1[28]; // [esp+0h] [ebp-40h] BYREF
-  int v2; // [esp+1Ch] [ebp-24h]
-  int16_t v3; // [esp+22h] [ebp-1Eh]
-  int v4; // [esp+38h] [ebp-8h]
+  // Same int386x register block as sub_145FD2 (Int386xRegs): v2/v3 are fields
+  // v1.status (+28) and v1.f34 (+34). v4 ([ebp-8h]) is past the block -> local.
+  Int386xRegs v1; // [ebp-40h] BYREF - int386x register block
+  int v4;         // [ebp-8h]
 
   sub_127678((char *)&dword_1BB8E0, 0x1Cu, 0);
   sub_127678((char *)word_1BBA1C, 0xCu, 0);
   v4 = dword_1B06FC;
   sub_127678((char *)dword_1B06FC, 0x102u, 0);
-  sub_127678(v1, 0x32u, 0);
-  v2 = 20224;
-  v3 = dword_1B06F8;
-  *(_DWORD *)v1 = 0;
+  sub_127678((char *)&v1, 0x32u, 0);
+  v1.status = 20224;
+  v1.f34 = dword_1B06F8;
+  *(int *)&v1 = 0;
   LOWORD(dword_1BB8E0) = 768;
   LOWORD(dword_1BB8E4) = 16;
   LOWORD(dword_1BB8E8) = 0;
   word_1BBA1C[0] = __SS__;
-  dword_1BB8F4 = (int)v1;
+  dword_1BB8F4 = (int)&v1;
   int386x(49, &dword_1BB8E0);
   LOWORD(dword_1BB8E0) = 20231;
   LOWORD(dword_1BB8E4) = 0;
   LOWORD(dword_1BB8E8) = 0;
   LOWORD(dword_1BB8EC) = 0;
   int386(16, &dword_1BB8E0, &dword_1BB8E0);
-  if ( (_BYTE)v2 == 79 )
-    return *(int *)(v4 + 16) >> 16 << 6;
-  else
-    return 512;
+  // PORT: int386/int386x are no-op stubs, so the VESA mode-info block is never
+  // filled: v1.status stays 0 (not the 0x4F "VESA present" AL) and v4's mode
+  // info is all zero, so the original math would fall to the else branch (512).
+  // For the forced linear mode 5 the correct value is 2048 (word_1BBA62 = 0x800,
+  // verified via dosbox DUMPMEM). Return it directly so the downstream banking
+  // config matches the original. Consistent with wave 16 (VESA forced true).
+  (void)v4;
+  return 2048;
 }
 // 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);
 // 144A4A: using guessed type int int386x(_DWORD, _DWORD);
@@ -4507,27 +4505,26 @@ int sub_1460C1()
 //----- (001461F0) --------------------------------------------------------
 int sub_1461F0()
 {
-  char v1[20]; // [esp+0h] [ebp-40h] BYREF
-  int v2; // [esp+14h] [ebp-2Ch]
-  int v3; // [esp+18h] [ebp-28h]
-  int v4; // [esp+1Ch] [ebp-24h]
-  int16_t v5; // [esp+22h] [ebp-1Eh]
-  int v6; // [esp+38h] [ebp-8h]
+  // Same int386x register block (Int386xRegs): v2/v3/v4/v5 are fields v1.f20
+  // (+20), v1.f24 (+24), v1.status (+28), v1.f34 (+34). v6 ([ebp-8h]) is the
+  // mode-info pointer, past the block -> a real local.
+  Int386xRegs v1; // [ebp-40h] BYREF - int386x register block
+  int v6;         // [ebp-8h]
 
   sub_127678((char *)&dword_1BB8E0, 0x1Cu, 0);
   sub_127678((char *)word_1BBA1C, 0xCu, 0);
   v6 = dword_1B06FC;
   sub_127678((char *)dword_1B06FC, 0x100u, 0);
-  sub_127678(v1, 0x32u, 0);
-  v4 = 20225;
-  v3 = 257;
-  v5 = dword_1B06F8;
-  v2 = 0;
+  sub_127678((char *)&v1, 0x32u, 0);
+  v1.status = 20225;
+  v1.f24 = 257;
+  v1.f34 = dword_1B06F8;
+  v1.f20 = 0;
   LOWORD(dword_1BB8E0) = 768;
   LOWORD(dword_1BB8E4) = 16;
   LOWORD(dword_1BB8E8) = 0;
   word_1BBA1C[0] = __SS__;
-  dword_1BB8F4 = (int)v1;
+  dword_1BB8F4 = (int)&v1;
   int386x(49, &dword_1BB8E0);
   if ( (*(_BYTE *)(v6 + 2) & 5) == 5 )
     word_1BBA5E = 0;
@@ -4537,7 +4534,12 @@ int sub_1461F0()
     word_1BBA5E = 1;
   if ( (*(_BYTE *)(v6 + 3) & 3) == 3 )
     word_1BBA58 = 1;
-  return *(uint16_t *)(v6 + 4);
+  // PORT: int386x is a no-op, so the VESA mode-info block (v6/dword_1B06FC) is
+  // never filled and *(u16)(v6+4) reads 0 -> upstream `64 / word_1BBA56` divides
+  // by zero. The correct mode-5 value is 64 (word_1BBA56 = 0x40, verified via
+  // dosbox DUMPMEM). Return it. (word_1BBA5E/58 above stay at their defaults,
+  // which is fine for the port's linear framebuffer.)
+  return 64;
 }
 // 144A4A: using guessed type int int386x(_DWORD, _DWORD);
 // 1B06F8: using guessed type int dword_1B06F8;
