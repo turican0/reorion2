@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include "hexrays_compat.h"
+#include "decomp_compat.h"
 
 #pragma pack(push, 1)
 typedef struct
@@ -14494,7 +14494,7 @@ int j___delay(_DWORD); // weak
 // int memavl(_DWORD); weak
 // int memcpy(_DWORD, _DWORD, _DWORD); weak
 // int strcpy(_DWORD, _DWORD); weak
-// dos_getdiskfree: realna deklarace v hexrays_compat.h, implementace v port_dos.cpp (vlna 09)
+// dos_getdiskfree: realna deklarace v decomp_compat.h, implementace v port_dos.cpp (vlna 09)
 int j_unlink(_DWORD); // weak
 bool sub_13F486();
 int sub_13F52E();
@@ -14709,7 +14709,7 @@ int sub_1487E0(int a1, int a2, _BYTE *a3);
 int sub_1489F4(int a1, int a2, int *a3);
 int sub_148C33(int a1, int a2, int *a3);
 int sub_148F57(int16_t a1, int16_t a2, int a3);
-// dos_getvect/dos_setvect: realne deklarace v hexrays_compat.h, implementace v port_dos.cpp (vlna 09)
+// dos_getvect/dos_setvect: realne deklarace v decomp_compat.h, implementace v port_dos.cpp (vlna 09)
 char sub_149890(unsigned int a1, int a2);
 int sub_149950(int, int, int); // weak
 int sub_1499C0(); // weak

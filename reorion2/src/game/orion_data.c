@@ -17841,7 +17841,7 @@ int dword_1BC2D8; // weak
 // Puvodni INT 9 (klavesnice) vektor ulozeny pred instalaci vlastniho
 // handleru - 6 bajtu na adrese 1BC2DC (dword offset + word segment),
 // IDA je mylne typovala jako ukazatel na funkci. Viz InstallKeyboardIsr_12C420/RestoreKeyboardIsr_12C493
-// v orion_part_20.c a struct DosFarPointer v hexrays_compat.h/port_dos.h.
+// v orion_part_20.c a struct DosFarPointer v decomp_compat.h/port_dos.h.
 struct DosFarPointer savedKeyboardVector_1BC2DC; // weak
 char byte_1BC2E2; // weak
 char byte_1BC2E3; // weak

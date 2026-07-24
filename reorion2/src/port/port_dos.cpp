@@ -216,7 +216,7 @@ unsigned int PortDos_BiosTick(void)
 
 void PortDebug_Checkpoint(const char* name, int value)
 {
-    // Env-gated diagnostika (vlna 11) - viz deklarace v hexrays_compat.h.
+    // Env-gated diagnostika (vlna 11) - viz deklarace v decomp_compat.h.
     // Staticka inicializace se vyhodnoti jen jednou pri prvnim volani.
     static const bool enabled = std::getenv("REORION2_TRACE") != nullptr;
     if (!enabled)

@@ -1,14 +1,14 @@
 /*
- * hexrays_compat.h
- * Kompatibilni vrstva pro preklad Hex-Rays dekompilovaneho vystupu
+ * decomp_compat.h
+ * Kompatibilni vrstva pro preklad decompiled output
  * (Orion2.exe, Watcom C++, DOS4GW protected mode) beznym C kompilatorem.
  *
  * Ucel: umoznit SYNTAKTICKY preklad puvodniho pseudokodu, ne nutne
  * bit-presnou funkcni ekvivalenci. __asm bloky a "decompilation failure"
  * funkce jsou nahrazeny stuby s TODO komentarem - viz DECOMP_TODO.
  */
-#ifndef HEXRAYS_COMPAT_H
-#define HEXRAYS_COMPAT_H
+#ifndef DECOMP_COMPAT_H
+#define DECOMP_COMPAT_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -18,7 +18,7 @@
 #include <time.h>
 /* POZOR: zamerne NEpridavame <stdio.h> sem. Dekompilovany kod vola
    fopen/fseek/fgets/fgetc/ftell s jinym poctem argumentu, nez maji
-   skutecne CRT prototypy (typicky Hex-Rays "guessed type" artefakt) -
+   skutecne CRT prototypy (typicky decompiler "guessed type" artifact) -
    bez prototypu se to preklada jako implicitni K&R deklarace (funguje
    na cdecl ABI), se skutecnym prototypem z <stdio.h> uz ne. fprintf a
    spol. proto zustavaji take bez explicitniho prototypu zde - viz
@@ -108,7 +108,7 @@ int    PortFile_Scanf(int handle, const char* fmt, ...);
 
 /* Znakove/textove stdio (vlna 15) - stream je int handle z PortFile_Open,
    ne FILE*. fgets/fscanf/fprintf maji v dekompilaci casto navic zdvojeny
-   posledni argument (Hex-Rays artefakt) - variadicka makra ho zahodi.
+   posledni argument (decompiler artifact) - variadicka makra ho zahodi.
    fprintf smeruje vyhradne na herni handle (AIL debug log dword_1C0E50 /
    dword_1849E6), nikdy na stdout/stderr - viz analyza vlny 15. */
 #define fgets(buf, n, str, ...)    PortFile_Gets((buf), (n), (str))
@@ -121,7 +121,7 @@ int    PortFile_Scanf(int handle, const char* fmt, ...);
 
 /* ---- DOS FINDFIRST/FINDNEXT (vlna 08) ----
    "unknown_libname_1"/"unknown_libname_2" jsou puvodni Watcom v9.x DOS
-   runtime knihovni funkce (nemely rozpoznatelnou vlastni adresu v IDA),
+   runtime knihovni funkce (had no recognizable address of their own in the disassembler),
    ktere spojuji INT 21h AH=1Ah (SET DTA) + AH=4Eh/4Fh (FIND FIRST/NEXT
    ASCIZ) do jednoho volani. Skutecna implementace (case-insensitive
    hledani se * a ? wildcards, vyuziva stejny resolver jako fopen() vyse)
@@ -230,7 +230,7 @@ typedef uint16_t _WORD;
 typedef uint32_t _DWORD;
 typedef uint64_t _QWORD;
 
-/* Hex-Rays _BOOLn nejsou 'bool' - jde o vysledek flagoveho vyrazu ulozeny
+/* The decompiler's _BOOLn nejsou 'bool' - jde o vysledek flagoveho vyrazu ulozeny
    do n-bytoveho registru/promenne, chova se jako int. */
 typedef int _BOOL1;
 typedef int _BOOL2;
@@ -261,7 +261,7 @@ typedef int64_t  __int64;
 #define __noreturn
 #define __spoils(x)
 
-/* ---- extrakce bajtu/slov z promennych (Hex-Rays makra) ---- */
+/* ---- extrakce bajtu/slov z promennych (decompiler macros) ---- */
 #define LOBYTE(x)   (*((unsigned char*)&(x)))
 #define LOWORD(x)   (*((unsigned short*)&(x)))
 #define LODWORD(x)  (*((unsigned int*)&(x)))
@@ -308,8 +308,8 @@ typedef int64_t  __int64;
 
 /* pseudo-pole reprezentujici obsah zasobniku pri primem/absolutnim
    pristupu (STACK[n]) - jen pro syntakticky preklad. */
-extern int HEXRAYS_STACK_STUB[0x8000];
-#define STACK HEXRAYS_STACK_STUB
+extern int DECOMP_STACK_STUB[0x8000];
+#define STACK DECOMP_STACK_STUB
 
 /* CPU flagy a _EBP jako pseudo-registr - vysledek vyrazu s vedlejsimi
    ucinky na priznaky/ukazatel zasobnikoveho ramce, zde jen stub. */
@@ -344,14 +344,14 @@ extern void _terminate(void);
    V originale jde o cely 32bit adresni prostor DOS4GW; pro ucely prekladu
    (ne behu) je nahrazen fiktivnim polem. Skutecna semantika (BIOS tick
    pri 0x46C apod.) se dorezi az pri realne portaci. */
-extern int HEXRAYS_MEMORY_STUB[0x40000];
-#define MEMORY HEXRAYS_MEMORY_STUB
+extern int DECOMP_MEMORY_STUB[0x40000];
+#define MEMORY DECOMP_MEMORY_STUB
 
 /* ---- nedekodovane/nerekonstruovane skoky ----
    JUMPOUT(adr) = dekompilator nedokazal prevest control-flow na strukturu.
-   Stub jen zaznamena adresu, funkce s JUMPOUT je nutne rucne dohledat v IDA. */
-static inline void HEXRAYS_JUMPOUT_STUB(unsigned int addr) { (void)addr; }
-#define JUMPOUT(addr) HEXRAYS_JUMPOUT_STUB(addr)
+   Stub jen zaznamena adresu, functions with JUMPOUT must be looked up by hand in the disassembly. */
+static inline void DECOMP_JUMPOUT_STUB(unsigned int addr) { (void)addr; }
+#define JUMPOUT(addr) DECOMP_JUMPOUT_STUB(addr)
 
 /* ---- pseudo-registry / DOS4GW segmentove intrinsics ----
    Pouzity jen ojedinele (FPU inicializace apod.) - stub hodnoty. */
@@ -362,9 +362,9 @@ static inline void _disable(void) {}
 static inline void *_GETDS_STUB(void) { return (void*)0; }
 #define _GETDS _GETDS_STUB
 
-/* sub_ED48B: Hex-Rays u teto (jiz tak podezrele - "local variable
+/* sub_ED48B: the decompiler, for this (jiz tak podezrele - "local variable
    allocation has failed") funkce nedokazal urcit typ 8. argumentu.
-   DECOMP_TODO: overit v IDA, jak je a8 skutecne pouzivan. */
+   DECOMP_TODO: verify against the disassembly, jak je a8 skutecne pouzivan. */
 typedef struct { unsigned char arr[4]; } arg8_ED48B;
 
 /* ---- MSVC/Watcom intrinsics (port I/O, GS-segmentovy pristup, flagy) ----
@@ -392,4 +392,4 @@ static inline void hr_addgsword(unsigned int off, unsigned short v) { (void)off;
    selhanou dekompilaci). Vyhledatelne pres grep DECOMP_TODO. */
 #define DECOMP_TODO(msg)
 
-#endif /* HEXRAYS_COMPAT_H */
+#endif /* DECOMP_COMPAT_H */

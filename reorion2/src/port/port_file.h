@@ -20,7 +20,7 @@
 //
 // VSECHNY souborove funkce v dekompilovanem kodu (fopen/fclose/fread/
 // fwrite/fseek/ftell/fflush/access) jsou presmerovane sem pres makra v
-// hexrays_compat.h - viz komentar tam.
+// decomp_compat.h - viz komentar tam.
 //
 // Sem patri i FINDFIRST/FINDNEXT (INT 21h AH=1Ah+4Eh/4Fh, puvodne
 // "unknown_libname_1/2" - Watcom v9.x DOS runtime, viz PROGRESS.md vlna

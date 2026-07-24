@@ -104,7 +104,7 @@
     <ClInclude Include="code\code\orion_common.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
-    <ClInclude Include="code\code\hexrays_compat.h">
+    <ClInclude Include="code\code\decomp_compat.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
   </ItemGroup>

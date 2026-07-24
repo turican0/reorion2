@@ -3503,14 +3503,20 @@ _BOOL1 sub_132646(int a1, int a2, int a3)
   else
     v7 = 0;
   v7 |= v6;
+  PortDebug_Checkpoint("132646.before_14BC40", (int)(intptr_t)v4);
   dword_1845F0 = (int)sub_14BC40(0xFFFFFFFF, v7, v4);
+  PortDebug_Checkpoint("132646.after_14BC40", dword_1845F0);
   if ( !dword_1845F0 )
   {
     if ( !byte_184544[0] )
+    {
+      PortDebug_Checkpoint("132646.no_fallback_prefix", 0);
       return 0;
+    }
     strcpy(v4, byte_184544);
     strcat(v4, v5);
     dword_1845F0 = (int)sub_14BC40(0xFFFFFFFF, v7, v4);
+    PortDebug_Checkpoint("132646.after_14BC40_fallback", dword_1845F0);
   }
   if ( dword_1845F0 && v8 == 1 )
     sub_14A1C0((void (__noreturn *)())0x8000, (void (__noreturn *)())0x8000, 1, dword_1845F0);

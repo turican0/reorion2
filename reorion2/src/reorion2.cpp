@@ -14,7 +14,7 @@
 // DEBUG (temporary, wave-23 x64 bisection): print the faulting instruction/address
 // when an unhandled SEH exception occurs, since the default CRT abort() path gives
 // no diagnostic info at all. Defined before including orion_common.h so the
-// project's hexrays_compat.h macros (fflush/fprintf -> PortFile_*, __stdcall -> "")
+// project's decomp_compat.h macros (fflush/fprintf -> PortFile_*, __stdcall -> "")
 // don't clobber this plain Win32 code.
 static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
 {

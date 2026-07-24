@@ -8,8 +8,8 @@
 
 */
 
-#ifndef HEXRAYS_DEFS_H
-#define HEXRAYS_DEFS_H
+#ifndef DECOMP_DEFS_H
+#define DECOMP_DEFS_H
 
 #if defined(__GNUC__)
   typedef          long long ll;
@@ -442,4 +442,4 @@ void __noreturn __break(uint16 code, uint16 subcode);
 
 #define ADJ(p) (__parentof(p) *)(p-__deltaof(p))
 
-#endif // HEXRAYS_DEFS_H
+#endif // DECOMP_DEFS_H

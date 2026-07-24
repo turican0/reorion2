@@ -1,12 +1,12 @@
 # reorion2
 
-A from-scratch, functionally faithful **native Windows port of Master of Orion II** (MicroProse / SimTex, 1996), rebuilt from a Hex-Rays decompilation of the original DOS binary into readable modern C++ / SDL3.
+A from-scratch, functionally faithful **native Windows port of Master of Orion II** (MicroProse / SimTex, 1996), rebuilt from a decompilation of the original DOS binary into readable modern C++ / SDL3.
 
 > **Status: work in progress — not playable yet.** The engine boots, initializes its subsystems, and now runs deep into game start-up (menus, text/font rendering, resource loading), but still hits crashes and hangs before the main game loop is reachable. See [Current status](#current-status) below.
 
 ## What this is
 
-`Orion2.exe` was decompiled with Hex-Rays into ~5,100 functions across ~300,000 lines of low-level, DOS-real-mode-flavored C (`sub_XXXXXX` names, raw segment math, `int`-as-pointer tricks, BIOS/DOS interrupt calls). This project incrementally turns that dump into a real, compilable, cross-platform-minded engine:
+`Orion2.exe` was decompiled into ~5,100 functions across ~300,000 lines of low-level, DOS-real-mode-flavored C (`sub_XXXXXX` names, raw segment math, `int`-as-pointer tricks, BIOS/DOS interrupt calls). This project incrementally turns that dump into a real, compilable, cross-platform-minded engine:
 
 - BIOS/DOS/VGA/mouse/sound dependencies are extracted into a small `src/port/` layer (inspired by [DOSBox-X](https://github.com/joncampbell123/dosbox-x) and the `remc2` project), built on **SDL3**.
 - Memory management moves off segment:offset DOS tricks onto `malloc`/`new`.
@@ -28,7 +28,7 @@ Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave e
 
 - The DOS-era intro-video / logo cinematics play through their animation loops correctly.
 - Font/text rendering, the tech-tree init tables, and localized string tables no longer crash.
-- A cluster of **x64-only** bugs was found and fixed: a register-fusion trick that only works when a pointer fits in 32 bits (it doesn't on x64), a couple of "IDA mistook this integer constant for a function address" false positives, and a parser context pointer that silently truncated 64-bit stack addresses.
+- A cluster of **x64-only** bugs was found and fixed: a register-fusion trick that only works when a pointer fits in 32 bits (it doesn't on x64), a couple of "the decompiler mistook this integer constant for a function address" false positives, and a parser context pointer that silently truncated 64-bit stack addresses.
 - Known open issues right now: the intro sequence can get stuck right at the very end (loading the main intro cinematic data — under investigation), and there's a new crash just past the main-menu entry point.
 
 Nothing is playable yet — there's no in-game screenshot to show, because the game doesn't survive long enough to reach one. That will change as the crash frontier keeps moving forward; this section (and the changelog below) gets updated as it does.
@@ -39,7 +39,7 @@ Nothing is playable yet — there's no in-game screenshot to show, because the g
 flowchart TB
     subgraph decompiled["src/game/ — decompiled game logic"]
         orion["orion_part_01..26.c\norion_data.c\n(~5,100 functions, being cleaned up incrementally)"]
-        compat["hexrays_compat.h\n(shims for __fastcall, JUMPOUT, etc.)"]
+        compat["decomp_compat.h\n(shims for __fastcall, JUMPOUT, etc.)"]
     end
 
     subgraph port["src/port/ — modern platform layer"]
@@ -66,7 +66,7 @@ reorion2/
     game/                 # the decompiled game itself, being incrementally cleaned up
       orion_part_01.c ... orion_part_26.c
       orion_data.c         # global data/tables extracted from the original binary
-      hexrays_compat.h      # compatibility shims for decompiler artifacts
+      decomp_compat.h        # compatibility shims for decompiler artifacts
       orion_common.h        # shared declarations
     port/                 # modern platform layer replacing BIOS/DOS/VGA/mouse/sound
       port_vga.*    port_sound.*   port_mouse.*
@@ -111,7 +111,7 @@ This project follows a deliberate, verify-before-you-fix process (full rules in 
 4. Remove `JUMPOUT`/`goto` artifacts where possible, without changing behavior.
 5. Route anything BIOS/DOS/hardware-shaped into `src/port/*.cpp`.
 6. Strip decompiler calling-convention noise (`__fastcall`, `__usercall`, ...) once it's confirmed dead.
-7. **Always cross-check against the original disassembly** (`Debug/diss/Orion2.exe.asm`) when decompiled control flow, argument counts, or return values look suspicious — Hex-Rays gets things wrong often enough that "looks weird" is a real signal, not noise.
+7. **Always cross-check against the original disassembly** (`Debug/diss/Orion2.exe.asm`) when decompiled control flow, argument counts, or return values look suspicious — the decompiler gets things wrong often enough that "looks weird" is a real signal, not noise.
 8. English for all comments and all `.md` documentation.
 
 ## Contributing / history

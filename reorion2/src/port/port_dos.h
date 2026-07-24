@@ -17,7 +17,7 @@
 #include <cstdint>
 
 // ---------------------------------------------------------------------
-// Sdileny guard s hexrays_compat.h: obe hlavicky definuji stejne struktury
+// Sdileny guard s decomp_compat.h: obe hlavicky definuji stejne struktury
 // (kazda pro svou stranu - port vs. cisty C herni kod), ale reorion2.cpp
 // includuje obe najednou - bez guardu by slo o redefinici.
 #ifndef REORION2_DOS_STRUCTS_DEFINED
@@ -55,7 +55,7 @@ struct DosFarPointer {
 // C-linkage most pro dekompilovany herni kod (jmena odpovidaji puvodnim
 // IDA nazvum Watcom runtime funkci, stejny princip jako unknown_libname_1/2
 // v port_file.h). Deklarace pro cisty C kod jsou zrcadlene v
-// hexrays_compat.h (ten nemuze includovat tento header kvuli namespace).
+// decomp_compat.h (ten nemuze includovat tento header kvuli namespace).
 #ifdef __cplusplus
 extern "C" {
 #endif

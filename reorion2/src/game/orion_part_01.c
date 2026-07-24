@@ -541,7 +541,7 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
   while ( 1 )
   {
     // DECOMP_TODO (vyreseno ve vlne 05): tady byvalo "JUMPOUT(0x103DF);",
-    // ktere je v hexrays_compat.h definovane jako NO-OP (viz komentar tam) -
+    // ktere je v decomp_compat.h definovane jako NO-OP (viz komentar tam) -
     // takze kdyz doslo vsech argumentu bez nalezeni "/saveset", kod bez
     // navratu SPADL DAL na "strcpy(currentArg_v17, argValues_a2[argIndex_v1])"
     // s argIndex_v1 == argCount_a1, tedy cteni argv[argc], ktere je podle

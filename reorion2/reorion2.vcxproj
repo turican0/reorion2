@@ -206,7 +206,7 @@
     <ClCompile Include="src\port\port_file.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\game\hexrays_compat.h" />
+    <ClInclude Include="src\game\decomp_compat.h" />
     <ClInclude Include="src\game\orion_common.h" />
     <ClInclude Include="src\port\port_dos.h" />
     <ClInclude Include="src\port\port_memory.h" />

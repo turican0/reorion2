@@ -130,7 +130,7 @@ int byte_1BE356;
    AH=36h/35h/25h) UZ NEJSOU stubovane - skutecna implementace (realne volne
    misto na disku pres std::filesystem + emulovana tabulka interrupt vektoru)
    je v src/port/port_dos.cpp, deklarace v port_dos.h a zrcadlene v
-   hexrays_compat.h. Viz PROGRESS.md vlna 09. */
+   decomp_compat.h. Viz PROGRESS.md vlna 09. */
 int dword_184532;
 int dword_184536;
 int dword_18F4B0;
@@ -205,15 +205,15 @@ int dword_1BD352;
 int dword_1C9400;
 int dword_1C9540;
 /* fprintf/fscanf/printf/sprintf ZAMERNE NEJSOU stubovane - jsou to realne
-   standardni CRT funkce (viz <stdio.h> pribaleny v hexrays_compat.h) a
+   standardni CRT funkce (viz <stdio.h> pribaleny v decomp_compat.h) a
    dekompilovany kod je opravdu pouziva se skutecnymi argumenty (napr. AIL
    debug log v orion_part_21.c, nacitani hodnot v orion_part_07.c) - stub
    vracejici vzdy 0 by jejich chovani rozbil. Puvodne tu byly definovane
    jako no-op nahrady (viz git historie), coz zpusobovalo LNK2005/LNK1169
    "multiply defined symbol" ve chvili, kdy se do projektu pridala realna
    CRT knihovna (SDL3 zavislosti, port_memory.cpp pouzivajici <cstdio>). */
-int HEXRAYS_MEMORY_STUB;
-int HEXRAYS_STACK_STUB;
+int DECOMP_MEMORY_STUB;
+int DECOMP_STACK_STUB;
 /* int386 UZ NENI no-op stub - emulace je v src/port/port_dos.cpp
    (INT 33h/mys -> Port::Mouse, ostatni preruseni deterministicky vraci
    vstupni registry). Stub, ktery do vystupniho REGS bufferu nic nezapsal,

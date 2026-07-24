@@ -72,7 +72,7 @@ std::size_t GetAvailableBytes(); // rozpocet - zive alokace (0 pri prekroceni)
 // C-linkage most pro dekompilovany herni kod (cisty C, src/game/*.c).
 // Vlna 06: VSECHNY malloc/calloc/realloc/free (a Watcom "near heap"
 // nmalloc/nfree) v dekompilovanem kodu se presmerovavaji sem pres makra
-// v hexrays_compat.h - viz komentar tam. Tyhle funkce jsou jen tenke C
+// v decomp_compat.h - viz komentar tam. Tyhle funkce jsou jen tenke C
 // obalky nad Port::Memory:: API vyse, aby je bylo mozne volat i z .c
 // souboru (ktere nerozumi namespace/template).
 #ifdef __cplusplus
