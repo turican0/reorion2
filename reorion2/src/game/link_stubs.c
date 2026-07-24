@@ -312,7 +312,8 @@ int SDWORD2(void) { return 0; }
 int segread(void) { return 0; }
 int sound(void) { return 0; }
 /* sprintf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
-int sub_10000;
+// PORT (wave 23b): real constant, not a stub - see orion_common.h comment.
+const int sub_10000 = 0x10000;
 int sub_1279A(void) { return 0; }
 int sub_13F949(void) { return 0; }
 int sub_13F94E(void) { return 0; }

@@ -1828,3 +1828,71 @@ overit proti `Debug/diss/Orion2.exe.asm` (asm je "zive" ground truth primo z
 originalu, netreba pokazde spoustet dosbox), pak az kdyz je potreba
 RUNTIME hodnota (ne jen velikost/rozlozeni), pouzit dosbox-x DUMPMEM/DUMPREGS
 dle `c:\prenos\dosbox-x-remc2\genCompare\DOSBOX_CTL_PROTOCOL.md`.
+
+## Done - wave 23b: x64 branch is primary now - real x64-only bug found + fixed
+
+Uzivatel pozadal pokracovat primarne na x64 vetvi (x86 uz jen jako pomocna
+rychlejsi iterace). Pridano `GenerateMapFile`/`BasicRuntimeChecks=Default` i
+do Debug|x64 (stejna diagnostika jako x86 z vlny 23).
+
+**Prvni skutecne x64-specificky bug teto session:** `sub_1449CC`/`sub_144A06`
+(RLE font-glyph dekoder, opraveny volajici v bug #1 vyse) na x64 padaly s
+`av_read=0xFFFFFFFFFFFFFFFF`. Pricina: `int64_t a1` packing dvou 32bit
+ukazatelu (dest v LODWORD, zdroj v HIDWORD) je trik, ktery funguje POUZE na
+x86, kde skutecny ukazatel je 32bit - LODWORD/HIDWORD pulka `int64_t` presne
+odpovida velikosti pointeru. Na x64 je ukazatel 64bit, takze `*(_BYTE*)v3`
+(primy cast CELEHO 64bit `v3` na pointer) dereferencoval OBE slozene
+32bit hodnoty najednou (zdroj<<32|cil) misto jen cilove adresy. Fix: cilovy
+zapis explicitne `*(_BYTE *)(uintptr_t)LODWORD(v3) = ...` v obou funkcich -
+vynuti oriznuti na spravnou pulku pred pointer-castem na obou platformach
+(cteni pres `HIDWORD(v3)` uz bylo spravne, protoze HIDWORD makro vraci
+obycejne `unsigned int`, ne reinterpretaci cele 64bit hodnoty). Overeno:
+x64 build ted projde CELYM font rendererem (drivejsi x64 frontier byl
+DRIV nez na x86 - `tail.before_switch1`, ted az za `tail.after_FE8BE2`).
+
+**`sub_144A91`/`sub_144EAC`/`sub_14529D`** (mysi kurzor renderer, video mod 5,
+`dword_1B920C` vtable, `sub_125064` case 5) pouzivaly stary VESA-bankovany
+adresovaci model: `&loc_9FFFD` = falesna VGA-okno adresa 0x9FFFD (+3 =
+0xA0000 vsude v kodu), stejna trida bugu jako drive opravene
+`sub_1694D9`/`sub_1694B7` (vlna 22j/22b). Fix: vsech 21 vyskytu primeho
+`(char*)&loc_9FFFD` prebazovano na `((char*)PortVga_Framebuffer() - 3)`
+(sed nad orion_part_21.c). **Otevrene:** 12 vyskytu vzacneho bank-crossing
+podvetve pouziva `(uint16_t)&loc_9FFFD` (16bit segment-offset trik bez
+modernich ekvivalentu) - nedotcen, netrigroval se v aktualni bisekci.
+
+**`sub_10000`/`loc_20000`** - DALSI instance "IDA spletla konstantu s
+adresou" (jako drivejsi `0x64000`/`&loc_63FFB+5`). `sub_10000` byl v
+orion_common.h deklarovany jako FUNKCE, ale v link_stubs.c jako `int
+sub_10000;` (=0, typovy konflikt mezi TU!) - vsech ~90 pouziti v 10
+souborech ho ale pouziva cisteji jako HODNOTU 0x10000 pres cast
+(`(unsigned int)sub_10000`), nikdy nevolaji. Na x64 `(int)funkce` beztak
+nedava 0x10000 (zavisi na linkerove adrese, ne na hodnote). Fix: predeklarovano
+jako `extern const int sub_10000;` / `const int sub_10000 = 0x10000;` -
+opravi VSECHNA pouziti najednou beze zmeny volajicich. `loc_20000` (jen 2
+pouziti) opraveno primym nahrazenim `0x20000` literalem.
+
+**`dword_1ACF14`/`dword_1ACF0C`/`dword_1ACF08`/`dword_1ACF04`/`dword_1ACEFC`/
+`dword_1ACF00`/`dword_1ACF10`** (orion_part_17.c, text/edit-field parser
+kontext) - `sub_104C31` uklada adresy SVYCH LOKALNICH bufferu (`&v19`, `v15`,
+`v16`, `v18`, `&v17`) do techto 7 globalu deklarovanych jako `int`, ktere
+pak destitky dalsich funkci v souboru cti pres byte-offset
+(`*(WORD*)(dword_1ACF14+N)`). Na x86 to prezije (zasobnik pod LAA:NO limitem
+podobne jako halda), na x64 zasobnik NENI omezen pod 4GB → truncate →
+garbage. Fix: vsech 7 globalu → `intptr_t` (zachova vsechnu existujici
+aritmetiku, jen 6 inicializacnich `(int)&x` → `(intptr_t)&x`).
+
+**`sub_126F3B` (LBX loader, pouzivany pres `sub_126C37` mode=2) - DALSI
+lost-return-value bug**, stejna trida jako drivejsi AIL wrapper (vlna 22c).
+`case 0/1/2` konci `return result;` kde `result` NIKDY neni priразen
+(nedefinovana hodnota - u x64 vysla konkretne -1, sign-extended na
+0xFFFFFFFFFFFFFFFF). Overeno v asm (`sub_126F3B @ 0x126F3B`): VSECHNY CTYRI
+case (0/1/2/3) jen ulozi pointer do `var_C` a skoci na SDILENY epilog
+`def_127190` (fread + return) - **zadny early return v originale vubec
+neexistuje**. Fix: `return result;`→`break;` u case 0/1/2 (spadnou do
+spolecneho `fread(v17,...); return v17;` na konci), `result` smazano.
+Tenhle bug byl skryty na x86 (nedefinovany int nekdy nahodou vysel jako
+pouzitelna hodnota z predchoziho vypoctu), ale na x64 spolehlive -1 →
+segfault v sub_12760B (atoi-like parser volany na vysledek).
+
+**Novy frontier: `sub_12B726`** (jeste neanalyzovano). Pad postoupil skrz
+cely `LoadLanguageSetting`-navazany text-parsing kod az sem.

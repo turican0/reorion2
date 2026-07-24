@@ -3336,7 +3336,14 @@ int64_t sub_1449CC(int64_t a1, int a2, int a3)
           if ( (_BYTE)v4 == 0x80 )
             goto LABEL_7;
         }
-        *(_BYTE *)v3 = *(_BYTE *)(v4 + a2 - 1);
+        // PORT (wave 23, x64 fix): `*(_BYTE*)v3` dereferenced the FULL 64-bit
+        // v3 on x64 (dest-ptr-low32 | src-ptr-high32 combined into one bogus
+        // address) instead of just the packed low-32-bit dest pointer - this
+        // int64-as-two-32bit-pointers trick only ever worked on x86, where a
+        // real pointer IS 32 bits. Force the truncation explicitly so both
+        // platforms dereference just the dest half, matching x86's implicit
+        // 64->32 pointer narrowing.
+        *(_BYTE *)(uintptr_t)LODWORD(v3) = *(_BYTE *)(v4 + a2 - 1);
         LODWORD(v3) = v3 + 1;
         LOBYTE(v4) = *(_BYTE *)HIDWORD(v3);
         ++HIDWORD(v3);
@@ -3386,8 +3393,10 @@ int64_t sub_144A06(int64_t a1, int a2, int a3)
           if ( (_BYTE)v4 == 0x80 )
             goto LABEL_9;
         }
+        // PORT (wave 23, x64 fix): see sub_1449CC - dereference just the
+        // packed low-32-bit dest pointer, not the full 64-bit v3.
         if ( (_BYTE)v4 )
-          *(_BYTE *)v3 = *(_BYTE *)(v4 + a2 - 1);
+          *(_BYTE *)(uintptr_t)LODWORD(v3) = *(_BYTE *)(v4 + a2 - 1);
         LODWORD(v3) = v3 + 1;
         LOBYTE(v4) = *(_BYTE *)HIDWORD(v3);
         ++HIDWORD(v3);
@@ -3477,7 +3486,7 @@ void sub_144A91()
   dword_1BB8AC = v1;
   sub_138C58();
   v3 = (_DWORD *)dword_1BB8B0;
-  v4 = (char *)&loc_9FFFD + dword_188D84 + 3;
+  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   if ( byte_188D95 == 26 )
@@ -3492,7 +3501,7 @@ void sub_144A91()
           {
             ++word_188D82;
             sub_138C58();
-            v7 = (char *)&loc_9FFFD + 3;
+            v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
             HIWORD(v8) = 0;
             v9 = (uint16_t)word_188D82 - dword_188D7A;
             switch ( v9 )
@@ -3506,7 +3515,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 383) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
                 }
                 break;
               case 2:
@@ -3518,7 +3527,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 127) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
                 }
                 break;
               case 3:
@@ -3530,7 +3539,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 511) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
                 }
                 break;
               default:
@@ -3542,7 +3551,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 255) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
                 }
                 break;
             }
@@ -3559,7 +3568,7 @@ void sub_144A91()
         {
           ++word_188D82;
           sub_138C58();
-          v4 = (char *)&loc_9FFFD + 3;
+          v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
         }
         ++dword_188D9B;
         v4 += 614;
@@ -3657,7 +3666,7 @@ void sub_144EAC()
   }
   sub_138C34();
   v3 = (char *)dword_1BB8B0;
-  v4 = (char *)&loc_9FFFD + dword_188D84 + 3;
+  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   if ( byte_188D95 == 26 )
@@ -3672,7 +3681,7 @@ void sub_144EAC()
           {
             ++word_188D82;
             sub_138C34();
-            v7 = (char *)&loc_9FFFD + 3;
+            v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
             HIWORD(v8) = 0;
             v9 = (uint16_t)word_188D82 - dword_188D7A;
             switch ( v9 )
@@ -3686,7 +3695,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 383) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
                 }
                 break;
               case 2:
@@ -3698,7 +3707,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 127) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
                 }
                 break;
               case 3:
@@ -3710,7 +3719,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 511) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
                 }
                 break;
               default:
@@ -3722,7 +3731,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 255) + 3;
+                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
                 }
                 break;
             }
@@ -3738,7 +3747,7 @@ void sub_144EAC()
         {
           ++word_188D82;
           sub_138C34();
-          v4 = (char *)&loc_9FFFD + 3;
+          v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
         }
         ++dword_188D9B;
         v4 += 614;
@@ -3835,7 +3844,7 @@ void sub_14529D()
   }
   sub_138C34();
   v3 = (char *)dword_1BBA18;
-  v4 = (char *)&loc_9FFFD + dword_188D84 + 3;
+  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   while ( 1 )
@@ -3851,7 +3860,7 @@ void sub_14529D()
         {
           ++word_188D82;
           sub_138C34();
-          v7 = (char *)&loc_9FFFD + 3;
+          v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
           HIWORD(v8) = 0;
           v9 = (uint16_t)word_188D82 - dword_188D7A;
           switch ( v9 )
@@ -3865,7 +3874,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 383) + 3;
+                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
               }
               break;
             case 2:
@@ -3877,7 +3886,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 127) + 3;
+                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
               }
               break;
             case 3:
@@ -3889,7 +3898,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 511) + 3;
+                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
               }
               break;
             default:
@@ -3901,7 +3910,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = (char *)&loc_9FFFD + (uint16_t)(dword_1BBA42 + 255) + 3;
+                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
               }
               break;
           }
@@ -3921,7 +3930,7 @@ void sub_14529D()
           {
             ++word_188D82;
             sub_138C34();
-            v4 = (char *)&loc_9FFFD + 3;
+            v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
           }
           break;
         }

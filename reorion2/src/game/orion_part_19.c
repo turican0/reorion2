@@ -5772,7 +5772,6 @@ LABEL_28:
 _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int a6, int a7)
 {
   int v7; // ecx
-  _DWORD *result; // eax
   _BYTE v9[60]; // [esp+0h] [ebp-88h] BYREF
   int v10; // [esp+3Ch] [ebp-4Ch]
   _DWORD *v11; // [esp+40h] [ebp-48h]
@@ -5841,6 +5840,15 @@ _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int
   // index) o velikosti "v19" kazdy - proto "v16 + 4 + a5 * v19". POTREBUJE
   // OVERENI - spatny odhad by zpusobil tiche cteni spatnych dat, ne pad.
   fseek(dword_1BC26C, v16 + 4 + a5 * (uint16_t)v19, SEEK_SET);
+  // PORT (wave 23b): Hex-Rays inserted spurious `return result;` (result is
+  // never assigned - always garbage) at the end of case 0/1/2, but the real
+  // asm (Debug/diss/Orion2.exe.asm sub_126F3B @ 0x126F3B) shows ALL FOUR
+  // cases just store their pointer into var_C and jump to the SAME shared
+  // `def_127190` epilogue (fread + return) - there is no early return
+  // anywhere in the switch. This is why sub_126C37 (mode 2, used by e.g.
+  // orion_part_07.c's estrings-record loader) returned garbage/-1 instead of
+  // the freshly-read buffer: callers treating that -1 as a valid pointer
+  // crashed downstream (sub_12760B reading through it).
   v15 = a6 * (uint16_t)v19;
   switch ( v14 )
   {
@@ -5848,17 +5856,17 @@ _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int
       v17 = sub_111131(v15, a6 * (uint16_t)v19);
       if ( !v17 )
         sub_1273DC(v12, 3u, v10, v7);
-      return result;
+      break;
     case 1:
       v17 = sub_111188((int)v11, v15);
       if ( !v17 )
         sub_1273DC(v12, 5u, v10, v7);
-      return result;
+      break;
     case 2:
       v17 = sub_1111D6((int)v11, v15);
       if ( !v17 )
         sub_1273DC(v12, 5u, v10, v7);
-      return result;
+      break;
     case 3:
       v17 = v11;
       break;
@@ -6059,6 +6067,7 @@ int sub_12760B(char *a1)
   int v3; // ebx
   int v4; // ebx
 
+  PortDebug_Checkpoint("12760B.enter.a1", (int)(intptr_t)a1);
   while ( 1 )
   {
     v1 = IsTable[(uint8_t)(*a1 + 1)] & 2;

@@ -890,7 +890,7 @@ void sub_D7171(int a1, int a2)
           if ( v6 > 0 )
             v12[v5] += v6;
         }
-        if ( ((unsigned int)sub_10000 & v2) != 0 || ((unsigned int)&loc_20000 & v2) != 0 )
+        if ( (0x10000 & v2) != 0 || (0x20000 & v2) != 0 )
           v12[v5] += *(uint8_t *)(v14 + 49 * v5 + dword_1AA1F8 + 2)
                    + *(uint8_t *)(v14 + 49 * v5 + dword_1AA1F8 + 3);
       }

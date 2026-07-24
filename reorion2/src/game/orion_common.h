@@ -20341,13 +20341,13 @@ extern _BYTE byte_1ACE98[32];
 extern int16_t word_1ACEB8;
 extern int16_t word_1ACEBA;
 extern int dword_1ACEBC[];
-extern int dword_1ACEFC;
-extern int dword_1ACF00;
-extern int dword_1ACF04;
-extern int dword_1ACF08;
-extern int dword_1ACF0C;
-extern int dword_1ACF10;
-extern int dword_1ACF14;
+extern intptr_t dword_1ACEFC; // wave 23b: real pointer-holder, see orion_data.c
+extern intptr_t dword_1ACF00;
+extern intptr_t dword_1ACF04;
+extern intptr_t dword_1ACF08;
+extern intptr_t dword_1ACF0C;
+extern intptr_t dword_1ACF10;
+extern intptr_t dword_1ACF14;
 extern int16_t word_1ACF18;
 extern int16_t word_1ACF1A;
 extern int16_t word_1ACF1C;
@@ -20944,7 +20944,16 @@ extern int nullsub_6();
 extern int nullsub_7();
 extern int nullsub_8();
 extern int nullsub_9();
-extern int sub_10000();
+// PORT (wave 23b): NOT a function - IDA misread the plain integer constant
+// 0x10000 (65536, a VESA 64KB bank size) as a call target because it happens
+// to fall inside the loaded image's address range, same false-positive class
+// as the earlier "0x64000 -> &loc_63FFB+5" PoolAlloc size (see GameMain_10057
+// wave 06) and loc_20000/0x30000/0x40000 below (sub_125814 wave 21 comment).
+// All ~90 call sites use it purely as a value (`(int)sub_10000`, never
+// `sub_10000()`), so a real int constant fixes every site at once - and,
+// unlike a #define, still allows the two `&sub_10000` sites (orion_data.c,
+// storing it as a placeholder/never-called function pointer) to compile.
+extern const int sub_10000;
 extern int sub_1279A();
 extern int sub_13F949();
 extern int sub_13F94E();

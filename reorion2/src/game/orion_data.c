@@ -74,7 +74,7 @@ char byte_A659F = '\xB0'; // weak
 int16_t word_A65BA = -13120; // weak
 char byte_A65D5[3] = { 'P', 'W', 'W' }; // weak
 int dword_A65F4[2] = { 131073, 196611 }; // weak
-void (__noreturn *off_A6606)() = &sub_10000; // weak
+void (__noreturn *off_A6606)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
 int16_t word_A6646 = 210; // weak
 int16_t word_A6672 = 210; // weak
 int16_t word_A669E = 210; // weak
@@ -7199,7 +7199,7 @@ int16_t word_182306 = 0; // weak
 int16_t word_182308 = 0; // weak
 int16_t word_18230A = 0; // weak
 int16_t word_18230C = 0; // weak
-void (__noreturn *off_18230E)() = &sub_10000; // weak
+void (__noreturn *off_18230E)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
 char *off_182314 = "SCORE.LBX"; // weak
 char aMoise[6] = "Moise"; // weak
 char byte_1823E0[] = { '\n' }; // weak
@@ -8063,7 +8063,7 @@ int (*dword_184488)(_DWORD) = NULL; // weak
 int16_t word_18448C = 0; // weak
 int dword_18448E = -65536; // weak
 int dword_184492 = -65535; // weak
-_UNKNOWN *off_184496 = &loc_20000; // weak
+_UNKNOWN *off_184496 = (_UNKNOWN *)0x20000; // weak (was &loc_20000 - see sub_10000 comment, same false-positive-address class)
 _UNKNOWN unk_18449A; // weak
 _UNKNOWN unk_1844A4; // weak
 int16_t word_1844A6 = 0; // weak
@@ -17470,13 +17470,23 @@ _BYTE byte_1ACE98[32]; // weak
 int16_t word_1ACEB8; // weak
 int16_t word_1ACEBA; // weak
 int dword_1ACEBC[]; // weak
-int dword_1ACEFC; // weak
-int dword_1ACF00; // weak
-int dword_1ACF04; // weak
-int dword_1ACF08; // weak
-int dword_1ACF0C; // weak
-int dword_1ACF10; // weak
-int dword_1ACF14; // weak
+// PORT (wave 23b, x64 fix): these six hold ADDRESSES of local stack buffers
+// from sub_104C31's "edit field" parser context (orion_part_17.c ~1300-1353:
+// dword_1ACF14=&v19, dword_1ACF08=v15, dword_1ACF00=v16, dword_1ACEFC/1ACF04
+// =v18, dword_1ACF0C=&v17), then read back byte-offset-into-struct style
+// (`*(WORD*)(dword_1ACF14+N)`) by dozens of functions across the whole file.
+// Declared `int` they truncated a real 64-bit stack address on x64 (the
+// stack, unlike the LAA:NO-constrained heap, is NOT guaranteed under 4GB) -
+// crashed in sub_12760B reading through a garbage (sign-extended -1) pointer.
+// Widened to intptr_t; every existing `dword_X + N` / `(T*)dword_X` usage
+// keeps compiling unchanged since intptr_t supports the same arithmetic.
+intptr_t dword_1ACEFC; // weak
+intptr_t dword_1ACF00; // weak
+intptr_t dword_1ACF04; // weak
+intptr_t dword_1ACF08; // weak
+intptr_t dword_1ACF0C; // weak
+intptr_t dword_1ACF10; // weak
+intptr_t dword_1ACF14; // weak
 int16_t word_1ACF18; // weak
 int16_t word_1ACF1A; // weak
 int16_t word_1ACF1C; // weak
