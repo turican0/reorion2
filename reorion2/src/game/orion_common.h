@@ -16675,7 +16675,7 @@ extern _UNKNOWN *off_17E7F0;
 extern _UNKNOWN *off_17EA60;
 extern int dword_17EB2A;
 extern _UNKNOWN *off_17EB3D;
-extern int16_t word_17EB43;
+extern int16_t word_17EB43[]; // wave 23: sized array in orion_data.c, see comment there
 extern int dword_17EB45;
 extern int16_t word_17EB49;
 extern char byte_17EB4B[];
@@ -16713,7 +16713,7 @@ extern _UNKNOWN *off_17EE6E;
 extern _UNKNOWN *off_17EEB1;
 extern _UNKNOWN *off_17EEBA;
 extern _UNKNOWN *off_17EEE0;
-extern int16_t word_17EEE6;
+extern int16_t word_17EEE6[]; // wave 23: sized array in orion_data.c
 extern int16_t word_17EEE8[6];
 extern int16_t word_17EEF4[];
 extern int16_t word_17EF00;
@@ -16727,7 +16727,7 @@ extern int16_t word_17F3DB;
 extern int16_t word_17F582;
 extern int dword_17F629;
 extern _UNKNOWN *off_17F638;
-extern int16_t word_17F63E;
+extern int16_t word_17F63E[]; // wave 23: sized array in orion_data.c
 extern char byte_17F641[];
 extern int16_t word_17F642;
 extern int16_t word_17F644;
@@ -16736,7 +16736,7 @@ extern _UNKNOWN *off_17F665;
 extern char byte_17F698;
 extern char byte_17F69B;
 extern _UNKNOWN *off_17F6A1;
-extern int16_t word_17F6A7;
+extern int16_t word_17F6A7[]; // wave 23: sized array in orion_data.c
 extern int16_t word_17F6A9;
 extern int16_t word_17F6B5[6];
 extern int16_t word_17F6C1;
@@ -19960,8 +19960,8 @@ extern int16_t word_1A1366;
 extern int dword_1A1368;
 extern int16_t word_1A136C;
 extern _UNKNOWN unk_1A1370;
-extern int dword_1A6578[368];
-extern int dword_1A6B38;
+extern int dword_1A6578[812]; // wave 23: real size, see orion_data.c comment
+extern char dword_1A6B38[16]; // wave 23: real buffer, see orion_data.c comment
 extern int dword_1A6F88;
 extern int (*dword_1A722C[2])(void);
 extern char byte_1A7234[];

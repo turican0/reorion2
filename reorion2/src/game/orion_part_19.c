@@ -3158,11 +3158,27 @@ int16_t sub_121D19(int a1, int a2, int a3, int a4)
 int sub_121DEB(int a1, int a2, unsigned int a3)
 {
   int64_t v3; // rax
-  int64_t v5; // [esp+0h] [ebp-38h]
+  int64_t v5; // [esp+0h] [ebp-38h] - dest ptr (low dword) : src glyph ptr (high dword)
   int v6; // [esp+8h] [ebp-30h]
   int v7; // [esp+Ch] [ebp-2Ch]
 
-  LODWORD(v5) = (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  // PORT: Hex-Rays dropped the HIDWORD(v5)/v6/v7 setup entirely (it failed to see
+  // that sub_1449CC's int64_t a1 is really an EDX:EAX register pair - dest ptr in
+  // EAX, source (compressed glyph) ptr in EDX). Reconstructed from
+  // Debug/diss/Orion2.exe.asm (sub_121DEB @ 0x121DEB): EAX = dword_1BB904
+  // (backbuffer base) + dest offset; EDX = dword_1B3E74 (font glyph-data base) +
+  // dword_1B3FA8[a3] (per-glyph offset table); ECX = word_1B3EA0; EBX =
+  // &byte_1B3E7C. Without this the source pointer was uninitialized garbage,
+  // crashing sub_1449CC's byte-stream read on the very first character drawn.
+  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  HIDWORD(v5) = dword_1B3E74 + dword_1B3FA8[a3];
+  // a2 = EBX = &byte_1B3E7C (color/pattern lookup table, used as [run+a2-1]);
+  // a3 = ECX = word_1B3EA0 (glyph row count - drives the x86 `loop` instruction,
+  // which Hex-Rays turned into the explicit `--a3; while(a3)` counter). Verified
+  // against Debug/diss/Orion2.exe.asm (sub_1449CC @ 0x1449CC): `ebx` feeds the
+  // `mov al,[eax+ebx-1]` lookup while `ecx` is consumed only by `loop`.
+  v6 = (int)byte_1B3E7C;
+  v7 = word_1B3EA0;
   v3 = sub_1449CC(v5, v6, v7);
   WORD2(v3) = word_1B3EA6;
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);
@@ -3181,11 +3197,17 @@ int sub_121DEB(int a1, int a2, unsigned int a3)
 int sub_121E85(int a1, int a2, unsigned int a3)
 {
   int64_t v3; // rax
-  int64_t v5; // [esp+0h] [ebp-38h]
+  int64_t v5; // [esp+0h] [ebp-38h] - dest ptr (low dword) : src glyph ptr (high dword)
   int v6; // [esp+8h] [ebp-30h]
   int v7; // [esp+Ch] [ebp-2Ch]
 
-  LODWORD(v5) = (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  // PORT: same missing-HIDWORD(v5) bug as sub_121DEB (see comment there);
+  // verified identical in Debug/diss/Orion2.exe.asm (sub_121E85 @ 0x121E85).
+  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  HIDWORD(v5) = dword_1B3E74 + dword_1B3FA8[a3];
+  // a2 = &byte_1B3E7C (color table), a3 = word_1B3EA0 (row count) - see sub_121DEB.
+  v6 = (int)byte_1B3E7C;
+  v7 = word_1B3EA0;
   v3 = sub_144A06(v5, v6, v7);
   WORD2(v3) = word_1B3EA6;
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);

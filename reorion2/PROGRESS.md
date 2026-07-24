@@ -1716,3 +1716,115 @@ dword_1BB908.
 7. Az narazime na dalsi funkce odpovidajici VGA/zvuku/mysi/DOS sluzbam,
    napojit je na prislusny `port_*.cpp`. Totez pro `PoolAlloc_110B89` ->
    `port_memory` (zatim nezavisle vedle sebe, viz vlna 06).
+
+## Done - wave 23: x86/x64 crash bisection through GameMain tail -> main menu entry
+
+Ukol teto session: "zamer se na x64, testuj rozdily x86 vs x64 vs dosbox,
+postupuj funkci po funkci od main()". Zjisteni #1 (dulezite): **x86 a x64
+Debug build padaly na UPLNE STEJNEM miste** - vsechny nove nalezene bugy v teto
+vlne jsou tedy spolecne oběma platformam, ne x64-specificke. x64 build sam o
+sobe funguje (jen desitky tisic C4311/C4312 pointer-truncation warningu -
+budouci prace, viz nize).
+
+### Diagnosticka infrastruktura (nova, trvala)
+- `src/reorion2.cpp`: `AddVectoredExceptionHandler` vypisujici pri neosetrene
+  SEH vyjimce `SEH code=... addr=... av_read/write=... module=... rva=...` na
+  stderr - drive jsme meli jen "exit code 3" bez jakekoliv diagnostiky.
+  Definovano PRED `#include "game/orion_common.h"`, protoze
+  `hexrays_compat.h` prepisuje `fflush`/`fprintf`/`__stdcall` na PortFile_*/
+  prazdno (funkcni jen pro dekompilovany kod, ne pro tento nativní Win32 kod).
+- `reorion2.vcxproj` (Debug|Win32): `<BasicRuntimeChecks>Default</BasicRuntimeChecks>`
+  (vypnuty /RTC) + `<GenerateMapFile>true</GenerateMapFile>`. Duvod: /RTC na
+  poskozeni zasobniku vola primo `abort()` (exit 3) BEZ SEH vyjimky a BEZ
+  zpravy na stderr - naprosto nediagnostikovatelne. S /RTC vypnutym stejny bug
+  projde dal a spadne jako normalni access violation, ktere uz nas handler
+  zachyti a popise. Kompromis: /RTC dava lepsi ochranu pro finalni build, ale
+  behem aktivniho hledani bugu je "tichy abort" horsi nez viditelny AV.
+  Ponechano vypnute pro dalsi debugovani; zvazit znovu zapnout pred vydanim.
+- Postup lokalizace pádu z `SEH ... addr=X module=reorion2.exe rva=Y`: `Y +
+  0x400000` (preferovana base linkeru) se hleda v `Debug/reorion2.map` (sekce
+  "Publics by Value") - najde se jmeno funkce a offset uvnitr ni. Pro presnou
+  instrukci/radek: `dumpbin /disasm Debug/reorion2.exe` (POZOR: v Git Bash
+  pouzit `MSYS2_ARG_CONV_EXCL="*"` pred prikazem, jinak MSYS prevede
+  `/disasm` na cestu k souboru a selze to s LNK1181).
+
+### Bug #1 - sub_121DEB/sub_121E85 (font glyph renderer): chybejici horni
+### pulka int64 parametru + prohozene registrove argumenty
+
+Prvni pad v teto vlne: `sub_1212B3` (vykresleni "Loading..." textu, volane z
+`GameMain_10057` tail) -> `sub_1212EB` -> `sub_121DEB`/`sub_121E85` (font
+plotter). Hex-Rays u obou uplne vynechala vypocet `HIDWORD(v5)` (zdrojovy
+ukazatel do komprimovanych dat fontu) - `sub_1449CC`/`sub_144A06` maji
+`int64_t a1`, ktery je ve skutecnosti EDX:EAX par (EAX=cil v backbufferu,
+EDX=zdroj v datech fontu), ale volajici nastavovaly jen LODWORD. Overeno v
+`Debug/diss/Orion2.exe.asm` (sub_121DEB @ 0x121DEB): `EAX = dword_1BB904
+(backbuffer base) + destOffset`, `EDX = dword_1B3E74 (font base) +
+dword_1B3FA8[a3]` (per-glyph offset tabulka). Bez toho byl zdrojovy ukazatel
+nedefinovany smetí -> pad na prvnim vykreslenem znaku.
+
+Druhy vrstevnaty bug ve stejnych funkcich: `sub_1449CC(int64_t a1, int a2, int
+a3)` pouziva `a3` jako **citac x86 instrukce `loop`** (`--a3; while(a3)`) a
+`a2` jako **tabulku barev** (`*(a2+run-1)`) - ale volajici mely tyto dva
+parametry PROHOZENE (`&byte_1B3E7C` poslane jako pocitadlo smycky = miliardy
+iteraci -> access violation na konci pameti). Overeno primo v asm prologu
+`sub_1449CC` (`mov esi,edx; mov edi,eax; ... loop loc_1449D5` - ECX je
+implicitni citac `loop`, coz odpovida `a3`; EBX pouzite v `[eax+ebx-1]`
+odpovida `a2`). Opraveno v `orion_part_19.c`.
+
+### Bug #2 - dalsi vlna "pole velikosti 1" (fontBlock-style truncation),
+### tentokrat v tech-tree tabulkach `sub_5E1E3`
+
+Po opravě #1 pad postoupil do `sub_13174` -> `sub_5E1E3` (inicializace
+tech-tree kategorii, volana z GameMain tail pred hlavnim menu). Root cause:
+**osm globalnich tabulek** (`word_17EB43`, `word_17EEE6`, `word_17F63E`,
+`word_17F6A7`, `word_17F80D`, `word_17F819`, `word_17FDF2`, `word_17FE76`,
+`word_17FFE8` - devet, oprava chyba v puvodnim poctu) deklarovanych jako
+1-prvkove skalary/pole, pouzivanych pres `*(int16_t*)((char*)&word_X +
+STRIDE*i)` s STRIDE 11-59 a i az do ~45 (byte-offset aritmetika, ne pole-index
+- klasicky fontBlock/Int386xRegs vzor). Cteni za koncem vratilo smeti, ktere
+se vynasobilo 13 a pouzilo jako index do `byte_17E085[]` (rovnez 1-bajtove
+pole misto skutecne 13-bajtove-zaznamove tabulky, velikost overena v asm
+gapem k `dword_176B2A` = 2725 bajtu) -> zapis daleko mimo pole -> pad uvnitr
+CRT (ne primo v nasem kodu - proto prvni pokus s dumpbin na nas modul
+neuspel, EIP byl jinde, az druhy pokus s cerstvym mapem ukazal spravne
+`sub_5E1E3`). Opraveno: vsech 9 tabulek zvetseno na 1024 prvku (nulovano -
+**datova mezera**: puvodni obsah tech tabulek jeste neni obnoven, jen
+velikost je bezpecna) + `byte_17E085` na 2730 bajtu.
+
+### Bug #3 - `dword_1A6578[368]` prilis male pole (potvrzeny skutecny limit
+### v asm) a nesmyslna DOS-layout kontrola
+
+`sub_CDF65` (nacitani lokalizovane string-tabulky estrings.lbx) pise index
+0..0x32Bh (811) do pole deklarovaneho na 368 prvku - **v asm primo overeno**
+(`cmp eax, 32Ch`), 368 byl jen gap k nahodnemu sousednimu BSS symbolu.
+Zvetseno na 812. Soucasne `if (a3 > (char*)dword_1A6578) sub_126487(...)` je
+nesmyslna v modernim portu: puvodne to byla adresova sanity-kontrola zavisla
+na konkretnim DOS4GW pametovem rozlozeni (a3 = heap ukazatel z PoolAlloc,
+dword_1A6578 = staticke pole - v nasem procesu heap adresy typicky VZDY vetsi
+nez staticky segment, takze kontrola by falesne padala vzdy). Odstranena s
+komentarem; skutecnou ochranu proti pretečeni ted da spravne velike pole.
+
+### Bug #4 - `dword_1A6B38` pouzivan jako pointer, ale byl to jen `int`=0
+### (NULL pointer write)
+
+Dalsi krok v `sub_CDF65`: `v6 = (_DWORD*)dword_1A6B38; *v6 = ...` kopiruje
+13-bajtove lokalizovane jmeno LBX souboru (napr. "MAINTEXT.LBX\0") do `*v6`.
+`dword_1A6B38` byl ale jen `int` inicializovany na 0 a NIKDE v cele hre
+nenastaveny na skutecnou adresu -> zapis na NULL. Reseni: `dword_1A6B38` neni
+pointer na buffer nekde jinde - je to SAM buffer (potvrzeno: v cele hre se
+nikde jinde necte, jediny XREF v asm je tato jedna zapisova instrukce) -
+predefinovano jako `char dword_1A6B38[16]`.
+
+### Vysledek vlny 23
+
+Pad postoupil z `sub_1212B3` (font renderer, uplne na zacatku GameMain tail)
+az do `sub_1171AB` volane z hlavniho menu (`sub_1049B`) - tj. cely usek
+"font -> tech tabulky -> string tabulky -> pred menu" ted bezi bez padu.
+Novy frontier: READ access violation v `sub_1171AB` (jeste neanalyzovano,
+dalsi session). x86 i x64 potvrzeny na stejnem miste pred kazdou opravou.
+
+Zpusob prace (na zadost uzivatele): pri kazdem nalezu nejdriv staticky
+overit proti `Debug/diss/Orion2.exe.asm` (asm je "zive" ground truth primo z
+originalu, netreba pokazde spoustet dosbox), pak az kdyz je potreba
+RUNTIME hodnota (ne jen velikost/rozlozeni), pouzit dosbox-x DUMPMEM/DUMPREGS
+dle `c:\prenos\dosbox-x-remc2\genCompare\DOSBOX_CTL_PROTOCOL.md`.

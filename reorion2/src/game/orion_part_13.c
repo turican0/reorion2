@@ -6422,8 +6422,16 @@ LABEL_13:
     dword_1A6578[(int16_t)i] = (int)a3;
     a3 += strlen(a3) + 1;
   }
-  if ( a3 > (char *)dword_1A6578 )
-    sub_126487(aYouBlewTheArra, i);
+  // PORT: the original `if (a3 > (char*)dword_1A6578) sub_126487(aYouBlewTheArra, i);`
+  // (Debug/diss/Orion2.exe.asm sub_CDF65: `cmp ebx, offset dword_19E578; jbe ...`)
+  // is an unsigned-address sanity check that only made sense in the original DOS4GW
+  // flat memory layout, where the resource pool a3 points into and this static
+  // array happened to sit in a specific relative order. In a modern process the
+  // heap-allocated a3 (from sub_126C91's PoolAlloc-backed loader) is unrelated to
+  // dword_1A6578's static address and typically compares greater regardless of
+  // whether the 812 strings actually fit - it always fired here (wave 23), even
+  // though the loop itself completed correctly. Dropped; the loop bound (0x32C)
+  // is the real overflow guard now that dword_1A6578 is sized to match it.
   result = sub_CE0E5();
   if ( byte_199CAE == 1 )
   {

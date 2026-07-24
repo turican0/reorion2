@@ -8,6 +8,41 @@
 // vypisovat nebo kreslit.
 
 #include <cstdint>
+#include <cstdio>
+#include <windows.h>
+
+// DEBUG (temporary, wave-23 x64 bisection): print the faulting instruction/address
+// when an unhandled SEH exception occurs, since the default CRT abort() path gives
+// no diagnostic info at all. Defined before including orion_common.h so the
+// project's hexrays_compat.h macros (fflush/fprintf -> PortFile_*, __stdcall -> "")
+// don't clobber this plain Win32 code.
+static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
+{
+    DWORD code = ep->ExceptionRecord->ExceptionCode;
+    if (code == EXCEPTION_ACCESS_VIOLATION || code == EXCEPTION_STACK_OVERFLOW ||
+        code == EXCEPTION_ILLEGAL_INSTRUCTION || code == EXCEPTION_INT_DIVIDE_BY_ZERO)
+    {
+        std::fprintf(stderr, "SEH code=0x%08lX addr=%p", code, ep->ExceptionRecord->ExceptionAddress);
+        if (code == EXCEPTION_ACCESS_VIOLATION && ep->ExceptionRecord->NumberParameters >= 2)
+        {
+            std::fprintf(stderr, " av_%s=0x%p",
+                ep->ExceptionRecord->ExceptionInformation[0] ? "write" : "read",
+                (void*)ep->ExceptionRecord->ExceptionInformation[1]);
+        }
+        HMODULE mod = nullptr;
+        if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                                (LPCSTR)ep->ExceptionRecord->ExceptionAddress, &mod))
+        {
+            char path[MAX_PATH] = {0};
+            GetModuleFileNameA(mod, path, MAX_PATH);
+            std::fprintf(stderr, " module=%s base=%p rva=0x%zx", path, (void*)mod,
+                (size_t)((char*)ep->ExceptionRecord->ExceptionAddress - (char*)mod));
+        }
+        std::fprintf(stderr, "\n");
+        std::fflush(stderr);
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
 
 #include "game/orion_common.h"
 #include "port/port_dos.h"
@@ -18,6 +53,7 @@
 
 int main(int argc, char* argv[])
 {
+    AddVectoredExceptionHandler(1, DebugVectoredHandler);
     // Evidence alokaci zapnout uplne prvni, aby zachytila i pripadne
     // alokace, ktere si udelaji Init() funkce port vrstvy nize.
     Port::Memory::Init();

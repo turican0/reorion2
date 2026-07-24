@@ -157,7 +157,9 @@ void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
     PortDebug_Checkpoint("tail.after_1212B3", 0);
 
     sub_FE8BE(0, 0, 0, 0);                    // 010276
+    PortDebug_Checkpoint("tail.after_FE8BE2", 0);
     sub_124ECB();                             // 01027B
+    PortDebug_Checkpoint("tail.after_124ECB", 0);
     sub_13174(0, 0, menuBuf);                 // 010280 (a3=buffer)
     PortDebug_Checkpoint("tail.after_13174", 0);
     sub_7A816();                              // 010285

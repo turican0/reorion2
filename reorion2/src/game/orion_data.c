@@ -3111,13 +3111,37 @@ int16_t word_17E07D = 0; // weak
 int16_t word_17E07F = 0; // weak
 char byte_17E082[] = { '\0' }; // weak
 char byte_17E084[] = { '\x01' }; // weak
-char byte_17E085[] = { '\0' }; // weak
+// PORT: Hex-Rays declared this as a single byte, but Debug/diss/Orion2.exe.asm
+// shows byte_176085 is the START of a large table of 13-byte tech-tree records
+// (`imul edx, 0Dh` in sub_5E1E3/readers - 13 * techId indexing), running
+// uninterrupted up to the next real symbol `dword_176B2A` (== dword_17EB2A
+// here, +0x8000 delta) - i.e. 0x176B2A-0x176085 = 0xAA5 = 2725 bytes. Sizing
+// it to 1 byte let sub_5E1E3's table-init loops (`byte_17E085[13*techId] = flag`)
+// write far past the end, corrupting the heap and crashing later inside CRT
+// code (wave 23). off_17E0EE/off_17E7F0/off_17EA60 are separately-declared
+// globals that are ALSO just offsets into this same original blob, but since
+// this port keeps them as independent objects (not aliased into this array),
+// only the flag-byte writes/reads (byte_17E085[13*idx]) need this array sized
+// correctly; the full struct merge is a follow-up if other fields are needed.
+char byte_17E085[2730] = { 0 }; // weak
 _UNKNOWN *off_17E0EE = &unk_178A04; // weak
 _UNKNOWN *off_17E7F0 = &unk_178A04; // weak
 _UNKNOWN *off_17EA60 = &unk_178A04; // weak
 int dword_17EB2A = 2686976; // weak
 _UNKNOWN *off_17EB3D = &unk_178A04; // weak
-int16_t word_17EB43 = 0; // weak
+// PORT (wave 23): Hex-Rays declared word_17EB43/17EEE6/17F63E/17F6A7/17F80D/
+// 17FDF2/17FE76/17FFE8 as single int16 scalars, but sub_5E1E3 (and several
+// other functions in orion_part_04.c) index them via raw byte-offset casts
+// `*(int16_t*)((char*)&word_X + STRIDE*i)` with STRIDE 15-59 and i up to ~45 -
+// i.e. each is really the head of a multi-record lookup table. The 1-element
+// declaration let those reads run off the end into whatever followed in BSS,
+// producing a garbage tech-tree index that was then used as a raw offset into
+// byte_17E085 - the actual out-of-bounds WRITE that crashed (wave 23, see
+// PROGRESS.md). Sized generously (1024 elements/2048 bytes, well above every
+// STRIDE*maxIndex seen) to stop the overrun; the original content is zero for
+// now (a data-fidelity gap - the exact tech-table values still need pulling
+// from the original binary, this only fixes the crash).
+int16_t word_17EB43[1024] = { 0 }; // weak
 int dword_17EB45 = 0; // weak
 int16_t word_17EB49 = 0; // weak
 char byte_17EB4B[] = { '\x06' }; // weak
@@ -3155,7 +3179,7 @@ _UNKNOWN *off_17EE6E = &unk_178A04; // weak
 _UNKNOWN *off_17EEB1 = (_UNKNOWN *)0x30000; // weak
 _UNKNOWN *off_17EEBA = &unk_178A04; // weak
 _UNKNOWN *off_17EEE0 = &unk_178A04; // weak
-int16_t word_17EEE6 = 0; // weak
+int16_t word_17EEE6[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17EEE8[6] = { 0, 0, 0, 0, 0, 0 }; // weak
 int16_t word_17EEF4[] = { 0 }; // weak
 int16_t word_17EF00 = 0; // weak
@@ -3169,7 +3193,7 @@ int16_t word_17F3DB = 56; // weak
 int16_t word_17F582 = 192; // weak
 int dword_17F629 = 3; // weak
 _UNKNOWN *off_17F638 = &unk_178A04; // weak
-int16_t word_17F63E = 0; // weak
+int16_t word_17F63E[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 char byte_17F641[] = { '\0' }; // weak
 int16_t word_17F642 = -100; // weak
 int16_t word_17F644 = 0; // weak
@@ -3178,7 +3202,7 @@ _UNKNOWN *off_17F665 = &unk_178A04; // weak
 char byte_17F698 = '\xC9'; // weak
 char byte_17F69B = '\x1E'; // weak
 _UNKNOWN *off_17F6A1 = &unk_178A04; // weak
-int16_t word_17F6A7 = 0; // weak
+int16_t word_17F6A7[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17F6A9 = 0; // weak
 int16_t word_17F6B5[6] = { 0, 0, 0, 0, 0, 0 }; // weak
 int16_t word_17F6C1 = 0; // weak
@@ -3187,14 +3211,14 @@ int dword_17F7EB[] = { 0 }; // weak
 _UNKNOWN *off_17F803 = &unk_178A04; // weak
 _UNKNOWN *off_17F807 = &unk_178A04; // weak
 int16_t word_17F80B[] = { 0 }; // weak
-int16_t word_17F80D[] = { 0 }; // weak
+int16_t word_17F80D[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 char byte_17F80F[] = { '\0' }; // weak
 char byte_17F810[] = { '\xFF' }; // weak
 int16_t word_17F811[] = { 0 }; // weak
 int16_t word_17F813[] = { 0 }; // weak
 int16_t word_17F815[] = { 0 }; // weak
 int16_t word_17F817[] = { 0 }; // weak
-int16_t word_17F819[] = { 0 }; // weak
+int16_t word_17F819[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23; used with stride 14 in orion_part_04.c)
 char byte_17F81C[] = { '\0' }; // weak
 int16_t word_17F81D[] = { 0 }; // weak
 int16_t word_17F983 = 4; // weak
@@ -3247,12 +3271,12 @@ int dword_17FDD6 = 19660813; // weak
 int16_t word_17FDDA = 300; // weak
 int16_t word_17FDE9 = 50; // weak
 _UNKNOWN *off_17FDEC = &unk_178A04; // weak
-int16_t word_17FDF2[] = { 0 }; // weak
+int16_t word_17FDF2[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FDF4[] = { 0 }; // weak
 int16_t word_17FE00[] = { 0 }; // weak
 _UNKNOWN unk_17FE42; // weak
 _UNKNOWN *off_17FE70 = &unk_178A04; // weak
-int16_t word_17FE76[] = { 0 }; // weak
+int16_t word_17FE76[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FE78[] = { 0 }; // weak
 int16_t word_17FE84[] = { 0 }; // weak
 char byte_17FE90[] = { '\0' }; // weak
@@ -3264,7 +3288,7 @@ int dword_17FFA6[] = { 219025168 }; // weak
 _UNKNOWN *off_17FFB2 = &unk_178A04; // weak
 _UNKNOWN *off_17FFD6 = &unk_178A04; // weak
 int16_t word_17FFDE = 2; // weak
-int16_t word_17FFE8[] = { 0 }; // weak
+int16_t word_17FFE8[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FFEA[] = { 0 }; // weak
 _UNKNOWN *off_180014 = &unk_178A04; // weak
 int dword_18001A[] = { 16711864 }; // weak
@@ -17050,8 +17074,23 @@ int16_t word_1A1366; // weak
 int dword_1A1368; // weak
 int16_t word_1A136C; // weak
 _UNKNOWN unk_1A1370; // weak
-int dword_1A6578[368]; // weak
-int dword_1A6B38; // weak
+// PORT (wave 23): Hex-Rays sized this at 368 (the gap to the next BSS symbol
+// dword_1A6B38), but sub_CDF65's string-table loader (orion_part_13.c) writes
+// index 0..0x32Bh (811) unconditionally - confirmed in Debug/diss/Orion2.exe.asm
+// (`cmp eax, 32Ch` in sub_CDF65). Both this array and dword_1A6B38 are `dd ?`
+// (uninitialized BSS) in the original - the 368 "boundary" was just the next
+// symbol IDA happened to find, not a real limit. Sized to the real 812 needed.
+int dword_1A6578[812]; // weak
+// PORT (wave 23): sub_CDF65 (orion_part_13.c) treats this as a POINTER
+// (`v6 = (_DWORD*)dword_1A6B38; *v6 = ...`) and copies a 13-byte localized LBX
+// filename (e.g. "MAINTEXT.LBX\0") into `*v6` via four chunked int/byte writes.
+// Declared as a scalar int (always 0), this always wrote through a NULL
+// pointer - crashed here once the earlier array-overflow bugs upstream of it
+// stopped masking this path. This global IS the destination buffer itself
+// (never read back anywhere else in the game - dead/write-only data even in
+// the original, per its single XREF in Debug/diss/Orion2.exe.asm), so it needs
+// to be the buffer's own storage, not a pointer variable pointing elsewhere.
+char dword_1A6B38[16]; // weak
 int dword_1A6F88; // weak
 int (*dword_1A722C[2])(void); // weak
 char byte_1A7234[]; // weak
