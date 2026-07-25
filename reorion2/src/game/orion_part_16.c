@@ -451,7 +451,7 @@ void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
         word_1AAF6E = 0;
         dword_1AAF6A = 0;
         sub_1112EC(dword_192ED4, (int)&loc_E1000);
-        dword_1AAF72 = (int)sub_110D3C(dword_192ED4, (int)&loc_E1000);
+        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
         word_1AB09C = v50;
         sub_FC6A5();
         return;
@@ -803,7 +803,7 @@ LABEL_51:
         word_1AAF6E = 0;
         dword_1AAF6A = 0;
         sub_1112EC(dword_192ED4, (int)&loc_E1000);
-        dword_1AAF72 = (int)sub_110D3C(dword_192ED4, (int)&loc_E1000);
+        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
         return;
       case 52:
         byte_1AB094[v51] = 1;
@@ -1772,7 +1772,7 @@ void sub_F74CD( int a1, int a2, int a3)
 
   v31 = a1;
   sub_1112EC(dword_192ED4, (int)&loc_E1000);
-  v28 = (int16_t *)sub_110D3C(dword_192ED4, (int)&loc_E1000);
+  v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
   v25 = v28;
   qmemcpy(v28, &word_1AAF68, sizeof(int16_t));
   qmemcpy(v28 + 1, &dword_192FD8, 4u);
@@ -2198,7 +2198,7 @@ void sub_F7E95()
   _DWORD savedregs[6]; // [esp+6E4h] [ebp+0h] BYREF
 
   sub_1112EC(dword_192ED4, 350000);
-  v36 = (char *)sub_110D3C(dword_192ED4, 350000);
+  v36 = (char *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 350000);
   qmemcpy(v36, &dword_192FD8, 4u);
   v43[0] = word_19999C;
   qmemcpy(v36 + 4, v43, sizeof(char));
@@ -2705,7 +2705,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
     v4 = 20;
   else
     v4 = 30720;
-  v31 = (char *)sub_110D3C(dword_192ED4, v4);
+  v31 = (char *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v4);
   v29 = v31;
   v5 = 3753 * (int16_t)v28;
   qmemcpy(v31, &v27, 2u);
@@ -3029,7 +3029,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
     v6 = 30;
   else
     v6 = 30720;
-  v29 = (char *)sub_110D3C(dword_192ED4, v6);
+  v29 = (char *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v6);
   v7 = 3753 * (int16_t)v27;
   qmemcpy(v29, &a5, 2u);
   v28 = v29 + 2;
@@ -3384,7 +3384,7 @@ _DWORD *sub_F97CD(int a1, int a2, int a3, int a4, int a5, int a6)
   LOWORD(a1) = word_19999C;
   v46 = a1;
   sub_1112EC(dword_192ED4, 30720);
-  v6 = (char *)sub_110D3C(dword_192ED4, 30720);
+  v6 = (char *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 30720);
   qmemcpy(v6, &v46, 2u);
   v40 = v6 + 2;
   qmemcpy(v6 + 2, &v38, 2u);
@@ -3731,7 +3731,7 @@ void sub_FA05D(int a1)
   _DWORD *v1; // eax
 
   sub_1112EC(dword_192ED4, 30026);
-  v1 = sub_110D3C(dword_192ED4, 30026);
+  v1 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 30026);
   qmemcpy(v1, &word_199998, 2u);
   qmemcpy((char *)v1 + 2, (void *)dword_197F98, 3753 * word_199998);
   sub_F6816(a1, 32, (int)v1, 3753 * word_199998 + 2);
@@ -8169,7 +8169,7 @@ int sub_FE8C8(int a1, int a2)
 {
   _DWORD *v2; // eax
 
-  v2 = sub_110CEE(a1, 1);
+  v2 = (_DWORD*)sub_110CEE((PoolMemType*)a1, 1);
   return nullsub_15(v2, a2);
 }
 // FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);

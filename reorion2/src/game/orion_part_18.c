@@ -130,7 +130,7 @@ int sub_10D041( int a1)
   int v10; // [esp+6Ch] [ebp+E6h]
 
   sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  v1 = sub_110CEE(dword_192ED4, (int)&loc_7C830);
+  v1 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
   sub_12D7B7((int)v1);
   sub_249F9(aBilltextLbx_2, 2, (char *)v5, 256);
   sub_24E73(256);
@@ -185,7 +185,7 @@ int sub_10D0DA(int64_t a1, int a2)
 
   v10 = a2;
   sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  LODWORD(a1) = sub_110CEE(dword_192ED4, (int)&loc_7C830);
+  LODWORD(a1) = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
   sub_12D7B7(a1);
   sub_249F9(aBilltextLbx_2, 3, (char *)v4, 256);
   sub_24E27();
@@ -241,7 +241,7 @@ int sub_10D167( int a1, int a2, int a3)
 
   v13 = a2;
   sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  v4 = sub_110CEE(dword_192ED4, (int)&loc_7C830);
+  v4 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
   sub_12D7B7((int)v4);
   sub_249F9(aBilltextLbx_2, 0, (char *)v7, 256);
   sub_24D83();
@@ -453,14 +453,14 @@ int16_t sub_10D31C(
   }
   ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   v25 = sub_126B42((int)aScienceLbx, 0, dword_192ED4);
-  dword_1AD598 = (int)sub_110D3C(dword_192ED4, 917);
-  *(_DWORD *)((char *)&a21 + 2) = sub_110D3C(dword_192ED4, 1404);
+  dword_1AD598 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 917);
+  *(_DWORD *)((char *)&a21 + 2) = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1404);
   v26 = sub_12DAA4(175, 195);
-  *(_DWORD *)((char *)&a21 + 10) = sub_110D3C(dword_192ED4, v26);
+  *(_DWORD *)((char *)&a21 + 10) = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v26);
   v27 = sub_12DAA4(175, 195);
-  *(_DWORD *)((char *)&a21 + 6) = sub_110D3C(dword_192ED4, v27);
+  *(_DWORD *)((char *)&a21 + 6) = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v27);
   v28 = sub_12DAA4(600, 60);
-  v29 = sub_110D3C(dword_192ED4, v28);
+  v29 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v28);
   sub_1278A3();
   if ( !byte_199BE2 )
   {
@@ -747,7 +747,7 @@ int sub_10DB69(int a1, int16_t *a2)
   _DWORD *v2; // eax
 
   sub_131970();
-  v2 = sub_110CEE(dword_192ED4, (int)&loc_7C830);
+  v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
   sub_12D7B7((int)v2);
   sub_10D1FC(word_19999C);
   sub_10DC12(0, 255, a1, a2);
@@ -769,7 +769,7 @@ int16_t sub_10DBCE(int a1, int16_t *a2)
 {
   int16_t result; // ax
 
-  sub_110CEE(dword_192ED4, 4);
+  (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 4);
   sub_124D41();
   sub_11E718();
   sub_124DEC();
@@ -876,8 +876,8 @@ void sub_10DC12(int a1, int a2, int a3, int16_t *a4)
   dword_192BD8 = 3753 * word_19999C + dword_197F98;
   byte_1AD6BA = v64;
   v63 = *(uint8_t *)(dword_192BD8 + 801);
-  v58 = (int16_t *)sub_110D3C(dword_192ED4, 3136);
-  dword_192BC8 = (int)sub_110D3C(dword_192ED4, 1404);
+  v58 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3136);
+  dword_192BC8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1404);
   ServiceAudioTick_FE8BE(dword_192BC8, 1404, v10, a4);
   if ( v64 == 1 )
   {
@@ -1379,14 +1379,14 @@ int16_t *sub_10E6C7(int a1, int a2, int a3, int16_t *a4)
   v44 = v11;
   v45 = sub_126B42((int)aTechselLbx, v12, dword_192ED4);
   ServiceAudioTick_FE8BE((int)v45, v12, v15, a4);
-  v16 = sub_110D3C(dword_192ED4, 13280);
+  v16 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 13280);
   HIWORD(v17) = HIWORD(v40);
   LOWORD(v17) = *(_WORD *)(v40 + 390);
   dword_1842AD = (int)v16;
   v52 = v17;
   word_184297 = v17 + 16;
   v18 = sub_12DAA4(437, 400);
-  v19 = sub_110D3C(dword_192ED4, v18);
+  v19 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v18);
   v49 = v19;
   sub_12D8F5(437, 400, (int)v19);
   sub_12E148(84, 40, 519, 439, (int)v19);
@@ -2063,7 +2063,7 @@ void sub_10F62F(int a1, int a2)
   sub_119281();
   sub_1112EC(dword_192ED4, 1404);
   sub_1172D4();
-  v2 = sub_110D3C(dword_192ED4, 1404);
+  v2 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1404);
   sub_A6547(v11);
   v12 = sub_126BDD((int)v11, 0, (int)v2, a2, 1u, 1403);
   v3 = sub_E1E96(dword_197F98 + 3753 * word_19999C, *(int16_t *)((char *)&word_17E07F + 13 * a2));
@@ -2823,30 +2823,34 @@ int16_t IsMemPoolReady_110B5C()
 // ukazatel AZ ZA ni. a1 = pozadovana velikost v bajtech, a2 = kontext,
 // ktery se nepouziva primo tady, jen se predava dal do zalozni cesty a
 // do chyboveho hlaseni (viz PoolAllocFallback_110C62 / PoolAllocAbort_110EC3).
-uint32_t* PoolAlloc_110B89(int size)
+// POZOR - drobna oprava: puvodni radek "alignedSize = a1;" odkazoval na
+// neexistujici promennou "a1" (pozustatek po prejmenovani parametru na
+// "size"); opraveno na "alignedSize = size;" (stejne jako v analogicke
+// PoolAllocFallback_110C62 nize) - funkcne jde o totez, co bylo zjevne
+// zamysleno, jinak by se to vubec neprelozilo.
+PoolMemType* PoolAlloc_110B89(int size)
 {
-  uint32_t* header=0; // [esp+4h] [ebp-10h]
-  int alignedSize; // [esp+Ch] [ebp-8h]
-
-  alignedSize = a1;
+  int alignedSize = size;
   if ( (size & 3) != 0 )
       alignedSize = 4 * (size >> 2) + 4;              // zarovnani na nasobek 4 nahoru
-  header = PoolRawAlloc_110DFE(alignedSize + 12);
+  PoolMemType* header = PoolRawAlloc_110DFE(alignedSize + sizeof(PoolMemHeader));
   if ( !header)
-      header = PoolAllocFallback_110C62(alignedSize + 12);
+      header = PoolAllocFallback_110C62(alignedSize + sizeof(PoolMemHeader));
   if ( !header)
     PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
-  header[0] = 0;
-  header[1] = size;
-  header[2] = 0;
-  return header + 3;
+  header->header.reservedSize = 0;
+  header->header.requestedSize = size;
+  header->header.flags = 0;
+  return header + 1;               // +1 = +sizeof(PoolMemType) = +12 bajtu = presne na data
 }
 
 
 //----- (00110C29) --------------------------------------------------------
-int sub_110C29(int a1)
+// a1 ukazuje AZ ZA hlavicku (viz vyse) - skutecna hlavicka je tedy na
+// (a1 - 1) tohoto typu.
+int sub_110C29(PoolMemType *a1)
 {
-  return *(_DWORD *)(a1 - 12 + 4);
+  return (a1 - 1)->header.requestedSize;
 }
 
 
@@ -2854,51 +2858,51 @@ int sub_110C29(int a1)
 // Zalozni cesta PoolAlloc_110B89: stejna hlavicka jako u nej, ale bloku
 // se ziskava pres sub_110E36 (DPMI/port-memory "near heap" nahrada)
 // misto primeho nmalloc.
-_DWORD* PoolAllocFallback_110C62(int size)
+PoolMemType* PoolAllocFallback_110C62(int size)
 {
-  _DWORD* header; // [esp+4h] [ebp-10h]
-  int alignedSize; // [esp+Ch] [ebp-8h]
-
-  alignedSize = size;
+  int alignedSize = size;
   if ( (size & 3) != 0 )
       alignedSize = 4 * (size >> 2) + 4;
-  header = (_DWORD *)sub_110E36(alignedSize + 12);
+  PoolMemType* header = (PoolMemType *)sub_110E36(alignedSize + sizeof(PoolMemHeader));
   if ( !header)
     PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
-  header[0] = 0;
-  header[1] = size;
-  header[2] = 0;
-  return header + 3;
+  header->header.reservedSize = 0;
+  header->header.requestedSize = size;
+  header->header.flags = 0;
+  return header + 1;
 }
 
 
 //----- (00110CEE) --------------------------------------------------------
-_DWORD *sub_110CEE(int a1, int a2)
+PoolMemType *sub_110CEE(PoolMemType *a1, int a2)
 {
-  *(_DWORD *)(a1 - 12) = 0;
+  (a1 - 1)->header.reservedSize = 0;
   return sub_110D3C(a1, a2);
 }
 
 
 //----- (00110D3C) --------------------------------------------------------
-_DWORD *sub_110D3C(int a1, int a2)
+// Sub-alokator: carve nova "pod-hlavicka+data" uvnitr bloku, na ktery
+// ukazuje a1 (a1 - 1 = vnejsi hlavicka tohoto bloku, ktera si v
+// reservedSize pamatuje, kolik bajtu od zacatku "a1" uz je vyuzito).
+PoolMemType *sub_110D3C(PoolMemType *a1, int a2)
 {
-  _DWORD *v3; // [esp+8h] [ebp-14h]
-  _DWORD *v4; // [esp+10h] [ebp-Ch]
+  PoolMemType *v3; // [esp+8h] [ebp-14h]
+  PoolMemType *v4; // [esp+10h] [ebp-Ch]
   int v5; // [esp+14h] [ebp-8h]
 
   v5 = a2;
   if ( (a2 & 3) != 0 )
     v5 = 4 * (a2 >> 2) + 4;
-  v4 = (_DWORD *)(a1 - 12);
-  if ( v5 + *(_DWORD *)(a1 - 12) + 12 > *(_DWORD *)(a1 - 12 + 4) )
-    sub_110F3A(a2, a2 + *v4 - v4[1], v4[1]);
-  v3 = (_DWORD *)(*v4 + a1);
-  *v4 += v5 + 12;
-  *v3 = 0;
-  v3[1] = a2;
-  v3[2] = 0;
-  return v3 + 3;
+  v4 = a1 - 1;
+  if ( v5 + v4->header.reservedSize + 12 > v4->header.requestedSize )
+    sub_110F3A(a2, a2 + v4->header.reservedSize - v4->header.requestedSize, v4->header.requestedSize);
+  v3 = (PoolMemType *)((uint8_t *)a1 + v4->header.reservedSize);
+  v4->header.reservedSize += v5 + 12;
+  v3->header.reservedSize = 0;
+  v3->header.requestedSize = a2;
+  v3->header.flags = 0;
+  return v3 + 1;
 }
 
 
@@ -2909,9 +2913,9 @@ _DWORD *sub_110D3C(int a1, int a2)
 // horni polovina skutecneho ukazatele vraceneho z nmalloc (void*) - vsechna
 // volajici mista jej pak stejne pretypovavala zpet na _DWORD*, takze slo o
 // tichou ztratu horni 32bitove casti adresy. Ted se vraci rovnou ukazatel.
-_DWORD *PoolRawAlloc_110DFE(int a1)
+PoolMemType *PoolRawAlloc_110DFE(int a1)
 {
-  return (_DWORD *)nmalloc(a1);
+  return (PoolMemType *)nmalloc(a1);
 }
 
 
@@ -3063,9 +3067,9 @@ _DWORD *sub_111131(int a1, int a2)
 {
   _DWORD *v4; // [esp+4h] [ebp-8h]
 
-  v4 = PoolRawAlloc_110DFE(a1);
+  v4 = (_DWORD *)PoolRawAlloc_110DFE(a1);
   if ( !v4 )
-    v4 = PoolAllocFallback_110C62(a1);
+    v4 = (_DWORD *)PoolAllocFallback_110C62(a1);
   if ( !v4 )
     PoolAllocAbort_110EC3(a1);       // __noreturn - dale se nepokracuje
   return v4;

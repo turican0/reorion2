@@ -59,7 +59,7 @@ char sub_88B5B( int a1, char *a2, int16_t **a3)
     sub_1112EC(dword_192ED4, v6);
     v17 = (int16_t)v23;
     v9 = sub_12DAA4(v23, v8);
-    v10 = (int16_t *)sub_110D3C(dword_192ED4, v9);
+    v10 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v9);
     *a3 = v10;
     sub_12D8F5(v17, v8, (int)v10);
     v11 = (int)*a3;
@@ -2687,9 +2687,9 @@ void sub_8BC39(int a1)
         word_1999A2 - (int16_t)v13 - v10);
       sub_6497C();
     }
-    dword_19C2D0 = (int)sub_110CEE(dword_192ED4, 6120);
+    dword_19C2D0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 6120);
     qmemcpy((void *)dword_19C2D0, (void *)dword_1930D4, 0x17E8u);
-    qmemcpy(sub_110D3C(dword_192ED4, 8136), (void *)dword_19306C, 0x1FC8u);
+    qmemcpy((_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 8136), (void *)dword_19306C, 0x1FC8u);
     while ( word_1999A2 - (int16_t)v13 >= v10 )
     {
       v2 = (int16_t)(sub_1247A0(word_1999A2) - 1);
@@ -2964,11 +2964,11 @@ void sub_8C099(int a1, unsigned int a2)
   v41 = 0;
   sub_1112EC(dword_192ED4, (int)&loc_1D4BC + 4);
   v43 = 0;
-  v39 = sub_110D3C(dword_192ED4, (int)&loc_1D4BC + 4);
+  v39 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_1D4BC + 4);
   v2 = 6;
-  v36 = sub_110D3C(dword_192ED4, 40000);
+  v36 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 40000);
   v3 = 0;
-  v35 = sub_110D3C(dword_192ED4, 20000);
+  v35 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 20000);
   ServiceAudioTick_FE8BE((int)v35, 20000, a1, (int16_t *)a2);
   do
   {
@@ -4569,7 +4569,7 @@ LABEL_2:
   HIDWORD(v35) = 3316;
   dword_19C2C0 = (int)sub_126BDD((int)aStarnameLbx_0, 1, dword_192ED4, 0, 0x33Du, 15);
   ServiceAudioTick_FE8BE(dword_19C2C0, 3316, v34, v26);
-  dword_19C2BC = (int)sub_110D3C(dword_192ED4, 3316);
+  dword_19C2BC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3316);
   ServiceAudioTick_FE8BE(dword_19C2BC, 3316, v34, v26);
   ServiceAudioTick_FE8BE(v35, 3316, v34, v26);
   if ( word_1999E0 )
@@ -4593,7 +4593,7 @@ LABEL_2:
     strcpy(byte_19C2F4, sub_7A990(0xF2u));
     v26 = (int16_t *)byte_19C2F4;
     v38 = sub_12DAA4(325, 30);
-    dword_19C2E4 = (int)sub_110D3C(dword_192ED4, v38);
+    dword_19C2E4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v38);
     v39 = dword_19C2E4;
     v40 = sub_12D8F5(325, 30, dword_19C2E4);
     word_19C2F0 = 0;

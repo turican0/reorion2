@@ -716,7 +716,7 @@ _DWORD *sub_C6AF9()
   _DWORD *result; // eax
 
   v0 = 0;
-  dword_1A0C60 = (int)sub_110D3C(dword_192ED4, 7056);
+  dword_1A0C60 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 7056);
   do
   {
     if ( v0 )
@@ -11085,32 +11085,32 @@ void sub_D3D34(int a1, int a2)
 
   nullsub_14(a1);
   sub_1112EC(dword_192ED4, 8000);
-  dword_1AA1DC = (int)sub_110D3C(dword_192ED4, 8000);
-  dword_1AA1F4 = (int)sub_110D3C(dword_192ED4, 8000);
-  dword_1AA1FC = (int)sub_110D3C(dword_192ED4, 4000);
-  dword_1AA1BC = (int)sub_110D3C(dword_192ED4, 5760);
-  dword_1AA210 = (int)sub_110D3C(dword_192ED4, 2304);
-  dword_1AA1E0 = (int)sub_110D3C(dword_192ED4, 2304);
-  dword_1AA1E8 = (int)sub_110D3C(dword_192ED4, 41472);
-  dword_1AA1B8 = (int)sub_110D3C(dword_192ED4, (int)&loc_28800);
-  dword_1AA1B4 = (int)sub_110D3C(dword_192ED4, 36000);
-  dword_1AA1C0 = (int)sub_110D3C(dword_192ED4, 72000);
-  dword_1AA208 = (int)sub_110D3C(dword_192ED4, (int)&loc_2D000);
-  dword_1AA1EC = (int)sub_110D3C(dword_192ED4, 1750);
-  dword_1AA204 = (int)sub_110D3C(dword_192ED4, 464);
-  dword_1AA1F8 = (int)sub_110D3C(dword_192ED4, 3528);
-  dword_1AA214 = (int)sub_110D3C(dword_192ED4, 72);
-  dword_1AA200 = (int)sub_110D3C(dword_192ED4, 72);
-  dword_1AA1F0 = (int)sub_110D3C(dword_192ED4, (int)&loc_2D000);
-  dword_1AA1E4 = (int)sub_110D3C(dword_192ED4, 5760);
-  dword_1AA1D8 = (int)sub_110D3C(dword_192ED4, 720);
-  dword_1AA20C = (int)sub_110D3C(dword_192ED4, 576);
-  dword_1AA1D4 = (int)sub_110D3C(dword_192ED4, 1000);
+  dword_1AA1DC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 8000);
+  dword_1AA1F4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 8000);
+  dword_1AA1FC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 4000);
+  dword_1AA1BC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 5760);
+  dword_1AA210 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2304);
+  dword_1AA1E0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2304);
+  dword_1AA1E8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 41472);
+  dword_1AA1B8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_28800);
+  dword_1AA1B4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 36000);
+  dword_1AA1C0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 72000);
+  dword_1AA208 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_2D000);
+  dword_1AA1EC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1750);
+  dword_1AA204 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 464);
+  dword_1AA1F8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3528);
+  dword_1AA214 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 72);
+  dword_1AA200 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 72);
+  dword_1AA1F0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_2D000);
+  dword_1AA1E4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 5760);
+  dword_1AA1D8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 720);
+  dword_1AA20C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 576);
+  dword_1AA1D4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1000);
   off_183554 = &unk_1A8B34;
-  dword_1AA1C8 = (int)sub_110D3C(dword_192ED4, 1168);
-  dword_1AA1D0 = (int)sub_110D3C(dword_192ED4, 168);
-  dword_1AA1C4 = (int)sub_110D3C(dword_192ED4, 24016);
-  dword_1AA1CC = (int)sub_110D3C(dword_192ED4, 2000);
+  dword_1AA1C8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1168);
+  dword_1AA1D0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 168);
+  dword_1AA1C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 24016);
+  dword_1AA1CC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2000);
   v2 = memset(dword_1AA204, 0, 464);
   ServiceAudioTick_FE8BE(v2, 0, 464, (int16_t *)a2);
   memset(dword_1AA1DC, 0, 8000);

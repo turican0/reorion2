@@ -652,11 +652,11 @@ int64_t sub_7267D(
 //----- (00072A65) --------------------------------------------------------
 int sub_72A65()
 {
-  dword_192B24 = (int)sub_110D3C(dword_192ED4, 3250);
-  dword_192B68 = (int)sub_110D3C(dword_192ED4, 250);
-  dword_192B6C = (int)sub_110D3C(dword_192ED4, 500);
-  dword_193188 = (int)sub_110D3C(dword_192ED4, 134);
-  dword_1975C4 = (int)sub_110D3C(dword_192ED4, 29);
+  dword_192B24 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3250);
+  dword_192B68 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 250);
+  dword_192B6C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 500);
+  dword_193188 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 134);
+  dword_1975C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 29);
   memset(dword_1975C4, 0, 29);
   return sub_111499(dword_192ED4);
 }
@@ -2244,7 +2244,7 @@ void sub_7464A()
   dword_192B28 = (int)sub_126B42((int)off_181FE4, 17, dword_192ED4);
   dword_192B44 = (int)sub_126B42((int)off_181FE4, 18, dword_192ED4);
   v1 = 0;
-  dword_193108 = (int)sub_110D3C(dword_192ED4, 67);
+  dword_193108 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 67);
   sub_72A65();
   while ( 1 )
   {
@@ -4157,9 +4157,9 @@ void sub_7670E( int a1)
     v1 = *(_BYTE *)(dword_197F9C + 129 * v59 + 17);
     sub_1112EC(dword_192ED4, 10000);
     v76 = 282;
-    v2 = sub_110D3C(dword_192ED4, 10000);
+    v2 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 10000);
     v3 = 0;
-    sub_110D3C(dword_192ED4, 1403);
+    (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1403);
     if ( v1 < 2u )
     {
       if ( v1 == 1 )
@@ -4705,7 +4705,7 @@ int16_t sub_7743A(int a1)
   dword_19BEDC[0] = sub_127C27((int)aWarningLbx, 0, dword_193174);
   sub_133C9C(dword_19BEDC[0], 191);
   v1 = sub_12DAA4(331, 191);
-  dword_19BED4 = (int)sub_110D3C(dword_192ED4, v1);
+  dword_19BED4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v1);
   sub_12D8F5(331, 191, dword_19BED4);
   word_19BF06 = 144;
   word_19BF02 = sub_11438B(0, 0, 639, 479, asc_179340, 41);

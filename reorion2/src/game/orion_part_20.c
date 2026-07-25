@@ -712,7 +712,7 @@ int sub_12C7CC()
     sub_12AE00();
   v0 = (_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16));
   v6 = v0[1] - *v0;
-  if ( sub_110C29(dword_1BC324) < v6 )
+  if ( sub_110C29((PoolMemType*)dword_1BC324) < v6 )
     sub_126487(aFileAnimationF, (int)v0);
   v5 = dword_1BC324;
   // Seek to the frame inside the LBX archive: the frame offset *v0 from the
@@ -838,7 +838,7 @@ int sub_12CAD6( int a1)
     sub_12AE00();
   v2 = (_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16));
   v5 = v2[1] - *v2;
-  if ( sub_110C29(dword_1BC324) < v5 )
+  if ( sub_110C29((PoolMemType*)dword_1BC324) < v5 )
     sub_126487(aFileAnimationF_0, (int)v2);
   v6 = dword_1BC324;
   // Multi-file animation: frame `a1` lives in file dword_1BC310[a1]; its frame
@@ -924,7 +924,7 @@ int sub_12CD2D()
     sub_12AE00();
   v0 = (_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16));
   v3 = v0[1] - *v0;
-  if ( sub_110C29(dword_1BC324) < v3 )
+  if ( sub_110C29((PoolMemType*)dword_1BC324) < v3 )
     sub_126487(aFileAnimationF_1, (int)v0);
   v4 = dword_1BC324;
   // frame offset *v0 is relative to the record base dword_1BC328 (asm sub_12CD2D:
@@ -1064,7 +1064,7 @@ int sub_12D408( int a1)
   HIDWORD(v5) = dword_1BC2A8 + 12;
   v2 = (_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16));
   v7 = v2[1] - *v2;
-  if ( sub_110C29(dword_1BC324) < v7 )
+  if ( sub_110C29((PoolMemType*)dword_1BC324) < v7 )
     sub_126487(aFileAnimationF_3, (int)v2);
   v8 = dword_1BC324;
   // frame offset *v2 is relative to the per-file record base dword_1BC348[a1]
@@ -1634,7 +1634,7 @@ _DWORD *sub_12E9A1(int a1, int a2, int a3)
   v13 = a3;
   byte_1BC38C = a3;
   v3 = (a3 << 8) + 4;
-  result = sub_110D3C(a1, v3);
+  result = (_DWORD*)sub_110D3C((PoolMemType*)a1, v3);
   dword_1845E8 = (int)result;
   if ( !result )
     sub_126487(aNotEnoughSpace_0, v3);
@@ -3302,7 +3302,7 @@ int sub_131F7B()
 //----- (00132065) --------------------------------------------------------
 _DWORD *sub_132065(int a1)
 {
-  return sub_110D3C(a1, 4160);
+  return (_DWORD*)sub_110D3C((PoolMemType*)a1, 4160);
 }
 
 

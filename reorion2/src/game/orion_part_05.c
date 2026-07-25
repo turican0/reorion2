@@ -1604,7 +1604,7 @@ void sub_6603E(int16_t *a1)
   word_19995E = 0;
   sub_1112EC(dword_192EE8, 29);
   v2 = 479;
-  dword_1975C4 = (int)sub_110D3C(dword_192EE8, 29);
+  dword_1975C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 29);
   memset(dword_1975C4, 0, 29);
   sub_124D41();
   v3 = sub_6C6CD();
@@ -2889,8 +2889,8 @@ void sub_67BC7(int a1)
   v5 = a1;
   sub_A6547(v8);
   sub_1112EC(dword_192ED4, 5000);
-  v9 = sub_110D3C(dword_192ED4, 5000);
-  sub_110D3C(dword_192ED4, 1403);
+  v9 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 5000);
+  (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1403);
   strcpy(v6, (char *)sub_126C37((int)v8, 0, (int)v9, 0x190u, 1u, 1403) + 103);
   v1 = v9;
   v2 = (char *)&v5 + 3;
@@ -3552,7 +3552,7 @@ int16_t sub_68755(int16_t *a1)
   _BOOL1 v46; // [esp+830h] [ebp+7Eh]
 
   sub_1112EC(dword_192EE8, 29);
-  dword_1975C4 = (int)sub_110D3C(dword_192EE8, 29);
+  dword_1975C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 29);
   memset(dword_1975C4, 0, 29);
   v1 = dword_1975C4;
   *(_WORD *)(dword_1975C4 + 12) = 0;
@@ -4296,7 +4296,7 @@ void sub_69583()
   HIWORD(v1) = (unsigned int)v32 >> 16;
   v33 = dword_1791DC;
   sub_1112EC(dword_192EE8, 29);
-  dword_1975C4 = (int)sub_110D3C(dword_192EE8, 29);
+  dword_1975C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 29);
   memset(dword_1975C4, 0, 29);
   word_19B972 = -1;
   word_19B976 = 0;
@@ -7228,8 +7228,8 @@ void sub_6C98D(int a1, int a2, int a3, int16_t *a4)
   dword_19277C = (int)sub_126B42((int)off_18175C, v59, dword_192ED4);
   dword_192788 = (int)sub_126B42((int)off_18175C, (int16_t)(v59 + 1), dword_192ED4);
   sub_111499(dword_192ED4);
-  dword_1927A8 = (int)sub_110CEE(dword_192EE8, 293);
-  dword_192694 = (int)sub_110D3C(dword_192EE8, 240);
+  dword_1927A8 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 293);
+  dword_192694 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 240);
   v83 = 0;
   sub_6F23C(v91);
   do
@@ -9697,8 +9697,8 @@ _DWORD *sub_6FBEA(char *a1, int a2)
 
   sub_A6547(v5);
   sub_1112EC(dword_192ED4, 2000);
-  v3 = sub_110D3C(dword_192ED4, 2000);
-  sub_110D3C(dword_192ED4, 1403);
+  v3 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2000);
+  (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1403);
   strcpy(a1, (char *)sub_126C37((int)v5, 0, (int)v3, a2, 1u, 1403) + 103);
   return sub_1113CC(dword_192ED4, 0);
 }

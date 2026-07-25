@@ -9255,7 +9255,7 @@ void sub_5D41E()
   char v15; // [esp+Ch] [ebp-4h]
 
   v0 = 0;
-  v13 = sub_110CEE(dword_192EE8, 500);
+  v13 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 500);
   while ( v0 < word_199994 )
   {
     v1 = (char *)v13 + v0++;
@@ -13463,7 +13463,7 @@ void sub_628E2(int16_t *a1)
   v24 = v2;
   sub_1112EC(dword_192EE8, 3753);
   v3 = 0;
-  LODWORD(v4) = sub_110D3C(dword_192EE8, 3753);
+  LODWORD(v4) = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 3753);
   v17 = (_BYTE *)v4;
   HIDWORD(v4) = sub_127776((_BYTE *)v4, 0xEA9u);
   while ( 1 )
@@ -13654,11 +13654,11 @@ void sub_62C70(int a1, int16_t *a2)
   sub_124820(dword_199CB6);
   sub_12484C();
   sub_1112EC(dword_192ED4, 34048);
-  dword_19B888 = (int)sub_110D3C(dword_192ED4, 34048);
-  dword_19B884 = (int)sub_110D3C(dword_192ED4, 20736);
-  dword_19B894 = (int)sub_110D3C(dword_192ED4, 360);
-  dword_19B890 = (int)sub_110D3C(dword_192ED4, 72);
-  dword_19B88C = (int)sub_110D3C(dword_192ED4, 968);
+  dword_19B888 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 34048);
+  dword_19B884 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 20736);
+  dword_19B894 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 360);
+  dword_19B890 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 72);
+  dword_19B88C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 968);
   memset(dword_19B888, 0, 34048);
   memset(dword_19B884, 0, 20736);
   memset(dword_19B894, -1, 360);

@@ -7099,18 +7099,44 @@ extern int sub_110AFC();
 extern void MarkMemPoolReady_110B34();
 // plna signatura: int16_t IsMemPoolReady_110B5C();
 extern int16_t IsMemPoolReady_110B5C();
+// ==== Zonovy alokator - 12bajtova hlavicka pred kazdym blokem ====
+// PoolAlloc_110B89 a pribuzne funkce (sub_110C29/sub_110CEE/sub_110D3C)
+// vraceji ukazatel AZ ZA touto hlavickou; samotna hlavicka lezi na adrese
+// (vraceny_ukazatel - 1) tohoto typu, tj. presne sizeof(PoolMemType) = 12
+// bajtu pred nim (idiom "header pred uzivatelskymi daty", stejny jako u
+// beznych alokatoru). Hlavicka je vytknuta do samostatne 12bajtove
+// PoolMemHeader, kterou PoolMemType obsahuje jako prvni clen - "data" je
+// pak flexibilni pole hned za ni, ktere jen oznacuje start uzivatelskych
+// dat presne na offsetu +12 - viz PoolAlloc_110B89.
+#pragma pack(push, 1)
+typedef struct PoolMemHeader
+{
+    uint32_t reservedSize;  // +0  kolik bajtu z bloku uz je vyuzito (viz sub_110D3C - sub-alokace uvnitr bloku)
+    uint32_t requestedSize; // +4  puvodne pozadovana velikost (parametr size v PoolAlloc_110B89)
+    uint32_t flags;         // +8  priznak (0/nenulovy, presny vyznam neznamy - DECOMP_TODO)
+} PoolMemHeader;
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+typedef struct PoolMemType
+{
+    PoolMemHeader header;   // +0..+11
+    uint8_t* data[];        // +12 zacatek uzivatelskych dat bloku
+} PoolMemType;
+#pragma pack(pop)
+
 // plna signatura: _DWORD *PoolAlloc_110B89(int a1, int a2);
-extern uint32_t* PoolAlloc_110B89(int size);
+extern PoolMemType* PoolAlloc_110B89(int size);
 // plna signatura: int sub_110C29(int a1);
 extern int sub_110C29();
 // plna signatura: _DWORD *PoolAllocFallback_110C62(int a1, int a2);
-extern _DWORD *PoolAllocFallback_110C62(int size);
+extern PoolMemType *PoolAllocFallback_110C62(int size);
 // plna signatura: _DWORD *sub_110CEE(int a1, int a2);
-extern _DWORD *sub_110CEE();
+extern PoolMemType *sub_110CEE();
 // plna signatura: _DWORD *sub_110D3C(int a1, int a2);
-extern _DWORD *sub_110D3C();
+extern PoolMemType *sub_110D3C();
 // plna signatura: _DWORD *PoolRawAlloc_110DFE(int a1);
-extern _DWORD *PoolRawAlloc_110DFE();
+extern PoolMemType *PoolRawAlloc_110DFE();
 // plna signatura: int sub_110E36(int a1);
 extern int sub_110E36();
 // plna signatura: void PoolAllocAbort_110EC3(int a1, int a2);

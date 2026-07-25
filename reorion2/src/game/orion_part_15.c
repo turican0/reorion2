@@ -11236,8 +11236,8 @@ void sub_F41AD(int a1, int a2, int a3, int16_t *a4)
   v5 = dword_192EE8;
   *(_DWORD *)dword_192680 = *(_DWORD *)aEvanAxelrad;
   strcpy((char *)(v4 + 4), " Axelrad");
-  dword_19268C = (int)sub_110CEE(v5, 1000);
-  dword_192688 = (int)sub_110D3C(dword_192EE8, 1000);
+  dword_19268C = (int)(_DWORD*)sub_110CEE((PoolMemType*)v5, 1000);
+  dword_192688 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 1000);
   *(_DWORD *)(dword_192680 + 15) = sub_127C27((int)aMultigmLbx, 0, dword_193174);
   if ( (uint8_t)byte_199F3A < 2u )
   {

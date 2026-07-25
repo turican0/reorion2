@@ -268,7 +268,7 @@ _DWORD *sub_B0A24()
     }
     dword_19DD98[v1] = (int)v2;
   }
-  dword_19DD8C = (int)sub_110D3C(dword_192ED4, 8100);
+  dword_19DD8C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 8100);
   result = sub_126B42((int)aColsumLbx, 21, dword_192ED4);
   dword_19DD90 = (int)result;
   return result;
@@ -2932,7 +2932,7 @@ void sub_B4041( int a1, int16_t *a2)
   dword_19F82C = dword_19F7B8;
   sub_AFBC1();
   v5 = (char *)&unk_1827AD;
-  dword_19DE8C = (int)sub_110D3C(dword_192ED4, 2806);
+  dword_19DE8C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2806);
   sub_120CCB(4, (int)&unk_1827AD);
   LOWORD(v6) = sub_120E8C(1);
   v7 = sub_BB954(v6, (int)&unk_1827AD);
@@ -8943,7 +8943,7 @@ _DWORD *sub_BB7BB()
 {
   _DWORD *result; // eax
 
-  result = sub_110D3C(dword_192ED4, 14432);
+  result = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 14432);
   word_182C1F = -1;
   dword_19DD8C = (int)result;
   return result;
@@ -8958,8 +8958,8 @@ _DWORD *sub_BB7DB()
 {
   _DWORD *result; // eax
 
-  dword_19F7C0 = (int)sub_110D3C(dword_192ED4, 3632);
-  result = sub_110D3C(dword_192ED4, 3632);
+  dword_19F7C0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3632);
+  result = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3632);
   word_182C1D = -1;
   word_182C9A = -1;
   dword_182C96 = -1;
@@ -9062,14 +9062,14 @@ int sub_BB954(int a1, int a2)
   ServiceAudioTick_FE8BE(v2, 0, 0, 0);
   v3 = sub_C52F6();
   ServiceAudioTick_FE8BE(v3, 0, 0, 0);
-  dword_19F7C0 = (int)sub_110D3C(dword_192ED4, 3632);
-  v4 = sub_110D3C(dword_192ED4, 3632);
+  dword_19F7C0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3632);
+  v4 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3632);
   word_182C1D = -1;
   word_182C9A = -1;
   dword_182C96 = -1;
   dword_19F7CC = (int)v4;
   ServiceAudioTick_FE8BE(v4, 0, 0, 0);
-  v5 = sub_110D3C(dword_192ED4, 14432);
+  v5 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 14432);
   word_182C1F = -1;
   dword_19DD8C = (int)v5;
   ServiceAudioTick_FE8BE(v5, 0, 0, 0);
@@ -9252,8 +9252,8 @@ int sub_BBBBA( unsigned int a1)
 //----- (000BBC16) --------------------------------------------------------
 int sub_BBC16()
 {
-  dword_19F7B0 = (int)sub_110D3C(dword_192EF4, 932);
-  dword_19F7C4 = (int)sub_110D3C(dword_192EF4, 932);
+  dword_19F7B0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EF4, 932);
+  dword_19F7C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EF4, 932);
   return nullsub_9(dword_19F7C4);
 }
 // C49C8: using guessed type int nullsub_9(_DWORD);

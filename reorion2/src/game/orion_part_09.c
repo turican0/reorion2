@@ -2554,11 +2554,11 @@ void sub_968D1(int a1, int16_t *a2)
   ServiceAudioTick_FE8BE(v2, dword_1930D4, a1, a2);
   sub_82348();
   sub_72A65();
-  dword_193118 = (int)sub_110D3C(dword_192ED4, (int)&loc_14C05 + 3);
-  dword_19C458 = (int)sub_110D3C(dword_192ED4, 48);
+  dword_193118 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_14C05 + 3);
+  dword_19C458 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 48);
   memset(dword_19C458, 0, 48);
   v3 = 0;
-  dword_19C4C8 = (int)sub_110D3C(dword_192ED4, 3953);
+  dword_19C4C8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3953);
   while ( 1 )
   {
     v4 = dword_1930DC + 59 * (int16_t)v3;
@@ -2570,8 +2570,8 @@ void sub_968D1(int a1, int16_t *a2)
       *(_WORD *)(5 * (int16_t)v3 + dword_19C4C8 + 1) = v24;
     if ( (int16_t)++v3 >= 67 )
     {
-      dword_193114 = (int)sub_110D3C(dword_192ED4, 268);
-      dword_1930EC = (int)sub_110D3C(dword_192ED4, 268);
+      dword_193114 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 268);
+      dword_1930EC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 268);
       LOWORD(v6) = sub_92E72();
       ServiceAudioTick_FE8BE(v6, 268, v3, a2);
       dword_193168 = (int)sub_126B42((int)off_182278, 0, dword_192ED4);
@@ -2608,7 +2608,7 @@ void sub_968D1(int a1, int16_t *a2)
       dword_19311C = (int)sub_126B42((int)off_182278, 142, dword_192ED4);
       ServiceAudioTick_FE8BE(dword_19311C, 142, v12, a2);
       v13 = 88;
-      dword_193108 = (int)sub_110D3C(dword_192ED4, 48);
+      dword_193108 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 48);
       sub_93DF7();
       sub_942FD();
       v14 = 0;
@@ -5460,13 +5460,13 @@ int sub_999BF(int a1)
 //----- (00099A6F) --------------------------------------------------------
 int sub_99A6F()
 {
-  dword_19C5A0 = (int)sub_110D3C(dword_192ED4, 10080);
+  dword_19C5A0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 10080);
   memset(dword_19C5A0, -1, 10080);
-  dword_19C598 = (int)sub_110D3C(dword_192ED4, 277);
+  dword_19C598 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 277);
   memset(dword_19C598, 0, 277);
-  dword_19C5A4 = (int)sub_110D3C(dword_192ED4, 4000);
+  dword_19C5A4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 4000);
   memset(dword_19C5A4, -1, 4000);
-  dword_1975C4 = (int)sub_110D3C(dword_192ED4, 29);
+  dword_1975C4 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 29);
   return memset(dword_1975C4, 0, 29);
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -5891,7 +5891,7 @@ void sub_9A2BA(int16_t *a1)
   sub_1112EC(dword_192ED4, 10080);
   v3 = 0;
   v4 = -1;
-  v5 = (int16_t *)sub_110D3C(dword_192ED4, 10080);
+  v5 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 10080);
   v6 = memset(v5, -1, 10080);
   *a1 = 0;
   while ( v3 < word_1999A2 )
@@ -8504,7 +8504,7 @@ void sub_9D252()
   *(_WORD *)v4 = v6;
   *(_BYTE *)(v4 + 26) = 1;
   v8 = 0;
-  dword_19C594 = (int)sub_110D3C(v7, 200);
+  dword_19C594 = (int)(_DWORD*)sub_110D3C((PoolMemType*)v7, 200);
   do
   {
     v9 = (int16_t)v8;
@@ -8897,7 +8897,7 @@ int sub_9DB51( int a1)
   uint16_t v2; // dx
 
   sub_1112EC(dword_192EE8, 293);
-  dword_19C7C0 = (int)sub_110CEE(dword_192EE8, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 293);
   sub_9D977(a1);
   v2 = *(_WORD *)(dword_19C7C0 + 174);
   sub_1113CC(dword_192EE8, v2);
@@ -9684,14 +9684,14 @@ int sub_9EB42()
   int result; // eax
   int v10; // ebx
 
-  dword_19C7C0 = (int)sub_110CEE(dword_192ED4, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 293);
   memset(dword_19C7C0, 0, 293);
   v0 = sub_12DAA4(600, 300);
-  v1 = sub_110D3C(dword_192ED4, v0);
+  v1 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v0);
   *(_DWORD *)(dword_19C7C0 + 8) = v1;
   sub_12D8F5(600, 300, (int)v1);
   v2 = sub_12DAA4(50, 50);
-  dword_19C150 = (int)sub_110D3C(dword_192ED4, v2);
+  dword_19C150 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v2);
   v3 = sub_126B42((int)off_182314, 0, dword_192ED4);
   v4 = dword_192ED4;
   *(_DWORD *)(dword_19C7C0 + 4) = v3;
@@ -9797,7 +9797,7 @@ int sub_9EC4A(
 int16_t sub_9ED88( int a1)
 {
   sub_1112EC(dword_192ED4, 293);
-  dword_19C7C0 = (int)sub_110D3C(dword_192ED4, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 293);
   memset(dword_19C7C0, 0, 293);
   *(_BYTE *)(dword_19C7C0 + 104) = a1;
   sub_9D977(a1);
@@ -9817,7 +9817,7 @@ int sub_9EDE1()
   _DWORD *v2; // edx
   int result; // eax
 
-  dword_19C7C0 = (int)sub_110CEE(dword_192ED4, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 293);
   memset(dword_19C7C0, 0, 293);
   v0 = sub_126B42((int)aScoreLbx, 15, dword_192ED4);
   v1 = dword_192ED4;

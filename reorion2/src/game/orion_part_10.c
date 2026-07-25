@@ -140,7 +140,7 @@ void sub_9F712(int a1, int16_t *a2)
   v26 = 0;
   sub_1191CA((int)nullsub_15, 1);
   v5 = 0;
-  dword_19C7C0 = (int)sub_110CEE(dword_192ED4, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 293);
   v6 = 0;
   while ( 1 )
   {
@@ -459,7 +459,7 @@ void sub_9FCF0( int a1)
   v7 = 5 * (int16_t)v3;
   v8 = 0;
   v9 = 0;
-  v26 = sub_110D3C(dword_192ED4, v7);
+  v26 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   memset(v26, 0, v7);
   while ( v8 < word_199996 && !v29 )
   {
@@ -846,8 +846,8 @@ int sub_A0305()
 
   sub_5D41E();
   sub_11127C(dword_192EE8);
-  v24 = sub_110D3C(dword_192EE8, 360);
-  v0 = sub_110D3C(dword_192EE8, 288);
+  v24 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 360);
+  v0 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 288);
   sub_1112B4(dword_192EE8);
   memset(v0, 2, 288);
   v33 = 0;
@@ -3089,9 +3089,9 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   else
     v26 = 4;
   v11 = sub_12DAA4(288, 154);
-  dword_19D21C = (int)sub_110D3C(dword_192ED4, v11 + 10);
+  dword_19D21C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v11 + 10);
   v12 = sub_12DAA4(34, 34);
-  v13 = (int16_t *)sub_110D3C(dword_192ED4, v12 + 10);
+  v13 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v12 + 10);
   v25 = a5 + a3 + a8;
   v14 = a7 + a6 + a4;
   v15 = sub_127C27((int)aBuffer0Lbx_4, v28 + 77, dword_193174);
@@ -3968,7 +3968,7 @@ void sub_A404E( int a1)
   sub_1318D4(0, 255);
   sub_13AAC1();
   ServiceAudioTick_FE8BE(v3, 0, 0, 0);
-  dword_193184 = (int)sub_110D3C(dword_19D214, 70);
+  dword_193184 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_19D214, 70);
   v4 = (int16_t *)sub_127C27((int)aBuffer0Lbx_4, 73, dword_193174);
   v5 = *v4;
   word_192FE0[0] = v4[1];
@@ -4621,7 +4621,7 @@ void sub_A4E1B( int a1)
 {
   char v2[120]; // [esp+0h] [ebp-78h] BYREF
 
-  dword_193274 = (int)sub_110CEE(dword_19D214, 20);
+  dword_193274 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_19D214, 20);
   memset(dword_193274, 0, 20);
   sprintf(v2, "%d> %s", a1, (char *)(dword_19306C + 113 * a1));
   if ( strlen(v2) >= 0x14 )
@@ -5364,7 +5364,7 @@ int16_t sub_A59A1()
   sub_120940(2, (int)v32);
   v0 = 4172;
   sub_1112EC(dword_19D354, 4172);
-  v37 = (int16_t *)sub_110D3C(dword_19D354, 4172);
+  v37 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_19D354, 4172);
   v39 = 0;
   v38 = v29;
   v48 = 0;
@@ -5403,14 +5403,14 @@ int16_t sub_A59A1()
   {
     v6 = v39 + 72500;
     sub_13B9BD(dword_19D354, v39 + 72500);
-    v7 = sub_110CEE(dword_192ED4, v6);
+    v7 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, v6);
     byte_19D36A = 1;
     dword_19D354 = (int)v7;
   }
   v8 = 11;
   v36 = sub_126B42((int)aTextboxLbx, 3, dword_19D354);
   v46 = 0;
-  v9 = sub_110D3C(dword_19D354, 12500);
+  v9 = (_DWORD*)sub_110D3C((PoolMemType*)dword_19D354, 12500);
   dword_19D36B = (int)v9;
   do
   {
@@ -5704,12 +5704,12 @@ int sub_A62E0(int a1)
   {
     sub_1112EC(dword_192ED4, 1);
     byte_19D36A = 0;
-    v2 = sub_110D3C(dword_192ED4, a1 + 384);
+    v2 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, a1 + 384);
   }
   else
   {
     sub_13B9BD(dword_192ED4, a1 + 512);
-    v2 = sub_110CEE(dword_192ED4, a1 + 384);
+    v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, a1 + 384);
     byte_19D36A = 1;
   }
   dword_19D354 = (int)v2;
@@ -8028,9 +8028,9 @@ void sub_A9AED( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
     v11 = (int16_t)v10;
     v12 = (uint8_t)byte_182477[(int16_t)v10] * (uint8_t)byte_182477[(int16_t)v10] + 32;
     sub_1112EC(dword_192ED4, v9);
-    v13 = (int16_t *)sub_110D3C(dword_192ED4, v12);
+    v13 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v12);
     sub_12D8F5((uint8_t)byte_182477[v11], (uint8_t)byte_182477[v11], (int)v13);
-    v14 = (int16_t *)sub_110D3C(dword_192ED4, v12);
+    v14 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v12);
     sub_12D8F5((uint8_t)byte_182477[v11], (uint8_t)byte_182477[v11], (int)v14);
     if ( a7 || dword_18246B )
     {
@@ -8361,9 +8361,9 @@ _DWORD *sub_AA38D( int a1, int a2, int a3, int a4, int a5)
   v21 = sub_A9AAD(a3);
   v7 = (uint8_t)byte_182477[v21] * (uint8_t)byte_182477[v21] + 32;
   sub_1112EC(dword_192ED4, a2);
-  v8 = (int16_t *)sub_110D3C(dword_192ED4, v7);
+  v8 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   v9 = v7;
-  v10 = (int16_t *)sub_110D3C(dword_192ED4, v7);
+  v10 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   if ( word_182489 )
   {
     if ( a5 || dword_18246F )
@@ -9533,8 +9533,8 @@ _DWORD *sub_AC619( int a1, int a2, int a3, int a4)
   LOWORD(v8) = *(uint8_t *)(313 * v5 + dword_192864 + 34) - word_1998F2;
   v30 += a4 + 20 * v8;
   sub_1112EC(dword_192ED4, 22500);
-  v9 = (int16_t *)sub_110D3C(dword_192ED4, 22500);
-  v10 = (int16_t *)sub_110D3C(dword_192ED4, 22500);
+  v9 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 22500);
+  v10 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 22500);
   LOWORD(v11) = *(uint8_t *)(v7 + dword_192864 + 35);
   if ( (uint16_t)v11 > 4u && *(uint8_t *)(v7 + dword_192864 + 35) < 9u )
   {
@@ -9774,7 +9774,7 @@ _DWORD *sub_ACCDB( int a1)
   sub_1320E9((_BYTE *)dword_192944);
   sub_1112EC(dword_192ED4, 6);
   v8 = sub_111499(dword_192ED4);
-  v9 = sub_110D3C(dword_192ED4, v8 - 100);
+  v9 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v8 - 100);
   sub_12F578((int)v9, dword_192948);
   sub_12DAFC((int)v9);
   sub_128AB6(0, 0, 639, 350);
@@ -9867,7 +9867,7 @@ _BYTE *sub_ACE08( int a1, int a2, int a3)
   sub_1320E9((_BYTE *)dword_192944);
   sub_1112EC(dword_192ED4, v16);
   v17 = sub_111499(dword_192ED4);
-  v18 = sub_110D3C(dword_192ED4, v17 - 100);
+  v18 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v17 - 100);
   sub_12F578((int)v18, dword_192948);
   sub_12DAFC((int)v18);
   v19 = (int16_t)v24;
@@ -10129,7 +10129,7 @@ void sub_AD3CA( int a1, int a2)
   if ( word_1998F6 == 1 && !word_1998E0 )
   {
     sub_1112EC(dword_192ED4, 50000);
-    v2 = sub_110D3C(dword_192ED4, 50000);
+    v2 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 50000);
     v3 = 313 * a1;
     v4 = &v19;
     sub_49ED1(a1, &v19, &v17);
@@ -10220,7 +10220,7 @@ void sub_AD580( int a1, int a2)
   v23 = a2;
   sub_1112EC(dword_192ED4, 80);
   v3 = sub_12DAA4(80, 80);
-  v4 = (int16_t *)sub_110D3C(dword_192ED4, v3);
+  v4 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v3);
   sub_49ED1(a1, &v22, &v21);
   v22 += v23;
   v21 += v24;
@@ -10387,7 +10387,7 @@ _BOOL1 sub_AD98A( int a1, int a2, int a3)
     sub_12B79D(v4);
     sub_131F7B();
     sub_1112EC(dword_192ED4, 50000);
-    v20 = sub_110D3C(dword_192ED4, 50000);
+    v20 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 50000);
     sub_49ED1(a1, &v24, &v27);
     HIWORD(v5) = HIWORD(dword_192864);
     v6 = dword_192864 + 313 * a1;
@@ -11798,9 +11798,9 @@ int sub_AF542()
   do
   {
     if ( (_WORD)v0 )
-      v1 = sub_110D3C(dword_192F08, 11264);
+      v1 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192F08, 11264);
     else
-      v1 = sub_110CEE(dword_192F08, 11264);
+      v1 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192F08, 11264);
     dword_19D88C[(int16_t)v0] = (int)v1;
     result = j___clock((int16_t)v0, v1, v0);
     v3 = (int16_t)v0++;
@@ -11963,7 +11963,7 @@ _DWORD *sub_AF74F()
   _DWORD *result; // eax
 
   word_1828BA = -1;
-  result = sub_110D3C(dword_192ED4, 2806);
+  result = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 2806);
   dword_19DE8C = (int)result;
   return result;
 }

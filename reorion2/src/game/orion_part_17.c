@@ -4350,7 +4350,7 @@ void sub_106CAC( int a1)
   do
   {
     v5 = sub_12DAA4(24, 108);
-    v6 = sub_110D3C(dword_192ED4, v5);
+    v6 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v5);
     v7 = (uint16_t)v4++;
     v28[v7] = (int)v6;
   }
@@ -4359,7 +4359,7 @@ void sub_106CAC( int a1)
   do
   {
     v9 = sub_12DAA4(160, 20);
-    v10 = sub_110D3C(dword_192ED4, v9);
+    v10 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v9);
     v11 = (uint16_t)v8++;
     v29[v11] = v10;
   }
@@ -4583,15 +4583,15 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
   v26 = a4;
   sub_1112EC(dword_192ED4, 9);
   v5 = sub_12DAA4(24, 9);
-  v28 = (int16_t *)sub_110D3C(dword_192ED4, v5);
+  v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v5);
   sub_12D8F5(24, 9, (int)v28);
   sub_12F7E6(0, 0, *(int16_t **)(a1 + 92), v28);
   v6 = sub_12DAA4(24, 6);
-  v32 = (int16_t *)sub_110D3C(dword_192ED4, v6);
+  v32 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v6);
   sub_12D8F5(24, 6, (int)v32);
   sub_12F7E6(0, 0, *(int16_t **)(a1 + 100), v32);
   v7 = sub_12DAA4(24, 108);
-  v27 = (int16_t *)sub_110D3C(dword_192ED4, v7);
+  v27 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   sub_12D8F5(24, 108, (int)v27);
   sub_12F7E6(0, 0, *(int16_t **)(a1 + 88), v27);
   v8 = 0;
@@ -5428,7 +5428,7 @@ int sub_108073(int a1, int a2, int a3)
   {
     dword_1AD1E0 = (int)&v34[64 * (uint16_t)v3];
     qmemcpy(&v34[64 * (uint16_t)v3], &unk_183E15, 0x40u);
-    v4 = sub_110D3C(dword_192ED4, (uint16_t)word_183E0D[(uint16_t)v3]);
+    v4 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (uint16_t)word_183E0D[(uint16_t)v3]);
     v5 = dword_1AD1E0;
     *(_DWORD *)(dword_1AD1E0 + 22) = v4;
     sub_108611(v5, (int16_t)v3, v3);
@@ -5438,11 +5438,11 @@ int sub_108073(int a1, int a2, int a3)
     *(_BYTE *)(*(_DWORD *)(v6 + 22) + 6) = 0;
   }
   while ( (uint16_t)v3 < 4u );
-  v37 = sub_110D3C(dword_192ED4, 1404);
+  v37 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1404);
   v7 = sub_12DAA4(180, 150);
-  dword_1AD1F0 = (int)sub_110D3C(dword_192ED4, v7);
+  dword_1AD1F0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   v8 = sub_12DAA4(180, 48);
-  dword_1AD1EC = (int)sub_110D3C(dword_192ED4, v8);
+  dword_1AD1EC = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v8);
   v41 = 0;
   v38 = sub_126B42((int)aAppPicsLbx, 0, dword_192ED4);
   v9 = 0;
@@ -5977,7 +5977,7 @@ int sub_1089C6()
   byte_199BA3[0] = word_19999C;
   sub_102597(1, 1);
   v0 = sub_12DAA4(183, 20);
-  v1 = sub_110D3C(dword_192ED4, v0);
+  v1 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v0);
   v33 = v1;
   sub_12D8F5(183, 20, (int)v1);
   sub_120D79(2, (int)&unk_183B2E);
@@ -5987,7 +5987,7 @@ int sub_1089C6()
   {
     v2 = sub_12DAA4(183, 164);
     v3 = (uint16_t)v40;
-    v4 = sub_110D3C(dword_192ED4, v2);
+    v4 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v2);
     v37 = 4 * v3;
     *(_DWORD *)&v32[v37 + 32] = v4;
     sub_12D8F5(183, 164, (int)v4);
@@ -6571,7 +6571,7 @@ void sub_1093CD()
   v29 = 98;
   v28 = 118;
   v9 = 0;
-  v25 = sub_110D3C(dword_192ED4, 84);
+  v25 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 84);
   word_1AD1F4 = sub_113E65();
   sub_A6547(v24);
   v10 = 0;
@@ -6812,8 +6812,8 @@ void sub_10988E()
   dword_183EFD = (int)v26;
   v1 = sub_12DAA4(190, 314);
   v2 = dword_192ED4;
-  dword_1AD1F0 = (int)sub_110D3C(dword_192ED4, v1);
-  v32 = sub_110D3C(dword_192ED4, 1404);
+  dword_1AD1F0 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v1);
+  v32 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1404);
   sub_A6547(v29);
   v34 = sub_127233((int)v29, word_1AD1F8, v2, 80);
   v35 = 0;
@@ -8038,7 +8038,7 @@ LABEL_88:
       sub_124C08();
       ServiceAudioTick_FE8BE(v65, 25, v28, a1);
       v66 = sub_12DAA4(187, 25);
-      v67 = sub_110CEE(dword_192ED4, v66);
+      v67 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, v66);
       v68 = sub_12D8F5(187, 25, (int)v67);
       ServiceAudioTick_FE8BE(v68, 25, (int)v67, a1);
       v69 = dword_192ED4;
