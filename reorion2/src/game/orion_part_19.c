@@ -5618,7 +5618,7 @@ void sub_12643D(int a1, int a2)
   v3 = sub_111090();
   v2 = sub_110F89();
   printf("Linear Free = %dk   Dos Free = %dk\n", v2, v3);
-  exit(1, a2);
+  exit(1);
 }
 // 13F2D1: using guessed type _DWORD printf(char *, ...);
 
@@ -5628,7 +5628,7 @@ void sub_126487(char *a1, int a2)
 {
   sub_113DBD();
   printf("%s\n", a1);
-  exit(1, a2);
+  exit(1);
 }
 // 113DBD: using guessed type int sub_113DBD(void);
 // 13F2D1: using guessed type _DWORD printf(char *, ...);
@@ -6372,15 +6372,18 @@ _DWORD *sub_1279AF(int a1, int a2)
   v5 = a1 - 226500;
   if ( ((a1 - 226500) & 3) != 0 )
     v5 = 4 * (v3 >> 2) + 4;
-  v4 = (_DWORD *)sub_110DFE(v5 + 12);
+  v4 = PoolRawAlloc_110DFE(v5 + 12);
   if ( !v4 )
-    sub_110EC3(v3, a2);
+    PoolAllocAbort_110EC3(v3, a2);       // __noreturn - dale se nepokracuje
   *v4 = 0;
   v4[1] = v3;
   v4[2] = 0;
-  dword_1BC28C = sub_110DFE(226500);
+  // POZOR: dword_1BC28C drzi adresu jako int (viz pouziti nize v teto
+  // funkci) - stejny predexistujici vzorec jako u dword_1BC280/1BC284/
+  // 1BC288 tady i jinde v souboru; mimo rozsah teto opravy.
+  dword_1BC28C = (int)(intptr_t)PoolRawAlloc_110DFE(226500);
   if ( !dword_1BC28C )
-    sub_110EC3(226500, (int)v4);
+    PoolAllocAbort_110EC3(226500, (int)v4);  // __noreturn
   word_1BC290 = 0;
   for ( i = 0; i < 50; ++i )
   {

@@ -4648,7 +4648,7 @@ int sub_14DDF3( unsigned int a1, char *a2, int a3, int (*a4)(_DWORD, _DWORD, _DW
   int v4; // eax
 
   if ( !sub_13D2A6(0x8000u) )
-    exit(1, (int)a2);
+    exit(1);
   if ( !a4 )
     return -203;
   dword_1C3C68 = (int (*)(_DWORD, _DWORD, _DWORD))sub_13DABB;
@@ -4811,7 +4811,7 @@ int sub_14E069(int a1, int a2, int a3, int a4, int a5, int a6)
     v15 = sub_14F2F3(&dword_1C3C48, v7, v6);
   while ( v15 == 5 );
   if ( v15 == 1 )
-    exit(1, v7);
+    exit(1);
   return 1;
 }
 // 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
@@ -4930,7 +4930,7 @@ int sub_14E46B(int a1, int a2, int a3)
       LODWORD(v3) = sub_14F2F3(&dword_1C3C48, SHIDWORD(v3), 10);
     while ( (_DWORD)v3 == 5 );
     if ( (_DWORD)v3 == 1 )
-      exit(1, SHIDWORD(v3));
+      exit(1);
   }
   return v3;
 }
@@ -5888,7 +5888,7 @@ uint8_t *sub_14F93A( unsigned int a1, int a2, int a3, int a4, int a5, int a6, in
     }
     v12 = nmalloc(34);
     if ( !v12 )
-      exit(1, a2);
+      exit(1);
     *(_DWORD *)(v12 + 30) = 0;
     *(_BYTE *)v12 = v17;
     *(_BYTE *)(v12 + 1) = a3;
@@ -5935,7 +5935,7 @@ uint8_t *sub_14F93A( unsigned int a1, int a2, int a3, int a4, int a5, int a6, in
   {
     dword_1C40EA = nmalloc(34);
     if ( !dword_1C40EA )
-      exit(1, a2);
+      exit(1);
     v16 = dword_1C40EA;
     *(_DWORD *)(dword_1C40EA + 30) = 0;
     *(_BYTE *)v16 = v17;
@@ -5977,7 +5977,7 @@ int sub_14FB47(int a1, int a2, int a3, int a4)
   v9 = dword_1C40EA;
   v7 = nmalloc(34);
   if ( !v7 )
-    exit(1, a2);
+    exit(1);
   sub_14FDC5(&v8, v10, &v12);
   dword_189714 = v8;
   dword_189718 = v10[0];

@@ -910,14 +910,14 @@ LABEL_6:
   dword_193174 = (int)sub_1279AF(v2, v2);
   dword_193170 = v2;
 LABEL_7:
-  dword_192EE8 = (int)sub_110C62(10240, v2);
-  dword_193068 = (int)sub_110C62(20, 20);
+  dword_192EE8 = (int)PoolAllocFallback_110C62(10240, v2);
+  dword_193068 = (int)PoolAllocFallback_110C62(20, 20);
   sub_127776((_BYTE *)dword_193068, 0x14u);
-  dword_19306C = (int)sub_110C62(8136, 8136);
+  dword_19306C = (int)PoolAllocFallback_110C62(8136, 8136);
   sub_127776((_BYTE *)dword_19306C, 0x1FC8u);
-  dword_197F9C = (int)sub_110C62(64500, 64500);
+  dword_197F9C = (int)PoolAllocFallback_110C62(64500, 64500);
   sub_127776((_BYTE *)dword_197F9C, 0xFBF4u);
-  result = sub_110C62(3953, 3953);
+  result = PoolAllocFallback_110C62(3953, 3953);
   dword_1930DC = (int)result;
   sub_127776(result, 0xF71u);
   return result;

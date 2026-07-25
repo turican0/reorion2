@@ -2818,6 +2818,11 @@ int16_t IsMemPoolReady_110B5C()
 
 
 //----- (00110B89) --------------------------------------------------------
+// Zonovy alokator: pred kazdy blok si predsadi 12bajtovou hlavicku
+// (rezervovana velikost, puvodni pozadovana velikost a1, priznak) a vrati
+// ukazatel AZ ZA ni. a1 = pozadovana velikost v bajtech, a2 = kontext,
+// ktery se nepouziva primo tady, jen se predava dal do zalozni cesty a
+// do chyboveho hlaseni (viz PoolAllocFallback_110C62 / PoolAllocAbort_110EC3).
 _DWORD *PoolAlloc_110B89(int a1, int a2)
 {
   _DWORD *v4; // [esp+4h] [ebp-10h]
@@ -2825,12 +2830,12 @@ _DWORD *PoolAlloc_110B89(int a1, int a2)
 
   v5 = a1;
   if ( (a1 & 3) != 0 )
-    v5 = 4 * (a1 >> 2) + 4;
-  v4 = (_DWORD *)sub_110DFE(v5 + 12);
+    v5 = 4 * (a1 >> 2) + 4;              // zarovnani na nasobek 4 nahoru
+  v4 = PoolRawAlloc_110DFE(v5 + 12);
   if ( !v4 )
-    v4 = sub_110C62(v5 + 12, a2);
+    v4 = PoolAllocFallback_110C62(v5 + 12, a2);
   if ( !v4 )
-    sub_110EC3(a1, a2);
+    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
   *v4 = 0;
   v4[1] = a1;
   v4[2] = 0;
@@ -2846,7 +2851,10 @@ int sub_110C29(int a1)
 
 
 //----- (00110C62) --------------------------------------------------------
-_DWORD *sub_110C62(int a1, int a2)
+// Zalozni cesta PoolAlloc_110B89: stejna hlavicka jako u nej, ale bloku
+// se ziskava pres sub_110E36 (DPMI/port-memory "near heap" nahrada)
+// misto primeho nmalloc.
+_DWORD *PoolAllocFallback_110C62(int a1, int a2)
 {
   _DWORD *v4; // [esp+4h] [ebp-10h]
   int v5; // [esp+Ch] [ebp-8h]
@@ -2856,7 +2864,7 @@ _DWORD *sub_110C62(int a1, int a2)
     v5 = 4 * (a1 >> 2) + 4;
   v4 = (_DWORD *)sub_110E36(v5 + 12);
   if ( !v4 )
-    sub_110EC3(a1, a2);
+    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
   *v4 = 0;
   v4[1] = a1;
   v4[2] = 0;
@@ -2895,11 +2903,16 @@ _DWORD *sub_110D3C(int a1, int a2)
 
 
 //----- (00110DFE) --------------------------------------------------------
-int sub_110DFE(int a1)
+// "Rychla cesta" PoolAlloc_110B89: primy obal nad nmalloc/PortMemory_Alloc,
+// bez zalozni logiky. DULEZITA OPRAVA: puvodne vracelo `int` (dekompilator
+// pouzil odhadnuty typ "int nmalloc(_DWORD)"), cimz se na x64 orezaval
+// horni polovina skutecneho ukazatele vraceneho z nmalloc (void*) - vsechna
+// volajici mista jej pak stejne pretypovavala zpet na _DWORD*, takze slo o
+// tichou ztratu horni 32bitove casti adresy. Ted se vraci rovnou ukazatel.
+_DWORD *PoolRawAlloc_110DFE(int a1)
 {
-  return nmalloc(a1);
+  return (_DWORD *)nmalloc(a1);
 }
-// 13CB78: using guessed type int nmalloc(_DWORD);
 
 
 //----- (00110E36) --------------------------------------------------------
@@ -2907,7 +2920,7 @@ int sub_110DFE(int a1)
 // MEMORY BLOCK, INT 31h): prevede bajty na paragrafy (16 B), vrati
 // 16*segment = linearni adresu bloku POD 1 MiB. Hra ji pouziva primo
 // (sub_113E08: 8KiB buffer, jehoz adresu deli 16 zpet na "segment") i
-// jako zalozni cestu PoolAlloc_110B89/sub_110C62.
+// jako zalozni cestu PoolAlloc_110B89/PoolAllocFallback_110C62.
 // VLNA 11 - PORT: zadny real mode neexistuje; puvodni telo s int386
 // stubem cetlo NEINICIALIZOVANY vystupni buffer (v3[6]) a vracelo bud
 // falesne selhani (-> "Insufficient Memory!" a drive nekonecna sonda
@@ -2933,7 +2946,14 @@ int sub_110E36(int a1)
 
 
 //----- (00110EC3) --------------------------------------------------------
-void sub_110EC3(int a1, int a2)
+// Fatalni chyba "dosla pamet" - vypise diagnostiku a ukonci proces.
+// V .asm oznaceno primo jako "__noreturn" (viz sub_110EC3+... XREFs);
+// puvodne dekompilovano jako exit(1, a2) se dvema parametry - overeno
+// v .asm (viz sub_110EC3+... "mov eax, 1 / call exit_"), ze se reálně
+// preda jen EAX=1: a2 byl falesny druhy parametr z chybneho odhadu
+// dekompilatoru (zbytek "zivy" v EDX pri volani), skutecny exit() bere
+// jen jeden int. Opraveno na exit(1).
+void PoolAllocAbort_110EC3(int a1, int a2)
 {
   int v2; // eax
   int v3; // eax
@@ -2946,7 +2966,7 @@ void sub_110EC3(int a1, int a2)
   printf("Linear space remaining %d bytes\n", v2);
   v3 = sub_111090();
   printf("Dos space remaining %d bytes\n", v3);
-  exit(1, a2);
+  exit(1);
 }
 // 13F2D1: using guessed type _DWORD printf(char *, ...);
 
@@ -2956,7 +2976,7 @@ void sub_110F3A(int a1, int a2, int a3)
 {
   sub_113DBD();
   printf("Unable to Allocate %d bytes (short by %d bytes) in a block size of %d!\n\n", a1, a2, a3);
-  exit(1, a2);
+  exit(1);
 }
 // 13F2D1: using guessed type _DWORD printf(char *, ...);
 
@@ -2983,7 +3003,7 @@ unsigned int sub_110F89()
 
 
 //----- (00110FE7) --------------------------------------------------------
-// "Linear space remaining" (vola se jen z chyboveho hlaseni sub_110EC3):
+// "Linear space remaining" (vola se jen z chyboveho hlaseni PoolAllocAbort_110EC3):
 // klasicka Watcom sonda volne pameti - alokovala rostouci bloky (po 8 KiB,
 // pak po 1 KiB), dokud nmalloc neselhal, a vratila memavl() + posledni
 // velikost. VLNA 11 - PORT: presne tady se port zasekaval, ze DVOU duvodu:
@@ -3048,11 +3068,11 @@ _DWORD *sub_111131(int a1, int a2)
 {
   _DWORD *v4; // [esp+4h] [ebp-8h]
 
-  v4 = (_DWORD *)sub_110DFE(a1);
+  v4 = PoolRawAlloc_110DFE(a1);
   if ( !v4 )
-    v4 = sub_110C62(a1, a2);
+    v4 = PoolAllocFallback_110C62(a1, a2);
   if ( !v4 )
-    sub_110EC3(a1, a2);
+    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
   return v4;
 }
 
@@ -3570,7 +3590,7 @@ void sub_111F3E()
     {
       printf("\r\nCould not register timer with AIL.\r\n");
       sub_13F7BC();
-      exit(255, 0);
+      exit(255);
     }
     sub_1402FD(v0, 0x3Cu);
     PortDebug_Checkpoint("111F3E.after_1402FD", 0);
@@ -4979,7 +4999,7 @@ int sub_113E08(int a1, int a2)
 {
   int result; // eax
 
-  dword_1B06F8 = (unsigned int)sub_110C62(0x2000, a2) >> 4;
+  dword_1B06F8 = (unsigned int)PoolAllocFallback_110C62(0x2000, a2) >> 4;
   dword_1B06FC = 16 * dword_1B06F8;
   word_1B0700 = dword_1B06F8;
   result = 16 * dword_1B06F8;

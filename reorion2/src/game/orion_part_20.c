@@ -6723,7 +6723,7 @@ int sub_13982D(int a1, int a2, int a3, int a4, int a5)
 void sub_13998F(int a1, int a2)
 {
   if ( !byte_184654 )
-    exit(1, a2);
+    exit(1);
   if ( (dword_184650 & 1) != 0 )
     ++dword_184650;
 }
