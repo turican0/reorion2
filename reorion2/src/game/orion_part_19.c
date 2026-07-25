@@ -2366,7 +2366,7 @@ int sub_120526(int a1)
   else
   {
     v3 = sub_126ABD(a1, 0);
-    dword_1B3E78 = (int)PoolAlloc_110B89(12644, 0);
+    dword_1B3E78 = (int)PoolAlloc_110B89(12644);
   }
   dword_184514 = (int)v3;
   sub_12779E(byte_1BA318, v3, 0x40u);
@@ -5090,12 +5090,12 @@ int sub_12537D(int a1, int a2)
   unsigned int v2; // edx
   int result; // eax
 
-  dword_1BB90C = (int)PoolAlloc_110B89(a1 + 46, a2);
-  dword_1BB8FC = (int)PoolAlloc_110B89(a1 + 46, a2);
+  dword_1BB90C = (int)PoolAlloc_110B89(a1 + 46);
+  dword_1BB8FC = (int)PoolAlloc_110B89(a1 + 46);
   sub_127678((char *)dword_1BB90C, dword_18453C, 0);
   v2 = sub_127678((char *)dword_1BB8FC, dword_18453C, 0);
-  dword_1BB908 = (int)PoolAlloc_110B89(4 * a2, v2);
-  dword_1BB8C0 = (int)PoolAlloc_110B89(4 * a2, v2);
+  dword_1BB908 = (int)PoolAlloc_110B89(4 * a2);
+  dword_1BB8C0 = (int)PoolAlloc_110B89(4 * a2);
   sub_127678((char *)dword_1BB908, 4 * a2, 0);
   result = dword_1BB8C0;
   sub_127678((char *)dword_1BB8C0, 4 * a2, 0);
@@ -6374,7 +6374,7 @@ _DWORD *sub_1279AF(int a1, int a2)
     v5 = 4 * (v3 >> 2) + 4;
   v4 = PoolRawAlloc_110DFE(v5 + 12);
   if ( !v4 )
-    PoolAllocAbort_110EC3(v3, a2);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(v3);       // __noreturn - dale se nepokracuje
   *v4 = 0;
   v4[1] = v3;
   v4[2] = 0;
@@ -6383,7 +6383,7 @@ _DWORD *sub_1279AF(int a1, int a2)
   // 1BC288 tady i jinde v souboru; mimo rozsah teto opravy.
   dword_1BC28C = (int)(intptr_t)PoolRawAlloc_110DFE(226500);
   if ( !dword_1BC28C )
-    PoolAllocAbort_110EC3(226500, (int)v4);  // __noreturn
+    PoolAllocAbort_110EC3(226500);  // __noreturn
   word_1BC290 = 0;
   for ( i = 0; i < 50; ++i )
   {

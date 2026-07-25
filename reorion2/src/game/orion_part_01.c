@@ -59,7 +59,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   // bere prvni parametr jako POCET BAJTU k alokaci (viz jeho definice),
   // takze 0x64000 (400 KB) je smysluplna velikost jednorazove alokovaneho
   // pool bufferu, ne adresa k dereferenci.
-  dword_19916C = (int)PoolAlloc_110B89(0x64000, (int)v5);
+  dword_19916C = (int)PoolAlloc_110B89(0x64000);
   PortDebug_Checkpoint("GameMain.pool64000.done", dword_19916C != 0);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
@@ -873,14 +873,14 @@ _BYTE *sub_10CB5(int a1, int a2)
   // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
   // (runtime EIP = IDA adresa + 0x224000).
   PortDebug_Checkpoint("sub_10CB5.enter", a1);
-  dword_192EF4 = (int)PoolAlloc_110B89(1790000, a2);
-  dword_193178 = (int)PoolAlloc_110B89(30000, a2);
-  dword_19A00C = (int)PoolAlloc_110B89(1000, a2);
-  dword_1930D4 = (int)PoolAlloc_110B89(6120, 6120);
+  dword_192EF4 = (int)PoolAlloc_110B89(1790000);
+  dword_193178 = (int)PoolAlloc_110B89(30000);
+  dword_19A00C = (int)PoolAlloc_110B89(1000);
+  dword_1930D4 = (int)PoolAlloc_110B89(6120);
   sub_127776((_BYTE *)dword_1930D4, 0x17E8u);
-  dword_197F98 = (int)PoolAlloc_110B89(30024, 30024);
+  dword_197F98 = (int)PoolAlloc_110B89(30024);
   sub_127776((_BYTE *)dword_197F98, 0x7548u);
-  dword_192B18 = (int)PoolAlloc_110B89(90250, 90250);
+  dword_192B18 = (int)PoolAlloc_110B89(90250);
   v2 = sub_127776((_BYTE *)dword_192B18, 90250u);
   if ( sub_127880() )
   {
@@ -904,20 +904,20 @@ LABEL_6:
     v3 = sub_1279AF(dword_193170, v2);
     goto LABEL_6;
   }
-  v4 = PoolAlloc_110B89(256000, v2);
+  v4 = PoolAlloc_110B89(256000);
   v2 -= 266000;
   dword_192EF0 = (int)v4;
   dword_193174 = (int)sub_1279AF(v2, v2);
   dword_193170 = v2;
 LABEL_7:
-  dword_192EE8 = (int)PoolAllocFallback_110C62(10240, v2);
-  dword_193068 = (int)PoolAllocFallback_110C62(20, 20);
+  dword_192EE8 = (int)PoolAllocFallback_110C62(10240);
+  dword_193068 = (int)PoolAllocFallback_110C62(20);
   sub_127776((_BYTE *)dword_193068, 0x14u);
-  dword_19306C = (int)PoolAllocFallback_110C62(8136, 8136);
+  dword_19306C = (int)PoolAllocFallback_110C62(8136);
   sub_127776((_BYTE *)dword_19306C, 0x1FC8u);
-  dword_197F9C = (int)PoolAllocFallback_110C62(64500, 64500);
+  dword_197F9C = (int)PoolAllocFallback_110C62(64500);
   sub_127776((_BYTE *)dword_197F9C, 0xFBF4u);
-  result = PoolAllocFallback_110C62(3953, 3953);
+  result = PoolAllocFallback_110C62(3953);
   dword_1930DC = (int)result;
   sub_127776(result, 0xF71u);
   return result;

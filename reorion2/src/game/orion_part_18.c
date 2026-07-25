@@ -2823,23 +2823,23 @@ int16_t IsMemPoolReady_110B5C()
 // ukazatel AZ ZA ni. a1 = pozadovana velikost v bajtech, a2 = kontext,
 // ktery se nepouziva primo tady, jen se predava dal do zalozni cesty a
 // do chyboveho hlaseni (viz PoolAllocFallback_110C62 / PoolAllocAbort_110EC3).
-_DWORD *PoolAlloc_110B89(int a1, int a2)
+uint32_t* PoolAlloc_110B89(int size)
 {
-  _DWORD *v4; // [esp+4h] [ebp-10h]
-  int v5; // [esp+Ch] [ebp-8h]
+  uint32_t* header=0; // [esp+4h] [ebp-10h]
+  int alignedSize; // [esp+Ch] [ebp-8h]
 
-  v5 = a1;
-  if ( (a1 & 3) != 0 )
-    v5 = 4 * (a1 >> 2) + 4;              // zarovnani na nasobek 4 nahoru
-  v4 = PoolRawAlloc_110DFE(v5 + 12);
-  if ( !v4 )
-    v4 = PoolAllocFallback_110C62(v5 + 12, a2);
-  if ( !v4 )
-    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
-  *v4 = 0;
-  v4[1] = a1;
-  v4[2] = 0;
-  return v4 + 3;
+  alignedSize = a1;
+  if ( (size & 3) != 0 )
+      alignedSize = 4 * (size >> 2) + 4;              // zarovnani na nasobek 4 nahoru
+  header = PoolRawAlloc_110DFE(alignedSize + 12);
+  if ( !header)
+      header = PoolAllocFallback_110C62(alignedSize + 12);
+  if ( !header)
+    PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
+  header[0] = 0;
+  header[1] = size;
+  header[2] = 0;
+  return header + 3;
 }
 
 
@@ -2854,21 +2854,21 @@ int sub_110C29(int a1)
 // Zalozni cesta PoolAlloc_110B89: stejna hlavicka jako u nej, ale bloku
 // se ziskava pres sub_110E36 (DPMI/port-memory "near heap" nahrada)
 // misto primeho nmalloc.
-_DWORD *PoolAllocFallback_110C62(int a1, int a2)
+_DWORD* PoolAllocFallback_110C62(int size)
 {
-  _DWORD *v4; // [esp+4h] [ebp-10h]
-  int v5; // [esp+Ch] [ebp-8h]
+  _DWORD* header; // [esp+4h] [ebp-10h]
+  int alignedSize; // [esp+Ch] [ebp-8h]
 
-  v5 = a1;
-  if ( (a1 & 3) != 0 )
-    v5 = 4 * (a1 >> 2) + 4;
-  v4 = (_DWORD *)sub_110E36(v5 + 12);
-  if ( !v4 )
-    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
-  *v4 = 0;
-  v4[1] = a1;
-  v4[2] = 0;
-  return v4 + 3;
+  alignedSize = size;
+  if ( (size & 3) != 0 )
+      alignedSize = 4 * (size >> 2) + 4;
+  header = (_DWORD *)sub_110E36(alignedSize + 12);
+  if ( !header)
+    PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
+  header[0] = 0;
+  header[1] = size;
+  header[2] = 0;
+  return header + 3;
 }
 
 
@@ -2953,19 +2953,14 @@ int sub_110E36(int a1)
 // preda jen EAX=1: a2 byl falesny druhy parametr z chybneho odhadu
 // dekompilatoru (zbytek "zivy" v EDX pri volani), skutecny exit() bere
 // jen jeden int. Opraveno na exit(1).
-void PoolAllocAbort_110EC3(int a1, int a2)
+void PoolAllocAbort_110EC3(int size)
 {
-  int v2; // eax
-  int v3; // eax
-
-  PortDebug_Checkpoint("110EC3.attempted_bytes", a1); // kolik chtel alokovat
+  PortDebug_Checkpoint("110EC3.attempted_bytes", size); // kolik chtel alokovat
   sub_113DBD();
   printf("Insufficient Memory!\n\n");
-  printf("Attempted to allocate %d bytes\n", a1);
-  v2 = sub_110FE7();
-  printf("Linear space remaining %d bytes\n", v2);
-  v3 = sub_111090();
-  printf("Dos space remaining %d bytes\n", v3);
+  printf("Attempted to allocate %d bytes\n", size);
+  printf("Linear space remaining %d bytes\n", sub_110FE7());
+  printf("Dos space remaining %d bytes\n", sub_111090());
   exit(1);
 }
 // 13F2D1: using guessed type _DWORD printf(char *, ...);
@@ -3070,9 +3065,9 @@ _DWORD *sub_111131(int a1, int a2)
 
   v4 = PoolRawAlloc_110DFE(a1);
   if ( !v4 )
-    v4 = PoolAllocFallback_110C62(a1, a2);
+    v4 = PoolAllocFallback_110C62(a1);
   if ( !v4 )
-    PoolAllocAbort_110EC3(a1, a2);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(a1);       // __noreturn - dale se nepokracuje
   return v4;
 }
 
@@ -4999,7 +4994,7 @@ int sub_113E08(int a1, int a2)
 {
   int result; // eax
 
-  dword_1B06F8 = (unsigned int)PoolAllocFallback_110C62(0x2000, a2) >> 4;
+  dword_1B06F8 = (unsigned int)PoolAllocFallback_110C62(0x2000) >> 4;
   dword_1B06FC = 16 * dword_1B06F8;
   word_1B0700 = dword_1B06F8;
   result = 16 * dword_1B06F8;

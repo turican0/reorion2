@@ -3122,7 +3122,7 @@ _DWORD *sub_144348(int a1, int a2)
   sub_14475C();
   if ( dword_1BBA52 >> 16 >= 5 )
   {
-    result = PoolAlloc_110B89(20000, a2);
+    result = PoolAlloc_110B89(20000);
     dword_1B3E74 = (int)result;
     word_1B43A8[0] = 19;
     word_1B43B8[0] = 0;
@@ -3190,7 +3190,7 @@ _DWORD *sub_144348(int a1, int a2)
   }
   else
   {
-    result = PoolAlloc_110B89(20000, a2);
+    result = PoolAlloc_110B89(20000);
     dword_1B3E74 = (int)result;
     word_1B43A8[0] = 8;
     word_1B43B8[0] = 0;
