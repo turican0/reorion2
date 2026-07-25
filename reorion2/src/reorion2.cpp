@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     // Treti parametr dekompilovaneho vstupu (a3) neni ve standardnim main
     // dostupny, puvodni volajici (DOS startup kod) do nej pravdepodobne
     // predaval PSP/env blok - zatim nullptr, viz DECOMP_TODO v port_dos.h.
-    GameMain_10057(argc, reinterpret_cast<intptr_t>(argv), nullptr);
+    GameMain_10057(argc, argv, nullptr);
 
     // GameMain_10057 je (interne kdyz nekonci hru, zavola exit()
     // pres RunGameAndExit_113D47 -> atexit(...)), takze se sem beh nikdy

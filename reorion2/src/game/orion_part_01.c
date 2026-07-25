@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x10057 - 0x23563  (200 funkci) */
 
 //----- (00010057) --------------------------------------------------------
-void GameMain_10057(int a1, intptr_t a2, int16_t *a3)
+void GameMain_10057(int argc, char** argv, int16_t *a3)
 {
   // DECOMP_TODO: docasny bezpecny placeholder (misto puvodni neinicializovane
   // promenne - stejna trida chyby jako u ParseCommandLine_107E6/vlna 02).
@@ -15,19 +15,19 @@ void GameMain_10057(int a1, intptr_t a2, int16_t *a3)
   _BYTE v5[32]; // [esp+6Ch] [ebp+3Eh] BYREF
   char v6[16]; // [esp+9Ch] [ebp+6Eh] BYREF
 
-  PortDebug_Checkpoint("GameMain_10057.enter", a1);
+  PortDebug_Checkpoint("GameMain_10057.enter", argc);
   byte_199F19 = -1;
   byte_199F36 = 1;
   word_1999EC = 1;
   word_1999EA = 20;
   word_1999EE = 20;
   byte_19A006 = -1;
-  // a1/a2 jsou tady porad nedotcene argc/argv teto funkce (GameMain_10057) -
+  // argc/argv jsou tady porad nedotcene argc/argv teto funkce (GameMain_10057) -
   // presne ty hodnoty, ktere ParseCommandLine_107E6 drive cetla z
   // neinicializovanych promennych. Viz DECOMP_TODO u ParseCommandLine_107E6.
-  ParseCommandLine_107E6(a1, (char**)a2);
+  ParseCommandLine_107E6(argc, argv);
   PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
-  sub_FE8BE(v3, a1, a2, a3);
+  sub_FE8BE(v3, argc, (intptr_t)argv, a3);
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
   PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
@@ -171,10 +171,10 @@ void GameMain_10057(int a1, intptr_t a2, int16_t *a3)
     // Prekopirovani argv[1] do jmena savu (jen kdyz argc>=2) - 010299.
     // DECOMP_TODO: word_18FF78 je puvodne vetsi buffer (IDA ho zmensila na
     // int16_t); pri argc>=2 se sem strcpy jmeno savu. Default argc==1.
-    if ( a1 < 2 )
+    if ( argc < 2 )
       *(char *)&word_18FF78 = 0;
     else
-      strcpy((char *)&word_18FF78, ((char **)a2)[1]);
+      strcpy((char *)&word_18FF78, argv[1]);
 
     // Vyber pocatecniho herniho stavu (word_199A08) - 0102BD..010360.
     if ( byte_19A007 )
