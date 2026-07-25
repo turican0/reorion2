@@ -9169,40 +9169,40 @@ int sub_8440E()
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_85593();
-  ServiceAudioTick_FE8BE(v0);
+  ServiceAudioTick_FE8BE(v0, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_85320();
-  ServiceAudioTick_FE8BE(v1);
+  ServiceAudioTick_FE8BE(v1, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_85550();
-  ServiceAudioTick_FE8BE(v2);
+  ServiceAudioTick_FE8BE(v2, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   for ( i = 0; i < word_19999A; ++i )
     sub_83741(i);
-  ServiceAudioTick_FE8BE(v3);
+  ServiceAudioTick_FE8BE(v3, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_88CB7();
-  ServiceAudioTick_FE8BE(v5);
+  ServiceAudioTick_FE8BE(v5, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_83BF9();
-  ServiceAudioTick_FE8BE(v6);
+  ServiceAudioTick_FE8BE(v6, 0, 0, 0);
   sub_128AB6(22, 22, 527, 421);
   sub_12B634();
   sub_A070F(1);
-  ServiceAudioTick_FE8BE(v7);
+  ServiceAudioTick_FE8BE(v7, 0, 0, 0);
   sub_128BE7();
   sub_12B65C();
   sub_87BAE();
-  result = ServiceAudioTick_FE8BE(v8);
+  result = ServiceAudioTick_FE8BE(v8, 0, 0, 0);
   if ( byte_199F3A )
   {
     LOBYTE(v10) = sub_83D06();
-    return ServiceAudioTick_FE8BE(v10);
+    return ServiceAudioTick_FE8BE(v10, 0, 0, 0);
   }
   return result;
 }

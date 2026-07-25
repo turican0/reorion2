@@ -3967,7 +3967,7 @@ void sub_A404E( int a1)
   v2 = 113 * a1;
   sub_1318D4(0, 255);
   sub_13AAC1();
-  ServiceAudioTick_FE8BE(v3);
+  ServiceAudioTick_FE8BE(v3, 0, 0, 0);
   dword_193184 = (int)sub_110D3C(dword_19D214, 70);
   v4 = (int16_t *)sub_127C27((int)aBuffer0Lbx_4, 73, dword_193174);
   v5 = *v4;
@@ -3981,7 +3981,7 @@ void sub_A404E( int a1)
   v29 = 0;
   v10 = 0;
   dword_19D218 = dword_190470[v9];
-  ServiceAudioTick_FE8BE(dword_19D218);
+  ServiceAudioTick_FE8BE(dword_19D218, 0, 0, 0);
   byte_19D32D = 1;
   while ( 1 )
   {
@@ -4025,7 +4025,7 @@ void sub_A404E( int a1)
     }
     if ( ++v29 >= 5 )
     {
-      ServiceAudioTick_FE8BE(v19);
+      ServiceAudioTick_FE8BE(v19, 0, 0, 0);
       if ( v10 )
       {
         sub_13AC01(192, 64);
@@ -4043,7 +4043,7 @@ void sub_A404E( int a1)
       }
       v23 = sub_111499(dword_19D214);
       byte_199F1D = 0;
-      ServiceAudioTick_FE8BE(v23);
+      ServiceAudioTick_FE8BE(v23, 0, 0, 0);
       qsort(dword_193184, 5, 14, sub_A5045);
       if ( !byte_199F18 && !sub_A44FC(a1, word_19999C) )
         sub_8F6DF(*(uint8_t *)(113 * a1 + dword_19306C + 22) + 15, byte_19D228);

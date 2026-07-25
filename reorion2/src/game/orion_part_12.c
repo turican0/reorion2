@@ -8021,7 +8021,7 @@ void sub_C5BB9()
     {
       v2 = sub_132C80(i);
       byte_18319C = i;
-      ServiceAudioTick_FE8BE(v2);
+      ServiceAudioTick_FE8BE(v2, 0, 0, 0);
       v0 = 1;
     }
     if ( v0 )
@@ -8054,7 +8054,7 @@ void sub_C5C44()
     {
       v1 = sub_132C80(i);
       byte_18319C = i;
-      ServiceAudioTick_FE8BE(v1);
+      ServiceAudioTick_FE8BE(v1, 0, 0, 0);
     }
   }
   sub_124C08();

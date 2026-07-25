@@ -9059,27 +9059,27 @@ int sub_BB954(int a1, int a2)
   _DWORD *v9; // eax
 
   v2 = sub_B0A24();
-  ServiceAudioTick_FE8BE(v2);
+  ServiceAudioTick_FE8BE(v2, 0, 0, 0);
   v3 = sub_C52F6();
-  ServiceAudioTick_FE8BE(v3);
+  ServiceAudioTick_FE8BE(v3, 0, 0, 0);
   dword_19F7C0 = (int)sub_110D3C(dword_192ED4, 3632);
   v4 = sub_110D3C(dword_192ED4, 3632);
   word_182C1D = -1;
   word_182C9A = -1;
   dword_182C96 = -1;
   dword_19F7CC = (int)v4;
-  ServiceAudioTick_FE8BE(v4);
+  ServiceAudioTick_FE8BE(v4, 0, 0, 0);
   v5 = sub_110D3C(dword_192ED4, 14432);
   word_182C1F = -1;
   dword_19DD8C = (int)v5;
-  ServiceAudioTick_FE8BE(v5);
+  ServiceAudioTick_FE8BE(v5, 0, 0, 0);
   v6 = sub_BB8DD();
-  ServiceAudioTick_FE8BE(v6);
+  ServiceAudioTick_FE8BE(v6, 0, 0, 0);
   sub_B5FBE();
   v7 = sub_AF74F();
-  ServiceAudioTick_FE8BE(v7);
+  ServiceAudioTick_FE8BE(v7, 0, 0, 0);
   v8 = sub_BB91D();
-  ServiceAudioTick_FE8BE(v8);
+  ServiceAudioTick_FE8BE(v8, 0, 0, 0);
   v9 = sub_BB822();
   return nullsub_7(v9, a2);
 }
@@ -9105,7 +9105,7 @@ int sub_BBA8E(int a1)
   int result; // eax
 
   v1 = a1;
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   switch ( v1 )
   {
     case 0:

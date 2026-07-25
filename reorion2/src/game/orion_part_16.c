@@ -1157,7 +1157,7 @@ void sub_F69FE(int a1, int a2, int a3, int16_t *a4)
       {
         v5 = -1;
       }
-      ServiceAudioTick_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4, 0, 0, 0);
       ++byte_18360A;
       v31 = v5;
       if ( v5 != -1 && !sub_139127() )
@@ -2725,7 +2725,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
       qmemcpy(v29, (void *)(v8 + dword_197F98 + 279), 0xD4u);
       v29 += 212;
     }
-    v9 = ServiceAudioTick_FE8BE(v8);
+    v9 = ServiceAudioTick_FE8BE(v8, 0, 0, 0);
     v32 = 67;
     while ( (int16_t)v32 > 0 )
     {
@@ -2735,7 +2735,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
       v29 += 2;
       qmemcpy(v29, (void *)(v10 + dword_1930DC), 0x3Bu);
       v29 += 59;
-      v9 = ServiceAudioTick_FE8BE(v10);
+      v9 = ServiceAudioTick_FE8BE(v10, 0, 0, 0);
     }
     v32 = -1;
     qmemcpy(v29, &v32, 2u);
@@ -2743,7 +2743,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
     LOWORD(v9) = word_199998;
     while ( (int16_t)v9 > 0 )
       qmemcpy(v29++, (void *)(v3 + 66 + (int16_t)--v9), sizeof(char));
-    ServiceAudioTick_FE8BE(v9);
+    ServiceAudioTick_FE8BE(v9, 0, 0, 0);
     qmemcpy(v29, &word_199996, 2u);
     v11 = v3 + 10;
     v29 += 2;
@@ -2770,7 +2770,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
       }
     }
     while ( v11 != v30 );
-    ServiceAudioTick_FE8BE(v11);
+    ServiceAudioTick_FE8BE(v11, 0, 0, 0);
     qmemcpy(v29, &word_199994, 2u);
     v33 = 0;
     v29 += 2;
@@ -2787,7 +2787,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
         v29 += 2;
         qmemcpy(v29, (void *)(v16 + dword_197F9C), 0x81u);
         v29 += 129;
-        ServiceAudioTick_FE8BE(v16);
+        ServiceAudioTick_FE8BE(v16, 0, 0, 0);
       }
       ++v33;
     }
@@ -2795,7 +2795,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
     qmemcpy(v29, &v33, 2u);
     v29 += 2;
   }
-  ServiceAudioTick_FE8BE(v6);
+  ServiceAudioTick_FE8BE(v6, 0, 0, 0);
   if ( v29 - v31 > 0x8000 )
   {
     v34 = (v29 - v31 + 30719) / 30720;
@@ -2809,7 +2809,7 @@ _DWORD *sub_F88D8(int a1, int a2, void *a3)
       if ( i >= v29 )
         break;
       v22 = v29 - i;
-      v23 = ServiceAudioTick_FE8BE(v24);
+      v23 = ServiceAudioTick_FE8BE(v24, 0, 0, 0);
       if ( v22 > 30720 )
         v22 = 30720;
       do
@@ -2877,7 +2877,7 @@ void sub_F8C8E(char *a1)
   qmemcpy(v15, a1 + 2, sizeof(v15));
   v16 = a1 + 46;
   v2 = sub_E6903(v15);
-  ServiceAudioTick_FE8BE(v2);
+  ServiceAudioTick_FE8BE(v2, 0, 0, 0);
   v17 = v1;
   if ( word_1AAF86 != word_1AAF5E )
   {
@@ -2899,16 +2899,16 @@ void sub_F8C8E(char *a1)
         v4 = 59 * (int16_t)i;
         qmemcpy((void *)(v4 + dword_1930DC), v16, 0x3Bu);
         v16 += 59;
-        ServiceAudioTick_FE8BE(v4);
+        ServiceAudioTick_FE8BE(v4, 0, 0, 0);
       }
     }
     while ( (int16_t)i != -1 );
-    ServiceAudioTick_FE8BE(-1);
+    ServiceAudioTick_FE8BE(-1, 0, 0, 0);
     v5 = word_199998;
     v6 = v17 + 66;
     while ( v5 > 0 )
       qmemcpy((void *)(v6 + --v5), v16++, 1u);
-    v7 = ServiceAudioTick_FE8BE(v6);
+    v7 = ServiceAudioTick_FE8BE(v6, 0, 0, 0);
     v8 = 5;
     qmemcpy(&word_199996, v16, sizeof(word_199996));
     v16 += 2;
@@ -2942,7 +2942,7 @@ void sub_F8C8E(char *a1)
       }
     }
     while ( v8 > 0 );
-    v13 = ServiceAudioTick_FE8BE(v7);
+    v13 = ServiceAudioTick_FE8BE(v7, 0, 0, 0);
     qmemcpy(&word_199994, v16, sizeof(word_199994));
     LOWORD(v13) = word_199994;
     v16 += 2;
@@ -2957,7 +2957,7 @@ void sub_F8C8E(char *a1)
         v14 = 129 * (int16_t)j;
         qmemcpy((void *)(v14 + dword_197F9C), v16, 0x81u);
         v16 += 129;
-        ServiceAudioTick_FE8BE(v14);
+        ServiceAudioTick_FE8BE(v14, 0, 0, 0);
       }
     }
     while ( (int16_t)j != -1 );
@@ -3042,7 +3042,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
   if ( word_1AAF86 != *(_WORD *)(v7 + dword_197F98 + 43) )
   {
     v8 = sub_E691A((void **)&v28, a5);
-    v9 = ServiceAudioTick_FE8BE(v8);
+    v9 = ServiceAudioTick_FE8BE(v8, 0, 0, 0);
     if ( (int16_t)v26 < 8 )
     {
       v9 = dword_197F98 + 3753 * (int16_t)v26;
@@ -3055,7 +3055,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
       qmemcpy(v28, (void *)(v9 + 279), 0xD4u);
       v28 += 212;
     }
-    v10 = ServiceAudioTick_FE8BE(v9);
+    v10 = ServiceAudioTick_FE8BE(v9, 0, 0, 0);
     v31 = 67;
     while ( (int16_t)v31 > 0 )
     {
@@ -3080,7 +3080,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
     }
     if ( (int16_t)v27 < 8 )
       qmemcpy(v28++, (void *)(v5 + 66 + (int16_t)v27), sizeof(char));
-    ServiceAudioTick_FE8BE(v10);
+    ServiceAudioTick_FE8BE(v10, 0, 0, 0);
     v11 = (int16_t)v24;
     if ( (int16_t)v24 != -1 )
     {
@@ -3099,7 +3099,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
       qmemcpy(++v28, (void *)(v11 + dword_192B18), 0x169u);
       v28 += 361;
     }
-    ServiceAudioTick_FE8BE(v11);
+    ServiceAudioTick_FE8BE(v11, 0, 0, 0);
     qmemcpy(v28, &word_199994, 2u);
     v30 = 0;
     v28 += 2;
@@ -3125,7 +3125,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
     v30 = -1;
     qmemcpy(v28, &v30, 2u);
     v28 += 2;
-    ServiceAudioTick_FE8BE(v15);
+    ServiceAudioTick_FE8BE(v15, 0, 0, 0);
   }
   if ( v28 - v29 > 0x8000 )
   {
@@ -3140,7 +3140,7 @@ void sub_F8F98(int a1, int a2, int a3, int a4, int a5)
       if ( i >= v28 )
         break;
       v21 = v28 - i;
-      v22 = ServiceAudioTick_FE8BE(v23);
+      v22 = ServiceAudioTick_FE8BE(v23, 0, 0, 0);
       if ( v21 > 30720 )
         v21 = 30720;
       do
@@ -3601,7 +3601,7 @@ void sub_F9C58(char *a1)
   byte_1AAF95[12 * v21] = v15[0];
   v11 += 2;
   byte_1AAF95[12 * v20] = (char)a1;
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   if ( (_WORD)v18 != word_19999C && ((_WORD)v18 != v20 || v21 >= 8 || *(_BYTE *)(3753 * v21 + dword_197F98 + 40) != 100) )
   {
     qmemcpy(&v16, v11, sizeof(v16));
@@ -3611,7 +3611,7 @@ void sub_F9C58(char *a1)
     v11 += 2;
     qmemcpy(&v17, v11, sizeof(v17));
     v11 += 2;
-    ServiceAudioTick_FE8BE(v1);
+    ServiceAudioTick_FE8BE(v1, 0, 0, 0);
     if ( v21 < 8 )
     {
       qmemcpy((void *)(dword_197F98 + 3753 * v21 + 279), v11, 0xD4u);
@@ -3635,7 +3635,7 @@ void sub_F9C58(char *a1)
       }
     }
     while ( v13 != -1 );
-    ServiceAudioTick_FE8BE(-1);
+    ServiceAudioTick_FE8BE(-1, 0, 0, 0);
     v2 = v17;
     if ( v17 != -1 )
     {
@@ -3660,7 +3660,7 @@ void sub_F9C58(char *a1)
         sub_E5296((_BYTE *)(113 * v16 + dword_19306C));
       }
     }
-    ServiceAudioTick_FE8BE(v2);
+    ServiceAudioTick_FE8BE(v2, 0, 0, 0);
     qmemcpy(&word_199994, v11, sizeof(word_199994));
     v5 = 0;
     v11 += 2;
@@ -3690,7 +3690,7 @@ void sub_F9C58(char *a1)
         qmemcpy((void *)(dword_197F9C + 129 * v12), v11, 0x81u);
         v11 += 129;
       }
-      ServiceAudioTick_FE8BE(v6);
+      ServiceAudioTick_FE8BE(v6, 0, 0, 0);
     }
     while ( v12 != -1 );
     while ( (int16_t)v5 < word_199994 )
@@ -8130,6 +8130,21 @@ char sub_FE86B(int a1, int16_t *a2)
 // in its full body), so whatever a caller passes as a1 is discarded. This
 // matches the "leftover register" pattern noted where GameMain_10057
 // passes its own unrelated first args through here.
+//
+// COMPAT FIX: in the original DOS/x86 binary many call sites only ever set
+// up 1 of the 4 register-based params (the rest kept whatever value was
+// already sitting in that register from earlier code - harmless there,
+// since a1 is dead and a2/a3/a4 are only read behind runtime flags that
+// were usually false). On a modern recompile that "leftover value" is not
+// reproducible (different compiler, different ABI, different register
+// contents) and reading it is genuine undefined behavior, so every such
+// call site across the codebase has been changed to pass explicit
+// trailing 0s (",0, 0, 0"), matching the deterministic-zero convention
+// already established elsewhere in this project (see the DECOMP_TODO
+// note in GameMain_10057 about "predano 0"). This changes no observable
+// behavior versus the original (those parameters still go unread in the
+// same runtime conditions as before), it just removes reliance on
+// whatever the new compiler happens to leave in a register/stack slot.
 //
 // DECOMP_TODO: this function's real return value/tail is NOT fully
 // present in any wave we have. sub_F69FE ends in "JUMPOUT(0xFA388)" -

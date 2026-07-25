@@ -451,7 +451,7 @@ int16_t sub_10D31C(
     BYTE1(a1) &= 1u;
     a1 = sprintf(&v61[64 * WORD2(a1) + 256], "TANM_%03hi.LBX", (uint16_t)a1);
   }
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   v25 = sub_126B42((int)aScienceLbx, 0, dword_192ED4);
   dword_1AD598 = (int)sub_110D3C(dword_192ED4, 917);
   *(_DWORD *)((char *)&a21 + 2) = sub_110D3C(dword_192ED4, 1404);

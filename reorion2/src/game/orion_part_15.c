@@ -2323,7 +2323,7 @@ void sub_E84A5(int16_t *a1, int16_t *a2, int a3)
   v5 = a3 - 1;
   while ( *a1 == -1 && (v5 & 0x8000u) == 0 )
   {
-    ServiceAudioTick_FE8BE();
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);
     *a1 = *(uint8_t *)((int16_t)v5 + dword_1AA37C);
     if ( (byte_199F3A == 2 || byte_199F3A == 3) && sub_E841A(*a1) )
     {
@@ -3727,7 +3727,7 @@ void sub_EAAA1(int a1, int a2, int a3)
   int16_t v51; // [esp+20h] [ebp-8h]
   char v52[4]; // [esp+24h] [ebp-4h] BYREF
 
-  v3 = ServiceAudioTick_FE8BE(a1);
+  v3 = ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   if ( byte_183579 )
     goto LABEL_89;
   LOWORD(v3) = word_199998;
@@ -3816,7 +3816,7 @@ void sub_EAAA1(int a1, int a2, int a3)
                   LOWORD(v34) = byte_1AAF94[12 * --v36];
                   if ( (_WORD)v34 == v49 )
                   {
-                    v34 = ServiceAudioTick_FE8BE(v34);
+                    v34 = ServiceAudioTick_FE8BE(v34, 0, 0, 0);
                     byte_1AAF94[12 * v36] = -1;
                   }
                 }
@@ -3836,7 +3836,7 @@ void sub_EAAA1(int a1, int a2, int a3)
                     LOWORD(v37) = byte_1AAF94[12 * v39];
                     if ( (_WORD)v37 == v49 )
                     {
-                      v37 = ServiceAudioTick_FE8BE(v37);
+                      v37 = ServiceAudioTick_FE8BE(v37, 0, 0, 0);
                       byte_1AAF94[12 * v39] = -1;
                     }
                   }
@@ -3883,7 +3883,7 @@ void sub_EAAA1(int a1, int a2, int a3)
         {
           if ( *(_BYTE *)(3753 * --v4 + dword_197F98 + 40) == 100 && byte_1AAF8B[12 * v4] != 14 )
           {
-            ServiceAudioTick_FE8BE(12 * v4);
+            ServiceAudioTick_FE8BE(12 * v4, 0, 0, 0);
             v5 = 1;
           }
         }
@@ -3895,7 +3895,7 @@ LABEL_89:
       JUMPOUT(0xEA8BE);
     }
     --v51;
-    ServiceAudioTick_FE8BE(v3);
+    ServiceAudioTick_FE8BE(v3, 0, 0, 0);
     v3 = v51;
     v6 = 12 * v51;
     LOBYTE(a2) = byte_1AAF8B[v6] - 14;
@@ -3915,7 +3915,7 @@ LABEL_89:
             LOWORD(v3) = byte_1AAF94[12 * --v9];
             if ( (_WORD)v3 == v51 )
             {
-              v3 = ServiceAudioTick_FE8BE(v3);
+              v3 = ServiceAudioTick_FE8BE(v3, 0, 0, 0);
               byte_1AAF94[12 * v9] = -1;
             }
           }
@@ -3939,7 +3939,7 @@ LABEL_89:
               LOWORD(v10) = byte_1AAF94[12 * v12];
               if ( (_WORD)v10 == v51 )
               {
-                v10 = ServiceAudioTick_FE8BE(v10);
+                v10 = ServiceAudioTick_FE8BE(v10, 0, 0, 0);
                 byte_1AAF94[12 * v12] = -1;
               }
             }
@@ -11095,7 +11095,7 @@ int sub_F3E42(int a1)
   _BYTE v18[4]; // [esp+4h] [ebp-4h] BYREF
 
   v1 = a1;
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   byte_1AAC54 = 0;
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);

@@ -893,7 +893,7 @@ int sub_2484F()
       {
         v1 = sub_113B56();
         v0 = v1;
-        ServiceAudioTick_FE8BE(v1);
+        ServiceAudioTick_FE8BE(v1, 0, 0, 0);
       }
       v2 = sub_113A4E();
       word_180EB4 = j___clock(v2, 0, 3) % 3uLL + 1;
@@ -961,7 +961,7 @@ int sub_2496C()
     {
       v1 = sub_113B56();
       v0 = v1;
-      ServiceAudioTick_FE8BE(v1);
+      ServiceAudioTick_FE8BE(v1, 0, 0, 0);
     }
     v2 = sub_113A4E();
     word_180EB4 = j___clock(v2, 0, 3) % 3uLL + 4;
@@ -1003,7 +1003,7 @@ char sub_249F9(char *a1, int a2, char *a3, int a4)
   v6 = 6 * v14 + v5;
   ((void (*)(void))ServiceAudioTick_FE8BE)();
   v7 = sub_126C91((int)a1, v6, (int)v11, 0, 1u, 100);
-  ServiceAudioTick_FE8BE(v7);
+  ServiceAudioTick_FE8BE(v7, 0, 0, 0);
   v8 = strlen(v11) + 1;
   v9 = v8 - 1;
   if ( (int16_t)(v8 - 1) >= (int16_t)v13 - 1 || v9 >= 99 )
@@ -5993,7 +5993,7 @@ LABEL_59:
         }
 LABEL_60:
         ++v10;
-        ServiceAudioTick_FE8BE(v12);
+        ServiceAudioTick_FE8BE(v12, 0, 0, 0);
         if ( v10 >= 300 )
         {
           if ( v4 <= 0 )
@@ -6053,7 +6053,7 @@ LABEL_60:
                   }
                 }
               }
-              ServiceAudioTick_FE8BE(v14);
+              ServiceAudioTick_FE8BE(v14, 0, 0, 0);
               ++v38;
             }
           }
@@ -6104,7 +6104,7 @@ LABEL_60:
         break;
     }
 LABEL_45:
-    ServiceAudioTick_FE8BE(v6);
+    ServiceAudioTick_FE8BE(v6, 0, 0, 0);
   }
   v6 = 0;
   while ( 1 )
@@ -6321,7 +6321,7 @@ int sub_2BA5E( int a1)
         }
       }
     }
-    ServiceAudioTick_FE8BE(v4);
+    ServiceAudioTick_FE8BE(v4, 0, 0, 0);
   }
   return v2;
 }
@@ -6539,7 +6539,7 @@ void sub_2BE25( int a1)
         }
       }
     }
-    ServiceAudioTick_FE8BE(v3);
+    ServiceAudioTick_FE8BE(v3, 0, 0, 0);
   }
   JUMPOUT(0x2BAFD);
 }
@@ -6856,17 +6856,17 @@ void sub_2C6BA(int a1)
     goto LABEL_36;
   if ( !word_1998CA )
     LOBYTE(a1) = sub_128C32(0, 0, 639, 479, 0);
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   sub_128EDE(15, 362, 102, 374, 0, 199);
   sub_128EDE(401, 362, 489, 374, 0, 199);
   LOBYTE(v1) = sub_128EDE(401, 379, 488, 467, 0, 199);
-  ServiceAudioTick_FE8BE(v1);
+  ServiceAudioTick_FE8BE(v1, 0, 0, 0);
   v2 = word_1998F8;
   if ( word_1998F8 > -1 )
     sub_3459E(401, 379);
-  ServiceAudioTick_FE8BE(v2);
+  ServiceAudioTick_FE8BE(v2, 0, 0, 0);
   dword_192880 = sub_127C27((int)aCombatLbx_0, 0, dword_193174);
-  ServiceAudioTick_FE8BE(dword_192880);
+  ServiceAudioTick_FE8BE(dword_192880, 0, 0, 0);
   v3 = sub_12A478(0, 351, dword_192880);
   LOWORD(v3) = word_19999C;
   if ( word_19999C == word_1998AC )
@@ -6880,7 +6880,7 @@ LABEL_11:
     sub_12B753(dword_19286C, 1);
     v3 = sub_12A478(273, 364, dword_19286C);
   }
-  ServiceAudioTick_FE8BE(v3);
+  ServiceAudioTick_FE8BE(v3, 0, 0, 0);
   sub_128AB6(0, 0, 639, 350);
   sub_12B634();
   if ( word_1998CA == 1 )
@@ -6888,13 +6888,13 @@ LABEL_11:
   else
     v4 = 46;
   dword_192858 = sub_127C27((int)aCombatLbx_0, v4, dword_193174);
-  ServiceAudioTick_FE8BE(dword_192858);
+  ServiceAudioTick_FE8BE(dword_192858, 0, 0, 0);
   sub_12A478(word_199880, word_199882, dword_192858);
   v5 = sub_12A478(word_199880 - 640, word_199882, dword_192858);
-  ServiceAudioTick_FE8BE(v5);
+  ServiceAudioTick_FE8BE(v5, 0, 0, 0);
   sub_12A478(word_199880 - 640, word_199882 - 480, dword_192858);
   v6 = sub_12A478(word_199880, word_199882 - 480, dword_192858);
-  v7 = ServiceAudioTick_FE8BE(v6);
+  v7 = ServiceAudioTick_FE8BE(v6, 0, 0, 0);
   if ( word_1998EE == 1 )
   {
     v7 = word_1998F8;
@@ -6910,23 +6910,23 @@ LABEL_11:
       }
     }
   }
-  ServiceAudioTick_FE8BE(v7);
+  ServiceAudioTick_FE8BE(v7, 0, 0, 0);
   dword_192878 = sub_127C27((int)aCombatLbx_0, 47, dword_193174);
-  ServiceAudioTick_FE8BE(dword_192878);
+  ServiceAudioTick_FE8BE(dword_192878, 0, 0, 0);
   sub_12A478(word_199886, word_199884, dword_192878);
   v9 = sub_12A478(word_199886 - 640, word_199884, dword_192878);
-  ServiceAudioTick_FE8BE(v9);
+  ServiceAudioTick_FE8BE(v9, 0, 0, 0);
   sub_12A478(word_199886 - 640, word_199884 - 480, dword_192878);
   v10 = sub_12A478(word_199886, word_199884 - 480, dword_192878);
-  ServiceAudioTick_FE8BE(v10);
+  ServiceAudioTick_FE8BE(v10, 0, 0, 0);
   dword_192888 = sub_127C27((int)aCombatLbx_0, 48, dword_193174);
-  ServiceAudioTick_FE8BE(dword_192888);
+  ServiceAudioTick_FE8BE(dword_192888, 0, 0, 0);
   sub_12A478(word_19988C, word_19988A, dword_192888);
   v11 = sub_12A478(word_19988C - 640, word_19988A, dword_192888);
-  ServiceAudioTick_FE8BE(v11);
+  ServiceAudioTick_FE8BE(v11, 0, 0, 0);
   sub_12A478(word_19988C - 640, word_19988A - 480, dword_192888);
   v12 = sub_12A478(word_19988C, word_19988A - 480, dword_192888);
-  ServiceAudioTick_FE8BE(v12);
+  ServiceAudioTick_FE8BE(v12, 0, 0, 0);
   sub_12B65C();
   sub_128BE7();
   for ( i = 0; i < word_1998C0; ++i )
@@ -6951,7 +6951,7 @@ LABEL_11:
     sub_2CBCC(14, 376, word_1998F8);
     v15 = sub_2F445(word_1998F8, 15, 379);
   }
-  v16 = ServiceAudioTick_FE8BE(v15);
+  v16 = ServiceAudioTick_FE8BE(v15, 0, 0, 0);
   if ( word_1998E4 == 1 )
   {
     for ( j = 0; j < 640; j += 20 )
@@ -6967,7 +6967,7 @@ LABEL_11:
       v16 = sub_134D2D(0, v21, 640, v22, 4);
     }
   }
-  ServiceAudioTick_FE8BE(v16);
+  ServiceAudioTick_FE8BE(v16, 0, 0, 0);
   sub_2F172();
   word_1998F4 = -2;
 LABEL_36:

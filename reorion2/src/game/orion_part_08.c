@@ -1531,7 +1531,7 @@ void sub_8A6C2()
   }
   else
   {
-    ServiceAudioTick_FE8BE(v0);
+    ServiceAudioTick_FE8BE(v0, 0, 0, 0);
     byte_19C1A0 = 0;
     byte_19C1A2 = 0;
     byte_19C18E = 1;
@@ -1539,13 +1539,13 @@ void sub_8A6C2()
     sub_124C08();
     sub_123E6C((int)&unk_17CF4A, 1);
     sub_C5BB9();
-    ServiceAudioTick_FE8BE(v2);
+    ServiceAudioTick_FE8BE(v2, 0, 0, 0);
     v3 = sub_1205E6(0, 0, 255);
-    ServiceAudioTick_FE8BE(v3);
+    ServiceAudioTick_FE8BE(v3, 0, 0, 0);
     v4 = sub_132C80(100);
-    ServiceAudioTick_FE8BE(v4);
+    ServiceAudioTick_FE8BE(v4, 0, 0, 0);
     v5 = sub_81D73();
-    v6 = ServiceAudioTick_FE8BE(v5);
+    v6 = ServiceAudioTick_FE8BE(v5, 0, 0, 0);
     if ( v1 )
     {
       v7 = 0;
@@ -1554,14 +1554,14 @@ void sub_8A6C2()
         byte_199BE0 = 0;
         v7 = 1;
       }
-      ServiceAudioTick_FE8BE(v6);
+      ServiceAudioTick_FE8BE(v6, 0, 0, 0);
       sub_83669(word_192FDE[0]);
       if ( v7 )
         byte_199BE0 = 1;
     }
     v8 = sub_124D41();
     v9 = sub_84E9D(v8);
-    ServiceAudioTick_FE8BE(v9);
+    ServiceAudioTick_FE8BE(v9, 0, 0, 0);
     v10 = sub_131922(0, 255);
     sub_1077D(v10);
     sub_123E6C((int)&unk_17CF00, 1);
@@ -1572,7 +1572,7 @@ void sub_8A6C2()
     else
     {
       sub_C5C44();
-      ServiceAudioTick_FE8BE(v11);
+      ServiceAudioTick_FE8BE(v11, 0, 0, 0);
     }
     byte_199F38 = 0;
     sub_1172FC();

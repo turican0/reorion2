@@ -6405,7 +6405,7 @@ int sub_DD3B8(char *a1)
     if ( *(_BYTE *)(v4 + dword_197F98 + 40) == 100 )
     {
       v3 = sub_F6816(*(int16_t *)(v4 + dword_197F98 + 43), 39, (int)a1, strlen(a1) + 1);
-      result = ServiceAudioTick_FE8BE(v3);
+      result = ServiceAudioTick_FE8BE(v3, 0, 0, 0);
     }
   }
   return result;
@@ -6442,7 +6442,7 @@ void sub_DD42A(char *a1)
         *v6 = 0;
       }
       v4 = sub_F6816(*(int16_t *)(v7 + dword_197F98 + 43), 45, (int)a1, v3 + 1);
-      ServiceAudioTick_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4, 0, 0, 0);
     }
   }
   JUMPOUT(0xDD423);
@@ -11046,7 +11046,7 @@ void sub_E2D09( int a1, int a2)
     {
       sub_E1839(v3);
       LOBYTE(v4) = sub_E1E1F((int)v3);
-      ServiceAudioTick_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4, 0, 0, 0);
     }
   }
   JUMPOUT(0xE2AA9);
@@ -11068,7 +11068,7 @@ int sub_E2D72(int a1, int a2)
   int v5; // eax
 
   v2 = a1;
-  ServiceAudioTick_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
   v3 = (char *)(dword_192B18 + 361 * word_199996);
   while ( (unsigned int)v3 > dword_192B18 )
   {
@@ -11076,11 +11076,11 @@ int sub_E2D72(int a1, int a2)
     if ( *v3 == v2 && !v3[6] )
     {
       sub_E1D59(v3);
-      ServiceAudioTick_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4, 0, 0, 0);
     }
   }
   sub_E2D09(v2, a2);
-  return ServiceAudioTick_FE8BE(v5);
+  return ServiceAudioTick_FE8BE(v5, 0, 0, 0);
 }
 // E2DAD: variable 'v4' is possibly undefined
 // E2DC2: variable 'v5' is possibly undefined

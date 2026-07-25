@@ -4189,7 +4189,7 @@ void sub_14DF7(int a1, int a2, int a3)
     sub_124D41();
     sub_132869(word_19A01E, word_19A01C, v8, v7);
     v10 = sub_124ECB();
-    ServiceAudioTick_FE8BE(v10);
+    ServiceAudioTick_FE8BE(v10, 0, 0, 0);
     HIDWORD(v5) = (int16_t)v7;
     if ( (int16_t)sub_132825() == (int16_t)v7 - 1 )
       v8 = 1;
@@ -4209,7 +4209,7 @@ void sub_14DF7(int a1, int a2, int a3)
   }
   sub_1329D4();
   dword_193174 = (int)sub_1279AF(dword_193170, SHIDWORD(v5));
-  ServiceAudioTick_FE8BE(dword_193174);
+  ServiceAudioTick_FE8BE(dword_193174, 0, 0, 0);
   word_180EB4 = -1;
   sub_2484F();
   if ( !a3 )
