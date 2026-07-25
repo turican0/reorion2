@@ -4123,7 +4123,7 @@ void sub_123491()
 
 
 //----- (001236D1) --------------------------------------------------------
-void __noreturn sub_1236D1()
+void sub_1236D1()
 {
   ((void (__noreturn *)(_DWORD))_GETDS)((uint16_t)__DS__);
 }
@@ -5609,7 +5609,7 @@ int sub_12641A()
 
 
 //----- (0012643D) --------------------------------------------------------
-void __noreturn sub_12643D(int a1, int a2)
+void sub_12643D(int a1, int a2)
 {
   unsigned int v2; // eax
   int v3; // [esp-4h] [ebp-Ch]
@@ -5624,7 +5624,7 @@ void __noreturn sub_12643D(int a1, int a2)
 
 
 //----- (00126487) --------------------------------------------------------
-void __noreturn sub_126487(char *a1, int a2)
+void sub_126487(char *a1, int a2)
 {
   sub_113DBD();
   printf("%s\n", a1);
@@ -5955,7 +5955,7 @@ int sub_127233(int a1, int a2, int a3, int a4)
 
 
 //----- (001273DC) --------------------------------------------------------
-void __noreturn sub_1273DC(int a1, unsigned int a2, int a3, int a4)
+void sub_1273DC(int a1, unsigned int a2, int a3, int a4)
 {
   char *v4; // edx
   char v5[120]; // [esp+0h] [ebp-98h] BYREF
@@ -8150,7 +8150,7 @@ int sub_12B0B7( int a1, int a2, int a3)
   }
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
 // 184530: using guessed type int64_t qword_184530;
 // 1BB8A4: using guessed type int (*dword_1BB8A4)(_DWORD);

@@ -205,8 +205,8 @@ extern TypeStateBlock_199BDC stateBlock_199BDC;
    Skutecna/plna signatura je v komentari nad kazdou deklaraci a v
    tele prislusne definice. DECOMP_TODO: az bude potreba typova
    kontrola, dohledat a sjednotit realny pocet parametru v IDA. ==== */
-// plna signatura: void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3);
-extern void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3);
+// plna signatura: void GameMain_10057(int a1, intptr_t a2, int16_t *a3);
+extern void GameMain_10057(int a1, intptr_t a2, int16_t *a3);
 // plna signatura: void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6);
 extern void sub_1049B();
 // plna signatura: int sub_1077D(int a1, int a2, int a3, int16_t *a4);
@@ -7113,10 +7113,10 @@ extern _DWORD *sub_110D3C();
 extern int sub_110DFE();
 // plna signatura: int sub_110E36(int a1);
 extern int sub_110E36();
-// plna signatura: void __noreturn sub_110EC3(int a1, int a2);
-extern void __noreturn sub_110EC3();
-// plna signatura: void __noreturn sub_110F3A(int a1, int a2, int a3);
-extern void __noreturn sub_110F3A();
+// plna signatura: void sub_110EC3(int a1, int a2);
+extern void sub_110EC3();
+// plna signatura: void sub_110F3A(int a1, int a2, int a3);
+extern void sub_110F3A();
 // plna signatura: unsigned int sub_110F89();
 extern unsigned int sub_110F89();
 // plna signatura: int sub_110FE7();
@@ -7282,7 +7282,7 @@ extern void sub_113CFB();
 // plna signatura: int sub_113D23();
 extern int sub_113D23();
 // plna signatura: void RunGameAndExit_113D47(int a1, _BYTE *a2);
-// vlna 13: __noreturn ODEBRAN - funkce se normalne vraci (viz orion_part_18.c)
+// vlna 13: ODEBRAN - funkce se normalne vraci (viz orion_part_18.c)
 extern void RunGameAndExit_113D47();
 // plna signatura: int sub_113DBD();
 extern int sub_113DBD();
@@ -7348,8 +7348,8 @@ extern int16_t sub_117174();
 extern int sub_1171AB();
 // plna signatura: int16_t sub_117262();
 extern int16_t sub_117262();
-// plna signatura: void __noreturn sub_1172B0(int a1, int a2);
-extern void __noreturn sub_1172B0();
+// plna signatura: void sub_1172B0(int a1, int a2);
+extern void sub_1172B0();
 // plna signatura: void sub_1172D4();
 extern void sub_1172D4();
 // plna signatura: void sub_1172FC();
@@ -7566,8 +7566,8 @@ extern int sub_1233B4();
 extern int sub_123437();
 // plna signatura: void sub_123491();
 extern void sub_123491();
-// plna signatura: void __noreturn sub_1236D1();
-extern void __noreturn sub_1236D1();
+// plna signatura: void sub_1236D1();
+extern void sub_1236D1();
 // plna signatura: void sub_1237F3();
 extern void sub_1237F3();
 // plna signatura: void sub_12386C();
@@ -7694,10 +7694,10 @@ extern int sub_126224();
 extern int sub_1263FF();
 // plna signatura: int sub_12641A();
 extern int sub_12641A();
-// plna signatura: void __noreturn sub_12643D(int a1, int a2);
-extern void __noreturn sub_12643D();
-// plna signatura: void __noreturn sub_126487(char *a1, int a2);
-extern void __noreturn sub_126487();
+// plna signatura: void sub_12643D(int a1, int a2);
+extern void sub_12643D();
+// plna signatura: void sub_126487(char *a1, int a2);
+extern void sub_126487();
 // plna signatura: _DWORD *sub_126ABD(int a1, int a2);
 extern _DWORD *sub_126ABD();
 // plna signatura: _DWORD *sub_126AFD(int a1, int a2, int a3);
@@ -7716,8 +7716,8 @@ extern _DWORD *sub_126CEB();
 extern _DWORD *sub_126F3B();
 // plna signatura: int sub_127233(int a1, int a2, int a3, int a4);
 extern int sub_127233();
-// plna signatura: void __noreturn sub_1273DC(int a1, unsigned int a2, int a3, int a4);
-extern void __noreturn sub_1273DC();
+// plna signatura: void sub_1273DC(int a1, unsigned int a2, int a3, int a4);
+extern void sub_1273DC();
 // plna signatura: int sub_127593(int a1);
 extern int sub_127593();
 // plna signatura: int sub_12760B(char *a1);
@@ -7848,8 +7848,8 @@ extern _BOOL1 sub_12C3D3();
 extern void InstallKeyboardIsr_12C420();
 // plna signatura: void RestoreKeyboardIsr_12C493();
 extern void RestoreKeyboardIsr_12C493();
-// plna signatura: void __noreturn KeyboardIsr_12C4D8();
-extern void __noreturn KeyboardIsr_12C4D8();
+// plna signatura: void KeyboardIsr_12C4D8();
+extern void KeyboardIsr_12C4D8();
 // plna signatura: int sub_12C574();
 extern int sub_12C574();
 // plna signatura: int sub_12C5AE();
@@ -7989,7 +7989,7 @@ extern void sub_1329D4();
 // plna signatura: int sub_132A11();
 extern int sub_132A11();
 // plna signatura: void CalibrateCpuTick_132AA4();
-// vlna 13: __noreturn ODEBRAN - selhana dekompilace, skutecne telo se vraci
+// vlna 13: ODEBRAN - selhana dekompilace, skutecne telo se vraci
 extern void CalibrateCpuTick_132AA4();
 void sub_132AF8(unsigned int *paletteData, int count, int startIndex);
 // plna signatura: void sub_132B27();
@@ -8068,8 +8068,8 @@ extern _BYTE *sub_137121();
 extern int sub_13719F();
 // plna signatura: int sub_13743E(int a1, int a2);
 extern int sub_13743E();
-// plna signatura: void __noreturn sub_1376CF(int a1, int a2);
-extern void __noreturn sub_1376CF();
+// plna signatura: void sub_1376CF(int a1, int a2);
+extern void sub_1376CF();
 // plna signatura: int sub_137D86(int a1, int a2, int a3, int a4);
 extern int sub_137D86();
 // plna signatura: int sub_1380E0(int result, int a2);
@@ -9760,8 +9760,8 @@ extern uint8_t ***sub_162B06();
 extern int sub_162CA3();
 // plna signatura: bool sub_162E63(_DWORD *a1, int a2);
 extern bool sub_162E63();
-// plna signatura: void __noreturn sub_163233(int a1, int a2);
-extern void __noreturn sub_163233();
+// plna signatura: void sub_163233(int a1, int a2);
+extern void sub_163233();
 // plna signatura: int sub_1632B0(int a1, int a2);
 extern int sub_1632B0();
 // plna signatura: int sub_1632E8(int a1, int a2, int a3, int a4);
@@ -9794,10 +9794,10 @@ extern void sub_163B9E();
 extern void sub_163BFB();
 // plna signatura: void sub_163C58();
 extern void sub_163C58();
-// plna signatura: void __noreturn sub_163C6D();
-extern void __noreturn sub_163C6D();
-// plna signatura: void __noreturn sub_163C7A();
-extern void __noreturn sub_163C7A();
+// plna signatura: void sub_163C6D();
+extern void sub_163C6D();
+// plna signatura: void sub_163C7A();
+extern void sub_163C7A();
 // plna signatura: void sub_163D80( int a1, double *a2, double a3);
 extern void sub_163D80();
 // plna signatura: void sub_163E0D( int a1, int a2, double *a3, int a4, double a5);
@@ -10409,8 +10409,8 @@ extern void *sub_1694D9();
 #if 0 /* puvodni Hex-Rays deklarace, jen pro referenci - nekompiluje se */
 // Function declarations
 
-void __noreturn sub_10000(); // weak
-// void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3);
+void sub_10000(); // weak
+// void GameMain_10057(int a1, intptr_t a2, int16_t *a3);
 // void sub_1049B(int a1, int a2, int a3, int16_t a4, int a5, char *a6);
 // int sub_1077D(int a1, int a2, int a3, int16_t *a4);
 _DWORD *sub_107AF(_DWORD *result);
@@ -13881,7 +13881,7 @@ void sub_10FAAC();
 int16_t sub_10FB02();
 int16_t sub_10FE41(int a1);
 int16_t sub_10FEC1(int a1);
-// void __noreturn start(); weak
+// void start(); weak
 int sub_1101F0(int a1, int a2, int a3, int a4);
 int sub_110AFC();
 void MarkMemPoolReady_110B34();
@@ -13893,8 +13893,8 @@ _DWORD *sub_110CEE(int a1, int a2);
 _DWORD *sub_110D3C(int a1, int a2);
 int sub_110DFE(int a1);
 int sub_110E36(int a1);
-void __noreturn sub_110EC3(int a1, int a2);
-void __noreturn sub_110F3A(int a1, int a2, int a3);
+void sub_110EC3(int a1, int a2);
+void sub_110F3A(int a1, int a2, int a3);
 unsigned int sub_110F89();
 int sub_110FE7();
 int sub_111090();
@@ -13977,7 +13977,7 @@ int sub_113C9B();
 int sub_113CBD(int result);
 void sub_113CFB();
 int sub_113D23();
-void RunGameAndExit_113D47(int a1, _BYTE *a2); // vlna 13: __noreturn odebran
+void RunGameAndExit_113D47(int a1, _BYTE *a2); // vlna 13: odebran
 int sub_113DBD();
 int sub_113E08(int a1, int a2);
 int16_t sub_113E65();
@@ -14010,7 +14010,7 @@ int sub_1166F5(int a1, int a2);
 int16_t sub_117174(int16_t a1);
 int sub_1171AB(int a1, int a2, int a3, int a4);
 int16_t sub_117262();
-void __noreturn sub_1172B0(int a1, int a2);
+void sub_1172B0(int a1, int a2);
 void sub_1172D4();
 void sub_1172FC();
 char *sub_117324(int16_t a1);
@@ -14119,7 +14119,7 @@ int16_t sub_123387(int16_t result);
 int sub_1233B4();
 int sub_123437();
 void sub_123491();
-void __noreturn sub_1236D1();
+void sub_1236D1();
 void sub_1237F3();
 void sub_12386C();
 void sub_123926();
@@ -14183,8 +14183,8 @@ int sub_125FFB(int a1, int a2, int a3);
 int sub_126224(int16_t a1, int16_t a2, int16_t a3, int16_t a4);
 int sub_1263FF();
 int sub_12641A();
-void __noreturn sub_12643D(int a1, int a2);
-void __noreturn sub_126487(char *a1, int a2);
+void sub_12643D(int a1, int a2);
+void sub_126487(char *a1, int a2);
 // int64_t sprintf(_DWORD, char *, ...); weak
 // int atoi(_DWORD); weak
 // int fopen(_DWORD);
@@ -14199,7 +14199,7 @@ _DWORD *sub_126C91(int a1, int a2, int a3, unsigned int a4, uint16_t a5, int16_t
 _DWORD *sub_126CEB(int a1, int a2, int a3, int a4);
 _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, uint16_t a6, int16_t a7);
 int sub_127233(int a1, int a2, int a3, int a4);
-void __noreturn sub_1273DC(int a1, unsigned int a2, int a3, int a4);
+void sub_1273DC(int a1, unsigned int a2, int a3, int a4);
 int sub_127593(int a1);
 int sub_12760B(char *a1);
 // unsigned int sub_127678(char *a1, unsigned int result, int a3);
@@ -14274,7 +14274,7 @@ char sub_12C392();
 _BOOL1 sub_12C3D3();
 void InstallKeyboardIsr_12C420(int a1, int16_t a2);
 void RestoreKeyboardIsr_12C493();
-void __noreturn KeyboardIsr_12C4D8();
+void KeyboardIsr_12C4D8();
 int sub_12C574();
 int sub_12C5AE();
 int sub_12C607(int a1, int a2, int a3, int a4);
@@ -14344,7 +14344,7 @@ int sub_132825();
 void sub_132869(int a1, int a2, int a3, int a4);
 void sub_1329D4();
 int sub_132A11();
-void CalibrateCpuTick_132AA4(); // vlna 13: __noreturn odebran
+void CalibrateCpuTick_132AA4(); // vlna 13: odebran
 /* sub_132AF8 declared above (palette upload) */
 void sub_132B27();
 void sub_132B41();
@@ -14385,7 +14385,7 @@ _BYTE *sub_1370A3(_BYTE **a1, int16_t a2, int16_t a3, int a4, _WORD *a5);
 _BYTE *sub_137121(_BYTE **a1, int16_t a2, int16_t a3, int a4, _WORD *a5);
 int sub_13719F(int a1, int16_t a2, char a3);
 int sub_13743E(int a1, char a2);
-void __noreturn sub_1376CF(int a1, int a2);
+void sub_1376CF(int a1, int a2);
 int sub_137D86(int a1, int a2, int16_t a3, int16_t a4);
 int sub_1380E0(int result, int16_t a2);
 int sub_1381B5(int a1, int a2);
@@ -14481,7 +14481,7 @@ int sub_13E47F(int a1, uint8_t *a2, int16_t a3, int a4);
 int sub_13EBFE(int a1);
 // int strupr(_DWORD); weak
 int sub_13EE7E(int16_t a1, int16_t a2, int16_t a3, int16_t a4, int16_t a5);
-// void __noreturn _CMain(int, char **argv); idb
+// void _CMain(int, char **argv); idb
 // int64_t _InitRtns(_DWORD); weak
 void sub_13F1D8();
 // int strcat(_DWORD, _DWORD); weak
@@ -14490,7 +14490,7 @@ void sub_13F1D8();
 // int nosound(_DWORD); weak
 int j___delay(_DWORD); // weak
 // _DWORD printf(char *, ...); weak
-// void __noreturn exit(int, int status); idb
+// void exit(int, int status); idb
 // int memavl(_DWORD); weak
 // int memcpy(_DWORD, _DWORD, _DWORD); weak
 // int strcpy(_DWORD, _DWORD); weak
@@ -15091,7 +15091,7 @@ void sub_15DD1A();
 void sub_15DD55();
 bool sub_15DDE1();
 int sub_15DE09();
-// void __noreturn _assert(_DWORD, _DWORD, _DWORD, _DWORD); weak
+// void _assert(_DWORD, _DWORD, _DWORD, _DWORD); weak
 int sub_15E0F0(unsigned int a1);
 int sub_15E108(unsigned int a1, int a2);
 int sub_15E124();
@@ -15299,7 +15299,7 @@ uint8_t ***sub_162B06(uint8_t ***result, int a2);
 int sub_162CA3(uint8_t ***a1, int a2, char a3);
 bool sub_162E63(_DWORD *a1, int a2);
 // int calloc(_DWORD); weak
-void __noreturn sub_163233(int a1, char a2);
+void sub_163233(int a1, char a2);
 int sub_1632B0(int a1, int a2);
 int sub_1632E8(int a1, int a2, int a3, int a4);
 bool sub_1633C4(int a1, int a2, int a3, int a4);
@@ -15316,8 +15316,8 @@ void sub_163B59(int a1, int16_t a2);
 void sub_163B9E();
 void sub_163BFB();
 void sub_163C58();
-void __noreturn sub_163C6D(); // weak
-void __noreturn sub_163C7A();
+void sub_163C6D(); // weak
+void sub_163C7A();
 // void sub_163D80(int16_t a1, double *a2, double a3);
 // void sub_163E0D(int16_t a1, int a2, double *a3, int16_t a4, double a5);
 // double sub_163E5F(char a1, int a2, int16_t a3, double a4);

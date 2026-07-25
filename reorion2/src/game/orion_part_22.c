@@ -1190,7 +1190,7 @@ LABEL_13:
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 189170: using guessed type int (*dword_189170)(_DWORD, _DWORD, _DWORD);
 
 
@@ -1869,7 +1869,7 @@ void sub_14AC60(int a1, int a2, int a3, int a4, int a5, int a6)
 }
 // 14AFDC: conditional instruction was optimized away because %var_14.4 is in (==4|==8)
 // 14B01A: variable 'v38' is possibly undefined
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (0014B1C0) --------------------------------------------------------
@@ -5820,7 +5820,7 @@ int sub_14F591(int a1, int a2, int a3)
   return v13;
 }
 // 129FE4: using guessed type int64_t j___clock(_DWORD, _DWORD, _DWORD);
-// 15DF24: using guessed type void __noreturn _assert(_DWORD, _DWORD, _DWORD, _DWORD);
+// 15DF24: using guessed type void _assert(_DWORD, _DWORD, _DWORD, _DWORD);
 // 184654: using guessed type char byte_184654;
 // 1C3C5C: using guessed type int dword_1C3C5C;
 // 1C3C7C: using guessed type int dword_1C3C7C;

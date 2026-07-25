@@ -3250,7 +3250,7 @@ _DWORD *sub_144348(int a1, int a2)
   }
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 184A5C: using guessed type int dword_184A5C[19];
 // 184AA8: using guessed type int dword_184AA8[19];
 // 184B00: using guessed type int dword_184B00[4096];
@@ -3593,7 +3593,7 @@ void sub_144A91()
 }
 // 144A91: could not find valid save-restore pair for edi
 // 144A91: could not find valid save-restore pair for esi
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 188D78: using guessed type int16_t word_188D78;
 // 188D7A: using guessed type int dword_188D7A;
 // 188D7E: using guessed type int dword_188D7E;
@@ -3772,7 +3772,7 @@ void sub_144EAC()
 }
 // 144EAC: could not find valid save-restore pair for edi
 // 144EAC: could not find valid save-restore pair for esi
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 184530: using guessed type int64_t qword_184530;
 // 188D78: using guessed type int16_t word_188D78;
 // 188D7A: using guessed type int dword_188D7A;
@@ -3959,7 +3959,7 @@ void sub_14529D()
 }
 // 14529D: could not find valid save-restore pair for edi
 // 14529D: could not find valid save-restore pair for esi
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 188D78: using guessed type int16_t word_188D78;
 // 188D7A: using guessed type int dword_188D7A;
 // 188D7E: using guessed type int dword_188D7E;
@@ -5915,7 +5915,7 @@ void sub_148086(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (001480C8) --------------------------------------------------------
@@ -5941,7 +5941,7 @@ void sub_1480C8(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (0014810A) --------------------------------------------------------
@@ -5967,7 +5967,7 @@ void sub_14810A(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (0014814C) --------------------------------------------------------
@@ -5993,6 +5993,6 @@ void sub_14814C(unsigned int a1, unsigned int a2, _BYTE *a3, int a4, int a5, int
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 

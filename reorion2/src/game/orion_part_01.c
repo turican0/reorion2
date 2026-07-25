@@ -3,7 +3,7 @@
 /* Adresni rozsah: 0x10057 - 0x23563  (200 funkci) */
 
 //----- (00010057) --------------------------------------------------------
-void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
+void GameMain_10057(int a1, intptr_t a2, int16_t *a3)
 {
   // DECOMP_TODO: docasny bezpecny placeholder (misto puvodni neinicializovane
   // promenne - stejna trida chyby jako u ParseCommandLine_107E6/vlna 02).
@@ -68,7 +68,7 @@ void __noreturn GameMain_10057(int a1, intptr_t a2, int16_t *a3)
 
   // =================== OCAS GameMain_10057 (vlna 15) ===================
   // Vse za timto bodem IDA ZAHODILA jako nedosazitelne kvuli spatnemu
-  // __noreturn na CalibrateCpuTick_132AA4 (selhana dekompilace, viz vlna
+  // na CalibrateCpuTick_132AA4 (selhana dekompilace, viz vlna
   // 13). RunGameAndExit_113D47 se ale VRACI a GameMain pokracuje:
   // doinicializuje, prehraje intro (sub_24ED3 = MicroProse/SimTex loga),
   // spusti hlavni menu smycku (sub_1049B) a na konci vypise lokalizovane

@@ -2771,7 +2771,7 @@ int sub_1101F0(int a1, int a2, int a3, int a4)
   }
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 12685D: using guessed type int fopen(_DWORD, _DWORD);
 // 12697A: using guessed type int fclose(_DWORD);
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
@@ -2933,7 +2933,7 @@ int sub_110E36(int a1)
 
 
 //----- (00110EC3) --------------------------------------------------------
-void __noreturn sub_110EC3(int a1, int a2)
+void sub_110EC3(int a1, int a2)
 {
   int v2; // eax
   int v3; // eax
@@ -2952,7 +2952,7 @@ void __noreturn sub_110EC3(int a1, int a2)
 
 
 //----- (00110F3A) --------------------------------------------------------
-void __noreturn sub_110F3A(int a1, int a2, int a3)
+void sub_110F3A(int a1, int a2, int a3)
 {
   sub_113DBD();
   printf("Unable to Allocate %d bytes (short by %d bytes) in a block size of %d!\n\n", a1, a2, a3);
@@ -4914,7 +4914,7 @@ int sub_113D23()
 
 
 //----- (00113D47) --------------------------------------------------------
-void RunGameAndExit_113D47(int a1, _BYTE *a2) // vlna 13: __noreturn odebran, funkce se vraci
+void RunGameAndExit_113D47(int a1, _BYTE *a2) // vlna 13: odebran, funkce se vraci
 {
   int v2; // eax
   int16_t v3; // [esp+0h] [ebp-8h]
@@ -4942,7 +4942,7 @@ void RunGameAndExit_113D47(int a1, _BYTE *a2) // vlna 13: __noreturn odebran, fu
   CalibrateCpuTick_132AA4();
   // VLNA 13: nasledujici dve akce v dekompilatu CHYBELY - Hex-Rays je
   // zahodil jako nedosazitelne, protoze CalibrateCpuTick_132AA4 mylne oznacil za
-  // __noreturn (selhana dekompilace, viz komentar u ni). Overeno
+  // (selhana dekompilace, viz komentar u ni). Overeno
   // disassemblovanim originalu (DOSBox DUMPMEM, runtime 0x337D47):
   //   call 0x356AA4 (CalibrateCpuTick_132AA4)  ; kalibrace - VRACI SE
   //   call 0x347491 (sub_123491)  ; inicializace mysi (INT 33h)
@@ -6244,7 +6244,7 @@ int16_t sub_117262()
 
 
 //----- (001172B0) --------------------------------------------------------
-void __noreturn sub_1172B0(int a1, int a2)
+void sub_1172B0(int a1, int a2)
 {
   sub_12643D(a1, a2);
 }

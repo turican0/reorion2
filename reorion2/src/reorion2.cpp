@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     // predaval PSP/env blok - zatim nullptr, viz DECOMP_TODO v port_dos.h.
     GameMain_10057(argc, reinterpret_cast<intptr_t>(argv), nullptr);
 
-    // GameMain_10057 je __noreturn (interne kdyz nekonci hru, zavola exit()
+    // GameMain_10057 je (interne kdyz nekonci hru, zavola exit()
     // pres RunGameAndExit_113D47 -> atexit(...)), takze se sem beh nikdy
     // nevrati. Return tu je jen kvuli tvaru signatury main().
     Port::Sound::Shutdown();

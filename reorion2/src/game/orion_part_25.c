@@ -563,7 +563,7 @@ int sub_164920(int a1)
   dword_18A6A0 = a1 + 32;
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 18A660: using guessed type int dword_18A660;
 // 18A668: using guessed type int dword_18A668;
 // 18A66C: using guessed type int dword_18A66C;

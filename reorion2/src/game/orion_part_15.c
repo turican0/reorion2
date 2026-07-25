@@ -1727,7 +1727,7 @@ void sub_E78A7(int a1, int a2, int a3, int a4, int a5, unsigned int *a6, int16_t
 }
 // E7B74: control flows out of bounds to E6A9C
 // E7B12: variable 'v17' is possibly undefined
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 192B18: using guessed type int dword_192B18;
 // 197F98: using guessed type int dword_197F98;
 // 1AA380: using guessed type int16_t word_1AA380[5];

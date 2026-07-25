@@ -4500,7 +4500,7 @@ int sub_162000(int a1)
   while ( (unsigned int)v9 < dword_18AD38 );
   return result;
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 1604F8: using guessed type int (*funcs_16213C[4])();
 // 18AD28: using guessed type int dword_18AD28;
 // 18AD2C: using guessed type int dword_18AD2C;
@@ -5015,7 +5015,7 @@ bool sub_162E63(_DWORD *a1, int a2)
 
 
 //----- (00163233) --------------------------------------------------------
-void __noreturn sub_163233(int a1, int a2)
+void sub_163233(int a1, int a2)
 {
   char v2[40]; // [esp+0h] [ebp-2Ch] BYREF
   char *v3; // [esp+28h] [ebp-4h] BYREF
@@ -5480,19 +5480,19 @@ void sub_163C58()
 
 
 //----- (00163C6D) --------------------------------------------------------
-void __noreturn sub_163C6D()
+void sub_163C6D()
 {
   hr_outbyte(0x20u, 0x20u);
   hr_outbyte(0xA0u, 0x20u);
   hr_outbyte(0xF0u, 0);
   sub_163C7A();
 }
-// 163C6D: using guessed type void __noreturn sub_163C6D();
-// 163C7A: using guessed type void __noreturn sub_163C7A(void);
+// 163C6D: using guessed type void sub_163C6D();
+// 163C7A: using guessed type void sub_163C7A(void);
 
 
 //----- (00163C7A) --------------------------------------------------------
-void __noreturn sub_163C7A()
+void sub_163C7A()
 {
   _DWORD v1[16]; // [esp-24h] [ebp-40h] BYREF
 

@@ -594,7 +594,7 @@ void RestoreKeyboardIsr_12C493()
 
 
 //----- (0012C4D8) --------------------------------------------------------
-void __noreturn KeyboardIsr_12C4D8()
+void KeyboardIsr_12C4D8()
 {
   ((void (__noreturn *)(void))_GETDS)();
 }
@@ -3010,7 +3010,7 @@ void sub_13165C( int a1, int a2,
       sub_14814C(v13, v11, (_BYTE *)(v12 + a9), a1, v14, -a11, (_BYTE *)(a7 + a8), a2);
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (001318D4) --------------------------------------------------------
@@ -3666,7 +3666,7 @@ int sub_132A11()
 //----- (00132AA4) --------------------------------------------------------
 // VLNA 13: dekompilace teto funkce SELHALA ("could not find valid
 // save-restore pair") a Hex-Rays vypustil telo jako "while(1);" s
-// __noreturn - coz (a) byla nekonecna smycka v portu a (b) zpusobilo
+// - coz (a) byla nekonecna smycka v portu a (b) zpusobilo
 // URIZNUTI zbytku volajici RunGameAndExit_113D47 (vse za volanim
 // dekompiler zahodil jako nedosazitelne, vcetne volani MouseInit
 // sub_123491 a normalniho navratu!).
@@ -5733,7 +5733,7 @@ int sub_13743E(int a1, int a2)
 
 
 //----- (001376CF) --------------------------------------------------------
-void __noreturn sub_1376CF(int a1, int a2)
+void sub_1376CF(int a1, int a2)
 {
   sub_126487(aCannotColorRep, a2);
 }

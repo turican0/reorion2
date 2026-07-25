@@ -911,7 +911,7 @@ void sub_D7171(int a1, int a2)
   }
 }
 // D73CF: control flows out of bounds to D716B
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -2607,7 +2607,7 @@ LABEL_65:
 // D9171: variable 'v21' is possibly undefined
 // D9188: variable 'v23' is possibly undefined
 // D91E2: variable 'v24' is possibly undefined
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;

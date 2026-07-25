@@ -2174,7 +2174,7 @@ LABEL_39:
     }
   }
 }
-// 10000: using guessed type void __noreturn sub_10000();
+// 10000: using guessed type void sub_10000();
 
 
 //----- (00157FA9) --------------------------------------------------------
