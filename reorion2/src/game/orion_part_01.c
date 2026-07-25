@@ -27,13 +27,19 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   // neinicializovanych promennych. Viz DECOMP_TODO u ParseCommandLine_107E6.
   ParseCommandLine_107E6(argc, argv);
   PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
-  // ServiceAudioTick_FE8BE's real prototype (viz orion_common.h) je (int,int,int,int16_t*) -
-  // treti parametr je plain int, ne pointer. Puvodne (32bit DOS/x86) byl
-  // pointer-v-registru a int stejne siroke, takze to sedelo samo od sebe;
-  // na 64bit sestaveni to musime explicitne zuzit, abychom zachovali presne
-  // stejnou hodnotu (dolnich 32 bitu adresy argv), jakou by dostal puvodni
-  // 32bit kod - a ne aby se to tise/spatne prevedlo pres intptr_t.
-  ServiceAudioTick_FE8BE(v3, argc, (int)(intptr_t)argv, a3);
+  // ServiceAudioTick_FE8BE's a2/a3 slots here were originally just whatever
+  // the DOS/x86 compiler happened to leave in eax/edx at this point in
+  // main__0 - namely this function's own argc/argv, purely by register-
+  // reuse coincidence (see PROGRESS.md wave notes). They have no actual
+  // meaning to ServiceAudioTick_FE8BE (a1 is dead, a2 only matters when
+  // dword_184380 is set, which it never is this early), so rather than
+  // pass argc/argv through - which reads as if this call cared about the
+  // program's command-line arguments, and it doesn't - we pass explicit
+  // deterministic 0s here, same as the plain "(0, 0, 0, 0)" call sites
+  // used elsewhere in this file. Only a3 (GameMain_10057's own third
+  // parameter, forwarded into the a4/int16_t* slot) is a real, intentional
+  // pass-through and is kept as-is.
+  ServiceAudioTick_FE8BE(v3, 0, 0, a3);
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
   PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
