@@ -5402,7 +5402,7 @@ int sub_CCA1C()
   v1 = 0;
   v2 = 0;
   dword_1A1354 = (int)sub_126AFD((int)aRaceoptLbx_3, 0, dword_192ED4);
-  sub_FE8BE(dword_1A1354, 0, v0, 0);
+  ServiceAudioTick_FE8BE(dword_1A1354, 0, v0, 0);
   do
   {
     v3 = dword_192ED4;
@@ -5414,7 +5414,7 @@ int sub_CCA1C()
   while ( v1 < 3 );
   v6 = v1 + 1;
   v7 = 0;
-  sub_FE8BE((int)v5, v4, v3, (int16_t *)(v2 * 4));
+  ServiceAudioTick_FE8BE((int)v5, v4, v3, (int16_t *)(v2 * 4));
   v8 = 0;
   v38 = v6;
   do
@@ -5430,7 +5430,7 @@ int sub_CCA1C()
   while ( v7 < 5 );
   v12 = v7 + v6;
   v13 = 0;
-  sub_FE8BE((int)v11, v9, v10, (int16_t *)(v8 * 4));
+  ServiceAudioTick_FE8BE((int)v11, v9, v10, (int16_t *)(v8 * 4));
   v14 = 0;
   v37 = v12;
   do
@@ -5446,7 +5446,7 @@ int sub_CCA1C()
   while ( v13 < 4 );
   v18 = v13 + v12;
   v19 = 0;
-  sub_FE8BE((int)v17, v15, v16, (int16_t *)(v14 * 4));
+  ServiceAudioTick_FE8BE((int)v17, v15, v16, (int16_t *)(v14 * 4));
   v20 = 0;
   v36 = v18;
   do
@@ -5462,7 +5462,7 @@ int sub_CCA1C()
   while ( v19 < 7 );
   v24 = v19 + v18;
   v25 = 0;
-  sub_FE8BE((int)v23, v21, v22, (int16_t *)(v20 * 4));
+  ServiceAudioTick_FE8BE((int)v23, v21, v22, (int16_t *)(v20 * 4));
   v26 = 0;
   v35 = v24;
   do
@@ -5476,7 +5476,7 @@ int sub_CCA1C()
     dword_1A12FC[v26] = (int)v29;
   }
   while ( v25 < 3 );
-  sub_FE8BE((int)v29, v27, v28, (int16_t *)(v26 * 4));
+  ServiceAudioTick_FE8BE((int)v29, v27, v28, (int16_t *)(v26 * 4));
   v30 = v25 + v24;
   dword_1A12C0 = (int)sub_126B42((int)aNewgameLbx, v30, dword_192ED4);
   dword_1A12BC = (int)sub_126B42((int)aNewgameLbx, (int16_t)(v30 + 1), dword_192ED4);
@@ -5488,7 +5488,7 @@ int sub_CCA1C()
   dword_1A12D4[0] = (int)v31;
   v33 = (int16_t)(v30 + 6);
   dword_1A12D0 = (int)sub_126B42((int)aNewgameLbx, v33, dword_192ED4);
-  sub_FE8BE(dword_1A12D0, v33, v32, (int16_t *)(v26 * 4));
+  ServiceAudioTick_FE8BE(dword_1A12D0, v33, v32, (int16_t *)(v26 * 4));
   return sub_CC81C();
 }
 // 192ED4: using guessed type int dword_192ED4;
@@ -7636,7 +7636,7 @@ int sub_CFCB6(int a1, int a2, int a3, int16_t *a4)
   int result; // eax
   int16_t i; // cx
 
-  sub_FE8BE(a1, a2, a3, a4);
+  ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   memset(dword_1A7454, 0, 96);
   memset(dword_1A7294, 0, 448);
   memset(dword_1A7254, 0, 32);
@@ -7695,7 +7695,7 @@ int sub_CFCB6(int a1, int a2, int a3, int16_t *a4)
       }
     }
   }
-  sub_FE8BE(v5, v4, (int)v6, a4);
+  ServiceAudioTick_FE8BE(v5, v4, (int)v6, a4);
   v11 = 16;
   v12 = 0;
   v13 = memset(byte_1A7284, 0, 16);
@@ -7712,7 +7712,7 @@ int sub_CFCB6(int a1, int a2, int a3, int16_t *a4)
       byte_1A7284[2 * v14] += v13;
     }
   }
-  sub_FE8BE(v13, v12, v11, a4);
+  ServiceAudioTick_FE8BE(v13, v12, v11, a4);
   for ( i = word_199998; i > 0; result = sub_CF40D(i) )
     --i;
   return result;
@@ -8515,7 +8515,7 @@ void sub_D0D2F(int16_t *a1)
     v16 = (int16_t)v15;
     if ( (int16_t)v15 != -1 )
       v16 = sub_E109D(v15);
-    sub_FE8BE(v16, v15, v7, a1);
+    ServiceAudioTick_FE8BE(v16, v15, v7, a1);
     if ( (int16_t)v15 == -1 )
       JUMPOUT(0xCFADE);
   }
@@ -8802,7 +8802,7 @@ void sub_D10EE( int a1, int16_t *a2)
   v138 = v7;
   if ( v7 > 10 )
     v138 = 10;
-  sub_FE8BE(v7, v6, v4, a2);
+  ServiceAudioTick_FE8BE(v7, v6, v4, a2);
   if ( *(_BYTE *)(v142 + 2070) && !v140 )
     v140 = (uint8_t)v4 + 1;
   v8 = word_199996;
@@ -8834,7 +8834,7 @@ LABEL_253:
         {
           v29 = 361 * v120[v20];
           v8 = v29 + dword_192B18;
-          sub_FE8BE(v29, v6, v29 + dword_192B18, (int16_t *)v10);
+          ServiceAudioTick_FE8BE(v29, v6, v29 + dword_192B18, (int16_t *)v10);
           if ( v140
             && (v6 = dword_1AA1D8,
                 *(_BYTE *)(dword_1AA1D8
@@ -8980,7 +8980,7 @@ LABEL_50:
             }
           }
         }
-        sub_FE8BE(v44, v6, v8, (int16_t *)v10);
+        ServiceAudioTick_FE8BE(v44, v6, v8, (int16_t *)v10);
         v48 = (int)sub_D0C7F;
         v49 = 1;
         v50 = v139;
@@ -9029,7 +9029,7 @@ LABEL_50:
             }
           }
         }
-        sub_FE8BE(v51, v50, v49, (int16_t *)v10);
+        ServiceAudioTick_FE8BE(v51, v50, v49, (int16_t *)v10);
         if ( v182 )
         {
           v54 = v142;
@@ -9088,7 +9088,7 @@ LABEL_50:
             }
           }
         }
-        sub_FE8BE(v54, v50, v49, (int16_t *)v10);
+        ServiceAudioTick_FE8BE(v54, v50, v49, (int16_t *)v10);
         v164 = (int16_t *)(v142 + 1301);
         v163 = 2 * v140 + 48;
         v158 = 2 * v140 + 35;
@@ -9115,7 +9115,7 @@ LABEL_116:
           v149 = v139 - 1;
           v148 = v120[v139 - 1];
           v58 = (_BYTE *)(361 * v148 + dword_192B18);
-          sub_FE8BE(361 * v148, (int)v58, v57, (int16_t *)v10);
+          ServiceAudioTick_FE8BE(361 * v148, (int)v58, v57, (int16_t *)v10);
           v147 = v58;
           if ( v139 <= 0
             || *(_DWORD *)(v142 + 50) + *(int16_t *)(v142 + 178) >= *(_DWORD *)(v142 + 180)
@@ -9201,7 +9201,7 @@ LABEL_116:
         v168 = 361 * v148;
         while ( 2 )
         {
-          sub_FE8BE(v64, v62, v57, (int16_t *)v10);
+          ServiceAudioTick_FE8BE(v64, v62, v57, (int16_t *)v10);
           v62 = 6;
           v65 = sub_FE96F((int)&v122, 6);
           v66 = (int (*)(uint8_t *, uint8_t *))v48;
@@ -9635,7 +9635,7 @@ LABEL_247:
         }
       }
     }
-    sub_FE8BE(v12, v6, v8, (int16_t *)v10);
+    ServiceAudioTick_FE8BE(v12, v6, v8, (int16_t *)v10);
     if ( (uint8_t)sub_DF8C1(v11) || *(_BYTE *)(v10 + dword_1AA1EC + 5) || v184 )
       break;
 LABEL_28:
@@ -10117,7 +10117,7 @@ void sub_D302E()
       if ( (v3 & 1) != 0 )
       {
         LOWORD(v3) = *v2;
-        sub_FE8BE((int)v2, v3, v0, (int16_t *)v1);
+        ServiceAudioTick_FE8BE((int)v2, v3, v0, (int16_t *)v1);
         if ( (int16_t)v3 == -1 )
         {
           v4 = 720 * (int16_t)v0;
@@ -10201,7 +10201,7 @@ LABEL_22:
       v18 = 0;
       v4 = dword_19306C;
       v12 = *(int16_t *)(v17 + dword_1930D4);
-      sub_FE8BE(v12, dword_19306C, v0, v1);
+      ServiceAudioTick_FE8BE(v12, dword_19306C, v0, v1);
       v5 = v3 + v4;
       v15 = 0;
       *(_WORD *)((char *)off_183558 + v0 + v2) = *(_WORD *)((char *)off_183554 + v0 + v2);
@@ -11112,7 +11112,7 @@ void sub_D3D34(int a1, int a2)
   dword_1AA1C4 = (int)sub_110D3C(dword_192ED4, 24016);
   dword_1AA1CC = (int)sub_110D3C(dword_192ED4, 2000);
   v2 = memset(dword_1AA204, 0, 464);
-  sub_FE8BE(v2, 0, 464, (int16_t *)a2);
+  ServiceAudioTick_FE8BE(v2, 0, 464, (int16_t *)a2);
   memset(dword_1AA1DC, 0, 8000);
   memset(dword_1AA1F4, 0, 8000);
   memset(dword_1AA1FC, 0, 4000);
@@ -11194,7 +11194,7 @@ void sub_D3D34(int a1, int a2)
               *(_WORD *)(v158 + v207 + dword_1AA1F4) = v13;
               v4 = dword_1AA1FC + 8 * v165;
               v14 = sub_5F379(v165, v4);
-              sub_FE8BE((int)v14, v4, v3, (int16_t *)a2);
+              ServiceAudioTick_FE8BE((int)v14, v4, v3, (int16_t *)a2);
               if ( v7 < 8 && v9 < 10 )
               {
                 v170 = (_DWORD *)(v223 + v168 + v167 + dword_1AA1F0 + v169);
@@ -11260,7 +11260,7 @@ void sub_D3D34(int a1, int a2)
       }
     }
   }
-  sub_FE8BE(v18, v4, v3, (int16_t *)a2);
+  ServiceAudioTick_FE8BE(v18, v4, v3, (int16_t *)a2);
   v20 = word_19999A;
   v226 = 80 * word_19999A;
   v21 = 2560 * word_19999A;
@@ -11314,7 +11314,7 @@ void sub_D3D34(int a1, int a2)
     }
     while ( v3 < 9 );
   }
-  sub_FE8BE(v21, v20, v3, (int16_t *)a2);
+  ServiceAudioTick_FE8BE(v21, v20, v3, (int16_t *)a2);
   for ( j = word_199998; j > 0; *(_DWORD *)&v147[4 * j + 96] = v27 / 2 * (v27 / 2) )
   {
     v25 = 30 * *(int16_t *)(dword_197F98 + 3753 * --j + 804);
@@ -11375,7 +11375,7 @@ void sub_D3D34(int a1, int a2)
       }
     }
   }
-  sub_FE8BE(v29, v28, (int)v30, (int16_t *)a2);
+  ServiceAudioTick_FE8BE(v29, v28, (int)v30, (int16_t *)a2);
   memset(dword_1AA1E8, 255, 41472);
   v34 = (int)&loc_28800;
   v35 = 255;
@@ -11409,13 +11409,13 @@ void sub_D3D34(int a1, int a2)
             v35 = sub_FFBD6(v186, (int16_t)v36, v38);
             v40 = (_BYTE *)(v186 + v228 + v187 + dword_1AA1E8);
             *v40 = v35;
-            sub_FE8BE((int)v40, v35, (int16_t)v38, v36);
+            ServiceAudioTick_FE8BE((int)v40, v35, (int16_t)v38, v36);
           }
         }
       }
     }
   }
-  sub_FE8BE(v37, v35, v34, v36);
+  ServiceAudioTick_FE8BE(v37, v35, v34, v36);
   memset(dword_1AA1B4, 255, 36000);
   v41 = (_BYTE *)(&loc_1193F + 1);
   v42 = 255;
@@ -11459,13 +11459,13 @@ void sub_D3D34(int a1, int a2)
             v42 = v190 + dword_1AA1B4 + v48;
             LOBYTE(v49) = v149;
             *(_BYTE *)v42 = v149;
-            sub_FE8BE(v49, v42, (int)v148, (int16_t *)v44);
+            ServiceAudioTick_FE8BE(v49, v42, (int)v148, (int16_t *)v44);
           }
         }
       }
     }
   }
-  sub_FE8BE(v45, v42, (int)v41, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v45, v42, (int)v41, (int16_t *)v44);
   memset(dword_1AA1EC, 0, 1750);
   v50 = (uint8_t *)(dword_192B18 + 361 * word_199996);
   v51 = v50 + 12;
@@ -11477,7 +11477,7 @@ void sub_D3D34(int a1, int a2)
     {
       v52 = 7 * ((int)&v50[-dword_192B18] / 361);
       v53 = (uint8_t *)(v52 + dword_1AA1EC);
-      sub_FE8BE(v52, (int)&v50[-dword_192B18] % 361, v52 + dword_1AA1EC, (int16_t *)v44);
+      ServiceAudioTick_FE8BE(v52, (int)&v50[-dword_192B18] % 361, v52 + dword_1AA1EC, (int16_t *)v44);
       v53[6] = 0;
       v54 = &v51[4 * v50[10]];
       while ( v51 < v54 )
@@ -11513,7 +11513,7 @@ void sub_D3D34(int a1, int a2)
       v60 = 80 * *(uint8_t *)(dword_1930D4 + v59 + 2);
       v265 = 0;
       v175 = v58;
-      sub_FE8BE(v59, v56, v58, (int16_t *)v44);
+      ServiceAudioTick_FE8BE(v59, v56, v58, (int16_t *)v44);
       v57 = word_199998;
       v192 = v60;
       v61 = 10 * word_199998;
@@ -11531,7 +11531,7 @@ void sub_D3D34(int a1, int a2)
       while ( v57 > 0 && !v265 );
     }
   }
-  sub_FE8BE(v57, v56, v58, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v57, v56, v58, (int16_t *)v44);
   v62 = 0;
   memset(dword_1AA1F8, 0, 3528);
   v63 = word_19999A;
@@ -11594,13 +11594,13 @@ LABEL_122:
     }
   }
   sub_D3BA0();
-  sub_FE8BE(v68, v62, v63, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v68, v62, v63, (int16_t *)v44);
   v69 = word_199998;
   v70 = 3753 * word_199998;
   v238 = v70;
   while ( v69 > 0 )
   {
-    sub_FE8BE(v70, v62, v69--, (int16_t *)v44);
+    ServiceAudioTick_FE8BE(v70, v62, v69--, (int16_t *)v44);
     v44 = 58 * v69;
     v238 -= 3753;
     v71 = 113 * word_19999A + dword_19306C;
@@ -11664,7 +11664,7 @@ LABEL_136:
       }
     }
   }
-  sub_FE8BE(v70, v62, v69, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v70, v62, v69, (int16_t *)v44);
   v75 = dword_192B18;
   v76 = (char *)(dword_192B18 + 361 * word_199996);
   while ( (unsigned int)v76 > dword_192B18 )
@@ -11686,7 +11686,7 @@ LABEL_136:
       }
     }
   }
-  sub_FE8BE((int)v76, v75, v69, (int16_t *)v44);
+  ServiceAudioTick_FE8BE((int)v76, v75, v69, (int16_t *)v44);
   v78 = word_199998;
   v79 = 0;
   v80 = 58 * word_199998;
@@ -11704,13 +11704,13 @@ LABEL_136:
     k -= 58;
     --v81;
   }
-  sub_FE8BE(v80, k, v81, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v80, k, v81, (int16_t *)v44);
   sub_D302E();
-  sub_FE8BE(v83, k, v81, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v83, k, v81, (int16_t *)v44);
   sub_D3125();
-  sub_FE8BE(v84, k, v81, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v84, k, v81, (int16_t *)v44);
   v85 = sub_DC47C(dword_1AA1D0);
-  sub_FE8BE(v85, k, 24016, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v85, k, 24016, (int16_t *)v44);
   word_1AA218 = 0;
   memset(dword_1AA1C4, 0, 24016);
   v86 = 0;
@@ -11731,7 +11731,7 @@ LABEL_136:
         ++word_1AA218;
         if ( !*(_BYTE *)(v88 + 100) )
         {
-          sub_FE8BE(v87, v86, v88, (int16_t *)v44);
+          ServiceAudioTick_FE8BE(v87, v86, v88, (int16_t *)v44);
           sub_D33D1(v88);
           v90 = v89;
           v44 = (int)(v88 - dword_197F9C) / 129;
@@ -11756,13 +11756,13 @@ LABEL_136:
   while ( v94 > 0 )
   {
     --v94;
-    sub_FE8BE(v87, v86, v88, (int16_t *)v44);
+    ServiceAudioTick_FE8BE(v87, v86, v88, (int16_t *)v44);
     v95 = (int16_t *)(3002 * v94 + dword_1AA1C4);
     v88 = 6;
     v86 = *v95;
     v87 = qsort(v95 + 1, v86, 6);
   }
-  sub_FE8BE(v87, v86, v88, (int16_t *)v44);
+  ServiceAudioTick_FE8BE(v87, v86, v88, (int16_t *)v44);
   memset(dword_1AA1C8, -1, 1168);
   v96 = word_1AA218;
   v97 = qsort(dword_1AA1D4, word_1AA218, 2);
@@ -11770,7 +11770,7 @@ LABEL_136:
   {
     if ( (int16_t)m >= word_1AA218 )
     {
-      sub_FE8BE(v97, v96, m, (int16_t *)v44);
+      ServiceAudioTick_FE8BE(v97, v96, m, (int16_t *)v44);
       v100 = (int)&loc_2D000;
       v101 = 0;
       memset(dword_1AA208, 0, &loc_2D000);
@@ -11786,7 +11786,7 @@ LABEL_136:
         v44 = *(int16_t *)(129 * v103 + dword_197F9C + 101);
         v104 = *(char *)(129 * v103 + dword_197F9C + 99);
         v199 = v104;
-        sub_FE8BE(v104, 11, 129 * v103, (int16_t *)v44);
+        ServiceAudioTick_FE8BE(v104, 11, 129 * v103, (int16_t *)v44);
         v105 = 129 * v103 + dword_197F9C;
         --v198;
         if ( *(_BYTE *)(v105 + 100) == 10 || v44 < word_19999A )
@@ -11852,7 +11852,7 @@ LABEL_136:
           }
         }
       }
-      sub_FE8BE(n, v101, v100, (int16_t *)v44);
+      ServiceAudioTick_FE8BE(n, v101, v100, (int16_t *)v44);
       v109 = 5760;
       v110 = 0;
       v111 = memset(dword_1AA1BC, 0, 5760);
@@ -11870,7 +11870,7 @@ LABEL_136:
           *(_WORD *)(dword_1AA1BC + 16 * (int16_t)v111 + 2 * v109) = v110;
         }
       }
-      sub_FE8BE(v111, v110, v109, (int16_t *)v44);
+      ServiceAudioTick_FE8BE(v111, v110, v109, (int16_t *)v44);
       memset(dword_1AA1E0, 0, 2304);
       memset(dword_1AA210, 0, 2304);
       memset(v146, -1, sizeof(v146));
@@ -11919,7 +11919,7 @@ LABEL_136:
         if ( *(_BYTE *)(v119 + dword_19306C + 56) )
         {
           v121 = v120 + 10;
-          sub_FE8BE(v119, v120, v114, v115);
+          ServiceAudioTick_FE8BE(v119, v120, v114, v115);
           v245 = v120;
           do
           {
@@ -11991,7 +11991,7 @@ LABEL_136:
                     else
                       v212 = 4;
                   }
-                  sub_FE8BE(v130, v129, v128, v115);
+                  ServiceAudioTick_FE8BE(v130, v129, v128, v115);
                   LOWORD(v131) = word_19999A;
                   v254 = v131;
                   v215 = v220;
@@ -12024,7 +12024,7 @@ LABEL_136:
                   LOWORD(v134) = sub_D3576(v127, (int16_t)v115, v133, 0, v144);
                   if ( (int16_t)v134 <= 2 )
                   {
-                    sub_FE8BE(v134, (int16_t)v115, v133, v115);
+                    ServiceAudioTick_FE8BE(v134, (int16_t)v115, v133, v115);
                     v208 += *(uint16_t *)(v221 + v249 + dword_1AA1BC);
                   }
                 }

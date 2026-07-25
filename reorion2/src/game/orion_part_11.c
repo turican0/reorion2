@@ -9059,32 +9059,32 @@ int sub_BB954(int a1, int a2)
   _DWORD *v9; // eax
 
   v2 = sub_B0A24();
-  sub_FE8BE(v2);
+  ServiceAudioTick_FE8BE(v2);
   v3 = sub_C52F6();
-  sub_FE8BE(v3);
+  ServiceAudioTick_FE8BE(v3);
   dword_19F7C0 = (int)sub_110D3C(dword_192ED4, 3632);
   v4 = sub_110D3C(dword_192ED4, 3632);
   word_182C1D = -1;
   word_182C9A = -1;
   dword_182C96 = -1;
   dword_19F7CC = (int)v4;
-  sub_FE8BE(v4);
+  ServiceAudioTick_FE8BE(v4);
   v5 = sub_110D3C(dword_192ED4, 14432);
   word_182C1F = -1;
   dword_19DD8C = (int)v5;
-  sub_FE8BE(v5);
+  ServiceAudioTick_FE8BE(v5);
   v6 = sub_BB8DD();
-  sub_FE8BE(v6);
+  ServiceAudioTick_FE8BE(v6);
   sub_B5FBE();
   v7 = sub_AF74F();
-  sub_FE8BE(v7);
+  ServiceAudioTick_FE8BE(v7);
   v8 = sub_BB91D();
-  sub_FE8BE(v8);
+  ServiceAudioTick_FE8BE(v8);
   v9 = sub_BB822();
   return nullsub_7(v9, a2);
 }
 // BB9FD: using guessed type int nullsub_7(_DWORD, _DWORD);
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 182C1D: using guessed type int16_t word_182C1D;
 // 182C1F: using guessed type int16_t word_182C1F;
 // 182C96: using guessed type int dword_182C96;
@@ -9105,7 +9105,7 @@ int sub_BBA8E(int a1)
   int result; // eax
 
   v1 = a1;
-  sub_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1);
   switch ( v1 )
   {
     case 0:
@@ -9195,7 +9195,7 @@ LABEL_21:
   }
   return result;
 }
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 182B8D: using guessed type int dword_182B8D[19];
 // 192B18: using guessed type int dword_192B18;
 // 1930D4: using guessed type int dword_1930D4;

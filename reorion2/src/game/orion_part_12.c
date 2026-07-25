@@ -3808,20 +3808,20 @@ int16_t sub_C058A(int a1, int16_t *a2)
   LOWORD(a2) = word_19999C;
   word_19999C = *(char *)(dword_192B18 + 361 * dword_19F7A8);
   v6 = sub_B0A24();
-  sub_FE8BE((int)v6, v5, a1, a2);
+  ServiceAudioTick_FE8BE((int)v6, v5, a1, a2);
   v7 = sub_C52F6();
-  sub_FE8BE((int)v7, v5, a1, a2);
+  ServiceAudioTick_FE8BE((int)v7, v5, a1, a2);
   v8 = sub_BB7DB();
-  sub_FE8BE((int)v8, v5, a1, a2);
+  ServiceAudioTick_FE8BE((int)v8, v5, a1, a2);
   v9 = sub_BB7BB();
-  sub_FE8BE((int)v9, v5, a1, a2);
+  ServiceAudioTick_FE8BE((int)v9, v5, a1, a2);
   v10 = sub_BB8DD();
-  sub_FE8BE(v10, v5, a1, a2);
+  ServiceAudioTick_FE8BE(v10, v5, a1, a2);
   sub_B5FBE();
   v11 = sub_AF74F();
-  sub_FE8BE((int)v11, v5, a1, a2);
+  ServiceAudioTick_FE8BE((int)v11, v5, a1, a2);
   v12 = sub_BB91D();
-  sub_FE8BE(v12, v5, a1, a2);
+  ServiceAudioTick_FE8BE(v12, v5, a1, a2);
   sub_BB822();
   if ( byte_182AC9 )
   {
@@ -8021,7 +8021,7 @@ void sub_C5BB9()
     {
       v2 = sub_132C80(i);
       byte_18319C = i;
-      sub_FE8BE(v2);
+      ServiceAudioTick_FE8BE(v2);
       v0 = 1;
     }
     if ( v0 )
@@ -8036,7 +8036,7 @@ void sub_C5BB9()
   }
 }
 // 1077D: using guessed type int sub_1077D(_DWORD);
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 18319C: using guessed type char byte_18319C;
 // 18319D: using guessed type char byte_18319D;
 
@@ -8054,12 +8054,12 @@ void sub_C5C44()
     {
       v1 = sub_132C80(i);
       byte_18319C = i;
-      sub_FE8BE(v1);
+      ServiceAudioTick_FE8BE(v1);
     }
   }
   sub_124C08();
 }
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 18319C: using guessed type char byte_18319C;
 
 

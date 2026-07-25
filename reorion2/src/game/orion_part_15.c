@@ -2323,7 +2323,7 @@ void sub_E84A5(int16_t *a1, int16_t *a2, int a3)
   v5 = a3 - 1;
   while ( *a1 == -1 && (v5 & 0x8000u) == 0 )
   {
-    sub_FE8BE();
+    ServiceAudioTick_FE8BE();
     *a1 = *(uint8_t *)((int16_t)v5 + dword_1AA37C);
     if ( (byte_199F3A == 2 || byte_199F3A == 3) && sub_E841A(*a1) )
     {
@@ -2361,7 +2361,7 @@ void sub_E84A5(int16_t *a1, int16_t *a2, int a3)
 }
 // E84C0: control flows out of bounds to E6CA5
 // E8512: variable 'v6' is possibly undefined
-// FE8BE: using guessed type int sub_FE8BE(void);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(void);
 // 199F3A: using guessed type char byte_199F3A;
 // 1AA37C: using guessed type int dword_1AA37C;
 // 1AA38A: using guessed type int16_t word_1AA38A[];
@@ -3336,9 +3336,9 @@ void sub_EA2F1(int a1, int16_t *a2)
   dword_1AA378 = (int)v31;
   while ( (uint8_t)byte_1AB03F >= 0xEu && (uint8_t)byte_1AB03F < 0x23u )
   {
-    sub_FE8BE((int)v4, v3, v2, a2);
+    ServiceAudioTick_FE8BE((int)v4, v3, v2, a2);
     v19 = sub_F55A4(v18, v3, v2, a1);
-    sub_FE8BE(v19, v3, v2, a2);
+    ServiceAudioTick_FE8BE(v19, v3, v2, a2);
     a1 = 24;
     a2 = &word_EA27A;
     LOBYTE(v4) = byte_1AB03F;
@@ -3372,7 +3372,7 @@ void sub_EA2F1(int a1, int16_t *a2)
           LOWORD(v4) = word_1AAF6E;
           if ( word_1AAF6E >= word_1AAF70 )
             break;
-          sub_FE8BE((int)v4, v3, v2, a2);
+          ServiceAudioTick_FE8BE((int)v4, v3, v2, a2);
         }
         v3 = dword_1AAF6A;
         sub_F8C8E((char *)dword_1AAF72);
@@ -3420,7 +3420,7 @@ LABEL_44:
           LOWORD(v4) = word_1AAF6E;
           if ( word_1AAF6E >= word_1AAF70 )
             break;
-          sub_FE8BE((int)v4, v3, v2, a2);
+          ServiceAudioTick_FE8BE((int)v4, v3, v2, a2);
         }
         v3 = dword_1AAF6A;
         sub_F93E3((char *)dword_1AAF72);
@@ -3446,7 +3446,7 @@ LABEL_5:
         BYTE2(v25) = sub_E938C(byte_1AB040, word_19999C, word_1AB041, word_1AB043, v24, 0);
         v8 = sub_F6816(*(int16_t *)(dword_197F98 + 3753 * word_1AB045 + 43), 24, (int)v24, 0x6CEu);
         while ( byte_1AB03F != 14 )
-          sub_FE8BE(v8, 24, (int)v24, (int16_t *)v26);
+          ServiceAudioTick_FE8BE(v8, 24, (int)v24, (int16_t *)v26);
         a1 = word_1AB041;
         v2 = word_1AB045;
         v22 = SBYTE2(v25);
@@ -3461,7 +3461,7 @@ LABEL_5:
         if ( byte_1AB03F != 26 )
           byte_1AB03F = 14;
         while ( byte_1AB03F != 26 )
-          sub_FE8BE(v12, v11, v10, a2);
+          ServiceAudioTick_FE8BE(v12, v11, v10, a2);
         sub_E85F7(dword_1AB04C);
         sub_F6816(*(int16_t *)(dword_197F98 + 3753 * byte_1AB048 + 43), 25, 0, 0);
         a1 = word_1AB041;
@@ -3548,7 +3548,7 @@ LABEL_43:
           LOWORD(v4) = word_1AAF6E;
           if ( word_1AAF6E >= word_1AAF70 )
             break;
-          sub_FE8BE((int)v4, v3, v2, a2);
+          ServiceAudioTick_FE8BE((int)v4, v3, v2, a2);
         }
         v3 = dword_1AAF6A;
         sub_F9C58((char *)dword_1AAF72);
@@ -3561,7 +3561,7 @@ LABEL_43:
   }
   dword_1AB04C = 0;
   dword_1AA378 = 0;
-  sub_FE8BE((int)v4, v3, v2, a2);
+  ServiceAudioTick_FE8BE((int)v4, v3, v2, a2);
 }
 // EA330: variable 'v4' is possibly undefined
 // EA54E: variable 'v8' is possibly undefined
@@ -3727,7 +3727,7 @@ void sub_EAAA1(int a1, int a2, int a3)
   int16_t v51; // [esp+20h] [ebp-8h]
   char v52[4]; // [esp+24h] [ebp-4h] BYREF
 
-  v3 = sub_FE8BE(a1);
+  v3 = ServiceAudioTick_FE8BE(a1);
   if ( byte_183579 )
     goto LABEL_89;
   LOWORD(v3) = word_199998;
@@ -3816,7 +3816,7 @@ void sub_EAAA1(int a1, int a2, int a3)
                   LOWORD(v34) = byte_1AAF94[12 * --v36];
                   if ( (_WORD)v34 == v49 )
                   {
-                    v34 = sub_FE8BE(v34);
+                    v34 = ServiceAudioTick_FE8BE(v34);
                     byte_1AAF94[12 * v36] = -1;
                   }
                 }
@@ -3836,7 +3836,7 @@ void sub_EAAA1(int a1, int a2, int a3)
                     LOWORD(v37) = byte_1AAF94[12 * v39];
                     if ( (_WORD)v37 == v49 )
                     {
-                      v37 = sub_FE8BE(v37);
+                      v37 = ServiceAudioTick_FE8BE(v37);
                       byte_1AAF94[12 * v39] = -1;
                     }
                   }
@@ -3883,7 +3883,7 @@ void sub_EAAA1(int a1, int a2, int a3)
         {
           if ( *(_BYTE *)(3753 * --v4 + dword_197F98 + 40) == 100 && byte_1AAF8B[12 * v4] != 14 )
           {
-            sub_FE8BE(12 * v4);
+            ServiceAudioTick_FE8BE(12 * v4);
             v5 = 1;
           }
         }
@@ -3895,7 +3895,7 @@ LABEL_89:
       JUMPOUT(0xEA8BE);
     }
     --v51;
-    sub_FE8BE(v3);
+    ServiceAudioTick_FE8BE(v3);
     v3 = v51;
     v6 = 12 * v51;
     LOBYTE(a2) = byte_1AAF8B[v6] - 14;
@@ -3915,7 +3915,7 @@ LABEL_89:
             LOWORD(v3) = byte_1AAF94[12 * --v9];
             if ( (_WORD)v3 == v51 )
             {
-              v3 = sub_FE8BE(v3);
+              v3 = ServiceAudioTick_FE8BE(v3);
               byte_1AAF94[12 * v9] = -1;
             }
           }
@@ -3939,7 +3939,7 @@ LABEL_89:
               LOWORD(v10) = byte_1AAF94[12 * v12];
               if ( (_WORD)v10 == v51 )
               {
-                v10 = sub_FE8BE(v10);
+                v10 = ServiceAudioTick_FE8BE(v10);
                 byte_1AAF94[12 * v12] = -1;
               }
             }
@@ -4027,7 +4027,7 @@ LABEL_32:
   }
 }
 // EB18D: control flows out of bounds to EA8BE
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 183579: using guessed type char byte_183579;
 // 192B18: using guessed type int dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -11095,7 +11095,7 @@ int sub_F3E42(int a1)
   _BYTE v18[4]; // [esp+4h] [ebp-4h] BYREF
 
   v1 = a1;
-  sub_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1);
   byte_1AAC54 = 0;
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);
@@ -11140,7 +11140,7 @@ int sub_F3E42(int a1)
   return sub_EFCEA(v15, v14);
 }
 // F3FBC: variable 'v15' is possibly undefined
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192680: using guessed type int dword_192680;
 // 193174: using guessed type int dword_193174;
@@ -11156,7 +11156,7 @@ int sub_F3FC6(int a1, int a2, int a3, int16_t *a4)
   int v6; // ebx
   int result; // eax
 
-  sub_FE8BE(a1, a2, a3, a4);
+  ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);
   v4 = dword_192680;
@@ -11193,7 +11193,7 @@ int sub_F40D3(int a1, int a2, int a3, int16_t *a4)
   int v8; // eax
   int result; // eax
 
-  sub_FE8BE(a1, a2, a3, a4);
+  ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);
   v4 = dword_192680;
@@ -11229,7 +11229,7 @@ void sub_F41AD(int a1, int a2, int a3, int16_t *a4)
   _DWORD *v7; // eax
   int v8; // ebx
 
-  sub_FE8BE(a1, a2, a3, a4);
+  ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);
   v4 = dword_192680;
@@ -11284,7 +11284,7 @@ void sub_F42CA(int a1, int a2, int a3, int16_t *a4)
   int16_t *v6; // eax
   int v7; // ebx
 
-  sub_FE8BE(a1, a2, a3, a4);
+  ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   dword_192680 = (int)&unk_1AACB4;
   memset(&unk_1AACB4, 0, 491);
   v4 = (char *)dword_192680;

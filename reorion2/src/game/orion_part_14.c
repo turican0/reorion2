@@ -687,7 +687,7 @@ void sub_D6ED4( int a1, int a2, int16_t *a3)
   sub_D5E19();
   sub_D0D2F((int16_t *)word_1AA234);
   sub_D6E1D(a3);
-  sub_FE8BE(v4, v3, a2, a3);
+  ServiceAudioTick_FE8BE(v4, v3, a2, a3);
   dword_1AA22C = 0;
 }
 // D6F55: variable 'v4' is possibly undefined
@@ -715,11 +715,11 @@ unsigned int sub_D6F67(int a1, int16_t *a2)
     --v2;
     if ( *(_BYTE *)(v3 + dword_197F98 + 40) != 100 )
     {
-      sub_FE8BE(dword_197F98, v2, v3, a2);
+      ServiceAudioTick_FE8BE(dword_197F98, v2, v3, a2);
       sub_D6ED4(v2, v3, a2);
     }
   }
-  sub_FE8BE(a1, v2, v3, a2);
+  ServiceAudioTick_FE8BE(a1, v2, v3, a2);
   result = dword_192B18 + 361 * word_199996;
   while ( result > dword_192B18 )
   {
@@ -3107,7 +3107,7 @@ void sub_D9A7E(int a1, int a2, int a3, int a4)
   v6 = sub_D983F(v27, (int *)a2, (int)v32, &v35, a4);
   while ( !v59 && *(int *)v4 > 0 )
   {
-    sub_FE8BE(v6, a2, v5, v4);
+    ServiceAudioTick_FE8BE(v6, a2, v5, v4);
     memset(v31, -1, 500);
     memset(v30, -1, 500);
     v5 = 2880;
@@ -3443,7 +3443,7 @@ LABEL_19:
                 if ( ++v51 >= 10 )
                   goto LABEL_19;
               }
-              sub_FE8BE((int)v5, v3, v1, a1);
+              ServiceAudioTick_FE8BE((int)v5, v3, v1, a1);
               if ( (char)v40[v1] == -1 )
               {
                 v6 = 63 * v43;
@@ -3782,7 +3782,7 @@ LABEL_67:
   else
     v19 = 255;
   v50 = v19;
-  sub_FE8BE(v19, v18, v1, (int16_t *)v9);
+  ServiceAudioTick_FE8BE(v19, v18, v1, (int16_t *)v9);
   v43[1] = -1;
   v40 = v56;
   v20 = 5 * v56;
@@ -3985,7 +3985,7 @@ void sub_DA99C(int a1)
                 v31[0] = v18[(int16_t)--v44];
                 v15 = 129 * v31[0];
                 v16 = (int16_t *)*(int16_t *)(dword_197F9C + v15 + 101);
-                sub_FE8BE(v15, v2, v1, v16);
+                ServiceAudioTick_FE8BE(v15, v2, v1, v16);
                 v31[1] = -1;
               }
               while ( (int)v16 >= 72 );
@@ -4167,7 +4167,7 @@ LABEL_83:
           if ( *(int16_t *)(v4 + 101) < 72 )
           {
             v1 = *(int16_t *)(v4 + 101);
-            sub_FE8BE(v3, v2, v1, (int16_t *)a1);
+            ServiceAudioTick_FE8BE(v3, v2, v1, (int16_t *)a1);
             if ( byte_199CB0 )
             {
               v2 = dword_19306C;
@@ -4554,7 +4554,7 @@ void sub_DB47E(int a1, int a2, int16_t *a3)
   _BYTE v17[72]; // [esp+B40h] [ebp-48h] BYREF
 
   v3 = a1;
-  sub_FE8BE(a1, a1, a2, a3);
+  ServiceAudioTick_FE8BE(a1, a1, a2, a3);
   word_1AA24C = v3;
   dword_1AA248 = 3753 * v3 + dword_197F98;
   dword_1AA244 = (int)v15;
@@ -4578,31 +4578,31 @@ void sub_DB47E(int a1, int a2, int16_t *a3)
       *(_BYTE *)(dword_1AA23C + *(int16_t *)(v6 + 101)) = v4;
     }
   }
-  sub_FE8BE(v6, v5, v4, a3);
+  ServiceAudioTick_FE8BE(v6, v5, v4, a3);
   sub_D7764(dword_1AA244, &word_1AA24E);
-  sub_FE8BE(v7, (int)&word_1AA24E, v4, a3);
+  ServiceAudioTick_FE8BE(v7, (int)&word_1AA24E, v4, a3);
   sub_DB257();
-  sub_FE8BE(v8, (int)&word_1AA24E, v4, a3);
+  ServiceAudioTick_FE8BE(v8, (int)&word_1AA24E, v4, a3);
   v9 = sub_D97EE(6, 2);
-  sub_FE8BE(v9, SHIDWORD(v9), v4, a3);
+  ServiceAudioTick_FE8BE(v9, SHIDWORD(v9), v4, a3);
   sub_D9F85(a3);
-  sub_FE8BE(v9, SHIDWORD(v9), v4, a3);
+  ServiceAudioTick_FE8BE(v9, SHIDWORD(v9), v4, a3);
   v10 = sub_D97EE(1, 2);
-  sub_FE8BE(v10, SHIDWORD(v10), v4, a3);
+  ServiceAudioTick_FE8BE(v10, SHIDWORD(v10), v4, a3);
   LOBYTE(v10) = sub_D896F(dword_1AA244, &word_1AA24E);
-  sub_FE8BE(v10, 2, v4, a3);
+  ServiceAudioTick_FE8BE(v10, 2, v4, a3);
   v11 = sub_D97EE(2, 2);
-  sub_FE8BE(v11, SHIDWORD(v11), v4, a3);
+  ServiceAudioTick_FE8BE(v11, SHIDWORD(v11), v4, a3);
   v12 = sub_D97EE(6, 0);
-  sub_FE8BE(v12, SHIDWORD(v12), v4, a3);
+  ServiceAudioTick_FE8BE(v12, SHIDWORD(v12), v4, a3);
   v13 = sub_D97EE(1, 0);
-  sub_FE8BE(v13, SHIDWORD(v13), v4, a3);
+  ServiceAudioTick_FE8BE(v13, SHIDWORD(v13), v4, a3);
   v14 = sub_D97EE(2, 0);
-  sub_FE8BE(v14, SHIDWORD(v14), v4, a3);
+  ServiceAudioTick_FE8BE(v14, SHIDWORD(v14), v4, a3);
   sub_DA99C((int)a3);
-  sub_FE8BE(v14, SHIDWORD(v14), v4, a3);
+  ServiceAudioTick_FE8BE(v14, SHIDWORD(v14), v4, a3);
   sub_DA485();
-  sub_FE8BE(v14, SHIDWORD(v14), v4, a3);
+  ServiceAudioTick_FE8BE(v14, SHIDWORD(v14), v4, a3);
   if ( *(_WORD *)(dword_1AA204 + 58 * word_1AA24C + 24) == *(_WORD *)(dword_1AA204 + 58 * word_1AA24C + 10)
     || !byte_199CB0 )
   {
@@ -4914,7 +4914,7 @@ void sub_DBB29(int16_t *a1)
     {
       if ( *(_BYTE *)(v3 + 1440) )
       {
-        sub_FE8BE(v3, v1, v2, a1);
+        ServiceAudioTick_FE8BE(v3, v1, v2, a1);
         if ( *(_BYTE *)(v2 + dword_197F98 + 2236) || !sub_233FA() )
           sub_DB47E((int16_t)v1, v2, a1);
       }
@@ -6405,12 +6405,12 @@ int sub_DD3B8(char *a1)
     if ( *(_BYTE *)(v4 + dword_197F98 + 40) == 100 )
     {
       v3 = sub_F6816(*(int16_t *)(v4 + dword_197F98 + 43), 39, (int)a1, strlen(a1) + 1);
-      result = sub_FE8BE(v3);
+      result = ServiceAudioTick_FE8BE(v3);
     }
   }
   return result;
 }
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
@@ -6442,13 +6442,13 @@ void sub_DD42A(char *a1)
         *v6 = 0;
       }
       v4 = sub_F6816(*(int16_t *)(v7 + dword_197F98 + 43), 45, (int)a1, v3 + 1);
-      sub_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4);
     }
   }
   JUMPOUT(0xDD423);
 }
 // DD4B0: control flows out of bounds to DD423
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
@@ -11046,14 +11046,14 @@ void sub_E2D09( int a1, int a2)
     {
       sub_E1839(v3);
       LOBYTE(v4) = sub_E1E1F((int)v3);
-      sub_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4);
     }
   }
   JUMPOUT(0xE2AA9);
 }
 // E2D6D: control flows out of bounds to E2AA9
 // E2D4F: variable 'v4' is possibly undefined
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 197F98: using guessed type int dword_197F98;
 // 199996: using guessed type int16_t word_199996;
@@ -11068,7 +11068,7 @@ int sub_E2D72(int a1, int a2)
   int v5; // eax
 
   v2 = a1;
-  sub_FE8BE(a1);
+  ServiceAudioTick_FE8BE(a1);
   v3 = (char *)(dword_192B18 + 361 * word_199996);
   while ( (unsigned int)v3 > dword_192B18 )
   {
@@ -11076,15 +11076,15 @@ int sub_E2D72(int a1, int a2)
     if ( *v3 == v2 && !v3[6] )
     {
       sub_E1D59(v3);
-      sub_FE8BE(v4);
+      ServiceAudioTick_FE8BE(v4);
     }
   }
   sub_E2D09(v2, a2);
-  return sub_FE8BE(v5);
+  return ServiceAudioTick_FE8BE(v5);
 }
 // E2DAD: variable 'v4' is possibly undefined
 // E2DC2: variable 'v5' is possibly undefined
-// FE8BE: using guessed type int sub_FE8BE(_DWORD);
+// FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 192B18: using guessed type int dword_192B18;
 // 199996: using guessed type int16_t word_199996;
 
@@ -13450,7 +13450,7 @@ void sub_E55BE(char *a1, int16_t *a2)
 
   v3 = a1 + 12;
   v4 = (uint8_t)a1[10];
-  sub_FE8BE((int)a1, (int)(a1 + 12), (int)a1, a2);
+  ServiceAudioTick_FE8BE((int)a1, (int)(a1 + 12), (int)a1, a2);
   v5 = (int)v3;
   v6 = (unsigned int)&v3[4 * v4];
   for ( i = &v3[4 * (uint8_t)a1[10]]; v3 < i; i[1] |= 1u )
@@ -13608,7 +13608,7 @@ void sub_E5832(int a1, int a2, int a3, int16_t *a4)
   int v24; // [esp+14h] [ebp-8h]
 
   LOWORD(v4) = sub_EB192(a1);
-  sub_FE8BE(v4, a2, a3, a4);
+  ServiceAudioTick_FE8BE(v4, a2, a3, a4);
   v22 = 30000;
   for ( i = (char *)(dword_192B18 + 361 * word_199996); (unsigned int)i > dword_192B18; sub_E55BE(i, a4) )
     i -= 361;
@@ -13631,7 +13631,7 @@ void sub_E5832(int a1, int a2, int a3, int16_t *a4)
     {
       v8 -= 3753;
       v23 = (int)(v8 - dword_197F98) / 3753;
-      sub_FE8BE(v23, (int)(v8 - dword_197F98) % 3753, 3753, a4);
+      ServiceAudioTick_FE8BE(v23, (int)(v8 - dword_197F98) % 3753, 3753, a4);
       v10 = dword_19306C;
       *(_BYTE *)(dword_19306C + 113 * *(uint8_t *)(17 * *(int16_t *)(v8 + 41) + dword_1930D4 + 2) + 55) = v23;
       v11 = 400 * (*(char *)(v8 + 2212) + 2);
@@ -13687,7 +13687,7 @@ void sub_E5832(int a1, int a2, int a3, int16_t *a4)
       }
       do
       {
-        sub_FE8BE(j, v18, v17, a4);
+        ServiceAudioTick_FE8BE(j, v18, v17, a4);
         if ( a4 )
         {
           if ( (int)a4 - 1 < v19 )

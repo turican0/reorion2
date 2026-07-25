@@ -205,7 +205,7 @@ extern TypeStateBlock_199BDC stateBlock_199BDC;
    Skutecna/plna signatura je v komentari nad kazdou deklaraci a v
    tele prislusne definice. DECOMP_TODO: az bude potreba typova
    kontrola, dohledat a sjednotit realny pocet parametru v IDA. ==== */
-// plna signatura: void GameMain_10057(int a1, intptr_t a2, int16_t *a3);
+// plna signatura: void GameMain_10057(int argc, char** argv, int16_t *a3);
 extern void GameMain_10057(int argc, char** argv, int16_t *a3);
 // plna signatura: void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6);
 extern void sub_1049B();
@@ -6445,8 +6445,8 @@ extern void sub_FE785();
 extern char sub_FE793();
 // plna signatura: char sub_FE86B(int a1, int16_t *a2);
 extern char sub_FE86B();
-// plna signatura: int sub_FE8BE(int a1, int a2, int a3, int16_t *a4);
-extern int sub_FE8BE();
+// plna signatura: int ServiceAudioTick_FE8BE(int a1, int a2, int a3, int16_t *a4);
+extern int ServiceAudioTick_FE8BE();
 // plna signatura: int sub_FE8C8(int a1, int a2);
 extern int sub_FE8C8();
 // plna signatura: int sub_FE8DA(int a1, int a2);
