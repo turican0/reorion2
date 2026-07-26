@@ -55,7 +55,6 @@ char sub_1642A0(
   unsigned int v47; // ebp
   char v48; // t2
   char v49; // cf
-  int *v50; // ecx
   int *v51; // edx
   int i; // ecx
   int v53; // eax
@@ -63,7 +62,6 @@ char sub_1642A0(
   int j; // ecx
   int v56; // eax
   int *v58; // [esp-Ch] [ebp-Ch]
-  int v59; // [esp-8h] [ebp-8h]
 
   if ( (uint8_t)byte_18A6C0 < 9u )
   {
@@ -182,11 +180,36 @@ char sub_1642A0(
   BYTE1(a1) = v44;
   LOBYTE(a1) = v48;
   word_18A7E4 = a1;
-  *a2 = 0;
-  a2[1] = 0;
-  a2[2] = 0;
-  a2[3] = 0;
-  v59 = -2;
+  // PORT (wave 24d): the same "build tree via explicit push/pop stack" bug
+  // class as sub_164200 (wave 24c), but worse-mangled here since it's inline
+  // in a much larger function rather than its own helper: Hex-Rays collapsed
+  // the ENTIRE marker stack (which needs to hold one entry per nested "1"
+  // bit, exactly like sub_164200's markerStack) into a single scalar `v59`,
+  // producing the self-assignment no-op `if (v59==-2) v59=-2;` where the
+  // original pushes a fresh reservation - this only "worked" by accident for
+  // trees of depth <= 1 and silently corrupted/lost markers for any deeper
+  // tree, plus it never terminates (no path sets v59 to the -1 sentinel).
+  // Hex-Rays also aliased the ORIGINAL `a2` parameter (the 16-byte output
+  // struct, asm register edx, referenced via `[edx+4/8/0xC]` at the very end
+  // - untouched for the whole function) with the *different* concept of
+  // "the current slot to backpatch" by reassigning `a2` itself inside the
+  // loop (`a2 = (_DWORD*)v59;`) - so by the time the function reaches its
+  // tail (original `a2[1..3]` fixups), `a2` no longer points at the struct
+  // the caller passed in. Rewritten from Debug/diss/Orion2.exe.asm
+  // (sub_1642A0 @ 0x1642A0, build/backpatch section @ 0x164430-0x164583),
+  // confirmed against dosbox-x (DUMPREGS at loc_164562/"tree_done": the
+  // popped marker is 0xFFFFFFFF exactly once per call, matching the
+  // sentinel check below - the original always terminates here).
+  _DWORD *outStruct = a2; // edx - the real, never-reassigned output struct
+  uintptr_t markerStack[1024];
+  int sp = 0;
+
+  outStruct[0] = 0;
+  outStruct[1] = 0;
+  outStruct[2] = 0;
+  outStruct[3] = 0;
+  markerStack[sp++] = 0xFFFFFFFFu; // outermost sentinel
+  markerStack[sp++] = 0xFFFFFFFEu; // "no backpatch needed" root marker
   while ( 1 )
   {
     while ( 1 )
@@ -200,15 +223,16 @@ char sub_1642A0(
       v43 >>= 1;
       if ( !v49 )
         break;
-      if ( v59 == -2 )
-        v59 = -2;
+      // internal node: reserve a slot in a4[] to backpatch later
+      uintptr_t top = markerStack[--sp];
+      markerStack[sp++] = top;
+      markerStack[sp++] = (uintptr_t)a4;
       ++a4;
     }
-    v50 = (int *)v59;
-    if ( v59 == -1 )
+    uintptr_t marker = markerStack[--sp];
+    if ( marker == 0xFFFFFFFFu )
       break;
-    v59 = (int)a2;
-    v58 = v50;
+    v58 = (int *)marker;
     v51 = (int *)dword_18A68C;
     for ( i = *(_DWORD *)dword_18A68C; *v51 >= 0; i = *v51 )
     {
@@ -240,38 +264,37 @@ char sub_1642A0(
       v54 = (int *)((char *)v54 + j);
     }
     LOWORD(v53) = j;
-    a2 = (_DWORD *)v59;
     v56 = __ROL4__(v53, 8);
     if ( word_18A7E0 == (_WORD)v56 )
     {
       v56 = 0;
-      *(_DWORD *)(v59 + 4) = a4;
+      outStruct[1] = (int)a4;
     }
     else if ( word_18A7E2 == (_WORD)v56 )
     {
       v56 = 0;
-      *(_DWORD *)(v59 + 8) = a4;
+      outStruct[2] = (int)a4;
     }
     else if ( word_18A7E4 == (_WORD)v56 )
     {
       v56 = 0;
-      *(_DWORD *)(v59 + 12) = a4;
+      outStruct[3] = (int)a4;
     }
     a1 = v56 << 16;
     LOBYTE(a1) = 1;
     *a4++ = a1;
-    if ( v58 != (int *)-2 )
+    if ( v58 != (int *)0xFFFFFFFE )
     {
       a1 = ((char *)a4 - (char *)v58) << 13;
       *v58 = a1;
     }
   }
-  if ( !a2[1] )
-    a2[1] = a4;
-  if ( !a2[2] )
-    a2[2] = ++a4;
-  if ( !a2[3] )
-    a2[3] = a4 + 1;
+  if ( !outStruct[1] )
+    outStruct[1] = (int)a4;
+  if ( !outStruct[2] )
+    outStruct[2] = (int)++a4;
+  if ( !outStruct[3] )
+    outStruct[3] = (int)(a4 + 1);
   return a1;
 }
 // 18A68C: using guessed type int dword_18A68C;

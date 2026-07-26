@@ -2068,3 +2068,122 @@ odvodila, ze nejaka podminka je vzdy stejna (typicky kdyz podminka
 zavisi na hodnote ulozene na stack/registru, kterou dataflow analyza
 neumi sledovat pres vice urovni push/pop), a ZAHODILA tim i skutecny
 navrat/ukonceni funkce.
+
+Overeno: `sub_164200` po fixu zapisuje spravne (2044B / 2036B, oba pod
+2048B rozpoctem pro `dword_18A68C`/`dword_18A690`) - fix je spravny,
+neni to zdroj noveho pádu.
+
+## Rozpracovano - vlna 24d: sub_1642A0 ma STEJNY bug potreti, ale INLINE
+## (slozitejsi fix, otevreno pro pristi session)
+
+Pad presunut do `sub_1642A0` (Smacker "small tree" dekoder), presne na
+`for (i = *(_DWORD*)dword_18A68C; *v51>=0; i=*v51)` (radek ~213,
+uzivatelem potvrzeno VS debuggerem: `v51 = 0x8165B513` - smeti).
+
+**Zjisteni:** `dword_18A68C`/`dword_18A690` NEJSOU jen ctene pro traversal
+- `sub_1642A0` je i SAMO STAVI (stejnym rekurzivnim zasobnikovym trikem
+jako `sub_164200`, viz `Debug/diss/Orion2.exe.asm` @ 0x164457-0x164562:
+`push 0xFFFFFFFF/0xFFFFFFFE`, `pop ecx; cmp ecx,0xFFFFFFFE/...FFFFFFFF`,
+stejny backpatch vzor `[edx]=edi-ecx`). Rozdil oproti `sub_164200`: tady
+NENI to samostatna funkce s vlastnim `retn` na konci - `cmp ecx,
+0xFFFFFFFFh; jz loc_164562` SKACE do JINE CASTI TE SAME velke funkce
+(pokracuje dalsi logikou - porovnavani s `word_1827E0/E2/E4` a
+vyber/zapis do struct slotu na `edx+4/+8/+0Ch`), ne navrat.
+
+Tenhle konkretni useк je INLINE ve velke, uz tak slozite `sub_1642A0`
+(200+ radku, mnoho odrolovanych bit-decode retezcu v5-v48). Podezrele
+misto v dekompilaci: `if (v59 == -2) v59 = -2;` (radek ~203) -
+sebe-prirazeni, klasicky signal ztracene vetve, pravdepodobne SOUVISI s
+timhle inline stromem (ne primo traversal loop na radku 213, ktera je jen
+DUSLEDEK spatnych dat z INLINE stavby stromu vys - pokud se strom postavi
+spatne/nekonecne, traversal pak cte smeti).
+
+**Dalsi krok (pro pristi session, chce cas na peclive overeni):** precist
+cely `sub_1642A0` (orion_part_25.c, cely rozsah radku ~1-260) soubezne s
+`Debug/diss/Orion2.exe.asm` @ 0x1642A0-0x164600+, presne zmapovat KTERA
+cast dekompilovaneho v5-v48 retezce odpovida asm useku 0x164430-0x164562
+(inline tree-build), rekonstruovat spravne ukonceni/pokracovani (misto
+`retn` tu je `jmp loc_164562` do zbytku funkce), a opravit i sebe-prirazeni
+`v59`. NEDOPORUCUJI rychlou opravu bez peclive verifikace - tahle funkce
+je hustsi/slozitejsi nez `sub_164200` a chyba v prevodu by se tezko
+odhalovala (tise spatna data misto crashe).
+
+## Vyresene - vlna 24e: sub_1642A0 opraveno (marker-stack + backpatch), PLUS
+## skryta chyba v sub_164200 nalezena a opravena (chybejici sign-bit init)
+
+Pred opravou samotnou provereno dle uzivatelova pozadavku: dosbox-x pass2
+(`STOP cond=cycle_ge:3000000000`) potvrdil, ze originalni `sub_1642A0`
+konci na `loc_164562` presne 4x, vzdy s `ecx=0xFFFFFFFF` (spravny
+sentinel) - tedy original korektne terminuje, bug je vyhradne
+v dekompilaci/prevodu, ne v pochopeni algoritmu.
+
+**Fix `sub_1642A0`** (orion_part_25.c): stejna trida bugu jako
+`sub_164200` (Hex-Rays zahodila `retn`/skok na spravne misto a zkolabovala
+cely explicitni marker-zasobnik do jedne skalarni `v59`), navic zhorsena
+tim, ze puvodni parametr `a2` (asm `edx`, nedotcena struktura po celou
+dobu funkce - pouzita az na konci pro `[edx+4/8/0xC]`) byla dekompilatorem
+znovu-prirazena k JINE veci (aktualni backpatch marker) - takze zavěrečný
+kod uz nemel spravny ukazatel na vystupni strukturu.
+
+Reseni: zaveden `outStruct = a2;` (uchovava puvodni ukazatel po celou
+dobu, nikdy neprepsan), a skutecny `markerStack[]`/`sp` zasobnik
+(stejny vzor jako u `sub_164200`), nahrazujici skalarni `v59`. Zbytek
+funkce (oba traversal loopy na `dword_18A68C`/`dword_18A690`, vyber
+struct slotu dle `word_18A7E0/E2/E4`) ponechan beze zmeny - nebyl
+identifikovan jako chybny.
+
+**Skryta druha chyba (bez tohoto zjisteni by fix `sub_1642A0` porad
+padal):** po fixu `sub_1642A0` padalo pořad na stejnem miste
+(`for (i = *(_DWORD*)dword_18A68C; *v51>=0; ...)` uvnitr `sub_1642A0`),
+i kdyz `dword_18A68C`/`dword_18A690` byly overene platne ukazatele
+(PortDebug_CheckpointPtr: `0x1834FFC0`/`0x183507C0`, presne 2048B od
+sebe - odpovida `sub_1646A0`) a oba stromy byly na danem snimku skutecne
+prestaveny (rebuild-bit=1 pro oba, overeno checkpointem). Zavada tedy
+byla v OBSAHU stromu postaveneho `sub_164200`, ne v `sub_1642A0`.
+
+Root cause v `sub_164200` (orion_part_24.c): original asm (`sub_164200`
+@ 0x164200, prvni instrukce) dela `mov eax, 80000000h` JEDNOU pred celou
+smyckou, a kazdy dalsi zapis listu upravuje uz jen `al`/`bl` (nizky byte)
+- horni bity registru `eax` VCETNE ZNAMENKOVEHO BITU zustavaji po celou
+dobu funkce `0x800000..`. Tenhle znamenkovy bit je presne to, co
+`sub_1642A0`v traversal (`*v51 >= 0`) pouziva k rozliseni listu (negativni)
+od vnitrniho uzlu (pozitivni distance). Dekompilovany kod ale deklaroval
+`unsigned int v3` bez inicializace a jen zapisoval `LOBYTE(v3)` - horni
+bity byly nedefinovane smeti, takze nahodne nektere listy vysly jako
+"pozitivni" a traversal je zamenila za vnitrni uzly, coz vedlo k
+prochazeni mimo buffer stromu (nedeterministicke - lisilo se run od
+run, presne odpovida pozorovanym ruznym pádovym adresam). Oprava:
+`unsigned int v3 = 0x80000000u;` pred smyckou (misto neinicializovane
+deklarace), zbytek beze zmeny.
+
+**Nova trvala diagnosticka infrastruktura:** `DebugVectoredHandler`
+(src/reorion2.cpp) ted navic vypisuje cely call-stack (StackWalk64 +
+SymFromAddr, `dbghelp.lib`) pri neosetrene SEH vyjimce - predtim davala
+jen "module=X rva=Y" bez cesty k volajicimu, coz pro pad hluboko
+v CRT/system DLL (napr. `memmove` volane s neplatnou velikosti) davalo
+nulovou moznost dohledat, ktery herni kod volani zpusobil.
+
+Po fixu pad zmizel ze VSECH tri drivejsich mist v `sub_1642A0`
+(deterministicky, overeno vicero behy) a presunul se do UPLNE JINE,
+predtim nedosazitelne funkce - viz nize.
+
+## Nova hranice - vlna 25: sub_14CD50/sub_14BC40 (memcpy s podezrelou
+## velikosti)
+
+Novy pad (mimo Smacker tree-decode kod, uz downstream): AV uvnitr
+`memmove` (VCRUNTIME140D.dll), `av_read=0xFFFFFFFFFFFFFFFF` (typicky
+znak podtecene/obrovske unsigned velikosti predane do memcpy). Call
+stack (diky nove diagnosticke infrastrukture):
+
+```
+memmove -> qmemcpy -> sub_14CD50+0x113 -> sub_14BC40+0x100c ->
+sub_132646 -> sub_14DF7 -> sub_24ED3 -> GameMain_10057
+```
+
+Podezrely radek: `orion_part_22.c:3489`,
+`qmemcpy(v28, *(void**)(a1+1076), v24)` uvnitr `sub_14CD50`, kde
+`v24 = *(a1+1072) - *(a1+1076)` (zbyvajici bajty v bufferu), orezano
+`v26`/`*(a1+1084)`. Pokud nektere z techto poli struktury `a1`
+(offsety 1068-1092, souborovy/bufferovy stav) neni spravne
+inicializovano pred timhle volanim, `v24` muze vyjit jako obrovske
+unsigned cislo. Otevreno pro dalsi session - viz task #15.

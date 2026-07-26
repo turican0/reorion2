@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 
 // DEBUG (temporary, wave-23 x64 bisection): print the faulting instruction/address
 // when an unhandled SEH exception occurs, since the default CRT abort() path gives
@@ -39,6 +41,53 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
                 (size_t)((char*)ep->ExceptionRecord->ExceptionAddress - (char*)mod));
         }
         std::fprintf(stderr, "\n");
+
+        // PORT (wave 24e): print the call stack so an AV inside a CRT/system
+        // DLL (e.g. memcpy called with a garbage pointer/size) can still be
+        // traced back to the game-code call site that triggered it - without
+        // this, "module=vcruntime140d.dll" alone gives no way to find the bug.
+        SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+        HANDLE process = GetCurrentProcess();
+        if (SymInitialize(process, nullptr, TRUE))
+        {
+            STACKFRAME64 frame = {};
+            DWORD machine = IMAGE_FILE_MACHINE_AMD64;
+#if defined(_M_IX86)
+            machine = IMAGE_FILE_MACHINE_I386;
+            frame.AddrPC.Offset = ep->ContextRecord->Eip;
+            frame.AddrFrame.Offset = ep->ContextRecord->Ebp;
+            frame.AddrStack.Offset = ep->ContextRecord->Esp;
+#else
+            frame.AddrPC.Offset = ep->ContextRecord->Rip;
+            frame.AddrFrame.Offset = ep->ContextRecord->Rbp;
+            frame.AddrStack.Offset = ep->ContextRecord->Rsp;
+#endif
+            frame.AddrPC.Mode = AddrModeFlat;
+            frame.AddrFrame.Mode = AddrModeFlat;
+            frame.AddrStack.Mode = AddrModeFlat;
+
+            CONTEXT ctx = *ep->ContextRecord;
+            for (int i = 0; i < 32; ++i)
+            {
+                if (!StackWalk64(machine, process, GetCurrentThread(), &frame, &ctx,
+                                  nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
+                    break;
+                if (frame.AddrPC.Offset == 0)
+                    break;
+
+                char symBuf[sizeof(SYMBOL_INFO) + 256] = {0};
+                SYMBOL_INFO* sym = (SYMBOL_INFO*)symBuf;
+                sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+                sym->MaxNameLen = 256;
+                DWORD64 displacement = 0;
+                if (SymFromAddr(process, frame.AddrPC.Offset, &displacement, sym))
+                    std::fprintf(stderr, "  #%d %p %s+0x%llx\n", i, (void*)frame.AddrPC.Offset,
+                                 sym->Name, (unsigned long long)displacement);
+                else
+                    std::fprintf(stderr, "  #%d %p ?\n", i, (void*)frame.AddrPC.Offset);
+            }
+            SymCleanup(process);
+        }
         std::fflush(stderr);
     }
     return EXCEPTION_CONTINUE_SEARCH;

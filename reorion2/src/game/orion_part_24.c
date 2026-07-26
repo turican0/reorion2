@@ -5647,7 +5647,18 @@ double sub_163EAA( int a1, double *a2, double result)
 // there: a1/ebp=bit accumulator, a2/edi=output cursor, a3/esi=bitstream).
 void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
 {
-  unsigned int v3; // eax
+  // PORT (wave 24e): asm sets `mov eax, 80000000h` ONCE before the loop
+  // (Debug/diss/Orion2.exe.asm sub_164200+0) and every leaf write thereafter
+  // only ever touches AL (`mov al, bl`/`or al, bl`) - eax's upper 24 bits,
+  // including the sign bit, stay permanently 0x800000 for every leaf value
+  // written to a2[]. That sign bit is exactly what sub_1642A0's tree
+  // traversal (`*v51 >= 0`) relies on to distinguish a leaf from an internal
+  // node. The decompiler dropped this init (v3 was left to default-init /
+  // garbage), so leaves came out with a random sign bit - sometimes
+  // mistaken for internal nodes, sending the traversal walking off the end
+  // of the tree buffer into unmapped memory (observed as an AV inside
+  // sub_1642A0, not here, since the corrupt tree is only read there).
+  unsigned int v3 = 0x80000000u; // eax
   char v6; // cl
   char v7; // al
   unsigned int v8; // ebp
