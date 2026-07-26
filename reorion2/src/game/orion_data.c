@@ -17746,9 +17746,18 @@ char byte_1BB357[]; // weak
 // byte_1BB35x/49x/59x/61x/65x symboly do nej zatim NEaliasuji (paletova data
 // se pres ne necti) - plny overlay az bude potreba barevna presnost.
 char byte_1BB358[1024]; // weak
-char byte_1BB359[]; // weak
-char byte_1BB35A[]; // weak
-char byte_1BB35B[318]; // weak
+// VLNA 15 DECOMP_TODO vyreseno: byte_1BB358 je pole 256 zaznamu po 4 bajtech
+// [flag, R, G, B] (viz sub_132A11/sub_132AF8 - "active flag" + 6bit VGA RGB).
+// byte_1BB359/35A/35B jsou presne tyto R/G/B kanaly na bajtovem offsetu
+// +1/+2/+3 od byte_1BB358 (IDA je kvuli stride-4 pristupu rozsekala na
+// samostatne symboly - viz komentar vyse). Bez tohoto aliasovani zapisovaly
+// VSECHNY zapisy barev (sub_132A11 pro SMK/fade paletu, i desitky dalsich
+// mist v orion_part_10/18/19/20/21) do trech osamocenych, nikdy ctenych
+// bufferu - do skutecneho, na obrazovku nahravaneho bufferu (byte_1BB358) se
+// tak dostal jen flag bajt, nikdy skutecna barva.
+char* byte_1BB359 = byte_1BB358 + 1;
+char* byte_1BB35A = byte_1BB358 + 2;
+char* byte_1BB35B = byte_1BB358 + 3;
 char byte_1BB499[]; // weak
 char byte_1BB49A[]; // weak
 char byte_1BB49B[253]; // weak
