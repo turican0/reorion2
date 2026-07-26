@@ -822,7 +822,12 @@ void sub_149BC0(_DWORD *a1)
     {
       while ( 1 )
       {
-        v2 = *(_DWORD **)(v1 + 52);
+        // PORT (wave 25): +52 is a plain 32-bit "next" link (see the
+        // `_DWORD` read/write of this same offset just above/below) -
+        // reading it as a native pointer pulls in 4 garbage high bytes
+        // on x64. Same bug class at every `_DWORD**`/`char**` cast onto
+        // this struct's raw offsets in this file - fixed throughout.
+        v2 = (_DWORD *)(uintptr_t)*(_DWORD *)(v1 + 52);
         if ( a1 == v2 )
           break;
         v1 = *(_DWORD *)(v1 + 52);
@@ -1029,7 +1034,7 @@ void sub_149F20()
     v1 = *(_DWORD *)(i + 16);
     if ( v1 > *(_DWORD *)(i + 100) || *(_DWORD *)(i + 68) && v1 > 3 )
     {
-      sub_141A76(*(_DWORD **)(i + 56));
+      sub_141A76((_DWORD *)(uintptr_t)*(_DWORD *)(i + 56));
       v3 = v2;
       if ( v2 <= 1 )
       {
@@ -1328,7 +1333,7 @@ int sub_14A580(int a1, void *a2, int a3)
   if ( v5 >= 7u )
     return 0;
   v6 = a3 + 4 * v5;
-  v7 = *(_DWORD **)(v6 + 964);
+  v7 = (_DWORD *)(uintptr_t)*(_DWORD *)(v6 + 964);
   if ( !v7 )
     return 0;
   if ( (HIBYTE(*(_DWORD *)(v6 + 72)) & 0x80u) == 0 )
@@ -1912,7 +1917,7 @@ void sub_14B200(int a1)
     if ( v1 < v4 && (*(_BYTE *)(a1 + 901) & 2) == 0 )
     {
       *(_DWORD *)(a1 + 944) = *(_DWORD *)(a1 + 940);
-      sub_14CD50(a1, *(char **)(a1 + 940), *(_DWORD *)(*(_DWORD *)(a1 + 952) + 4 * *(_DWORD *)(a1 + 880)));
+      sub_14CD50(a1, (char *)(uintptr_t)*(_DWORD *)(a1 + 940), *(_DWORD *)(*(_DWORD *)(a1 + 952) + 4 * *(_DWORD *)(a1 + 880)));
     }
     LOBYTE(v5) = sub_14C740(a1);
     if ( dword_189154 )
@@ -2063,7 +2068,7 @@ int sub_14B4D0(int a1, int a2, int a3, int a4, int a5)
     {
       v11 = *(_DWORD *)(a5 + 928);
       v10 = *(_DWORD *)(a5 + 924);
-      v9 = *(unsigned int **)(a5 + 992);
+      v9 = (unsigned int *)(uintptr_t)*(_DWORD *)(a5 + 992);
       *(_DWORD *)(a5 + 996) = 1;
       v8 = sub_167320(v9, v10, v11);
     }
@@ -2291,7 +2296,7 @@ void sub_14B8B0(int a1)
         if ( *(_DWORD *)(v1 + 1028) )
         {
           dword_1C3C3C(*(_DWORD *)(v1 + 1028));
-          sub_132614(**(_DWORD **)(v1 + 1028));
+          sub_132614(*(_DWORD *)(uintptr_t)*(_DWORD *)(v1 + 1028));
           sub_132614(*(_DWORD *)(v1 + 1028));
           v2 = dword_189154 - 1;
           *(_DWORD *)(v1 + 1028) = 0;
@@ -3150,11 +3155,11 @@ LABEL_8:
   {
     v2 = v29;
     *(_DWORD *)(v29 + 944) = *(_DWORD *)(v29 + 940);
-    sub_14CD50(v29, *(char **)(v29 + 940), *(_DWORD *)(*(_DWORD *)(v2 + 952) + 4 * *(_DWORD *)(v2 + 880)));
+    sub_14CD50(v29, (char *)(uintptr_t)*(_DWORD *)(v29 + 940), *(_DWORD *)(*(_DWORD *)(v2 + 952) + 4 * *(_DWORD *)(v2 + 880)));
   }
 LABEL_9:
   v3 = v29;
-  v4 = *(_DWORD **)(v29 + 944);
+  v4 = (_DWORD *)(uintptr_t)*(_DWORD *)(v29 + 944);
   *(_DWORD *)(v29 + 960) = v4;
   result = *(_BYTE *)(*(_DWORD *)(v29 + 880) + *(_DWORD *)(v3 + 956));
   if ( (result & 1) != 0 )
@@ -3396,7 +3401,7 @@ unsigned int sub_14CAA0(int a1)
       sub_15C941(v31, v19);
       if ( (v19 & 0xFFF) != 0 )
       {
-        v25 = *(char **)(v1 + 1076);
+        v25 = (char *)(uintptr_t)*(_DWORD *)(v1 + 1076);
         *(_DWORD *)(v1 + 1068) = 0;
         v26 = sub_14CD50(v1, v25, 4096 - (v19 & 0xFFF));
         v27 = *(_DWORD *)(v1 + 1080);
@@ -3429,7 +3434,7 @@ unsigned int sub_14CAA0(int a1)
     else
     {
       *(_DWORD *)(v1 + 944) = *(_DWORD *)(v1 + 940);
-      return sub_14CD50(v1, *(char **)(v1 + 940), *(_DWORD *)(*(_DWORD *)(v1 + 952) + 4 * *(_DWORD *)(v1 + 880)));
+      return sub_14CD50(v1, (char *)(uintptr_t)*(_DWORD *)(v1 + 940), *(_DWORD *)(*(_DWORD *)(v1 + 952) + 4 * *(_DWORD *)(v1 + 880)));
     }
   }
 }
@@ -3443,7 +3448,7 @@ unsigned int sub_14CD10(int a1)
   if ( (*(_BYTE *)(a1 + 901) & 2) != 0 )
     return 0;
   *(_DWORD *)(a1 + 944) = *(_DWORD *)(a1 + 940);
-  return sub_14CD50(a1, *(char **)(a1 + 940), *(_DWORD *)(*(_DWORD *)(a1 + 952) + 4 * *(_DWORD *)(a1 + 880)));
+  return sub_14CD50(a1, (char *)(uintptr_t)*(_DWORD *)(a1 + 940), *(_DWORD *)(*(_DWORD *)(a1 + 952) + 4 * *(_DWORD *)(a1 + 880)));
 }
 
 
@@ -3496,7 +3501,15 @@ unsigned int sub_14CD50(int a1, char *a2, unsigned int a3)
           v24 = v26;
         if ( *(_DWORD *)(a1 + 1084) < v24 )
           v24 = *(_DWORD *)(a1 + 1084);
-        qmemcpy(v28, *(void **)(a1 + 1076), v24);
+        // PORT (wave 25): `a1+1076` is a plain 32-bit buffer-cursor field
+        // (every other access in this function reads/writes it via
+        // `*(_DWORD*)(a1+1076)`, e.g. two lines below). `*(void**)(...)`
+        // read it as a full pointer-width value instead - harmless on x86
+        // (void* is 4 bytes there) but on x64 it pulls in the adjacent
+        // 32-bit field (a1+1080) as the pointer's high dword, producing a
+        // garbage 64-bit address and an AV inside qmemcpy/memmove. Fix:
+        // read the 32-bit cursor value and widen it explicitly.
+        qmemcpy(v28, (void *)(uintptr_t)*(_DWORD *)(a1 + 1076), v24);
         *(_DWORD *)(a1 + 1084) -= v24;
         *(_DWORD *)(a1 + 1092) += v24;
         v6 = v24 + *(_DWORD *)(a1 + 1076);

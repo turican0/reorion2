@@ -2187,3 +2187,55 @@ Podezrely radek: `orion_part_22.c:3489`,
 (offsety 1068-1092, souborovy/bufferovy stav) neni spravne
 inicializovano pred timhle volanim, `v24` muze vyjit jako obrovske
 unsigned cislo. Otevreno pro dalsi session - viz task #15.
+
+## Vyresene - vlna 25: sub_14CD50/14BC40/14C740/14CAA0 - x64 sirka
+## ukazatele (`_DWORD**`/`char**` na 32bit pole)
+
+Diagnostickym vypisem primo pred padajicim `qmemcpy` (docasny,
+odstranen po zjisteni) se ukazalo, ze `a1+1068/1072/1076/1084` maji
+rozumne hodnoty (buffer 406388928, konec +331776, pozice=buffer,
+avail=1024, pozadavek=13480→orezano na 1024) - kopie samotna vypadala
+bezpecne. Skutecna pricina: `qmemcpy(v28, *(void **)(a1 + 1076), v24)`
+cte pole `a1+1076` (jinde v CELE teto funkci dusledne pristupovane
+jako `*(_DWORD*)(a1+1076)`, tedy 32bitove) jako **cely nativni
+ukazatel** - na x86 `void*` je 4B takze bug se neprojevi, ale na x64
+`void**` cte 8 bajtu a natahne SOUSEDNI 32bitove pole (`a1+1080`) jako
+horni polovinu adresy → nesmyslny 64bit ukazatel → AV v memmove.
+
+**Tato trida bugu byla rozsirena po celem souboru** (stejny SMK-reader
+struct pouzity v `sub_14BC40`/`sub_14CD50`/`sub_14C740`/`sub_14CAA0`,
+kazdy vyskyt krizove overen proti sousednim `_DWORD`-pristupum NA
+STEJNEM offsetu v tomtez souboru pred opravou): opraveno 9 mist
+(offsety 52, 56, 940×4, 944, 964, 992, 1028, 1076) na vzor
+`(T*)(uintptr_t)*(_DWORD*)(...)` (precti 32bit hodnotu, pak teprve
+rozsir na ukazatel) misto primeho `*(T**)(...)`. **Ponechano bez
+opravy** (nedostatecne overeno, jiny/neprozkoumany struct): radek
+~1048 (`sub_14A010` argumenty) a ~1708 (`v33 = *(char**)(v6+4)`) -
+zkontrolovat pokud se ukazou byt na kriticke ceste.
+
+**Vysledek:** `sub_14BC40` (cele nacteni SMK hlavicky + tabulek +
+Huffman stromu pres jiz opravene `sub_164200`/`sub_1642A0`) ted PRVNE
+KOMPLETNE USPEJE (`132646.after_14BC40` vraci platny nenulovy
+ukazatel) - dosud nejhlubsi bod, kam se port SimTex/logo Smacker cesty
+dostal. **Novy pad** hned potom: `av_write` na adresu
+`0x7FFE5DCB1800`, `GetModuleHandleExA` pro ni NENASEL vlastnici modul
+(tedy nejde o skutecnou systemovou DLL - vypada to na divoky/poskozeny
+ukazatel, ktery jen nahodou vypada jako vysoka adresa), stack unwind
+se zastavi hned po prvnim rámci (mozna poskozeny zásobník). Nejspis
+dalsi vyskyt STEJNE tridy bugu (x64 sirka ukazatele) uvnitr skutecneho
+per-snimkoveho block/pixel decode (`sub_132869`/`sub_14A090`/
+`sub_138CEE`/`sub_14AA40`), zatim neprozkoumano - viz task #17.
+
+**Stmivani (uzivateluv dotaz):** paletova pipeline pro SMK-embedded
+paletove zmeny (`sub_132A11`→`byte_1BB358`→`sub_131F7B`→`sub_132AF8`→
+`PortVga_SetPaletteEntry`) byla precte overena radek-po-radku proti
+asm (`Debug/diss/Orion2.exe.asm`, offsety +0x68 a +0x8A v
+`sub_132869`/`sub_132A11`) a je 1:1 verna - zadny chybejici/zahozeny
+kod. Explicitni DAC-rampa (`sub_C5BB9`/`sub_C5C44`, `sub_132C80`) se
+pro simtex.lbx volani (`sub_14DF7(aSimtexLbx,0,0)`, potvrzeno i v asm
+`xor edx,edx`) **umyslne nevola** (a3=0) - shodne s originalem, NENI
+to port bug. Fade pro tuto konkretni animaci tedy musi prijit z
+paletovych chunku zakodovanych primo ve SMK souboru, aplikovanych pres
+jiz overenou pipeline - ale **nelze to jeste vizualne overit**, dokud
+video nedobehne aspon k prvnimu vykreslenemu snimku (blokovano task
+#17).
