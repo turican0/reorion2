@@ -853,74 +853,79 @@ int LoadLanguageSetting_10C2F()
 
 
 //----- (00010CB5) --------------------------------------------------------
-_BYTE *sub_10CB5(int a1, int a2)
+_BYTE* sub_10CB5(int a1, int a2)
 {
-  signed int v2; // edx
-  _DWORD *v3; // eax
-  _DWORD *v4; // eax
-  PoolMemHeader* result; // eax
-
-  // DECOMP_TODO (vyreseno ve vlne 10): puvodni vyrazy "(int)&unk_1B5030",
-  // "(int)&loc_16085 + 5", "(int)&loc_3E7FB + 5" a "(int)&loc_40F0D + 3"
-  // jsou stejny IDA false-positive jako 0x64000 ve vlne 06: 32bit KONSTANTY
-  // velikosti alokaci, ktere nahodou padly do rozsahu adres programu, takze
-  // je IDA prevedla na "offset symbol + delta". Hodnoty prevedene zpet jsou
-  // presna kulata cisla (1790000 / 90250 / 256000 / 266000) a 90250 =
-  // 361*250 presne odpovida smycce cteni 250 zaznamu po 361 bajtech v
-  // sub_10E2F nize. OVERENO ZA BEHU originalu v upravenem DOSBox-X
-  // (DUMPREGS testovaci body, viz PROGRESS.md vlna 10): hra pri startu
-  // skutecne vola PoolAlloc_110B89 postupne s EAX = 1790000, 30000, 1000,
-  // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
-  // (runtime EIP = IDA adresa + 0x224000).
-  PortDebug_Checkpoint("sub_10CB5.enter", a1);
-  dword_192EF4 = PoolAlloc_110B89(1790000);
-  dword_193178 = (uint8_t*)PoolAlloc_110B89(30000);
-  dword_19A00C = (uint8_t*)PoolAlloc_110B89(1000);
-  dword_1930D4 = (uint8_t*)PoolAlloc_110B89(6120);
-  sub_127776((_BYTE *)dword_1930D4, 0x17E8u);
-  dword_197F98 = (uint8_t*)PoolAlloc_110B89(30024);
-  sub_127776((_BYTE *)dword_197F98, 0x7548u);
-  dword_192B18 = (uint8_t*)PoolAlloc_110B89(90250);
-  v2 = sub_127776((_BYTE *)dword_192B18, 90250u);
-  if ( sub_127880() )
-  {
-    dword_192EF0 = 0;
-    v3 = sub_1279AF(1525000, v2);
-    dword_193170 = 1525000;
-LABEL_6:
-    dword_193174 = (int)v3;
-    goto LABEL_7;
-  }
-  // v2 = volna pamet v bajtech (sub_110F89 vraci KiB, hra nasobi 1000);
-  // prah 1791000 = velikost hlavniho zvukoveho bufferu 1790000 + rezerva.
-  // Za behu originalu (32MB stroj) tudy proslo v2 = 0x188AB70 (~25.7 MB)
-  // -> vetev s PoolAlloc(256000) nize, presne dle tohoto kodu.
-  v2 = 1000 * sub_110F89();
-  PortDebug_Checkpoint("sub_10CB5.availBytes", v2);
-  if ( v2 <= 1791000 )
-  {
-    dword_192EF0 = 0;
-    dword_193170 = 1000 * (sub_110F89() - 50);
-    v3 = sub_1279AF(dword_193170, v2);
-    goto LABEL_6;
-  }
-  v4 = PoolAlloc_110B89(256000);
-  v2 -= 266000;
-  dword_192EF0 = (int)v4;
-  dword_193174 = (int)sub_1279AF(v2, v2);
-  dword_193170 = v2;
-LABEL_7:
-  dword_192EE8 = PoolAllocFallback_110C62(10240);
-  dword_193068 = (uint8_t*)PoolAllocFallback_110C62(20);
-  sub_127776((_BYTE *)dword_193068, 0x14u);
-  dword_19306C = (uint8_t*)PoolAllocFallback_110C62(8136);
-  sub_127776((_BYTE *)dword_19306C, 0x1FC8u);
-  dword_197F9C = (uint8_t*)PoolAllocFallback_110C62(64500);
-  sub_127776((_BYTE *)dword_197F9C, 0xFBF4u);
-  result = PoolAllocFallback_110C62(3953);
-  dword_1930DC = (int)result;
-  sub_127776(result, 0xF71u);
-  return result;
+    signed int v2; // edx
+    _DWORD* v3; // eax
+    _DWORD* v4; // eax
+    PoolMemHeader* result; // eax
+    // DECOMP_TODO (vyreseno ve vlne 10): puvodni vyrazy "(int)&unk_1B5030",
+    // "(int)&loc_16085 + 5", "(int)&loc_3E7FB + 5" a "(int)&loc_40F0D + 3"
+    // jsou stejny IDA false-positive jako 0x64000 ve vlne 06: 32bit KONSTANTY
+    // velikosti alokaci, ktere nahodou padly do rozsahu adres programu, takze
+    // je IDA prevedla na "offset symbol + delta". Hodnoty prevedene zpet jsou
+    // presna kulata cisla (1790000 / 90250 / 256000 / 266000) a 90250 =
+    // 361*250 presne odpovida smycce cteni 250 zaznamu po 361 bajtech v
+    // sub_10E2F nize. OVERENO ZA BEHU originalu v upravenem DOSBox-X
+    // (DUMPREGS testovaci body, viz PROGRESS.md vlna 10): hra pri startu
+    // skutecne vola PoolAlloc_110B89 postupne s EAX = 1790000, 30000, 1000,
+    // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
+    // (runtime EIP = IDA adresa + 0x224000).
+    PortDebug_Checkpoint("sub_10CB5.enter", a1);
+    dword_192EF4 = PoolAlloc_110B89(1790000);
+    dword_193178 = (uint8_t*)PoolAlloc_110B89(30000);
+    dword_19A00C = (uint8_t*)PoolAlloc_110B89(1000);
+    dword_1930D4 = (uint8_t*)PoolAlloc_110B89(6120);
+    sub_127776((_BYTE*)dword_1930D4, 0x17E8u);
+    dword_197F98 = (uint8_t*)PoolAlloc_110B89(30024);
+    sub_127776((_BYTE*)dword_197F98, 0x7548u);
+    dword_192B18 = (uint8_t*)PoolAlloc_110B89(90250);
+    v2 = sub_127776((_BYTE*)dword_192B18, 90250u);
+    if (sub_127880())
+    {
+        // puvodni "LABEL_6" vetev
+        dword_192EF0 = 0;
+        v3 = sub_1279AF(1525000, v2);
+        dword_193170 = 1525000;
+        dword_193174 = (int)v3;
+    }
+    else
+    {
+        // v2 = volna pamet v bajtech (sub_110F89 vraci KiB, hra nasobi 1000);
+        // prah 1791000 = velikost hlavniho zvukoveho bufferu 1790000 + rezerva.
+        // Za behu originalu (32MB stroj) tudy proslo v2 = 0x188AB70 (~25.7 MB)
+        // -> vetev s PoolAlloc(256000) nize, presne dle tohoto kodu.
+        v2 = 1000 * sub_110F89();
+        PortDebug_Checkpoint("sub_10CB5.availBytes", v2);
+        if (v2 <= 1791000)
+        {
+            // opet puvodni "LABEL_6" vetev
+            dword_192EF0 = 0;
+            dword_193170 = 1000 * (sub_110F89() - 50);
+            v3 = sub_1279AF(dword_193170, v2);
+            dword_193174 = (int)v3;
+        }
+        else
+        {
+            v4 = PoolAlloc_110B89(256000);
+            v2 -= 266000;
+            dword_192EF0 = (int)v4;
+            dword_193174 = (int)sub_1279AF(v2, v2);
+            dword_193170 = v2;
+        }
+    }
+    // puvodni "LABEL_7" - spolecne pokracovani pro vsechny tri vetve vyse
+    dword_192EE8 = PoolAllocFallback_110C62(10240);
+    dword_193068 = (uint8_t*)PoolAllocFallback_110C62(20);
+    sub_127776((_BYTE*)dword_193068, 0x14u);
+    dword_19306C = (uint8_t*)PoolAllocFallback_110C62(8136);
+    sub_127776((_BYTE*)dword_19306C, 0x1FC8u);
+    dword_197F9C = (uint8_t*)PoolAllocFallback_110C62(64500);
+    sub_127776((_BYTE*)dword_197F9C, 0xFBF4u);
+    result = PoolAllocFallback_110C62(3953);
+    dword_1930DC = (int)result;
+    sub_127776(result, 0xF71u);
+    return result;
 }
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 192EE8: using guessed type int (uint8_t*)dword_192EE8;
