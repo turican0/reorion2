@@ -2261,3 +2261,42 @@ z `sub_132869`) - `av_write` na (tentokrat vyhlizejici jako realnou,
 ne zjevne divokou) haldovou adresu. To uz je JINY, samostatny bug v
 samotnem obrazovem dekodovani (ne v casovani/palete) - dalsi krok pro
 pristi session.
+
+## Vyresene - vlna 25b: DRUHY samostatny root cause - sub_132C80 psal
+## do no-op VGA portu (hr_outbyte), ne do PortVga_SetPaletteEntry
+
+Po nahlaseni "furt zadne stmivani" se ukazalo, ze uzivatel ve
+skutecnosti vidi VETEV `logo.LBX` (sub_25259()==false v jeho prostredi),
+ne SIMTEX Smacker cestu zkoumanou vyse - uplne jina, jednodussi
+animace (staticke LBX snimky, ne video). Na zadost uzivatele
+("nemuzes zachytit stav palety pres dosbox?") nastaven dosbox-x
+trace (breakpointy na `sub_132C80`/`sub_C5BB9`/`sub_C5C44`) -
+**potvrzeno, ze `sub_132C80` se v originalu vola OPAKOVANE (101x) s
+klesajicim `a1` (100→0) z `sub_251EF`** (fade-in smycka volana z
+`sub_24ED3` pred loop1, dekompilovana SPRAVNE a beze zmeny nutna).
+`sub_132C80(a1)` skaluje ulozenou baseline paletu (`dword_1BB880`,
+ktery je jen ALIAS na `byte_1BB358`) faktorem `(100-a1)/100` - tedy
+klesajici `a1` produkuje NARUSTAJICI jas (spravny fade-in, 0%→100%).
+
+Rizeni behu (`sub_251EF`, `sub_C5BB9`, `sub_C5C44`) bylo VZDY spravne
+dekompilovano a spravne bezelo - problem byl, ze samotne
+`sub_132C80` zapisovalo primo pres `hr_outbyte()` (VGA DAC porty
+0x3C6/0x3C8/0x3C9), a **`hr_outbyte` je v tomto portu uplny no-op
+stub** (`decomp_compat.h`) - na rozdil od sesterske funkce
+`sub_132AF8` (uz drive prevedena na `PortVga_SetPaletteEntry`,
+proto jsem ji drive oznacil za "overenou pipeline" - ale je to JINA
+funkce nez `sub_132C80`!). Vysledek: fade smycka bezela spravnym
+poctem kroku se spravnymi hodnotami, ale KAZDY zapis skoncil v
+prazdnu - stmivani se nikdy nedostalo na obrazovku, ani in ani out.
+
+Fix: `sub_132C80` prepsano na `PortVga_SetPaletteEntry` (stejny most
+jako `sub_132AF8`), zachovan puvodni cteci vzor (presko flag bajt,
+cti R/G/B ze 4-bajtoveho slotu, skaluj `(100-a1)/100`). Odstranena
+rucni VGA-port DAC-index aritmetika (uz neni potreba - index se
+predava primo).
+
+**Pouceni:** "paleta se aplikuje" (sub_132A11→byte_1BB358→sub_131F7B
+→sub_132AF8) a "paleta se STMIVA" (sub_132C80, volana sub_251EF/
+sub_C5BB9/sub_C5C44) jsou DVE ROZDILNE cesty ke stejnemu vysledku
+(SDL paleta) - overeni jedne NEZNAMENA overeni druhe. Vzdy zkontrolovat
+KAZDOU funkci v retezci zvlast, ne predpokladat sdilenou infrastrukturu.

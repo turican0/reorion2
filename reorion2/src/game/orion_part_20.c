@@ -3767,87 +3767,44 @@ void sub_132B41()
 
 
 //----- (00132C80) --------------------------------------------------------
+// PORT (wave 25): this is the OTHER palette-brightness-scaling path (besides
+// sub_132AF8) - called repeatedly by sub_251EF (fade-in, 101 calls with a1
+// counting 100->0) and sub_C5BB9/sub_C5C44 (fade-in/out, a1 counting 0->100
+// or 100->0 in steps). It reads a baseline palette snapshot from
+// dword_1BB880 (same [flag,R,G,B]*256 layout as byte_1BB358) and writes each
+// channel scaled by `(100-a1)/100` directly to the VGA DAC ports via
+// `hr_outbyte` - a no-op stub in this port (see decomp_compat.h). Every
+// control-flow detail here (the 100-101-step loops, the "100-a1" brightness
+// inversion) was ALREADY correct and reaching this function with the right
+// values - dosbox-x confirmed the original calls this 100+ times in a row
+// with a1 stepping down - but every single call was silently discarded by
+// the stubbed-out port I/O, so neither fade-in nor fade-out ever reached the
+// screen. Fix: write through PortVga_SetPaletteEntry (same bridge already
+// used by sub_132AF8), keeping the original's read pattern (skip the flag
+// byte, read R/G/B, scale each by (100-a1)/100) intact.
 int sub_132C80(int a1)
 {
-  uint16_t v1; // dx
-  uint8_t *v2; // esi
-  int v3; // ecx
-  uint16_t v4; // dx
-  uint8_t v5; // bh
-  uint8_t v6; // al
-  uint8_t *v7; // esi
-  uint8_t v8; // al
-  uint8_t v9; // al
-  uint16_t v10; // dx
-  int v11; // ecx
-  uint16_t v12; // dx
-  uint8_t v13; // bh
-  uint8_t v14; // al
-  uint8_t *v15; // esi
-  uint8_t v16; // al
-  uint8_t v17; // al
-  _BYTE *v18; // edi
-  int v19; // ecx
+  int scale = 100 - a1;
+  uint8_t *v2 = (uint8_t *)dword_1BB880;
 
-  dword_184608 = a1;
-  LOWORD(dword_184608) = 100 - a1;
-  hr_outbyte(0x3C6u, 0xFFu);
-  sub_132B41();
-  v1 = 968;
-  v2 = (uint8_t *)dword_1BB880;
-  v3 = 128;
-  do
+  for ( int index = 0; index < 256; ++index )
   {
-    _disable();
-    hr_outbyte(v1, 0x80 - v3);
-    v4 = v1 + 1;
-    v5 = dword_184608;
-    LOWORD(v2) = (_WORD)v2 + 1;
-    v6 = *v2;
-    v7 = v2 + 1;
-    hr_outbyte(v4, (uint16_t)((uint8_t)dword_184608 * v6) / 0x64u);
-    v8 = *v7++;
-    hr_outbyte(v4, (uint16_t)(v5 * v8) / 0x64u);
-    v9 = *v7;
-    v2 = v7 + 1;
-    hr_outbyte(v4, (uint16_t)(v5 * v9) / 0x64u);
-    _enable();
-    v1 = v4 - 1;
-    --v3;
+    ++v2; // skip the [flag] byte - same 4-byte [flag,R,G,B] layout as byte_1BB358
+    uint8_t r = *v2++;
+    uint8_t g = *v2++;
+    uint8_t b = *v2++;
+    PortVga_SetPaletteEntry(index,
+                            (uint8_t)((scale * r) / 100),
+                            (uint8_t)((scale * g) / 100),
+                            (uint8_t)((scale * b) / 100));
   }
-  while ( v3 );
-  sub_132B27();
-  v10 = 968;
-  v11 = 128;
-  do
-  {
-    _disable();
-    hr_outbyte(v10, -(char)v11);
-    v12 = v10 + 1;
-    v13 = dword_184608;
-    LOWORD(v2) = (_WORD)v2 + 1;
-    v14 = *v2;
-    v15 = v2 + 1;
-    hr_outbyte(v12, (uint16_t)((uint8_t)dword_184608 * v14) / 0x64u);
-    v16 = *v15++;
-    hr_outbyte(v12, (uint16_t)(v13 * v16) / 0x64u);
-    v17 = *v15;
-    v2 = v15 + 1;
-    hr_outbyte(v12, (uint16_t)(v13 * v17) / 0x64u);
-    _enable();
-    v10 = v12 - 1;
-    --v11;
-  }
-  while ( v11 );
-  v18 = (_BYTE *)dword_1BB880;
-  v19 = 256;
-  do
+
+  _BYTE *v18 = (_BYTE *)dword_1BB880;
+  for ( int i = 0; i < 256; ++i )
   {
     *v18 = 1;
     v18 += 4;
-    --v19;
   }
-  while ( v19 );
   return a1;
 }
 // 184608: using guessed type int dword_184608;
