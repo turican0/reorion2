@@ -4155,7 +4155,10 @@ void sub_14DF7(int a1, int a2, int a3)
   sub_132646(a1, byte_199BEF, a2);
   word_19A01E = (640 - sub_1327A3()) / 2;
   v5 = 480 - sub_132762();
-  if ( ((unsigned int)&loc_100000 & a2) != 0 )
+  if ( (0x100000 & a2) != 0 ) // FIX: was ((unsigned int)&loc_100000 & a2) -- same
+                              // decompiler address-of-label artifact as in
+                              // sub_14BC40; this checks flag bit 0x100000 in a2,
+                              // not a real pointer.
   {
     v6 = __CFSHL__(HIDWORD(v5), 2);
     HIDWORD(v5) *= 4;

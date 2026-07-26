@@ -3599,8 +3599,11 @@ void sub_132869(int a1, int a2, int a3, int a4)
     do
       a1 = sub_14A090(a1, a2, a3, a4, (_DWORD *)dword_1845F0);
     while ( a1 );
-    if ( *(_DWORD *)(dword_1845F0 + 104) )
+    if ( *(_DWORD *)(dword_1845F0 + 104) ) {
       sub_132A11();
+      PortDebug_Checkpoint("sub_132869.paletteApplied",
+                            (sub_132825() << 16) | ((uint8_t)byte_1BB359[4*10] << 8) | (uint8_t)byte_1BB358[4*10]);
+    }
     sub_14AA40(0, dword_1BB904, *(_DWORD *)(dword_1845F0 + 8), 640, a2, v6, dword_1845F0);
     v5 = sub_14B4D0(v4, a2, a3, a4, dword_1845F0);
     while ( sub_14A2D0(v5, a2, a3, a4, 0, dword_1845F0) )

@@ -2631,9 +2631,12 @@ _DWORD *sub_14BC40(unsigned int a1, int a2, _DWORD *a3)
       v13 = -v12;
     v3[256] = v13;
     if ( v13 )
-      v14 = (unsigned int)&loc_186A0 / v3[256];
+      v14 = 100000 / v3[256]; // FIX: was (unsigned int)&loc_186A0 -- decompiler
+                              // emitted address-of-label for the immediate 0x186A0
+                              // (100000); in the 64-bit rebuild that's a real
+                              // (unrelated) code address, not the constant.
     else
-      v14 = (unsigned int)&loc_186A0;
+      v14 = 100000; // FIX: same &loc_186A0 artifact
     v69 = v14;
     if ( !v14 )
       v69 = 1;
@@ -2878,7 +2881,11 @@ LABEL_101:
       v52 = (void *)(a2 & 0x300000);
       if ( (a2 & 0x300000u) < 0x200000 )
       {
-        if ( v52 != &loc_100000 )
+        if ( v52 != (void *)0x100000 ) // FIX: was &loc_100000 (decompiler
+                                       // address-of-label artifact for the
+                                       // immediate 0x100000) -- previously
+                                       // this branch was never taken, so the
+                                       // v3[5] flag bit below never got set.
           goto LABEL_118;
         v53 = v3[5];
         LOBYTE(v53) = v53 & 0xF9 | 2;
@@ -3037,7 +3044,10 @@ char sub_14C4C0(_DWORD *a1, unsigned int a2)
   memset32((void *)a1[a2 + 257], v12, 0x1Du);
   *(_DWORD *)(a1[a2 + 257] + 28) = (unsigned int)(a1[256] << 7)
                                  * (uint64_t)(unsigned int)v20
-                                 / (unsigned int)&loc_186A0;
+                                 / 100000u; // FIX: was (unsigned int)&loc_186A0
+                                            // -- same decompiler artifact, this
+                                            // is an audio track duration/buffer
+                                            // calc (units of 100000 = 1e5).
   *(_DWORD *)(a1[a2 + 257] + 36) = v20 << 6;
   v13 = a1[a2 + 257];
   v14 = v20 + (*(_DWORD *)(v13 + 28) >> 6) + 4095;
