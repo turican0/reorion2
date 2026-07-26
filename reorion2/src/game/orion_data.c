@@ -15220,7 +15220,7 @@ int16_t word_19296E[209]; // weak
 int16_t word_192B10[]; // weak
 int16_t word_192B12; // weak
 int dword_192B14; // weak
-int dword_192B18; // weak
+uint8_t* dword_192B18; // weak
 int dword_192B1C; // weak
 int dword_192B20; // weak
 int dword_192B24; // weak
@@ -15431,7 +15431,7 @@ int dword_192EE4; // weak
 PoolMemType* dword_192EE8; // weak
 int dword_192EEC; // weak
 int dword_192EF0; // weak
-int dword_192EF4; // weak
+PoolMemType* dword_192EF4; // weak
 int dword_192EF8; // weak
 int dword_192F00; // weak
 int dword_192F08; // weak
@@ -15484,7 +15484,7 @@ int dword_193070; // weak
 int dword_193080; // weak
 int dword_1930A8; // weak
 int dword_1930BC; // weak
-int dword_1930D4; // weak
+uint8_t* dword_1930D4; // weak
 int dword_1930D8; // weak
 int dword_1930DC; // weak
 int dword_1930E0; // weak
@@ -15522,7 +15522,7 @@ int dword_193168; // weak
 int dword_19316C; // weak
 int dword_193170; // weak
 int dword_193174; // weak
-int dword_193178; // weak
+uint8_t* dword_193178; // weak
 int dword_193184; // weak
 int dword_193188; // weak
 int dword_193190; // weak
@@ -15587,7 +15587,7 @@ int dword_1975D0; // weak
 int16_t word_1975D4; // weak
 int16_t word_1975D6; // weak
 char byte_1975D8[2496]; // weak
-int dword_197F98; // weak
+uint8_t* dword_197F98; // weak
 uint8_t* dword_197F9C; // weak
 int dword_197FA0[]; // weak
 int dword_197FA4; // weak
@@ -16031,7 +16031,7 @@ char byte_19A004; // weak
 char byte_19A005; // weak
 char byte_19A006; // weak
 char byte_19A007; // weak
-int dword_19A00C; // weak
+uint8_t* dword_19A00C; // weak
 int dword_19A010; // weak
 int dword_19A014; // weak
 int dword_19A018; // weak

@@ -161,7 +161,7 @@ void sub_9F712(int a1, int16_t *a2)
           if ( (int16_t)v3 > -1 )
           {
             v8 = 3753 * (int16_t)v2;
-            if ( *(_BYTE *)(v8 + dword_197F98 + 3689) )
+            if ( *(_BYTE *)(v8 + (uint8_t*)dword_197F98 + 3689) )
             {
               v3 = -1;
               sub_8F6DF(0x17u, v18);
@@ -172,7 +172,7 @@ void sub_9F712(int a1, int16_t *a2)
             }
             else
             {
-              v17 = v8 + dword_197F98 + 1;
+              v17 = v8 + (uint8_t*)dword_197F98 + 1;
               if ( v5 > (int16_t)v25 )
               {
                 v10 = sub_7A990(0x28u);
@@ -208,9 +208,9 @@ void sub_9F712(int a1, int16_t *a2)
               v15 = 3753 * (int16_t)v2;
               HIDWORD(v7) = (int16_t)v3;
               v22 = 20 * (int16_t)v3;
-              strcpy(&byte_19C5FE[v22], (char *)(v15 + dword_197F98 + 1));
+              strcpy(&byte_19C5FE[v22], (char *)(v15 + (uint8_t*)dword_197F98 + 1));
               word_19C6C6[(int16_t)v3] = v25;
-              v2 = dword_197F98 + v15;
+              v2 = (uint8_t*)dword_197F98 + v15;
               LOBYTE(v7) = byte_199CB0;
               v16 = &byte_19C6F8[v22];
               word_19C6DA[(int16_t)v3] = *(uint8_t *)(v2 + 37);
@@ -235,7 +235,7 @@ void sub_9F712(int a1, int16_t *a2)
 // FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 192ED4: using guessed type int dword_192ED4;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199A08: using guessed type int16_t word_199A08;
 // 199CB0: using guessed type char byte_199CB0;
 // 199F19: using guessed type char byte_199F19;
@@ -445,8 +445,8 @@ void sub_9FCF0( int a1)
   for ( i = 0; i < word_199996; ++i )
   {
     v25 = 361 * i;
-    v5 = v25 + dword_192B18;
-    if ( a1 == *(char *)(v25 + dword_192B18) )
+    v5 = v25 + (uint8_t*)dword_192B18;
+    if ( a1 == *(char *)(v25 + (uint8_t*)dword_192B18) )
     {
       LOWORD(v5) = *(uint8_t *)(v5 + 10);
       v3 += v5;
@@ -463,17 +463,17 @@ void sub_9FCF0( int a1)
   memset(v26, 0, v7);
   while ( v8 < word_199996 && !v29 )
   {
-    v9 = dword_192B18;
-    if ( *(char *)(dword_192B18 + 361 * v8) == a1 )
+    v9 = (uint8_t*)dword_192B18;
+    if ( *(char *)((uint8_t*)dword_192B18 + 361 * v8) == a1 )
     {
       for ( j = 0; ; ++j )
       {
         v9 = 361 * v8;
-        v12 = v9 + dword_192B18;
-        LOWORD(v9) = *(uint8_t *)(v9 + dword_192B18 + 10);
+        v12 = v9 + (uint8_t*)dword_192B18;
+        LOWORD(v9) = *(uint8_t *)(v9 + (uint8_t*)dword_192B18 + 10);
         if ( (int16_t)v9 <= j || v29 )
           break;
-        v10 = *(uint8_t *)(3753 * (*(_DWORD *)(v12 + 4 * j + 12) & 0xF) + dword_197F98 + 37);
+        v10 = *(uint8_t *)(3753 * (*(_DWORD *)(v12 + 4 * j + 12) & 0xF) + (uint8_t*)dword_197F98 + 37);
         if ( v10 < 0xEu )
         {
           if ( v6 == (_WORD)v27 )
@@ -537,9 +537,9 @@ void sub_9FCF0( int a1)
 }
 // 9FF31: control flows out of bounds to 9D945
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199996: using guessed type int16_t word_199996;
 // 19C7C0: using guessed type int dword_19C7C0;
 
@@ -1371,7 +1371,7 @@ int sub_A0D78( int a1, int a2)
   }
   if ( a1 < 8 )
   {
-    v7 = *(uint8_t *)(dword_197F98 + 3753 * a1 + 38);
+    v7 = *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * a1 + 38);
     sub_79917();
     v8 = v7;
     v9 = 4 * v7;
@@ -1417,7 +1417,7 @@ int sub_A0D78( int a1, int a2)
 // 190678: using guessed type int dword_190678[4];
 // 1906B0: using guessed type int dword_1906B0[];
 // 193174: using guessed type int dword_193174;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000A0F2A) --------------------------------------------------------
@@ -1751,7 +1751,7 @@ void sub_A1455()
   v4 = sub_77FF5(v2);
   v5 = v4;
   if ( v4 < 8 )
-    v5 = *(uint8_t *)(dword_197F98 + 3753 * v4 + 38);
+    v5 = *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * v4 + 38);
   v6 = sub_79917();
   v17 = v6;
   switch ( v6 )
@@ -1828,7 +1828,7 @@ void sub_A1455()
 // 193174: using guessed type int dword_193174;
 // 193414: using guessed type int dword_193414;
 // 1975D4: using guessed type int16_t word_1975D4;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 1999B8: using guessed type int16_t word_1999B8;
 
 
@@ -2224,7 +2224,7 @@ unsigned int sub_A1C74(
     for ( i = 4; i > -1; --i )
     {
       v11 = *(_WORD *)(dword_193184 + 14 * i);
-      if ( v11 <= -1 || (v12 = dword_1930D4 + 17 * v11, *(_BYTE *)(v12 + 4) == 1) )
+      if ( v11 <= -1 || (v12 = (uint8_t*)dword_1930D4 + 17 * v11, *(_BYTE *)(v12 + 4) == 1) )
       {
         word_1992D4[i] = -1000;
       }
@@ -2233,7 +2233,7 @@ unsigned int sub_A1C74(
         v13 = *(uint8_t *)(v12 + 5);
         if ( *(_BYTE *)(v12 + 4) == 2 )
           v13 = 4;
-        sub_EBEEB(v37, *(uint8_t *)(17 * v11 + dword_1930D4 + 3), &v39, &v38, &v40);
+        sub_EBEEB(v37, *(uint8_t *)(17 * v11 + (uint8_t*)dword_1930D4 + 3), &v39, &v38, &v40);
         v14 = (uint8_t)byte_199EC2[v13];
         v15 = (uint8_t)byte_199EC2[v13];
         v41 = a3;
@@ -2312,7 +2312,7 @@ unsigned int sub_A1C74(
 // 192FE2: using guessed type int16_t word_192FE2[];
 // 19306C: using guessed type int dword_19306C;
 // 193080: using guessed type int dword_193080;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193184: using guessed type int dword_193184;
 // 1931BC: using guessed type int16_t word_1931BC[];
 // 1931BE: using guessed type int16_t word_1931BE[];
@@ -2481,7 +2481,7 @@ int sub_A2123(
   *(_DWORD *)((char *)&a14 + 2) = 1;
   *(_DWORD *)((char *)&a15 + 2) = 0;
   if ( byte_199F26
-    || sub_79D1C(word_19999C, *(uint8_t *)(17 * SHIWORD(a23) + dword_1930D4 + 2))
+    || sub_79D1C(word_19999C, *(uint8_t *)(17 * SHIWORD(a23) + (uint8_t*)dword_1930D4 + 2))
     || (v25 = sub_79E06(word_19999C)) )
   {
     v25 = 1;
@@ -2491,17 +2491,17 @@ int sub_A2123(
   **(_WORD **)((char *)&a24 + 14) = 12;
   dword_193070 = sub_127C27((int)aBuffer0Lbx_4, 73, dword_193174);
   qmemcpy((char *)&a12 + 2, sub_8E5C5(WORD3(a14), 60, 67), 8u);
-  v26 = *(_WORD *)(dword_1930D4 + 17 * SHIWORD(a23));
+  v26 = *(_WORD *)((uint8_t*)dword_1930D4 + 17 * SHIWORD(a23));
   if ( v26 <= -1 )
     v27 = -1;
   else
-    v27 = *(char *)(361 * v26 + dword_192B18);
+    v27 = *(char *)(361 * v26 + (uint8_t*)dword_192B18);
   sub_120BB5(SWORD3(a14), (int)&a12 + 2);
   sub_120E8C(SWORD1(a14));
   BYTE2(a17) = sub_122259() + 1;
   *(_DWORD *)((char *)&a14 + 14) = *(_DWORD *)((char *)&a24 + 2) + v59 + v61 + 6;
   *(_DWORD *)((char *)&a14 + 10) = *(_DWORD *)((char *)&a24 + 6) + v58 + v60 + 7;
-  BYTE2(a16) = *(_BYTE *)(dword_1930D4 + 17 * SHIWORD(a23) + 4) == 2;
+  BYTE2(a16) = *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * SHIWORD(a23) + 4) == 2;
   if ( BYTE2(a16) )
   {
     strcpy(vars2, sub_7A990(0x15Fu));
@@ -2517,7 +2517,7 @@ LABEL_11:
     }
     goto LABEL_12;
   }
-  if ( *(_BYTE *)(dword_1930D4 + 17 * SHIWORD(a23) + 4) == 1 )
+  if ( *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * SHIWORD(a23) + 4) == 1 )
   {
     strcpy(vars2, sub_7A990(0x160u));
     if ( BYTE2(a25) )
@@ -2530,20 +2530,20 @@ LABEL_12:
     goto LABEL_61;
   }
   if ( v26 <= -1 )
-    v33 = *(_BYTE *)(17 * SHIWORD(a23) + dword_1930D4 + 8);
+    v33 = *(_BYTE *)(17 * SHIWORD(a23) + (uint8_t*)dword_1930D4 + 8);
   else
-    v33 = *(_BYTE *)(361 * v26 + dword_192B18 + 226);
+    v33 = *(_BYTE *)(361 * v26 + (uint8_t*)dword_192B18 + 226);
   BYTE6(a15) = v33;
   sub_77B42();
   if ( (int)((uint64_t)sprintf(vars2, "%s ", v34) >> 32) > -1 )
   {
-    v35 = sprintf(var4E, "(%s", (char *)(dword_197F98 + 3753 * v27 + 21));
+    v35 = sprintf(var4E, "(%s", (char *)((uint8_t*)dword_197F98 + 3753 * v27 + 21));
     v36 = &_B9;
     do
       ++v36;
     while ( *v36 );
     strcpy(v36, var4E);
-    if ( *(_BYTE *)(HIDWORD(v35) + dword_192B18 + 6) )
+    if ( *(_BYTE *)(HIDWORD(v35) + (uint8_t*)dword_192B18 + 6) )
       v37 = sub_7A990(0x161u);
     else
       v37 = asc_179C33;
@@ -2569,7 +2569,7 @@ LABEL_12:
   v41 = sprintf(
           var4E,
           "%s, %s",
-          (char *)dword_192BE0[*(uint8_t *)(dword_1930D4 + 17 * SHIWORD(a23) + 5)],
+          (char *)dword_192BE0[*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * SHIWORD(a23) + 5)],
           (char *)dword_18F990[BYTE6(a15)]);
   if ( BYTE2(a25) )
   {
@@ -2585,7 +2585,7 @@ LABEL_12:
     if ( v43 > *v42 )
       *v42 = v43;
   }
-  sub_E0B4F((int16_t *)(17 * SHIWORD(a23) + dword_1930D4), word_19999C);
+  sub_E0B4F((int16_t *)(17 * SHIWORD(a23) + (uint8_t*)dword_1930D4), word_19999C);
   v57 = v44;
   if ( v26 <= -1 )
   {
@@ -2594,7 +2594,7 @@ LABEL_12:
   }
   else
   {
-    v56 = *(uint8_t *)(dword_192B18 + 361 * v26 + 10);
+    v56 = *(uint8_t *)((uint8_t*)dword_192B18 + 361 * v26 + 10);
     v45 = sub_7A990(0x181u);
     v46 = sprintf(var4E, v45, v56, v57);
   }
@@ -2615,7 +2615,7 @@ LABEL_12:
   LOWORD(v48) = BYTE2(a17);
   *(_DWORD *)((char *)&a14 + 10) += v48;
   **(_WORD **)((char *)&a24 + 14) += BYTE2(a17);
-  v50 = dword_1930D4 + 17 * SHIWORD(a23);
+  v50 = (uint8_t*)dword_1930D4 + 17 * SHIWORD(a23);
   if ( *(_BYTE *)(v50 + 6) == 1 )
     sprintf(var4E, "%s", (char *)dword_192BF4[*(uint8_t *)(v50 + 10)]);
   else
@@ -2647,7 +2647,7 @@ LABEL_12:
       SBYTE2(a25));
     *(_DWORD *)((char *)&a15 + 2) = v53;
   }
-  v54 = 17 * SHIWORD(a23) + dword_1930D4;
+  v54 = 17 * SHIWORD(a23) + (uint8_t*)dword_1930D4;
   if ( *(_BYTE *)(v54 + 15) && *(_BYTE *)(v54 + 15) != 11 )
   {
     if ( !WORD1(a15) )
@@ -2662,12 +2662,12 @@ LABEL_12:
     if ( BYTE2(a25) )
     {
       v28 = WORD5(a14);
-      v30 = (char *)dword_18F9B8[*(char *)(17 * SHIWORD(a23) + dword_1930D4 + 15)];
+      v30 = (char *)dword_18F9B8[*(char *)(17 * SHIWORD(a23) + (uint8_t*)dword_1930D4 + 15)];
       v29 = HIWORD(a14);
       goto LABEL_11;
     }
     v31 = *(int16_t **)((char *)&a24 + 10);
-    v32 = sub_12066F(dword_18F9B8[*(char *)(17 * SHIWORD(a23) + dword_1930D4 + 15)]);
+    v32 = sub_12066F(dword_18F9B8[*(char *)(17 * SHIWORD(a23) + (uint8_t*)dword_1930D4 + 15)]);
     if ( v32 <= *v31 )
       goto LABEL_62;
 LABEL_61:
@@ -2691,14 +2691,14 @@ LABEL_62:
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 18F990: using guessed type int dword_18F990[];
 // 18F9B8: using guessed type int dword_18F9B8[];
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 192BE0: using guessed type int dword_192BE0[];
 // 192BF4: using guessed type int dword_192BF4[];
 // 192C74: using guessed type int dword_192C74[];
 // 193070: using guessed type int dword_193070;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19999C: using guessed type int16_t word_19999C;
 // 199F26: using guessed type char byte_199F26;
 
@@ -2820,7 +2820,7 @@ int16_t sub_A26E3(int a1, int a2, int a3, int a4, int a5, int16_t *a6, int16_t *
     LOWORD(v16) = sub_77FF5(*(int16_t *)((char *)&word_1975D4 + 5 * a5));
     v64 = v16;
     v53 = (int16_t)v16;
-    v17 = 3753 * (int16_t)v16 + dword_197F98;
+    v17 = 3753 * (int16_t)v16 + (uint8_t*)dword_197F98;
     v18 = v15 + dword_197F9C;
     LOWORD(v15) = *(_WORD *)(v15 + dword_197F9C + 103);
     LOWORD(v18) = *(_WORD *)(v18 + 105);
@@ -2839,7 +2839,7 @@ int16_t sub_A26E3(int a1, int a2, int a3, int a4, int a5, int16_t *a6, int16_t *
       if ( (int16_t)v51[i] > 0 )
         ++v20;
     }
-    v46 = dword_197F98 + 3753 * (int16_t)v64 + 21;
+    v46 = (uint8_t*)dword_197F98 + 3753 * (int16_t)v64 + 21;
     v22 = sub_7A990(0x163u);
     v23 = sprintf(v49, v22, v46);
     sub_120BB5((int16_t)v61, SHIDWORD(v23));
@@ -2976,7 +2976,7 @@ int16_t sub_A26E3(int a1, int a2, int a3, int a4, int a5, int16_t *a6, int16_t *
 // 193070: using guessed type int dword_193070;
 // 193174: using guessed type int dword_193174;
 // 1975D4: using guessed type int16_t word_1975D4;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 197F9C: using guessed type int dword_197F9C;
 // 199A08: using guessed type int16_t word_199A08;
 
@@ -2989,14 +2989,14 @@ int sub_A2C11( int a1, int a2, int a3)
   _WORD *v7; // ebx
 
   v5 = 3753 * a3;
-  v6 = *(uint8_t *)(v5 + dword_197F98 + 38);
-  v7 = (_WORD *)sub_127C27((int)aBuffer0Lbx_4, *(uint8_t *)(v5 + dword_197F98 + 38) + 35, dword_193174);
+  v6 = *(uint8_t *)(v5 + (uint8_t*)dword_197F98 + 38);
+  v7 = (_WORD *)sub_127C27((int)aBuffer0Lbx_4, *(uint8_t *)(v5 + (uint8_t*)dword_197F98 + 38) + 35, dword_193174);
   dword_1904F8[v6] = (int)v7;
   return sub_12A478(a1 - *v7 + 2, a2, (int)v7);
 }
 // 1904F8: using guessed type int dword_1904F8[8];
 // 193174: using guessed type int dword_193174;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000A2C66) --------------------------------------------------------
@@ -3041,14 +3041,14 @@ void sub_A2D2D(int a1, int a2, int a3)
   int16_t v4; // di
 
   v3 = 3753 * a3;
-  v4 = *(uint8_t *)(v3 + dword_197F98 + 38);
-  dword_1904D8[v4] = sub_127C27((int)aBuffer0Lbx_4, *(uint8_t *)(v3 + dword_197F98 + 38) + 43, dword_193174);
+  v4 = *(uint8_t *)(v3 + (uint8_t*)dword_197F98 + 38);
+  dword_1904D8[v4] = sub_127C27((int)aBuffer0Lbx_4, *(uint8_t *)(v3 + (uint8_t*)dword_197F98 + 38) + 43, dword_193174);
   JUMPOUT(0xA2C5D);
 }
 // A2D77: control flows out of bounds to A2C5D
 // 1904D8: using guessed type int dword_1904D8[8];
 // 193174: using guessed type int dword_193174;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000A2D7C) --------------------------------------------------------
@@ -3082,10 +3082,10 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   HIWORD(v10) = HIWORD(dword_1930D4);
   v22 = *(_WORD *)(v9 + 4);
   v24 = *(uint8_t *)(v9 + 6);
-  LOWORD(v10) = *(uint8_t *)(dword_1930D4 + v8 + 4);
+  LOWORD(v10) = *(uint8_t *)((uint8_t*)dword_1930D4 + v8 + 4);
   sub_1112EC(dword_192ED4, v10);
   if ( (_WORD)v10 == 3 )
-    v26 = *(uint8_t *)(v8 + dword_1930D4 + 5);
+    v26 = *(uint8_t *)(v8 + (uint8_t*)dword_1930D4 + 5);
   else
     v26 = 4;
   v11 = sub_12DAA4(288, 154);
@@ -3121,7 +3121,7 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   return sub_1113CC(dword_192ED4, v29);
 }
 // 192ED4: using guessed type int dword_192ED4;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
 // 193184: using guessed type int dword_193184;
 // 193194: using guessed type int dword_193194[6];
@@ -3191,7 +3191,7 @@ void sub_A30FD( int a1, int a2, int a3, int a4, int a5, int a6)
     v10 = *((uint8_t *)v8 + 7);
     if ( *v8 > -1 )
     {
-      v11 = *(uint8_t *)(17 * v9 + dword_1930D4 + 4);
+      v11 = *(uint8_t *)(17 * v9 + (uint8_t*)dword_1930D4 + 4);
       if ( v11 == 3 || v11 == 2 )
       {
         sub_A2D7C(v9, v7, a1, a2, a3, a4, a5, a6);
@@ -3208,7 +3208,7 @@ void sub_A30FD( int a1, int a2, int a3, int a4, int a5, int a6)
   }
 }
 // A31D5: control flows out of bounds to A2D27
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
 // 193184: using guessed type int dword_193184;
 // 193410: using guessed type int dword_193410;
@@ -3463,13 +3463,13 @@ LABEL_29:
     if ( v25 > -1 )
     {
       v26 = 17 * v25;
-      v27 = *(uint8_t *)(dword_1930D4 + v26 + 5);
-      if ( *(_BYTE *)(dword_1930D4 + v26 + 4) == 2 )
+      v27 = *(uint8_t *)((uint8_t*)dword_1930D4 + v26 + 5);
+      if ( *(_BYTE *)((uint8_t*)dword_1930D4 + v26 + 4) == 2 )
         v27 = 4;
       v28 = dword_193184 + 14 * v24;
       v29 = *(_WORD *)(v28 + 2) + v101;
       v30 = *(_WORD *)(v28 + 4) + v103;
-      v31 = (int16_t *)(17 * v25 + dword_1930D4);
+      v31 = (int16_t *)(17 * v25 + (uint8_t*)dword_1930D4);
       v32 = v29 - 2;
       v33 = *v31;
       v34 = v30 - 2;
@@ -3483,7 +3483,7 @@ LABEL_29:
           v32 += v35;
           v34 += v35;
         }
-        v36 = (char *)(dword_192B18 + 361 * (int16_t)v91);
+        v36 = (char *)((uint8_t*)dword_192B18 + 361 * (int16_t)v91);
         if ( v36[6] )
           sub_A2D2D(v32, v34, *v36);
         else
@@ -3503,7 +3503,7 @@ LABEL_29:
     v38 = *(_WORD *)(14 * v37 + dword_193184);
     if ( v38 > -1 )
     {
-      v39 = dword_1930D4 + 17 * v38;
+      v39 = (uint8_t*)dword_1930D4 + 17 * v38;
       v40 = *(uint8_t *)(v39 + 5);
       if ( *(_BYTE *)(v39 + 4) == 2 )
         v40 = 4;
@@ -3517,7 +3517,7 @@ LABEL_29:
         v44 = v40;
         LOWORD(v44) = (uint8_t)byte_199EC2[v40];
         v94 = v44;
-        if ( *(_BYTE *)(dword_1930D4 + 17 * v38 + 4) != 1 )
+        if ( *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * v38 + 4) != 1 )
           sub_A3A15(v38, v94, v94, v90, v43);
         sub_A2123(
           v38,
@@ -3591,9 +3591,9 @@ LABEL_29:
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1845D8: using guessed type int16_t word_1845D8;
 // 18F9B8: using guessed type int dword_18F9B8[];
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193184: using guessed type int dword_193184;
 // 19987A: using guessed type int16_t word_19987A;
 // 19999C: using guessed type int16_t word_19999C;
@@ -3630,7 +3630,7 @@ int sub_A3A15( int a1, int a2, int a3, int a4, int a5)
   int16_t v25; // [esp+10h] [ebp-8h]
   char v26; // [esp+14h] [ebp-4h]
 
-  v6 = *(_WORD *)(dword_1930D4 + 17 * a1);
+  v6 = *(_WORD *)((uint8_t*)dword_1930D4 + 17 * a1);
   v26 = 0;
   dword_193190 = sub_127C27((int)aBuffer0Lbx_4, 75, dword_193174);
   v25 = *(_WORD *)dword_193190;
@@ -3647,9 +3647,9 @@ int sub_A3A15( int a1, int a2, int a3, int a4, int a5)
   }
   else
   {
-    v7 = 3753 * *(char *)(361 * v6 + dword_192B18);
-    v8 = *(uint8_t *)(v7 + dword_197F98 + 38);
-    if ( *(_BYTE *)(v7 + dword_197F98 + 38) )
+    v7 = 3753 * *(char *)(361 * v6 + (uint8_t*)dword_192B18);
+    v8 = *(uint8_t *)(v7 + (uint8_t*)dword_197F98 + 38);
+    if ( *(_BYTE *)(v7 + (uint8_t*)dword_197F98 + 38) )
     {
       v24 = 73;
       for ( k = 0; k < 9; ++k )
@@ -3674,11 +3674,11 @@ int sub_A3A15( int a1, int a2, int a3, int a4, int a5)
   }
   return result;
 }
-// 192B18: using guessed type int dword_192B18;
-// 1930D4: using guessed type int dword_1930D4;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
 // 193190: using guessed type int dword_193190;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000A3BC4) --------------------------------------------------------
@@ -3791,23 +3791,23 @@ int sub_A3D84(int *a1, int a2)
   int v11; // [esp+0h] [ebp-8h]
   _BOOL1 v12; // [esp+4h] [ebp-4h]
 
-  v3 = dword_1930D4 + 17 * a2;
+  v3 = (uint8_t*)dword_1930D4 + 17 * a2;
   v4 = *(uint8_t *)(v3 + 8);
   v5 = *(_WORD *)v3;
   v12 = *(_BYTE *)(v3 + 4) == 2;
   v11 = 17 * a2;
-  if ( *(_BYTE *)(v11 + dword_1930D4 + 5) >= 4u )
+  if ( *(_BYTE *)(v11 + (uint8_t*)dword_1930D4 + 5) >= 4u )
     v6 = 4;
   else
-    v6 = *(uint8_t *)(v11 + dword_1930D4 + 5);
+    v6 = *(uint8_t *)(v11 + (uint8_t*)dword_1930D4 + 5);
   v7 = v6;
   if ( v5 > -1 && v5 < word_199996 && !v12 )
   {
-    v8 = 361 * v5 + dword_192B18;
+    v8 = 361 * v5 + (uint8_t*)dword_192B18;
     if ( !*(_BYTE *)(v8 + 6) )
       v4 = *(uint8_t *)(v8 + 226);
   }
-  if ( *(_BYTE *)(dword_1930D4 + 17 * a2 + 4) == 2 )
+  if ( *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * a2 + 4) == 2 )
     v9 = 50;
   else
     v9 = v7 + 5 * v4;
@@ -3815,8 +3815,8 @@ int sub_A3D84(int *a1, int a2)
   *a1 = result;
   return result;
 }
-// 192B18: using guessed type int dword_192B18;
-// 1930D4: using guessed type int dword_1930D4;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
 // 199996: using guessed type int16_t word_199996;
 
@@ -3997,12 +3997,12 @@ void sub_A404E( int a1)
     else
     {
       HIWORD(v12) = HIWORD(dword_1930D4);
-      v13 = dword_1930D4 + 17 * v11;
+      v13 = (uint8_t*)dword_1930D4 + 17 * v11;
       LOWORD(v12) = *(uint8_t *)(v13 + 5);
       v30 = v12;
       if ( *(_BYTE *)(v13 + 4) == 2 )
         v30 = 4;
-      sub_EBEEB(a1, *(uint8_t *)(17 * v11 + dword_1930D4 + 3), &v26, &v25, &v24);
+      sub_EBEEB(a1, *(uint8_t *)(17 * v11 + (uint8_t*)dword_1930D4 + 3), &v26, &v25, &v24);
       v14 = (uint8_t)byte_199EC2[(int16_t)v30];
       v15 = v25 - v14 / 2;
       if ( !v29 && ((unsigned int)v24 <= 2 || v24 >= 12 && v24 <= 15) )
@@ -4061,7 +4061,7 @@ void sub_A404E( int a1)
 // 192FE0: using guessed type int16_t word_192FE0[];
 // 192FE2: using guessed type int16_t word_192FE2[];
 // 19306C: using guessed type int dword_19306C;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 193174: using guessed type int dword_193174;
 // 193184: using guessed type int dword_193184;
 // 19999C: using guessed type int16_t word_19999C;
@@ -4251,7 +4251,7 @@ void sub_A453F()
   v0 = 17 * v32;
   strcpy(v40, sub_7A990(0x16Eu));
   strcpy(v41, sub_7A990(0x16Fu));
-  sub_E5430((_BYTE *)(dword_197F98 + 3753 * word_19999C), (_BYTE *)(v0 + dword_1930D4), &v42);
+  sub_E5430((_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C), (_BYTE *)(v0 + (uint8_t*)dword_1930D4), &v42);
   v1 = sub_7A990(0x170u);
   sprintf(v36, aM2530, v1);
   v2 = &v35;
@@ -4264,7 +4264,7 @@ void sub_A453F()
     ++v3;
   while ( *v3 );
   strcpy(v3, (char *)&off_179C5D);
-  sub_E0B4F((int16_t *)(v0 + dword_1930D4), word_19999C);
+  sub_E0B4F((int16_t *)(v0 + (uint8_t*)dword_1930D4), word_19999C);
   sprintf(v34, v36, v4);
   if ( v45 )
   {
@@ -4386,8 +4386,8 @@ void sub_A453F()
 // A4957: variable 'v28' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 179C5D: using guessed type _UNKNOWN *off_179C5D;
-// 1930D4: using guessed type int dword_1930D4;
-// 197F98: using guessed type int dword_197F98;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19999C: using guessed type int16_t word_19999C;
 
 
@@ -4422,7 +4422,7 @@ void sub_A4989(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
 
   v32 = a5 + a3 + a7;
   v31 = a6 + a4 + a8;
-  v8 = *(uint8_t *)(dword_197F98 + 3753 * word_19999C + 38);
+  v8 = *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 38);
   qmemcpy(v29, sub_8E5C5(1u, (uint8_t)byte_10010[v8], (uint8_t)byte_10010[v8] + 6), sizeof(v29));
   v28[0] = 0;
   sub_120BB5(1, (int)v29);
@@ -4441,7 +4441,7 @@ void sub_A4989(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
           do
             ++v16;
           while ( *v16 );
-          strcpy(v16, (char *)(3753 * v14 + dword_197F98 + 1));
+          strcpy(v16, (char *)(3753 * v14 + (uint8_t*)dword_197F98 + 1));
           v17 = &v27;
           do
             ++v17;
@@ -4467,13 +4467,13 @@ LABEL_3:
       while ( v10 < word_199998 )
       {
         v11 = 3753 * v10;
-        if ( (uint8_t)sub_79CF9(v11 + dword_197F98, 113 * v25 + dword_19306C) )
+        if ( (uint8_t)sub_79CF9(v11 + (uint8_t*)dword_197F98, 113 * v25 + dword_19306C) )
         {
           v12 = &v27;
           do
             ++v12;
           while ( *v12 );
-          strcpy(v12, (char *)(v11 + dword_197F98 + 21));
+          strcpy(v12, (char *)(v11 + (uint8_t*)dword_197F98 + 21));
           v13 = &v27;
           do
             ++v13;
@@ -4509,7 +4509,7 @@ LABEL_24:
 // A4B37: variable 'v15' is possibly undefined
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 19306C: using guessed type int dword_19306C;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 // 19999C: using guessed type int16_t word_19999C;
 
@@ -5221,7 +5221,7 @@ int sub_A5844( int a1)
   if ( v1 < 8 )
   {
     v2 = dword_193174;
-    v3 = *(uint8_t *)(3753 * v1 + dword_197F98 + 38) + 273;
+    v3 = *(uint8_t *)(3753 * v1 + (uint8_t*)dword_197F98 + 38) + 273;
     return sub_127C27((int)aBuffer0Lbx_4, v3, v2);
   }
   if ( v1 == 8 )
@@ -5242,7 +5242,7 @@ int sub_A5844( int a1)
 // 193174: using guessed type int dword_193174;
 // 1931C2: using guessed type int16_t word_1931C2[];
 // 1975D4: using guessed type int16_t word_1975D4;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000A58CE) --------------------------------------------------------
@@ -5264,7 +5264,7 @@ void sub_A58CE( int a1, int a2, int16_t *a3, int16_t *a4, _WORD *a5, int a6, int
   while ( 1 )
   {
     v8 = *((_WORD *)v12 + v7);
-    if ( *(_BYTE *)(v8 + dword_192B18 + 361 * a1 + 310) )
+    if ( *(_BYTE *)(v8 + (uint8_t*)dword_192B18 + 361 * a1 + 310) )
     {
       if ( !(_WORD)v14 )
       {
@@ -5292,7 +5292,7 @@ void sub_A58CE( int a1, int a2, int16_t *a3, int16_t *a4, _WORD *a5, int a6, int
 // A599C: control flows out of bounds to A30BF
 // A1C68: using guessed type int[3];
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
 //----- (000A59A1) --------------------------------------------------------
@@ -7380,8 +7380,8 @@ LABEL_113:
 // 192864: using guessed type int dword_192864;
 // 192950: using guessed type int dword_192950;
 // 192B14: using guessed type int dword_192B14;
-// 192B18: using guessed type int dword_192B18;
-// 1930D4: using guessed type int dword_1930D4;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 199878: using guessed type int16_t word_199878;
 // 19987E: using guessed type int16_t word_19987E;
 // 1998CE: using guessed type int16_t word_1998CE;
@@ -8157,9 +8157,9 @@ LABEL_21:
 // 19283C: using guessed type int dword_19283C;
 // 19285C: using guessed type int dword_19285C;
 // 192864: using guessed type int dword_192864;
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 192ED4: using guessed type int dword_192ED4;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 199878: using guessed type int16_t word_199878;
 
 
@@ -11977,12 +11977,12 @@ int sub_AF76F( int a1)
 {
   int result; // eax
 
-  result = sub_AF7B4(*(char *)(dword_192B18 + 361 * dword_19F7A8), a1, dword_19F7A8);
+  result = sub_AF7B4(*(char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), a1, dword_19F7A8);
   if ( (int16_t)result != -1 )
     *(_BYTE *)(dword_197F9C + 129 * (int16_t)result + 100) = 6;
   return result;
 }
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F9C: using guessed type int dword_197F9C;
 // 19F7A8: using guessed type int dword_19F7A8;
 
@@ -12009,9 +12009,9 @@ int sub_AF7B4(int a1, int a2, int a3)
   int v20; // [esp+1F8h] [ebp-8h]
   int v21; // [esp+1FCh] [ebp-4h]
 
-  v3 = 17 * *(int16_t *)(361 * a3 + dword_192B18 + 2);
+  v3 = 17 * *(int16_t *)(361 * a3 + (uint8_t*)dword_192B18 + 2);
   v21 = 0;
-  v4 = *(uint8_t *)(dword_1930D4 + v3 + 2);
+  v4 = *(uint8_t *)((uint8_t*)dword_1930D4 + v3 + 2);
   while ( (int16_t)v21 < 500 )
   {
     v5 = 129 * (int16_t)v21 + dword_197F9C;
@@ -12026,7 +12026,7 @@ int sub_AF7B4(int a1, int a2, int a3)
   v6 = 129 * (int16_t)v21;
   memset(v6 + dword_197F9C, 0, 129);
   v20 = 3753 * v18;
-  sub_12779E((_BYTE *)(v6 + dword_197F9C), (_BYTE *)(v20 + dword_197F98 + 806 + 99 * a2), 0x63u);
+  sub_12779E((_BYTE *)(v6 + dword_197F9C), (_BYTE *)(v20 + (uint8_t*)dword_197F98 + 806 + 99 * a2), 0x63u);
   v7 = v6 + dword_197F9C;
   *(_BYTE *)(v7 + 99) = v18;
   *(_BYTE *)(v7 + 93) = v18;
@@ -12040,13 +12040,13 @@ int sub_AF7B4(int a1, int a2, int a3)
   *(_WORD *)(v7 + 105) = v8;
   if ( byte_199CB4 )
   {
-    v16 = *(int16_t *)(2 * *(uint8_t *)(v7 + 16) + v20 + dword_197F98 + 1400);
+    v16 = *(int16_t *)(2 * *(uint8_t *)(v7 + 16) + v20 + (uint8_t*)dword_197F98 + 1400);
     v14 = v7;
     v10 = (char *)sub_CDF5C(42);
     sprintf(v19, v10, v14, v16);
     if ( strlen(v19) >= 0xF )
     {
-      v17 = *(int16_t *)(v20 + dword_197F98 + 2 * *(uint8_t *)(v6 + dword_197F9C + 16) + 1400);
+      v17 = *(int16_t *)(v20 + (uint8_t*)dword_197F98 + 2 * *(uint8_t *)(v6 + dword_197F9C + 16) + 1400);
       v15 = v6 + dword_197F9C;
       v11 = (char *)sub_CDF5C(72);
       sprintf(v19, v11, v15, v17);
@@ -12055,17 +12055,17 @@ int sub_AF7B4(int a1, int a2, int a3)
     }
     v12 = 129 * (int16_t)v21;
     strcpy((char *)(v12 + dword_197F9C), v19);
-    ++*(_WORD *)(dword_197F98 + 3753 * v18 + 2 * *(uint8_t *)(v12 + dword_197F9C + 16) + 1400);
+    ++*(_WORD *)((uint8_t*)dword_197F98 + 3753 * v18 + 2 * *(uint8_t *)(v12 + dword_197F9C + 16) + 1400);
   }
   return v21;
 }
 // AF806: variable 'v18' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
-// 1930D4: using guessed type int dword_1930D4;
-// 197F98: using guessed type int dword_197F98;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 197F9C: using guessed type int dword_197F9C;
 // 199994: using guessed type int16_t word_199994;
 // 199CB4: using guessed type char byte_199CB4;
@@ -12261,13 +12261,13 @@ LABEL_3:
       if ( a1 <= -100 || a1 > -50 )
         result = -1;
       else
-        result = 3753 * *(char *)(361 * dword_19F7A8 + dword_192B18) + dword_197F98 + 806 - 99 * (a1 + 50);
+        result = 3753 * *(char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18) + (uint8_t*)dword_197F98 + 806 - 99 * (a1 + 50);
       break;
   }
   return result;
 }
-// 192B18: using guessed type int dword_192B18;
-// 197F98: using guessed type int dword_197F98;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19F7A8: using guessed type int dword_19F7A8;
 
 
@@ -12289,7 +12289,7 @@ void sub_AFD42()
   WORD2(v1) = 0;
   while ( 1 )
   {
-    v9 = 3753 * v7 + dword_197F98;
+    v9 = 3753 * v7 + (uint8_t*)dword_197F98;
     LODWORD(v1) = SWORD2(v1) + v9;
     if ( *(_BYTE *)(v1 + 279) == 3 )
     {
@@ -12315,7 +12315,7 @@ void sub_AFD42()
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
 // 17EB43: using guessed type int16_t word_17EB43;
-// 197F98: using guessed type int dword_197F98;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
 //----- (000AFDE9) --------------------------------------------------------
@@ -12347,12 +12347,12 @@ int sub_AFE0C( int a1, int a2)
   v4 = 0;
   for ( i = 0; i < 7; ++i )
   {
-    if ( a2 == *(_WORD *)(2 * i + dword_192B18 + 361 * a1 + 277) )
+    if ( a2 == *(_WORD *)(2 * i + (uint8_t*)dword_192B18 + 361 * a1 + 277) )
       ++v4;
   }
   return v4;
 }
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
 //----- (000AFE48) --------------------------------------------------------
@@ -12385,17 +12385,17 @@ int sub_AFE6E( int a1)
     v4 = *(_WORD *)(113 * a1 + dword_19306C + 2 * i + 74);
     if ( v4 != -1 )
     {
-      v5 = *(int16_t *)(dword_1930D4 + 17 * v4);
-      if ( (v5 == -1 || *(_BYTE *)(dword_192B18 + 361 * v5 + 6)) && *(_BYTE *)(dword_1930D4 + 17 * v4 + 4) == 3 )
+      v5 = *(int16_t *)((uint8_t*)dword_1930D4 + 17 * v4);
+      if ( (v5 == -1 || *(_BYTE *)((uint8_t*)dword_192B18 + 361 * v5 + 6)) && *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * v4 + 4) == 3 )
         ++result;
     }
   }
   return result;
 }
 // AFEAA: conditional instruction was optimized away because ebx.4 is in (<8000u|FFFF8000..FFFFFFFE)
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
-// 1930D4: using guessed type int dword_1930D4;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 
 
 //----- (000AFEE0) --------------------------------------------------------
@@ -12423,7 +12423,7 @@ int sub_AFEFC(int a1, int a2, int a3)
   word_18283A = 2;
   do
   {
-    sub_E11BC((char *)(361 * dword_19F7A8 + dword_192B18), a3);
+    sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), a3);
     if ( (word_18283A <= 54 && v3 == 1 || byte_182ACB) && a3 != 11 )
     {
       v4 = word_18283A++;
@@ -12439,7 +12439,7 @@ int sub_AFEFC(int a1, int a2, int a3)
 // 1827D0: using guessed type int16_t word_1827D0;
 // 18283A: using guessed type int16_t word_18283A;
 // 182ACB: using guessed type char byte_182ACB;
-// 192B18: using guessed type int dword_192B18;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19F7A8: using guessed type int dword_19F7A8;
 
 
@@ -12475,29 +12475,29 @@ void sub_AFF9E()
   char v26; // al
   int v27; // eax
 
-  v0 = *(uint8_t *)(dword_1930D4 + 17 * *(int16_t *)(dword_192B18 + 361 * dword_19F7A8 + 2) + 2);
+  v0 = *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 2) + 2);
   word_1828A8 = 0;
   v1 = sub_AFE6E(v0);
   sub_AFDE9(11);
   if ( v1 > v2 )
   {
-    sub_E11BC((char *)(dword_192B18 + 361 * dword_19F7A8), 11);
+    sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), 11);
     if ( v3 )
     {
       v4 = word_1828A8++;
       word_18283C[v4] = 11;
     }
   }
-  if ( *(_BYTE *)(dword_197F98 + 3753 * word_19999C + 348) == 3 )
+  if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 348) == 3 )
   {
-    sub_E11BC((char *)(dword_192B18 + 361 * dword_19F7A8), -15);
+    sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -15);
     if ( v5 )
     {
       v6 = word_1828A8++;
       word_18283C[v6] = -15;
     }
   }
-  v7 = dword_197F98 + 3753 * *(char *)(dword_192B18 + 361 * dword_19F7A8);
+  v7 = (uint8_t*)dword_197F98 + 3753 * *(char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8);
   if ( *(int16_t *)(v7 + 804) > 0 && *(_BYTE *)(v7 + 1440) )
   {
     if ( *(_BYTE *)(v7 + 320) == 3 )
@@ -12505,13 +12505,13 @@ void sub_AFF9E()
       v8 = word_1828A8++;
       word_18283C[v8] = -12;
     }
-    if ( *(_BYTE *)(3753 * *(char *)(dword_192B18 + 361 * dword_19F7A8) + dword_197F98 + 388) == 3 )
+    if ( *(_BYTE *)(3753 * *(char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8) + (uint8_t*)dword_197F98 + 388) == 3 )
     {
       v9 = word_1828A8++;
       word_18283C[v9] = -17;
     }
-    v10 = (char *)(361 * dword_19F7A8 + dword_192B18);
-    if ( *(_BYTE *)(3753 * *v10 + dword_197F98 + 468) == 3 && v10[332] )
+    v10 = (char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18);
+    if ( *(_BYTE *)(3753 * *v10 + (uint8_t*)dword_197F98 + 468) == 3 && v10[332] )
     {
       v11 = word_1828A8++;
       word_18283C[v11] = -11;
@@ -12528,15 +12528,15 @@ void sub_AFF9E()
       v16 = sub_CDF5C(12);
       if ( strcmp(v16, v15)
         && (!byte_199CB4
-         || *(_BYTE *)(dword_197F98 + 3753 * word_19999C + 99 * i + 822) != 4
-         || *(_BYTE *)(dword_197F98 + 3753 * *(char *)(361 * dword_19F7A8 + dword_192B18) + 465) == 3) )
+         || *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 99 * i + 822) != 4
+         || *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * *(char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18) + 465) == 3) )
       {
         v17 = word_1828A8++;
         word_18283C[v17] = v13;
       }
       --v13;
     }
-    if ( *(_BYTE *)(dword_197F98 + 3753 * *(char *)(361 * dword_19F7A8 + dword_192B18) + 334) == 3 && byte_199CB4 )
+    if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * *(char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18) + 334) == 3 && byte_199CB4 )
     {
       v18 = word_1828A8++;
       word_18283C[v18] = -16;
@@ -12547,25 +12547,25 @@ void sub_AFF9E()
     v19 = word_1828A8++;
     word_18283C[v19] = -9;
   }
-  sub_E11BC((char *)(dword_192B18 + 361 * dword_19F7A8), -4);
+  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -4);
   if ( v20 )
   {
     v21 = word_1828A8++;
     word_18283C[v21] = -4;
   }
-  sub_E11BC((char *)(dword_192B18 + 361 * dword_19F7A8), -5);
+  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -5);
   if ( v22 )
   {
     v23 = word_1828A8++;
     word_18283C[v23] = -5;
   }
-  sub_E11BC((char *)(dword_192B18 + 361 * dword_19F7A8), -6);
+  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -6);
   if ( v24 )
   {
     v25 = word_1828A8++;
     word_18283C[v25] = -6;
   }
-  sub_E11BC((char *)(361 * dword_19F7A8 + dword_192B18), -7);
+  sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), -7);
   if ( v26 )
   {
     v27 = word_1828A8++;
@@ -12582,9 +12582,9 @@ void sub_AFF9E()
 // 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 18283C: using guessed type int16_t word_18283C[54];
 // 1828A8: using guessed type int16_t word_1828A8;
-// 192B18: using guessed type int dword_192B18;
-// 1930D4: using guessed type int dword_1930D4;
-// 197F98: using guessed type int dword_197F98;
+// 192B18: using guessed type int (uint8_t*)dword_192B18;
+// 1930D4: using guessed type int (uint8_t*)dword_1930D4;
+// 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19999C: using guessed type int16_t word_19999C;
 // 199CB4: using guessed type char byte_199CB4;
 // 19F7A8: using guessed type int dword_19F7A8;
