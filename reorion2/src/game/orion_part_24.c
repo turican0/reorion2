@@ -5629,31 +5629,60 @@ double sub_163EAA( int a1, double *a2, double result)
 
 
 //----- (00164200) --------------------------------------------------------
+// PORT (wave 24c): this is Smacker's classic "build big/small tree" bitstream
+// decoder (recursive-descent over a binary Huffman tree, emitting either a
+// leaf value or an internal-node "skip distance" backpatch, flattened into
+// `a2[]` for fast iterative traversal during actual video decode). The
+// recursion is emulated in the original with an explicit stack of markers
+// (0xFFFFFFFF = outermost sentinel, 0xFFFFFFFE = "no backpatch needed",
+// anything else = an earlier `a2` position to backpatch once its subtree
+// is fully written). Hex-Rays completely dropped the `retn` reached when the
+// outermost sentinel is popped (see its own comments below about a
+// "conditional instruction... optimized away" - it mis-resolved the
+// terminating compare on a stack value it couldn't track statically) and
+// replaced the whole function with a bare `while(1)` - it never returns, so
+// `a2` just walks past the caller's output buffer until it faults. Rewritten
+// directly from Debug/diss/Orion2.exe.asm (sub_164200 @ 0x164200), using an
+// explicit array as the same kind of side stack the original used (registers
+// there: a1/ebp=bit accumulator, a2/edi=output cursor, a3/esi=bitstream).
 void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
 {
   unsigned int v3; // eax
-  char v4; // cf
-  char v5; // bl
   char v6; // cl
   char v7; // al
   unsigned int v8; // ebp
+  uintptr_t markerStack[1024];
+  int sp = 0;
 
-  v3 = 0x80000000;
-  while ( 1 )
+  markerStack[sp++] = 0xFFFFFFFFu;
+  markerStack[sp++] = 0xFFFFFFFEu;
+
+  for ( ;; )
   {
     if ( !--byte_18A6C0 )
     {
       a1 = *a3++;
       byte_18A6C0 = 32;
     }
-    v4 = a1 & 1;
+    char carryClear = (a1 & 1) == 0;
     a1 >>= 1;
-    if ( v4 )
+    if ( !carryClear )
     {
+      // bit was 1: internal node - reserve a slot in a2[] to backpatch later
+      // (the original branches on marker==0xFFFFFFFE here, but both arms
+      // push the same value back unchanged - simplified accordingly)
+      uintptr_t marker = markerStack[--sp];
+      markerStack[sp++] = marker;
+      markerStack[sp++] = (uintptr_t)a2;
       ++a2;
     }
     else
     {
+      // bit was 0: leaf - pop and check for the outermost sentinel (done)
+      uintptr_t marker = markerStack[--sp];
+      if ( marker == 0xFFFFFFFFu )
+        return;
+      markerStack[sp++] = marker;
       if ( (uint8_t)byte_18A6C0 < 9u )
       {
         v6 = byte_18A6C0;
@@ -5666,12 +5695,18 @@ void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
       }
       else
       {
-        v5 = a1;
+        char v5 = a1;
         byte_18A6C0 -= 8;
         a1 >>= 8;
         LOBYTE(v3) = v5;
       }
+      marker = markerStack[--sp];
       *a2++ = v3;
+      if ( marker != 0xFFFFFFFEu )
+      {
+        // backpatch: store the distance from the reserved slot to here
+        *(unsigned int *)marker = (unsigned int)((uintptr_t)a2 - marker);
+      }
     }
   }
 }

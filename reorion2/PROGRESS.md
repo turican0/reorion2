@@ -2026,3 +2026,45 @@ write AV na vysoke heap adrese (0x18A42000) - vypada jako frame-buffer
 decode prekroceni, ne NULL/negativni-index vzor. Dalsi krok: precist
 sub_164200 a jeho volajici (nejspis Smacker frame-decode / bitstream
 unpacking rutina), overit proti Debug/diss/Orion2.exe.asm.
+
+## Done - wave 24c: sub_164200 - DALSI zahozena `retn` -> nekonecna smycka
+## (Smacker "build big tree" Huffman dekoder)
+
+Uzivatel poslal VS debugger screenshot: pad presne v `sub_164200` na
+`*a2++ = v3;` (write AV, `a2` = nesmyslna adresa po mnoha iteracich).
+
+**Root cause:** `sub_164200` je klasicky Smacker "build Huffman tree"
+algoritmus (rozpoznatelny z verejne dokumentovaneho SMK kodeku / FFmpeg
+`smacker.c`) - rekurzivni sestup binarnim stromem emulovany EXPLICITNIM
+zasobnikem (x86 `push`/`pop`), kde:
+- bit==1 = vnitrni uzel: rezervuje slot v `a2[]`, ulozi marker (pozici) na
+  zasobnik pro pozdejsi "backpatch" (zapis vzdalenosti k pravemu potomkovi)
+- bit==0 = list: precte bajtovou hodnotu, zapise ji, pak backpatchne
+  predchozi rezervovany slot (pokud existuje)
+- **zasobnik ma DVA druhy markeru**: `0xFFFFFFFE` (koren, zadny backpatch)
+  a `0xFFFFFFFF` (uplne dno - kdyz se tohle vyskoci, funkce KONCI - `retn`)
+
+Hex-Rays u teto (uz tak podezrele - vlastni komentare "conditional
+instruction was optimized away because %0x4.4==FFFFFFFE" 3x) funkce
+**uplne zahodila porovnani s 0xFFFFFFFF a nasledujici `retn`**, a nahradila
+celou funkci `while(1)` bez zadneho zpusobu ukonceni - `a2` pak jen roste
+donekonecna, dokud nenarazi mimo buffer (presne "write AV po X iteracich"
+pozorovany v debuggeru).
+
+Fix: presna rekonstrukce z `Debug/diss/Orion2.exe.asm` (sub_164200 @
+0x164200) pomoci lokalniho pole jako nahrady za x86 zasobnik (`markerStack[]`,
+push/pop indexem `sp`), zachovava presne stejnou logiku vcetne
+backpatch-vypoctu (`*(unsigned int*)marker = (a2 - marker)`).
+
+**Vysledek: sub_164200 uz nepada, frontier postoupil do `sub_1642A0`**
+(sesterska "small tree" dekodovaci funkce, jina - jednodussi, neodrolovana
+- struktura, zatim neanalyzovano) - read AV. Dalsi krok pro pristi session.
+
+**Metodologicka poznamka:** kdyz dekompilovana funkce ma vlastni komentare
+typu "conditional instruction was optimized away because X==CONST" NEBO
+konci bez `retn`/`return` na vsech cestach (podezrele `while(1)` bez
+break), je to silny signal na presne tenhle bug: Hex-Rays si spatne
+odvodila, ze nejaka podminka je vzdy stejna (typicky kdyz podminka
+zavisi na hodnote ulozene na stack/registru, kterou dataflow analyza
+neumi sledovat pres vice urovni push/pop), a ZAHODILA tim i skutecny
+navrat/ukonceni funkce.
