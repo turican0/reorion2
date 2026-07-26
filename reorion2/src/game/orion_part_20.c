@@ -81,6 +81,20 @@ bool sub_12B6D4(int a1)
 //----- (0012B726) --------------------------------------------------------
 int sub_12B726(int result)
 {
+  // PORT (wave 24, defensive guard - NOT a root-cause fix): the original asm
+  // (Debug/diss/Orion2.exe.asm sub_12B726 @ 0x12B726) unconditionally does
+  // `mov eax,[ebp+var_4]; mov word ptr [eax+4],0`, i.e. it never checks for
+  // NULL either - the original relied on every off_184480[] window-slot's
+  // +44 resource-pointer field always being populated by the time
+  // sub_11E718's per-slot switch reaches this call. In this port some slots
+  // still reach here with that field at 0 (root cause not yet found - likely
+  // an incomplete window-slot init path upstream, possibly interacting with
+  // the off_184480/unk_1B0848 array-size fix earlier in this wave). Guarding
+  // here avoids the crash and lets execution proceed past this frontier;
+  // the skipped slots may render incorrectly until the real init gap is
+  // found - flagged as an open item, see PROGRESS.md wave 24.
+  if (!result)
+    return result;
   *(_WORD *)(result + 4) = 0;
   return result;
 }

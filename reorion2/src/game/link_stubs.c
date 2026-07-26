@@ -375,7 +375,11 @@ int unk_1B0041;
 int unk_1B0043;
 int unk_1B004F;
 int unk_1B0057;
-int unk_1B0848;
+// PORT (wave 24): sized array, not a plain int placeholder - see
+// orion_common.h declaration comment (off_184480/off_184484 both point at
+// this same "window slot table": 250 slots * 55 bytes, per the loop bounds
+// in sub_11E718/sub_1198F9 and the sibling constant word_18447E=250).
+char unk_1B0848[13750];
 int unk_1BB8C4;
 int unk_1C95D8;
 /* unknown_libname_1/2 (puvodni Watcom v9.x DOS runtime FINDFIRST/FINDNEXT,

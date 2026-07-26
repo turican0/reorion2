@@ -19985,7 +19985,7 @@ extern int16_t word_1A1364;
 extern int16_t word_1A1366;
 extern int dword_1A1368;
 extern int16_t word_1A136C;
-extern _UNKNOWN unk_1A1370;
+extern char unk_1A1370[21000]; // wave 24: real buffer, see orion_data.c comment
 extern int dword_1A6578[812]; // wave 23: real size, see orion_data.c comment
 extern char dword_1A6B38[16]; // wave 23: real buffer, see orion_data.c comment
 extern int dword_1A6F88;
@@ -21045,7 +21045,7 @@ extern _UNKNOWN unk_1B0041;
 extern _UNKNOWN unk_1B0043;
 extern _UNKNOWN unk_1B004F;
 extern _UNKNOWN unk_1B0057;
-extern _UNKNOWN unk_1B0848;
+extern char unk_1B0848[13750]; // wave 24: 250-slot * 55-byte window table, see link_stubs.c comment
 extern _UNKNOWN unk_1BB8C4;
 extern _UNKNOWN unk_1C95D8;
 extern _UNKNOWN word_1B9E2F;

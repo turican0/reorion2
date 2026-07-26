@@ -225,4 +225,13 @@ void PortDebug_Checkpoint(const char* name, int value)
     std::fflush(stderr);
 }
 
+void PortDebug_CheckpointPtr(const char* name, const void* value)
+{
+    static const bool enabled = std::getenv("REORION2_TRACE") != nullptr;
+    if (!enabled)
+        return;
+    std::fprintf(stderr, "DIAG %s %p\n", name ? name : "?", value);
+    std::fflush(stderr);
+}
+
 } // extern "C"

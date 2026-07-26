@@ -7579,6 +7579,12 @@ int sub_12A478( int a1, int a2, int a3)
   int16_t v11; // [esp+30h] [ebp-8h]
   int16_t v12; // [esp+34h] [ebp-4h]
 
+  // PORT (wave 24, defensive guard - see sub_12B726 for the matching one):
+  // the original never checks a3 for NULL either, but this port's window-
+  // slot init leaves some slots' resource pointer at 0 - root cause not yet
+  // found, see PROGRESS.md wave 24.
+  if ( !a3 )
+    return 0;
   v7 = 0;
   dword_1BC2A8 = a3;
   v12 = *(_WORD *)a3 + a1 - 1;

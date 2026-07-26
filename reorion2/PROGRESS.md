@@ -1928,3 +1928,101 @@ z orion_part_13.c s ruznymi a2).
 (co ten callback dela) - pravdepodobne dalsi instalace "timer/interrupt"
 mechanismu analogicka sub_149A20, potrebuje stejny typ fixu (vzit
 "VxD/modern-OS-timing" vetev misto DOS interrupt spin).
+
+## Done - wave 24: uzivatel udelal rozsahle vlastni opravy + nalezen masivni
+## heap-corrupting buffer overflow (unk_1A1370)
+
+Mezi sezenimi uzivatel sam prubezne opravoval ukazatele/nazvy napric skoro
+vsemi soubory (`ServiceAudioTick_FE8BE` = prejmenovany `sub_FE8BE`,
+`PoolMemHeader`/`PoolAlloc` opravy, argc/argv, goto cleanup - 20+ commitu).
+Pri navratu do session bylo nutne re-synchronizovat: rebuild + cerstvy test
+misto pokracovani na starych predpokladech.
+
+**Nalezen a opraven kriticky bug: `unk_1A1370` (orion_part_13.c/orion_data.c)**
+- 1-bajtovy `_UNKNOWN` (=`char`) placeholder pouzivany jako PRIMY cilovy
+  buffer (zadna cerstva alokace) pro nacteni lokalizovane "estrings.lbx"
+  (string tabulka) - vsech 6 volani (`sub_CDF65`, po jednom na jazyk) predava
+  **21000** jako velikostni parametr, ale destinace mela jen 1 bajt.
+  Klasicky "IDA nedokazala odhadnout velikost bufferu" bug, tentokrat ale s
+  VELMI velkym dopadem (~21 KB prepis pres hranici, ne par bajtu jako drive).
+- **Zpusob nalezu:** uzivatel nahlasil zaseknuti/pad za menu vstupem; misto
+  hadani pridana rada `PortDebug_Checkpoint` volani sledujicich konkretni
+  globalni promennou (`byte_19A005`) skrz cely GameMain tail, bisekcne
+  zuzeno na jedno konkretni volani (`sub_CDF65`), pak dale na jednu radku
+  (`sub_126C91(...&unk_1A1370...)`). Tenhle "sledovat konkretni globalni
+  promennou pres radu checkpointu" postup je efektivni pro corruption bugy,
+  kde primy crash-site backtrace nikam nevede (protoze padne uplne jina,
+  nesouvisejici funkce, ktera jen NAHODOU cte poskozenou pamet pozdeji).
+- Dusledek: prepis takhle velkeho rozsahu pravdepodobne poskozoval MNOHO
+  dalsich globalu naraz (`byte_19A005`, pravdepodobne i `dword_1A6578`/
+  `dword_1A6B38` hned za nim, ktere si `sub_CDF65` sam nastavuje IHNED PO
+  tomto volani) - vysvetluje proc predchozi vlny nalezaly tolik zdanlive
+  nesouvisejicich "undersized buffer" bugu v teto oblasti; tenhle byl
+  pravdepodobne "matka" vsech.
+- Fix: `unk_1A1370` -> `char[21000]` (velikost primo z volajicich mist).
+
+**Pomocna diagnostika (trvala):** `PortDebug_CheckpointPtr(name, void*)` v
+port_dos.cpp/decomp_compat.h - jako `PortDebug_Checkpoint`, ale pro cele
+64bit ukazatele (napr. `_ReturnAddress()` pro zjisteni skutecneho volajiciho
+mista bez nutnosti instrumentovat kazde z 100+ volani zvlast).
+
+**Vysledek:** frontier po opravach = `sub_12B726` (write AV na adrese 0x4,
+NULL+4 vzor) - **stejne misto jako predtim indikovany task #12** pred touto
+odbockou, potvrzuje ze jde o genuinne dalsi bug v poradi, ne artefakt
+predchoziho.
+
+## Done - wave 24b: dalsi 2 bugy (unk_1B0848 window-slot pole, off_184480) +
+## KRITICKY MILNIK - intro cinematic (Smacker video) konecne nacita data
+
+**`unk_1B0848`/`off_184480`/`off_184484`** (orion_data.c/link_stubs.c) -
+DALSI instance stejneho vzoru: `off_184480 = &unk_1B0848` kde `unk_1B0848`
+byl jen `int` (4 bajty), ale je to ve skutecnosti **pole 250 "okenních"
+zaznamu po 55 bajtech** (13750 bajtu celkem) - overeno primo v asm (gap k
+dalsimu symbolu `unk_1ABDFC` = presne 0x35B4 = 13748 bajtu, + soused
+`word_18447E = 250` potvrzuje pocet slotu). Pouzivano v `sub_11E718` (a
+dalsich) jako `*(TYPE*)((char*)off_184480 + 55*slotIndex + fieldOffset)`.
+Nalezeno stejnou `_ReturnAddress()` technikou jako u `sub_12A478` (viz
+vlna 24 vyse) - **efektivni pro bugy s destikami moznych volacich mist**.
+Fix: `unk_1B0848` -> `char[13750]`, `off_184480`/`off_184484` inicializovany
+primo `unk_1B0848` (bez `&`, pole uz je pointer-compatible).
+
+**Zbyvajici otevrene (defensive guard, ne root-cause fix):** i po opraveni
+pole samotneho nekdy jednotlivy "okenni slot" ma sve `+44` (resource pointer)
+pole na 0 - puvodni asm (`sub_12B726`/`sub_12A478`) NEMA null-check (spoleha
+na to, ze slot je vzdy inicializovany pred pouzitim), takze presny root
+cause (ktera init-cesta nastavuje `+44` a proc se nekdy neprovede) zustava
+nenalezeny. Pridan defensive null-guard do obou funkci (`sub_12B726`,
+`sub_12A478`) - preskoci prazdny slot misto padu, ale muze zpusobit
+neúplne/spatne vykreslene UI prvky. Otevreny task pro pristi session.
+
+**KRITICKY MILNIK: `sub_15C850` byl DALSI zahozeny `int 21h` (DECOMP_TODO
+"inline asm") - OPEN DISK FILE WITH HANDLE (AH=3Dh).** Vratil jen
+bit-manipulovany smetí misto skutecneho otevreni souboru. Toto byl SKUTECNY
+duvod, proc "konec intra zaseknuty" bug (vlna 23c) prezival i po opraveni
+`sub_15C8A9` (cteni souboru, AH=3Fh) - `sub_15C8A9` spravne volalo
+`PortFile_Read`, ale s FALESNYM handle od `sub_15C850`, takze vzdy vratilo
+0 bajtu. Overeno v asm (`sub_15C850 @ 0x15C850`): skutecne parametry a2=
+jmeno souboru, a4=access mode (0=cteni/1=zapis/2=obojí); a1/a3 jsou DS
+segment/artefakt, ignorovany. Fix: skutecne `PortFile_Open(jmeno, mod)`.
+
+**Po opraveni OBOU (sub_15C8A9 + sub_15C850) spolecne:** `sub_14BC40`
+(Smacker-video loader pro hlavni intro cinematic "INTRO.LBX") **konecne
+uspesne cte a rozpozna "SMK2" magic header poprve v historii tohoto
+portu** (`14BC40.magic = 843795795` = "SMK2" ASCII, potvrzeno). Frontier
+se presunul HLOUBEJI - novy pad je uvnitr samotneho Smacker video
+dekoderu/frame-processing kodu (zpracovava realna komprimovana data
+poprve), zatim neanalyzovano - dalsi krok pro pristi session.
+
+**Metodologicka poznamka pro pristi session:** kdyz `DECOMP_TODO("inline
+asm")` funkce vraci hodnotu, ktera se pak POUZIJE jako handle/pointer v
+DALSI `DECOMP_TODO` funkci, obе potrebuji opravit SPOLECNE - opraveni jen
+jedne (jak se stalo ve vlne 23c se sub_15C8A9) muze vypadat spravne
+(zadna dalsi chyba, spravny navratovy typ) ale zustane funkcne rozbite,
+dokud navazujici stub take nedostane realnou implementaci.
+
+**Presna pozice noveho frontieru:** `sub_164200` (orion_part_25.c ci
+blizky soubor dle rozsahu - jeste neoveřeno, jen lokalizovano přes mapu),
+write AV na vysoke heap adrese (0x18A42000) - vypada jako frame-buffer
+decode prekroceni, ne NULL/negativni-index vzor. Dalsi krok: precist
+sub_164200 a jeho volajici (nejspis Smacker frame-decode / bitstream
+unpacking rutina), overit proti Debug/diss/Orion2.exe.asm.

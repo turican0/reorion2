@@ -5766,16 +5766,26 @@ char sub_15C730()
 
 
 //----- (0015C850) --------------------------------------------------------
+// PORT (wave 24): another `DECOMP_TODO("inline asm")` stub around a missed
+// inline `int 21h` (DOS AH=3Dh, OPEN DISK FILE WITH HANDLE) - it never
+// actually opened anything, just returned a bit-manipulated garbage "handle"
+// built from its own arguments. Callers (sub_14BC40, the Smacker-style intro
+// cinematic loader) then read from that fake handle via sub_15C8A9 (wave
+// 23c fix), which correctly called PortFile_Read but always got 0 bytes
+// back since the "handle" was never registered with Port::File - hence the
+// SMK2 magic check always failing and the end-of-intro hang persisting even
+// after the sub_15C8A9 fix. Reconstructed from Debug/diss/Orion2.exe.asm
+// (sub_15C850 @ 0x15C850): real params are a2=filename (DS:DX), a4=access
+// mode (AL: 0=read,1=write,2=read&write); a1/a3 are DOS DS-segment/decompiler
+// artifact junk, same pattern as sub_15C8A9. Returns -1 on failure (matches
+// the original's carry-flag -> 0xFFFF convention that callers check for).
 int sub_15C850( int a1, int a2, int a3, int a4)
 {
-  int result; // eax
-
-  BYTE1(result) = 61;
-  LOBYTE(result) = a4;
-  /* __asm: int     21h; DOS - 2+ - OPEN DISK FILE WITH HANDLE */ DECOMP_TODO("inline asm");
-  if ( a1 )
-    LOWORD(result) = -1;
-  return (int16_t)result;
+  (void)a1;
+  (void)a3;
+  const char* mode = (a4 == 1) ? "wb" : (a4 == 2) ? "r+b" : "rb";
+  int handle = PortFile_Open((const char*)(intptr_t)a2, mode);
+  return handle ? handle : -1;
 }
 
 

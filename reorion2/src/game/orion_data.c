@@ -8057,8 +8057,8 @@ int16_t word_184475 = 3; // weak
 char byte_184479 = '\x01'; // weak
 int dword_18447A = -1; // weak
 int16_t word_18447E = 250; // weak
-_UNKNOWN *off_184480 = &unk_1B0848; // weak
-_UNKNOWN *off_184484 = &unk_1B0848; // weak
+_UNKNOWN *off_184480 = unk_1B0848; // weak
+_UNKNOWN *off_184484 = unk_1B0848; // weak
 int (*dword_184488)(_DWORD) = NULL; // weak
 int16_t word_18448C = 0; // weak
 int dword_18448E = -65536; // weak
@@ -17073,7 +17073,21 @@ int16_t word_1A1364; // weak
 int16_t word_1A1366; // weak
 int dword_1A1368; // weak
 int16_t word_1A136C; // weak
-_UNKNOWN unk_1A1370; // weak
+// PORT (wave 24): Hex-Rays declared this as a single-byte placeholder
+// (`_UNKNOWN` = `char`), but sub_CDF65 (orion_part_13.c) reads the
+// localized "estrings.lbx" record DIRECTLY into it via sub_126C91's mode-3
+// path (destination buffer supplied by the caller, no fresh allocation) with
+// an explicit 21000-byte size argument at every one of its 6 call sites (one
+// per language). A 1-byte buffer receiving an LBX record up to ~21000 bytes
+// overflowed massively into whatever followed it in BSS - traced empirically
+// (checkpoint bisection) to flipping byte_19A005 from 1 to 0 mid-write,
+// which in turn made the main menu (sub_816F2) skip its one-time init
+// (sub_81ABE, which sets dword_19C08C) and read that global uninitialized ->
+// crash in sub_12A478. Almost certainly also corrupts other neighbors in a
+// real build (dword_1A6578, dword_1A6B38, ... - the very buffers sub_CDF65
+// itself sets up right after this call). Sized to the 21000 the call sites
+// already specify.
+char unk_1A1370[21000]; // weak
 // PORT (wave 23): Hex-Rays sized this at 368 (the gap to the next BSS symbol
 // dword_1A6B38), but sub_CDF65's string-table loader (orion_part_13.c) writes
 // index 0..0x32Bh (811) unconditionally - confirmed in Debug/diss/Orion2.exe.asm

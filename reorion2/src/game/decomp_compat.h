@@ -16,6 +16,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <intrin.h> /* _ReturnAddress() - used for ad-hoc call-site debugging */
 /* POZOR: zamerne NEpridavame <stdio.h> sem. Dekompilovany kod vola
    fopen/fseek/fgets/fgetc/ftell s jinym poctem argumentu, nez maji
    skutecne CRT prototypy (typicky decompiler "guessed type" artifact) -
@@ -160,6 +161,7 @@ int unknown_libname_2(struct DosDta* dta); /* FINDNEXT */
 extern "C" {
 #endif
 void PortDebug_Checkpoint(const char* name, int value);
+void PortDebug_CheckpointPtr(const char* name, const void* value);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
 unsigned char *PortVga_Framebuffer(void);
