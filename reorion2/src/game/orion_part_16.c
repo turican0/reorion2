@@ -1394,7 +1394,10 @@ int sub_F6FD9(int a1)
   if ( *(_BYTE *)a1 )
   {
     if ( *(_BYTE *)a1 <= 1u )
-      return fgetc(*(_DWORD *)(a1 + 1), 0);
+      // DECOMP_TODO (oprava): fgetc() melo jen 1 parametr - stejny
+      // "guessed type" artefakt dekompilatoru jako u fseek/ftell (viz
+      // decomp_compat.h). Druhy (nulovy) parametr byl nesouvisejici.
+      return fgetc(*(_DWORD *)(a1 + 1));
     if ( *(_BYTE *)a1 != 2 )
       return 0;
     if ( *(_DWORD *)(a1 + 13) + *(_DWORD *)(a1 + 5) == *(_DWORD *)(a1 + 9) )
@@ -7168,7 +7171,7 @@ char sub_FD911( int a1, int a2, int16_t *a3)
 //----- (000FD95A) --------------------------------------------------------
 void sub_FD95A(int a1, int a2)
 {
-  unsigned int v2; // ebx
+  uint8_t* v2; // ebx
   char v3; // al
   _BOOL1 v4; // ch
   int v5; // eax
@@ -7300,9 +7303,9 @@ char sub_FDB01( int a1, int a2)
   _BYTE v23[200]; // [esp+CCh] [ebp-CEh] BYREF
   _BYTE v24[100]; // [esp+194h] [ebp-6h] BYREF
   int v25; // [esp+1F8h] [ebp+5Eh]
-  unsigned int v26; // [esp+1FCh] [ebp+62h]
+  uint8_t* v26; // [esp+1FCh] [ebp+62h]
   unsigned int v27; // [esp+200h] [ebp+66h]
-  int v28; // [esp+204h] [ebp+6Ah]
+  uint8_t* v28; // [esp+204h] [ebp+6Ah]
   unsigned int v29; // [esp+208h] [ebp+6Eh]
   int v30; // [esp+20Ch] [ebp+72h]
   char v31; // [esp+210h] [ebp+76h]
@@ -8032,7 +8035,7 @@ void sub_FE785(int16_t *a1)
 char sub_FE793(int a1)
 {
   int v2; // eax
-  unsigned int v3; // ecx
+  uint8_t* v3; // ecx
   int16_t v4; // bx
   int16_t v5; // si
   _BYTE v7[16]; // [esp+0h] [ebp-18h] BYREF
@@ -8910,7 +8913,7 @@ int sub_FF496(int a1)
 
 
 //----- (000FF4E9) --------------------------------------------------------
-char sub_FF4E9(int a1, int a2, int a3)
+char sub_FF4E9(uint8_t* a1, int a2, int a3)
 {
   int v4; // edx
   char v5; // ch
@@ -9972,11 +9975,11 @@ void sub_100519(int a1, int a2)
 //----- (00100618) --------------------------------------------------------
 void sub_100618(int a1, int a2)
 {
-  unsigned int v2; // ebx
+  uint8_t* v2; // ebx
   int v3; // ecx
   unsigned int v4; // edx
   int v5; // eax
-  unsigned int v6; // edx
+  uint8_t* v6; // edx
   char v7; // cl
   unsigned int v8; // eax
   int v9; // ecx

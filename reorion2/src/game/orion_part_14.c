@@ -779,7 +779,7 @@ char sub_D7078(int a1, int a2)
 {
   int v3; // eax
   int v4; // ecx
-  unsigned int v5; // ebx
+  uint8_t* v5; // ebx
   int v7; // [esp+0h] [ebp-10h]
   int v8; // [esp+Ch] [ebp-4h]
 
@@ -1392,7 +1392,7 @@ int16_t sub_D7B48(_WORD *a1, int a2, int a3)
 //----- (000D7C04) --------------------------------------------------------
 _DWORD *sub_D7C04( int a1, _DWORD *a2, _DWORD *a3)
 {
-  unsigned int v4; // ebx
+  uint8_t* v4; // ebx
   int16_t v5; // ax
   int16_t v6; // ax
   int v7; // esi
@@ -1602,7 +1602,7 @@ char sub_D7FF7(int a1, int16_t *a2, int a3, int a4)
   int16_t v13; // bx
   int v14; // eax
   int16_t v15; // ax
-  int v16; // ebx
+  uint8_t* v16; // ebx
   int16_t v17; // ax
   unsigned int v18; // edx
   int v19; // edx
@@ -1610,7 +1610,7 @@ char sub_D7FF7(int a1, int16_t *a2, int a3, int a4)
   _BOOL1 v21; // bl
   int16_t v22; // ax
   int v23; // ecx
-  unsigned int v24; // ebx
+  uint8_t* v24; // ebx
   int16_t v25; // ax
   int v26; // eax
   int16_t v27; // ax
@@ -1622,7 +1622,7 @@ char sub_D7FF7(int a1, int16_t *a2, int a3, int a4)
   char v33; // bl
   int16_t v34; // ax
   int v35; // edi
-  unsigned int v36; // ebx
+  uint8_t* v36; // ebx
   int16_t v37; // ax
   int v38; // eax
   int v39; // eax
@@ -2139,12 +2139,12 @@ char sub_D896F(int a1, int16_t *a2)
       if ( (char)v4[99] == word_1AA24C && sub_FF6BE((int)v4) )
       {
         v5 = (int16_t)v27++;
-        v21[v5] = (int)&v4[-dword_197F9C] / 129;
+        v21[v5] = (int)(v4 - dword_197F9C) / 129;
       }
       else if ( (char)v4[100] < 3 )
       {
         v3 -= 2;
-        *(_WORD *)v3 = (int)&v4[-dword_197F9C] / 129;
+        *(_WORD *)v3 = (int)(v4 - dword_197F9C) / 129;
       }
     }
   }
@@ -3355,7 +3355,7 @@ void sub_D9F85(int16_t *a1)
   int j; // edx
   int v17; // eax
   char v18; // ch
-  unsigned int v19; // ebx
+  uint8_t* v19; // ebx
   uint8_t v20; // al
   int v21; // edx
   _BYTE *v22; // ecx
@@ -3716,7 +3716,7 @@ void sub_DA485()
       if ( sub_FF6BE((int)v11) )
       {
         v1 = 129;
-        v7 = (int)&v11[-dword_197F9C] / 129;
+        v7 = (int)(v11 - dword_197F9C) / 129;
         v10 = (int16_t)v2++;
         v33[v10] = v7;
       }
@@ -3730,7 +3730,7 @@ void sub_DA485()
           v51 = 129;
           v7 = (int16_t)v10;
           v9 *= 5;
-          sub_D7D53((int)&v11[-dword_197F9C] / 129, v10);
+          sub_D7D53((int)(v11 - dword_197F9C) / 129, v10);
           v10 = (int16_t)v10;
           *(_DWORD *)&v34[v9 + 1] += (int16_t)v10;
         }
@@ -3912,7 +3912,7 @@ void sub_DA99C(int a1)
   int v1; // ebx
   int v2; // edx
   int v3; // eax
-  unsigned int v4; // esi
+  uint8_t* v4; // esi
   int v5; // ecx
   char *v6; // eax
   int v7; // eax
@@ -12509,7 +12509,7 @@ void sub_E45FF(int a1)
   int v6; // ebx
   int v7; // eax
   int v8; // esi
-  unsigned int v9; // esi
+  uint8_t* v9; // esi
   int16_t v10; // ax
   int v11; // esi
   int v12; // eax
@@ -13144,7 +13144,7 @@ void sub_E5097()
   int v4; // ebx
   int v5; // esi
   uint8_t v6; // cl
-  unsigned int v7; // esi
+  uint8_t* v7; // esi
   unsigned int v8; // edi
   int16_t v9; // ax
   int16_t v10; // [esp-8h] [ebp-24h]
@@ -13593,7 +13593,7 @@ void sub_E5832(int a1, int a2, int a3, int16_t *a4)
   int j; // eax
   int v10; // ebx
   int64_t v11; // rax
-  unsigned int v12; // ebx
+  uint8_t* v12; // ebx
   uint8_t v13; // al
   uint8_t v14; // al
   int v15; // ebx

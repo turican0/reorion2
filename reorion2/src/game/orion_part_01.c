@@ -59,7 +59,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   // bere prvni parametr jako POCET BAJTU k alokaci (viz jeho definice),
   // takze 0x64000 (400 KB) je smysluplna velikost jednorazove alokovaneho
   // pool bufferu, ne adresa k dereferenci.
-  dword_19916C = (int)PoolAlloc_110B89(0x64000);
+  dword_19916C = PoolAlloc_110B89(0x64000);
   PortDebug_Checkpoint("GameMain.pool64000.done", dword_19916C != 0);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
   if ( v4 )
@@ -858,7 +858,7 @@ _BYTE *sub_10CB5(int a1, int a2)
   signed int v2; // edx
   _DWORD *v3; // eax
   _DWORD *v4; // eax
-  _BYTE *result; // eax
+  PoolMemHeader* result; // eax
 
   // DECOMP_TODO (vyreseno ve vlne 10): puvodni vyrazy "(int)&unk_1B5030",
   // "(int)&loc_16085 + 5", "(int)&loc_3E7FB + 5" a "(int)&loc_40F0D + 3"
@@ -873,14 +873,14 @@ _BYTE *sub_10CB5(int a1, int a2)
   // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
   // (runtime EIP = IDA adresa + 0x224000).
   PortDebug_Checkpoint("sub_10CB5.enter", a1);
-  dword_192EF4 = (int)PoolAlloc_110B89(1790000);
-  dword_193178 = (int)PoolAlloc_110B89(30000);
-  dword_19A00C = (int)PoolAlloc_110B89(1000);
-  dword_1930D4 = (int)PoolAlloc_110B89(6120);
+  dword_192EF4 = PoolAlloc_110B89(1790000);
+  dword_193178 = PoolAlloc_110B89(30000);
+  dword_19A00C = PoolAlloc_110B89(1000);
+  dword_1930D4 = PoolAlloc_110B89(6120);
   sub_127776((_BYTE *)dword_1930D4, 0x17E8u);
-  dword_197F98 = (int)PoolAlloc_110B89(30024);
+  dword_197F98 = PoolAlloc_110B89(30024);
   sub_127776((_BYTE *)dword_197F98, 0x7548u);
-  dword_192B18 = (int)PoolAlloc_110B89(90250);
+  dword_192B18 = PoolAlloc_110B89(90250);
   v2 = sub_127776((_BYTE *)dword_192B18, 90250u);
   if ( sub_127880() )
   {
@@ -910,12 +910,12 @@ LABEL_6:
   dword_193174 = (int)sub_1279AF(v2, v2);
   dword_193170 = v2;
 LABEL_7:
-  dword_192EE8 = (int)PoolAllocFallback_110C62(10240);
-  dword_193068 = (int)PoolAllocFallback_110C62(20);
+  dword_192EE8 = PoolAllocFallback_110C62(10240);
+  dword_193068 = (uint8_t*)PoolAllocFallback_110C62(20);
   sub_127776((_BYTE *)dword_193068, 0x14u);
-  dword_19306C = (int)PoolAllocFallback_110C62(8136);
+  dword_19306C = (uint8_t*)PoolAllocFallback_110C62(8136);
   sub_127776((_BYTE *)dword_19306C, 0x1FC8u);
-  dword_197F9C = (int)PoolAllocFallback_110C62(64500);
+  dword_197F9C = (uint8_t*)PoolAllocFallback_110C62(64500);
   sub_127776((_BYTE *)dword_197F9C, 0xFBF4u);
   result = PoolAllocFallback_110C62(3953);
   dword_1930DC = (int)result;
@@ -923,7 +923,7 @@ LABEL_7:
   return result;
 }
 // 192B18: using guessed type int dword_192B18;
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 192EF0: using guessed type int dword_192EF0;
 // 192EF4: using guessed type int dword_192EF4;
 // 193068: using guessed type int dword_193068;
@@ -1936,7 +1936,7 @@ void sub_12268()
 char sub_122CC()
 {
   char result; // al
-  unsigned int v1; // ecx
+  uint8_t* v1; // ecx
   int16_t v2; // si
   int16_t v3; // di
   uint8_t *v4; // eax
@@ -2228,16 +2228,16 @@ void sub_12983(int16_t *a1)
   int16_t v45; // [esp+8h] [ebp-8h]
   int i; // [esp+Ch] [ebp-4h]
 
-  v1 = dword_192EE8;
+  v1 = (uint8_t*)dword_192EE8;
   LOWORD(v2) = 1;
-  dword_19B7DC[0] = (int)sub_126BDD((int)aRacestufLbx, 7, dword_192EE8, 0, 1u, 31);
+  dword_19B7DC[0] = (int)sub_126BDD((int)aRacestufLbx, 7, (uint8_t*)dword_192EE8, 0, 1u, 31);
   ServiceAudioTick_FE8BE(dword_19B7DC[0], 7, v1, a1);
   do
   {
     v3 = 7;
     v4 = (int16_t *)(int16_t)v2;
-    v5 = dword_192EE8;
-    v6 = sub_126C37((int)aRacestufLbx, 7, dword_192EE8, (int16_t)v2, 1u, 31);
+    v5 = (uint8_t*)dword_192EE8;
+    v6 = sub_126C37((int)aRacestufLbx, 7, (uint8_t*)dword_192EE8, (int16_t)v2, 1u, 31);
     LOWORD(v2) = v2 + 1;
     dword_19B7DC[(_DWORD)v4] = (int)v6;
     ServiceAudioTick_FE8BE((int)v6, 7, v5, v4);
@@ -2395,7 +2395,7 @@ void sub_12983(int16_t *a1)
 // 17FFEA: using guessed type int16_t word_17FFEA[];
 // 192630: using guessed type int dword_192630[];
 // 192ED4: using guessed type int dword_192ED4;
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 192FD8: using guessed type int dword_192FD8;
 // 197F98: using guessed type int dword_197F98;
 // 199998: using guessed type int16_t word_199998;

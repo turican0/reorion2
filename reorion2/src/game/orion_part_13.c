@@ -7525,7 +7525,7 @@ LABEL_68:
 
 
 //----- (000CFAE5) --------------------------------------------------------
-void sub_CFAE5(int a1)
+void sub_CFAE5(uint8_t* a1)
 {
   int v2; // edx
   int v3; // esi
@@ -8599,7 +8599,7 @@ void sub_D10EE( int a1, int16_t *a2)
   int v7; // eax
   int v8; // ebx
   int v9; // esi
-  int v10; // edi
+  uint8_t* v10; // edi
   int v11; // ecx
   bool v12; // eax
   int v13; // eax
@@ -9352,8 +9352,8 @@ LABEL_116:
                 v57 = v76;
                 if ( (int16_t)v76 != -1 )
                 {
-                  v10 = 129 * (int16_t)v76;
-                  *(_BYTE *)(v10 + dword_197F9C + 100) = 6;
+                  v10 = (uint8_t*)(intptr_t)(129 * (int16_t)v76);
+                  *(_BYTE *)((intptr_t)v10 + dword_197F9C + 100) = 6;
                   v177 = -(v76 + 100);
                   v77 = (int16_t)v149;
                   v78 = &v120[(int16_t)v149];
@@ -9363,7 +9363,7 @@ LABEL_116:
                   v62 = v48;
                   memmove(v78, v48, v166 - v77);
                   v57 = 12 * (int16_t)v119;
-                  v79 = v10 + dword_197F9C;
+                  v79 = (int)((intptr_t)v10 + dword_197F9C);
 LABEL_206:
                   sub_CFAE5(v79);
                   *(int *)((char *)dword_1A745C + v57) -= v80;
@@ -10818,7 +10818,7 @@ void sub_D3BA0()
 void sub_D3D34(int a1, int a2)
 {
   int v2; // eax
-  int v3; // ebx
+  uint8_t* v3; // ebx
   int v4; // edx
   int v5; // eax
   int v6; // eax
@@ -10903,7 +10903,7 @@ void sub_D3D34(int a1, int a2)
   int v85; // eax
   int v86; // edx
   int v87; // eax
-  unsigned int v88; // ebx
+  uint8_t* v88; // ebx
   int v89; // eax
   int v90; // ecx
   _DWORD *v91; // eax

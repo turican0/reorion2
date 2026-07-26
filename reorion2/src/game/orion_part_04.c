@@ -9255,7 +9255,7 @@ void sub_5D41E()
   char v15; // [esp+Ch] [ebp-4h]
 
   v0 = 0;
-  v13 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 500);
+  v13 = (_DWORD*)sub_110CEE(dword_192EE8, 500);
   while ( v0 < word_199994 )
   {
     v1 = (char *)v13 + v0++;
@@ -9314,7 +9314,7 @@ void sub_5D41E()
 }
 // 5D52B: variable 'v14' is possibly undefined
 // 192248: using guessed type int16_t word_192248[500];
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 1975D4: using guessed type int16_t word_1975D4;
 // 1975D6: using guessed type int16_t word_1975D6;
 // 197F98: using guessed type int dword_197F98;
@@ -13461,9 +13461,9 @@ void sub_628E2(int16_t *a1)
   v21 = 0;
   word_19B880 = 0;
   v24 = v2;
-  sub_1112EC(dword_192EE8, 3753);
+  sub_1112EC((uint8_t*)dword_192EE8, 3753);
   v3 = 0;
-  LODWORD(v4) = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 3753);
+  LODWORD(v4) = (_DWORD*)sub_110D3C(dword_192EE8, 3753);
   v17 = (_BYTE *)v4;
   HIDWORD(v4) = sub_127776((_BYTE *)v4, 0xEA9u);
   while ( 1 )
@@ -13471,7 +13471,7 @@ void sub_628E2(int16_t *a1)
     if ( (_WORD)v3 )
     {
       sub_11C2F0();
-      sub_1113CC(dword_192EE8, SHIDWORD(v4));
+      sub_1113CC((uint8_t*)dword_192EE8, SHIDWORD(v4));
       sub_119281();
       if ( (_WORD)v3 == 2 )
       {
@@ -13567,7 +13567,7 @@ LABEL_17:
 // 62ABB: variable 'v9' is possibly undefined
 // 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 197F98: using guessed type int dword_197F98;
 // 19999C: using guessed type int16_t word_19999C;
 // 1999AA: using guessed type int16_t word_1999AA;

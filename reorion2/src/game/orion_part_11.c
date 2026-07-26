@@ -376,7 +376,7 @@ int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4)
 
 
 //----- (000B0CF6) --------------------------------------------------------
-char sub_B0CF6(int a1, int a2, int a3)
+char sub_B0CF6(uint8_t* a1, int a2, int a3)
 {
   char *v4; // eax
   int64_t v5; // rax

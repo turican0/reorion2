@@ -845,10 +845,10 @@ int sub_A0305()
   char v33; // [esp+38h] [ebp-4h]
 
   sub_5D41E();
-  sub_11127C(dword_192EE8);
-  v24 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 360);
-  v0 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 288);
-  sub_1112B4(dword_192EE8);
+  sub_11127C((uint8_t*)dword_192EE8);
+  v24 = (_DWORD*)sub_110D3C(dword_192EE8, 360);
+  v0 = (_DWORD*)sub_110D3C(dword_192EE8, 288);
+  sub_1112B4((uint8_t*)dword_192EE8);
   memset(v0, 2, 288);
   v33 = 0;
   memset(&word_1906C0, -1, 6864);
@@ -999,7 +999,7 @@ LABEL_43:
 // 1906C4: using guessed type int16_t word_1906C4[];
 // 1906C6: using guessed type int16_t word_1906C6[];
 // 192248: using guessed type int16_t word_192248[500];
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 19306C: using guessed type int dword_19306C;
 // 1975D4: using guessed type int16_t word_1975D4;
 // 197F9C: using guessed type int dword_197F9C;

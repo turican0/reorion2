@@ -2366,7 +2366,7 @@ int sub_120526(int a1)
   else
   {
     v3 = sub_126ABD(a1, 0);
-    dword_1B3E78 = (int)PoolAlloc_110B89(12644);
+    dword_1B3E78 = PoolAlloc_110B89(12644);
   }
   dword_184514 = (int)v3;
   sub_12779E(byte_1BA318, v3, 0x40u);
@@ -5090,12 +5090,12 @@ int sub_12537D(int a1, int a2)
   unsigned int v2; // edx
   int result; // eax
 
-  dword_1BB90C = (int)PoolAlloc_110B89(a1 + 46);
-  dword_1BB8FC = (int)PoolAlloc_110B89(a1 + 46);
+  dword_1BB90C = PoolAlloc_110B89(a1 + 46);
+  dword_1BB8FC = PoolAlloc_110B89(a1 + 46);
   sub_127678((char *)dword_1BB90C, dword_18453C, 0);
   v2 = sub_127678((char *)dword_1BB8FC, dword_18453C, 0);
-  dword_1BB908 = (int)PoolAlloc_110B89(4 * a2);
-  dword_1BB8C0 = (int)PoolAlloc_110B89(4 * a2);
+  dword_1BB908 = PoolAlloc_110B89(4 * a2);
+  dword_1BB8C0 = PoolAlloc_110B89(4 * a2);
   sub_127678((char *)dword_1BB908, 4 * a2, 0);
   result = dword_1BB8C0;
   sub_127678((char *)dword_1BB8C0, 4 * a2, 0);

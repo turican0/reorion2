@@ -4718,7 +4718,7 @@ void sub_987FB(int a1, int a2, int a3)
 
 
 //----- (00098C23) --------------------------------------------------------
-int sub_98C23(int a1, int a2, int a3)
+int sub_98C23(int a1, int a2, uint8_t* a3)
 {
   char v4; // al
 
@@ -4731,7 +4731,7 @@ int sub_98C23(int a1, int a2, int a3)
 
 
 //----- (00098C87) --------------------------------------------------------
-char sub_98C87(int a1, int a2, int a3)
+char sub_98C87(int a1, int a2, uint8_t* a3)
 {
   char v4; // al
 
@@ -4744,7 +4744,7 @@ char sub_98C87(int a1, int a2, int a3)
 
 
 //----- (00098CEB) --------------------------------------------------------
-char sub_98CEB(int a1, int a2, int a3, int a4)
+char sub_98CEB(int a1, int a2, uint8_t* a3, int a4)
 {
   int v5; // edx
   int v6; // eax
@@ -4787,7 +4787,7 @@ char sub_98CEB(int a1, int a2, int a3, int a4)
 
 
 //----- (00098DAD) --------------------------------------------------------
-int sub_98DAD(int a1, int a2, int a3, int a4)
+int sub_98DAD(int a1, int a2, uint8_t* a3, int a4)
 {
   int v5; // eax
   int v6; // edx
@@ -8896,14 +8896,14 @@ int sub_9DB51( int a1)
 {
   uint16_t v2; // dx
 
-  sub_1112EC(dword_192EE8, 293);
-  dword_19C7C0 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 293);
+  sub_1112EC((uint8_t*)dword_192EE8, 293);
+  dword_19C7C0 = (int)(_DWORD*)sub_110CEE(dword_192EE8, 293);
   sub_9D977(a1);
   v2 = *(_WORD *)(dword_19C7C0 + 174);
-  sub_1113CC(dword_192EE8, v2);
+  sub_1113CC((uint8_t*)dword_192EE8, v2);
   return v2;
 }
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 19C7C0: using guessed type int dword_19C7C0;
 
 

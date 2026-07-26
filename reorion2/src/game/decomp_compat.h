@@ -244,10 +244,16 @@ typedef char _UNKNOWN;
    proslo beze zmeny. GCC/Clang je neznaji, proto tu pro ne (a jen pro ne -
    pod MSVC uz tyto typy existuji nativne) pridavame ekvivalentni typedef,
    aby slo sanity-checkovat preklad i mimo Visual Studio. */
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__int8)
 typedef int8_t   __int8;
+#endif
+#if !defined(_MSC_VER) && !defined(__int16)
 typedef int16_t  __int16;
+#endif
+#if !defined(_MSC_VER) && !defined(__int32)
 typedef int32_t  __int32;
+#endif
+#if !defined(_MSC_VER) && !defined(__int64)
 typedef int64_t  __int64;
 #endif
 

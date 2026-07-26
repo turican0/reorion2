@@ -2143,7 +2143,7 @@ void sub_7C107( int a1, int a2, int a3)
   char v31; // [esp+24h] [ebp-4h]
 
   v3 = 0;
-  dword_19BFE4 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 288);
+  dword_19BFE4 = (int)(_DWORD*)sub_110CEE(dword_192EE8, 288);
   while ( v3 < word_19999A )
   {
     v4 = dword_19BFE4;
@@ -2256,7 +2256,7 @@ void sub_7C107( int a1, int a2, int a3)
 // 7C17E: variable 'v8' is possibly undefined
 // 7C2CB: variable 'v18' is possibly undefined
 // 7C38F: variable 'v24' is possibly undefined
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int dword_1930D4;
 // 199998: using guessed type int16_t word_199998;
@@ -2758,7 +2758,7 @@ LABEL_3:
 
 
 //----- (0007CB7C) --------------------------------------------------------
-char sub_7CB7C(int a1, int a2)
+char sub_7CB7C(uint8_t* a1, int a2)
 {
   _BOOL1 v3; // ch
   int v4; // edi
@@ -6794,14 +6794,14 @@ void sub_816F2(int a1, int a2, int a3, int16_t *a4)
   sub_8156B(210, v5, a4);
   ServiceAudioTick_FE8BE(v6, 210, v5, a4);
   byte_199F3A = 0;
-  dword_19C090 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_192EE8, 210);
-  dword_19C084 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 40);
+  dword_19C090 = (int)(_DWORD*)sub_110CEE(dword_192EE8, 210);
+  dword_19C084 = (int)(_DWORD*)sub_110D3C(dword_192EE8, 40);
   ServiceAudioTick_FE8BE(dword_19C084, -1, 210, a4);
   memset(dword_19C090, -1, 210);
-  dword_19C038 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 632);
-  dword_19268C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 1000);
+  dword_19C038 = (int)(_DWORD*)sub_110D3C(dword_192EE8, 632);
+  dword_19268C = (int)(_DWORD*)sub_110D3C(dword_192EE8, 1000);
   v7 = -1;
-  dword_192688 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192EE8, 1000);
+  dword_192688 = (int)(_DWORD*)sub_110D3C(dword_192EE8, 1000);
   ServiceAudioTick_FE8BE(dword_192688, 1000, 210, a4);
   if ( byte_19A005 )
   {
@@ -6954,7 +6954,7 @@ LABEL_51:
 // 192688: using guessed type int dword_192688;
 // 19268C: using guessed type int dword_19268C;
 // 192ED4: using guessed type int dword_192ED4;
-// 192EE8: using guessed type int dword_192EE8;
+// 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 19994C: using guessed type int16_t word_19994C;
 // 1999BC: using guessed type int16_t word_1999BC;
 // 199A08: using guessed type int16_t word_199A08;
