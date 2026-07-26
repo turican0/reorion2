@@ -2234,8 +2234,30 @@ asm (`Debug/diss/Orion2.exe.asm`, offsety +0x68 a +0x8A v
 kod. Explicitni DAC-rampa (`sub_C5BB9`/`sub_C5C44`, `sub_132C80`) se
 pro simtex.lbx volani (`sub_14DF7(aSimtexLbx,0,0)`, potvrzeno i v asm
 `xor edx,edx`) **umyslne nevola** (a3=0) - shodne s originalem, NENI
-to port bug. Fade pro tuto konkretni animaci tedy musi prijit z
-paletovych chunku zakodovanych primo ve SMK souboru, aplikovanych pres
-jiz overenou pipeline - ale **nelze to jeste vizualne overit**, dokud
-video nedobehne aspon k prvnimu vykreslenemu snimku (blokovano task
-#17).
+to port bug.
+
+**SKUTECNY ROOT CAUSE (nalezeno diky uzivatelove napovede "problem je
+v sub_124ECB nebo pred ni"):** `dword_18A5AC` - casovaci/hodinova
+funkce (Miles Sound System `AIL_ms_count()` ekvivalent), instalovana
+`sub_149890`/`sub_149A20` (volano JESTE PRED prvnim snimkem, tedy
+"pred sub_124ECB") a pouzivana po celem SMK readeru
+(`orion_part_22.c`) pro realne casovani prehravani - jak formou
+proste "precti aktualni tick" dotazu, tak formou busy-wait throttlu
+(`do v=dword_18A5AC(v); while(v<target);`). Obe kandidatni
+implementace (`sub_149B10`, `sub_149B30`, `link_stubs.c`) byly
+`return 0;` pahyly - VZDY zastavene hodiny. Zadne casovani/throttling
+se tak nikdy neuplatnilo a cele cinematicke intro (vcetne stmivani
+zakodovaneho v palete pres desitky snimku v REALNEM CASE) se
+dekodovalo a vykreslovalo tak rychle, jak stihne CPU - tedy prakticky
+okamzite, misto za svou autorskou delku. Fix: `sub_149B10`/`sub_149B30`
+nyni vraceji `SDL_GetTicks()` (skutecny monotonni ms citac); argument
+se stejne jako u realneho `AIL_ms_count()` ignoruje.
+
+Po fixu (a po fixu x64 sirky ukazatele vyse) video PRVNE uspesne
+zavola `sub_132A11` (paleta aplikovana, checkpoint
+`sub_132869.paletteApplied=1` potvrzen) a postoupi az do skutecneho
+per-snimkoveho pixel/blok decoderu, kde spadne v `sub_14AA40` (volano
+z `sub_132869`) - `av_write` na (tentokrat vyhlizejici jako realnou,
+ne zjevne divokou) haldovou adresu. To uz je JINY, samostatny bug v
+samotnem obrazovem dekodovani (ne v casovani/palete) - dalsi krok pro
+pristi session.

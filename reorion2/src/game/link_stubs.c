@@ -4,6 +4,7 @@
  */
 #include <stddef.h> /* size_t - potreba pro PortMemory_* deklarace nize (vlna 06) */
 #include <string.h> /* memcpy - realny qmemcpy, wave 20 */
+#include <SDL3/SDL.h> /* SDL_GetTicks - realny AIL_ms_count nahrada, viz sub_149B10/149B30 nize (vlna 25) */
 
 int __CS__;
 int __DS__;
@@ -318,8 +319,22 @@ int sub_13FBB5(void) { return 0; }
 int sub_13FD4B(void) { return 0; }
 int sub_149950(void) { return 0; }
 int sub_1499C0(void) { return 0; }
-int sub_149B10(void) { return 0; }
-int sub_149B30(void) { return 0; }
+// PORT (wave 25): dword_18A5AC ("int (*)(_DWORD)") is the Miles Sound System
+// AIL_ms_count()-equivalent timer-tick query, installed by sub_149890/
+// sub_149A20 and used throughout the Smacker reader (orion_part_22.c) for
+// real-time pacing - both as a plain "read current tick" query and as a
+// busy-wait throttle (`do v = dword_18A5AC(v); while (v < target);`). Both
+// candidate implementations were `return 0;` stubs, meaning every timing/
+// pacing calculation derived from them saw a permanently-stopped clock: no
+// per-frame throttling ever engaged, so the whole cinematic (including any
+// palette-encoded fade-in/out, which only reads as a fade when spread across
+// real elapsed time) decoded and presented as fast as the CPU allowed, i.e.
+// all in an eyeblink instead of over its authored duration. The single int
+// argument is ignored by the real AIL_ms_count() too (Miles callers just
+// re-feed the previous return value into the throttle loop above) - a real
+// monotonic millisecond clock is all that is needed here.
+int sub_149B10(int a1) { (void)a1; return (int)SDL_GetTicks(); }
+int sub_149B30(int a1) { (void)a1; return (int)SDL_GetTicks(); }
 int sub_149BB0(void) { return 0; }
 int sub_149C40(void) { return 0; }
 int sub_15C7F0(void) { return 0; }
