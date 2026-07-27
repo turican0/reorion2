@@ -2731,3 +2731,51 @@ Docasne diagnosticke checkpointy (`164600.entry.*`, `1646A0.cursor.*`,
 `164600.big.cursor_*`, `167320.branchA.*`, `167320.a3*`,
 `167320.dword_18A69C`) PONECHANY v kodu pro pokracovani v pristi
 session.
+
+## Vlna 25n (2026-07-27): DALSI cast stejne tridy bugu - bitovy akumulator take musel byt globalni
+
+Pokracovani vlny 25m. Po fixu kurzoru (`a5`) `sub_1646A0` porad volalo
+`sub_164600` s vysledkem vetev `1,0,0,0` (mel byt `1,1,1,1`) - potvrzeno
+novym dosbox-nezavislym testem primo v portu (checkpointy
+`1646A0.cursor.before2/3/4` se vubec nehnuly, `164600.entry.v5_branch`
+bylo 0 pro volani 2-4).
+
+**Root cause: DRUHA cast stejneho bit-readeru (aktualne nactene,
+castecne spotrebovane slovo - "akumulator") byla take jen mistni
+promenna/hodnotovy parametr, ne perzistentni registr.** `byte_18A6C0`
+(pocet zbyvajicich bitu v akumulatoru) uz byl globalni a fungoval
+spravne, ale samotna HODNOTA akumulatoru (`a1` v `sub_164200`, `a3` v
+`sub_1642A0`/`sub_164600`) se pri kazdem volani/navratu funkce ztratila
+- presne stejna trida bugu jako kurzor ve vlne 25m, jen druha polovina
+te same dvojice registru.
+
+**Fix:** novy globalni `unsigned int g_smkBitAccum` (orion_data.c,
+extern v orion_common.h, vedle `byte_18A6C0`). Odstraneny parametry
+nesouci akumulator ze signatur `sub_164200` (byl `a1`), `sub_1642A0`
+(byl `a3`), `sub_164600` (byl `a3`) - vsechny ted primo ctou/zapisuji
+`g_smkBitAccum`. `sub_1642A0` navic na konci publikuje sve zbyvajici
+stav (`g_smkBitAccum = v43;`) pro navazujici volani. Opraveno i 9
+volacich mist `sub_164200` v `sub_1676F0` (orion_part_26.c, per-snimkovy
+dekoder) na stejny vzor (seed pred volanim, cist g_smkBitAccum po
+volani misto zastaraleho mistniho kopie) - overeno jen mechanicky
+(kompiluje, odpovida vzoru), NE jeste bit-presne proti dosboxu (tahle
+cesta jeste neni v behu dosazena).
+
+**Overeno primo v portu:** po fixu vsechny 4 volani `sub_164600` z
+`sub_1646A0` ted berou vetev `1,1,1,1` (`164600.entry.v5_branch`=1
+4x) a kurzor postupuje monotonne - PRESNE jako original. Tabulky
+`block18A610[]`/`dword_18A60C` uz nejsou `0xCDCDCDCD` (neinicializovana
+pamet), ale realna postavena data.
+
+**NOVY, JINY bug odhalen az timhle fixem (drive skryty pod garbage
+daty):** `sub_167320` porad pada na `dword_18A69C(v15)`, ale ted uz s
+JINYM (realnym, ne nahodnym) parametrem. Kolem radku 1141 je
+`/* __asm: jmp dword_18A650[ecx*4] */ DECOMP_TODO("inline asm");` -
+Hex-Rays neprelozil vypocitany skok (jump table dispatch do jedne ze 4
+funkci `sub_164A40`/`sub_164DA0`/`sub_167040`/`sub_1655B0`, nebo jejich
+`loc_*` alternativ pri `dword_18A6AC==1`). V C kodu se misto skoku proste
+PROPADNE do nasledujiciho kodu (`dword_18A69C = *(a3+4); ... volani
+dword_18A69C(v15);`), coz je STRUKTURALNE SPATNE - original by mel
+skocit jinam a nikdy se sem takhle propadnout. **Toto je novy, vetsi
+ukol pro pristi session: rekonstruovat jump-table dispatch na radku
+~1141 (sub_167320), ne dalsi drobny pointer-bug.**

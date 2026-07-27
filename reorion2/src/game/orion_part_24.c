@@ -5653,7 +5653,10 @@ double sub_163EAA( int a1, double *a2, double result)
 // to `unsigned int **a3` (pointer to the CALLER's cursor variable) so this
 // function's own advancement of the bitstream position is visible to,
 // and threaded through, every other call in the chain.
-void sub_164200(unsigned int a1, unsigned int *a2, unsigned int **a3)
+// PORT (wave 25n): dropped the `a1` accumulator parameter - it's now the
+// persistent `g_smkBitAccum` global (see orion_data.c), matching the way the
+// original register survives across calls instead of resetting per-call.
+void sub_164200(unsigned int *a2, unsigned int **a3)
 {
   // PORT (wave 24e): asm sets `mov eax, 80000000h` ONCE before the loop
   // (Debug/diss/Orion2.exe.asm sub_164200+0) and every leaf write thereafter
@@ -5680,11 +5683,11 @@ void sub_164200(unsigned int a1, unsigned int *a2, unsigned int **a3)
   {
     if ( !--byte_18A6C0 )
     {
-      a1 = *(*a3)++;
+      g_smkBitAccum = *(*a3)++;
       byte_18A6C0 = 32;
     }
-    char carryClear = (a1 & 1) == 0;
-    a1 >>= 1;
+    char carryClear = (g_smkBitAccum & 1) == 0;
+    g_smkBitAccum >>= 1;
     if ( !carryClear )
     {
       // bit was 1: internal node - reserve a slot in a2[] to backpatch later
@@ -5706,17 +5709,17 @@ void sub_164200(unsigned int a1, unsigned int *a2, unsigned int **a3)
       {
         v6 = byte_18A6C0;
         byte_18A6C0 += 24;
-        v7 = a1;
+        v7 = g_smkBitAccum;
         --v6;
         v8 = **a3;
         LOBYTE(v3) = (*(*a3)++ << v6) | v7;
-        a1 = v8 >> ~(v6 - 9);
+        g_smkBitAccum = v8 >> ~(v6 - 9);
       }
       else
       {
-        char v5 = a1;
+        char v5 = g_smkBitAccum;
         byte_18A6C0 -= 8;
-        a1 >>= 8;
+        g_smkBitAccum >>= 8;
         LOBYTE(v3) = v5;
       }
       marker = markerStack[--sp];

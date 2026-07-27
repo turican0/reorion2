@@ -1373,31 +1373,44 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v67 = v45 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v67, (unsigned int *)dword_18AC24, &v7);
+        // PORT (wave 25n): sub_164200 now consumes/reloads the persistent
+        // g_smkBitAccum global internally - seed it with the locally-tracked
+        // carry value before each call and read it back afterward instead of
+        // trusting the pre-call local (which the call may have invalidated).
+        g_smkBitAccum = v67;
+        sub_164200((unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
-          v67 = *v7++;
+          g_smkBitAccum = *v7++;
           byte_18A6C0 = 32;
         }
-        v68 = v67 >> 1;
+        v68 = g_smkBitAccum >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v68, (unsigned int *)(dword_18AC24 + 2048), &v7);
+        g_smkBitAccum = v68;
+        sub_164200((unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( !--byte_18A6C0 )
         {
-          v68 = *v7++;
+          g_smkBitAccum = *v7++;
           byte_18A6C0 = 32;
         }
-        v69 = v68 >> 1;
+        v69 = g_smkBitAccum >> 1;
         dword_18A694 = dword_18AC24 + 4096;
-        sub_164200(v69, (unsigned int *)(dword_18AC24 + 4096), &v7);
+        g_smkBitAccum = v69;
+        sub_164200((unsigned int *)(dword_18AC24 + 4096), &v7);
         if ( !--byte_18A6C0 )
         {
-          v69 = *v7++;
+          g_smkBitAccum = *v7++;
           byte_18A6C0 = 32;
         }
-        v70 = v69 >> 1;
+        v70 = g_smkBitAccum >> 1;
         dword_18A698 = dword_18AC24 + 6144;
-        sub_164200(v70, (unsigned int *)(dword_18AC24 + 6144), &v7);
+        g_smkBitAccum = v70;
+        sub_164200((unsigned int *)(dword_18AC24 + 6144), &v7);
+        // PORT (wave 25n): the code below consumes further bits directly out
+        // of the accumulator via the `(uint8_t)byte_18A6C0 < 9u` idiom
+        // (no separate reload-check step) - it must read the persistent
+        // g_smkBitAccum (as left behind by the 4th sub_164200 call above),
+        // not the stale pre-call local `v70`.
         if ( dword_18AC20 )
         {
           v72 = (_DWORD *)dword_18AC30;
@@ -1409,7 +1422,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           {
             v77 = byte_18A6C0;
             byte_18A6C0 += 24;
-            v78 = v70;
+            v78 = g_smkBitAccum;
             --v77;
             v79 = *v7;
             v76 = (*v7++ << v77) | v78;
@@ -1417,9 +1430,9 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           }
           else
           {
-            v74 = v70;
+            v74 = g_smkBitAccum;
             byte_18A6C0 -= 8;
-            v75 = v70 >> 8;
+            v75 = g_smkBitAccum >> 8;
             v76 = v74;
           }
           BYTE1(v71) = v76;
@@ -1560,15 +1573,19 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v46 = v45 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v46, (unsigned int *)dword_18AC24, &v7);
+        // PORT (wave 25n): see the matching block above - sub_164200 reads
+        // and reloads the persistent g_smkBitAccum global itself now.
+        g_smkBitAccum = v46;
+        sub_164200((unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
-          v46 = *v7++;
+          g_smkBitAccum = *v7++;
           byte_18A6C0 = 32;
         }
-        v47 = v46 >> 1;
+        v47 = g_smkBitAccum >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v47, (unsigned int *)(dword_18AC24 + 2048), &v7);
+        g_smkBitAccum = v47;
+        sub_164200((unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( dword_18AC20 )
         {
           v48 = (_WORD *)dword_18AC30;
@@ -1580,7 +1597,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           {
             v53 = byte_18A6C0;
             byte_18A6C0 += 24;
-            v54 = v47;
+            v54 = g_smkBitAccum;
             --v53;
             v55 = *v7;
             v52 = (*v7++ << v53) | v54;
@@ -1588,9 +1605,9 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           }
           else
           {
-            v50 = v47;
+            v50 = g_smkBitAccum;
             byte_18A6C0 -= 8;
-            v51 = v47 >> 8;
+            v51 = g_smkBitAccum >> 8;
             v52 = v50;
           }
           HIBYTE(v56) = v52;
@@ -1669,15 +1686,19 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v24 = v11 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v24, (unsigned int *)dword_18AC24, &v7);
+        // PORT (wave 25n): see the matching block above - sub_164200 reads
+        // and reloads the persistent g_smkBitAccum global itself now.
+        g_smkBitAccum = v24;
+        sub_164200((unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
-          v24 = *v7++;
+          g_smkBitAccum = *v7++;
           byte_18A6C0 = 32;
         }
-        v25 = v24 >> 1;
+        v25 = g_smkBitAccum >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v25, (unsigned int *)(dword_18AC24 + 2048), &v7);
+        g_smkBitAccum = v25;
+        sub_164200((unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( dword_18AC20 )
         {
           v26 = (_WORD *)dword_18AC30;
@@ -1689,7 +1710,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           {
             v31 = byte_18A6C0;
             byte_18A6C0 += 24;
-            v32 = v25;
+            v32 = g_smkBitAccum;
             --v31;
             v33 = *v7;
             v30 = (*v7++ << v31) | v32;
@@ -1697,9 +1718,9 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           }
           else
           {
-            v28 = v25;
+            v28 = g_smkBitAccum;
             byte_18A6C0 -= 8;
-            v29 = v25 >> 8;
+            v29 = g_smkBitAccum >> 8;
             v30 = v28;
           }
           HIBYTE(v34) = v30;
@@ -1770,7 +1791,10 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v12 = v11 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v12, (unsigned int *)dword_18AC24, &v7);
+        // PORT (wave 25n): see the matching block above - sub_164200 reads
+        // and reloads the persistent g_smkBitAccum global itself now.
+        g_smkBitAccum = v12;
+        sub_164200((unsigned int *)dword_18AC24, &v7);
         if ( dword_18AC20 )
         {
           v13 = (_BYTE *)dword_18AC30;
@@ -1782,7 +1806,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           {
             v18 = byte_18A6C0;
             byte_18A6C0 += 24;
-            v19 = v12;
+            v19 = g_smkBitAccum;
             --v18;
             v20 = *v7;
             v17 = (*v7++ << v18) | v19;
@@ -1790,9 +1814,9 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
           }
           else
           {
-            v15 = v12;
+            v15 = g_smkBitAccum;
             byte_18A6C0 -= 8;
-            v16 = v12 >> 8;
+            v16 = g_smkBitAccum >> 8;
             v17 = v15;
           }
           for ( i2 = v17; ; i2 += i3 )

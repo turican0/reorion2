@@ -8,10 +8,14 @@
 // in sub_1646A0 (asm passes this via a persistent ESI register that
 // survives across all 4 sub_164600 calls; the decompiler mis-modeled it as
 // `(unsigned int*)(a1+4096)` re-derived identically on every call).
+// PORT (wave 25n): dropped the `a3` accumulator parameter - it's now the
+// persistent `g_smkBitAccum` global (see orion_data.c), matching sub_164200.
+// The leftover accumulator state at function exit is published back to
+// g_smkBitAccum so the next sub_164600 call in sub_1646A0's sequence picks
+// up exactly where this call left off.
 char sub_1642A0(
         int a1,
         _DWORD *a2,
-        unsigned int a3,
         int *a4,
         unsigned int **a5)
 {
@@ -72,7 +76,7 @@ char sub_1642A0(
   {
     v8 = byte_18A6C0;
     byte_18A6C0 += 24;
-    v9 = a3;
+    v9 = g_smkBitAccum;
     --v8;
     v10 = **a5;
     v7 = (*(*a5)++ << v8) | v9;
@@ -80,9 +84,9 @@ char sub_1642A0(
   }
   else
   {
-    v5 = a3;
+    v5 = g_smkBitAccum;
     byte_18A6C0 -= 8;
-    v6 = a3 >> 8;
+    v6 = g_smkBitAccum >> 8;
     v7 = v5;
   }
   v11 = v7;
@@ -185,6 +189,7 @@ char sub_1642A0(
   BYTE1(a1) = v44;
   LOBYTE(a1) = v48;
   word_18A7E4 = a1;
+  PortDebug_CheckpointPtr("1642A0.after_preamble.cursor", (void*)*a5);
   // PORT (wave 24d): the same "build tree via explicit push/pop stack" bug
   // class as sub_164200 (wave 24c), but worse-mangled here since it's inline
   // in a much larger function rather than its own helper: Hex-Rays collapsed
@@ -300,6 +305,9 @@ char sub_1642A0(
     outStruct[2] = (int)++a4;
   if ( !outStruct[3] )
     outStruct[3] = (int)(a4 + 1);
+  // PORT (wave 25n): publish the leftover bit-accumulator state so the next
+  // sub_164600 call in sub_1646A0's sequence continues from here.
+  g_smkBitAccum = v43;
   return a1;
 }
 // 18A68C: using guessed type int dword_18A68C;
@@ -360,15 +368,16 @@ int sub_164590(int a1, int a2)
 //----- (00164600) --------------------------------------------------------
 // PORT (wave 25m): `a5` threaded through as a pointer-to-cursor - see the
 // matching fix in sub_1646A0 and sub_1642A0/sub_164200.
+// PORT (wave 25n): dropped the `a3` accumulator parameter for the same
+// reason - it's now the persistent `g_smkBitAccum` global, read/reloaded
+// in place instead of being reset to a fresh (wrong) value on calls 2-4.
 int sub_164600(
         int result,
         _DWORD *a2,
-        unsigned int a3,
         int a4,
         unsigned int **a5)
 {
   char v5; // cf
-  unsigned int v6; // ebp
   unsigned int v7; // ebp
   unsigned int v8; // ebp
   int *v9; // [esp-10h] [ebp-10h]
@@ -376,11 +385,11 @@ int sub_164600(
 
   if ( !--byte_18A6C0 )
   {
-    a3 = *(*a5)++;
+    g_smkBitAccum = *(*a5)++;
     byte_18A6C0 = 32;
   }
-  v5 = a3 & 1;
-  v6 = a3 >> 1;
+  v5 = g_smkBitAccum & 1;
+  g_smkBitAccum >>= 1;
   PortDebug_CheckpointPtr("164600.entry.a2", (void*)a2);
   PortDebug_Checkpoint("164600.entry.v5_branch", v5);
   if ( v5 )
@@ -389,27 +398,29 @@ int sub_164600(
     v9 = (int *)result;
     if ( !--byte_18A6C0 )
     {
-      v6 = *(*a5)++;
+      g_smkBitAccum = *(*a5)++;
       byte_18A6C0 = 32;
     }
-    v5 = v6 & 1;
-    v7 = v6 >> 1;
+    v5 = g_smkBitAccum & 1;
+    v7 = g_smkBitAccum >> 1;
+    g_smkBitAccum = v7;
     PortDebug_CheckpointPtr("164600.big.cursor_before1st164200", (void*)*a5);
     if ( v5 )
-      sub_164200(v7, (unsigned int *)dword_18A68C, a5);
+      sub_164200((unsigned int *)dword_18A68C, a5);
     PortDebug_CheckpointPtr("164600.big.cursor_after1st164200", (void*)*a5);
     if ( !--byte_18A6C0 )
     {
-      v7 = *(*a5)++;
+      g_smkBitAccum = *(*a5)++;
       byte_18A6C0 = 32;
     }
-    v5 = v7 & 1;
-    v8 = v7 >> 1;
+    v5 = g_smkBitAccum & 1;
+    v8 = g_smkBitAccum >> 1;
+    g_smkBitAccum = v8;
     PortDebug_CheckpointPtr("164600.big.cursor_before2nd164200", (void*)*a5);
     if ( v5 )
-      sub_164200(v8, (unsigned int *)dword_18A690, a5);
+      sub_164200((unsigned int *)dword_18A690, a5);
     PortDebug_CheckpointPtr("164600.big.cursor_after2nd164200", (void*)*a5);
-    sub_1642A0(result, a2, v8, v9, a5);
+    sub_1642A0(result, a2, v9, a5);
     PortDebug_CheckpointPtr("164600.big.cursor_after1642A0", (void*)*a5);
     return sub_164590(v10, a4);
   }
@@ -471,19 +482,24 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   // branch, never the "reuse" shortcut our reset caused calls 2-4 to take).
   // Fixed with one local cursor variable, threaded through &bitstreamCursor.
   unsigned int *bitstreamCursor = (unsigned int *)(a1 + 4096);
+  // PORT (wave 25n): the accumulator ("current partially-consumed word") is
+  // also a persistent register in the original, not a fresh value per call -
+  // see g_smkBitAccum in orion_data.c. sub_164600's dropped `a3` parameter
+  // (always literal 0 here) is gone; g_smkBitAccum starts at 0 too, but its
+  // initial value never matters because byte_18A6C0==1 forces an immediate
+  // reload on the very first bit read regardless.
   PortDebug_CheckpointPtr("1646A0.cursor.before1", (void*)bitstreamCursor);
-  sub_164600(a2 + 29800, &block18A610[0], 0, a2 + 16, &bitstreamCursor);
+  sub_164600(a2 + 29800, &block18A610[0], a2 + 16, &bitstreamCursor);
   PortDebug_CheckpointPtr("1646A0.cursor.before2", (void*)bitstreamCursor);
   dword_18A6B0 = 10;
   dword_18A6B4 = 1024;
-  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &block18A610[4], 0, dword_18AC04 + 8208, &bitstreamCursor);
+  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &block18A610[4], dword_18AC04 + 8208, &bitstreamCursor);
   PortDebug_CheckpointPtr("1646A0.cursor.before3", (void*)bitstreamCursor);
   dword_18A6B0 = 12;
   dword_18A6B4 = 4096;
   sub_164600(
     dword_18AC0C + dword_18AC08 + dword_18AC04 + 29800,
     &block18A610[8],
-    0,
     dword_18AC04 + 12304,
     &bitstreamCursor);
   PortDebug_CheckpointPtr("1646A0.cursor.before4", (void*)bitstreamCursor);
@@ -492,7 +508,6 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   sub_164600(
     dword_18AC10 + dword_18AC0C + dword_18AC08 + dword_18AC04 + 29800,
     &block18A610[12],
-    0,
     dword_18AC04 + 28688,
     &bitstreamCursor);
   v6 = (_DWORD *)dword_18AC04;

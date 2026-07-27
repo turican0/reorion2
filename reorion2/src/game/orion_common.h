@@ -9834,13 +9834,13 @@ extern double sub_163E5F();
 extern int64_t sub_163E85();
 // plna signatura: double sub_163EAA( int a1, double *a2, double result);
 extern double sub_163EAA();
-// plna signatura: void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3);
+// plna signatura: void sub_164200(unsigned int *a2, unsigned int **a3); (wave 25n: a1 accumulator -> g_smkBitAccum)
 extern void sub_164200();
-// plna signatura: char sub_1642A0( int a1, _DWORD *a2, unsigned int a3, int *a4, unsigned int *a5);
+// plna signatura: char sub_1642A0( int a1, _DWORD *a2, int *a4, unsigned int **a5); (wave 25n: a3 accumulator -> g_smkBitAccum)
 extern char sub_1642A0();
 // plna signatura: int sub_164590(int a1, int a2);
 extern int sub_164590();
-// plna signatura: int sub_164600( int result, _DWORD *a2, unsigned int a3, int a4, unsigned int *a5);
+// plna signatura: int sub_164600( int result, _DWORD *a2, int a4, unsigned int **a5); (wave 25n: a3 accumulator -> g_smkBitAccum)
 extern int sub_164600();
 // plna signatura: int sub_164690();
 extern int sub_164690();
@@ -17789,6 +17789,7 @@ extern int dword_18A6AC;
 extern int dword_18A6B0;
 extern int dword_18A6B4;
 extern char byte_18A6C0;
+extern unsigned int g_smkBitAccum; // PORT (wave 25n): persistent Smacker bit-accumulator, see orion_data.c
 extern int dword_18A6D0;
 extern int dword_18A6E0;
 extern int16_t word_18A7E0;

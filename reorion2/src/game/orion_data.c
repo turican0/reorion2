@@ -13643,6 +13643,16 @@ int dword_18A6AC = 0; // weak
 int dword_18A6B0 = 0; // weak
 int dword_18A6B4 = 0; // weak
 char byte_18A6C0 = '\0'; // weak
+// PORT (wave 25n): the Smacker bit-reader's "currently loaded, partially
+// consumed word" (the value shifted 1 bit at a time alongside byte_18A6C0's
+// bit-count) is ANOTHER register that survives across sub_164600/sub_164200/
+// sub_1642A0 call boundaries in the original asm - same class of bug as the
+// bitstream cursor (a5) fixed in wave 25m, just the sibling register. The
+// decompiler modeled it as a plain by-value parameter/local in each function,
+// silently discarding the leftover bits every time control returned to a
+// caller. Promoted to a global exactly like byte_18A6C0 (its constant
+// companion) so every read/consume site shares the same persistent state.
+unsigned int g_smkBitAccum = 0; // weak
 int dword_18A6D0 = 0; // weak
 int dword_18A6E0 = 1; // weak
 int16_t word_18A7E0 = 0; // weak
