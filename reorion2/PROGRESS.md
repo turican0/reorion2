@@ -2861,3 +2861,62 @@ pad. **Novy, mnohem vzdalenejsi crash frontier:** `sub_167F40`
 (volana z `sub_14A2D0` <- `sub_132869` <- `sub_14DF7` <- `sub_24ED3`) -
 ZCELA nove misto, nikdy predtim nedosazene. Task pro pristi session:
 prozkoumat `sub_167F40`.
+
+**Vlna 25p (2026-07-27): sub_167F40 pointer-width fix opraven, ale odhalil DALSI bug - nekonecna smycka.**
+Uzivatel poslal screenshot pádu presne v `sub_167F40` radek 2040
+(`if (*v2) goto LABEL_14;`, `v2 = 0xFFFFFFFFFFFFFFFF`). Root cause: stejna
+trida x64 pointer-width bugu jako celym souborem - `v2 = *(_WORD**)(a1+52);`
+cte 32bit ulozenou hodnotu jako 8B nativni ukazatel (potvrzeno souvisejicim
+zapisem `*(_DWORD*)(a1+52)=v2;` o par radku niz - a1+52 je genuinne 32bit
+slot). Fix: `v2 = (_WORD*)(uintptr_t)*(_DWORD*)(a1+52);`.
+
+**Po opravě: zadny pad, ale NEKONECNA SMYCKA.** Test bezel pres 4 miliony
+radku diagnostiky bez ukonceni (uzivatel: "už je to dlouho a nic se
+nevypisuje" - proces jsem ukoncil). Analyza trace ukazala: `dispatch.
+block_type_symbol` je VZDY presne stejna hodnota (405864448) po CELOU
+dobu behu (1.47 milionu dispatch volani, 0 odlisnych hodnot), a
+`1664F0.write.g_smkFrameOutput` cykli pres presne stejnych 4800 adres
+dokola (presne odpovida poctu uspesnych dispatchu z predchozi vlny 25o,
+nez to padalo v sub_167F40). **Zavěr: po fixu sub_167F40 uz nekrachuje,
+ale neco zpusobuje, ze se cely 4800-dispatch blok/snimek dekoduje porad
+dokola od zacatku, misto aby postoupil dal (dalsi snimek, nebo konec
+dekodovani).** Podezreni: `sub_167F40`'s navratova hodnota/vedlejsi
+efekty (asi "je dalsi radek/blok k dekodovani?" signal) nebo jeji
+volajici (`sub_14A2D0`) spatne interpretuje stav a restartuje misto
+postupu. **OTEVRENO pro pristi session:** analyzovat `sub_167F40` cely
+(ne jen radek s pádem) + `sub_14A2D0` volajici logiku, dosbox porovnat
+kolikrat se `sub_167F40`/`sub_14A2D0` maji volat na 1 snimek v originale.
+Take zvazit odstraneni/ztlumeni verbose diagnostiky (`1664F0.write.*`,
+`dispatch.*`) pred dalsim testem - miliony radku zpomaluji test na
+neprakticke tempo.
+
+**Aktualizace (uzivatel: "nahraj z dosboxu snimky obrazovky a porovnej"):**
+misto register-trace pristupu pridan primy vizualni nastroj -
+`Port::Vga::DumpFrameIfRequested()` (port_vga.cpp) pise skutecny
+framebuffer+paletu (raw + human-viewable BMP) na N-ty `Present()` volani,
+rizeno env `REORION2_DUMP_FRAME=N` / `REORION2_DUMP_DIR`. Ztlumena
+verbose diagnostika (`1664F0.write.*` odstraneno, `dispatch.*` throttled
+na kazde 5000. volani).
+
+**VELKY milnik:** snimky 20/50/150 ukazuji SPRAVNE dekodovane logo SIMTEX
+(cerne "S" na sedem pozadi) s plynulym fade-in (tmave->stredni->plne) -
+vizualni potvrzeni, ze zakladni obrazova data + paletovy fade fungujic
+spravne (pravdepodobne z drivejsi, jiz opravene casti pipeline - staticky
+obraz + paleta, ne nutne primo z teto session).
+
+**Ale hlubsi test odhalil: PRAVY nekonecny cyklus existuje.** Delsi beh
+(90s, throttled diagnostika) ukazal: zpocatku `g_smkFrameOutput` (a
+`g_smkFrameCursor`/`byte_18A6C0`/`g_smkFrameAccum`) SKUTECNE postupuji
+(zdrave rostouci hodnoty, zadna stagnace) - ale po case se zacykli do
+PRESNE 6 opakujicich se `g_smkFrameOutput` adres donekonecna
+(1844C2EC, 18460D8C, 1845C82C, 18458AEC, 1845458C, 1845002C, dokola).
+`dispatch.index` zustava po celou dobu 0 (sub_1664F0), zadny
+`UNIMPLEMENTED_*` stub nebyl zasazen - tedy NENI to chybejici
+dispatch cil, ale bug primo v `sub_1664F0`'s vlastni "radek/blok
+hotov, pokracuj dal" logice (kandidati: `dword_18A670`/`dword_18A688`
+"dalsi radek" vypocet, nebo `dword_18A668`/`dword_18A674` "block done"
+reset - 6 opakujicich se adres napovida na malou strukturalni smycku,
+ne na cely znovu-dekodovany snimek). **OTEVRENO pro pristi session:**
+dosbox DUMPREGS/DUMPMEM primo na "radek dokoncen" vetve v sub_1664F0
+(asm ekvivalent radku 872-883 v orion_part_26.c), porovnat kolikrat a
+jak `dword_18A670` klesa v originale vs portu na stejnem miste.

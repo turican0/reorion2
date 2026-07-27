@@ -787,8 +787,21 @@ LABEL_31:
   }
   dword_18A664 = *(int *)((char *)&dword_18A6E0 + (g_smkBlockTypeSymbol & 0xFC));
   dispatch_index = g_smkBlockTypeSymbol & 3;
-  PortDebug_Checkpoint("dispatch.block_type_symbol", g_smkBlockTypeSymbol);
-  PortDebug_Checkpoint("dispatch.index", dispatch_index);
+  // PORT (wave 25p): throttled - this fires per decoded symbol (millions of
+  // times during a stuck/looping decode) and was flooding the trace.
+  {
+    static unsigned s_dispatchCallCount = 0;
+    if ( (++s_dispatchCallCount % 5000) == 1 )
+    {
+      PortDebug_Checkpoint("dispatch.calls_so_far", (int)s_dispatchCallCount);
+      PortDebug_Checkpoint("dispatch.block_type_symbol", g_smkBlockTypeSymbol);
+      PortDebug_Checkpoint("dispatch.index", dispatch_index);
+      PortDebug_Checkpoint("dispatch.byte_18A6C0", (unsigned char)byte_18A6C0);
+      PortDebug_CheckpointPtr("dispatch.g_smkFrameCursor", (void*)g_smkFrameCursor);
+      PortDebug_Checkpoint("dispatch.g_smkFrameAccum", (int)g_smkFrameAccum);
+      PortDebug_CheckpointPtr("dispatch.g_smkFrameOutput", (void*)g_smkFrameOutput);
+    }
+  }
 
   if ( dword_18A6AC & 1 )
     return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_raw_asm_quadrant", dispatch_index);
@@ -1016,7 +1029,6 @@ LABEL_27:
       v38 = BYTE1(v18);
       LOWORD(v37) = __ROR4__(v18, 16);
       LOWORD(v39) = ((int16_t (*)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
-      PortDebug_CheckpointPtr("1664F0.write.g_smkFrameOutput", (void*)g_smkFrameOutput);
       *g_smkFrameOutput = v39;
       v40 = (int **)((char *)g_smkFrameOutput + dword_18A660);
       *v40 = v22;
@@ -2017,7 +2029,11 @@ int sub_167F40(int a1, unsigned int *a2)
 
   if ( *(_BYTE *)(a1 + 32) )
     return 0;
-  v2 = *(_WORD **)(a1 + 52);
+  // PORT (wave 25p): a1+52 is a plain 32-bit stored pointer value (same
+  // family as the rest of this file) - `*(_WORD**)` dereferences it as a
+  // native 8-byte pointer on x64, pulling in the adjacent a1+56 dword as
+  // the high half and producing a garbage (0xFFFFFFFF‘xxxxxxxx) pointer.
+  v2 = (_WORD *)(uintptr_t)*(_DWORD *)(a1 + 52);
   if ( *(_BYTE *)(a1 + 33) )
   {
     v8 = *(_DWORD *)(a1 + 48);
