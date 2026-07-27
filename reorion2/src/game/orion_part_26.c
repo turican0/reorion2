@@ -804,9 +804,17 @@ LABEL_31:
       default: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_1655B0", dispatch_index);
     }
   }
+  // PORT (wave 25o fix): confirmed via Debug/diss/Orion2.exe.asm
+  // (sub_167320 loc_167694 / sub_1664F0+0) that the dispatch targets'
+  // "a1" parameter is EDX, not EAX - `mov edx,dword_1826E0[edx]; mov
+  // dword_182664,edx; jmp dword_182650[ecx*4]` leaves edx (== the value
+  // just stored into dword_18A664) live at the jump, and sub_1664F0's
+  // very first instruction is `add dword_1827F4, edx`. Passing the
+  // decoded symbol itself (g_smkBlockTypeSymbol, "eax") here instead was
+  // wrong and produced huge values that blew out the coverage-marking loop.
   switch ( dispatch_index )
   {
-    case 0: return sub_1664F0(g_smkBlockTypeSymbol);
+    case 0: return sub_1664F0(dword_18A664);
     case 1: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_166830", dispatch_index);
     case 2: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167040", dispatch_index);
     default: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167190", dispatch_index);
@@ -1240,6 +1248,10 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
     // decoder only ever does `mov ax,...` (LOWORD writes), relying on the
     // rest of eax already holding this same value from this point on.
     g_smkBlockTypeSymbol = v19;
+    PortDebug_Checkpoint("167320.seed.g_smkFrameAccum", g_smkFrameAccum);
+    PortDebug_CheckpointPtr("167320.seed.g_smkFrameCursor", (void*)g_smkFrameCursor);
+    PortDebug_Checkpoint("167320.seed.byte_18A6C0", (unsigned char)byte_18A6C0);
+    PortDebug_CheckpointPtr("167320.seed.a1raw", (void*)a1);
     PortDebug_CheckpointPtr("167320.seed.g_smkFrameOutput", (void*)g_smkFrameOutput);
     PortDebug_CheckpointPtr("167320.seed.a2", (void*)(uintptr_t)a2);
     PortDebug_CheckpointPtr("167320.seed.a3", (void*)(uintptr_t)a3);

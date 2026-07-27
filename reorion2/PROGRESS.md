@@ -2836,3 +2836,28 @@ kodu (nikdy predtim netestovano, protoze se k nemu behem cele historie
 portu nedostalo - mozna ma svou vlastni, jeste neobjevenou chybu).
 Diagnosticke checkpointy `167320.seed.*`, `1664F0.write.g_smkFrameOutput`,
 `dispatch.block_type_symbol/index` ponechany v kodu.
+
+**Root cause nalezen a opraven (uzivatel: "pokracuj s dumpy z dosboxu"):**
+dosbox-x DUMPREGS primo na `Debug/diss/Orion2.exe.asm` @ `loc_167694`
+(0x167694) potvrdil presny asm:
+```
+mov edx, eax
+mov ecx, eax
+and edx, 0FCh
+and ecx, 3
+mov edx, dword_1826E0[edx]
+mov dword_182664, edx      ; <- edx ulozeno do globalu PRED jmp
+jmp dword_182650[ecx*4]     ; <- edx zustava live v registru PRI skoku
+```
+a `sub_1664F0`'s uplne prvni instrukce: `add dword_1827F4, edx` (NE eax!).
+**Muj puvodni predpoklad byl spatny:** myslel jsem, ze dispatch cile
+dostavaji jako "a1" cely dekodovany symbol (eax/`g_smkBlockTypeSymbol`),
+ale ve skutecnosti je to EDX - presne ta HODNOTA, co se ulozila do
+globalu `dword_18A664` tesne pred skokem. Fix: `sub_1664F0(dword_18A664)`
+misto `sub_1664F0(g_smkBlockTypeSymbol)`. **Overeno primo v portu:**
+dispatch smycka ted probehne uspesne 4800x (skutecny per-pixel decode,
+`g_smkFrameOutput` se hezky posouva po 4 bajtech), zadny heap-corruption
+pad. **Novy, mnohem vzdalenejsi crash frontier:** `sub_167F40`
+(volana z `sub_14A2D0` <- `sub_132869` <- `sub_14DF7` <- `sub_24ED3`) -
+ZCELA nove misto, nikdy predtim nedosazene. Task pro pristi session:
+prozkoumat `sub_167F40`.
