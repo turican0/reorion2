@@ -2920,3 +2920,111 @@ ne na cely znovu-dekodovany snimek). **OTEVRENO pro pristi session:**
 dosbox DUMPREGS/DUMPMEM primo na "radek dokoncen" vetve v sub_1664F0
 (asm ekvivalent radku 872-883 v orion_part_26.c), porovnat kolikrat a
 jak `dword_18A670` klesa v originale vs portu na stejnem miste.
+
+**Vlna 25p - zpresneni pomoci "stejna udalost na obou stranach" metodiky
+(na zadost uzivatele):** puvodni srovnani pocitalo Present() volani
+(port) vs sub_125814 zasahy (dosbox) - NEEKVIVALENTNI udalosti (port
+Present() se vola i pri busy-waitu bez zmeny obsahu). Opraveno:
+1. **`PortVga_WaitVsyncSlow()`** (port_vga.cpp) - `sub_12C2C6` (cekani na
+   N BIOS tiku) volalo plne `PortVga_WaitVsync()` (Present+14ms) v KAZDE
+   iteraci smycky, ale 1 BIOS tik = ~55ms → ~4x zbytecnych Present()
+   volani na kazdy skutecny tik cekani. Nova varianta ceka 50ms mezi
+   Present() volanimi behem busy-waitu (`sub_12C2C6` prepnuto na ni),
+   `PortVga_WaitVsync` (pouzivana pro SKUTECNE nove snimky) zustala
+   nezmenena.
+2. **Dedup na obou stranach** - `DumpFrameIfRequested`
+   (REORION2_DUMP_FRAME_RANGE) i dosbox-x `DUMPFRAME` ted zapisuji soubor
+   jen pri SKUTECNE zmene obsahu (framebuffer NEBO paleta), ne na kazdy
+   zasah breakpointu - takze oba proudy meri stejnou udalost ("byl
+   vykreslen novy/odlisny snimek"), ne casovy vzorek.
+
+**Po opravach: 80 odlisnych snimku z kazde strany, srovnano.** Vizualne
+potvrzeno (frame index 10): **originál uz je u animace MICRO PROSE**
+(svisle pruhy skladajici pismena), **port je porad jen u sotva
+rozsviceneho loga SIMTEX**. Tedy: i po odstraneni busy-wait redundance a
+merenim "stejne udalosti", port stale generuje VYRAZNE VICE odlisnych
+snimku na stejny usek obsahu nez original. **Zaver: existuje skutecny bug
+- port pravdepodobne dekoduje/prezentuje nekolik lehce odlisnych
+mezistavu tam, kde original postupuje cistě v jednom kroku.** Toto se
+kryje s drive nalezenym "6 opakujicich se adres" pozorovanim (vlna 25p
+drive) - nejspis STEJNA prevlekle-formulovana chyba v sub_1664F0/
+sub_167320's "blok/radek hotov, pokracuj dal" logice, ne skutecna
+nekonecna smycka, ale zdroj nadbytecnych temer-duplicitnich snimku.
+**OTEVRENO pro pristi session:** najit presne misto v sub_1664F0, kde
+vznikaji tyhle "skoro stejne" mezistavy (kandidati: `dword_18A670`
+row-advance, `dword_18A668`/`674` block-reset) - pravdepodobne DALSI
+instance "perzistentni registr vs fresh hodnota" bugu (5. tato session),
+tentokrat v necem, co by melo drzet stav MEZI radky/bloky ale
+neudrzuje ho spravne.
+
+**Vlna 25p - PRULOMOVY vysledek (na zadost uzivatele, primy in-process
+compare-and-abort misto externich nastroju):** pridana
+`CompareAgainstReferenceIfChanged()` (port_vga.cpp) - nacte dosbox-x
+DUMPFRAME referencni snimky (`REORION2_COMPARE_DIR`), a pro kazdy
+odlisny port-snimek je porovna s AKTUALNI referencni pozici (kurzor,
+NE 1:1 index - port muze generovat "extra" snimky navic, tolerovano az
+do 300 za sebou nez se to prohlasi za skutecnou divergenci). Vysledek
+behu (80 referencnich snimku, SIMTEX->MICRO PROSE usek):
+
+- **Reference #0-2 (SIMTEX fade-in): port potreboval 116 "extra" snimku**
+  nez dosahl obsahu odpovidajicim referenci #2.
+- **Reference #3 az #41+ (SKUTECNA MICRO PROSE animace, pohybliva
+  pismena): port sedi DOKONALE, 0 extra snimku pro KAZDOU jednu
+  referenci, snimek za snimkem, presne v poradí.**
+
+**Zaver: block/pixel decoder (cely fokus teto session, vlny 25n/25o/25p)
+je SPRAVNY - overeno bit-presne pro realny pohyblivy obsah.** "6
+opakujicich se adres"/"nadbytecne snimky" pozorovani z drivejsi casti
+vlny 25p bylo ZAVADEJICI - nebyl to bug v sub_1664F0's radek/blok
+logice, ale izolovany problem konkretne v SIMTEX fade-in useku (prvni
+2-3 realne snimky). **Pristi krok: prozkoumat SIMTEX-specificky fade
+mechanismus** (pravdepodobne opakovane volani PortVga_SetPaletteEntry
+s malymi prirustky mezi kazdym Present(), misto primeho skoku na
+cilovou barvu jako original) - kandidati: sub_132A11/byte_1BB358/
+sub_131F7B/sub_132AF8 retez z vlny 25, NEBO mozna vubec neni chyba v
+dekodovani, ale v tom, ze port generuje vic PRESENT udalosti behem
+fade-in casti nez original (rozdil v tom, kolikrat se `Smk167320_
+DecodeBlockTypeAndDispatch`/`sub_1664F0` zavola/vraci "continue" pro
+tenhle konkretni typ snimku vs original). Nastroj (`REORION2_COMPARE_DIR`
++ `REORION2_COMPARE_SKIP`) je pripraven pro rychlou iteraci pri
+dalsim ladeni - staci spustit port s novym dosbox dumpem.
+
+## Vlna 25p pokracovani: hromadny snimek+paleta diff nastroj (na zadost uzivatele)
+
+Uzivatel pozadal o presun z register-trace metodiky na primy hromadny
+diff vsech snimku+palet mezi originalem a portem. Postaveno:
+
+1. **`DUMPFRAME` prikaz** v dosbox-x ctl protokolu (`engine.cpp`,
+   `FrameWatch`/`ctl_load_dumpframe`/`ctl_check_dumpframe`) - na kazdy
+   zasah EIP zapise `frame_NNNNN.raw` (768B RGB6 paleta + WxH indexovanych
+   pixelu) do zadaneho adresare, az do `maxcount`. Zdokumentovat jeste
+   treba do DOSBOX_CTL_PROTOCOL.md (TODO).
+2. **Port strana** (`port_vga.cpp`): `DumpFrameIfRequested` rozsireno o
+   `REORION2_DUMP_FRAME_RANGE=START:COUNT` (`REORION2_DUMP_DIR` spolecne) -
+   dumpuje STEJNY format (`frame_NNNNN.raw`) pro primy binarni diff.
+3. **`genCompare/compare_frames.c`** (kompilovano primo cl.exe, viz
+   genCompare/compare_frames.exe) - cte dvojice frame_NNNNN.raw ze dvou
+   adresaru, expanduje dosbox 6bit->8bit paletu stejnym vzorcem jako
+   `PortVga_SetPaletteEntry` ((v<<2)|(v>>4)) a hlasi po snimcich pocet
+   neshodnych paletovych kanalu + pocet/pozici neshodnych pixelu.
+
+**Prvni test (30 snimku, breakpoint na `sub_132B41` @ 0x356B41, framebuf
+0x452044, 640x480):** **VELMI POVZBUDIVY VYSLEDEK.** Pixelovy obsah
+(dekodovana data) SEDI TEMER DOKONALE - 0.00% mismatch na 28 z 30
+snimku! Jen snimek #1 ma 97.87% pixel mismatch (pravdepodobne
+jednosnimkovy posun/zarovnani mezi tim, kdy port a original zapocitavaji
+prvni Present() - ne obsahovy bug). **Paleta ale systematicky diverguje
+rostoucim tempem** (worst-delta roste priblizne +4 kazdy snimek: 4, 8,
+12, 16, 20, 24, 28, 32, 36, 37, 41...) - vypada to na SPATNOU RYCHLOST
+fade rampy v portu (port fade bud postupuje jinym krokem, nebo je jeden
+krok pozadu/napred kazdy snimek, kumulativne). Snimek #0 ma extremni
+paletovy rozdil (648/768 kanalu, delta az 255) - pravdepodobne artefakt
+startovniho zarovnani (jedna strana jeste nema paletu vubec nastavenou).
+
+**ZAVER: skutecny video/blok decoder (waves 25n/25o/25p) je pravdepodobne
+SPRAVNY** - shoda obsahu je silny dukaz. **Pristi krok: prozkoumat fade
+rampu (sub_251EF/sub_132C80 rychlost/krok) - ne dale ladit sub_1664F0
+dekoder.** Nastroj (`compare_frames.exe`) pripraven pro rychlou iteraci:
+staci znovu zachytit dvojici dump (dosbox DUMPFRAME cfg + port
+REORION2_DUMP_FRAME_RANGE) po kazde zmene a spustit
+`compare_frames.exe dosbox_frames port_frames 640 480`.

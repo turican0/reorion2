@@ -164,6 +164,10 @@ void PortDebug_Checkpoint(const char* name, int value);
 void PortDebug_CheckpointPtr(const char* name, const void* value);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
+/* Stejne, ale ~1 BIOS tik (~55ms) mezi Present() volanimi - pro busy-wait
+   smycky (sub_12C2C6), ktere by jinak volaly WaitVsync 4x na kazdy
+   skutecny tik, ktery cekaji, vlna 25p. */
+void PortVga_WaitVsyncSlow(void);
 unsigned char *PortVga_Framebuffer(void);
 void PortVga_SetPaletteEntry(int index, int r, int g, int b);
 /* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */

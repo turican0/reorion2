@@ -517,7 +517,7 @@ int sub_12C2C6(int result)
   // Ted realny cas pres PortDos_BiosTick + prubezne vykreslovani, aby byla
   // animace videt a okno reagovalo.
   while ( (int)(PortDos_BiosTick() - dword_1845DC) < result )
-    PortVga_WaitVsync();
+    PortVga_WaitVsyncSlow();
   return result;
 }
 // 1845DC: using guessed type int dword_1845DC;
