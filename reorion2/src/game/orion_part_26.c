@@ -678,8 +678,156 @@ int16_t sub_1664E4(int a1, int a2)
 }
 
 
+// PORT (wave 25o): the other three dispatch slots in this quadrant
+// (sub_166830/sub_167040/sub_167190) and the entire other quadrant
+// (sub_164A40/sub_164DA0/sub_167040/sub_1655B0, selected when
+// dword_18A6A8 is set) and the raw-asm loc_* variants (dword_18A6AC set)
+// were never ported from assembly - link_stubs.c stubs them as `return 0;`.
+// Route them here instead of calling the broken stubs so a hit is visible
+// in the trace instead of silently producing wrong pixels or crashing.
+static SmkFrameStatus SmkDispatch_NotImplemented(const char *label, int dispatch_index)
+{
+  PortDebug_Checkpoint(label, dispatch_index);
+  return SmkFrame_Done;
+}
+
+// PORT (wave 25o): extracted from sub_167320's `loc_1675C0` (Debug/diss/
+// Orion2.exe.asm 0x1675C0-0x167694) - decodes the next "what kind of block"
+// Huffman symbol from the dword_18A60C tree and dispatches to the handler
+// selected by its low 2 bits. In the original this is inlined into
+// sub_167320 and re-entered via a raw `jmp` from sub_1664F0/sub_164A40/etc
+// after each one finishes a block (JUMPOUT(0x1675C0)) - ported here as a
+// real function returning SmkFrame_Continue/SmkFrame_Done so sub_167320 can
+// drive it with a real loop instead of a one-way jump. Uses the persistent
+// g_smkFrameAccum/g_smkFrameCursor globals (wave 25n/25o) instead of by-value
+// parameters, since the accumulator/cursor must survive across every hop.
+SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void)
+{
+  unsigned int v20; // edx
+  unsigned int v21; // ebp
+  unsigned int v22; // ecx
+  unsigned int v23; // ebp
+  char v24; // al
+  unsigned int *v25; // ecx
+  unsigned int v26; // edx
+  unsigned int v27; // ecx
+  unsigned int v28; // edx
+  unsigned int v29; // edx
+  char v30; // cf
+  int v31; // edx
+  int v32; // edx
+  int *v33; // ebx
+  int *v34; // ecx
+  int v35; // edx
+  int dispatch_index;
+
+  if ( (uint8_t)byte_18A6C0 > 8u )
+  {
+    v27 = *(_DWORD *)(dword_18A60C + 4 * (uint8_t)g_smkFrameAccum);
+    v23 = g_smkFrameAccum >> v27;
+    v24 = byte_18A6C0 - v27;
+    v25 = (unsigned int *)(dword_18A6A4 + (v27 >> 8));
+    v26 = *v25;
+    if ( (_WORD)dword_18A6D0 != (uint16_t)*v25 )
+      goto LABEL_31;
+  }
+  else
+  {
+    // PORT (wave 25o): asm `mov edx,[esi]; add esi,2` - a fresh dword read
+    // through the PERSISTENT cursor, advanced by 2 bytes (a sliding 16-bit
+    // top-up window), NOT a reset to a fixed offset from sub_167320's `a1`
+    // parameter as the pre-25o decompiled C incorrectly had it (that only
+    // happened to be right on the very first pass through this code, before
+    // it was known to be re-entered in a loop).
+    v20 = *g_smkFrameCursor;
+    g_smkFrameCursor = (unsigned int *)((char *)g_smkFrameCursor + 2);
+    v21 = g_smkFrameAccum | (v20 << (byte_18A6C0 - 1));
+    v22 = *(_DWORD *)(dword_18A60C + 4 * (uint8_t)v21);
+    v23 = v21 >> v22;
+    v24 = byte_18A6C0 + 16 - v22;
+    v25 = (unsigned int *)(dword_18A6A4 + (v22 >> 8));
+    v26 = *v25;
+    if ( (_WORD)dword_18A6D0 != (uint16_t)*v25 )
+      goto LABEL_31;
+  }
+  do
+  {
+    v28 = v26 >> 13;
+    if ( !--v24 )
+    {
+      v23 = *g_smkFrameCursor++;
+      v24 = 32;
+    }
+    v29 = (unsigned int)&loc_FFFF8 & v28;
+    v30 = v23 & 1;
+    v23 >>= 1;
+    if ( !v30 )
+      v29 = 4;
+    v25 = (unsigned int *)((char *)v25 + v29);
+    v26 = *v25;
+  }
+  while ( (_WORD)dword_18A6D0 == (uint16_t)*v25 );
+LABEL_31:
+  v31 = __ROR4__(v26, 16);
+  byte_18A6C0 = v24;
+  g_smkFrameAccum = v23;
+  LOWORD(g_smkBlockTypeSymbol) = v31;
+  v32 = __ROR4__(v31, 16);
+  if ( *(_DWORD *)block18A610[13] != v32 )
+  {
+    dword_18A678 = g_smkBlockTypeSymbol;
+    g_smkBlockTypeSymbol = *(_DWORD *)block18A610[13];
+    v33 = (int *)block18A610[14];
+    *(_DWORD *)block18A610[13] = v32;
+    v34 = (int *)block18A610[15];
+    v35 = *v33;
+    *v33 = g_smkBlockTypeSymbol;
+    LOBYTE(g_smkBlockTypeSymbol) = dword_18A678;
+    *v34 = v35;
+  }
+  dword_18A664 = *(int *)((char *)&dword_18A6E0 + (g_smkBlockTypeSymbol & 0xFC));
+  dispatch_index = g_smkBlockTypeSymbol & 3;
+  PortDebug_Checkpoint("dispatch.block_type_symbol", g_smkBlockTypeSymbol);
+  PortDebug_Checkpoint("dispatch.index", dispatch_index);
+
+  if ( dword_18A6AC & 1 )
+    return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_raw_asm_quadrant", dispatch_index);
+  if ( dword_18A6A8 )
+  {
+    // sub_164A40/sub_164DA0/sub_167040/sub_1655B0 quadrant - not confirmed
+    // live for any video seen so far (byte_a3plus1 was 0), left unported.
+    switch ( dispatch_index )
+    {
+      case 0: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_164A40", dispatch_index);
+      case 1: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_164DA0", dispatch_index);
+      case 2: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167040", dispatch_index);
+      default: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_1655B0", dispatch_index);
+    }
+  }
+  switch ( dispatch_index )
+  {
+    case 0: return sub_1664F0(g_smkBlockTypeSymbol);
+    case 1: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_166830", dispatch_index);
+    case 2: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167040", dispatch_index);
+    default: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167190", dispatch_index);
+  }
+}
+
+
 //----- (001664F0) --------------------------------------------------------
-int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
+// PORT (wave 25o): a2 (accumulator)/a3 (output write pointer)/a4 (cursor)
+// were by-value parameters modeling asm ebp/edi/esi at the moment
+// sub_167320 jumps here - confirmed via dosbox-x DUMPREGS (loc_167694 vs
+// this function's entry) that all three are IDENTICAL across the jump,
+// i.e. persistent registers, not fresh values. They're now the shared
+// g_smkFrameAccum/g_smkFrameOutput/g_smkFrameCursor globals (see
+// Smk167320_DecodeBlockTypeAndDispatch). `JUMPOUT(0x1675C0)` (asm: jump
+// back into sub_167320's block-type decoder to process the next block) and
+// `JUMPOUT(0x1676C0)` (asm: jump to sub_167320's own epilogue - the whole
+// per-frame decode is done) were previously no-ops (see decomp_compat.h),
+// silently falling through to an unconditional early return - replaced
+// with real SmkFrameStatus returns so the caller's loop behaves correctly.
+SmkFrameStatus sub_1664F0(int a1)
 {
   unsigned int v4; // ecx
   _BYTE *v5; // ebx
@@ -745,8 +893,8 @@ int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
     {
       if ( (uint8_t)byte_18A6C0 > 0xAu )
       {
-        v14 = *(_DWORD *)(dword_18A604 + 4 * (a2 & 0x3FF));
-        v10 = a2 >> v14;
+        v14 = *(_DWORD *)(dword_18A604 + 4 * (g_smkFrameAccum & 0x3FF));
+        v10 = g_smkFrameAccum >> v14;
         v11 = byte_18A6C0 - v14;
         v12 = (unsigned int *)(dword_18A6A4 + (v14 >> 8));
         v13 = *v12;
@@ -755,9 +903,9 @@ int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
       }
       else
       {
-        v7 = *a4;
-        a4 = (unsigned int *)((char *)a4 + 2);
-        v8 = a2 | (v7 << (byte_18A6C0 - 1));
+        v7 = *g_smkFrameCursor;
+        g_smkFrameCursor = (unsigned int *)((char *)g_smkFrameCursor + 2);
+        v8 = g_smkFrameAccum | (v7 << (byte_18A6C0 - 1));
         v9 = *(_DWORD *)(dword_18A604 + 4 * (v8 & 0x3FF));
         v10 = v8 >> v9;
         v11 = byte_18A6C0 + 16 - v9;
@@ -771,7 +919,7 @@ int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
         v15 = v13 >> 13;
         if ( !--v11 )
         {
-          v10 = *a4++;
+          v10 = *g_smkFrameCursor++;
           v11 = 32;
         }
         v16 = (unsigned int)&loc_FFFF8 & v15;
@@ -802,7 +950,7 @@ LABEL_16:
       if ( (uint8_t)byte_18A6C0 > 0xBu )
       {
         v29 = *(_DWORD *)(dword_18A600 + 4 * (v10 & 0x7FF));
-        a2 = v10 >> v29;
+        g_smkFrameAccum = v10 >> v29;
         v26 = byte_18A6C0 - v29;
         v27 = (unsigned int *)(dword_18A6A4 + (v29 >> 8));
         v28 = *v27;
@@ -811,11 +959,11 @@ LABEL_16:
       }
       else
       {
-        v23 = *a4;
-        a4 = (unsigned int *)((char *)a4 + 2);
+        v23 = *g_smkFrameCursor;
+        g_smkFrameCursor = (unsigned int *)((char *)g_smkFrameCursor + 2);
         v24 = v10 | (v23 << (byte_18A6C0 - 1));
         v25 = *(_DWORD *)(dword_18A600 + 4 * (v24 & 0x7FF));
-        a2 = v24 >> v25;
+        g_smkFrameAccum = v24 >> v25;
         v26 = byte_18A6C0 + 16 - v25;
         v27 = (unsigned int *)(dword_18A6A4 + (v25 >> 8));
         v28 = *v27;
@@ -827,12 +975,12 @@ LABEL_16:
         v30 = v28 >> 13;
         if ( !--v26 )
         {
-          a2 = *a4++;
+          g_smkFrameAccum = *g_smkFrameCursor++;
           v26 = 32;
         }
         v31 = (unsigned int)&loc_FFFF8 & v30;
-        v17 = a2 & 1;
-        a2 >>= 1;
+        v17 = g_smkFrameAccum & 1;
+        g_smkFrameAccum >>= 1;
         if ( !v17 )
           v31 = 4;
         v27 = (unsigned int *)((char *)v27 + v31);
@@ -860,15 +1008,16 @@ LABEL_27:
       v38 = BYTE1(v18);
       LOWORD(v37) = __ROR4__(v18, 16);
       LOWORD(v39) = ((int16_t (*)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
-      *a3 = v39;
-      v40 = (int **)((char *)a3 + dword_18A660);
+      PortDebug_CheckpointPtr("1664F0.write.g_smkFrameOutput", (void*)g_smkFrameOutput);
+      *g_smkFrameOutput = v39;
+      v40 = (int **)((char *)g_smkFrameOutput + dword_18A660);
       *v40 = v22;
       v41 = (int **)((char *)v40 + dword_18A660);
       LOWORD(v42) = ((int16_t (*)(int, int))funcs_164C45[v38])(v38, v37);
       *v41 = v42;
       v43 = (int **)((char *)v41 + dword_18A660);
       *v43 = v22;
-      a3 = (int **)((char *)v43 - dword_18A66C);
+      g_smkFrameOutput = (_DWORD *)((char *)v43 - dword_18A66C);
       if ( !--dword_18A668 )
         break;
       if ( !--dword_18A664 )
@@ -876,12 +1025,12 @@ LABEL_27:
     }
     if ( !--dword_18A670 )
       break;
-    a3 = (_DWORD *)((char *)a3 + dword_18A688);
+    g_smkFrameOutput = (_DWORD *)((char *)g_smkFrameOutput + dword_18A688);
 LABEL_34:
     dword_18A668 = dword_18A674;
     if ( !--dword_18A664 )
 LABEL_44:
-      JUMPOUT(0x1675C0);
+      return SmkFrame_Continue;
   }
   if ( (dword_18A6AC & 1) == 0 )
     goto LABEL_45;
@@ -904,7 +1053,7 @@ LABEL_42:
       dword_18A670 = v46[2];
       v42 = *(_DWORD **)v46;
       dword_18A6A0 = (int)(v46 + 3);
-      a3 = v42;
+      g_smkFrameOutput = v42;
       if ( dword_18A670 )
         goto LABEL_34;
       continue;
@@ -915,8 +1064,9 @@ LABEL_42:
     goto LABEL_42;
   if ( (_WORD)v42 == 0xFFFF )
 LABEL_45:
-    JUMPOUT(0x1676C0);
-  return sub_164920(dword_18A6A0);
+    return SmkFrame_Done;
+  sub_164920(dword_18A6A0);
+  return SmkFrame_Done;
 }
 // 16673E: control flows out of bounds to 1675C0
 // 16678A: control flows out of bounds to 1676C0
@@ -1023,6 +1173,8 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   v14 = a1 + 1;
   byte_18A6C0 = 33;
   dword_18A6AC = !(*(_BYTE *)a3 & 1);
+  PortDebug_Checkpoint("167320.dword_18A6AC", dword_18A6AC);
+  PortDebug_Checkpoint("167320.byte_a3plus1", *(_BYTE *)(a3 + 1));
   if ( (*(_BYTE *)(a3 + 1) & 1) != 0 )
   {
     if ( (dword_18A6AC & 1) != 0 )
@@ -1075,70 +1227,27 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
     dword_18A7F8 = a3 + 56;
     dword_18A7F4 = 0;
     dword_18A7F0 = 0;
-LABEL_22:
-    if ( (uint8_t)byte_18A6C0 > 8u )
-    {
-      v27 = *(_DWORD *)(dword_18A60C + 4 * (uint8_t)v13);
-      v23 = v13 >> v27;
-      v24 = byte_18A6C0 - v27;
-      v25 = (unsigned int *)(dword_18A6A4 + (v27 >> 8));
-      PortDebug_Checkpoint("167320.branchA.dword_18A60C", dword_18A60C);
-      PortDebug_Checkpoint("167320.branchA.dword_18A6A4", dword_18A6A4);
-      PortDebug_Checkpoint("167320.branchA.v27", v27);
-      PortDebug_CheckpointPtr("167320.branchA.v25", (void*)v25);
-      v26 = *v25;
-      if ( (_WORD)dword_18A6D0 != (uint16_t)*v25 )
-        goto LABEL_31;
-    }
-    else
-    {
-      v20 = *v14;
-      v14 = (unsigned int *)((char *)a1 + 6);
-      v21 = v13 | (v20 << (byte_18A6C0 - 1));
-      v22 = *(_DWORD *)(dword_18A60C + 4 * (uint8_t)v21);
-      v23 = v21 >> v22;
-      v24 = byte_18A6C0 + 16 - v22;
-      v25 = (unsigned int *)(dword_18A6A4 + (v22 >> 8));
-      v26 = *v25;
-      if ( (_WORD)dword_18A6D0 != (uint16_t)*v25 )
-        goto LABEL_31;
-    }
-    do
-    {
-      v28 = v26 >> 13;
-      if ( !--v24 )
-      {
-        v23 = *v14++;
-        v24 = 32;
-      }
-      v29 = (unsigned int)&loc_FFFF8 & v28;
-      v30 = v23 & 1;
-      v23 >>= 1;
-      if ( !v30 )
-        v29 = 4;
-      v25 = (unsigned int *)((char *)v25 + v29);
-      v26 = *v25;
-    }
-    while ( (_WORD)dword_18A6D0 == (uint16_t)*v25 );
-LABEL_31:
-    v31 = __ROR4__(v26, 16);
-    byte_18A6C0 = v24;
-    LOWORD(v19) = v31;
-    v32 = __ROR4__(v31, 16);
-    if ( *(_DWORD *)block18A610[13] != v32 )
-    {
-      dword_18A678 = v19;
-      v19 = *(_DWORD *)block18A610[13];
-      v33 = (int *)block18A610[14];
-      *(_DWORD *)block18A610[13] = v32;
-      v34 = (int *)block18A610[15];
-      v35 = *v33;
-      *v33 = v19;
-      LOBYTE(v19) = dword_18A678;
-      *v34 = v35;
-    }
-    dword_18A664 = *(int *)((char *)&dword_18A6E0 + (v19 & 0xFC));
-    /* __asm: jmp     dword_18A650[ecx*4] */ DECOMP_TODO("inline asm");
+    // PORT (wave 25o): seed the shared per-frame decode trampoline state -
+    // see g_smkFrame*/Smk167320_DecodeBlockTypeAndDispatch. The original's
+    // `jmp dword_18A650[ecx*4]` never returns to this stack frame; the
+    // replacement loop calls the (now-real) dispatch chain until it signals
+    // completion, then falls through to loc_1676CF's epilogue below (the
+    // dword_18A6AC==0 completion path - writes one completion byte).
+    g_smkFrameAccum = v13;
+    g_smkFrameCursor = v14;
+    g_smkFrameOutput = (_DWORD *)(uintptr_t)v19;
+    // PORT (wave 25o): eax (v19) itself is seeded here too - the block-type
+    // decoder only ever does `mov ax,...` (LOWORD writes), relying on the
+    // rest of eax already holding this same value from this point on.
+    g_smkBlockTypeSymbol = v19;
+    PortDebug_CheckpointPtr("167320.seed.g_smkFrameOutput", (void*)g_smkFrameOutput);
+    PortDebug_CheckpointPtr("167320.seed.a2", (void*)(uintptr_t)a2);
+    PortDebug_CheckpointPtr("167320.seed.a3", (void*)(uintptr_t)a3);
+    while ( Smk167320_DecodeBlockTypeAndDispatch() == SmkFrame_Continue )
+      ;
+    result = (_BYTE *)(dword_18A7F8 + ((unsigned int)dword_18A7F0 >> 4));
+    *result = 0;
+    return result;
   }
   // PORT (wave 25k): a3+4 is a plain 32-bit stored function-pointer value
   // (see the `*(_DWORD*)(a3+4)` read a few lines up, and the whole family
@@ -1181,8 +1290,23 @@ LABEL_19:
     dword_18A6A0 = (int)(v18 + 3);
     if ( dword_18A670 )
     {
-      HIWORD(v19) = HIWORD(v36);
-      goto LABEL_22;
+      g_smkBlockTypeSymbol = (g_smkBlockTypeSymbol & 0xFFFF) | (HIWORD(v36) << 16);
+      // PORT (wave 25o): this is the dword_18A6AC==1 sibling of the
+      // seeded-loop replacement below - NOT confirmed live by any video
+      // observed so far (dword_18A6AC was 0 every time checked), so the
+      // g_smkFrameOutput seed here is a best-effort guess (asm never
+      // reassigns edi in this branch, so it should still hold whatever it
+      // was left as - unverified). Flagged so a hit is visible in the trace.
+      PortDebug_Checkpoint("167320.UNVERIFIED_dword_18A6AC_eq_1_path", dword_18A6AC);
+      g_smkFrameAccum = v13;
+      g_smkFrameCursor = v14;
+      while ( Smk167320_DecodeBlockTypeAndDispatch() == SmkFrame_Continue )
+        ;
+      if ( (dword_18A6AC & 1) != 0 )
+        return (_BYTE *)v36;
+      result = (_BYTE *)(dword_18A7F8 + ((unsigned int)dword_18A7F0 >> 4));
+      *result = 0;
+      return result;
     }
   }
   if ( (_WORD)v15 != 0xFFFF )

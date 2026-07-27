@@ -13653,6 +13653,42 @@ char byte_18A6C0 = '\0'; // weak
 // caller. Promoted to a global exactly like byte_18A6C0 (its constant
 // companion) so every read/consume site shares the same persistent state.
 unsigned int g_smkBitAccum = 0; // weak
+// PORT (wave 25o): sub_167320's per-frame block/pixel decoder shares ONE
+// continuous bitstream+accumulator (asm ebp=word, esi=cursor) across a
+// dispatch trampoline: sub_167320 decodes a "what kind of block is this"
+// symbol using dword_18A60C's tree, then does `jmp dword_18A650[ecx*4]` into
+// one of sub_1664F0/sub_166830/sub_167040/sub_167190 (or their 164A40-family
+// siblings), which consume MORE bits from the SAME accumulator/cursor to
+// decode pixel values, then `JUMPOUT(0x1675C0)` back into sub_167320's own
+// body to decode the next block-type symbol - a raw-jmp code-sharing trick
+// with no direct C equivalent. Hex-Rays modeled the jmp-with-register-state
+// as if each target were a real function taking the accumulator/cursor as
+// by-value parameters (a2/a4), which is only correct for a SINGLE hop - it
+// silently drops the continuation, resetting state on every trip through the
+// "loop". These two globals are the shared, persistent registers (separate
+// bitstream session from g_smkBitAccum's tree-init use, but same treatment).
+unsigned int g_smkFrameAccum = 0; // weak
+unsigned int *g_smkFrameCursor = 0; // weak
+// PORT (wave 25o): the third register in the same trampoline - asm edi, the
+// "current output write position" (block18A610-tree leaf pixel/motion data
+// gets written through it). Confirmed via dosbox-x DUMPREGS at loc_167694
+// (0x38B694) vs sub_1664F0's entry (0x38A4F0): eax/ecx/edx differ (scratch),
+// but esi/ebp/edi are IDENTICAL across the jmp - all three are persistent
+// registers threaded through the whole per-frame decode trampoline, not
+// fresh per-call values. Seeded once in sub_167320 from `*(a3+4)` (confirmed:
+// asm `mov eax,[edi+4]` right before `mov edi,eax` at loc_1675B9).
+_DWORD *g_smkFrameOutput = 0; // weak
+// PORT (wave 25o): the decoded block-type symbol register (asm eax) is
+// ALSO persistent across Smk167320_DecodeBlockTypeAndDispatch calls - the
+// original only ever does `LOWORD(v19) = ...` (asm `mov ax, ...`) when
+// combining a freshly-decoded value with the swap-table lookup, leaving the
+// HIGH word untouched from whatever eax held before (seeded once from
+// `*(a3+4)` at the very start of sub_167320, alongside g_smkFrameOutput).
+// Splitting the block-type decoder into its own function turned this into
+// a fresh (uninitialized-high-word) local each call, producing wildly wrong
+// symbol values from the second call onward. Promoted to a global for the
+// same reason as g_smkFrameAccum/Cursor/Output.
+int g_smkBlockTypeSymbol = 0; // weak
 int dword_18A6D0 = 0; // weak
 int dword_18A6E0 = 1; // weak
 int16_t word_18A7E0 = 0; // weak

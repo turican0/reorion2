@@ -10366,8 +10366,7 @@ extern int sub_1664CC();
 extern int sub_1664D8();
 // plna signatura: int16_t sub_1664E4(int a1, int a2);
 extern int16_t sub_1664E4();
-// plna signatura: int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4);
-extern int sub_1664F0();
+// plna signatura: SmkFrameStatus sub_1664F0(int a1); (wave 25o: a2/a3/a4 -> g_smkFrameAccum/Output/Cursor globals) - see full decl above
 // plna signatura: _BYTE *sub_167320(unsigned int *a1, int a2, int a3);
 extern _BYTE *sub_167320();
 // plna signatura: void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6);
@@ -17790,6 +17789,13 @@ extern int dword_18A6B0;
 extern int dword_18A6B4;
 extern char byte_18A6C0;
 extern unsigned int g_smkBitAccum; // PORT (wave 25n): persistent Smacker bit-accumulator, see orion_data.c
+extern unsigned int g_smkFrameAccum; // PORT (wave 25o): persistent per-frame decode accumulator, see orion_data.c
+extern unsigned int *g_smkFrameCursor; // PORT (wave 25o): persistent per-frame decode cursor, see orion_data.c
+extern _DWORD *g_smkFrameOutput; // PORT (wave 25o): persistent per-frame decode output pointer, see orion_data.c
+extern int g_smkBlockTypeSymbol; // PORT (wave 25o): persistent block-type symbol register, see orion_data.c
+typedef enum { SmkFrame_Continue = 0, SmkFrame_Done = 1 } SmkFrameStatus;
+SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void);
+SmkFrameStatus sub_1664F0(int a1);
 extern int dword_18A6D0;
 extern int dword_18A6E0;
 extern int16_t word_18A7E0;

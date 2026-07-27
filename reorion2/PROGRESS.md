@@ -2779,3 +2779,60 @@ dword_18A69C(v15);`), coz je STRUKTURALNE SPATNE - original by mel
 skocit jinam a nikdy se sem takhle propadnout. **Toto je novy, vetsi
 ukol pro pristi session: rekonstruovat jump-table dispatch na radku
 ~1141 (sub_167320), ne dalsi drobny pointer-bug.**
+
+## Vlna 25o (2026-07-27): rekonstrukce jump-table dispatche v sub_167320 - castecny uspech, novy bug objeven
+
+Navazuje primo na 25n. `sub_167320`'s `jmp dword_18A650[ecx*4]` (radek ~1141,
+puvodne `DECOMP_TODO("inline asm")`) je vstup do trampoliny sdilene s
+`sub_1664F0`/`sub_166830`/`sub_167040`/`sub_167190` (a sesterska ctverice
+`sub_164A40`/.../`sub_1655B0` pro jiny bitovy rezim) - kazda z nich po
+zpracovani jednoho "bloku" dela `JUMPOUT(0x1675C0)` (skok ZPET do
+sub_167320's block-type dekoderu na dalsi symbol) nebo `JUMPOUT(0x1676C0)`
+(skok do sub_167320's epilogu - cely per-snimkovy decode hotovy).
+`JUMPOUT` byl dosud no-op stub (decomp_compat.h) - tise se propadal na
+prvni `return` za nim, takze `sub_1664F0` (uz driv dekompilovana, 260
+radku) nikdy fakticky neucastnila dekodovaci smycky.
+
+**Rekonstrukce (potvrzena dosbox-x DUMPREGS na loc_167694 vs sub_1664F0
+entry - esi/ebp/edi jsou IDENTICKE pres jmp, jen eax/ecx/edx jsou
+scratch):** 3 nove globalni promenne (`g_smkFrameAccum`=ebp, `g_smkFrameCursor`
+=esi, `g_smkFrameOutput`=edi, orion_data.c) drzi stav sdileny napric CELOU
+touhle tramponlinou - presne stejna trida bugu jako 25m/25n (perzistentni
+registr, decompilator ho modeloval jako fresh hodnotu/parametr). Extrahovan
+`Smk167320_DecodeBlockTypeAndDispatch()` (novy, orion_part_26.c) z
+puvodniho LABEL_22 bloku - vraci `SmkFrameStatus` (`Continue`/`Done`)
+misto jednosmerneho jmp; `sub_167320` ho ted vola ve `while` smycce.
+`sub_1664F0` prepsana na bezparametrovou (krome `a1`) fci pouzivajici tyhle
+3 globaly, `JUMPOUT(0x1675C0)`->`return SmkFrame_Continue`,
+`JUMPOUT(0x1676C0)`->`return SmkFrame_Done`. Ostatnich 7 dispatch cilu
+(166830/167040/167190/164A40-rodina/loc_ varianty pro `dword_1826AC==1`
+rezim) jsou porad NEPORTOVANE (byly uz predtim no-op stuby v link_stubs.c)
+- nahrazeny bezpecnym `SmkDispatch_NotImplemented()` (checkpoint + Done)
+misto tichych `return 0;`, takze zasah je videt v trace misto tise
+spatneho chovani.
+
+**4. objevena instance stejne tridy bugu behem testovani:** dekodovany
+block-type symbol (`v19`/eax) sam byl TAKY perzistentni pres cele volani
+(kod dela jen `LOWORD(v19)=...`, horni slovo prezije z predchoziho stavu
+registru) - po extrakci do samostatne funkce byl `v19` cerstva
+neinicializovana lokalni promenna, takze horni bity byly smeti. Pridan
+4. globe `g_smkBlockTypeSymbol`, seedovan spolu s ostatnimi v `sub_167320`.
+
+**Vysledek testovani:** puvodni `dword_18A69C` crash v `sub_167320` UZ
+NENASTAVA - dispatch spravne dojde do `sub_1664F0` (potvrzeno
+`dispatch.index=0`). **Ale hned na 1. volani `sub_1664F0` pada s
+`STATUS_HEAP_CORRUPTION` (0xC0000374)** - `dispatch.block_type_symbol`
+vychazi extremne velke (~400 milionu), coz znamena `dword_18A7F4 += a1;`
+v `sub_1664F0` pretece do gigantickeho cisla a nasledujici
+`do {*v5++=1;} while(v5!=v6);` (byte-coverage marking smycka,
+`dword_18A7F0`/`7F4`/`7F8`) zapisuje daleko mimo alokovany buffer -
+crash se hlasi az v pozdejsim, nesouvisejicim heap volani (typicke pro
+heap-corruption, ne prime AV na miste zapisu). **OTEVRENO pro pristi
+session:** bud je hodnota `g_smkFrameAccum`/`g_smkFrameCursor` seedovana
+spatne (v13/v14 z `sub_167320`'s vlastniho `a1` parametru - overit, ze
+tohle `a1` (per-snimkova komprimovana bitova data) je na spravnem
+miste/offsetu), nebo je chyba primo v prevzatem LABEL_22 dekodovacim
+kodu (nikdy predtim netestovano, protoze se k nemu behem cele historie
+portu nedostalo - mozna ma svou vlastni, jeste neobjevenou chybu).
+Diagnosticke checkpointy `167320.seed.*`, `1664F0.write.g_smkFrameOutput`,
+`dispatch.block_type_symbol/index` ponechany v kodu.
