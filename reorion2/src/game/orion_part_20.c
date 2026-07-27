@@ -3802,29 +3802,39 @@ int sub_132C80(int a1)
   // final (100%) value. Net effect: fade logic ran correctly and
   // invisibly. Restored both calls so each step actually reaches the
   // screen.
+  // PORT (wave 25d): dword_1BB880 stores 6-bit VGA DAC values (0-63), same
+  // as byte_1BB358 which sub_132AF8 reads from - see that function's own
+  // comment. I scaled the fade percentage directly onto those 6-bit values
+  // and passed the result straight to PortVga_SetPaletteEntry, which
+  // expects 8-bit (0-255) channels - so every fade step topped out at 63
+  // (~25% brightness) instead of 255, making the ramp look dim/slow, then
+  // "jump" the instant something else (sub_131F7B/sub_132AF8, which DOES
+  // do the 6-to-8 scaling) next wrote the real palette. Fixed: apply the
+  // same `(v<<2)|(v>>4)` widening as sub_132AF8, AFTER scaling by the fade
+  // percentage (so the widening always sees the intended 0-63 range).
   sub_132B41();
   for ( int index = 0; index < 128; ++index )
   {
     ++v2; // skip the [flag] byte - same 4-byte [flag,R,G,B] layout as byte_1BB358
-    uint8_t r = *v2++;
-    uint8_t g = *v2++;
-    uint8_t b = *v2++;
+    unsigned int r = (scale * *v2++) / 100;
+    unsigned int g = (scale * *v2++) / 100;
+    unsigned int b = (scale * *v2++) / 100;
     PortVga_SetPaletteEntry(index,
-                            (uint8_t)((scale * r) / 100),
-                            (uint8_t)((scale * g) / 100),
-                            (uint8_t)((scale * b) / 100));
+                            (r << 2) | (r >> 4),
+                            (g << 2) | (g >> 4),
+                            (b << 2) | (b >> 4));
   }
   sub_132B27();
   for ( int index = 128; index < 256; ++index )
   {
     ++v2;
-    uint8_t r = *v2++;
-    uint8_t g = *v2++;
-    uint8_t b = *v2++;
+    unsigned int r = (scale * *v2++) / 100;
+    unsigned int g = (scale * *v2++) / 100;
+    unsigned int b = (scale * *v2++) / 100;
     PortVga_SetPaletteEntry(index,
-                            (uint8_t)((scale * r) / 100),
-                            (uint8_t)((scale * g) / 100),
-                            (uint8_t)((scale * b) / 100));
+                            (r << 2) | (r >> 4),
+                            (g << 2) | (g >> 4),
+                            (b << 2) | (b >> 4));
   }
 
   _BYTE *v18 = (_BYTE *)dword_1BB880;

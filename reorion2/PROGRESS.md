@@ -2337,3 +2337,32 @@ zkontrolovat, jestli to volani neni ve skutecnosti jediny zpusob, jak
 se v teto vetvi kodu vubec nekdy zavola Present() - jinak zmena
 sice zustane funkcne spravna (data se zapisou), ale VIZUALNE se
 nikdy neprojevi.
+
+## Vyresene - vlna 25d: CTVRTY bug - chybejici 6bit->8bit DAC skalovani
+## v sub_132C80 (fade vypadal "pomaly a pak skokem")
+
+Po fixu 25c uzivatel hlasil: fade uz NECO dela, ale roztmivani
+pusobi moc pomale a pak jas "podivne skoci, jako by preteklo".
+Root cause: `dword_1BB880` (alias `byte_1BB358`) uklada **6bitove**
+VGA DAC hodnoty (0-63) - presne jak dokumentuje uz drive opravena
+sesterska funkce `sub_132AF8` (`6-bit DAC values are scaled to 8 bits
+for SDL: (v<<2)|(v>>4)`). Muj puvodni prepis `sub_132C80` (vlna 25b)
+skaloval fade-procento primo na tyto 6bitove hodnoty a poslal vysledek
+rovnou do `PortVga_SetPaletteEntry` OCEKAVAJICI 8bitovy (0-255) kanal
+- kazdy krok fade tak vrcholil na 63 (~25 % skutecne svetlosti) misto
+255, cimz cely prubeh vypadal slabe/pomale, a pak NASLEDNE, jakmile
+neco jineho (sub_131F7B/sub_132AF8, ktere 6→8 skalovani DELAJI
+spravne) paletu prepsalo doopravdy, jas "skocil" na skutecnou hodnotu.
+
+Fix: aplikovano stejne `(v<<2)|(v>>4)` roztazeni jako v `sub_132AF8`,
+AZ PO vynasobeni fade-procentem (tedy roztazeni vidi vzdy spravny
+0-63 rozsah). Casovani (2 vsync-prekresleni na volani, 101 volani ≈
+2.8s) ponechano beze zmeny - architekturalne odpovida puvodnimu
+70Hz VGA hardwaru, domnenka je, ze vnimana "pomalost" byla vedlejsi
+efekt slabeho jasu, ne skutecny casovaci bug.
+
+**Pouceni:** VZDY kdyz kod cte z `byte_1BB358`/`dword_1BB880` (nebo
+jakehokoliv jineho VGA DAC-puvodu bufferu) a posila vysledek do
+`PortVga_SetPaletteEntry`, zkontrolovat 6→8bit skalovani - snadno se
+zapomene, protoze compileru/testum to nespadne, jen to vizualne
+vypada "spravne, ale slabe".
