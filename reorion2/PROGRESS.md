@@ -2300,3 +2300,40 @@ predava primo).
 sub_C5BB9/sub_C5C44) jsou DVE ROZDILNE cesty ke stejnemu vysledku
 (SDL paleta) - overeni jedne NEZNAMENA overeni druhe. Vzdy zkontrolovat
 KAZDOU funkci v retezci zvlast, ne predpokladat sdilenou infrastrukturu.
+
+## Vyresene - vlna 25c: TRETI, skutecny root cause - chybejici Present()
+## behem fade rampy (muj vlastni regresni bug z vlny 25b)
+
+Po nahlaseni "vizualne porad bez fade" i po fixu 25b, uzivateluv trace
+odhalil, ze `sub_24ED3` ve skutecnosti hraje OBE animace postupne
+(LOGO.LBX pres `sub_251EF`/`sub_C5C44` fade, PAK SIMTEX Smacker cinematic
+pres `sub_14DF7` - ne alternativy podle `sub_25259()`, jak jsem drive
+mylne predpokladal - `if(sub_25259())` vola SIMTEX POZDEJI, `else`
+LOGO.LBX napřed). Trace koncí spravne az v jiz znamem pádu task #17.
+
+Skutecna pricina "porad bez fade": **muj vlastni fix z vlny 25b
+omylem odstranil volani `sub_132B41()`/`sub_132B27()`** (povazoval
+jsem je za bezvyznamny VGA-retrace pozustatek) - ale prave TYHLE
+funkce jsou jediny zpusob, jak se v tomto portu vola
+`Port::Vga::Present()` (pres `PortVga_WaitVsync`, viz port_vga.cpp).
+`PortVga_SetPaletteEntry` sama o sobe pouze aktualizuje `g_palette[]`
+v pameti - NEPREKRESLUJE obrazovku. Vysledek: vsech 101 kroku fade
+rampy (`sub_251EF`) spravne zapisovalo spravne hodnoty do palety, ale
+obrazovka se mezitim ANI JEDNOU nepřekreslila - viditelny byl az
+DALSI, nesouvisejici Present() (napr. uvnitr `sub_124ECB`), ktery uz
+ukazal FINALNI (100%) stav bez jakekoliv viditelne animace.
+
+Fix: `sub_132B41()`/`sub_132B27()` vraceny zpet do `sub_132C80`
+(pred/mezi dvema 128-polozkovymi pulkami zapisu, stejne jako original).
+Kazde volani `sub_132C80` tak ted zpusobi 2 realne prekreslenych
+snimky (~14ms SDL_Delay kazdy) - fade-in pres 101 kroku ~ 2.8s.
+
+**Pouceni (dulezite pro dalsi praci s VGA/DAC kodem):** V tomto portu
+neni "napis do palety" a "preresli obrazovku" jedna operace - jsou to
+DVA KROKY (`PortVga_SetPaletteEntry` vs `Port::Vga::Present()`).
+Kdykoliv se ve zdrojovem kodu odstranuje zdanlive "zbytecne" VGA
+cekani-na-retrace volani (sub_132B27/sub_132B41/podobne), NUTNE
+zkontrolovat, jestli to volani neni ve skutecnosti jediny zpusob, jak
+se v teto vetvi kodu vubec nekdy zavola Present() - jinak zmena
+sice zustane funkcne spravna (data se zapisou), ale VIZUALNE se
+nikdy neprojevi.

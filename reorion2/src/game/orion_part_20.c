@@ -3787,9 +3787,37 @@ int sub_132C80(int a1)
   int scale = 100 - a1;
   uint8_t *v2 = (uint8_t *)dword_1BB880;
 
-  for ( int index = 0; index < 256; ++index )
+  // PORT (wave 25c): the original called sub_132B41()/sub_132B27() here
+  // (VGA vertical-retrace wait) BEFORE/BETWEEN the two 128-entry DAC-write
+  // halves. I dropped both calls in the first pass at this function,
+  // reasoning they were now-pointless leftover VGA timing - but in this
+  // port sub_132B27/sub_132B41 are what call Port::Vga::Present() (see
+  // PortVga_WaitVsync in port_vga.cpp): they are the ONLY thing that
+  // actually pushes g_palette[] to the screen. PortVga_SetPaletteEntry
+  // just updates that array in memory. Dropping the wait calls meant all
+  // 256 entries got written correctly on every one of the 101 fade steps
+  // sub_251EF performs, but the screen was never repainted in between -
+  // only whatever Present() ran next (elsewhere, e.g. inside sub_124ECB)
+  // showed anything, and by then the palette had already reached its
+  // final (100%) value. Net effect: fade logic ran correctly and
+  // invisibly. Restored both calls so each step actually reaches the
+  // screen.
+  sub_132B41();
+  for ( int index = 0; index < 128; ++index )
   {
     ++v2; // skip the [flag] byte - same 4-byte [flag,R,G,B] layout as byte_1BB358
+    uint8_t r = *v2++;
+    uint8_t g = *v2++;
+    uint8_t b = *v2++;
+    PortVga_SetPaletteEntry(index,
+                            (uint8_t)((scale * r) / 100),
+                            (uint8_t)((scale * g) / 100),
+                            (uint8_t)((scale * b) / 100));
+  }
+  sub_132B27();
+  for ( int index = 128; index < 256; ++index )
+  {
+    ++v2;
     uint8_t r = *v2++;
     uint8_t g = *v2++;
     uint8_t b = *v2++;
