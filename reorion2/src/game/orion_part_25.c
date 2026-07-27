@@ -3,12 +3,17 @@
 /* Adresni rozsah: 0x1642A0 - 0x166150  (200 funkci) */
 
 //----- (001642A0) --------------------------------------------------------
+// PORT (wave 25m): `a5` (bitstream cursor) must be threaded through as a
+// pointer-to-the-caller's-cursor, not a fresh value - see the matching fix
+// in sub_1646A0 (asm passes this via a persistent ESI register that
+// survives across all 4 sub_164600 calls; the decompiler mis-modeled it as
+// `(unsigned int*)(a1+4096)` re-derived identically on every call).
 char sub_1642A0(
         int a1,
         _DWORD *a2,
         unsigned int a3,
         int *a4,
-        unsigned int *a5)
+        unsigned int **a5)
 {
   char v5; // bl
   unsigned int v6; // ebp
@@ -69,8 +74,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v9 = a3;
     --v8;
-    v10 = *a5;
-    v7 = (*a5++ << v8) | v9;
+    v10 = **a5;
+    v7 = (*(*a5)++ << v8) | v9;
     v6 = v10 >> ~(v8 - 9);
   }
   else
@@ -87,8 +92,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v16 = v6;
     --v15;
-    v17 = *a5;
-    v14 = (*a5++ << v15) | v16;
+    v17 = **a5;
+    v14 = (*(*a5)++ << v15) | v16;
     v13 = v17 >> ~(v15 - 9);
   }
   else
@@ -108,8 +113,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v24 = v13;
     --v23;
-    v25 = *a5;
-    v22 = (*a5++ << v23) | v24;
+    v25 = **a5;
+    v22 = (*(*a5)++ << v23) | v24;
     v21 = v25 >> ~(v23 - 9);
   }
   else
@@ -126,8 +131,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v31 = v21;
     --v30;
-    v32 = *a5;
-    v29 = (*a5++ << v30) | v31;
+    v32 = **a5;
+    v29 = (*(*a5)++ << v30) | v31;
     v28 = v32 >> ~(v30 - 9);
   }
   else
@@ -147,8 +152,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v39 = v28;
     --v38;
-    v40 = *a5;
-    v37 = (*a5++ << v38) | v39;
+    v40 = **a5;
+    v37 = (*(*a5)++ << v38) | v39;
     v36 = v40 >> ~(v38 - 9);
   }
   else
@@ -165,8 +170,8 @@ char sub_1642A0(
     byte_18A6C0 += 24;
     v46 = v36;
     --v45;
-    v47 = *a5;
-    v44 = (*a5++ << v45) | v46;
+    v47 = **a5;
+    v44 = (*(*a5)++ << v45) | v46;
     v43 = v47 >> ~(v45 - 9);
   }
   else
@@ -216,7 +221,7 @@ char sub_1642A0(
     {
       if ( !--byte_18A6C0 )
       {
-        v43 = *a5++;
+        v43 = *(*a5)++;
         byte_18A6C0 = 32;
       }
       v49 = v43 & 1;
@@ -238,7 +243,7 @@ char sub_1642A0(
     {
       if ( !--byte_18A6C0 )
       {
-        v43 = *a5++;
+        v43 = *(*a5)++;
         byte_18A6C0 = 32;
       }
       v49 = v43 & 1;
@@ -254,7 +259,7 @@ char sub_1642A0(
     {
       if ( !--byte_18A6C0 )
       {
-        v43 = *a5++;
+        v43 = *(*a5)++;
         byte_18A6C0 = 32;
       }
       v49 = v43 & 1;
@@ -353,12 +358,14 @@ int sub_164590(int a1, int a2)
 
 
 //----- (00164600) --------------------------------------------------------
+// PORT (wave 25m): `a5` threaded through as a pointer-to-cursor - see the
+// matching fix in sub_1646A0 and sub_1642A0/sub_164200.
 int sub_164600(
         int result,
         _DWORD *a2,
         unsigned int a3,
         int a4,
-        unsigned int *a5)
+        unsigned int **a5)
 {
   char v5; // cf
   unsigned int v6; // ebp
@@ -369,34 +376,41 @@ int sub_164600(
 
   if ( !--byte_18A6C0 )
   {
-    a3 = *a5++;
+    a3 = *(*a5)++;
     byte_18A6C0 = 32;
   }
   v5 = a3 & 1;
   v6 = a3 >> 1;
+  PortDebug_CheckpointPtr("164600.entry.a2", (void*)a2);
+  PortDebug_Checkpoint("164600.entry.v5_branch", v5);
   if ( v5 )
   {
     v10 = result;
     v9 = (int *)result;
     if ( !--byte_18A6C0 )
     {
-      v6 = *a5++;
+      v6 = *(*a5)++;
       byte_18A6C0 = 32;
     }
     v5 = v6 & 1;
     v7 = v6 >> 1;
+    PortDebug_CheckpointPtr("164600.big.cursor_before1st164200", (void*)*a5);
     if ( v5 )
       sub_164200(v7, (unsigned int *)dword_18A68C, a5);
+    PortDebug_CheckpointPtr("164600.big.cursor_after1st164200", (void*)*a5);
     if ( !--byte_18A6C0 )
     {
-      v7 = *a5++;
+      v7 = *(*a5)++;
       byte_18A6C0 = 32;
     }
     v5 = v7 & 1;
     v8 = v7 >> 1;
+    PortDebug_CheckpointPtr("164600.big.cursor_before2nd164200", (void*)*a5);
     if ( v5 )
       sub_164200(v8, (unsigned int *)dword_18A690, a5);
+    PortDebug_CheckpointPtr("164600.big.cursor_after2nd164200", (void*)*a5);
     sub_1642A0(result, a2, v8, v9, a5);
+    PortDebug_CheckpointPtr("164600.big.cursor_after1642A0", (void*)*a5);
     return sub_164590(v10, a4);
   }
   else
@@ -444,10 +458,26 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   dword_18A6B0 = 11;
   dword_18A6B4 = 2048;
   dword_18A6A4 = a2;
-  sub_164600(a2 + 29800, &block18A610[0], 0, a2 + 16, (unsigned int *)(a1 + 4096));
+  // PORT (wave 25m): the asm sets ESI = a1+4096 ONCE (right after computing
+  // dword_18A68C/690 above) and NEVER reloads it before any of the 4
+  // `call sub_164600` below - the bitstream cursor lives in that one
+  // persistent register for the whole function, each call picking up
+  // exactly where the previous one left off. The decompiler mis-modeled
+  // this as `(unsigned int*)(a1+4096)` re-derived identically on every
+  // call, silently resetting the cursor back to the start each time and
+  // desyncing every call after the first from the real bitstream position
+  // (confirmed against dosbox-x: the original's ESI strictly increases
+  // across all 4 calls, and all 4 always take the "build a real tree"
+  // branch, never the "reuse" shortcut our reset caused calls 2-4 to take).
+  // Fixed with one local cursor variable, threaded through &bitstreamCursor.
+  unsigned int *bitstreamCursor = (unsigned int *)(a1 + 4096);
+  PortDebug_CheckpointPtr("1646A0.cursor.before1", (void*)bitstreamCursor);
+  sub_164600(a2 + 29800, &block18A610[0], 0, a2 + 16, &bitstreamCursor);
+  PortDebug_CheckpointPtr("1646A0.cursor.before2", (void*)bitstreamCursor);
   dword_18A6B0 = 10;
   dword_18A6B4 = 1024;
-  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &block18A610[4], 0, dword_18AC04 + 8208, (unsigned int *)(a1 + 4096));
+  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &block18A610[4], 0, dword_18AC04 + 8208, &bitstreamCursor);
+  PortDebug_CheckpointPtr("1646A0.cursor.before3", (void*)bitstreamCursor);
   dword_18A6B0 = 12;
   dword_18A6B4 = 4096;
   sub_164600(
@@ -455,7 +485,8 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
     &block18A610[8],
     0,
     dword_18AC04 + 12304,
-    (unsigned int *)(a1 + 4096));
+    &bitstreamCursor);
+  PortDebug_CheckpointPtr("1646A0.cursor.before4", (void*)bitstreamCursor);
   dword_18A6B0 = 8;
   dword_18A6B4 = 256;
   sub_164600(
@@ -463,7 +494,7 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
     &block18A610[12],
     0,
     dword_18AC04 + 28688,
-    (unsigned int *)(a1 + 4096));
+    &bitstreamCursor);
   v6 = (_DWORD *)dword_18AC04;
   *(_DWORD *)dword_18AC04 = dword_18AC08;
   v6[1] = dword_18AC0C;

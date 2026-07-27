@@ -2674,3 +2674,60 @@ nespravny a rizikovy bez individualniho posouzeni KAZDEHO mista (jaky
 je skutecny puvod/vyznam dat na danem bajtovem offsetu). **Ponechano
 pro samostatnou, opatrnejsi analyzu v budouci session** - nejde o
 mechanickou opravu.
+
+## Vlna 25m: bug #4 - SKUTECNY root cause nalezen a z velke casti opraven -
+## bitstreamovy kurzor se resetoval mezi volanimi sub_164600 (task #17
+## pokracovani, na uzivateluv navrh "porovnej s dosboxem" a "pridej vic
+## kontrolnich bodu pred timto mistem, najdi kde se to rozchazi")
+
+Pokracovani vlny 25k (`dword_18A69C(v15)` pad - user poskytl DALSI presny
+VS-debugger repro na stejnem funkcnim retezci).
+
+**Skutecny root cause nalezen pres asm analyzu `sub_1646A0`:** bitstreamovy
+kurzor (`a5` parametr napric `sub_164600`/`sub_164200`/`sub_1642A0`) se v
+PUVODNIM asm predava IMPLICITNE pres registr ESI, ktery se nastavi JEDNOU
+(`a1+4096`) hned po vypoctu `dword_18A68C`/`690`, a NIKDY se pred zadnym
+ze 4 `call sub_164600` znovu nenacita - kurzor tak PRIROZENE prezije
+(a postupuje) napric vsemi 4 volanimi, protoze ESI je STANDARDNE
+callee-saved registr. Dekompilator tohle spatne zrekonstruoval jako
+`(unsigned int*)(a1+4096)` PREPOCITAVANE identicky pri kazdem ze 4 volani -
+tise RESETOVALO kurzor na zacatek pri kazdem volani, cimz se volani 2-4
+citala uplne SPATNA DATA (misto pokracovani tam, kde skoncilo volani 1).
+
+**Fix:** `sub_1646A0` ted drzi JEDNU lokalni promennou
+`unsigned int *bitstreamCursor` a predava `&bitstreamCursor` do vsech 4
+volani `sub_164600`. Signatury `sub_164600`/`sub_164200`/`sub_1642A0`
+zmeneny z `unsigned int *a5` (hodnota) na `unsigned int **a5` (ukazatel na
+volajiciho kurzor), vsechna interni `*a5++` prepsana na `*(*a5)++` (cte
+soucasnou hodnotu, POSOUVA kurzor VOLAJICIHO). **Bonus nalez:** `sub_164200`
+se navic vola z 9 dalsich mist uvnitr `sub_1676F0` (orion_part_26.c) se
+SDILENOU lokalni promennou `v7` - i TAM byl potreba stejny fix
+(`v7`→`&v7`), protoze funkce mezi jednotlivymi `sub_164200` volanimi sama
+cte dalsi bity ze STEJNEHO `v7` a bez threadingu by take cetla ze
+spatneho mista.
+
+**Overeni (checkpointy + dosbox porovnani):** pred fixem port bral pro
+4 volani `sub_164600` uvnitr JEDNE `sub_1646A0` vetve `1,0,0,0`
+("velky strom" jen pro prvni, zbytek chybne "maly/reuse"). Dosbox
+potvrdil original bere VZDY `1,1,1,1` (vsechna 4 vzdy stavi realny
+strom). Po fixu kurzor spravne POSTUPUJE mezi volanimi (misto
+zustavani na stejne hodnote) - delta pro cele volani #1
+(pred-prvnim-volanim → pred-druhym-volanim) je nyni **68256 bajtu**,
+dosbox potvrzuje original spotrebuje **68252 bajtu** - rozdil pouhe
+**4 bajty (1 slovo)** z celkovych ~68 tisic!
+
+**Zuzeno jeste dal (dosbox DUMPREGS na presnych asm adresach
+loc_164666/loc_164676):** spotreba OBOU volani `sub_164200` (uvnitr
+`sub_164600`, pro `dword_18A68C`/`690` stromy) SEDI PRESNE s originalem
+(320 a 160 bajtu, bit-presne). Rozdil 4 bajty je tedy izolovan
+VYHRADNE uvnitr `sub_1642A0` (drivejsi fix z vlny 24d) - nekde v
+tamnim stavebnim cyklu se cte o jedno slovo bitstreamu navic oproti
+originalu. **OTEVRENO pro pristi session** - dalsi krok: bit-presne
+porovnat `sub_1642A0`v vnitrni smycku (preambule word_18A7E0/E2/E4 je
+pevna/deterministicka, podezreni padá na strom-stavici smycku a jeji
+ukoncovaci logiku).
+
+Docasne diagnosticke checkpointy (`164600.entry.*`, `1646A0.cursor.*`,
+`164600.big.cursor_*`, `167320.branchA.*`, `167320.a3*`,
+`167320.dword_18A69C`) PONECHANY v kodu pro pokracovani v pristi
+session.

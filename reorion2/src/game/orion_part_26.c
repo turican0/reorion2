@@ -1149,6 +1149,9 @@ LABEL_31:
   // class as the rest of this file, fixed by reading the 32-bit value and
   // widening it explicitly.
   dword_18A69C = (int (*)(_DWORD))(uintptr_t)*(_DWORD *)(a3 + 4);
+  PortDebug_Checkpoint("167320.a3.raw", a3);
+  PortDebug_Checkpoint("167320.a3plus4.raw", *(_DWORD *)(a3 + 4));
+  PortDebug_CheckpointPtr("167320.dword_18A69C", (void*)dword_18A69C);
   v15 = *(uint16_t *)(a3 + 8);
   dword_18A680 = v15;
   dword_18A6A0 = a3 + 10;
@@ -1370,7 +1373,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v67 = v45 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v67, (unsigned int *)dword_18AC24, v7);
+        sub_164200(v67, (unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
           v67 = *v7++;
@@ -1378,7 +1381,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v68 = v67 >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v68, (unsigned int *)(dword_18AC24 + 2048), v7);
+        sub_164200(v68, (unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( !--byte_18A6C0 )
         {
           v68 = *v7++;
@@ -1386,7 +1389,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v69 = v68 >> 1;
         dword_18A694 = dword_18AC24 + 4096;
-        sub_164200(v69, (unsigned int *)(dword_18AC24 + 4096), v7);
+        sub_164200(v69, (unsigned int *)(dword_18AC24 + 4096), &v7);
         if ( !--byte_18A6C0 )
         {
           v69 = *v7++;
@@ -1394,7 +1397,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v70 = v69 >> 1;
         dword_18A698 = dword_18AC24 + 6144;
-        sub_164200(v70, (unsigned int *)(dword_18AC24 + 6144), v7);
+        sub_164200(v70, (unsigned int *)(dword_18AC24 + 6144), &v7);
         if ( dword_18AC20 )
         {
           v72 = (_DWORD *)dword_18AC30;
@@ -1557,7 +1560,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v46 = v45 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v46, (unsigned int *)dword_18AC24, v7);
+        sub_164200(v46, (unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
           v46 = *v7++;
@@ -1565,7 +1568,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v47 = v46 >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v47, (unsigned int *)(dword_18AC24 + 2048), v7);
+        sub_164200(v47, (unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( dword_18AC20 )
         {
           v48 = (_WORD *)dword_18AC30;
@@ -1666,7 +1669,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v24 = v11 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v24, (unsigned int *)dword_18AC24, v7);
+        sub_164200(v24, (unsigned int *)dword_18AC24, &v7);
         if ( !--byte_18A6C0 )
         {
           v24 = *v7++;
@@ -1674,7 +1677,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v25 = v24 >> 1;
         dword_18A690 = dword_18AC24 + 2048;
-        sub_164200(v25, (unsigned int *)(dword_18AC24 + 2048), v7);
+        sub_164200(v25, (unsigned int *)(dword_18AC24 + 2048), &v7);
         if ( dword_18AC20 )
         {
           v26 = (_WORD *)dword_18AC30;
@@ -1767,7 +1770,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
         }
         v12 = v11 >> 1;
         dword_18A68C = dword_18AC24;
-        sub_164200(v12, (unsigned int *)dword_18AC24, v7);
+        sub_164200(v12, (unsigned int *)dword_18AC24, &v7);
         if ( dword_18AC20 )
         {
           v13 = (_BYTE *)dword_18AC30;

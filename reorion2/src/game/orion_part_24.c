@@ -5645,7 +5645,15 @@ double sub_163EAA( int a1, double *a2, double result)
 // directly from Debug/diss/Orion2.exe.asm (sub_164200 @ 0x164200), using an
 // explicit array as the same kind of side stack the original used (registers
 // there: a1/ebp=bit accumulator, a2/edi=output cursor, a3/esi=bitstream).
-void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
+// PORT (wave 25m): `a3` (the bitstream cursor) is NOT a fresh parameter on
+// each outer call - see the caller-side fix in sub_1646A0 for the full
+// explanation (asm passes it via a persistent ESI register that survives
+// across all 4 sub_164600 calls, which the decompiler mis-modeled as
+// `(unsigned int*)(a1+4096)` re-derived identically every time). Changed
+// to `unsigned int **a3` (pointer to the CALLER's cursor variable) so this
+// function's own advancement of the bitstream position is visible to,
+// and threaded through, every other call in the chain.
+void sub_164200(unsigned int a1, unsigned int *a2, unsigned int **a3)
 {
   // PORT (wave 24e): asm sets `mov eax, 80000000h` ONCE before the loop
   // (Debug/diss/Orion2.exe.asm sub_164200+0) and every leaf write thereafter
@@ -5672,7 +5680,7 @@ void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
   {
     if ( !--byte_18A6C0 )
     {
-      a1 = *a3++;
+      a1 = *(*a3)++;
       byte_18A6C0 = 32;
     }
     char carryClear = (a1 & 1) == 0;
@@ -5700,8 +5708,8 @@ void sub_164200(unsigned int a1, unsigned int *a2, unsigned int *a3)
         byte_18A6C0 += 24;
         v7 = a1;
         --v6;
-        v8 = *a3;
-        LOBYTE(v3) = (*a3++ << v6) | v7;
+        v8 = **a3;
+        LOBYTE(v3) = (*(*a3)++ << v6) | v7;
         a1 = v8 >> ~(v6 - 9);
       }
       else
