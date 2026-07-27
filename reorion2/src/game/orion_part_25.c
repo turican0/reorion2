@@ -444,15 +444,15 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   dword_18A6B0 = 11;
   dword_18A6B4 = 2048;
   dword_18A6A4 = a2;
-  sub_164600(a2 + 29800, &dword_18A610, 0, a2 + 16, (unsigned int *)(a1 + 4096));
+  sub_164600(a2 + 29800, &block18A610[0], 0, a2 + 16, (unsigned int *)(a1 + 4096));
   dword_18A6B0 = 10;
   dword_18A6B4 = 1024;
-  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &dword_18A620, 0, dword_18AC04 + 8208, (unsigned int *)(a1 + 4096));
+  sub_164600(dword_18AC08 + dword_18AC04 + 29800, &block18A610[4], 0, dword_18AC04 + 8208, (unsigned int *)(a1 + 4096));
   dword_18A6B0 = 12;
   dword_18A6B4 = 4096;
   sub_164600(
     dword_18AC0C + dword_18AC08 + dword_18AC04 + 29800,
-    &dword_18A630,
+    &block18A610[8],
     0,
     dword_18AC04 + 12304,
     (unsigned int *)(a1 + 4096));
@@ -460,7 +460,7 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   dword_18A6B4 = 256;
   sub_164600(
     dword_18AC10 + dword_18AC0C + dword_18AC08 + dword_18AC04 + 29800,
-    &dword_18A640,
+    &block18A610[12],
     0,
     dword_18AC04 + 28688,
     (unsigned int *)(a1 + 4096));
@@ -469,7 +469,7 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
   v6[1] = dword_18AC0C;
   v6[2] = dword_18AC10;
   v6[3] = dword_18AC14;
-  qmemcpy(v6 + 7429, &dword_18A610, 0x40u);
+  qmemcpy(v6 + 7429, &block18A610[0], 0x40u);
   memset((void *)dword_18AC00, 0, 0x2000u);
   v7 = (_DWORD *)dword_18AC00;
   sub_1649E0(*(_DWORD *)dword_18AC04, dword_18AC00, dword_18AC04);
@@ -502,10 +502,6 @@ unsigned int sub_1646A0(int a1, int a2, int a3, int a4, int a5, int a6)
            *(_DWORD *)(dword_18AC04 + 12),
            *(_DWORD *)(dword_18AC04 + 8) + *(_DWORD *)(dword_18AC04 + 4) + *(_DWORD *)dword_18AC04 + dword_18AC04);
 }
-// 18A610: using guessed type _DWORD dword_18A610;
-// 18A620: using guessed type _DWORD dword_18A620;
-// 18A630: using guessed type _DWORD dword_18A630;
-// 18A640: using guessed type _DWORD dword_18A640;
 // 18A68C: using guessed type int dword_18A68C;
 // 18A690: using guessed type int dword_18A690;
 // 18A6A4: using guessed type int dword_18A6A4;
@@ -765,13 +761,13 @@ int sub_164A40(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
 LABEL_16:
       byte_18A6C0 = v11;
       HIWORD(v18) = HIWORD(v13);
-      if ( *(_DWORD *)dword_18A624 != v13 )
+      if ( *(_DWORD *)block18A610[5] != v13 )
       {
         dword_18A678 = v13;
-        v18 = *(_DWORD *)dword_18A624;
-        v19 = (int *)dword_18A628;
-        *(_DWORD *)dword_18A624 = v13;
-        v20 = (int *)dword_18A62C;
+        v18 = *(_DWORD *)block18A610[5];
+        v19 = (int *)block18A610[6];
+        *(_DWORD *)block18A610[5] = v13;
+        v20 = (int *)block18A610[7];
         v21 = *v19;
         *v19 = v18;
         HIWORD(v18) = HIWORD(dword_18A678);
@@ -823,13 +819,13 @@ LABEL_27:
       byte_18A6C0 = v26;
       LOWORD(v18) = v32;
       v33 = __ROR4__(v32, 16);
-      if ( *(_DWORD *)dword_18A614 != v33 )
+      if ( *(_DWORD *)block18A610[1] != v33 )
       {
         dword_18A678 = v18;
-        v34 = *(_DWORD *)dword_18A614;
-        v22 = (int *)dword_18A618;
-        *(_DWORD *)dword_18A614 = v33;
-        v35 = (_DWORD *)dword_18A61C;
+        v34 = *(_DWORD *)block18A610[1];
+        v22 = (int *)block18A610[2];
+        *(_DWORD *)block18A610[1] = v33;
+        v35 = (_DWORD *)block18A610[3];
         v36 = *v22;
         *v22 = v34;
         v18 = dword_18A678;
@@ -911,12 +907,6 @@ LABEL_45:
 // 164C7A: variable 'v44' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;
-// 18A614: using guessed type int dword_18A614;
-// 18A618: using guessed type int dword_18A618;
-// 18A61C: using guessed type int dword_18A61C;
-// 18A624: using guessed type int dword_18A624;
-// 18A628: using guessed type int dword_18A628;
-// 18A62C: using guessed type int dword_18A62C;
 // 18A660: using guessed type int dword_18A660;
 // 18A664: using guessed type int dword_18A664;
 // 18A668: using guessed type int dword_18A668;

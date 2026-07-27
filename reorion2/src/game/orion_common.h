@@ -17758,19 +17758,11 @@ extern int dword_18A600;
 extern int dword_18A604;
 extern int dword_18A608;
 extern int dword_18A60C;
-extern _DWORD dword_18A610;
-extern int dword_18A614;
-extern int dword_18A618;
-extern int dword_18A61C;
-extern _DWORD dword_18A620;
-extern int dword_18A624;
-extern int dword_18A628;
-extern int dword_18A62C;
-extern _DWORD dword_18A630;
-extern _DWORD dword_18A640;
-extern int dword_18A644;
-extern int dword_18A648;
-extern int dword_18A64C;
+// PORT (wave 25h): overlay for one contiguous 64-byte block, formerly 13
+// separate 4-byte globals (dword_18A610/614/618/61C/620/624/628/62C/630/
+// 640/644/648/64C) - see the backing array comment in orion_data.c. All
+// call sites now index block18A610[] directly instead of using macros.
+extern uint32_t block18A610[16];
 extern int dword_18A650;
 extern int dword_18A654;
 extern int dword_18A658;
@@ -21021,7 +21013,6 @@ extern _UNKNOWN unk_183938;
 extern _UNKNOWN unk_183B46;
 extern _UNKNOWN unk_183B93;
 extern _UNKNOWN unk_183CEB;
-extern _UNKNOWN unk_18A610;
 extern _UNKNOWN unk_199A12;
 extern _UNKNOWN unk_19B772;
 extern _UNKNOWN unk_19C048;

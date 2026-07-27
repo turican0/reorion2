@@ -2366,3 +2366,150 @@ jakehokoliv jineho VGA DAC-puvodu bufferu) a posila vysledek do
 `PortVga_SetPaletteEntry`, zkontrolovat 6→8bit skalovani - snadno se
 zapomene, protoze compileru/testum to nespadne, jen to vizualne
 vypada "spravne, ale slabe".
+
+## Vyresene - vlna 25e: PATY bug - roztrzena (non-atomicka) aktualizace
+## palety v sub_132C80 ("druhy fade divne pomrkava")
+
+Po fixu 25d uzivatel: prvni fade (sub_251EF, 101 jemnych 1% kroku)
+uz vypada dobre (a shoduje se s dosboxem vc. pocatecniho bleskoveho
+rozsviceni pred prvnim stmivanim - NENI to bug, viz nize). Ale
+"druhy fade" (na konci prechodu mezi fazemi LOGO.LBX) "divne
+pomrkava". Bisekce: `sub_C5C44` (volana mezi loop1/loop2) je
+POTVRZENE no-op i v originalu (dosbox: `byte_18319C=0` pri vstupu,
+presne jako v portu - `if(byte_18319C)` guard nikdy neprojde).
+Skutecny "druhy fade" je `sub_2518F` (volana `sub_24ED3` hned na
+zacatku "if(!v1)" bloku) - PRESNE OVERENO proti asm (`add edx,0Ah`),
+takze 11 HRUBYCH kroku po 10 % (0,10,...,100) je autenticke, ne
+decompiler bug.
+
+Root cause "pomrkavani": `sub_132C80` volalo `sub_132B41()`
+(Present) PO zapisu prvni pulky (indexy 0-127) a PRED zapisem druhe
+pulky (128-255) - takze kazdy Present() bud ukazal STAROU paletu
+(pred zacatkem kroku), NEBO "roztrzenou" paletu (pulka uz na nove
+hodnote, pulka jeste na stare)! Na skutecnem VGA hardwaru puvodni hra
+zapisovala do DAC portu behem `_disable()`/`_enable()` (prerusenim
+zakazano) a cekani na retrace davalo bezpecne okno mimo aktivni
+scan - roztrzeny stav NIKDY nebyl VIDITELNY. V portu Present()
+okamzite prekresli CELOU obrazovku bez ohledu na "scan pozici", takze
+roztrzena paleta byla viditelna po dobu celeho snimku (~14ms). Skoro
+neznatelne u 101 jemnych 1% kroku (`sub_251EF`), ale nápadné u 11
+hrubych 10% kroku (`sub_2518F`) - presne to uzivatel popsal jako
+"pomrkavani".
+
+Fix: v `sub_132C80` presunuty OBA zapisy (vsech 256 polozek) PRED oba
+`sub_132B41()`/`sub_132B27()` (Present) volani - kazdy viditelny
+snimek tak vzdy ukazuje kompletne konzistentni paletu. Casovani
+(2 prezentace na volani) zachovano beze zmeny.
+
+**Pouceni:** kdyz port nahrazuje "cekani na hardwarovy retrace/blanking"
+za "okamzite prekresleni obrazovky" (Present), MUSI se zkontrolovat,
+jestli puvodni kod NEROZDELOVAL nejakou logicky ATOMICKOU zmenu (napr.
+celou paletu) na vice davek prave proto, ze na hardwaru byl retrace-wait
+mezi nimi NEVIDITELNY bezpecnostni bod - v portu bez teto vlastnosti
+je treba vsechny davky spojit PRED prvnim Present() volanim.
+
+## Vlna 25f: DUMPPAL nastroj v dosbox-x + sub_81547 fix + opravena
+## vlastni chybna diagnoza "loop1/loop2 konci okamzite"
+
+Na uzivateluv pozadavek ("nemuzes se podivat do kodu dosbox-x a pridat
+funkci pro dump palety, porovnat s nasim portem?") pridan novy prikaz
+**`DUMPPAL cond=eip:0xADDR start=N count=M label=x [repeat=always]`**
+do `dosbox-x-remc2/src/engine/engine.cpp` - vypisuje SKUTECNE
+vykreslovanou VGA DAC paletu (`vga.dac.rgb[]`, 6bitove hodnoty), ne
+jen zdrojova data v pameti hry. Vsimnuto mimochodem: `DUMPMEM` vubec
+neparsuje `repeat=` (dump jen jednou pri prvnim zasahu) - `DUMPPAL` to
+ma opravene/podporovane. Zdokumentovano v
+`genCompare/DOSBOX_CTL_PROTOCOL.md` (TODO: doplnit at commit).
+
+**Vysledek trace (fade-in i fade-out, cely dosbox prubeh):** mezikrokove
+rozestupy konzistentne ~86000-88500 cyklu, ZADNE anomalie/zaskobrtnuti -
+original je hladky. Mezi fade-in a fade-out je ale mezera ~36M cyklu
+(perioda, kdy `sub_132C80` vubec nevola - "loop1" jen sleduje/ceka).
+
+**Bug nalezen a opraven:** `sub_81547` (orion_part_07.c, pouzivano v
+`sub_24ED3` pro porovnani "zmenil se zobrazeny snimek") melo
+`HIWORD(v3) = HIWORD(dword_1B06FC); LOWORD(v3) = *(WORD*)(dword_1B06FC+6);
+return v3-1;` - VERIFIKOVANO 1:1 vuci asm (`mov eax,dword_1A86FC; mov
+ax,[eax+6]; dec eax`), NENI to decompiler bug, je to autenticky puvodni
+kod. Problem: `mov ax,...` prepise jen DOLNI 16 bitu EAX, horni pulka
+zustava z PREDCHOZIHO nacteni CELEHO ukazatele - v DOS4GW s malymi
+predikovatelnymi adresami to bylo nahodou nevyznamne (~0), ale v portu
+s realnou haldou je horni pulka ukazatele velke nenulove cislo, takze
+porovnani `sub_12D70B() == sub_81547(...)` v originale funkcni logice
+(16bitova hodnota) je v portu prakticky VZDY FALSE (mimo nahodnou
+shodu, jednou pozorovanou). Fix: vraceno cistych 16 bitu bez pointerove
+primesi - dolnich 16 bitu vysledku `v3-1` je MATEMATICKY STEJNYCH bez
+ohledu na to, jestli se odecte 1 od cele 32bit hodnoty nebo jen od
+16bit hodnoty (vypujcka nikdy neovlivni uz spocitane nizsi bity), takze
+fix nemeni chovani v puvodnim (funkcnim) pripade, jen odstranuje
+zavislost na adrese haldy.
+
+**DULEZITA OPRAVA VLASTNI CHYBNE DIAGNOZY:** puvodne jsem se domnival,
+ze `loop1`/`loop2` v `sub_24ED3` konci "okamzite" (na zaklade toho, ze
+se nikdy nezobrazil checkpoint `loop1.tick`, ktery tiskne kazdych 200
+iteraci) - ale `loop1` ma jen 15 iteraci CELKEM (v7=15 countdown), takze
+tenhle checkpoint NEMEL SANCI se zobrazit bez ohledu na skutecny
+uplynuly cas! Zmereno realne (`time` prikaz): **cely beh (intro az po
+znamy pad v sub_14AA40) trva ~9.4 sekundy realneho casu** - `sub_12C2C6`
+(BIOS-tick-based pacing pres jiz drive opravenou `PortDos_BiosTick`)
+FUNGUJE SPRAVNE a dava kazde iteraci loop1/loop2 realne tempo. Puvodni
+hypoteza "loop1 konci bez cekani" byla tedy MYLNA - fix sub_81547 zustava
+platny (je to skutecna portovaci chyba), ale NENI to hlavni pricina
+zbyvajiciho lehkeho pomrkavani, ktere uzivatel hlasil. Skutecna pricina
+zbyvajiciho pomrkavani zatim NENI jednoznacne identifikovana - kandidati
+pro pristi session: (a) 11 hrubych 10% kroku fade-outu (`sub_2518F`)
+proti 101 jemnym u fade-in - i po fixu atomicity muze byt vizualne
+znatelnejsi/"schodovity", coz muze uzivatel vnimat jako "pomrkavani" i
+kdyz technicky neni bug; (b) SDL_Delay(14) presnost/OS scheduling
+jitter v ramci `PortVga_WaitVsync`; (c) neco specifickeho jeste
+neprozkoumaneho v prechodu mezi fazemi. Dalsi krok: pockat na uzivateluv
+vizualni test aktualniho buildu, pripadne pridat DUMPPAL analogii do
+portu (port_vga.cpp) pro primo srovnatelny per-krok vypis nasi vlastni
+`g_palette[]` a porovnat cyklus-za-cyklem s dosbox referenci.
+
+## Vlna 25i: task #17 pokracovani (VS debugger repro) - 2 bugy nalezeny a
+## opraveny, treti (hlubsi) jeste otevreny
+
+Uzivatel poskytl presny VS-debugger repro: pad v `sub_14AA40` radek 1584
+(`*v21 = 1;`), `v21 = *(_BYTE**)(a7+928)`.
+
+**Bug #1 (opraveno):** stejna trida x64 sirky ukazatele jako drive v
+teto session, tentokrat s `_BYTE**` (ne `_DWORD**`/`char**` jako drive -
+proto unikl puvodnimu greppu). `a7+928` je jinde v souboru dusledne
+`*(_DWORD*)` (32bit), takze `*(_BYTE**)` na x64 natahuje sousedni pametu
+jako horni pulku adresy. Opraveno na vsech 3 mistech v souboru
+(orion_part_22.c radky ~1575,1583,1750: `sub_14AA40` a sesterska funkce).
+Po fixu pad postoupil dal (sub_167320, volana z sub_14B4D0).
+
+**Bug #2 (opraveno):** `dword_18A610/614/618/61C/620/624/628/62C/630/
+640/644/648/64C` (+ `unk_18A610`, alias STEJNE adresy pod jinym jmenem z
+jineho dekompilacniho pruchodu) - 13 samostatnych 4bajtovych globalu,
+ve skutecnosti JEDEN souvisly 64bajtovy (16-dword) blok v puvodnim
+.data segmentu (OVERENO v asm: `dword_182610 dd 0`, kazdy dalsi symbol
+presne 4 bajty za predchozim, az po `dword_182650` ktery je jiz jinou,
+potvrzene nesouvisejici tabulkou funkcnich ukazatelu). C negarantuje
+souvislé, mezerami neprerusene rozlozeni samostatne deklarovanych
+globalu - `qmemcpy(cil, &dword_18A610, 0x40)` v `sub_1646A0`
+(orion_part_25.c) tak kopirovalo smetí ze sousednich, nesouvisejicich
+promennych. Fix: sloučeno do `uint32_t block18A610[16]`
+(orion_data.c), VSECHNA volajici mista v orion_part_25.c/orion_part_26.c
+prepsana na primou indexaci `block18A610[N]` (na uzivateluv vyslovny
+pozadavek - ZADNE `#define` makro-preklady, primy zapis v kazdem
+volacim miste).
+
+**Bug #3 (OTEVRENO, dalsi session):** i po obou opravach pad v
+`sub_167320` presetrvava - jen se posunul v ramci STEJNE
+sebe-referencni fixup smycky (drive `*v10=v9`, ted `*v11=v9`, o jeden
+zapis dal ve stejne skupine). To znamena: `block18A610` uz je spravne
+velky a NEPRETEKA, ale DATA, ktera se do nej ctou/kopiruji (pres 4
+volani `sub_164600` uvnitr `sub_1646A0`, orion_part_25.c radky
+~447-466) porad nejsou platna. Podezreni: bud (a) `sub_164600`v
+"maly strom" vetev (`a2[0]=0; a2[1..3]=result;`) se v tomto konkretnim
+kontextu nebere spravne (bitova podminka cte spatna data kvuli
+predchozimu, jeste nenalezenemu bugu), nebo (b) jedno z techto 4
+volani NEOCEKAVANE bere "velky strom" vetev (`sub_164200`, az 2048B)
+a i presto, ze block18A610 je nyni "spravne" 64B, PUVODNI KOD (a tedy
+i port) by pak PRETEKAL DO SOUSEDNICH GLOBALU STEJNE JAKO PUVODNE (jen
+uvnitr sveho vlastniho pole misto sousednich promennych) - coz by
+znamenalo, ze i toto misto potrebuje overit vuci dosboxu, jestli se
+"velka" vetev v teto casti kodu FAKTICKY nekdy neuplatnuje.

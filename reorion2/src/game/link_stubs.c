@@ -363,7 +363,6 @@ int unk_183938;
 int unk_183B46;
 int unk_183B93;
 int unk_183CEB;
-int unk_18A610;
 int unk_199A12;
 int unk_19B772;
 int unk_19C048;

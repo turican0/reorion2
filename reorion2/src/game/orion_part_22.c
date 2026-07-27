@@ -1572,7 +1572,13 @@ void sub_14AA40(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
     v34 >>= 1;
     v33 = 7;
   }
-  v11 = *(_BYTE **)(a7 + 928);
+  // PORT (wave 25g): +928 is a plain 32-bit stored buffer pointer (see the
+  // `*(_DWORD*)(a7+928)` reads/writes a few lines up and down from here) -
+  // same x64 pointer-width bug as the sub_14BC40/sub_14CD50/sub_14C740
+  // family fixed earlier in this file: `*(_BYTE**)(...)` pulls in 8 bytes
+  // on x64 instead of the stored 32-bit value, corrupting the pointer with
+  // adjacent memory.
+  v11 = (_BYTE *)(uintptr_t)*(_DWORD *)(a7 + 928);
   if ( v11 )
   {
     if ( *v11 == 1 )
@@ -1580,7 +1586,7 @@ void sub_14AA40(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 LABEL_16:
       *(_DWORD *)(a7 + 908) = a5;
       *(_DWORD *)(a7 + 904) = a6;
-      v21 = *(_BYTE **)(a7 + 928);
+      v21 = (_BYTE *)(uintptr_t)*(_DWORD *)(a7 + 928);
       *v21 = 1;
       v22 = v21 + 4;
       *((_BYTE *)v22 - 3) = (*(_BYTE *)(a7 + 902) & 0x20) != 0;

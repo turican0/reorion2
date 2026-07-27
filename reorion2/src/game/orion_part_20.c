@@ -3812,7 +3812,22 @@ int sub_132C80(int a1)
   // do the 6-to-8 scaling) next wrote the real palette. Fixed: apply the
   // same `(v<<2)|(v>>4)` widening as sub_132AF8, AFTER scaling by the fade
   // percentage (so the widening always sees the intended 0-63 range).
-  sub_132B41();
+  // PORT (wave 25e): the original split the 256-entry DAC write into two
+  // 128-entry halves separated by a vertical-retrace wait, because writing
+  // to the DAC while the electron beam is actively scanning causes visible
+  // "snow" on real VGA hardware - the retrace wait is a safe window, not a
+  // meaningful pacing device, and the two halves together are meant to be
+  // seen as a single atomic palette change. In this port, sub_132B41/
+  // sub_132B27 call Port::Vga::Present() (see comment above) - calling one
+  // of them BETWEEN the two halves, as the original instruction order
+  // suggests, made every step of the fade briefly show a torn palette
+  // (indices 0-127 already at the new brightness, 128-255 still at the
+  // old one) for one whole frame. Barely visible with sub_251EF's 101 fine
+  // (1%) steps, but glaring with sub_2518F's 11 coarse (10%) steps - this
+  // is the "blinks oddly" artifact. Fix: write all 256 entries first, THEN
+  // do both retrace-wait/present calls, so every visible frame shows a
+  // fully consistent palette (the second present is a harmless repeat,
+  // kept only to preserve the original's per-step pacing/duration).
   for ( int index = 0; index < 128; ++index )
   {
     ++v2; // skip the [flag] byte - same 4-byte [flag,R,G,B] layout as byte_1BB358
@@ -3824,7 +3839,6 @@ int sub_132C80(int a1)
                             (g << 2) | (g >> 4),
                             (b << 2) | (b >> 4));
   }
-  sub_132B27();
   for ( int index = 128; index < 256; ++index )
   {
     ++v2;
@@ -3836,6 +3850,8 @@ int sub_132C80(int a1)
                             (g << 2) | (g >> 4),
                             (b << 2) | (b >> 4));
   }
+  sub_132B41();
+  sub_132B27();
 
   _BYTE *v18 = (_BYTE *)dword_1BB880;
   for ( int i = 0; i < 256; ++i )

@@ -10,6 +10,8 @@ Potrebujeme ty funkce postupne prevest do citelneho kodu.
 -vzdy porovnavej kod s puvodnim diassemblovanym, a tam, kde to neni kvuli kompaktibilite a kvuli cisteni kodu, se rid tim puvodnim kodem, tak porrovnavej c++ dissasemblovany kod s asm kodem, tam kde to neni jasne
 -veskere komentare v souborech pis anglicky
 -stejne tak vsechny .md soubory pis anglicky
+-pokud narazis na lokalni promennou, kterou lze vyhodit tak, ze misto ni das rovnou funkci, jejíž výsledek se do té proměnné přiřazuje a zbavíme se tak proměnné, aniž by se změnil význam kódu, tak to udělej
+-pokud můžeš opravit berličky, kvůli kterým musí být v projektu vyjímky pro kompilátor, tak to udělej
 -pro int typy pouzivej vyhradne int8_t int16_t int32_t uint8_t uint16_t uint32_t
 -take prubezne vytvarej a doplnuj README.md pro GITHUB, pridej tam informace o projektu, informace o postupu, s popisem i obrazky a datumy
 

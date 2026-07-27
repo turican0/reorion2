@@ -6674,16 +6674,34 @@ int sub_8152B()
 int sub_81547(int a1, int a2)
 {
   char *v2; // eax
-  int v3; // eax
 
   if ( !(_WORD)dword_1845E0 )
   {
     v2 = sub_7A990(0xCEu);
     sub_126487(v2, a2);
   }
-  HIWORD(v3) = HIWORD(dword_1B06FC);
-  LOWORD(v3) = *(_WORD *)(dword_1B06FC + 6);
-  return v3 - 1;
+  // PORT (wave 25f): asm is `mov eax, dword_1A86FC; mov ax, [eax+6]; dec eax;
+  // retn` - `mov ax, ...` only writes AX (the low 16 bits), so EAX's upper
+  // half is left over from the preceding pointer load. Faithfully porting
+  // that as `HIWORD(v3) = HIWORD(dword_1B06FC)` is harmless in the original
+  // DOS4GW environment because that pool's flat-mode address happens to
+  // have a small/predictable upper half - but in this port, the pool comes
+  // from a real heap allocation whose upper 16 bits are large and
+  // essentially arbitrary. The single caller (sub_24ED3) compares this
+  // return value against sub_12D70B()'s plain int16_t "has the displayed
+  // frame's ID changed" result - with the pointer-derived upper half mixed
+  // in, that comparison is reliably FALSE (or true only by heap-layout
+  // coincidence, observed once), so the intended "wait for frame N to load,
+  // else keep polling" loop in sub_24ED3 never takes the real branch and
+  // just times out immediately instead of actually waiting - the missing
+  // multi-second "hold" between fade-in and fade-out that dosbox-x's
+  // reference trace showed (~36M cycle gap). The low 16 bits of `v3 - 1`
+  // are identical whether or not the upper half participates in the borrow
+  // (subtracting 1 from a value ending in the same low bits always produces
+  // the same low bits), so dropping the upper-half mixing changes nothing
+  // for the original's own comparisons - it only removes the address
+  // dependence that breaks it in this port.
+  return (int16_t)(*(_WORD *)(dword_1B06FC + 6) - 1);
 }
 // 1845E0: using guessed type int dword_1845E0;
 // 1B06FC: using guessed type int dword_1B06FC;

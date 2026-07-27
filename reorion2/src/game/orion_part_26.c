@@ -786,13 +786,13 @@ int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
 LABEL_16:
       byte_18A6C0 = v11;
       HIWORD(v18) = HIWORD(v13);
-      if ( *(_DWORD *)dword_18A624 != v13 )
+      if ( *(_DWORD *)block18A610[5] != v13 )
       {
         dword_18A678 = v13;
-        v18 = *(_DWORD *)dword_18A624;
-        v19 = (int *)dword_18A628;
-        *(_DWORD *)dword_18A624 = v13;
-        v20 = (int *)dword_18A62C;
+        v18 = *(_DWORD *)block18A610[5];
+        v19 = (int *)block18A610[6];
+        *(_DWORD *)block18A610[5] = v13;
+        v20 = (int *)block18A610[7];
         v21 = *v19;
         *v19 = v18;
         HIWORD(v18) = HIWORD(dword_18A678);
@@ -844,13 +844,13 @@ LABEL_27:
       byte_18A6C0 = v26;
       LOWORD(v18) = v32;
       v33 = __ROR4__(v32, 16);
-      if ( *(_DWORD *)dword_18A614 != v33 )
+      if ( *(_DWORD *)block18A610[1] != v33 )
       {
         dword_18A678 = v18;
-        v34 = *(_DWORD *)dword_18A614;
-        v22 = (int *)dword_18A618;
-        *(_DWORD *)dword_18A614 = v33;
-        v35 = (_DWORD *)dword_18A61C;
+        v34 = *(_DWORD *)block18A610[1];
+        v22 = (int *)block18A610[2];
+        *(_DWORD *)block18A610[1] = v33;
+        v35 = (_DWORD *)block18A610[3];
         v36 = *v22;
         *v22 = v34;
         v18 = dword_18A678;
@@ -924,12 +924,6 @@ LABEL_45:
 // 16671A: variable 'v42' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;
-// 18A614: using guessed type int dword_18A614;
-// 18A618: using guessed type int dword_18A618;
-// 18A61C: using guessed type int dword_18A61C;
-// 18A624: using guessed type int dword_18A624;
-// 18A628: using guessed type int dword_18A628;
-// 18A62C: using guessed type int dword_18A62C;
 // 18A660: using guessed type int dword_18A660;
 // 18A664: using guessed type int dword_18A664;
 // 18A668: using guessed type int dword_18A668;
@@ -957,13 +951,7 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   _DWORD *v3; // esi
   _DWORD *v4; // edi
   int v5; // ecx
-  int v6; // eax
-  _DWORD **v7; // esi
-  _DWORD *v8; // edi
   int v9; // edx
-  _DWORD *v10; // eax
-  _DWORD *v11; // eax
-  _DWORD *v12; // eax
   unsigned int v13; // ebp
   unsigned int *v14; // esi
   int v15; // eax
@@ -992,26 +980,38 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   dword_18A6A4 = a2;
   v3 = (_DWORD *)(a2 + 29716);
   LOWORD(dword_18A6D0) = *(_DWORD *)(a2 + 29712);
-  v4 = &unk_18A610;
+  v4 = &block18A610[0];
   v5 = 4;
+  // PORT (wave 25j): asm is a plain `lodsd/stosd` copy loop (4 groups of 4
+  // 32-bit dwords each) with a self-referential backpatch (`mov [eax],edx`
+  // - the 2nd/3rd/4th dword of each group is a stored 32-bit value that
+  // also doubles as the address to write the group's 1st ("self") value
+  // into). The decompiler represented the walking cursor as `_DWORD **v7`
+  // and read through it with `*v7++` - on x86 sizeof(_DWORD*)==4 so this
+  // coincidentally matched the intended 4-byte stride and the intended
+  // 32-bit-value read, but on x64 sizeof(_DWORD**)==8: `v7++` skips 8
+  // bytes instead of 4 (misaligning every read after the first), and
+  // `*v7` dereferences 8 bytes instead of 4 (pulling in an unrelated
+  // adjacent dword as the pointer's high half). Rewritten with explicit
+  // uint32_t indexing so every read is exactly 4 bytes, matching lodsd,
+  // and the stored 32-bit values are only widened to pointers at the
+  // point they're actually dereferenced as backpatch targets.
   do
   {
-    v6 = *v3;
-    v7 = (_DWORD **)(v3 + 1);
-    *v4 = v6;
-    v8 = v4 + 1;
-    v9 = v6;
-    v10 = *v7++;
-    *v8++ = v10;
-    *v10 = v9;
-    v11 = *v7++;
-    *v8++ = v11;
-    *v11 = v9;
-    v12 = *v7;
-    v3 = v7 + 1;
-    *v8 = v12;
-    v4 = v8 + 1;
-    *v12 = v9;
+    uint32_t g0 = v3[0];
+    uint32_t g1 = v3[1];
+    uint32_t g2 = v3[2];
+    uint32_t g3 = v3[3];
+    v9 = g0;
+    v4[0] = g0;
+    v4[1] = g1;
+    v4[2] = g2;
+    v4[3] = g3;
+    *(_DWORD *)(uintptr_t)g1 = v9;
+    *(_DWORD *)(uintptr_t)g2 = v9;
+    *(_DWORD *)(uintptr_t)g3 = v9;
+    v3 += 4;
+    v4 += 4;
     --v5;
   }
   while ( v5 );
@@ -1121,13 +1121,13 @@ LABEL_31:
     byte_18A6C0 = v24;
     LOWORD(v19) = v31;
     v32 = __ROR4__(v31, 16);
-    if ( *(_DWORD *)dword_18A644 != v32 )
+    if ( *(_DWORD *)block18A610[13] != v32 )
     {
       dword_18A678 = v19;
-      v19 = *(_DWORD *)dword_18A644;
-      v33 = (int *)dword_18A648;
-      *(_DWORD *)dword_18A644 = v32;
-      v34 = (int *)dword_18A64C;
+      v19 = *(_DWORD *)block18A610[13];
+      v33 = (int *)block18A610[14];
+      *(_DWORD *)block18A610[13] = v32;
+      v34 = (int *)block18A610[15];
       v35 = *v33;
       *v33 = v19;
       LOBYTE(v19) = dword_18A678;
@@ -1187,9 +1187,6 @@ LABEL_19:
 // 18A604: using guessed type int dword_18A604;
 // 18A608: using guessed type int dword_18A608;
 // 18A60C: using guessed type int dword_18A60C;
-// 18A644: using guessed type int dword_18A644;
-// 18A648: using guessed type int dword_18A648;
-// 18A64C: using guessed type int dword_18A64C;
 // 18A650: using guessed type int dword_18A650;
 // 18A654: using guessed type int dword_18A654;
 // 18A658: using guessed type int dword_18A658;

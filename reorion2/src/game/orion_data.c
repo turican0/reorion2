@@ -13600,19 +13600,23 @@ int dword_18A600 = 0; // weak
 int dword_18A604 = 0; // weak
 int dword_18A608 = 0; // weak
 int dword_18A60C = 0; // weak
-_DWORD dword_18A610 = 0; // weak
-int dword_18A614 = 0; // weak
-int dword_18A618 = 0; // weak
-int dword_18A61C = 0; // weak
-_DWORD dword_18A620 = 0; // weak
-int dword_18A624 = 0; // weak
-int dword_18A628 = 0; // weak
-int dword_18A62C = 0; // weak
-_DWORD dword_18A630 = 0; // weak
-_DWORD dword_18A640 = 0; // weak
-int dword_18A644 = 0; // weak
-int dword_18A648 = 0; // weak
-int dword_18A64C = 0; // weak
+// PORT (wave 25h): dword_18A610/614/618/61C/620/624/628/62C/630/640/644/
+// 648/64C (plus unk_18A610, an alias for the same address under a
+// different decompiler-guessed name) were 13 separate 4-byte globals -
+// IDA named each one because different code reads/writes specific byte
+// offsets within what is actually ONE contiguous 64-byte (16-dword) block
+// in the original data segment (confirmed: qmemcpy(dest, block18A610, 0x40)
+// at orion_part_25.c reads all 64 bytes as a single unit, and the
+// addresses are exactly 4/16 bytes apart with no other symbols between
+// them up to dword_18A650, a confirmed-unrelated function-pointer table).
+// As separate C globals there is no guarantee of contiguous, gap-free
+// layout (the compiler/linker is free to reorder/pad them) - the qmemcpy
+// read that assumed otherwise fed garbage adjacent-memory bytes into a
+// self-referential pointer table (sub_167320), causing an access
+// violation. Fixed by merging them into this single backing array; every
+// call site now indexes block18A610[] directly (index = old byte offset
+// / 4) instead of using the old per-symbol names.
+uint32_t block18A610[16] = {0}; // weak
 int dword_18A650 = 0; // weak
 int dword_18A654 = 0; // weak
 int dword_18A658 = 0; // weak
