@@ -245,7 +245,7 @@ int sub_15EF04()
 {
   int result; // eax
 
-  for ( ; dword_18ACE8; result = (*(int (**)(int))(dword_18ACE8 + 39))(dword_18ACE8) )
+  for ( ; dword_18ACE8; result = VCALL(dword_18ACE8 + 39, int (*)(int))(dword_18ACE8) )
     ;
   return result;
 }
@@ -633,8 +633,8 @@ int sub_15F568(int a1, int (*a2)(_BYTE *))
 
   v2 = a1;
   v6 = a2;
-  v3 = (*(int (**)(void))(a1 + 103))();
-  LOBYTE(v2) = (*(int (**)(int, int))(v2 + 107))(v2, v3);
+  v3 = VCALL(a1 + 103, int (*)(void))();
+  LOBYTE(v2) = VCALL(v2 + 107, int (*)(int, int))(v2, v3);
   sprintf(
     v5,
     "DSR: %c  CTS: %c  CD: %c  RI: %c  PE: %c  FE: %c  BREAK: %c OE: %c",
@@ -728,10 +728,10 @@ int sub_15F6F4(int a1, int (*a2)(_BYTE *))
   int (*v9)(_BYTE *); // [esp+54h] [ebp-8h]
 
   v9 = a2;
-  v7 = (*(int (**)(void))(a1 + 75))();
-  v6 = (*(int (**)(int))(a1 + 79))(a1);
-  v5 = (*(int (**)(int))(a1 + 67))(a1);
-  v3 = (*(int (**)(int))(a1 + 71))(a1);
+  v7 = VCALL(a1 + 75, int (*)(void))();
+  v6 = VCALL(a1 + 79, int (*)(int))(a1);
+  v5 = VCALL(a1 + 67, int (*)(int))(a1);
+  v3 = VCALL(a1 + 71, int (*)(int))(a1);
   sprintf(
     v8,
     "Status: %6d  TXUsed: %5ld  TXFree: %5ld  RXUsed: %5ld  RXFree: %5ld  ",
@@ -4460,7 +4460,7 @@ int sub_162000(int a1)
     dword_18AD2C = *(_DWORD *)(v1 + 4 * v10 + 24) + *(_DWORD *)(v1 + 4 * v10 + 8);
     dword_18AD30 = *(_DWORD *)(v1 + 4 * v10 + 16) + *(_DWORD *)(v1 + 4 * v10 + 8);
     if ( *(_DWORD *)(v1 + 2120) )
-      (*(void (**)(int))(v1 + 2120))(v1);
+      VCALL(v1 + 2120, void (*)(int))(v1);
     v11 = dword_18AD2C;
     ((void (*)(int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
       0,
@@ -4473,7 +4473,7 @@ int sub_162000(int a1)
     if ( v11 < dword_18AD30 )
       break;
     if ( *(_DWORD *)(a1 + 2124) )
-      result = (*(int (**)(int))(a1 + 2124))(a1);
+      result = VCALL(a1 + 2124, int (*)(int))(a1);
     if ( *(_DWORD *)(a1 + 48) )
     {
       if ( *(_DWORD *)(a1 + 48) == 1 )
@@ -4483,7 +4483,7 @@ int sub_162000(int a1)
         {
           *(_DWORD *)(a1 + 4) = 2;
           if ( *(_DWORD *)(a1 + 2128) )
-            return (*(int (**)(int))(a1 + 2128))(a1);
+            return VCALL(a1 + 2128, int (*)(int))(a1);
           return result;
         }
         if ( !*(_DWORD *)(a1 + 4 * v14 + 16) || *(_DWORD *)(a1 + 4 * v14 + 24) )

@@ -95,7 +95,7 @@ void sub_10CFD7(int a1)
   int v3; // [esp+0h] [ebp-4h]
 
   if ( *(_DWORD *)(a1 + 28) )
-    (*(void (**)(void))(a1 + 28))();
+    VCALL(a1 + 28, void (*)(void))();
   if ( *(_WORD *)(a1 + 12) )
   {
     v3 = 0;

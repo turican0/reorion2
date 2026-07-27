@@ -400,7 +400,7 @@ int sub_155E62(unsigned int a1)
   int i; // edx
 
   if ( *(_DWORD *)(a1 + 32) )
-    (*(void (**)(_DWORD))(a1 + 32))(*(_DWORD *)(a1 + 36));
+    VCALL(a1 + 32, void (*)(_DWORD))(*(_DWORD *)(a1 + 36));
   if ( *(_DWORD *)(a1 + 28) != -1 )
     sub_140665(*(_DWORD *)(a1 + 28));
   if ( *(_DWORD *)(a1 + 20) )
@@ -1813,9 +1813,9 @@ int sub_157960(int a1)
       v2 = *(_DWORD *)(a1 + 2124);
       *(_DWORD *)(a1 + 4) = 2;
       if ( v2 )
-        result = (*(int (**)(int))(a1 + 2124))(a1);
+        result = VCALL(a1 + 2124, int (*)(int))(a1);
       if ( *(_DWORD *)(a1 + 2128) )
-        return (*(int (**)(int))(a1 + 2128))(a1);
+        return VCALL(a1 + 2128, int (*)(int))(a1);
     }
   }
   return result;
@@ -2059,7 +2059,7 @@ int sub_157CD4(_DWORD *a1)
 void sub_157CDE(int a1)
 {
   if ( *(_DWORD *)(a1 + 2164) )
-    (*(void (**)(int))(a1 + 2164))(a1);
+    VCALL(a1 + 2164, void (*)(int))(a1);
   if ( *(int *)(a1 + 2188) > 0 )
     sub_140D8F(a1);
   *(_DWORD *)(a1 + 2188) = -1;
@@ -2922,7 +2922,7 @@ int sub_158B50(int a1, int a2, unsigned int a3, int a4, int a5)
         return;
       }
       if ( *(_DWORD *)(a1 + 28) )
-        *(_DWORD *)(v23 + 656) = (*(int (**)(int, int, int))(a1 + 28))(a1, v26, v5);
+        *(_DWORD *)(v23 + 656) = VCALL(a1 + 28, int (*)(int, int, int))(a1, v26, v5);
     }
 LABEL_31:
     v9 = &v25[v24];
@@ -3026,7 +3026,7 @@ LABEL_31:
     if ( a3 != 119 )
       goto LABEL_31;
     if ( *(_DWORD *)(a1 + 32) )
-      (*(void (**)(int, int, int))(a1 + 32))(a1, v26, v5);
+      VCALL(a1 + 32, void (*)(int, int, int))(a1, v26, v5);
   }
 }
 // 158B50: could not find valid save-restore pair for ebx
@@ -3410,7 +3410,7 @@ LABEL_38:
                     *(_DWORD *)(dword_1C9604 + 4) = 2;
                     if ( !v20 )
                       goto LABEL_37;
-                    (*(void (**)(int))(v19 + 36))(v19);
+                    VCALL(v19 + 36, void (*)(int))(v19);
                     *(_DWORD *)(dword_1C9604 + 20) += dword_1C9620;
                   }
                   else
@@ -5110,7 +5110,7 @@ void sub_15B3E0(int a1, int a2, int a3, unsigned int a4, int a5)
     sub_158B50(a2, a3, a4, a5, 0);
   }
   else if ( !*(_DWORD *)(a1 + 416)
-         || !(*(int (**)(int, _DWORD, int, unsigned int, int))(a1 + 416))(a1, 0, a3, a4, a5) )
+         || !VCALL(a1 + 416, int (*)(int, _DWORD, int, unsigned int, int))(a1, 0, a3, a4, a5) )
   {
     sub_1584A0(a1, a3, a4, a5);
   }
@@ -6677,21 +6677,21 @@ int sub_15E200(int a1, char *a2, int a3)
   *(_DWORD *)(a1 + 23) = 0;
   if ( a3 >= -2 && a3 <= 255 )
   {
-    (*(void (**)(int, char *, unsigned int))(a1 + 87))(a1, a2, strlen(a2));
+    VCALL(a1 + 87, void (*)(int, char *, unsigned int))(a1, a2, strlen(a2));
     if ( *(int *)(a1 + 14) < 0 )
       return *(_DWORD *)(a1 + 14);
     if ( a3 < 0 )
     {
       if ( a3 != -2 )
         return *(_DWORD *)(a1 + 14);
-      (*(void (**)(int, int))(a1 + 35))(a1, 13);
+      VCALL(a1 + 35, void (*)(int, int))(a1, 13);
       v5 = 10;
     }
     else
     {
       v5 = a3;
     }
-    (*(void (**)(int, int))(a1 + 35))(a1, v5);
+    VCALL(a1 + 35, void (*)(int, int))(a1, v5);
     return *(_DWORD *)(a1 + 14);
   }
   *(_DWORD *)(a1 + 14) = -7;

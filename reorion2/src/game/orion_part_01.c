@@ -482,10 +482,17 @@ int sub_107BA(int *a1)
 
 
 //----- (000107C2) --------------------------------------------------------
+// PORT (wave 25l): callers pass the address of a plain 32-bit global
+// (e.g. `&dword_1A11C0`, a "run once" callback slot) as `result`.
+// `*result` dereferenced that address as a native (8-byte on x64)
+// function pointer, reading 4 bytes of adjacent memory as the callee
+// address's high half. The slot itself only ever holds a 32-bit stored
+// address, so read/widen it explicitly instead.
 int (**sub_107C2(int (**result)(void)))(void)
 {
-  if ( *result )
-    return (int (**)(void))(*result)();
+  uint32_t stored = *(uint32_t *)result;
+  if ( stored )
+    return (int (**)(void))(uintptr_t)((int (*)(void))(uintptr_t)stored)();
   return result;
 }
 

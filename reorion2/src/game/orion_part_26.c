@@ -1082,6 +1082,10 @@ LABEL_22:
       v23 = v13 >> v27;
       v24 = byte_18A6C0 - v27;
       v25 = (unsigned int *)(dword_18A6A4 + (v27 >> 8));
+      PortDebug_Checkpoint("167320.branchA.dword_18A60C", dword_18A60C);
+      PortDebug_Checkpoint("167320.branchA.dword_18A6A4", dword_18A6A4);
+      PortDebug_Checkpoint("167320.branchA.v27", v27);
+      PortDebug_CheckpointPtr("167320.branchA.v25", (void*)v25);
       v26 = *v25;
       if ( (_WORD)dword_18A6D0 != (uint16_t)*v25 )
         goto LABEL_31;
@@ -1136,7 +1140,15 @@ LABEL_31:
     dword_18A664 = *(int *)((char *)&dword_18A6E0 + (v19 & 0xFC));
     /* __asm: jmp     dword_18A650[ecx*4] */ DECOMP_TODO("inline asm");
   }
-  dword_18A69C = *(int (**)(_DWORD))(a3 + 4);
+  // PORT (wave 25k): a3+4 is a plain 32-bit stored function-pointer value
+  // (see the `*(_DWORD*)(a3+4)` read a few lines up, and the whole family
+  // of `*(_DWORD*)(a3+N)` reads around it) - `*(int(**)(_DWORD))(a3+4)`
+  // dereferences it as a native (8-byte on x64) pointer-to-pointer,
+  // pulling in the adjacent `a3+8` dword as the address's high half and
+  // producing a garbage function pointer that crashes on call. Same bug
+  // class as the rest of this file, fixed by reading the 32-bit value and
+  // widening it explicitly.
+  dword_18A69C = (int (*)(_DWORD))(uintptr_t)*(_DWORD *)(a3 + 4);
   v15 = *(uint16_t *)(a3 + 8);
   dword_18A680 = v15;
   dword_18A6A0 = a3 + 10;
@@ -2099,7 +2111,7 @@ void sub_1685E9(int a1)
   v3 = *(_DWORD *)(a1 + *(_DWORD *)byte_18B040 + 42);
   v2 = *(_DWORD *)(a1 + *(_DWORD *)byte_18B040 + 46);
   ++*(_DWORD *)(v1 + 54);
-  (*(void (**)(_DWORD, _DWORD))(v1 + 10))(*(_DWORD *)(v1 + 20), *(uint16_t *)(v1 + 24));
+  VCALL(v1 + 10, void (*)(_DWORD, _DWORD))(*(_DWORD *)(v1 + 20), *(uint16_t *)(v1 + 24));
   if ( (_WORD)v2 )
     hr_outbyte(v2, 0x20u);
   if ( (_WORD)v3 )

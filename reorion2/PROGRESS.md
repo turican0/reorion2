@@ -2513,3 +2513,164 @@ i port) by pak PRETEKAL DO SOUSEDNICH GLOBALU STEJNE JAKO PUVODNE (jen
 uvnitr sveho vlastniho pole misto sousednich promennych) - coz by
 znamenalo, ze i toto misto potrebuje overit vuci dosboxu, jestli se
 "velka" vetev v teto casti kodu FAKTICKY nekdy neuplatnuje.
+
+## Vlna 25j: Bug #3 nalezen a opraven - sub_167320 sebe-referencni smycka
+## mela STEJNOU x64 sirku-ukazatele chybu jako cely zbytek session, jen
+## skrytou v kurzoru smycky, ne ve struct poli
+
+Pokracovani vlny 25i. Uzivatel poskytl DALSI presny VS-debugger repro na
+stejnem miste (radek 1000 dekompilatu, `*v10 = v9;`), `v10 =
+0xFFFFFFFFFFFFFFFF`.
+
+**Root cause:** asm je proste `lodsd/stosd` kopirovaci smycka (4 skupiny
+po 4 32bit dwordech) se sebe-referencni backpatch operaci (`mov
+[eax],edx` - 2./3./4. dword kazde skupiny je ulozena 32bit hodnota,
+ktera SOUCASNE slouzi jako adresa, kam se zapise skupinova "self"
+hodnota). Dekompilator reprezentoval prochazejici kurzor jako `_DWORD
+**v7` a cetl skrz nej pres `*v7++` - na x86 `sizeof(_DWORD*)==4`, takze
+se to NAHODOU shodovalo se zamyslenym 4-bajtovym krokem A zamyslenym
+32bit ctenim. Na x64 ale `sizeof(_DWORD**)==8`: `v7++` presouva o 8
+bajtu misto 4 (rozhodi zarovnani KAZDEHO dalsiho cteni po prvnim) A
+`*v7` cte 8 bajtu misto 4 (natahne sousedni nesouvisejici dword jako
+horni pulku ukazatele). Tohle vysvetluje, proc se pad postupne
+posouval mezi jednotlivymi zapisy skupiny (`*v10=v9` → `*v11=v9`) po
+predchozich fixech - kazdy dalsi krok byl citelny jeste vic mimo
+zarovnani.
+
+Fix: prepsano na explicitni `uint32_t` indexaci (`v3[0..3]`), zadne
+vice-urovnove ukazatelove typy pro prochazeni bufferu - presne
+odpovida `lodsd` (vzdy presne 4 bajty). Ulozene 32bit hodnoty se na
+ukazatel rozsiruji (`(uintptr_t)`) az v okamziku, kdy se SKUTECNE
+pouzivaji jako backpatch adresa. Nepouzivane docasne promenne
+(v6,v7,v8,v10,v11,v12 z puvodni dekompilace) odstraneny z deklaraci.
+
+**Vysledek:** pad se presunul VYRAZNE dal (offset 0xE0 → 0x481 v ramci
+`sub_167320`) - za celou opravenou sebe-referencni smycku A za stavbu
+vyhledavaci tabulky (`dword_18A600`/604/608/60C, pres `sub_164590`),
+nyni nekde uvnitr SKUTECNE dekodovaci logiky stromu (`v28 = *v27;` kde
+`v27 = dword_18A6A4 + (v29>>8)`, `v29` z lookup tabulky `dword_18A600`).
+`av_read` adresa ted vypada jako REALNA (ne zjevne "smeti"), coz
+naznacuje bud (a) legitimni, jeste nenalezeny bug v `sub_164590`
+(stavba `dword_18A600` tabulky) nebo drivejsich krocich, nebo (b) tahle
+konkretni cesta jeste neni v puvodni hre za normalnich okolnosti
+dosazena a jde o kumulaci drobnych chyb. Dalsi krok pro pristi session:
+overit `dword_18A600` tabulku (a `sub_164590`) proti dosboxu na
+konkretnich indexech, pripadne pokracovat v hledani dalsich `**)`
+sirko-ukazatelovych bugu v okoli teto casti `sub_167320`
+(`orion_part_26.c`, radky ~1220+ - funkce je velmi dlouha, tenhle konkretni
+pad je jeste v prvni tretine).
+
+## Vlna 25k: dalsi bug opraven (dword_18A69C volani pres 32bit hodnotu),
+## a KONKRETNI dukaz pro bug #4 (jeste otevreny)
+
+Uzivatel poskytl DALSI VS-debugger repro (jiny bod, radek 1150
+dekompilatu): `dword_18A69C(v15);` - pad "Access violation v miste
+provedeni" (volani pres neplatny ukazatel na funkci).
+
+**Bug opraven:** `dword_18A69C = *(int (**)(_DWORD))(a3 + 4);`
+(orion_part_26.c) - STEJNA trida x64 sirky-ukazatele bug jako cely
+zbytek session, tentokrat na FUNKCNIM ukazateli. `a3+4` je jinde v
+TEZE funkci (radek ~1071 puvodniho cislovani) dusledne `*(_DWORD*)`
+(32bit), takze `*(int(**)(_DWORD))` na x64 cte 8 bajtu a natahne
+sousedni `a3+8` jako horni pulku adresy → volani skrz smetovy
+ukazatel. Opraveno: `(int(*)(_DWORD))(uintptr_t)*(_DWORD*)(a3+4)`.
+
+**DULEZITE ZJISTENI - siroky rozsah tohoto bugu:** behem hledani
+podobnych mist nalezeno PRES 50 vyskytu vzoru
+`(*(TYPE(**)(...))(zaklad+offset))(...)` (volani "vtable"-stylem pres
+ulozenou 32bit hodnotu) napric MNOHA soubory (orion_part_17/18/20/22/23/24/26
+- ne jen Smacker kod!). Vsechny pravdepodobne trpi STEJNOU x64 chybou
+(cteni 8 bajtu misto 4). Zatim opraveny jen ty na aktivni pádové ceste
+(reaktivni pristup). **Otevrena otazka pro uzivatele: pokracovat
+reaktivne (oprava jak se na pad narazi), nebo udelat proaktivni
+komplexni sweep vsech vyskytu najednou?** Vzhledem k rozsahu (50+ mist)
+by komplexni sweep mohl byt efektivnejsi, ale riskantnejsi bez
+postupneho overovani kazdeho mista.
+
+**Bug #4 (pokracovani vlny 25j, jeste OTEVRENY) - konkretni dukaz:**
+Pridana docasna diagnostika primo pred pad v `sub_167320`
+(orion_part_26.c ~1084/1097, `v27=*(_DWORD*)(dword_18A60C+4*(uint8_t)v13)`).
+Vysledek: `v27 = -842150451` = **0xCDCDCDCD** presne - MSVC debug-heap
+"cerstve alokovana, nikdy nezapsana pamet" marker! `dword_18A60C`
+(= a2+28688, spravne vypocitana adresa, OVERENO) obsahuje na tomto
+miste pamet, kterou NIKDY NIC NEZAPSALO.
+
+Tato 256-polozkova tabulka se ma plnit v `sub_164590`, volane ZEVNITR
+`sub_164600` POUZE pokud se bere "velka" vetev (`if(v5) {...
+sub_164590(v10,a4)...}`) - pokud se bere "mala" vetev (`else {*a2=0;
+a2[1..3]=result;}`), `sub_164590` se VUBEC NEVOLA a tabulka zustane
+needefinovana! Ctvrte volani `sub_164600` v `sub_1646A0`
+(orion_part_25.c ~461-466, `dword_18A6B4=256` pred timto volanim) tak
+pravdepodobne bere "malou" vetev pro tenhle konkretni SMK soubor/snimek
+- coz v puvodni high implementaci pravdepodobne znamena "znovu pouzij
+tabulku z PREDCHOZIHO ramce/volani" (podobny vzor jako palette-reuse
+bit u sub_132646 - "pokud bit neni nastaven, ponech soucasny obsah
+bufferu"). Pokud PORT nekde predtim tuhle tabulku nikdy jednou spravne
+NEPOSTAVIL (napr. kvuli poradi volani nebo diky drivejsimu pádu, ktery
+znemoznil kompletni prvni-frame inicializaci), "znovu pouzij"
+vetev by procesenim ctenim needefinovanou pamet.
+
+**Dalsi krok pro pristi session:** zjistit, zda se VUBEC NEKDY (v
+libovolnem ramci/volani) korektne zavola "velka" vetev pro tenhle
+konkretni dword_18A60C/tree-slot (napr. pridat checkpoint na vstup
+`sub_164590` a sledovat, kolikrat/kdy se zavola pro tuto konkretni
+tabulku), nebo jestli "mala" vetev sama o sobe potrebuje odlisne
+zpracovani (nastavit tabulku na rozumny vychozi stav namisto
+spolehani na to, ze uz byla drive postavena).
+
+Docasne diagnosticke checkpointy (`167320.branchA.*`) PONECHANY v kodu
+pro pokracovani v pristi session - odstranit az po nalezeni root
+cause.
+
+## Vlna 25l: PROAKTIVNI KOMPLEXNI SWEEP - vsechny volani funkce pres
+## ulozenou 32bit hodnotu (60+ mist, 9 souboru)
+
+Na uzivateluv vyslovny pozadavek proveden kompletni sweep vzoru
+`(*(RETTYPE (**)(ARGS))(zaklad+offset))(...)` ("vtable"-styl volani
+pres 32bit ulozenou hodnotu, ktera na x64 spadne kvuli 8bajtovemu
+cteni misto 4). Nalezeno a opraveno **60 vyskytu v 9 souborech**:
+
+- **orion_part_22.c** (25) - vcetne `dword_18497C`-based AIL/modem
+  ovladac dispatch (~15 mist) a `sub_14D1C2` wrapperu (1 definice,
+  automaticky opravila 9 volajicich mist beze zmeny)
+- **orion_part_23.c** (11) - vcetne `a1+2124/2128/2164` (COM port
+  ovladac objekt)
+- **orion_part_24.c** (10) - stejny COM port ovladac vzor
+- **orion_part_17.c** (4) - `a1+30/34` (UI/text render objekt)
+- **orion_part_20.c** (2) - `dword_18497C+35/39`
+- **orion_part_18.c** (1)
+- **orion_part_26.c** (1, `v1+10` - zbytek po drivejsim
+  `dword_18A69C`/`a3+4` fixu ve stejnem souboru)
+- **orion_part_01.c** (1) - `sub_107C2` definice (adresa lokalni
+  promenne interpretovana jako 8bajtovy ukazatel), automaticky
+  opravila 13 volajicich mist v 6 dalsich souborech beze zmeny
+
+**Novy sdileny nastroj:** makro `VCALL(adresa, funkcni_typ)` pridano
+do `decomp_compat.h` - prevadi `(*(RETTYPE (**)(ARGS))(EXPR))(args)`
+na citelne `VCALL(EXPR, RETTYPE (*)(ARGS))(args)`, ktere spravne
+precte 32bit hodnotu a rozsiri ji az pri pretypovani na ukazatel.
+Pouzitelne pro budouci podobne nalezy bez rucniho opakovani vzoru.
+
+Kazdy vyskyt pred opravou krizove overen proti sousednimu
+`*(_DWORD*)(stejny_zaklad+stejny_offset)` cteni ve STEJNEM souboru,
+kde to bylo mozne (potvrzuje, ze jde o 32bit ulozenou hodnotu, ne o
+skutecny native-width ukazatel). Rebuild po kazde davce souboru (0
+chyb pri kazdem kroku). Zaverecny regresni test: beh sekvence az po
+jiz zdokumentovany bug #4 (`dword_18A60C` tabulka, task #17) beze
+zmeny/bez novych padu - potvrzuje, ze sweep nic nerozbil.
+
+**DALSI, VETSI a STRUKTURALNE JINY vzor nalezen, NEOPRAVOVAN:**
+siroky pruzkum `\*\(\w+ \*\*\)` (obecnejsi vzor, ne jen volani funkci)
+odhalil **251 vyskytu** napric projektem. Velka cast (namatkou
+overeno orion_part_10.c) ma tvar `*(TYP **)((char*)&LOKALNI_PROMENNA
++ N)` - cteni KONKRETNICH BAJTU uvnitr LOKALNI (stack) promenne
+(typicky Watcom "slouceny registrovy argument" artefakt, kde IDA
+spojila vice registru do jedne fake velke promenne a dekompilator pak
+cte konkretni podregiony pretypovanim). Tohle NENI stejna trida bugu
+jako "ulozena 32bit adresa v globalu/struct poli, ktera potrebuje
+rozsireni" - je to cteni bajtu z JIZ SPRAVNE (nativne) alokovane
+lokalni promenne, takze slepy sweep stejnym vzorem jako vyse by byl
+nespravny a rizikovy bez individualniho posouzeni KAZDEHO mista (jaky
+je skutecny puvod/vyznam dat na danem bajtovem offsetu). **Ponechano
+pro samostatnou, opatrnejsi analyzu v budouci session** - nejde o
+mechanickou opravu.

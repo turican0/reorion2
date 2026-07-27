@@ -287,6 +287,19 @@ typedef int64_t  __int64;
 #define BYTE2(x) (*((unsigned char*)&(x)+2))
 #define BYTE3(x) (*((unsigned char*)&(x)+3))
 #define BYTE4(x) (*((unsigned char*)&(x)+4))
+
+/* PORT (wave 25l): the decompiler represents "call the function pointer
+   stored at this address" (a DOS/Watcom vtable-dispatch idiom used all
+   over this codebase - AIL/Miles driver objects, per-instance method
+   tables, etc.) as `(*(RETTYPE (**)(ARGS))(ADDR))(...)`. On x86 that cast
+   coincidentally works because sizeof(void*)==4 matches the 32-bit value
+   actually stored at ADDR; on x64 the `**` dereference reads 8 bytes
+   instead of 4, pulling in 4 bytes of unrelated adjacent memory as the
+   pointer's high half and crashing on call. VCALL reads the stored
+   32-bit value explicitly and widens it to a real function pointer of
+   the given type before calling through it - use as
+   `VCALL(base + offset, RETTYPE (*)(ARGS))(args...)`. */
+#define VCALL(addr, functype) ((functype)(uintptr_t)*(unsigned int *)(addr))
 #define BYTE5(x) (*((unsigned char*)&(x)+5))
 #define BYTE6(x) (*((unsigned char*)&(x)+6))
 #define BYTE7(x) (*((unsigned char*)&(x)+7))

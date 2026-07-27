@@ -317,7 +317,7 @@ LABEL_30:
   while ( v17 <= v14 )
   {
     v19 = 2 * (int16_t)v18++;
-    (*(void (**)(_DWORD, _DWORD))(a1 + 30))(v17++, *(int16_t *)(*(_DWORD *)(a1 + 4) + v19));
+    VCALL(a1 + 30, void (*)(_DWORD, _DWORD))(v17++, *(int16_t *)(*(_DWORD *)(a1 + 4) + v19));
   }
   if ( *(int16_t *)(a1 + 28) > 0 )
   {
@@ -7299,7 +7299,7 @@ void sub_10A21D(int a1, int a2)
       if ( *(_DWORD *)(a1 + 34) )
       {
         sub_120BB5(*(uint8_t *)(a1 + 33), *(_DWORD *)(a1 + 40));
-        (*(void (**)(_DWORD, _DWORD, _DWORD))(a1 + 34))(
+        VCALL(a1 + 34, void (*)(_DWORD, _DWORD, _DWORD))(
           *(uint16_t *)(a2 + 74),
           (uint16_t)(*(_WORD *)(a2 + 2 * *(uint8_t *)(a2 + 6) + 78) + *(_WORD *)(a2 + 2)),
           *(uint8_t *)(*(uint8_t *)(a2 + 6) + a2 + 126));
@@ -7332,7 +7332,7 @@ void sub_10A345(int a1, int a2)
     if ( *(_DWORD *)(a1 + 34) )
     {
       sub_120BB5(*(uint8_t *)(a1 + 33), *(_DWORD *)(a1 + 40));
-      (*(void (**)(_DWORD, _DWORD, _DWORD))(a1 + 34))(
+      VCALL(a1 + 34, void (*)(_DWORD, _DWORD, _DWORD))(
         *(uint16_t *)(a2 + 74),
         (uint16_t)(*(_WORD *)(a2 + 2 * *(uint8_t *)(a2 + 6) + 78) + *(_WORD *)(a2 + 2)),
         *(uint8_t *)(a2 + *(uint8_t *)(a2 + 6) + 126));
@@ -7373,7 +7373,7 @@ void sub_10A3AD(int a1, int a2)
             sub_120BB5(*(uint8_t *)(a1 + 33), *(_DWORD *)(a1 + 60));
           }
           if ( *(_DWORD *)(a1 + 34) )
-            (*(void (**)(_DWORD, _DWORD, _DWORD))(a1 + 34))(
+            VCALL(a1 + 34, void (*)(_DWORD, _DWORD, _DWORD))(
               *(uint16_t *)(a2 + 74),
               (uint16_t)(*(_WORD *)(a2 + 2 * i + 78) + *(_WORD *)(a2 + 2)),
               *(uint8_t *)(a2 + i + 126));

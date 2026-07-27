@@ -3674,16 +3674,23 @@ int sub_14D110(int a1, int a2)
 
 
 //----- (0014D1C2) --------------------------------------------------------
+// PORT (wave 25l): callers pass a plain 32-bit address cast to
+// `int(**)(void)` ("call whatever function pointer is stored at this
+// address") - `(*a1)()` dereferenced that cast as a native (8-byte on
+// x64) pointer-to-pointer, pulling in 4 bytes of adjacent memory as the
+// callee address's high half. Same bug class as the rest of this file.
+// Signature kept as `int (**a1)(void)` to avoid touching all 9 call
+// sites' casts; only the dereference width is fixed.
 int sub_14D1C2(int (**a1)(void))
 {
-  return (*a1)();
+  return ((int (*)(void))(uintptr_t)*(_DWORD *)a1)();
 }
 
 
 //----- (0014D1C9) --------------------------------------------------------
 int sub_14D1C9(int a1, int a2)
 {
-  return (*(int (**)(void))(a2 + 4))();
+  return VCALL(a2 + 4, int (*)(void))();
 }
 
 
@@ -5185,7 +5192,7 @@ int sub_14E9AE(int a1)
   v5 = 0;
   v6 = 0;
   v7 = a1;
-  return (*(int (**)(int, char *, int))(dword_18497C + 87))(dword_18497C, v2, 24);
+  return VCALL(dword_18497C + 87, int (*)(int, char *, int))(dword_18497C, v2, 24);
 }
 // 18497C: using guessed type int dword_18497C;
 
@@ -5208,7 +5215,7 @@ int sub_14EA0E(int a1)
   v5 = 0;
   v6 = 0;
   v7 = a1;
-  return (*(int (**)(int, char *, int))(dword_18497C + 87))(dword_18497C, v2, 24);
+  return VCALL(dword_18497C + 87, int (*)(int, char *, int))(dword_18497C, v2, 24);
 }
 // 18497C: using guessed type int dword_18497C;
 
@@ -5320,15 +5327,15 @@ int sub_14EAF4(int a1, int a2, int a3)
       v12 = 0;
       for ( i = 0; i < v11; ++i )
         v12 += *(uint8_t *)(v17 + i + (v9 << 9));
-      (*(void (**)(int, char *, int))(dword_18497C + 87))(dword_18497C, &v7, 24);
+      VCALL(dword_18497C + 87, void (*)(int, char *, int))(dword_18497C, &v7, 24);
       v3 = v11;
-      (*(void (**)(int, int, int))(dword_18497C + 87))(dword_18497C, v17 + (v9 << 9), v11);
+      VCALL(dword_18497C + 87, void (*)(int, int, int))(dword_18497C, v17 + (v9 << 9), v11);
       v4 = dword_18497C;
-      v5 = (*(int (**)(int))(dword_18497C + 71))(dword_18497C);
+      v5 = VCALL(dword_18497C + 71, int (*)(int))(dword_18497C);
       for ( j = v5; j; j = v5 )
       {
         v4 = dword_18497C;
-        v5 = (*(int (**)(int))(dword_18497C + 71))(dword_18497C);
+        v5 = VCALL(dword_18497C + 71, int (*)(int))(dword_18497C);
       }
     }
     while ( !sub_14ED47(v5, v4, v3) );
@@ -5370,7 +5377,7 @@ void sub_14EDD9(int a1, int a2, int a3)
   if ( byte_184980 && byte_1896F8 && (dword_1BD150 != 1 || sub_13CFDD()) )
   {
     v3 = dword_18497C;
-    v4 = (*(int (**)(int))(dword_18497C + 79))(dword_18497C);
+    v4 = VCALL(dword_18497C + 79, int (*)(int))(dword_18497C);
     if ( v4 >= 0x18 )
     {
       sub_14EE75(v4, v3, a3);
@@ -5421,7 +5428,7 @@ int sub_14EE75(int a1, int a2, int a3)
   do
   {
     v3 = dword_18497C;
-    v4 = (*(int (**)(int))(dword_18497C + 79))(dword_18497C);
+    v4 = VCALL(dword_18497C + 79, int (*)(int))(dword_18497C);
     v12 = v4;
     if ( v4 == v14 )
     {
@@ -5436,7 +5443,7 @@ int sub_14EE75(int a1, int a2, int a3)
   }
   while ( v12 < 0x18 );
   v5 = dword_18497C;
-  (*(void (**)(int, char *, int))(dword_18497C + 91))(dword_18497C, &byte_1C3C98, 24);
+  VCALL(dword_18497C + 91, void (*)(int, char *, int))(dword_18497C, &byte_1C3C98, 24);
   if ( (uint8_t)byte_1C3C98 < 0x65u )
   {
     if ( byte_1C3C98 == 100 )
@@ -5465,7 +5472,7 @@ LABEL_17:
   sprintf(v7, "Receiving %d of %d\n", dword_1C3C9A, dword_1C3C9E - 1);
   if ( byte_1C3C98 == 100 )
   {
-    while ( (*(int (**)(int))(dword_18497C + 79))(dword_18497C) < dword_1C3CA2 )
+    while ( VCALL(dword_18497C + 79, int (*)(int))(dword_18497C) < dword_1C3CA2 )
       ;
     if ( !byte_1896F9 )
     {
@@ -5474,7 +5481,7 @@ LABEL_17:
       dword_1C3CD8 = 0;
       dword_1C3CC0 = 0;
     }
-    (*(void (**)(int, int, int))(dword_18497C + 91))(
+    VCALL(dword_18497C + 91, void (*)(int, int, int))(
       dword_18497C,
       dword_1C3CD4 + (dword_1C3C9A << 9),
       dword_1C3CA2);
@@ -6971,7 +6978,7 @@ int sub_1524D0(int a1, char *a2, int a3)
   v6 = v4;
   if ( v5 < 0 )
     return *(_DWORD *)(a1 + 14);
-  while ( (*(int (**)(int, int))(a1 + 71))(a1, v6) > 0 )
+  while ( VCALL(a1 + 71, int (*)(int, int))(a1, v6) > 0 )
     ;
   if ( *(_DWORD *)(a1 + 14) == -24 )
     *(_DWORD *)(a1 + 14) = v5;
@@ -7100,7 +7107,7 @@ int sub_152690(int a1, int a2, int a3, int a4)
     v10 = (int)v9;
     if ( (int)v9 < 0 )
       break;
-    v9 = (_BYTE *)(*(int (**)(int))(a1 + 27))(a1);
+    v9 = (_BYTE *)VCALL(a1 + 27, int (*)(int))(a1);
     a2 = (int)v9;
     if ( (int)v9 < 0 )
     {
@@ -7188,7 +7195,7 @@ int sub_1527B0(int a1, int a2, int a3, int a4)
   v6[17] = a4;
   while ( 1 )
   {
-    result = (*(int (**)(int, _DWORD *, int))(a1 + 91))(a1, v6, 64);
+    result = VCALL(a1 + 91, int (*)(int, _DWORD *, int))(a1, v6, 64);
     if ( result < 0 && result != -8 )
       break;
     if ( !*(_DWORD *)(a1 + 23) )
@@ -7204,7 +7211,7 @@ int sub_1527F4(int a1)
   int v1; // eax
   int v2; // edx
 
-  v1 = (*(int (**)(void))(a1 + 103))();
+  v1 = VCALL(a1 + 103, int (*)(void))();
   v2 = v1;
   if ( v1 > 0 )
     return v1 & 0x80;

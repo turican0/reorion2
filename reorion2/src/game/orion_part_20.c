@@ -7867,7 +7867,7 @@ int sub_13D0F1(char *a1)
 //----- (0013D190) --------------------------------------------------------
 int sub_13D190( unsigned int a1)
 {
-  return (*(int (**)(int, _DWORD))(dword_18497C + 35))(dword_18497C, a1);
+  return VCALL(dword_18497C + 35, int (*)(int, _DWORD))(dword_18497C, a1);
 }
 // 18497C: using guessed type int dword_18497C;
 
@@ -7900,7 +7900,7 @@ int sub_13D266()
 
   if ( dword_18497C )
   {
-    result = (*(int (**)(int))(dword_18497C + 39))(dword_18497C);
+    result = VCALL(dword_18497C + 39, int (*)(int))(dword_18497C);
     dword_18497C = 0;
   }
   return result;
