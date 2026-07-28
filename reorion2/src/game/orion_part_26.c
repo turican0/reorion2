@@ -785,7 +785,7 @@ LABEL_31:
     LOBYTE(g_smkBlockTypeSymbol) = dword_18A678;
     *v34 = v35;
   }
-  dword_18A664 = *(int *)((char *)&dword_18A6E0 + (g_smkBlockTypeSymbol & 0xFC));
+  dword_18A664 = block18A6E0[(g_smkBlockTypeSymbol & 0xFC) >> 2];
   dispatch_index = g_smkBlockTypeSymbol & 3;
   // PORT (wave 25p): throttled - this fires per decoded symbol (millions of
   // times during a stuck/looping decode) and was flooding the trace.
@@ -1241,6 +1241,17 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
     dword_18A660 = *(_DWORD *)(a3 + 24);
     dword_18A688 = *(_DWORD *)(a3 + 28);
     v19 = *(_DWORD *)(a3 + 4);
+    {
+      static unsigned s_167320EntryCount = 0;
+      ++s_167320EntryCount;
+      PortDebug_Checkpoint("167320.strides.n", (int)s_167320EntryCount);
+      PortDebug_Checkpoint("167320.strides.674", dword_18A674);
+      PortDebug_Checkpoint("167320.strides.670", dword_18A670);
+      PortDebug_Checkpoint("167320.strides.66C", dword_18A66C);
+      PortDebug_Checkpoint("167320.strides.684", dword_18A684);
+      PortDebug_Checkpoint("167320.strides.660", dword_18A660);
+      PortDebug_Checkpoint("167320.strides.688", dword_18A688);
+    }
     *(_DWORD *)(a3 + 32) = 0;
     *(_DWORD *)(a3 + 44) = 0;
     *(_DWORD *)(a3 + 48) = 0;

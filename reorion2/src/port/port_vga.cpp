@@ -162,12 +162,22 @@ void CompareAgainstReferenceIfChanged(const uint8_t* framebuffer,
     if (!s_enabled)
         return;
 
+    // PORT (wave 25p, per user correction): trigger ONLY on framebuffer
+    // (pixel) changes, NOT palette changes. dosbox-x's sub_125814 is
+    // specifically the dirty-rect PIXEL blit - it does not fire for a
+    // palette-only DAC ramp step (that goes through a completely different
+    // VGA-port path in the original with no matching "blit" event). Treating
+    // a palette-only change as "a new frame" here was comparing two
+    // different kinds of events and made the SIMTEX fade-in (many palette
+    // steps, ZERO pixel changes) look like ~116 spurious extra frames that
+    // don't exist on the dosbox side at all.
     size_t fbBytes = static_cast<size_t>(width) * height;
-    bool changed = !s_havePrev || palette != s_lastPal ||
-                   s_lastFb.size() != fbBytes ||
+    bool changed = !s_havePrev || s_lastFb.size() != fbBytes ||
                    std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
-    if (!changed)
+    if (!changed) {
+        s_lastPal = palette; // still track latest palette for the next real blit's comparison
         return;
+    }
     s_lastFb.assign(framebuffer, framebuffer + fbBytes);
     s_lastPal = palette;
     s_havePrev = true;
@@ -260,9 +270,12 @@ void DumpFrameIfRequested(const uint8_t* framebuffer, const std::array<uint32_t,
         }
     }
     if (s_rangeStart > 0 && s_presentCount >= s_rangeStart && s_distinctWritten < s_rangeCount) {
+        // PORT (wave 25p, per user correction): pixel-only trigger, see the
+        // matching comment in CompareAgainstReferenceIfChanged - a
+        // palette-only DAC ramp step is not "a new frame" on the dosbox
+        // sub_125814 side either.
         size_t fbBytes = static_cast<size_t>(width) * height;
-        bool changed = !s_havePrev || palette != s_lastPal ||
-                       s_lastFb.size() != fbBytes ||
+        bool changed = !s_havePrev || s_lastFb.size() != fbBytes ||
                        std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
         if (changed) {
             char name[64];

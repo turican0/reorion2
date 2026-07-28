@@ -2989,6 +2989,176 @@ tenhle konkretni typ snimku vs original). Nastroj (`REORION2_COMPARE_DIR`
 + `REORION2_COMPARE_SKIP`) je pripraven pro rychlou iteraci pri
 dalsim ladeni - staci spustit port s novym dosbox dumpem.
 
+**OPRAVA (uzivatel mel pravdu):** "116 extra snimku" byl artefakt
+mereni, ne skutecny bug. `sub_125814` (dosbox trigger) reaguje VYHRADNE
+na zmenu PIXELU (dirty-rect blit) - cisty paletovy DAC-ramp krok (fade)
+zadnou takovou udalost nevyvola. Port ale povazoval JAKOUKOLI zmenu
+(pixel NEBO paleta) za "novy snimek", takze behem SIMTEX fade-in (pixely
+konstantni, jen paleta postupne jasni) generoval desitky falesnych
+"extra" zaznamu, ktere dosbox strana vubec nezachytava. Fix: trigger
+(`CompareAgainstReferenceIfChanged` i `DumpFrameIfRequested`) ted reaguje
+JEN na zmenu framebufferu (pixelu), paleta se porovnava, ale negeneruje
+novou "distinct frame" udalost sama o sobe.
+
+**Po oprave: 116 extra snimku -> jen 4 (SIMTEX), a od reference #3
+(skutecna MICRO PROSE animace) az po #48: 46 PO SOBE JDOUCICH
+snimku s NULOVYM poctem extra snimku, presna shoda kazdy jeden.**
+Zastaveni na referenci #49 = cerna obrazovka (fade-out konec MICRO
+PROSE segmentu pred dalsi scenou) - pravdepodobne STEJNA trida
+paleta/pixel hranicniho jevu jako SIMTEX fade-in, ne novy bug (dosbox
+capture mel `maxcount=80`, konci prave v teto prechodove oblasti).
+
+**ZAVER (potvrzeno): block/pixel decoder (vlny 25n/25o/25p) je SPRAVNY,
+bit-presne overeno pro 46 po sobe jdoucich realnych snimku pohyblive
+animace.** Zbyvajici "SIMTEX/fade-out" hranicni pripady jsou
+pravdepodobne dalsi instance stejneho pixel-vs-paleta mereni artefaktu,
+ne dekoder bug - overit stejnym pristupem (dalsi dosbox capture pokryvajici
+vice snimku za cerny prechod) pokud bude potreba, ale jadro prace teto
+session je hotove a overene.
+
+**Vlna 25p - DALSI SKUTECNY BUG NALEZEN (uzivatel: "hledej dalsi rozdil"):**
+rozsireny dosbox capture na 250 referencnich snimku (misto 80) potvrdil:
+po referenci #48 (posledni presne sedici snimek) originál pokracuje
+DALSIMI snimky - referencni snimek #49 je cerna (fade-out konec MICRO
+PROSE), a kolem snimku #70 uz originál ukazuje UPLNE NOVOU scenu (vesmirne/
+mlhovinove intro cinematics, letterboxovany format, hvezdy). **Port se
+ale NA REFERENCI #49 SKUTECNE ZASEKNE** - dlouhy beh (300+ pokusu) ukazal
+`palette_mismatches` USTALENE NA 734` (identicka hodnota desitky vzorku
+za sebou) a `pixel_mismatches` kolisajici kolem ~306150-306560 (z 307200
+celkem) BEZ KONVERGENCE k nule. Toto NENI mereni artefakt (pixel-only
+trigger uz je opraveny) - port genuinne neprejde do cerne/dalsi sceny,
+jak to dela original.
+
+**Diagnoza (hypoteza, needle jeste overena dosboxem):** pravdepodobne
+5. instance stejne tridy bugu jako cela tato session (25m/25n/25o) -
+"blok/radek/snimek hotov, pokracuj dal" logika v sub_1664F0/sub_167320
+se u TOHOTO KONKRETNIHO prechodu (konec jednoho SMK segmentu, zacatek
+dalsiho/fade-out signal) nespravne zastavi/opakuje misto postupu -
+podobne jako drivejsi "6 opakujicich se adres" pozorovani, ale tentokrat
+skutecne bez zotaveni (predchozi pozorovani bylo z SIMTEX fade-in, kde
+se ukazalo byt jen mereni artefakt - TOHLE uz je overeno spravnou
+metodikou a je REALNE).
+
+**OTEVRENO pro pristi session:** najit presne misto, kde se
+end-of-segment/fade-out signal (pravdepodobne dword_18A670==0 nebo
+podobny "vsechny bloky hotovy" test v sub_1664F0, nebo navratovy kod
+z celeho sub_167320 volani zpet do sub_132869/sub_14A2D0) neprojevi
+spravne - dosbox DUMPREGS na teto konkretni hranici (runtime adresa
+kolem konce MICRO PROSE segmentu, cca dosbox cycle odpovidajici
+referenci #48->#49 v `dosbox_frames4/frame_00048.raw`->`_00049.raw`)
+prime porovnat s portem. Nastroj pripraven: `REORION2_COMPARE_DIR=
+dosbox_frames4 REORION2_COMPARE_SKIP=2`, 250 referencnich snimku k
+dispozici, staci upravit `kMaxExtraFrames` v `CompareAgainstReferenceIfChanged`
+(port_vga.cpp) pokud treba vice/mene trpelivosti pred ohlasenim divergence.
+
+**Vlna 25p pokracovani 2 (uzivatel: "analyzuj dumpy dalsich promennych,
+najdi a oprav"):** VIZUALNE presne identifikovan bug. Cisty beh (bez
+compare-overhead) dokonci CELE intro za 150s bez jedineho zasahu
+UNIMPLEMENTED stubu (dispatch_index vzdy 0, cela session) - vyvraceno
+podezreni na chybejici dispatch cile. Zachycen port frame batch
+(`REORION2_DUMP_FRAME_RANGE=1:70`) presne pres prechod MICRO PROSE ->
+cinematics: **frame #55 (prvni po MICRO PROSE) ukazuje spravny
+letterboxovany obdelnik na spravnem miste, ale VYPLNENY PRAVIDELNOU
+MRIZKOU/SACHOVNICI tecek** misto hladke vesmirne/mlhovinove sceny
+(kterou dosbox ukazuje spravne, viz drivejsi `d4_70.png`). Frame #59
+(o par snimku pozdeji) ukazuje stejny mrizkovy artefakt zesileny.
+
+**Hypoteza 1 (vyvracena testem):** stridy `dword_18A660/668/66C/670/
+674/684/688` (nastavovane v sub_167320 z `a3+8..a3+28` pri KAZDEM
+volani) by mohly zustat spatne/zastarale pro novy typ obsahu. Pridana
+diagnostika (`167320.strides.*`, throttled kazde volani) a testovano
+pres 646 po sobe jdoucich volani sub_167320 (60s bez compare-overhead,
+tedy hluboko do videa) - **VSECHNY stridy zustavaji NAPROSTO KONSTANTNI
+(674=120, 670=40, 66C=1916, 684=1920, 660=640, 688=2080) po CELOU
+zachycenou dobu.** Tato hypoteza je tedy vyvracena - stridy NEJSOU
+priciny mrizkoveho artefaktu.
+
+**OTEVRENO pro pristi session:** presne korelovat sub_167320 call-count
+(diagnostika `167320.strides.n`) s vizualnim mrizkovym artefaktem
+(kolem port frame #55 v pixel-only-triggered dump rezimu) - je potreba
+bud pridat frame-dump PRIMO synchronizovany s "n" (aby se dalo rict
+"artefakt se poprve objevi presne pri n=X"), a pak na TOM konkretnim
+volani prozkoumat vsechny ostatni globaly (block18A610[], dword_18A664,
+dword_18A678, funcs_164C45 tabulka, g_smkFrameAccum/Cursor) proti
+dosbox DUMPMEM na odpovidajicim miste. Vzhledem k tomu, ze stridy jsou
+konstantni, podezreni se presouva na: (a) samotna DEKODOVANA DATA
+(spatne symboly/leaf hodnoty z Huffman stromu pro tento typ obsahu -
+mozna je nektery z jeste neoverenych `block18A610[]` slotu spatne
+sestaven), nebo (b) `funcs_164C45[]` lookup tabulka pouzita pri zapisu
+pixelu (`((int16_t(*)(int,int))funcs_164C45[v18])(v18,v37)`) - tahle
+tabulka NEBYLA v teto session vubec prozkoumana, muze byt zdrojem
+"kazdy N-ty pixel spatne" vzoru presne odpovidajicimu pozorovane
+mrizce.
+
+**Vlna 25p pokracovani 3 - DALSI SKUTECNY BUG NALEZEN A OPRAVEN (ale
+nebyl to hlavni vinik):** audit `funcs_164C45[256]` (256 generovanych
+funkci volanych pri zapisu pixelu) - zadne JUMPOUT/DECOMP_TODO/pointer-
+width markery, cisty kod, VYLOUCENO jako pricina. Analyza stride hodnot
+(`dword_18A660=640, 18A66C=1916=3*640-4, ...`) ukazala, ze jsou VNITRNE
+KONZISTENTNI se standardnim 4x4-blokovym zapisem pro 640px sirokou
+obrazovku - TAKY vylouceno.
+
+**Nalezen a opraven skutecny bug:** `dword_18A6E0` byl deklarovany jako
+JEDNOTLIVY `int` (=1), ale kod ho cte jako POLE:
+`*(int*)((char*)&dword_18A6E0 + (v19&0xFC))` (indexy 0-252 po 4 bajtech,
+tedy az 64 prvku). **Primo potvrzeno v Debug/diss/Orion2.exe.asm** -
+hned za `dword_1826E0 dd 1` nasleduji syrove bajty `db 2,0,0,0 / db
+3,0,0,0 / db 4,0,0,0 ...` = citelna posloupnost 1,2,3,4,5... kterou IDA
+nikdy neseskupila do pojmenovaneho pole (protoze se pristupuje jen
+vypocitanym indexem, ne primym jmenem). Stejna trida bugu jako
+opakovane v tomto projektu (IDA rozsekla souvislou pametovou oblast).
+Fix: `int block18A6E0[64] = {1,2,...,64};` (orion_data.c), aktualizovana
+deklarace (orion_common.h) a cteni (`block18A6E0[(sym&0xFC)>>2]`,
+orion_part_26.c).
+
+**Tenhle fix ale mrizkovy artefakt NEVYRESIL** (otestovano, vizualne
+identicky vzor pretrval) - pravdepodobne index 0 (jedina hodnota, ktera
+byla driv spravne, `=1`) byl uz drive dostatecny pro tenhle konkretni
+obsah, takze fix je spravny a hodny zachovani (bude potreba pro JINY
+obsah), ale NENI to hlavni pricina AKTUALNIHO problemu.
+
+**Presnejsi charakterizace zbyvajiciho bugu (histogram bajtu):**
+prohledana oblast pixelu v problematicke scene ukazuje: hodnota 0 =
+62720x, hodnota 255 = 25280x, ostatni hodnoty (1, 180, 126) jen stovky-
+tisice x. Tedy VETSINA dekodovanych pixelu spadne na EXTREMNI hodnoty
+(0 nebo 255), jen RIDCE spravnou "stredni" hodnotu - typicky podpis
+SELHANI PRUCHODU HUFFMAN STROMEM (`block18A610[]` - traversal `*v51>=0`
+kdyz strom neni spravne postaveny/prochazeny, konci na okrajovych/
+nedefinovanych hodnotach misto skutecneho leaf listu).
+
+**OTEVRENO pro pristi session:** prozkoumat `block18A610[]` tree
+traversal ve `Smk167320_DecodeBlockTypeAndDispatch`/`sub_1664F0` pro
+TUTO KONKRETNI scenu - dosbox DUMPMEM primo na block18A610 (nebo
+ekvivalentni runtime adresy tree tabulek `dword_18A600/604/608/60C`)
+v okamziku, kdy se dekoduje tento snimek, porovnat bajt-po-bajtu s
+portem (`PortDebug_CheckpointPtr` na stejnem miste). Alternativne
+zkontrolovat, jestli 16-prvkove `block18A610[16]` neni pro tento typ
+obsahu PRILIS MALE (podobna trida bugu jako prave opraveny
+dword_18A6E0/64-prvkove pole).
+
+**Vyvracena hypoteza "stromy se stavi znovu na scenu":** dosbox trace
+(cyklovy rozsah 216M-300M, pokryvajici cely prechod) ukazuje, ze
+`sub_1646A0` (tree-init, runtime 0x38A6A0) se VUBEC ZNOVU NEZAVOLA -
+strom se stavi jen JEDNOU na zacatku celeho intra a original ho
+uspesne pouziva pro VSECHNY nasledujici sceny (SIMTEX, MICRO PROSE,
+cinematics). Port dela totez (taky nevola sub_1646A0 znovu) - takze
+tohle NENI bug, sdileni stromu je spravne zamyslene chovani. Zajimavost:
+`sub_15C850` (otevreni souboru, runtime 0x380850) SE zavola jednou
+kolem cyklu 216375210 (pred cinematics prechodem) - pravdepodobne
+nacitani noveho segmentu dat (ale ne noveho stromu).
+
+**Shrnuti pro pristi session:** hlavni bug NENI v (a) stride konstantach,
+(b) funcs_164C45 tabulce, (c) opakovanem stavu stromu mezi scenami -
+vsechny vyvraceny primym overenim. JE to nekde v samotnem PRUCHODU
+existujiciho stromu (`block18A610[]`/`dword_18A600/604/608/60C`) PRO
+TENTO KONKRETNI OBSAH - histogram (0 a 255 dominantni, jen ridke stredni
+hodnoty) ukazuje na traversal, ktery casto "vypadne" na okrajove/
+nedefinovane hodnoty. Dalsi krok: primo porovnat dekodovany
+`g_smkBlockTypeSymbol`/`dword_18A664` sekvenci s dosbox ekvivalentem
+(EAX pri loc_167694, uz zname z drivejsiho vyzkumu teto session) PRO
+TENTO KONKRETNI usek (kolem cyklu 290M-300M), ne jen pro logo useky
+jak bylo overeno driv.
+
 ## Vlna 25p pokracovani: hromadny snimek+paleta diff nastroj (na zadost uzivatele)
 
 Uzivatel pozadal o presun z register-trace metodiky na primy hromadny

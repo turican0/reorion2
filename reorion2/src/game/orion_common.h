@@ -17797,7 +17797,7 @@ typedef enum { SmkFrame_Continue = 0, SmkFrame_Done = 1 } SmkFrameStatus;
 SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void);
 SmkFrameStatus sub_1664F0(int a1);
 extern int dword_18A6D0;
-extern int dword_18A6E0;
+extern int block18A6E0[64]; // PORT (wave 25p): was mis-declared as a single dword, see orion_data.c
 extern int16_t word_18A7E0;
 extern int16_t word_18A7E2;
 extern int16_t word_18A7E4;

@@ -13690,7 +13690,25 @@ _DWORD *g_smkFrameOutput = 0; // weak
 // same reason as g_smkFrameAccum/Cursor/Output.
 int g_smkBlockTypeSymbol = 0; // weak
 int dword_18A6D0 = 0; // weak
-int dword_18A6E0 = 1; // weak
+// PORT (wave 25p): IDA declared this as a single dword (`dd 1`), but the
+// original reads it as `dword_1826E0[(v19&0xFC)]` (0..252, i.e. up to 64
+// entries) - the raw disassembly right after the `dd 1` shows
+// `db 2,0,0,0 / db 3,0,0,0 / db 4,0,0,0 ...`, a plain little-endian dword
+// sequence 1,2,3,4,... that IDA never grouped into a named array because
+// nothing referenced entries 1+ by a symbol, only via computed indexing.
+// A single `int` here meant every index other than 0 read whatever
+// happened to sit next in THIS port's data segment (a different, unrelated
+// global) - harmless for simple 2-color content (block-type symbols that
+// only ever produced index 0), but produced garbage step counts for
+// richer content (the space/nebula cinematic), causing sparse/grid-pattern
+// corrupted blocks. The sequence itself is trivial (array[k] = k+1), so
+// just spelled out as a real 64-entry array instead of pointer overrun.
+int block18A6E0[64] = {
+   1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+  17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+  33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+  49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
+}; // weak
 int16_t word_18A7E0 = 0; // weak
 int16_t word_18A7E2 = 0; // weak
 int16_t word_18A7E4 = 0; // weak
