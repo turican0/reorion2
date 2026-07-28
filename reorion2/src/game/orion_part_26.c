@@ -1009,6 +1009,21 @@ LABEL_16:
       }
       while ( (_WORD)dword_18A6D0 == (uint16_t)*v27 );
 LABEL_27:
+      {
+        static unsigned s_leafCount = 0;
+        static unsigned s_nonzeroHiCount = 0;
+        static unsigned s_lastLeaf = 0;
+        ++s_leafCount;
+        if ( (v28 >> 16) != 0 ) ++s_nonzeroHiCount;
+        s_lastLeaf = v28;
+        if ( (s_leafCount % 200003) == 1 )
+        {
+          PortDebug_Checkpoint("1664F0.leaf.count", (int)s_leafCount);
+          PortDebug_Checkpoint("1664F0.leaf.nonzeroHi", (int)s_nonzeroHiCount);
+          PortDebug_Checkpoint("1664F0.leaf.last", (int)s_lastLeaf);
+          s_nonzeroHiCount = 0;
+        }
+      }
       v32 = __ROR4__(v28, 16);
       byte_18A6C0 = v26;
       LOWORD(v18) = v32;
@@ -1029,6 +1044,29 @@ LABEL_27:
       v38 = BYTE1(v18);
       LOWORD(v37) = __ROR4__(v18, 16);
       LOWORD(v39) = ((int16_t (*)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
+      {
+        static unsigned s_pixelWriteCount = 0;
+        static unsigned s_nonzeroV18 = 0;
+        static unsigned s_maxV18 = 0;
+        static unsigned s_minV18 = 255;
+        ++s_pixelWriteCount;
+        if ( (uint8_t)v18 )
+        {
+          ++s_nonzeroV18;
+          if ( (uint8_t)v18 > s_maxV18 ) s_maxV18 = (uint8_t)v18;
+        }
+        if ( (uint8_t)v18 < s_minV18 ) s_minV18 = (uint8_t)v18;
+        if ( (s_pixelWriteCount % 200003) == 1 )
+        {
+          PortDebug_Checkpoint("1664F0.pixel.count", (int)s_pixelWriteCount);
+          PortDebug_Checkpoint("1664F0.pixel.nonzeroV18", (int)s_nonzeroV18);
+          PortDebug_Checkpoint("1664F0.pixel.maxV18", (int)s_maxV18);
+          PortDebug_Checkpoint("1664F0.pixel.minV18", (int)s_minV18);
+          s_nonzeroV18 = 0;
+          s_maxV18 = 0;
+          s_minV18 = 255;
+        }
+      }
       *g_smkFrameOutput = v39;
       v40 = (int **)((char *)g_smkFrameOutput + dword_18A660);
       *v40 = v22;

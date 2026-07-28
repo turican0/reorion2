@@ -275,6 +275,19 @@ char sub_1642A0(
     }
     LOWORD(v53) = j;
     v56 = __ROL4__(v53, 8);
+    {
+      static unsigned s_leafBuildCount = 0;
+      static unsigned s_escapeCount = 0;
+      ++s_leafBuildCount;
+      if ( word_18A7E0 == (_WORD)v56 || word_18A7E2 == (_WORD)v56 || word_18A7E4 == (_WORD)v56 )
+        ++s_escapeCount;
+      PortDebug_Checkpoint("1642A0.build.leafTotal", (int)s_leafBuildCount);
+      PortDebug_Checkpoint("1642A0.build.escapeTotal", (int)s_escapeCount);
+      PortDebug_Checkpoint("1642A0.build.v56raw", (int)(uint16_t)v56);
+      PortDebug_Checkpoint("1642A0.build.word7E0", word_18A7E0);
+      PortDebug_Checkpoint("1642A0.build.word7E2", word_18A7E2);
+      PortDebug_Checkpoint("1642A0.build.word7E4", word_18A7E4);
+    }
     if ( word_18A7E0 == (_WORD)v56 )
     {
       v56 = 0;
