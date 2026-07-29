@@ -3159,6 +3159,303 @@ nedefinovane hodnoty. Dalsi krok: primo porovnat dekodovany
 TENTO KONKRETNI usek (kolem cyklu 290M-300M), ne jen pro logo useky
 jak bylo overeno driv.
 
+## Vlna 25p pokracovani 4 (uzivatel: "pokracuj, over si to v dosboxu")
+
+Hluboka bisekce az na uroven jednotlivych dekodovanych bajtu:
+
+1. **`funcs_164C45[256]` write-hodnoty (v18/v37/v38/v39) throttled
+   checkpoint pres 3+ milionu zapisu pixelu:** VZDY presne 0, bez
+   VYJIMKY, po celou dobu behu (logo i cinematics). Podezreni presunuto
+   na tree-0 (`dword_18A600`) leaf hodnoty.
+2. **Tree-0 leaf vysoke slovo (`v28>>16`) pres 3+ milionu ctení:**
+   TAKY VZDY presne 0 - potvrzuje, ze KAZDY list v teto konkretni
+   tabulce ma vysoke slovo nulove.
+3. **Trasovano az do stavby stromu** (`sub_1642A0`, `v56` vypocet):
+   nalezen mechanismus - kdyz dekodovany 16bit symbol (`v56`) odpovida
+   jednomu ze 3 "escape" kodu (`word_18A7E0/E2/E4`), zapise se MISTO
+   NEJ `v56=0` (list oznacen jako specialni, hodnota jde do
+   `outStruct[1/2/3]`). Namereno: pro PRVNI stavemy strom (`word_18A7E0=0`)
+   se toto "escape" chovani spusti u **98.4 %** vsech listu (90031 z
+   91517) - takze temer VSECHNY listy v tomhle stromu skonci s
+   ulozenou hodnotou `(0<<16)|1=1`, coz presne odpovida pozorovanemu
+   "vzdy 0" vysokemu slovu pri cteni.
+4. **PRIMO OVERENO DOSBOXEM (DUMPMEM na loc_164430, runtime 0x388430,
+   ihned po preambuli prvniho stromu):** `word_18A7E0=0000,
+   word_18A7E2=0000, word_18A7E4=0000` - **STEJNE JAKO V PORTU!**
+   **Tato konkretni hypoteza je tedy VYVRACENA** - port se v tomhle
+   bode SHODUJE s originalem bit-presne, "0,0,0" je SPRAVNA hodnota,
+   ne bug.
+
+**Dusledek:** pokud original MA TAKY `word_18A7E0=0` pro tenhle strom
+(a tedy TAKY ~98% listu "escapovanych" na hodnotu 1), pak bud (a)
+original NA TOHLE zjevne nezalezi, protoze skutecna barva/hodnota
+prichazi JINOU cestou (mozna `v37`, ktere se z `v18` odvozuje jinak,
+nez jsem predpokladal - `sub_165760(a1,a2)` bere `a2`=v37 jako VSTUP,
+ne primo v18 - je mozne, ze jsem odvozeni `v37` z `v18` spatne
+protrasoval), NEBO (b) tenhle konkretni symptom (v18/v28 vzdy 0) je
+UPLNE V PORADKU a REALNY bug je jinde uplne (mozna v `dword_18A604`
+tree, pouzitem PRED timhle, ktere dava `v10`/`a2`-parametr pro
+`funcs_164C45` volani, a ktere jsem JESTE NEPROVERIL stejne dukladne).
+
+**OTEVRENO pro pristi session (cerstva hlava doporucena, bisekce uz
+je hluboka):**
+- Znovu presne protrasovat `v37`'s odvozeni z `v18` (radky ~1028-1030
+  orion_part_26.c: `HIWORD(v37)=HIWORD(v18); LOWORD(v37)=ROR4(v18,16);`)
+  a overit, ze `sub_165760`/ostatnich 255 funkci VSTUP (`a2`=v37) je
+  spravne interpretovan - je mozne, ze `funcs_164C45` funkce samy
+  CTOU neco jineho nez jsem predpokladal.
+- Prozkoumat `dword_18A604` tree (prvni decode v sub_1664F0, davajici
+  `v10`) stejne dukladne jako `dword_18A600` - checkpoint na `v10`/`v13`
+  hodnoty, overit proti dosboxu.
+- Zvazit, ze `funcs_164C45[0]` (`sub_165760`, "replicate") NENI bug -
+  overit, jestli original TAKY vola hlavne index 0 pro tuhle scenu
+  (mozna dosbox EAX v obdobnem bode UKAZE, ze i original pouziva hlavne
+  index 0 - coz by znamenalo, ze cely tenhle smer bisekce byl slepa
+  ulicka a bug je uplne jinde, napr. v `dword_18A660`/vypoctu pozice
+  zapisu, i kdyz stride KONSTANTY vysly spravne).
+- Nastroje (`compare_frames.exe`, `REORION2_COMPARE_DIR`, checkpointy
+  v `orion_part_25.c`/`26.c`) VSECHNY zustavaji funkcni a pripravene.
+
+**ROZHODUJICI DUKAZ ZISKAN (primo z dosboxu, `loc_1666E4`, runtime
+0x38A6E4 = misto `call funcs_164C45[eax*4]` uvnitr `sub_1664F0`):**
+DUMPREGS na 3071 vzorcich ukazuje BOHATOU distribuci indexu v originale
+(0 a 255 dohromady jen ~16.5 % vzorku - 257+250 z 3071; zbytek: 16, 1,
+128, 8, 17, 32, 239, 64, 2, 127, 4, 207, 48, 247, 136, 51, 223, 12...
+desitky ruznych hodnot). **Port ma NAPROTI TOMU index VZDY presne 0,
+bez jedine vyjimky, pres 3+ miliony vzorku.** Tohle DEFINITIVNE
+potvrzuje realny bug specificky v CTENI/PRUCHODU stromu `dword_18A600`
+BEHEM PREHRAVANI (ne v jeho STAVBE, ktera byla primo overena jako
+shodna s originalem).
+
+**Rucni code-review traversal kodu** (radky ~915-1010 orion_part_26.c,
+`sub_1664F0` prvni-tree-traversal `dword_18A604` vs druhy-tree-traversal
+`dword_18A600`) nenasel ocividnou chybu - obe smycky jsou strukturalne
+analogicke a interne konzistentni (spravne seedovani g_smkFrameAccum/
+g_smkFrameCursor pred vstupem do do-while, spravny zapis zpet do
+globalu behem refill). Rozdily (`&0x3FF` vs `&0x7FF`, `0xAu` vs `0xBu`
+prahy) odpovidaji ocekavane RUZNE VELIKOSTI obou stromu (1024 vs 2048
+zaznamu), nejsou podezrele.
+
+## Vlna 25q (2026-07-28): *** BUG ROZLOUSKNUT *** - `loc_FFFF8` byla KONSTANTA, ne adresa
+
+**Root cause nalezen a opraven.** Puvodni asm ma na 22 mistech
+`and edx, offset loc_FFFF8` - to je AND s **konstantou 0xFFFF8**. IDA ale
+tuhle immediate hodnotu zamenila za ADRESU stejnojmenneho navesti
+`loc_FFFF8`, ktere v kodu skutecne existuje (uvnitr `sub_FFEEA` na
+0xFFFF8) - proto dekompilat obsahuje `(unsigned int)&loc_FFFF8`.
+V portu je `loc_FFFF8` deklarovana jako `_UNKNOWN loc_FFFF8;` (1bajtovy
+BSS stub), takze ten vyraz vracel jeji **nahodnou runtime adresu**
+misto masky. Presne stejna trida jako driv opravene `sub_10000`/
+`loc_20000` (vlna 23b) - tenhle vyskyt se tehdy prehledl.
+
+**Proc se to schovavalo tak dlouho:** maska se aplikuje VYHRADNE na
+stromy, jejichz vnitrni uzly nesou `distance << 13` (tedy
+`sub_1642A0`-stavene PREHRAVACI stromy), NIKDY na `sub_164200`-stavene
+vnitrni bajtove stromy. Nahodna adresa ma nejake z bitu 3..19 nastavene,
+takze **mělké stromy (2barevna loga SIMTEX / MICRO PROSE - male
+vzdalenosti) prochazely spravne** a shodovaly se s originalem bit-presne
+pres 46 snimku v rade, zatimco **hluboke stromy (bohata vesmirna scena -
+velke vzdalenosti) mely vzdalenosti oriznute** → traversal vzdy skoncil
+na stejnem spatnem listu. To presne vysvetluje VSECHNY pozorovane
+symptomy: mrizkovy/sachovnicovy artefakt, histogram pixelu dominovany
+hodnotami 0/255, i "funcs_164C45 index je vzdy 0".
+
+**Jak byl nalezen (metodika, ktera zabrala):** primy bajtovy dump
+OBSAHU STROMU z obou stran (dosbox `DUMPMEM` vs portovni checkpointy):
+- vnitrni strom `dword_18A68C`: **bajt za bajtem IDENTICKY** ✓
+- vnitrni strom `dword_18A690`: **bajt za bajtem IDENTICKY** ✓
+- prehravaci strom `dword_18A600`: **1. polozka sedi, od 2. se rozchazi** ✗
+  (port mel navic podezrely vzor - kazda licha polozka porad stejna
+  `0x03197801`)
+To okamzite zuzilo hledani na `sub_164590` (stavitel lookup tabulky) a
+odtud na jediny podezrely vyraz - masku.
+
+**POZOR - past pri overovani adres (stala me jedno cele kolo):** asm dump
+ma datove symboly posunute o **-0x8000** vs C jmena, ale runtime adresa
+se pocita z **C jmena**: `data_runtime = C_adresa + 0x216000`. Tedy
+`word_18A7E0` → `0x3A07E0` (NE `0x3987E0`, coz je asm_jmeno+0x216000).
+Prvni pokus cetl spatnou adresu a vratil nesmyslne nuly, coz me poslalo
+za falesnou stopou. **Vzdy si mapovani over na zname hodnote** - napr.
+`dword_18A690 - dword_18A68C` musi vyjit 0x800 (2048), jak to nastavuje
+`sub_1646A0`.
+
+**Fix:** vsech 6 vyskytu v C (`orion_part_25.c` 3x - `sub_164590`,
+`sub_164A40`; `orion_part_26.c` 3x - `Smk167320_DecodeBlockTypeAndDispatch`,
+`sub_1664F0`) prepsano z `(unsigned int)&loc_FFFF8 &` na `0xFFFF8u &`.
+
+**Overeni po oprave:**
+1. Prehravaci strom `dword_18A600` je ted **bajt za bajtem identicky** s
+   originalem (vsech 16 dumpnutych polozek).
+2. **45 ze 45 referencnich snimku z dosboxu (refs 0-44) port reprodukuje
+   PIXEL-PRESNE** (timing-nezavisly test: pro kazdou referenci hledana
+   shoda mezi vsemi portovnimi snimky).
+3. Ověřeny par (ref #11 vs port frame 13) sedi **0 rozdilu v pixelech
+   A 0 rozdilu v palete** (po korektnim 6→8bit prevodu).
+4. Loga SIMTEX i MICRO PROSE se dal vykresluji spravne - zadna regrese.
+
+**Bonus: 4 dalsi latentni bugy stejne tridy nalezeny a opraveny**
+(vsechny overeny proti asm):
+- `orion_part_21.c` `(unsigned int)&loc_100000 & v13` → `0x100000u & v13`
+  (asm `test esi, offset loc_100000`)
+- `orion_part_24.c` `v6 < (int)&loc_100000` → `v6 < 0x100000`
+- `orion_part_16.c` `>= (unsigned int)&loc_80000` → `>= 0x80000u`
+- `orion_part_03.c` `<= (unsigned int)&loc_30D40` → `<= 0x30D40u` (200000)
+
+**POUCENI (nova polozka do kontrolniho seznamu):** kdykoli dekompilat
+pouzije `&nejaky_symbol` v ARITMETICE (maska, porovnani velikosti,
+test bitu) misto jako cil skoku/volani, je to skoro jiste IDA zamena
+konstanty za adresu. Grep na `(unsigned int)&(loc|sub)_[0-9A-F]+` v
+portu + `(and|or|add|cmp|test)\s+reg,\s+offset (loc|sub)_` v asm
+odhali cely zbytek teto tridy najednou.
+
+## Vlna 25q-2: *** DRUHY, JESTE VETSI ROOT CAUSE *** - `__ROL4__`/`__ROR4__` byly no-op pahyly
+
+Po oprave masky `loc_FFFF8` loga sedela 45/45 pixel-presne, ale vesmirna
+scena porad delala tecky. Bisekce pokracovala:
+- vnitrni stromy `dword_18A68C`/`690`: bajt-identicke ✓
+- prehravaci tabulka `dword_18A600`: bajt-identicka ✓ (po oprave masky)
+- pocet postavenych listu: **91517 v originale i v portu - presna shoda** ✓
+- hodnoty listu `i`/`j` z pruchodu vnitrnich stromu: **prvnich 12 paru
+  IDENTICKYCH s originalem** (0x80000002/0x80000000, 0x80000011/0x80000003,
+  0x800000D4/0x80000000, ...) ✓
+
+**Rozpor, ktery to prozradil:** vstupy (`i`,`j`) byly PROKAZATELNE spravne
+(pro 1. list davaji `v56 = 0x0002`), ale namerene `v56` bylo **0 pro
+vsech 80 000 listu**. Vypocet mezi tim je jediny radek:
+`v56 = __ROL4__(v53, 8);`
+
+**Root cause:** v `link_stubs.c` bylo
+```c
+int __ROL4__(void) { return 0; }
+int __ROR4__(void) { return 0; }
+```
+tedy **prazdne pahyly vracejici nulu**. Dekompilovany kod vola
+`__ROR4__` **219x** a `__ROL4__` 1x - KAZDA 32bitova rotace v celem dumpu
+tise vracela 0. Presne stejna trida jako `memset32` no-op pahyl z vlny 22k
+("koren garbage grafiky").
+
+**Proc to nikdo nezachytil:** `defs.h` definuje `__ROL4__`/`__ROR4__` jen
+pro C++ build (sablona `template<class T> T __ROL__`); v C vetvi je jen
+komentar *"For C, we just provide macros, they are not quite correct"* a
+`__ROL4__` tam neni vubec. Herni .c soubory se prekladaji jako **C
+(`/TC`)**, takze volani spadlo na implicitni deklaraci `int __ROL4__()`,
+ktera se bez varovani slinkovala s temihle pahyly. `defs.h` navic neni
+odnikud includovany.
+
+**Fix:** skutecne implementace v `link_stubs.c` (x86 `rol`/`ror`
+semantika, pocet modulo 32) + **prototypy v `decomp_compat.h`**, aby uz
+nikdy nemohlo dojit k implicitni deklaraci.
+
+**Overeni:** `v56` je ted nenulove u **99,99 %** listu (originál ma
+99,86 % - 131 nul z 91517), misto predchozich **0 %**.
+
+**POUCENI (kriticke, pridat do kontrolniho seznamu):** projit CELY
+`link_stubs.c` a overit, ktere "pahyly" jsou ve skutecnosti nutne
+funkce. Vzor `int NECO(void) { return 0; }` u ciste vypocetnich helperu
+(rotace, memset/memcpy, bit operace) je tikajici bomba - kompiluje se,
+linkuje se, nic nevarovi, a tise vrati nulu. Uz podruhe v tomto projektu
+(memset32 vlna 22k, ted rotace). **Take: `/TC` (C) build + chybejici
+prototyp = implicitni deklarace = zadna typova kontrola volani.**
+
+## Vlna 25q-3: naportovana `sub_167040`; STAV NA KONCI SESSION
+
+Po oprave rotaci se konecne LISI typy bloku - a tim se poprve vubec
+zacaly volat neportovane handlery. Zmereno: `sub_167040` **641x**,
+`sub_167190` 6x, `sub_166830` 6x (drive 0x, protoze index byl vzdy 0).
+Ty jsou v `link_stubs.c` jako `return 0;` - nic nedekoduji a NESPOTREBUJI
+bitstream, coz presne vysvetluje, proc cinematic scena porad neni v
+poradku.
+
+**Naportovana `sub_167040`** (z Debug/diss/Orion2.exe.asm, asm radky
+549745-549858, 113 radku) do `orion_part_26.c`. Mapovani registru podle
+uz portovane sesterske `sub_1664F0`: `edx`=a1 (delka behu z
+`dword_18A664`), `edi`=`g_smkFrameOutput`, `JUMPOUT(0x1675C0)`→
+`SmkFrame_Continue`, `JUMPOUT(0x1676C0)`→`SmkFrame_Done`. Pozor na dva
+detaily overene proti asm: (1) coverage-marking smycka zapisuje **0**
+(sesterska `sub_1664F0` zapisuje 1), (2) `*(_DWORD**)p` prepsano na
+`(_DWORD*)(uintptr_t)*(uint32_t*)p` (x64 pointer-width trida).
+Stub odstranen z `link_stubs.c`, deklarace opravena v `orion_common.h`,
+dispatcher case 2 napojen. **Build cisty, smoke test: zasahy
+`UNIMPLEMENTED_167040` zmizely (641 → 0), zadna nova regrese.**
+
+### STAV K ZAVERU SESSION (2026-07-28)
+
+**Vyreseno a overeno v teto session:**
+1. `loc_FFFF8` konstanta vs adresa (6 mist) - prehravaci stromy ted
+   bajt-identicke s originalem.
+2. `__ROL4__`/`__ROR4__` no-op pahyly (219+1 volani) - `v56` ted nenulove
+   u 99,99 % listu (original 99,86 %) misto 0 %.
+3. 4 dalsi latentni bugy tridy "konstanta zamenena za adresu"
+   (loc_100000 2x, loc_80000, loc_30D40).
+4. `dword_18A6E0` deklarovan jako 1 int misto 64prvkoveho pole.
+5. Naportovana `sub_167040`.
+**Overeni:** 45/45 referencnich snimku z dosboxu (loga SIMTEX +
+MICRO PROSE) reprodukovano PIXEL-PRESNE; titulni obrazovka i HLAVNI MENU
+MOO2 se vykresluji spravne.
+
+**Naportovany VSECHNY tri zbyvajici handlery (dokonceno):**
+- `sub_167040` (asm 549745-549858, 113 r.) - 641 zasahu/beh
+- `sub_167190` (asm 549868-550002, 134 r.) - solid-fill pres 4x `rep stosd`,
+  fill = BYTE1(symbolu) replikovany 4x; 24 zasahu/beh
+- `sub_166830` (asm 548962-549735, 773 r.) - **rozbalena smycka**: 4 skupiny
+  po [dekoduj symbol -> move-to-front cache] x2 -> `mov [edi],eax` -> krok o
+  radek; overeno spocitanim referenci (16x dword_182608 = 8 logickych
+  pruchodu, 8x cache trojice, 4x store, 3x `add edi,dword_182660` +
+  1x `sub edi,dword_18266C`). Prvni pruchod paru dela `mov eax,edx` (cely
+  list), druhy `mov ax,dx` po ror (jen dolni slovo) - ulozeny dword je
+  `(HIWORD(list1)<<16) | HIWORD(list2)`. Traversal vytknut do
+  `Smk166830_DecodeSymbol()` (strom dword_18A608, prah 0x0C, maska 0xFFF)
+  a `Smk166830_UpdateCache()` (block18A610[9..11]); 387 zasahu/beh.
+
+**Vysledek:** `UNIMPLEMENTED` zasahy **0** (drive 653+387), a poprve se
+realne pouzivaji VSECHNY ctyri typy bloku (namereno 36/11/28/3).
+Refs 0-48 dal sedi **49/49 pixel-presne** - zadna regrese, build cisty.
+
+**ALE cinematic (refs 49+) porad nesedi.** Vizualne: uz to nejsou
+pravidelne tecky ani mrizka, ale fragmentovane cervene/zelene bloky se
+strukturou - tedy blizko, ale ne spravne. Histogram typu bloku:
+original (do cyklu 300M) **0:746, 1:60, 2:934, 3:13**; port (throttled
+vzorek) zhruba 0:46%, 1:14%, 2:36%, 3:4% - tvar odpovida (0 a 2
+dominantni), takze dekodovani SYMBOLU uz zhruba funguje, ale pomery
+nesedi presne.
+
+**Nejpravdepodobnejsi pricina zbytku: chyba v nekterem z mych TRECH
+rucnich portu** (nejspis `sub_166830` - nejvetsi a nejsloziteji
+strukturovana). **Dalsi krok pro pristi session:** overit je
+per-blok proti originalu - dosbox `DUMPREGS` na vstupu kazdeho handleru
+(runtime adresy: sub_166830=0x38A830, sub_167040=0x38B040,
+sub_167190=0x38B190) + portovni checkpointy na stejnem miste, porovnat
+SEKVENCI (edx/`dword_18A664`, `edi`/`g_smkFrameOutput`) volani po volani.
+Prvni volani, kde se `edi` po navratu lisi, ukaze ktery handler a ktera
+vetev je spatne.
+- **Dalsi trida tichych nul k dodelani** (mimo video cestu, ale realne
+  bugy): `link_stubs.c` ma `abs16`/`abs32` jako `return 0;` (33+48
+  volani!), a `decomp_compat.h` ma `#define __CFSHL__(x,y) 0`
+  (160 volani), `__CFADD__` (3), `__OFSUB__` (3), `__CFSHR__` (2).
+  Rodina `SWORD1/3/4/5/6`, `SDWORD1/2`, `SBYTE4` (77+17+11+12+12+3+3+1
+  volani) taky konci na `return 0;` pahylech - overeno, ze VSECHNA
+  pouziti jsou rvalue nad prostymi promennymi, takze se daji bezpecne
+  nahradit makry s IDA semantikou (`#define SWORDn(x,n)
+  (*((int16_t*)&(x)+n))` atd.). `defs.h` tyhle definice ma, ale NENI
+  odnikud includovany.
+
+**Docasne diagnosticke checkpointy k odstraneni az bude hotovo:**
+`1642A0.build.*`, `1642A0.innertree*`, `1664F0.pixel.*`, `1664F0.leaf.*`,
+`167320.strides.*`, `167320.seed.*`, `167320.playtree*`, `1676F0.entry.*`,
+`dispatch.*`.
+
+**OTEVRENO (starsi poznamka, jiz vyresena vlnou 25q):** staticka analyza
+kodu je vycerpana bez nalezeni bugu - potreba PRESNA, volani-po-volani
+korelovana komparace (ne jen statisticky vzorek): pridat pocitadlo
+volani `sub_1664F0`/druheho-traversalu NA OBOU STRANACH (port
+checkpoint + dosbox DUMPREGS se stejnou `repeat=always` na
+`loc_1666E4`), spustit OBA OD CISTEHO STARTU (ne v prubehu), a
+porovnat EAX/v18 hodnotu PRO KAZDE N-te volani 1:1 (ne jen distribuci)
+- to presne urci PRVNI volani, kde se port odchyluje od originalu, a
+tim i PRESNY bod v bitstreamu/kodu, kde k chybe dochazi. Tohle uz
+vyzaduje cerstvou, soustredenou session (hluboka bisekce, hodne
+kontextu jiz nashromazdeno v teto session pro rychly start).
+
 ## Vlna 25p pokracovani: hromadny snimek+paleta diff nastroj (na zadost uzivatele)
 
 Uzivatel pozadal o presun z register-trace metodiky na primy hromadny

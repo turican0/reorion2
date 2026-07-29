@@ -168,6 +168,12 @@ void PortVga_WaitVsync(void);
    smycky (sub_12C2C6), ktere by jinak volaly WaitVsync 4x na kazdy
    skutecny tik, ktery cekaji, vlna 25p. */
 void PortVga_WaitVsyncSlow(void);
+/* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
+   prototypes the C build fell back to an implicit `int f()` declaration,
+   which happily linked against the old `return 0;` stubs and silently made
+   every rotate in the decompiled code evaluate to zero. */
+unsigned int __ROL4__(unsigned int value, int count);
+unsigned int __ROR4__(unsigned int value, int count);
 unsigned char *PortVga_Framebuffer(void);
 void PortVga_SetPaletteEntry(int index, int r, int g, int b);
 /* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */

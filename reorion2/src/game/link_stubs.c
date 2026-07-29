@@ -13,8 +13,26 @@ int __FS__;
 int __GS__;
 int __PAIR32__(void) { return 0; }
 int __PAIR64__;
-int __ROL4__(void) { return 0; }
-int __ROR4__(void) { return 0; }
+/* PORT (wave 25q): these were `return 0;` no-op stubs - and the decompiled
+   code calls __ROR4__ 219 times and __ROL4__ once, so EVERY 32-bit rotate in
+   the whole dump silently evaluated to zero. Same class as the memset32 no-op
+   stub found in wave 22k ("the root of the garbage graphics"). defs.h only
+   ever defines __ROL4__/__ROR4__ for a C++ build; the game translation units
+   are compiled as C (/TC), where the calls fell back to an implicit
+   `int __ROL4__()` declaration and linked against these stubs - so nothing
+   warned about it. Real implementations below (x86 `rol`/`ror` semantics:
+   the shift count is taken modulo 32). */
+unsigned int __ROL4__(unsigned int value, int count)
+{
+    unsigned int n = (unsigned int)count & 31u;
+    return n ? ((value << n) | (value >> (32 - n))) : value;
+}
+
+unsigned int __ROR4__(unsigned int value, int count)
+{
+    unsigned int n = (unsigned int)count & 31u;
+    return n ? ((value >> n) | (value << (32 - n))) : value;
+}
 int __SET_PAIR__(void) { return 0; }
 int __SS__;
 int _CF;
@@ -340,9 +358,9 @@ int sub_149C40(void) { return 0; }
 int sub_15C7F0(void) { return 0; }
 int sub_164DA0(void) { return 0; }
 int sub_1655B0(void) { return 0; }
-int sub_166830(void) { return 0; }
-int sub_167040(void) { return 0; }
-int sub_167190(void) { return 0; }
+/* PORT (wave 25q): real implementation now lives in orion_part_26.c */
+/* PORT (wave 25q): real implementation now lives in orion_part_26.c */
+/* PORT (wave 25q): real implementation now lives in orion_part_26.c */
 int sub_702E5(void) { return 0; }
 int sub_772BF(void) { return 0; }
 int sub_77433(void) { return 0; }

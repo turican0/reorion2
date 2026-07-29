@@ -15625,9 +15625,9 @@ int sub_1664CC(int a1, int a2);
 int sub_1664D8(int a1, int a2);
 int16_t sub_1664E4(int a1, int a2);
 // int sub_1664F0(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4);
-int sub_166830(); // weak
-int sub_167040(); // weak
-int sub_167190(); // weak
+SmkFrameStatus sub_166830(int a1); // PORT (wave 25q): ported from asm, see orion_part_26.c
+SmkFrameStatus sub_167040(int a1); // PORT (wave 25q): ported from asm, see orion_part_26.c
+SmkFrameStatus sub_167190(int a1); // PORT (wave 25q): ported from asm, see orion_part_26.c
 _BYTE *sub_167320(unsigned int *a1, int a2, int a3);
 void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6);
 unsigned int sub_167F20(int a1, int a2);
@@ -20993,9 +20993,9 @@ extern int sub_149C40();
 extern int sub_15C7F0();
 extern int sub_164DA0();
 extern int sub_1655B0();
-extern int sub_166830();
-extern int sub_167040();
-extern int sub_167190();
+/* sub_166830 declared above (wave 25q) */
+/* sub_167040 declared above (wave 25q) */
+/* sub_167190 declared above (wave 25q) */
 extern int sub_702E5();
 extern int sub_772BF();
 extern int sub_77433();

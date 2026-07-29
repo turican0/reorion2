@@ -68,7 +68,7 @@ int sub_15EBF0(int a1, int a2, int a3, int a4, int a5, unsigned int a6)
   if ( !v11 )
   {
     v6 = a5 + (uint16_t)v10 + ((uint16_t)v9 << 16);
-    if ( v6 < (int)&loc_100000 )
+    if ( v6 < 0x100000 ) // PORT (wave 25q): asm `cmp eax, offset loc_100000` = constant 0x100000
     {
       HIWORD(v12) = (a5 + (uint16_t)v10 + ((uint16_t)v9 << 16)) >> 4;
       LOWORD(v12) = v6 & 0xF;

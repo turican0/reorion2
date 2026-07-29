@@ -190,6 +190,21 @@ char sub_1642A0(
   LOBYTE(a1) = v48;
   word_18A7E4 = a1;
   PortDebug_CheckpointPtr("1642A0.after_preamble.cursor", (void*)*a5);
+  {
+    /* PORT (wave 25q): one-shot dump of the two inner byte-trees built by
+       sub_164200, for byte-exact comparison against the original (dosbox
+       DUMPMEM at eip 0x388457, the equivalent build-loop entry). */
+    static int s_dumpedInner = 0;
+    int k;
+    if ( !s_dumpedInner )
+    {
+      s_dumpedInner = 1;
+      for ( k = 0; k < 16; ++k )
+        PortDebug_Checkpoint("1642A0.innertree68C", *(int *)(dword_18A68C + 4 * k));
+      for ( k = 0; k < 16; ++k )
+        PortDebug_Checkpoint("1642A0.innertree690", *(int *)(dword_18A690 + 4 * k));
+    }
+  }
   // PORT (wave 24d): the same "build tree via explicit push/pop stack" bug
   // class as sub_164200 (wave 24c), but worse-mangled here since it's inline
   // in a much larger function rather than its own helper: Hex-Rays collapsed
@@ -276,17 +291,23 @@ char sub_1642A0(
     LOWORD(v53) = j;
     v56 = __ROL4__(v53, 8);
     {
+      /* PORT (wave 25q): first 24 (i,j) leaf pairs, to compare 1:1 against the
+         original's ECX at loc_1644CB (0x3884CB) and loc_16450B (0x38850B). */
       static unsigned s_leafBuildCount = 0;
-      static unsigned s_escapeCount = 0;
+      static unsigned s_nonzeroV56 = 0;
+      if ( s_leafBuildCount < 24 )
+      {
+        PortDebug_Checkpoint("1642A0.build.i", i);
+        PortDebug_Checkpoint("1642A0.build.j", j);
+      }
       ++s_leafBuildCount;
-      if ( word_18A7E0 == (_WORD)v56 || word_18A7E2 == (_WORD)v56 || word_18A7E4 == (_WORD)v56 )
-        ++s_escapeCount;
-      PortDebug_Checkpoint("1642A0.build.leafTotal", (int)s_leafBuildCount);
-      PortDebug_Checkpoint("1642A0.build.escapeTotal", (int)s_escapeCount);
-      PortDebug_Checkpoint("1642A0.build.v56raw", (int)(uint16_t)v56);
-      PortDebug_Checkpoint("1642A0.build.word7E0", word_18A7E0);
-      PortDebug_Checkpoint("1642A0.build.word7E2", word_18A7E2);
-      PortDebug_Checkpoint("1642A0.build.word7E4", word_18A7E4);
+      if ( (uint16_t)v56 != 0 )
+        ++s_nonzeroV56;
+      if ( (s_leafBuildCount % 20000) == 0 )
+      {
+        PortDebug_Checkpoint("1642A0.build.total", (int)s_leafBuildCount);
+        PortDebug_Checkpoint("1642A0.build.nonzeroV56", (int)s_nonzeroV56);
+      }
     }
     if ( word_18A7E0 == (_WORD)v56 )
     {
@@ -354,7 +375,25 @@ int sub_164590(int a1, int a2)
     v5 = (unsigned int *)dword_18A678;
     for ( i = *(_DWORD *)dword_18A678; !(uint16_t)*v5; i = *v5 )
     {
-      v7 = (unsigned int)&loc_FFFF8 & (i >> 13);
+      // PORT (wave 25q): the original is `and edx, offset loc_FFFF8`, i.e. AND
+      // with the CONSTANT 0xFFFF8 - IDA mistook that immediate for the address
+      // of the code label `loc_FFFF8` (which really does exist, inside
+      // sub_FFEEA), so the decompilation reads `(unsigned int)&loc_FFFF8`.
+      // In this port `loc_FFFF8` is a 1-byte BSS stub, so that expression
+      // evaluated to its arbitrary runtime address instead of the mask.
+      // Same "IDA turned a constant into a symbol" class as sub_10000 /
+      // loc_20000 (wave 23b) - this instance was missed back then.
+      // Why it stayed hidden so long: the mask is only applied to trees whose
+      // internal nodes store `distance << 13` (the sub_1642A0-built playback
+      // trees), never to the sub_164200-built inner byte-trees. A stray
+      // address still has *some* of bits 3..19 set, so shallow trees (the
+      // 2-colour SIMTEX / MICRO PROSE logos - small distances) traversed
+      // correctly and matched the original bit-exactly for 46 consecutive
+      // frames, while deep trees (the rich space/nebula cinematic - large
+      // distances) had their distances truncated, which is what produced the
+      // grid/checkerboard artifact and the "funcs_164C45 index is always 0"
+      // symptom (every traversal fell into the same wrong leaf).
+      v7 = 0xFFFF8u & (i >> 13);
       if ( !v4 )
         break;
       --v4;
@@ -808,7 +847,7 @@ int sub_164A40(int a1, unsigned int a2, _DWORD *a3, unsigned int *a4)
           v10 = *a4++;
           v11 = 32;
         }
-        v16 = (unsigned int)&loc_FFFF8 & v15;
+        v16 = 0xFFFF8u & v15;
         v17 = v10 & 1;
         v10 >>= 1;
         if ( !v17 )
@@ -864,7 +903,7 @@ LABEL_16:
           a2 = *a4++;
           v26 = 32;
         }
-        v31 = (unsigned int)&loc_FFFF8 & v30;
+        v31 = 0xFFFF8u & v30;
         v17 = a2 & 1;
         a2 >>= 1;
         if ( !v17 )

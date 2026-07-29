@@ -8682,7 +8682,7 @@ _BOOL1 sub_FF015(unsigned int a1, int a2)
       }
       if ( *(uint8_t *)(a2 + 224) <= v4 )
       {
-        if ( (v2 & 0xF0000) >= (unsigned int)&loc_80000 )
+        if ( (v2 & 0xF0000) >= 0x80000u ) // PORT (wave 25q): asm `cmp edx, offset loc_80000` = constant 0x80000
         {
           if ( v5 )
           {

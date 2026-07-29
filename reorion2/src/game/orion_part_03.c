@@ -13798,7 +13798,7 @@ void sub_4A12A()
       {
         *(_DWORD *)(v21 + dword_192864 + 198) = v26[*(int16_t *)(v21 + dword_192864 + 196)];
       }
-      else if ( sub_111499(dword_192ED4) <= (unsigned int)&loc_30D40 )
+      else if ( sub_111499(dword_192ED4) <= 0x30D40u ) // PORT (wave 25q): asm `cmp eax, offset loc_30D40` = constant 200000
       {
         *(_DWORD *)(v21 + dword_192864 + 198) = 0;
       }

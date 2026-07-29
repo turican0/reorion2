@@ -758,7 +758,7 @@ SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void)
       v23 = *g_smkFrameCursor++;
       v24 = 32;
     }
-    v29 = (unsigned int)&loc_FFFF8 & v28;
+    v29 = 0xFFFF8u & v28;
     v30 = v23 & 1;
     v23 >>= 1;
     if ( !v30 )
@@ -828,9 +828,492 @@ LABEL_31:
   switch ( dispatch_index )
   {
     case 0: return sub_1664F0(dword_18A664);
-    case 1: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_166830", dispatch_index);
-    case 2: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167040", dispatch_index);
-    default: return SmkDispatch_NotImplemented("dispatch.UNIMPLEMENTED_167190", dispatch_index);
+    case 1: return sub_166830(dword_18A664); // PORT (wave 25q): ported from asm
+    case 2: return sub_167040(dword_18A664); // PORT (wave 25q): ported from asm
+
+    default: return sub_167190(dword_18A664); // PORT (wave 25q): ported from asm
+  }
+}
+
+
+// PORT (wave 25q): helpers for sub_166830. One symbol decoded from the
+// 12-bit-indexed tree dword_18A608 (asm loc_166880..loc_16691C), and the
+// 3-slot move-to-front cache update on block18A610[9..11]
+// (asm dword_182634/638/63C). Structure is the same traversal shape as
+// sub_1664F0's, only the lookup threshold (0x0C), mask (0xFFF), tree and
+// cache slots differ.
+static unsigned int Smk166830_DecodeSymbol(void)
+{
+  unsigned char al = (unsigned char)byte_18A6C0;
+  unsigned int ebx = (unsigned int)dword_18A6D0;
+  unsigned int ecx;
+  unsigned int edx;
+
+  if ( al <= 0x0Cu )
+  {
+    unsigned char cl = al - 1;
+    edx = *g_smkFrameCursor;
+    g_smkFrameCursor = (unsigned int *)((char *)g_smkFrameCursor + 2);
+    edx = (edx << cl) | g_smkFrameAccum;
+    g_smkFrameAccum = edx;
+    edx &= 0xFFFu;
+    al += 0x10;
+    ecx = *(unsigned int *)(uintptr_t)((unsigned int)dword_18A608 + 4 * edx);
+    g_smkFrameAccum >>= (unsigned char)ecx;
+    al -= (unsigned char)ecx;
+    ecx = (ecx >> 8) + (unsigned int)dword_18A6A4;
+    edx = *(unsigned int *)(uintptr_t)ecx;
+  }
+  else
+  {
+    edx = g_smkFrameAccum & 0xFFFu;
+    ecx = *(unsigned int *)(uintptr_t)((unsigned int)dword_18A608 + 4 * edx);
+    g_smkFrameAccum >>= (unsigned char)ecx;
+    al -= (unsigned char)ecx;
+    ecx = (ecx >> 8) + (unsigned int)dword_18A6A4;
+    edx = *(unsigned int *)(uintptr_t)ecx;
+  }
+  while ( (uint16_t)ebx == (uint16_t)edx ) // loc_1668F5
+  {
+    unsigned int step = edx >> 13;
+    unsigned int bit;
+    if ( --al == 0 )
+    {
+      g_smkFrameAccum = *g_smkFrameCursor++;
+      al = 32;
+    }
+    step &= 0xFFFF8u;
+    bit = g_smkFrameAccum & 1; // asm: `shr ebp,1` sets CF from the old bit 0
+    g_smkFrameAccum >>= 1;
+    if ( !bit )
+      step = 4;
+    ecx += step;
+    edx = *(unsigned int *)(uintptr_t)ecx;
+  }
+  byte_18A6C0 = (char)al;
+  return edx;
+}
+
+static void Smk166830_UpdateCache(unsigned int leaf)
+{
+  int *p9 = (int *)(uintptr_t)block18A610[9];
+  if ( *p9 != (int)leaf )
+  {
+    int *p10 = (int *)(uintptr_t)block18A610[10];
+    int *p11 = (int *)(uintptr_t)block18A610[11];
+    int old9 = *p9;
+    int old10 = *p10;
+    *p9 = (int)leaf;
+    *p10 = old9;
+    *p11 = old10;
+  }
+}
+
+
+//----- (00166830) --------------------------------------------------------
+// PORT (wave 25q): the last unported block handler, from
+// Debug/diss/Orion2.exe.asm (sub_166830, asm lines 548962-549735). Was a
+// `return 0;` stub; reached 387x per intro run once the rotate fix made block
+// types vary, which is what still left holes in the cinematic scene.
+// The 773 asm lines are an UNROLLED loop: 4 groups of
+// [decode symbol -> cache update] x2 -> `mov [edi], eax` -> row step, then
+// the usual block/strip bookkeeping and shared tail. Verified by counting
+// references: 16x dword_182608 (= 8 logical traversals, each listed twice for
+// its refill/no-refill arms), 8x the cache triple, 4x `mov [edi], eax`,
+// 3x `add edi, dword_182660` + 1x `sub edi, dword_18266C`.
+// The two traversals of a pair differ only in how they feed EAX:
+//   first  (asm loc_16691C): `mov eax, edx`  -> EAX = the whole leaf
+//   second (asm loc_1669EC): `mov ax, dx` after ror -> only EAX's low word is
+//                            replaced by the leaf's HIGH word
+// so the stored dword ends up as (HIWORD(leaf1) << 16) | HIWORD(leaf2).
+SmkFrameStatus sub_166830(int a1)
+{
+  unsigned int ecx;
+  unsigned int ebx;
+  unsigned int eax = 0;
+  int k;
+  _DWORD *edi = g_smkFrameOutput;
+
+  dword_18A7F4 += a1;
+  ecx = (unsigned int)dword_18A7F4;
+  if ( (unsigned int)dword_18A7F0 <= ecx ) // asm: `ja short loc_166880`
+  {
+    ebx = (unsigned int)dword_18A7F0;
+    ecx = (ecx + 15) >> 4;
+    ebx >>= 4;
+    if ( ebx != ecx )
+    {
+      uint8_t *p = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + ebx);
+      uint8_t *e = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + ecx);
+      do
+        *p++ = 1;
+      while ( p != e );
+    }
+    dword_18A7F0 = (int)(ecx << 4);
+  }
+
+LABEL_166880:
+  for ( ;; )
+  {
+    for ( k = 0; k < 4; ++k )
+    {
+      unsigned int leaf;
+
+      leaf = Smk166830_DecodeSymbol();
+      Smk166830_UpdateCache(leaf);
+      eax = leaf; // asm loc_16691C: `mov eax, edx`
+
+      leaf = Smk166830_DecodeSymbol();
+      Smk166830_UpdateCache(leaf);
+      eax = (eax & 0xFFFF0000u) | (leaf >> 16); // asm loc_1669EC: `mov ax, dx`
+
+      *edi = (int)eax;
+      if ( k < 3 )
+        edi = (_DWORD *)((char *)edi + dword_18A660);
+    }
+    edi = (_DWORD *)((char *)edi - dword_18A66C);
+
+    if ( --dword_18A668 != 0 )
+    {
+      if ( --dword_18A664 != 0 )
+        continue;
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    // loc_166F60
+    if ( --dword_18A670 == 0 )
+      break; // -> loc_166F90 (tail)
+    edi = (_DWORD *)((char *)edi + dword_18A688);
+    // loc_166F6E
+    dword_18A668 = dword_18A674;
+    if ( --dword_18A664 != 0 )
+      continue;
+    g_smkFrameOutput = edi;
+    return SmkFrame_Continue;
+  }
+
+  // loc_166F90
+  if ( (dword_18A6AC & 1) == 0 )
+  {
+    g_smkFrameOutput = edi;
+    return SmkFrame_Done;
+  }
+  for ( ;; )
+  {
+    int base;
+    uint16_t w;
+    uint16_t *p;
+
+    // loc_166FA1
+    base = dword_18A6A0;
+    w = *(uint16_t *)(uintptr_t)base;
+    if ( w > 0xFFFEu )
+    {
+      g_smkFrameOutput = edi;
+      return SmkFrame_Done;
+    }
+    if ( w == 0xFFFDu )
+    {
+      sub_164920(base);
+    }
+    else
+    {
+      if ( w < 0xFFFDu )
+        dword_18A69C(w); // loc_166FD0
+      // loc_166FD6
+      p = (uint16_t *)(uintptr_t)(base + 2);
+      dword_18A660 = p[0];
+      dword_18A674 = p[1];
+      dword_18A668 = dword_18A674;
+      dword_18A66C = p[2];
+      dword_18A684 = p[3];
+      dword_18A688 = p[4];
+      p += 5;
+      dword_18A670 = p[2];
+      edi = (_DWORD *)(uintptr_t)*(uint32_t *)p;
+      dword_18A6A0 = (int)(p + 3);
+    }
+    // loc_167023
+    if ( dword_18A670 == 0 )
+      continue;
+    // asm: `pop eax; jmp loc_166F6E`
+    dword_18A668 = dword_18A674;
+    if ( --dword_18A664 == 0 )
+    {
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    goto LABEL_166880;
+  }
+}
+
+
+//----- (00167190) --------------------------------------------------------
+// PORT (wave 25q): solid-fill block handler, ported from
+// Debug/diss/Orion2.exe.asm (sub_167190, asm lines 549868-550002). Was a
+// `return 0;` stub; reached 24x per intro run once the rotate fix made block
+// types vary. Same register mapping as sub_167040/sub_1664F0.
+// Notes verified against the asm:
+//   * loc_1671E0 (`mov al,ah / mov ecx,eax / shl eax,10h / mov ax,cx`) builds
+//     the fill dword by replicating BYTE1 of the block-type symbol (the value
+//     the dispatcher left in EAX = g_smkBlockTypeSymbol) into all four bytes.
+//   * the body writes FOUR rows of `ecx` dwords (4x `rep stosd`) stepping by
+//     `dword_18A660 - 4*ecx` between rows, then backs up by dword_18A684.
+//   * the coverage-marking span writes 1 here (sub_167040 writes 0) and
+//     rounds up (`add ecx, 0Fh`) before the shift.
+SmkFrameStatus sub_167190(int a1)
+{
+  unsigned int ecx;
+  unsigned int ebx;
+  unsigned int edx_cnt = 0;
+  unsigned int fill;
+  unsigned int b;
+  int row;
+  _DWORD *edi = g_smkFrameOutput;
+
+  dword_18A7F4 += a1;
+  ecx = (unsigned int)dword_18A7F4;
+  if ( (unsigned int)dword_18A7F0 <= ecx ) // asm: `ja short loc_1671E0`
+  {
+    ebx = (unsigned int)dword_18A7F0;
+    ecx = (ecx + 15) >> 4;
+    ebx >>= 4;
+    if ( ebx != ecx )
+    {
+      uint8_t *p = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + ebx);
+      uint8_t *e = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + ecx);
+      do
+        *p++ = 1;
+      while ( p != e );
+    }
+    dword_18A7F0 = (int)(ecx << 4);
+  }
+
+  // loc_1671E0
+  b = ((unsigned int)g_smkBlockTypeSymbol >> 8) & 0xFFu;
+  fill = b | (b << 8) | (b << 16) | (b << 24);
+
+LABEL_1671EA:
+  for ( ;; )
+  {
+    unsigned int k;
+
+    ecx = (unsigned int)dword_18A668;
+    if ( (unsigned int)dword_18A664 < ecx )
+      ecx = (unsigned int)dword_18A664;
+    // loc_1671FE
+    ebx = (unsigned int)dword_18A660 - 4 * ecx;
+    edx_cnt = ecx;
+    for ( row = 0; row < 4; ++row )
+    {
+      for ( k = 0; k < edx_cnt; ++k )
+        *edi++ = fill; // rep stosd
+      if ( row < 3 )
+        edi = (_DWORD *)((char *)edi + ebx);
+    }
+    edi = (_DWORD *)((char *)edi - dword_18A684);
+
+    dword_18A668 -= (int)edx_cnt;
+    if ( dword_18A668 == 0 )
+    {
+      // loc_167240
+      if ( --dword_18A670 == 0 )
+        break; // -> loc_167270 (tail)
+      edi = (_DWORD *)((char *)edi + dword_18A688);
+      // loc_16724E
+      dword_18A664 -= (int)edx_cnt;
+      dword_18A668 = dword_18A674;
+      if ( dword_18A664 != 0 )
+        continue;
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    dword_18A664 -= (int)edx_cnt;
+    if ( dword_18A664 != 0 )
+      continue;
+    g_smkFrameOutput = edi;
+    return SmkFrame_Continue;
+  }
+
+  // loc_167270
+  if ( (dword_18A6AC & 1) == 0 )
+  {
+    g_smkFrameOutput = edi;
+    return SmkFrame_Done;
+  }
+  for ( ;; )
+  {
+    int base;
+    uint16_t w;
+    uint16_t *p;
+
+    // loc_167281
+    base = dword_18A6A0;
+    w = *(uint16_t *)(uintptr_t)base;
+    if ( w > 0xFFFEu )
+    {
+      g_smkFrameOutput = edi;
+      return SmkFrame_Done;
+    }
+    if ( w == 0xFFFDu )
+    {
+      sub_164920(base);
+    }
+    else
+    {
+      if ( w < 0xFFFDu )
+        dword_18A69C(w); // loc_1672B0
+      // loc_1672B6
+      p = (uint16_t *)(uintptr_t)(base + 2);
+      dword_18A660 = p[0];
+      dword_18A674 = p[1];
+      dword_18A668 = dword_18A674;
+      dword_18A66C = p[2];
+      dword_18A684 = p[3];
+      dword_18A688 = p[4];
+      p += 5;
+      dword_18A670 = p[2];
+      edi = (_DWORD *)(uintptr_t)*(uint32_t *)p;
+      dword_18A6A0 = (int)(p + 3);
+    }
+    // loc_167303
+    if ( dword_18A670 == 0 )
+      continue;
+    // asm: `pop eax; jmp loc_16724E`
+    dword_18A664 -= (int)edx_cnt;
+    dword_18A668 = dword_18A674;
+    if ( dword_18A664 == 0 )
+    {
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    goto LABEL_1671EA;
+  }
+}
+
+
+//----- (00167040) --------------------------------------------------------
+// PORT (wave 25q): block-type handler ported from Debug/diss/Orion2.exe.asm
+// (sub_167040, asm lines 549745-549858). It was a `return 0;` stub in
+// link_stubs.c. Once the __ROL4__/__ROR4__ no-op stubs were fixed the decoder
+// finally produces varied block types, and this handler is reached 641x per
+// intro run - so until now most of the cinematic's blocks were silently
+// skipped (nothing decoded, no bitstream consumed).
+// Register mapping follows the already-ported sibling sub_1664F0:
+//   edx = a1 (run length, the value the dispatcher left in dword_18A664)
+//   edi = g_smkFrameOutput (persistent output cursor)
+//   JUMPOUT(0x1675C0) -> SmkFrame_Continue, JUMPOUT(0x1676C0) -> SmkFrame_Done
+SmkFrameStatus sub_167040(int a1)
+{
+  int edx = a1;
+  unsigned int ecx;
+  unsigned int eax;
+  _DWORD *edi = g_smkFrameOutput;
+
+  dword_18A7F4 += edx;
+  ecx = (unsigned int)dword_18A7F4;
+  eax = (unsigned int)dword_18A7F0;
+  if ( eax <= ecx ) // asm: `ja short loc_167084` skips when above
+  {
+    ecx >>= 4;
+    eax >>= 4;
+    if ( eax < ecx )
+    {
+      // Coverage-marking span. NOTE: sub_1664F0's equivalent writes 1 here,
+      // this one writes 0 - verified against the asm (`mov byte ptr [eax], 0`).
+      uint8_t *p = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + eax);
+      uint8_t *e = (uint8_t *)(uintptr_t)((unsigned int)dword_18A7F8 + ecx);
+      do
+        *p++ = 0;
+      while ( p != e );
+    }
+    dword_18A7F0 = (int)(ecx << 4);
+  }
+
+  for ( ;; )
+  {
+    // loc_167084
+    ecx = (unsigned int)dword_18A668;
+    if ( (unsigned int)edx < ecx )
+      ecx = (unsigned int)edx;
+    // loc_167090
+    edi = (_DWORD *)((char *)edi + 4 * ecx);
+    dword_18A668 -= (int)ecx;
+    if ( dword_18A668 )
+    {
+      edx -= (int)ecx;
+      if ( edx )
+        continue;
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    // loc_1670B0
+    if ( --dword_18A670 )
+    {
+      edi = (_DWORD *)((char *)edi + dword_18A688);
+      // loc_1670BE
+      dword_18A668 = dword_18A674;
+      edx -= (int)ecx;
+      if ( edx )
+        continue;
+      g_smkFrameOutput = edi;
+      return SmkFrame_Continue;
+    }
+    // loc_1670E0
+    if ( (dword_18A6AC & 1) == 0 )
+    {
+      g_smkFrameOutput = edi;
+      return SmkFrame_Done;
+    }
+    for ( ;; )
+    {
+      int base;
+      uint16_t w;
+      uint16_t *p;
+
+      // loc_1670F1
+      base = dword_18A6A0;
+      w = *(uint16_t *)(uintptr_t)base;
+      if ( w > 0xFFFEu ) // 0xFFFF -> loc_1676C0
+      {
+        g_smkFrameOutput = edi;
+        return SmkFrame_Done;
+      }
+      if ( w == 0xFFFDu )
+      {
+        sub_164920(base); // asm: `push offset loc_167173; jmp sub_164920`
+      }
+      else
+      {
+        if ( w < 0xFFFDu )
+          dword_18A69C(w); // loc_167120
+        // loc_167126 - reload the per-strip geometry from the frame table
+        p = (uint16_t *)(uintptr_t)(base + 2);
+        dword_18A660 = p[0];
+        dword_18A674 = p[1];
+        dword_18A668 = dword_18A674;
+        dword_18A66C = p[2];
+        dword_18A684 = p[3];
+        dword_18A688 = p[4];
+        p += 5;
+        dword_18A670 = p[2];
+        // 32-bit stored pointer - widen explicitly (x64 pointer-width class)
+        edi = (_DWORD *)(uintptr_t)*(uint32_t *)p;
+        dword_18A6A0 = (int)(p + 3);
+      }
+      // loc_167173
+      if ( dword_18A670 == 0 )
+        continue;
+      // asm: `pop eax; jmp loc_1670BE`
+      dword_18A668 = dword_18A674;
+      edx -= (int)ecx;
+      if ( edx == 0 )
+      {
+        g_smkFrameOutput = edi;
+        return SmkFrame_Continue;
+      }
+      break; // -> loc_167084
+    }
   }
 }
 
@@ -943,7 +1426,7 @@ SmkFrameStatus sub_1664F0(int a1)
           v10 = *g_smkFrameCursor++;
           v11 = 32;
         }
-        v16 = (unsigned int)&loc_FFFF8 & v15;
+        v16 = 0xFFFF8u & v15;
         v17 = v10 & 1;
         v10 >>= 1;
         if ( !v17 )
@@ -999,7 +1482,7 @@ LABEL_16:
           g_smkFrameAccum = *g_smkFrameCursor++;
           v26 = 32;
         }
-        v31 = (unsigned int)&loc_FFFF8 & v30;
+        v31 = 0xFFFF8u & v30;
         v17 = g_smkFrameAccum & 1;
         g_smkFrameAccum >>= 1;
         if ( !v17 )
@@ -1056,7 +1539,7 @@ LABEL_27:
           if ( (uint8_t)v18 > s_maxV18 ) s_maxV18 = (uint8_t)v18;
         }
         if ( (uint8_t)v18 < s_minV18 ) s_minV18 = (uint8_t)v18;
-        if ( (s_pixelWriteCount % 200003) == 1 )
+        if ( (s_pixelWriteCount % 50003) == 1 )
         {
           PortDebug_Checkpoint("1664F0.pixel.count", (int)s_pixelWriteCount);
           PortDebug_Checkpoint("1664F0.pixel.nonzeroV18", (int)s_nonzeroV18);
@@ -1227,6 +1710,19 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   dword_18A604 = a2 + 8208;
   dword_18A608 = a2 + 12304;
   dword_18A60C = a2 + 28688;
+  {
+    /* PORT (wave 25q): one-shot dump of the playback lookup tables built by
+       sub_164590, for byte-exact comparison against the original. */
+    static int s_dumpedPlay = 0;
+    int k;
+    if ( !s_dumpedPlay )
+    {
+      s_dumpedPlay = 1;
+      for ( k = 0; k < 16; ++k )
+        PortDebug_Checkpoint("167320.playtree600", *(int *)(dword_18A600 + 4 * k));
+      PortDebug_Checkpoint("167320.playtree.a2", a2);
+    }
+  }
   v13 = *a1;
   v14 = a1 + 1;
   byte_18A6C0 = 33;
@@ -1536,6 +2032,18 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
   dword_18AC28 = a4;
   dword_18AC2C = a5;
   dword_18AC30 = a6;
+  {
+    static unsigned s_entryCount = 0;
+    ++s_entryCount;
+    if ( (s_entryCount % 50) == 1 )
+    {
+      PortDebug_Checkpoint("1676F0.entry.n", (int)s_entryCount);
+      PortDebug_Checkpoint("1676F0.entry.a2", a2);
+      PortDebug_Checkpoint("1676F0.entry.a4", a4);
+      PortDebug_Checkpoint("1676F0.entry.a5", a5);
+      PortDebug_Checkpoint("1676F0.entry.a6", a6);
+    }
+  }
   byte_18A6C0 = 0;
   v6 = *a1;
   v7 = a1 + 1;

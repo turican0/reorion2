@@ -3145,7 +3145,7 @@ _DWORD *sub_144348(int a1, int a2)
           v3 = 1;
         if ( (v13 & 0x1000000) != 0 )
           v4 = 1;
-        if ( ((unsigned int)&loc_100000 & v13) != 0 )
+        if ( (0x100000u & v13) != 0 ) // PORT (wave 25q): asm `test esi, offset loc_100000` = constant 0x100000
           v5 = 1;
         if ( ((unsigned int)sub_10000 & v13) != 0 )
           v6 = 1;
