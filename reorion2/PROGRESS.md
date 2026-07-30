@@ -3495,3 +3495,118 @@ dekoder.** Nastroj (`compare_frames.exe`) pripraven pro rychlou iteraci:
 staci znovu zachytit dvojici dump (dosbox DUMPFRAME cfg + port
 REORION2_DUMP_FRAME_RANGE) po kazde zmene a spustit
 `compare_frames.exe dosbox_frames port_frames 640 480`.
+
+## Vlna 25r: podezreni na artefakt merici metody (dedup asymetrie), ne na
+skutecny bug ve fade rampe
+
+Pred dalsim laděnim `sub_132C80` overeno, CO presne test v 25p meril.
+Test breakpointoval `sub_132B41` (0x356B41) - tedy primo uvnitr fade-rampy,
+kde se pixely v ramecku VUBEC NEMENI, jen paleta. dosbox-x strana pouziva
+vlastni `DUMPFRAME` ctl prikaz (`engine.cpp` `FrameWatch`), jehoz dedup
+zapisuje novy soubor pri ZMENE PIXELU **NEBO** PALETY. Portova strana
+(`DumpFrameIfRequested`, batch-range rezim v `port_vga.cpp`) ale od vlny
+25p (na uzivatelovu opravu pro SMACKER VIDEO test) dedupuje **jen podle
+pixelu** - pro cistou paletovou fade (0 zmen pixelu) by to znamenalo, ze
+port zapise jen UPLNE PRVNI snimek a pak uz zadny dalsi, dokud se pixely
+nekde jinde nezmeni. To presne odpovida pozorovanemu vzorci ("worst-delta
+roste priblizne +4 kazdy snimek") - je to pravdepodobne ARTEFAKT
+NESOULADU DEDUP KRITERII mezi dosbox referenci (pixel-nebo-paleta) a
+portovnim dumpem (jen pixel) pri INDEXOVEM porovnavani, ne nutne skutecny
+bug v `sub_132C80`/rychlosti rampy.
+
+**Oprava:** `DumpFrameIfRequested` (batch-range) i `CompareAgainstReferenceIfChanged`
+v `port_vga.cpp` ted maji volitelny prepinac `REORION2_DUMP_INCLUDE_PALETTE=1`,
+ktery dedup prepne na pixel-NEBO-paleta (odpovida DUMPFRAME chovani).
+Bez teto env promenne je chovani nezmenene (pixel-only, jak bylo overeno
+pro SMACKER video vlnou 25p) - takze zadna regrese tam, kde uz to bylo
+overene spravne. Build (x64 Debug) cisty, jen predem znama C4312/C4311
+varovani z existujiciho dekompilovaneho kodu.
+
+**Pristi krok:** znovu zachytit dvojici dump pro fade test (dosbox
+DUMPFRAME na sub_132B41 - nezmenene) + port (`REORION2_DUMP_FRAME_RANGE`
+S:C **s `REORION2_DUMP_INCLUDE_PALETTE=1`**) a znovu spustit
+`compare_frames.exe`. Pokud "rostouci delta" zmizi/vyrazne se zmensi,
+byla to metodika, ne bug - dale uz neladit `sub_132C80`. Pokud delta
+zustane, je to skutecny bug ve fade rychlosti/kroku a je treba ho hledat
+primo v `sub_132C80`/`sub_251EF` (napr. porovnat pocet volani
+`sub_132C80` mezi dvema po sobe jdoucimi dosbox-zachycenymi paletovymi
+kroky vs portem - zda oba stepuji `a1` o 1 na jeden skutecny "krok").
+
+Mimochodem: v `orion_part_26.c` (`Smk167320_DecodeBlockTypeAndDispatch`)
+zustava pripravena (ale nepouzita, dokud se nenastavi
+`REORION2_HANDLER_TRACE`) volani-po-volani trasovaci instrumentace pro
+`sub_166830`/`167040`/`167190` (predchozi podezreni na bug v techto
+hand-portovanych handlerech) - relevantni, POKUD by se fade-drift
+artefakt vyvratil a vratili bychom se k rozlousknuti cinematicke sceny.
+
+## Vlna 25r-2: *** BUG NALEZEN A OVERENY *** - `block18A6E0` mela spatnych
+poslednich 5 polozek (run-length tabulka)
+
+**Metodika (na vyslovny pokyn uzivatele): binarni zuzovani "posledni misto,
+kde vsechny promenne sedi" vs "prvni misto, kde se lisi".**
+
+1. **Snimky** (`compare_frames.exe` + `frame_stats.exe`, novy nastroj):
+   overeno, ze fade rampa `sub_132C80`/`sub_251EF` je SPRAVNA - 27 po sobe
+   jdoucich snimku bit-presne (paleta i pixely) po zarovnani o 1 snimek.
+   Drivejsi "rostouci paletova drift +4/snimek" (vlna 25p pokracovani) byl
+   ARTEFAKT MERENI: dosbox `DUMPFRAME` dedupuje pixel-NEBO-paleta, port jen
+   pixel. Pridan prepinac `REORION2_DUMP_INCLUDE_PALETTE=1` (port_vga.cpp),
+   ktery dedup srovna. **`sub_132C80` tedy uz neni potreba ladit.**
+   POZOR na druhou stranu asymetrie: dosbox reference zachycena na blitu
+   (`sub_125814`, eip 0x349814) NEobsahuje ciste paletove kroky (blit se
+   behem fade nevola), zatimco port dumpuje na kazdy Present(). Pro
+   blit-triggerovanou referenci je tedy spravny pixel-only gate.
+
+2. **Bloky** (nova instrumentace): `Smk_TraceDispatchEntry` v
+   `orion_part_26.c` loguje `cursor/accum/bits` na vstupu
+   `Smk167320_DecodeBlockTypeAndDispatch` (= `loc_1675C0`) pro KAZDY blok
+   (env `REORION2_DISPATCH_TRACE`), proti dosbox
+   `DUMPREGS cond=eip:0x38B5C0 repeat=always` (ebp=akumulator, esi=kurzor,
+   edi=vystup). **Prvni rozdil presne na bloku 7**: originalu tam skoci
+   kurzor o -11982 B a edi o -100300 B (= konec snimku, zacina novy), port
+   pokracuje (+2). Bloky 1-6 sedely bit-presne
+   (442A07C8/00002215/00000008/000003AD/00002EE1/00000148).
+
+3. **Zuzeno dovnitr**: `DUMPREGS` na vstupech vsech 4 handleru
+   (0x38A4F0/0x38A830/0x38B040/0x38B190) potvrdil, ze mapovani indexu na
+   handlery je SPRAVNE (original tez vola 6x `sub_167190`) a ze se lisi az
+   `edx` = `a1` = `dword_18A664`.
+
+**ROOT CAUSE:** `edx` na vstupu `sub_167190` mel v originale hodnoty
+**2048, 2048, 512, 128, 59, 5** pro symboly s indexy 63, 63, 61, 59, 58, 4.
+Moje `block18A6E0` z vlny 25p byla `{1..64}` - vznikla extrapolaci ZACATKU
+asm dat (`dd 1` + raw `db 2,0,0,0 / 3,0,0,0 / ...`). Ale posledni petice
+NENI 60..64: asm konci `... 3Ah, 3Bh, 80h, (0,1,0,0), (0,2,0,0), (0,4,0,0),
+(0,8,0,0)` = **58, 59, 128, 256, 512, 1024, 2048** - standardni Smacker
+`block_runs` tabulka. Opraveno v `orion_data.c`.
+
+`dword_18A664` je DELKA BEHU bloku (kolik bloku handler vyplni, nez je
+snimek hotovy). Orez na 64 misto az 2048 znamenal, ze snimek, ktery
+original dokonci v 6 blocich, se v portu nikdy nedokoncil.
+
+**OVERENO MERENIM (pred -> po):**
+- shodnych bloku v rade proti originalu: **6 -> 1687** (= CELY zachyceny
+  referencni usek, 1687/1687 bit-presne)
+- dispatch bloku za beh: 1230592 -> 1009152 (original 1769 v oknu)
+- snimkove porovnani proti 600 referencim: 49 shod pred i po
+  (**zadna regrese**; beh utnul timeout, viz nize)
+
+**POUCENI (nova varianta zname tridy):** kdyz IDA nerozpozna datovou
+tabulku jako pole a rekonstruuje se z raw `db` bajtu, NESTACI precist
+zacatek a extrapolovat - **vzdy dopocitat a precist i KONEC tabulky**.
+Prvnich 59 polozek tady vypadalo jako cista rampa 1,2,3..., ale poslednich
+5 skace na mocniny dvou. Levne overeni: `DUMPREGS` na vstupu funkce, ktera
+vysledek prevzme jako parametr (tady edx u `sub_167190`).
+
+**ZBYVA OTEVRENE (dominantni bug):** od bloku **1688** port donekonecna
+opakuje tychz 6 bloku (`A5615831, 000A5615, 00000295, 0001369A, 0000004D,
+00000001`) ~168000x - stejny snimek se dekoduje porad dokola misto postupu
+na dalsi. Original tenhle snimek v bloku 1688 tez zacina (potvrzeno
+`ebp=A5615831`), ale pokracuje dal. Je to TATAZ chyba, na kterou ukazovala
+uz vlna 25p ("1.47M dispatch volani, vystupni ukazatel cykluje pres stejnych
+4800 adres") - **postup mezi snimky**, ne dekoder bloku. Podezreli:
+`sub_167F40` a jeji volajici `sub_14A2D0`/`sub_132869` (spatna interpretace
+navratove hodnoty/stavu -> restart misto postupu). Nastroje pripravene:
+`REORION2_DISPATCH_TRACE`, `REORION2_HANDLER_TRACE`,
+`genCompare/frame_stats.exe`, `genCompare/compare_frames.exe`,
+`REORION2_DUMP_INCLUDE_PALETTE`.

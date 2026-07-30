@@ -2,6 +2,65 @@
 
 /* Adresni rozsah: 0x16615C - 0x1694D9  (98 funkci) */
 
+// PORT (wave 25r): per-call trace of the 3 hand-ported dispatch handlers
+// (sub_166830/167040/167190), correlated against dosbox DUMPREGS at the
+// same logical point (loc_1675C0, runtime 0x38B5C0 = "back at dispatch
+// after a handler returns"). Env-gated so it's zero-cost when unset.
+// Writes to a FILE instead of stderr (REORION2_TRACE) because this fires
+// far too often for the console/checkpoint path.
+// NOTE: this file (like the rest of the decompiled game code) has fopen/
+// fclose/fprintf/fflush #define'd to the int-handle-based PortFile_* wrappers
+// (see decomp_compat.h) - use those directly rather than real FILE* stdio.
+static void Smk_TraceHandlerCall(int handlerIndex, int a1, const void* outBefore, const void* outAfter)
+{
+  static int handle = 0;
+  static int tried = 0;
+  static long long callNo = 0;
+  if (!tried)
+  {
+    tried = 1;
+    {
+      const char* path = getenv("REORION2_HANDLER_TRACE");
+      if (path)
+        handle = PortFile_Open(path, "w");
+    }
+  }
+  if (handle <= 0)
+    return;
+  ++callNo;
+  PortFile_Printf(handle, "%lld idx=%d a1=%d before=%p after=%p\n", callNo, handlerIndex, a1, outBefore, outAfter);
+  if ((callNo % 256) == 0)
+    PortFile_Flush(handle);
+}
+
+// PORT (wave 25r): bitstream state at the TOP of the block-type decoder -
+// the exact point the original re-enters at loc_1675C0 (runtime 0x38B5C0).
+// Logged for EVERY block so the sequence can be diffed 1:1 against a dosbox
+// `DUMPREGS cond=eip:0x38B5C0 repeat=always` capture. esi (cursor) and the
+// remaining-bit count are what a bit-miscounting handler corrupts first,
+// so the first line where they disagree names the guilty preceding block.
+static void Smk_TraceDispatchEntry(const void* cursor, unsigned int accum, int bitsLeft)
+{
+  static int handle = 0;
+  static int tried = 0;
+  static long long blockNo = 0;
+  if (!tried)
+  {
+    tried = 1;
+    {
+      const char* path = getenv("REORION2_DISPATCH_TRACE");
+      if (path)
+        handle = PortFile_Open(path, "w");
+    }
+  }
+  if (handle <= 0)
+    return;
+  ++blockNo;
+  PortFile_Printf(handle, "%lld cursor=%p accum=%08X bits=%d\n", blockNo, cursor, accum, bitsLeft);
+  if ((blockNo % 256) == 0)
+    PortFile_Flush(handle);
+}
+
 //----- (0016615C) --------------------------------------------------------
 int16_t sub_16615C(int a1, int a2)
 {
@@ -721,6 +780,10 @@ SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void)
   int v35; // edx
   int dispatch_index;
 
+  // PORT (wave 25r): see Smk_TraceDispatchEntry - this is loc_1675C0.
+  Smk_TraceDispatchEntry((const void *)g_smkFrameCursor, g_smkFrameAccum,
+                         (int)(uint8_t)byte_18A6C0);
+
   if ( (uint8_t)byte_18A6C0 > 8u )
   {
     v27 = *(_DWORD *)(dword_18A60C + 4 * (uint8_t)g_smkFrameAccum);
@@ -825,13 +888,19 @@ LABEL_31:
   // very first instruction is `add dword_1827F4, edx`. Passing the
   // decoded symbol itself (g_smkBlockTypeSymbol, "eax") here instead was
   // wrong and produced huge values that blew out the coverage-marking loop.
-  switch ( dispatch_index )
   {
-    case 0: return sub_1664F0(dword_18A664);
-    case 1: return sub_166830(dword_18A664); // PORT (wave 25q): ported from asm
-    case 2: return sub_167040(dword_18A664); // PORT (wave 25q): ported from asm
-
-    default: return sub_167190(dword_18A664); // PORT (wave 25q): ported from asm
+    // PORT (wave 25r): per-call trace, see Smk_TraceHandlerCall above.
+    void *before = (void *)g_smkFrameOutput;
+    SmkFrameStatus st;
+    switch ( dispatch_index )
+    {
+      case 0: st = sub_1664F0(dword_18A664); break;
+      case 1: st = sub_166830(dword_18A664); break; // PORT (wave 25q): ported from asm
+      case 2: st = sub_167040(dword_18A664); break; // PORT (wave 25q): ported from asm
+      default: st = sub_167190(dword_18A664); break; // PORT (wave 25q): ported from asm
+    }
+    Smk_TraceHandlerCall(dispatch_index, dword_18A664, before, (void *)g_smkFrameOutput);
+    return st;
   }
 }
 

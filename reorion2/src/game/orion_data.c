@@ -13703,11 +13703,31 @@ int dword_18A6D0 = 0; // weak
 // richer content (the space/nebula cinematic), causing sparse/grid-pattern
 // corrupted blocks. The sequence itself is trivial (array[k] = k+1), so
 // just spelled out as a real 64-entry array instead of pointer overrun.
+// PORT (wave 25r): the LAST FIVE entries are NOT 60..64 - the run lengths
+// jump to powers of two. Wave 25p reconstructed this table from the start of
+// the asm data (`dd 1` followed by raw `db 2,0,0,0 / 3,0,0,0 / ...` bytes
+// IDA never grouped into an array) and extrapolated a plain 1..64 ramp; only
+// the first 59 entries actually follow it. The asm data really ends
+// `... 3Ah, 3Bh, 80h, (0,1,0,0), (0,2,0,0), (0,4,0,0), (0,8,0,0)` =
+// 58, 59, 128, 256, 512, 1024, 2048 - i.e. the standard Smacker block-run
+// table. CONFIRMED at runtime too: dosbox `DUMPREGS` at sub_167190's entry
+// (runtime 0x38B190) shows edx (= this lookup's result, stored into
+// dword_18A664) taking the values 2048/2048/512/128/59/5 for symbols whose
+// indices are 63/63/61/59/58/4.
+// Why this mattered so much: dword_18A664 is the block RUN LENGTH - how many
+// blocks the handler fills before the frame is done. Capping it at 64 instead
+// of up to 2048 meant a frame that the original finishes in 6 blocks never
+// finished in the port, which kept feeding the decoder past the end of the
+// frame's data: the port ran 1230592 dispatch blocks where the original ran
+// 1769, and the surplus garbage symbols showed up as block types 1 and 3
+// being ~6-9x over-represented versus the original's histogram.
 int block18A6E0[64] = {
-   1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-  17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-  33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-  49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
+    1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
+   13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,
+   25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,
+   37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,
+   49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,
+  128, 256, 512, 1024, 2048
 }; // weak
 int16_t word_18A7E0 = 0; // weak
 int16_t word_18A7E2 = 0; // weak

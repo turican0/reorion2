@@ -163,17 +163,37 @@ void CompareAgainstReferenceIfChanged(const uint8_t* framebuffer,
         return;
 
     // PORT (wave 25p, per user correction): trigger ONLY on framebuffer
-    // (pixel) changes, NOT palette changes. dosbox-x's sub_125814 is
-    // specifically the dirty-rect PIXEL blit - it does not fire for a
-    // palette-only DAC ramp step (that goes through a completely different
-    // VGA-port path in the original with no matching "blit" event). Treating
-    // a palette-only change as "a new frame" here was comparing two
-    // different kinds of events and made the SIMTEX fade-in (many palette
-    // steps, ZERO pixel changes) look like ~116 spurious extra frames that
-    // don't exist on the dosbox side at all.
+    // (pixel) changes, NOT palette changes, by default. dosbox-x's
+    // sub_125814 is specifically the dirty-rect PIXEL blit - it does not
+    // fire for a palette-only DAC ramp step (that goes through a completely
+    // different VGA-port path in the original with no matching "blit"
+    // event). Treating a palette-only change as "a new frame" here was
+    // comparing two different kinds of events and made the SIMTEX fade-in
+    // (many palette steps, ZERO pixel changes) look like ~116 spurious
+    // extra frames that don't exist on a sub_125814-triggered dosbox
+    // reference at all.
+    //
+    // PORT (wave 25r): that reasoning only holds when the dosbox reference
+    // was captured via sub_125814. dosbox-x's OWN `DUMPFRAME` ctl command
+    // (engine.cpp FrameWatch) has its own independent dedup that fires on
+    // EITHER a pixel OR a palette change - so a reference captured that way
+    // (e.g. breakpointing sub_132B41 to study a pure palette fade, as in
+    // the wave 25p-continuation fade-ramp test) writes one file per genuine
+    // palette step even with a static framebuffer. Comparing that against a
+    // pixel-only port dedup silently drops nearly all of the port's fade
+    // steps (only the very first Present() differs from "no previous
+    // frame"), which looks exactly like a slowly growing palette
+    // "drift" when diffed index-by-index - a tooling misalignment, not
+    // necessarily a bug in sub_132C80 itself. REORION2_DUMP_INCLUDE_PALETTE=1
+    // switches this dedup to pixel-OR-palette to match a DUMPFRAME-captured
+    // reference; leave it unset when comparing against a sub_125814-style
+    // (blit-triggered) reference.
+    static bool s_paletteGate = std::getenv("REORION2_DUMP_INCLUDE_PALETTE") != nullptr;
     size_t fbBytes = static_cast<size_t>(width) * height;
-    bool changed = !s_havePrev || s_lastFb.size() != fbBytes ||
-                   std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
+    bool pixelChanged = !s_havePrev || s_lastFb.size() != fbBytes ||
+                         std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
+    bool paletteChanged = s_paletteGate && (!s_havePrev || s_lastPal != palette);
+    bool changed = pixelChanged || paletteChanged;
     if (!changed) {
         s_lastPal = palette; // still track latest palette for the next real blit's comparison
         return;
@@ -270,13 +290,22 @@ void DumpFrameIfRequested(const uint8_t* framebuffer, const std::array<uint32_t,
         }
     }
     if (s_rangeStart > 0 && s_presentCount >= s_rangeStart && s_distinctWritten < s_rangeCount) {
-        // PORT (wave 25p, per user correction): pixel-only trigger, see the
-        // matching comment in CompareAgainstReferenceIfChanged - a
-        // palette-only DAC ramp step is not "a new frame" on the dosbox
-        // sub_125814 side either.
+        // PORT (wave 25p, per user correction; wave 25r: made opt-in via
+        // REORION2_DUMP_INCLUDE_PALETTE): pixel-only trigger by default, see
+        // the matching comment in CompareAgainstReferenceIfChanged - a
+        // palette-only DAC ramp step is not "a new frame" on a sub_125814
+        // (blit-triggered) dosbox reference. But dosbox-x's DUMPFRAME ctl
+        // command dedups on pixel-OR-palette, so a reference captured that
+        // way (e.g. breakpointing sub_132B41 to isolate a fade ramp) needs
+        // the same gate here, or the port silently drops ~all fade steps
+        // after the first Present() and the resulting index-by-index diff
+        // looks like a growing palette drift that isn't really there.
+        static bool s_paletteGate = std::getenv("REORION2_DUMP_INCLUDE_PALETTE") != nullptr;
         size_t fbBytes = static_cast<size_t>(width) * height;
-        bool changed = !s_havePrev || s_lastFb.size() != fbBytes ||
-                       std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
+        bool pixelChanged = !s_havePrev || s_lastFb.size() != fbBytes ||
+                             std::memcmp(s_lastFb.data(), framebuffer, fbBytes) != 0;
+        bool paletteChanged = s_paletteGate && (!s_havePrev || s_lastPal != palette);
+        bool changed = pixelChanged || paletteChanged;
         if (changed) {
             char name[64];
             std::snprintf(name, sizeof(name), "/frame_%05d.raw", s_distinctWritten);
