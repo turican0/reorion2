@@ -892,7 +892,16 @@ LABEL_31:
     v34 = (int *)block18A610[15];
     v35 = *v33;
     *v33 = g_smkBlockTypeSymbol;
-    LOBYTE(g_smkBlockTypeSymbol) = dword_18A678;
+    // PORT (wave 25r-7): the asm restores the WHOLE saved eax here
+    // (`mov eax, dword_182678`, sub_167320 just before loc_167694) - the
+    // decompiler emitted a LOBYTE assignment, so the upper 24 bits kept the
+    // old cache[0] entry that was parked in eax during the move-to-front
+    // swap. Since sub_167190 takes its fill colour from BYTE1 of this symbol
+    // (`mov al,ah`), every block decoded through the swap path was filled
+    // with the wrong colour - measured: the cinematic's first frame filled
+    // its first 2048-block run with 0 instead of 10 (32768 pixels, all
+    // "10 -> 0"), because that one call went through the swap.
+    g_smkBlockTypeSymbol = dword_18A678;
     *v34 = v35;
   }
   dword_18A664 = block18A6E0[(g_smkBlockTypeSymbol & 0xFC) >> 2];
@@ -1208,6 +1217,24 @@ SmkFrameStatus sub_167190(int a1)
   // loc_1671E0
   b = ((unsigned int)g_smkBlockTypeSymbol >> 8) & 0xFFu;
   fill = b | (b << 8) | (b << 16) | (b << 24);
+
+  // PORT (wave 25r-7): the cinematic's first frame is 6 solid-fill runs
+  // (2048+2048+512+128+59+5 = 4800 blocks = the whole 120x40 rect). The port
+  // loses exactly the FIRST 2048-block run, so log what each call actually
+  // gets and writes.
+  {
+    extern unsigned g_blitCount;
+    if ( g_blitCount >= 80 && g_blitCount <= 82 )
+    {
+      PortDebug_Checkpoint("167190.blit", (int)g_blitCount);
+      PortDebug_Checkpoint("167190.a1", a1);
+      PortDebug_Checkpoint("167190.run_18A664", dword_18A664);
+      PortDebug_Checkpoint("167190.rowleft_18A668", dword_18A668);
+      PortDebug_Checkpoint("167190.rows_18A670", dword_18A670);
+      PortDebug_Checkpoint("167190.fillbyte", (int)b);
+      PortDebug_Checkpoint("167190.symbol", g_smkBlockTypeSymbol);
+    }
+  }
 
 LABEL_1671EA:
   for ( ;; )
@@ -1924,6 +1951,18 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
                          (int)((char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB90C));
     PortDebug_Checkpoint("167320.seed.outMinus1BB8FC",
                          (int)((char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB8FC));
+    // PORT (wave 25r-7): the decoder's target address is baked into the frame
+    // table by sub_14AA40 from whatever dword_1BB904 was at CONFIG time. If
+    // the primary/secondary pair swaps afterwards, the video keeps writing to
+    // the stale surface and a later secondary<->primary copy wipes part of
+    // the freshly decoded frame - which is what 2048 unwritten blocks
+    // (32768 px, all "10 -> 0") on the cinematic's first frame look like.
+    { extern unsigned g_blitCount;
+      PortDebug_Checkpoint("167320.seed.blit", (int)g_blitCount);
+      PortDebug_Checkpoint("167320.seed.target_primary",
+                           (char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB90C == 102480);
+      PortDebug_Checkpoint("167320.seed.target_secondary",
+                           (char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB8FC == 102480); }
     PortDebug_CheckpointPtr("167320.seed.a2", (void*)(uintptr_t)a2);
     PortDebug_CheckpointPtr("167320.seed.a3", (void*)(uintptr_t)a3);
     while ( Smk167320_DecodeBlockTypeAndDispatch() == SmkFrame_Continue )

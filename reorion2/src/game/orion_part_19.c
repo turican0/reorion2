@@ -5268,8 +5268,8 @@ void *sub_125814()
   if ( g_blitCount >= 79 && g_blitCount <= 84 )
   {
     PortDebug_Checkpoint("125814.blit", (int)g_blitCount);
-    PortDebug_Checkpoint("125814.src_backbuf_at_5_5", *(uint8_t *)(uintptr_t)(v18 + 5 * 640 + 5));
-    PortDebug_Checkpoint("125814.dst_framebuf_at_5_5", (uint8_t)v17[5 * 640 + 5]);
+    PortDebug_Checkpoint("125814.src_backbuf_rect", *(uint8_t *)(uintptr_t)(v18 + 170 * 640 + 100));
+    PortDebug_Checkpoint("125814.dst_framebuf_rect", (uint8_t)v17[170 * 640 + 100]);
     PortDebug_Checkpoint("125814.dirty_row5_start", *(int16_t *)(uintptr_t)(dword_1BB908 + 4 * 5));
     PortDebug_Checkpoint("125814.dirty_row5_end", *((int16_t *)(uintptr_t)(dword_1BB908 + 4 * 5) + 1));
   }

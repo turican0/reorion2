@@ -3817,3 +3817,98 @@ bloku (3940 pixelu na kazdou `(y-160)%4` tridu) - jde tedy o cele CHYBNE
 Snimek 49 (prvni cinematicu) ma 32768 = presne 2^15 neshod. **Dalsi krok:**
 overit prvni snimek cinematicu blok po bloku - podezreni na pocatecni obsah
 obdelniku pred prvnim dekodem.
+
+### Vlna 25r-7: zuzeni zbylych 5,1 % (rozpracovano)
+
+Dalsi mereni k tem 15760 zbylym pixelum:
+
+- **Vsech 32768 neshod na snimku 49 je `10 -> 0`** - original ma v obdelniku
+  uniformni index 10, port tam ma 0 (tj. hodnotu po vymazani, NEZAPSANO).
+- 32768 px = **2048 bloku** ze 4800 v obdelniku. Prvni snimek cinematicu je
+  6 solid-fill bloku s behy **2048+2048+512+128+59+5 = 4800**; portu tedy
+  chybi presne JEDEN beh 2048 - a to ten PRVNI (dotcene jsou souvisle
+  blokove radky 0-16, tj. horni cast obdelniku).
+- `sub_167190` overena radek po radku proti asm (loc_1671EA/1671FE/167240/
+  16724E vcetne toho, ze `jnz` na loc_16724E testuje flagy ze `sub
+  dword_182664, edx` pres dva `mov`y) - **shoduje se**.
+- **Pohyb vystupniho ukazatele sedi pres VSECH 197813 bloku** referencniho
+  zaznamu (dosbox `edi` delty vs portovni `out` delty) - dekoder tedy
+  zapisuje na presne stejna mista jako original.
+- Video dekoduje VZDY do PRIMARNIHO bufferu (1406/1406 volani,
+  `g_smkFrameOutput - dword_1BB90C == 102480`), zadne prepnuti cile.
+- **Prvni snimek cinematicu se dekoduje na TEMZE blitu (81), na kterem
+  probiha vymazani obrazovky** (FILL sekundarniho + `sub_124E36` kopie
+  sekundarni->primarni). Podezreni tedy je na PORADI: kdyby se cast snimku
+  dekodovala pred tou kopii, kopie ji prepise. Nesedi ale, ze by slo o
+  presne 2048 bloku (cela kopie je 300 KB) - k dovyresenie.
+
+**Dalsi krok:** zachytit v dosboxu presne poradi na blitu 81 vcetne
+`sub_167320` (`DUMPREGS cond=eip:0x38B320`) vedle FILL/COPY, a porovnat s
+portem; pripadne pouzit `DUMPREGS cond=changed:` na pixel uvnitr obdelniku
+(napr. 0x452044+102480) a zjistit, co ho v portu vraci na 0.
+
+## Vlna 25r-7 (dokonceni): *** VIDEOSEKVENCE OPRAVENA - 600/600 SNIMKU ***
+
+**Ctvrty root cause: `LOBYTE` misto plneho obnoveni EAX ve swap-cache
+dispatche `sub_167320`.**
+
+Postup (mereni, ne odvozovani):
+1. Vsech 32768 neshod na snimku 49 je `10 -> 0`; 32768 px = 2048 bloku =
+   presne PRVNI beh prvniho snimku cinematicu (6 solid-fill behu
+   2048+2048+512+128+59+5 = 4800).
+2. `DUMPREGS cond=changed:0x46C9A8:1` (pixel uvnitr obdelniku) na originalu:
+   po vymazani jde 00 -> 0A z eip 0x38B21B = `sub_167190`. Poradi operaci na
+   blitu 81 (FILL/COPY.../DECODE) je v portu IDENTICKE - takze poradi OK.
+3. Portovni checkpoint primo v `sub_167190`: behy sedi (2048, 2048, 512, 128,
+   59, 5), ale **`fillbyte` prvniho volani je 0 misto 10**.
+4. `fillbyte = BYTE1(g_smkBlockTypeSymbol)`. Porovnani symbolu s originalem
+   (`DUMPREGS cond=eip:0x38B694` = loc_167694):
+   - original: 0x00460AFF, 0x0A0A0AFF, 0x0A0A0AF7, 0x0A0A0AEF, 0x0A0A0AEB,
+     0x0A0A0A13
+   - port:     0x000000FF, 0x00000AFF, 0x0AFF0AF7, 0x0AF70AEF, ...
+   Dolni pulka sedi VSUDE krome prvniho volani (0x00FF vs 0x0AFF).
+
+**ROOT CAUSE:** move-to-front swap v dispatchi. Asm uklada a pak
+**cele** obnovuje EAX:
+```
+mov  dword_182678, eax      ; uloz
+mov  eax, [ecx]             ; eax = stara cache[0]
+...
+mov  eax, dword_182678      ; OBNOV celych 32 bitu
+```
+Dekompilat mel `LOBYTE(g_smkBlockTypeSymbol) = dword_18A678;` - obnovil jen
+DOLNI BAJT, takze hornich 24 bitu zustalo ze stare cache[0] zaparkovane v
+eax behem swapu. `sub_167190` bere fill barvu z BYTE1 toho symbolu
+(`mov al,ah`), takze KAZDY blok dekodovany pres swap cestu dostal spatnou
+barvu. Oprava: `g_smkBlockTypeSymbol = dword_18A678;`.
+
+**OVERENO MERENIM:**
+- fillbyte vsech 6 volani: 0/10/10/10/10/10 -> **10/10/10/10/10/10**
+- dolni pulky symbolu sedi s originalem 1:1
+- **`compare_frames`: 600 snimku porovnano, `600 matched, 0 diverged`** -
+  pixelove I paletove PRESNE, vcetne cele cinematicke sceny.
+  (pred touto opravou 49 shod / 551 rozdilnych, prumer 13906 chybnych px)
+- vizualne overeno na snimku 300: identicke s originalem, bez artefaktu.
+
+**Souhrn celeho tahu (vlny 25r-2 az 25r-7), vse zmereno:**
+| oprava | neshoda pixelu (600 snimku) |
+|---|---|
+| vychozi stav | 49 shod, zbytek ~100 % |
+| `block18A6E0` = {1..59,128,256,512,1024,2048} (25r-2) | bloky 6 -> 1687 shodnych |
+| `Smk_ExpandMonoRows` misto funcs_164C45 (25r-3) | tečkovany artefakt pryc |
+| zachyt na blitu misto Present() (25r-4) | paleta 740/768 -> **0** neshod |
+| `HIDWORD(qword_184530)` misto `_UNKNOWN` (25r-6) | 79,96 % -> **5,17 %** |
+| plne obnoveni EAX ve swapu (25r-7) | 5,17 % -> **0 %** |
+
+**Zbyva k uklidu:** docasne diagnosticke checkpointy (`167190.*`,
+`167320.seed.*`, `128C32.*`, `138CE0.*`, `124DEC/124E36.*`, `125814.*`,
+`dispatch.*`, `1642A0.*`) - vsechny jsou env-gated (REORION2_TRACE), takze
+neskodi, ale az bude klid, smazat. Dale porad plati kontrolni seznam tichych
+nul: `abs16`/`abs32`, `__CFSHL__`/`__CFADD__`/`__OFSUB__`/`__CFSHR__`,
+rodina `SWORD1/3/4/5/6`+`SDWORD1/2`+`SBYTE4`.
+
+**Pozn.:** port jeste nezapisuje zpet do `g_smkBlockTypeSymbol` to, co
+handlery necha v EAX (`sub_167190` tam necha replikovany fill 0x0A0A0A0A,
+proto ma original horni pulku 0x0A0A a port 0x1849). Na vysledek to nema
+vliv (spotrebovava se jen dolni pulka, ktera se nastavuje znovu kazdy blok),
+ale pro vernost by to slo doplnit.
