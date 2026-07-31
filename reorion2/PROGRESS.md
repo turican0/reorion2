@@ -3912,3 +3912,56 @@ handlery necha v EAX (`sub_167190` tam necha replikovany fill 0x0A0A0A0A,
 proto ma original horni pulku 0x0A0A a port 0x1849). Na vysledek to nema
 vliv (spotrebovava se jen dolni pulka, ktera se nastavuje znovu kazdy blok),
 ale pro vernost by to slo doplnit.
+
+## Vlna 25r-8: *** PATY ROOT CAUSE *** - port prezentoval vlastni plochu misto
+herniho backbufferu (mod 5 = VESA linear)
+
+**Uzivatel hlasil, ze druha animace je cerna, prestoze mereni hlasilo
+600/600 shodu.** Mel pravdu: mereni vzorkovalo `dword_1BB90C` (backbuffer,
+totez co dosbox `DUMPFRAME framebuf=0x452044`), zatimco uzivatel vidi
+SDL plochu portu. Ta byla jina.
+
+**Retez (vse zmereno, obe strany):**
+1. Dump SDL plochy (Present-triggered) ukazal, ze cinematic scena probehne
+   na obrazovce za ~9 snimku a je vetsinou prazdna/cerna, prestoze backbuffer
+   ma 600 spravnych snimku.
+2. `sub_138CEE` (dirty rect) behem cinematicu: video obdelnik
+   (80,160)-(560,320) se oznaci **jen jednou** (blit 82), pak uz jen kurzor
+   (320,240)-(346,264). **A originál dela PRESNE TOTEZ** (2 volani/blit,
+   stejne obdelniky, `sub_167F40` 41 volani na blitu 82 a 1 na dalsich) -
+   takze to neni chyba portu.
+3. Plna kopie do VGA okna (`sub_138CE0 dst=0xA0000`) je v originale jen na
+   4 blitech (0, 1, 15, 81) - take neprezentuje video.
+4. **`DUMPMEM`: `dword_1BB904 == dword_1BB90C == 0x452044`**, a
+   `dword_1BB910[0] == 0x000A0000`. Tedy: adresa, kterou dosbox vzorkuje, JE
+   herni backbuffer, a `dword_1BB910[0]` je stare bankovane VGA okno, ktere
+   se v modu 5 NEZOBRAZUJE.
+
+**ROOT CAUSE:** v modu 5 (VESA linear) je zobrazovanou plochou primo herni
+buffer `dword_1BB90C` - hra do nej kresli a CRT ho proste snima, zadny
+"present" neexistuje a dirty-span blit `sub_125814` do `0xA0000` je v tomhle
+rezimu mrtva cesta. Port ale zobrazuje SVOU vlastni `g_framebuffer`, do ktere
+se pres `sub_125814` dostanou jen dirty spany - a ty behem videa pokryvaji
+jen kurzor. Log scény fungovaly jen proto, ze si znackuji 1100+ obdelniku na
+blit.
+
+**Oprava:** `PortVga_BlitBackBuffer()` (port_vga.cpp, deklarace v
+decomp_compat.h) - na konci `sub_125814` zrcadli cely backbuffer do
+`g_framebuffer` a zavola `Port::Vga::Present()`. Druha cast je nutna, protoze
+hra behem videa vubec neprochazi svymi vsync helpery
+(`sub_132B27`/`sub_132B41`), ktere jsou jinak jedine misto, odkud se v portu
+Present() vola - proto obrazovka zamrzla na poslednim snimku loga.
+
+**OVERENO MERENIM:**
+- snimku SDL plochy za beh: **110 -> 400**
+- SDL plocha behem cinematicu: `nonzero_pal=508 distinct_pix=111 top_pix=0
+  (75,0 %)` = **presne referencni hodnoty** (drive prazdno/cerno)
+- `compare_frames` proti 600 referencim: **600 matched, 0 diverged**
+  (zadna regrese oproti 25r-7)
+- vizualne: cista, detailni scena (vesmirna stanice s lodemi), bez artefaktu
+
+**POUCENI (uz poctvrte v tomhle tahu):** "port se shoduje s dosboxem" plati
+jen pro to, co obe strany vzorkuji. dosbox `DUMPFRAME framebuf=` cte
+konkretni ADRESU - je nutne vedet, CO na te adrese je (tady herni backbuffer,
+ne zobrazovana plocha portu). Pri hlaseni uzivatele "vidim neco jineho" vzdy
+nejdriv overit, ze merena plocha == zobrazovana plocha.

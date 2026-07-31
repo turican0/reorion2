@@ -2737,6 +2737,33 @@ int sub_167F40(int a1, unsigned int *a2)
   unsigned int v8; // eax
   unsigned int v9; // ecx
 
+  // PORT (wave 25r-8): dirty-rect iterator over the just-decoded frame.
+  // sub_14A2D0 (and through it sub_132869's sub_138CEE marking) yields
+  // NOTHING if this returns 0 on the first call - measured symptom: during
+  // the cinematic the video rect is marked dirty only once (blit 82), so the
+  // decoded frames never reach the screen even though the back buffer is
+  // pixel-perfect.
+  {
+    extern unsigned g_blitCount;
+    if ( g_blitCount >= 82 && g_blitCount <= 85 )
+    {
+      PortDebug_Checkpoint("167F40.blit", (int)g_blitCount);
+      PortDebug_Checkpoint("167F40.done32", *(uint8_t *)(uintptr_t)(a1 + 32));
+      PortDebug_Checkpoint("167F40.f33", *(uint8_t *)(uintptr_t)(a1 + 33));
+      PortDebug_Checkpoint("167F40.f34", *(uint8_t *)(uintptr_t)(a1 + 34));
+      PortDebug_Checkpoint("167F40.n36", *(int *)(uintptr_t)(a1 + 36));
+      PortDebug_Checkpoint("167F40.n40", *(int *)(uintptr_t)(a1 + 40));
+      PortDebug_Checkpoint("167F40.n44", *(int *)(uintptr_t)(a1 + 44));
+      PortDebug_Checkpoint("167F40.n48", *(int *)(uintptr_t)(a1 + 48));
+      // Coverage array at a1+56: handlers mark it (sub_1664F0/sub_167190
+      // write 1, sub_167040 writes 0) and this iterator skips zero bytes.
+      { const uint8_t *cov = (const uint8_t *)(uintptr_t)(a1 + 56);
+        int nz = 0, i; for ( i = 0; i < 320; ++i ) if ( cov[i] ) ++nz;
+        PortDebug_Checkpoint("167F40.cov_nonzero_of_320", nz);
+        PortDebug_Checkpoint("167F40.cov_byte0", cov[0]); }
+    }
+  }
+
   if ( *(_BYTE *)(a1 + 32) )
     return 0;
   // PORT (wave 25p): a1+52 is a plain 32-bit stored pointer value (same

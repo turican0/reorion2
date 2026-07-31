@@ -5288,6 +5288,7 @@ void *sub_125814()
   // PORT (wave 25r-4): sample the framebuffer HERE - this is the exact point
   // dosbox-x's `DUMPFRAME cond=eip:0x349814` samples the original, so the two
   // dumps compare like for like (see PortVga_CaptureBlit).
+  PortVga_BlitBackBuffer((const void *)(uintptr_t)v18);
   PortVga_CaptureBlit((const void *)(uintptr_t)v18);
   return result;
 }

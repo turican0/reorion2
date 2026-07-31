@@ -6341,7 +6341,7 @@ int sub_138CEE(int a1, int a2, int a3, int a4)
   // the two sides line up.
   {
     extern unsigned g_blitCount;
-    if ( g_blitCount >= 45 && g_blitCount <= 52 )
+    if ( g_blitCount >= 82 && g_blitCount <= 90 )
     {
       PortDebug_Checkpoint("138CEE.blit", (int)g_blitCount);
       PortDebug_Checkpoint("138CEE.x0", a1);

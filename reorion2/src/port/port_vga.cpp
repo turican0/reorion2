@@ -536,6 +536,33 @@ void PortVga_WaitVsync(void)
 // instead compared the fully-composed back buffer against a surface that only
 // ever receives the blit's dirty spans, which made undamaged areas keep the
 // previous scene's background (255) and looked like a 75-80% pixel mismatch.
+// PORT (wave 25r-8): in VESA mode 5 the DISPLAYED surface is the game's own
+// linear buffer - dosbox DUMPMEM proves dword_1BB904 == dword_1BB90C ==
+// 0x452044, which is exactly the address dosbox-x's DUMPFRAME samples, while
+// dword_1BB910[0] is the legacy banked VGA window at 0xA0000 that mode 5 does
+// not display. The dirty-span blit in sub_125814 therefore is NOT what puts
+// the video on screen: measured on BOTH sides, during the cinematic only the
+// mouse cursor rect is ever marked dirty (sub_138CEE: 2 calls/blit, identical
+// in port and original), so a port that presents its own g_framebuffer shows
+// a frozen/black screen even though its back buffer is pixel-perfect
+// (compare_frames: 600/600 match against the dosbox reference).
+// Fix: mirror the back buffer into the presented surface on every blit, which
+// is what mode 5 does implicitly by displaying that buffer directly.
+void PortVga_BlitBackBuffer(const void* backBuffer)
+{
+    if (!backBuffer || !Port::Vga::g_framebuffer)
+        return;
+    std::memcpy(Port::Vga::g_framebuffer, backBuffer,
+                static_cast<size_t>(Port::Vga::kModeWidth) * Port::Vga::kModeHeight);
+    // ...and push it out. In mode 5 the original needs no explicit present at
+    // all - the CRT simply scans the buffer the game just drew into - whereas
+    // this port only reaches the window through Present(). During the video
+    // the game never goes through its vsync helpers (sub_132B27/sub_132B41,
+    // the port's only other Present() callers), so without this the screen
+    // froze on the last logo frame while ~600 correct video frames went by.
+    Port::Vga::Present();
+}
+
 void PortVga_CaptureBlit(const void* backBuffer)
 {
     static bool s_checked = false;
