@@ -39,7 +39,8 @@ static void Smk_TraceHandlerCall(int handlerIndex, int a1, const void* outBefore
 // `DUMPREGS cond=eip:0x38B5C0 repeat=always` capture. esi (cursor) and the
 // remaining-bit count are what a bit-miscounting handler corrupts first,
 // so the first line where they disagree names the guilty preceding block.
-static void Smk_TraceDispatchEntry(const void* cursor, unsigned int accum, int bitsLeft)
+static void Smk_TraceDispatchEntry(const void* cursor, unsigned int accum, int bitsLeft,
+                                   const void* out)
 {
   static int handle = 0;
   static int tried = 0;
@@ -56,9 +57,55 @@ static void Smk_TraceDispatchEntry(const void* cursor, unsigned int accum, int b
   if (handle <= 0)
     return;
   ++blockNo;
-  PortFile_Printf(handle, "%lld cursor=%p accum=%08X bits=%d\n", blockNo, cursor, accum, bitsLeft);
+  PortFile_Printf(handle, "%lld cursor=%p accum=%08X bits=%d out=%p g660=%d g664=%d g668=%d g670=%d g674=%d g684=%d g688=%d\n",
+                  blockNo, cursor, accum, bitsLeft, out,
+                  dword_18A660, dword_18A664, dword_18A668, dword_18A670,
+                  dword_18A674, dword_18A684, dword_18A688);
   if ((blockNo % 256) == 0)
     PortFile_Flush(handle);
+}
+
+// PORT (wave 25r-3): replacement for the funcs_164C45[256] jump table.
+//
+// Those 256 tiny generated functions (sub_165760..sub_1664E4) each return
+// TWO 32-bit values - EAX **and EBX** - which the caller stores into two
+// consecutive framebuffer rows:
+//     call funcs_164C45[eax*4] / mov [edi],eax / add edi,stride
+//                               / mov [edi],ebx
+// IDA could only model one return value, so in the decompiled sub_1664F0
+// the EBX rows came out as `v22` - a stale `int *` left over from the
+// move-to-front cache update just above - and the EAX rows were truncated
+// (95 of the 256 functions were typed `int16_t`/`char`, dropping 2 or 3 of
+// their 4 pixels). Net effect: every other framebuffer row got a POINTER
+// written into it as pixel data, and the other rows kept only half their
+// pixels - exactly the dotted/checkerboard green artifact seen over the
+// cinematic scene, with raw pointer dwords (e.g. 0x06918DD0) visible in a
+// framebuffer dump.
+//
+// Semantics derived from the asm and verified against indices 0/1/2/3
+// (sub_165760/16576C/165778/165784): the caller sets edx to HIWORD(v18)
+// duplicated into both halves, so DL and DH are the block's two colours,
+// and the table index is a bit mask selecting between them:
+//     eax = pixels 0..3, ebx = pixels 4..7, pixel k = (index>>k)&1 ? dh : dl
+// i.e. the standard Smacker 2-colour ("mono") block: BYTE0(v18) and
+// BYTE1(v18) supply the 16 bits for the 16 pixels of one 4x4 block, and
+// BYTE2/BYTE3(v18) supply the two colours. Generating the pixels directly
+// makes all 256 generated functions dead code for this path.
+static void Smk_ExpandMonoRows(unsigned int index, unsigned int edxVal,
+                               unsigned int *outEax, unsigned int *outEbx)
+{
+  unsigned int dl = edxVal & 0xFFu;
+  unsigned int dh = (edxVal >> 8) & 0xFFu;
+  unsigned int a = 0, b = 0;
+  int k;
+
+  for ( k = 0; k < 4; ++k )
+    a |= (((index >> k) & 1u) ? dh : dl) << (8 * k);
+  for ( k = 4; k < 8; ++k )
+    b |= (((index >> k) & 1u) ? dh : dl) << (8 * (k - 4));
+
+  *outEax = a;
+  *outEbx = b;
 }
 
 //----- (0016615C) --------------------------------------------------------
@@ -782,7 +829,7 @@ SmkFrameStatus Smk167320_DecodeBlockTypeAndDispatch(void)
 
   // PORT (wave 25r): see Smk_TraceDispatchEntry - this is loc_1675C0.
   Smk_TraceDispatchEntry((const void *)g_smkFrameCursor, g_smkFrameAccum,
-                         (int)(uint8_t)byte_18A6C0);
+                         (int)(uint8_t)byte_18A6C0, (const void *)g_smkFrameOutput);
 
   if ( (uint8_t)byte_18A6C0 > 8u )
   {
@@ -1595,38 +1642,23 @@ LABEL_27:
       HIWORD(v37) = HIWORD(v18);
       v38 = BYTE1(v18);
       LOWORD(v37) = __ROR4__(v18, 16);
-      LOWORD(v39) = ((int16_t (*)(int, int))funcs_164C45[(uint8_t)v18])((uint8_t)v18, v37);
+      // PORT (wave 25r-3): was two truncated funcs_164C45[] calls whose EBX
+      // half IDA had modeled as the stale `v22` cache pointer - see
+      // Smk_ExpandMonoRows above for the asm evidence and the derivation.
       {
-        static unsigned s_pixelWriteCount = 0;
-        static unsigned s_nonzeroV18 = 0;
-        static unsigned s_maxV18 = 0;
-        static unsigned s_minV18 = 255;
-        ++s_pixelWriteCount;
-        if ( (uint8_t)v18 )
-        {
-          ++s_nonzeroV18;
-          if ( (uint8_t)v18 > s_maxV18 ) s_maxV18 = (uint8_t)v18;
-        }
-        if ( (uint8_t)v18 < s_minV18 ) s_minV18 = (uint8_t)v18;
-        if ( (s_pixelWriteCount % 50003) == 1 )
-        {
-          PortDebug_Checkpoint("1664F0.pixel.count", (int)s_pixelWriteCount);
-          PortDebug_Checkpoint("1664F0.pixel.nonzeroV18", (int)s_nonzeroV18);
-          PortDebug_Checkpoint("1664F0.pixel.maxV18", (int)s_maxV18);
-          PortDebug_Checkpoint("1664F0.pixel.minV18", (int)s_minV18);
-          s_nonzeroV18 = 0;
-          s_maxV18 = 0;
-          s_minV18 = 255;
-        }
+        unsigned int rowEax0, rowEbx0, rowEax1, rowEbx1;
+
+        Smk_ExpandMonoRows((uint8_t)v18, (unsigned int)v37, &rowEax0, &rowEbx0);
+        Smk_ExpandMonoRows((uint8_t)v38, (unsigned int)v37, &rowEax1, &rowEbx1);
+
+        *g_smkFrameOutput = rowEax0;
+        v40 = (int **)((char *)g_smkFrameOutput + dword_18A660);
+        *(unsigned int *)v40 = rowEbx0;
+        v41 = (int **)((char *)v40 + dword_18A660);
+        *(unsigned int *)v41 = rowEax1;
+        v43 = (int **)((char *)v41 + dword_18A660);
+        *(unsigned int *)v43 = rowEbx1;
       }
-      *g_smkFrameOutput = v39;
-      v40 = (int **)((char *)g_smkFrameOutput + dword_18A660);
-      *v40 = v22;
-      v41 = (int **)((char *)v40 + dword_18A660);
-      LOWORD(v42) = ((int16_t (*)(int, int))funcs_164C45[v38])(v38, v37);
-      *v41 = v42;
-      v43 = (int **)((char *)v41 + dword_18A660);
-      *v43 = v22;
       g_smkFrameOutput = (_DWORD *)((char *)v43 - dword_18A66C);
       if ( !--dword_18A668 )
         break;
@@ -1879,6 +1911,19 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
     PortDebug_Checkpoint("167320.seed.byte_18A6C0", (unsigned char)byte_18A6C0);
     PortDebug_CheckpointPtr("167320.seed.a1raw", (void*)a1);
     PortDebug_CheckpointPtr("167320.seed.g_smkFrameOutput", (void*)g_smkFrameOutput);
+    // PORT (wave 25r-6): in the ORIGINAL this pointer lands inside the linear
+    // VESA framebuffer - edi=0x46B094 with framebuf=0x452044, i.e. exactly
+    // base+102480 = base + (160*640+80), the video rect's origin. Log the
+    // port's framebuffer base and the offset so the two can be compared.
+    PortDebug_CheckpointPtr("167320.seed.fbBase", (void*)PortVga_Framebuffer());
+    PortDebug_Checkpoint("167320.seed.outMinusFb",
+                         (int)((char *)g_smkFrameOutput - (char *)PortVga_Framebuffer()));
+    PortDebug_Checkpoint("167320.seed.outMinus1BB904",
+                         (int)((char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB904));
+    PortDebug_Checkpoint("167320.seed.outMinus1BB90C",
+                         (int)((char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB90C));
+    PortDebug_Checkpoint("167320.seed.outMinus1BB8FC",
+                         (int)((char *)g_smkFrameOutput - (char *)(uintptr_t)dword_1BB8FC));
     PortDebug_CheckpointPtr("167320.seed.a2", (void*)(uintptr_t)a2);
     PortDebug_CheckpointPtr("167320.seed.a3", (void*)(uintptr_t)a3);
     while ( Smk167320_DecodeBlockTypeAndDispatch() == SmkFrame_Continue )

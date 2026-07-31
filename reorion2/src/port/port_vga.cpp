@@ -517,6 +517,69 @@ void PortVga_WaitVsync(void)
     SDL_Delay(14); // ~70 Hz VGA refresh
 }
 
+// PORT (wave 25r-4): capture the framebuffer AT THE BLIT (game sub_125814),
+// which is exactly where dosbox-x's `DUMPFRAME cond=eip:0x349814` samples the
+// original. Sampling the port at Present() instead was a measurement
+// asymmetry: the port blits ~1400 video frames per intro run (verified 1:1:1
+// decode:copy:blit on both sides - original 784/784/784, port 1406/1401/1401)
+// but Present() runs on its own cadence, so a Present()-triggered dump only
+// ever saw ~113 distinct states and made a correctly-playing cinematic look
+// like it was skipping ~98% of its frames. Enabled by REORION2_BLIT_DUMP_DIR;
+// same file layout (768B palette + WxH indices) and same content dedup as
+// DumpFrameIfRequested, so genCompare/compare_frames can diff the two
+// directories directly.
+// PORT (wave 25r-6): `backBuffer` must be the game's dword_1BB90C surface, NOT
+// the final SDL framebuffer. dosbox-x's `DUMPFRAME ... framebuf=0x452044`
+// samples that address, and DUMPMEM on the original proves 0x452044 IS
+// dword_1BB904/dword_1BB90C (the back buffer) - the real screen there is
+// dword_1BB910[0] = 0xA0000, the VGA window. Sampling g_framebuffer here
+// instead compared the fully-composed back buffer against a surface that only
+// ever receives the blit's dirty spans, which made undamaged areas keep the
+// previous scene's background (255) and looked like a 75-80% pixel mismatch.
+void PortVga_CaptureBlit(const void* backBuffer)
+{
+    static bool s_checked = false;
+    static std::string s_dir;
+    static int s_written = 0;
+    static int s_max = 0;
+    static std::vector<uint8_t> s_lastFb;
+    static std::array<uint32_t, 256> s_lastPal{};
+    static bool s_havePrev = false;
+
+    if (!s_checked) {
+        s_checked = true;
+        if (const char* env = std::getenv("REORION2_BLIT_DUMP_DIR")) {
+            s_dir = env;
+            s_max = 600;
+            if (const char* cnt = std::getenv("REORION2_BLIT_DUMP_COUNT"))
+                s_max = std::atoi(cnt);
+            SDL_Log("Port::Vga: blit-triggered dump to %s (max %d frames)", s_dir.c_str(), s_max);
+        }
+    }
+    if (s_dir.empty() || s_written >= s_max)
+        return;
+
+    const uint8_t* fb = static_cast<const uint8_t*>(backBuffer);
+    if (!fb)
+        return;
+    const int w = Port::Vga::kModeWidth, h = Port::Vga::kModeHeight;
+    size_t fbBytes = static_cast<size_t>(w) * h;
+    const std::array<uint32_t, 256>& pal = Port::Vga::g_palette;
+
+    bool changed = !s_havePrev || s_lastFb.size() != fbBytes ||
+                   std::memcmp(s_lastFb.data(), fb, fbBytes) != 0 || s_lastPal != pal;
+    if (!changed)
+        return;
+
+    char name[64];
+    std::snprintf(name, sizeof(name), "/frame_%05d.raw", s_written);
+    Port::Vga::DumpRawFrame(s_dir + name, fb, pal, w, h);
+    s_lastFb.assign(fb, fb + fbBytes);
+    s_lastPal = pal;
+    s_havePrev = true;
+    ++s_written;
+}
+
 // PORT (wave 25p): sub_12C2C6 ("wait N BIOS ticks", orion_part_20.c) busy-
 // waits by calling PortVga_WaitVsync() every loop iteration to stay
 // responsive and keep the window updating while it waits. A BIOS tick is

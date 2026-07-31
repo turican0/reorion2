@@ -282,7 +282,7 @@ int sub_12BAEB( int a1, int a2, int a3)
 
   v12 = *(_WORD *)(dword_1BC2A8 + 2);
   v8 = *(uint16_t *)(a3 + 2);
-  v9 = a1 + (v8 + a2) * *(int *)((char *)&dword_184532 + 2);
+  v9 = a1 + (v8 + a2) * HIDWORD(qword_184530);
   v7 = v9;
   v6 = 2;
   while ( 1 )
@@ -377,7 +377,7 @@ int sub_12BC0B( int a1, int a2, int a3)
   else
     v21 = *(_WORD *)(dword_1BC2A8 + 2) + a2 - v19;
   v9 = *(uint16_t *)(a3 + 2);
-  v7 = a1 + v19 * *(int *)((char *)&dword_184532 + 2);
+  v7 = a1 + v19 * HIDWORD(qword_184530);
   v8 = v7;
   v13 = 2;
   while ( v18 > v9 )
@@ -391,7 +391,7 @@ int sub_12BC0B( int a1, int a2, int a3)
   }
   if ( v18 < v9 )
   {
-    v7 += *(int *)((char *)&dword_184532 + 2) * (v9 - v18);
+    v7 += HIDWORD(qword_184530) * (v9 - v18);
     v8 = v7;
   }
   v10 = v9 - v18;
@@ -4834,8 +4834,8 @@ _BYTE *sub_13579C(_BYTE **a1, int a2, int a3, int a4)
     *v7 = a4;
     v7 += a2;
   }
-  result = &v7[*(int *)((char *)&dword_184532 + 2)];
-  *a1 = &v7[*(int *)((char *)&dword_184532 + 2)];
+  result = &v7[HIDWORD(qword_184530)];
+  *a1 = &v7[HIDWORD(qword_184530)];
   return result;
 }
 // 184532: using guessed type int dword_184532;
@@ -4852,7 +4852,7 @@ _BYTE *sub_135806(_BYTE **a1, int a2, int a3, int a4)
   for ( i = 0; a3 > i; ++i )
   {
     *v7 = a4;
-    v7 += *(int *)((char *)&dword_184532 + 2);
+    v7 += HIDWORD(qword_184530);
   }
   result = &v7[a2];
   *a1 = result;
@@ -5116,8 +5116,8 @@ _BYTE *sub_135EDD(_BYTE **a1, int a2, int a3, int a4, _WORD *a5)
     *v8 = *(_BYTE *)(a4 + ((*a5)++ & 7));
     v8 += a2;
   }
-  result = &v8[*(int *)((char *)&dword_184532 + 2)];
-  *a1 = &v8[*(int *)((char *)&dword_184532 + 2)];
+  result = &v8[HIDWORD(qword_184530)];
+  *a1 = &v8[HIDWORD(qword_184530)];
   return result;
 }
 // 184532: using guessed type int dword_184532;
@@ -5134,7 +5134,7 @@ _BYTE *sub_135F5D(_BYTE **a1, int a2, int a3, int a4, _WORD *a5)
   for ( i = 0; a3 > i; ++i )
   {
     *v8 = *(_BYTE *)(a4 + ((*a5)++ & 7));
-    v8 += *(int *)((char *)&dword_184532 + 2);
+    v8 += HIDWORD(qword_184530);
   }
   result = &v8[a2];
   *a1 = result;
@@ -5159,8 +5159,8 @@ _BYTE *sub_136631(_BYTE **a1, int a2, int a3, int a4, int a5)
     *v9 = a4;
     v9 += a2;
   }
-  result = &v9[*(int *)((char *)&dword_184532 + 2)];
-  *a1 = &v9[*(int *)((char *)&dword_184532 + 2)];
+  result = &v9[HIDWORD(qword_184530)];
+  *a1 = &v9[HIDWORD(qword_184530)];
   return result;
 }
 // 184532: using guessed type int dword_184532;
@@ -5176,11 +5176,11 @@ _BYTE *sub_1366AC(_BYTE **a1, int a2, int a3, int a4, int a5)
 
   v5 = *a1;
   *v5 = a5;
-  v9 = &v5[*(int *)((char *)&dword_184532 + 2)];
+  v9 = &v5[HIDWORD(qword_184530)];
   for ( i = 1; a3 > i; ++i )
   {
     *v9 = a4;
-    v9 += *(int *)((char *)&dword_184532 + 2);
+    v9 += HIDWORD(qword_184530);
   }
   result = &v9[a2];
   *a1 = result;
@@ -5527,8 +5527,8 @@ _BYTE *sub_1370A3(_BYTE **a1, int a2, int a3, int a4, _WORD *a5)
     *v8 = *(_BYTE *)(a4 + ((*a5)++ & 0x3FF));
     v8 += a2;
   }
-  result = &v8[*(int *)((char *)&dword_184532 + 2)];
-  *a1 = &v8[*(int *)((char *)&dword_184532 + 2)];
+  result = &v8[HIDWORD(qword_184530)];
+  *a1 = &v8[HIDWORD(qword_184530)];
   return result;
 }
 // 184532: using guessed type int dword_184532;
@@ -5545,7 +5545,7 @@ _BYTE *sub_137121(_BYTE **a1, int a2, int a3, int a4, _WORD *a5)
   for ( i = 0; a3 > i; ++i )
   {
     *v8 = *(_BYTE *)(a4 + ((*a5)++ & 0x3FF));
-    v8 += *(int *)((char *)&dword_184532 + 2);
+    v8 += HIDWORD(qword_184530);
   }
   result = &v8[a2];
   *a1 = result;
@@ -6290,6 +6290,27 @@ int sub_138CB0(int a1, int a2)
 // 300KB memcpy na NULL - checkpoint prozradi volajiciho drive nez crash.
 void *sub_138CE0(void *result, void *a2, int a3)
 {
+  // PORT (wave 25r-6): this 300 KB block copy is what actually moves the
+  // CLEARED offscreen buffer over the primary back buffer at the scene
+  // change - in the original the background byte at (5,5) flips 0xFF -> 0x00
+  // exactly here (dosbox `DUMPREGS cond=changed:0x452CC9:1` reports the write
+  // at eip 0x35CCEA = the `rep movsd` inside this function, after blit 81).
+  // sub_128C32 only fills the OFFSCREEN surface; without this copy the clear
+  // never becomes visible.
+  {
+    extern unsigned g_blitCount;
+    static unsigned n = 0;
+    ++n;
+    if ( n <= 20 || (g_blitCount >= 79 && g_blitCount <= 84) )
+    {
+      PortDebug_Checkpoint("138CE0.n", (int)n);
+      PortDebug_Checkpoint("138CE0.blit", (int)g_blitCount);
+      PortDebug_Checkpoint("138CE0.a3_kb", a3);
+      PortDebug_CheckpointPtr("138CE0.dst", result);
+      PortDebug_CheckpointPtr("138CE0.src", a2);
+    }
+  }
+
   if ( !result || !a2 || a3 < 0 || a3 > 512 )
     return result; // NULL/garbage guard (no screen copy is negative or > 512 KB)
   qmemcpy(result, a2, a3 << 10);
@@ -6311,6 +6332,24 @@ int sub_138CEE(int a1, int a2, int a3, int a4)
   _WORD *v12; // esi
   int16_t *v13; // esi
   int v15; // [esp-20h] [ebp-20h]
+
+  // PORT (wave 25r-5): dirty-rect diagnostic. At blit 49 (MICRO PROSE ->
+  // cinematic) the original ends up with the WHOLE screen copied from the
+  // back buffer (background index 0 replacing the 255 left over from the
+  // previous scene), while the port only copies the video rect - so the
+  // spans marked here must differ. Logged with the blit sequence number so
+  // the two sides line up.
+  {
+    extern unsigned g_blitCount;
+    if ( g_blitCount >= 45 && g_blitCount <= 52 )
+    {
+      PortDebug_Checkpoint("138CEE.blit", (int)g_blitCount);
+      PortDebug_Checkpoint("138CEE.x0", a1);
+      PortDebug_Checkpoint("138CEE.y0", a2);
+      PortDebug_Checkpoint("138CEE.x1", a3);
+      PortDebug_Checkpoint("138CEE.y1", a4);
+    }
+  }
 
   v15 = a1;
   if ( a1 < 0 )

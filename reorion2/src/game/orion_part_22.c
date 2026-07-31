@@ -1515,6 +1515,12 @@ LABEL_17:
 //----- (0014AA40) --------------------------------------------------------
 void sub_14AA40(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 {
+  // PORT (wave 25r-4): rate diagnostic. The original runs decode:copy:blit
+  // at 1:1:1 (dosbox DUMPREGS repeat=always on 0x38B320/0x36EA40/0x349814
+  // gives 784/784/784 with 864 blits); if the port's ratios differ, the
+  // cinematic is decoded but never reaches the screen.
+  { static unsigned n = 0; if ((++n % 100) == 1) PortDebug_Checkpoint("rate.COPY_14AA40", (int)n); }
+
   int v7; // eax
   int v8; // ebp
   int v9; // ebp
@@ -2076,6 +2082,17 @@ int sub_14B4D0(int a1, int a2, int a3, int a4, int a5)
       v10 = *(_DWORD *)(a5 + 924);
       v9 = (unsigned int *)(uintptr_t)*(_DWORD *)(a5 + 992);
       *(_DWORD *)(a5 + 996) = 1;
+      // PORT (wave 25r-2): frame-advance diagnostics. Verified against the
+      // asm (loc_14B562): the three args go on the STACK (push eax/edx/ebx,
+      // `add esp,0Ch`), cdecl right-to-left, so this call site's argument
+      // order is correct. At sub_167320's entry the original's leftover
+      // registers therefore read eax=a3 (*(a5+928), constant buffer base),
+      // edx=a2 (*(a5+924), constant) and ebx=a1 (*(a5+992)) - and it is a1
+      // that takes 38 distinct values across the 39 captured calls, i.e. a1
+      // is the per-frame compressed-data pointer. If a1 stays constant here
+      // the same frame is decoded forever (the wave 25r-2 symptom).
+      PortDebug_Checkpoint("14B4D0.frame_no", *(_DWORD *)(a5 + 1144));
+      PortDebug_CheckpointPtr("14B4D0.a1_framedata", (void *)v9);
       v8 = sub_167320(v9, v10, v11);
     }
   }

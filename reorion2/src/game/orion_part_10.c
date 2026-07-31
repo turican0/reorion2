@@ -4954,7 +4954,7 @@ void sub_A53DC( int a1, int a2, int a3, int a4)
   v20 = *(_WORD *)(dword_1BC2A8 + 2);
   v15 = *(uint16_t *)(a3 + 2);
   v5 = 2;
-  v6 = a1 + (v15 + a2) * *(int *)((char *)&dword_184532 + 2);
+  v6 = a1 + (v15 + a2) * HIDWORD(qword_184530);
   v17 = v6;
   while ( v20 > v15 )
   {
@@ -5066,7 +5066,7 @@ void sub_A54F2( int a1, int a2, int a3, int a4)
     v8 = dword_1BBA52;
   v31 = v8 - v6 + 1;
   v9 = 2;
-  v10 = *(int *)((char *)&dword_184532 + 2) * v6 + a1;
+  v10 = HIDWORD(qword_184530) * v6 + a1;
   v11 = *(uint16_t *)(a3 + 2);
   v12 = v10;
   while ( v11 < v35 )
@@ -5080,7 +5080,7 @@ void sub_A54F2( int a1, int a2, int a3, int a4)
   }
   if ( v11 > v35 )
   {
-    v10 += *(int *)((char *)&dword_184532 + 2) * (v11 - v35);
+    v10 += HIDWORD(qword_184530) * (v11 - v35);
     v12 = v10;
   }
   v14 = v11 - v35;

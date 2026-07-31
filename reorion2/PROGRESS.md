@@ -3610,3 +3610,210 @@ navratove hodnoty/stavu -> restart misto postupu). Nastroje pripravene:
 `REORION2_DISPATCH_TRACE`, `REORION2_HANDLER_TRACE`,
 `genCompare/frame_stats.exe`, `genCompare/compare_frames.exe`,
 `REORION2_DUMP_INCLUDE_PALETTE`.
+
+## Vlna 25r-3: *** DRUHY ROOT CAUSE *** - funcs_164C45[256] vracely DVE
+hodnoty (EAX **a EBX**), IDA namodelovala jen jednu (a orezanou)
+
+Pokracovani binarniho zuzovani z 25r-2. Postup a co se cestou VYVRATILO:
+
+1. **Postup mezi snimky je SPRAVNY** (podezreni z 25r-2 vyvraceno merenim):
+   `*(a5+992)` = per-frame ukazatel; port ma 361 ruznych hodnot a jejich
+   rozdily sedi s originalem PRESNE (-0x2EC8, +0x11C, -0x98, -0xD0, -0x2D8,
+   +0x210, +0x190 ...). "Nekonecna smycka 6 bloku" byly ve skutecnosti
+   opakovane STATICKE snimky. Take overeno proti asm (`loc_14B562`), ze
+   argumenty `sub_167320` jdou pres ZASOBNIK (push eax/edx/ebx,
+   `add esp,0Ch`, cdecl zprava doleva) - volaci misto v portu je spravne.
+   POZOR: registry v dosbox DUMPREGS na vstupu `sub_167320` jsou proto jen
+   zbytky po pushich: eax=a3, edx=a2, **ebx=a1** (ne Watcom poradi!).
+
+2. **Dekoder bloku je bit-presny**: po oprave `block18A6E0` (25r-2) sedi
+   **197814 po sobe jdoucich bloku** (cely dlouhy referencni zaznam,
+   dosbox `DUMPREGS cond=eip:0x38B5C0 repeat=always` vs portovni
+   `REORION2_DISPATCH_TRACE`) - akumulator, kurzor I pohyb vystupniho
+   ukazatele (delty 43552/43552/10368/2592/236 identicke; pred opravou
+   256/2336/248/2320/236).
+
+3. **Zbyval tedy jen ZAPIS hodnot.** Snimek portu ukazal video obdelnik na
+   SPRAVNEM miste ((80,160)-(559,319) = 480x160, presne dle geometrie
+   `18A668=120 dwordu`, `18A670=40 radku bloku`), ale s tečkovanym
+   sachovnicovym vzorem a surovymi dwordy typu `0x06918DD0` (= UKAZATEL)
+   mezi pixely.
+
+**ROOT CAUSE:** volaci misto v asm (`loc_1666E4`):
+```
+call funcs_164C45[eax*4] / mov [edi],eax / add edi,stride
+                         / mov [edi],ebx        <- DRUHA navratova hodnota
+... a jeste jednou pro radky 2 a 3
+```
+Kazda z 256 generovanych funkci (sub_165760..sub_1664E4) vraci **DVE
+32bitove hodnoty - EAX i EBX** = dva radky po 4 pixelech. IDA umi modelovat
+jen jednu, takze v dekompilovane `sub_1664F0` vysly EBX radky jako `v22` -
+zbytkovy `int *` z move-to-front cache updatu tesne nad tim - a EAX radky
+byly orezane (95 z 256 funkci melo navratovy typ `int16_t` (59) nebo
+`char` (36), tedy 2 resp. 3 ze 4 pixelu pryc). Odtud oba artefakty najednou.
+
+**Semantika odvozena z asm a overena na indexech 0/1/2/3**
+(sub_165760/16576C/165778/165784): volajici nastavi edx na HIWORD(v18)
+zdvojeny do obou pulek, takze DL a DH jsou dve barvy bloku, a index tabulky
+je bitova maska:
+```
+eax = pixely 0..3, ebx = pixely 4..7, pixel k = ((index>>k)&1) ? dh : dl
+```
+= standardni Smacker 2barevny ("mono") blok: BYTE0(v18)+BYTE1(v18) daji 16
+bitu pro 16 pixelu jednoho 4x4 bloku, BYTE2/BYTE3(v18) dve barvy.
+Nahrazeno jedinou funkci `Smk_ExpandMonoRows()` (orion_part_26.c); vsech
+256 generovanych funkci je tim pro tuhle cestu mrtvy kod.
+
+**OVERENO:** tečkovany/sachovnicovy artefakt ZMIZEL, cinematic scena je
+poprve souvisly rozpoznatelny obraz (interier kokpitu s pristrojovymi
+panely). `distinct_pix` v obdelniku 242 -> 113 (original 111).
+Referencni shody 49 beze zmeny (zadna regrese).
+
+**ZBYVA OTEVRENE:**
+- **Paleta behem cinematicu.** Port ji meni (nonzero_pal 660, 667, 631,
+  614, 671, 436 ...), original ma konstantnich **508**; `compare_frames`
+  hlasi 740/768 neshodnych kanalu. Vypada to, ze port na scenu aplikuje
+  fade, ktery original nedela (nebo ji zapisuje jinou cestou). **Tohle je
+  ted hlavni zbyvajici rozdil** - resit stejnou metodikou (DUMPPAL
+  `repeat=always` na obou stranach kolem prechodu).
+- **Index pozadi 0 vs 255.** Original na prechodu vysledkuje pozadi index 0
+  (ref#49 `distinct_pix=2, top_pix=0`), port ma 255. Vizualne NEPODSTATNE
+  (obe paletove polozky jsou cerne - overeno), ale blokuje postup
+  `CompareAgainstReferenceIfChanged` pres ref#49, takze automaticke
+  porovnavani cinematicu se musi spoustet s `REORION2_COMPARE_SKIP=50`.
+
+## Vlna 25r-4: paletova neshoda byla ZASE artefakt mereni; video uz sedi
+snimek po snimku
+
+**Podezreni z 25r-3 ("port aplikuje na cinematic fade, ktery original
+nedela") se VYVRATILO** - byla to tretí instance stejne asymetrie mereni:
+
+- dosbox `DUMPFRAME cond=eip:0x349814` vzorkuje **na blitu** (`sub_125814`).
+- port `DumpFrameIfRequested`/`CompareAgainstReferenceIfChanged` vzorkovaly
+  na **`Present()`**, ktery ma vlastni kadenci.
+
+Zmereny pomer dekod:kopie:blit je pritom na OBOU stranach 1:1:1 (original
+`DUMPREGS repeat=always` na 0x38B320/0x36EA40/0x349814 = 784/784/784, 864
+blitu; port 1406/1401/1401), takze port cinematic REALNE prehraval cely -
+jen Present()-triggerovany dump z nej videl jen ~8 stavu, coz vypadalo jako
+"port preskoci 98 % snimku" a "meni paletu, kdyz original ne".
+
+**Oprava mereni:** nova `PortVga_CaptureBlit()` (port_vga.cpp, env
+`REORION2_BLIT_DUMP_DIR` + `REORION2_BLIT_DUMP_COUNT`) volana z konce
+`sub_125814` - tedy PRESNE tam, kde vzorkuje dosbox. Stejny format i dedup.
+
+**VYSLEDEK (600 snimku, blit vs blit):**
+- **paleta: 0 neshod na VSECH 600 snimcich** (drive 740/768) - hodnoty
+  nonzero_pal sleduji original presne: 508, 666, 666, 597, 597, 597, 597,
+  597, 660, 667.
+- `distinct_pix` se lisi presne o **+1** = index pozadi navic.
+- snimky 0-48 **MATCH** (vcetne content_bbox a poctu pixelu).
+- vizualne: scena je spravna (stejna mimozemska lod, modre svetlo, cerveny
+  interier jako original) - viz FINAL_orig300.png / FINAL_port300.png.
+
+**ZBYVA:**
+1. **Index pozadi 0 vs 255.** Od blitu 49 ma original pozadi index 0, port
+   255. **Vizualne NEPODSTATNE** - overeno, ze `palette[255]` je po celou
+   scenu (28 vzorku mezi snimky 49-599) cerna, stejne jako `palette[0]`.
+   Nevznika to pres `sub_128C32` - celoobrazovkove mazani se v portu deje
+   na blitech 0, 15 a 81, na prechodu (blit 49) ZADNE neni (overeno
+   citacem `g_blitCount`). Zdroj pozadi 0 v originalu zatim nenalezen.
+2. **18-30 % pixelu uvnitr video obdelniku** (snimek 100: 15760/76800,
+   300: 14000/76800, 500: 23184/76800) - projevuje se jako cerne blokove
+   artefakty. Podezreni: pocatecni stav obdelniku. Na blitu 49 ma original
+   v obdelniku JEDEN nenulovy index, port tam ma 0; typ 2 (`sub_167040`,
+   52 % bloku) je "skip" (jen posune ukazatel, obsah nechá), takze rozdilny
+   pocatecni obsah se propaguje dal. **Dalsi krok:** zjistit, cim original
+   obdelnik pred prvnim snimkem cinematicu vyplni.
+
+## Vlna 25r-5: zuzeni zbyvajiciho rozdilu (pozadi 0 vs 255 + bloky v obdelniku)
+
+Systematicky VYLOUCENO porovnanim s dosboxem (vse zmereno, nic odvozeno):
+
+| co | original | port | zaver |
+|---|---|---|---|
+| celoobrazovkove `sub_128C32(0,0,639,479,0)` | blity 0, 15, 15, 81, 81, 81, 81 | **totez** | neni to tim |
+| `sub_138CEE` (dirty rect) pocet volani na blit 45-52 | 1034/1092/1173/1031/1189/1225/1102/1279 | **totez, bajt po bajtu** | neni to tim |
+| nejvetsi dirty obdelnik na blitu 48/49 | (320,240)-(346,264) = kurzor | **totez** | neni to tim |
+| `sub_127678` memsety kolem blitu 49 | jen reset dirty tabulky (dest=0x451054, size=1920, val=-1) | - | neni to tim |
+| dekod:kopie:blit | 784:784:784 | 1406:1401:1401 (1:1:1) | OK |
+
+Runtime adresy pouzite pri mereni: `sub_128C32`=0x34CC32, `sub_138CEE`=0x35CCEE,
+`sub_127678`=0x34B678, `sub_125814`=0x349814, `sub_167320`=0x38B320,
+`sub_14AA40`=0x36EA40, `sub_14B4D0`=0x36F4D0.
+
+**ZAVER ZUZOVANI:** mazani i dirty-rect znackovani jsou v portu IDENTICKE s
+originalem, takze se musi lisit **obsah ZDROJOVEHO bufferu**, ze ktereho
+blit kopiruje. Na blitu 49 ma original v obdelniku uniformni index **10** a
+vsude jinde **0**; port ma v obdelniku 0 a jinde 255 (zbytek predchozi
+MICRO PROSE sceny). Blity 0-48 pritom sedi PRESNE.
+
+**Nejpravdepodobnejsi pricina (jeste neoverena):** vystupni buffer noveho
+videa. Dekoder zapisuje primo do 640x480 plochy na offsetu 102480
+(= 160*640+80, origin video obdelniku - overeno: original edi=0x46B094,
+framebuf=0x452044). Okoli obdelniku tedy neplni dekoder, ale musi byt
+vynulovane pri OTEVRENI noveho videa. V portu se zrejme buffer recykluje
+bez vynulovani, takze tam zustane 255 z predchozi sceny - a protoze typ 2
+(`sub_167040`, 52 % bloku) je "skip" (obsah nechá), propaguje se rozdilny
+pocatecni obsah dal a projevuje se i jako **cerne blokove artefakty uvnitr
+obdelniku (18-30 % pixelu: snimek 100 = 15760/76800, 300 = 14000, 500 =
+23184)**.
+
+**Dalsi krok:** najit, kde se pri otevreni videa alokuje/nuluje vystupni
+buffer (`sub_14BC40` a okoli, pole `*(a6+928)`/`*(a5+992)`), a porovnat s
+originalem - stejnou metodikou (DUMPMEM na buffer hned po otevreni videa).
+
+## Vlna 25r-6: *** TRETI ROOT CAUSE OPRAVEN *** - stride obrazovky se cetl
+z 1bajtoveho `_UNKNOWN` placeholderu (54 mist)
+
+**Nejdriv oprava vlastni chyby v korelaci:** referencni snimek #49 NENI blit
+#49. dosbox `DUMPFRAME` dedupuje, takze index snimku != poradove cislo blitu.
+Prechod MICRO PROSE -> cinematic je ve skutecnosti **blit 81**, ne 49. Cele
+predchozi hledani "co se deje mezi blitem 48 a 49" bylo proto mimo.
+
+**Novy nastroj:** `DUMPREGS cond=changed:0xADDR:W` v dosbox-x (engine.cpp) -
+dumpne registry VCETNE EIP ve chvili, kdy se hodnota v pameti zmeni. Odpovi
+tedy na "KTERY kod tuhle pamet prepsal", coz obecny `DUMP cond=changed:`
+neumi (nema EIP). Presne tohle celou vec rozseklo.
+
+**Retez, jak se nasel:**
+1. `changed:0x452CC9:1` (pixel (5,5) v back bufferu) -> v originale se meni
+   jen na blitech 0, 15, 15 a **81**; prechod FF->00 je na blitu 81, zapsany
+   z eip 0x35CCEA = `rep movsd` uvnitr `sub_138CE0` (300 KB blokova kopie).
+2. Sekvence originalu na blitu 81: `FILL` (ret uvnitr `sub_2518F`) vyplni
+   **SEKUNDARNI** buffer nulou -> `sub_124E36` kopiruje sekundarni->primarni
+   -> pixel FF->00 -> VESA bank present -> `sub_124DEC` kopiruje zpet.
+3. Overeno, ze port dela VSECHNO stejne: vypln na blit 81 miri taky na
+   sekundarni buffer (`dword_1BB904 == dword_1BB8FC`), `sub_124E36` i
+   `sub_124DEC` se volaji na blitu 81, `sub_138CE0` dostane spravnych 300 KB.
+   Presto pixel zustaval 255 -> chyba tedy musela byt v SAMOTNE VYPLNI.
+
+**ROOT CAUSE:** `sub_1475BB` (dwordova vypln, jedine misto, ktere
+celoobrazovkove mazani realne provadi) pocita krok mezi radky jako
+`*(int *)((char *)&dword_184532 + 2)`. V originale je to
+`mov edx, dword ptr qword_184530+4` (asm sub_1475BB), tedy HIDWORD souvisleho
+`qword_184530` (= 0x0000028000000000, HIDWORD = **640** = radkovy stride).
+IDA ale pojmenovala VNITREK toho qwordu jako samostatny symbol a v portu je
+`dword_184532` deklarovany jako **`_UNKNOWN` (1 bajt)** - cetly se tedy
+4 bajty CIZI pameti. Dusledek: `a2 += 4*v10 + v9` po prvnim radku odskocilo
+mimo buffer, takze se vyplnil jen **JEDEN RADEK 640 px** (presne to sedelo
+s drive namerenym "port ma navic presne 640 pixelu"). Stejny vyraz pouzivalo
+**54 mist** ve 4 souborech (orion_part_10/19/20/21) - vsechna nahrazena za
+`HIDWORD(qword_184530)`. Stejna trida jako drivejsi overlay bugy (vlna 8/12/
+17/18/19) a jako `loc_9FFFD`/`unk_1A1370` placeholdery.
+
+**OVERENO MERENIM (pred -> po):**
+- pixel (5,5) v back bufferu po blitu 81: **255 (nikdy) -> 0** (jako original)
+- neshoda pixelu na 600 snimcich: **245648 (79,96 %) -> 15888 (5,17 %)**
+- prvni neshoda: (0,1) v pozadi -> **(116,160) uvnitr video obdelniku**
+- snimky 0-48 dal MATCH, paleta dal 0 neshod na vsech 600 snimcich
+
+**ZBYVA:** ~15760 pixelu (5,1 %) uvnitr video obdelniku, konstantne od
+snimku 49 dal (nekonverguje -> propaguje se pres "skip" bloky typu 2).
+Rozlozeni: dotcenych je 92 ze 160 radku, vzdy v celych ctverkach (block rows
+0-16 souvisle, pak 18, 20, 29, 34, 37, 39), a rovnomerne ve vsech 4 radcich
+bloku (3940 pixelu na kazdou `(y-160)%4` tridu) - jde tedy o cele CHYBNE
+4x4 BLOKY, ne o paritu radku (mono-blok oprava z 25r-3 je v poradku).
+Snimek 49 (prvni cinematicu) ma 32768 = presne 2^15 neshod. **Dalsi krok:**
+overit prvni snimek cinematicu blok po bloku - podezreni na pocatecni obsah
+obdelniku pred prvnim dekodem.

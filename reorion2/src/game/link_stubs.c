@@ -147,6 +147,16 @@ int byte_1BE356;
    misto na disku pres std::filesystem + emulovana tabulka interrupt vektoru)
    je v src/port/port_dos.cpp, deklarace v port_dos.h a zrcadlene v
    decomp_compat.h. Viz PROGRESS.md vlna 09. */
+/* PORT (wave 25r-6): NEPOUZIVAT primo pro radkovy stride obrazovky.
+   IDA pojmenovala VNITREK souvisleho qword_184530 (LODWORD=0, HIDWORD=640 =
+   stride) jako samostatny symbol, a 54 mist v dekompilatu cetlo stride
+   vyrazem `*(int *)((char *)&dword_184532 + 2)`. V originalu je to
+   `mov edx, dword ptr qword_184530+4` (viz sub_1475BB), tedy proste HIDWORD
+   toho qwordu - jenze tady je dword_184532 samostatny symbol (v hlavicce
+   dokonce `_UNKNOWN`, 1 bajt), takze se cetly 4 bajty CIZI pameti.
+   Dusledek: `sub_1475BB` (celoobrazovkova vypln) vyplnila jen PRVNI RADEK a
+   pak ukazatel odskocil mimo buffer -> vymazani obrazovky pri prechodu sceny
+   se nikdy neprojevilo. Vsechna pouziti nahrazena za HIDWORD(qword_184530). */
 int dword_184532;
 int dword_184536;
 int dword_18F4B0;

@@ -3352,7 +3352,7 @@ int64_t sub_1449CC(int64_t a1, int a2, int a3)
       while ( (_BYTE)v4 != 0x80 );
     }
 LABEL_7:
-    LODWORD(v3) = *(int *)((char *)&dword_184532 + 2) + v5;
+    LODWORD(v3) = HIDWORD(qword_184530) + v5;
     --a3;
   }
   while ( a3 );
@@ -3405,7 +3405,7 @@ int64_t sub_144A06(int64_t a1, int a2, int a3)
       while ( (_BYTE)v4 != 0x80 );
     }
 LABEL_9:
-    LODWORD(v3) = *(int *)((char *)&dword_184532 + 2) + v5;
+    LODWORD(v3) = HIDWORD(qword_184530) + v5;
     --a3;
   }
   while ( a3 );
@@ -4589,7 +4589,7 @@ char sub_14759C( int result, char *a2, unsigned int a3, int a4)
 {
   unsigned int v6; // edx
 
-  v6 = *(int *)((char *)&dword_184532 + 2) - a3;
+  v6 = HIDWORD(qword_184530) - a3;
   do
   {
     memset(a2, result, a3);
@@ -4616,7 +4616,7 @@ int sub_1475BB(int a1, char *a2, int a3, int a4)
   result = a1 << 16;
   LOWORD(result) = v4;
   v8 = 4 * a3;
-  v9 = *(int *)((char *)&dword_184532 + 2) - v8;
+  v9 = HIDWORD(qword_184530) - v8;
   v10 = v8 >> 2;
   do
   {
@@ -4636,7 +4636,7 @@ char sub_1475EB( int a1, char *a2, unsigned int a3, int a4)
   unsigned int v6; // edx
   char v7; // t0
 
-  v6 = *(int *)((char *)&dword_184532 + 2) - a3;
+  v6 = HIDWORD(qword_184530) - a3;
   do
   {
     memset(a2, a1, a3);
@@ -4676,7 +4676,7 @@ int sub_14760C(int a1, char *a2, int a3, int a4)
   LOWORD(v6) = v7;
   result = _InterlockedExchange(&dword_188FC4, v6);
   v11 = 4 * a3;
-  v12 = *(int *)((char *)&dword_184532 + 2) - v11;
+  v12 = HIDWORD(qword_184530) - v11;
   v13 = v11 >> 2;
   do
   {
@@ -4701,7 +4701,7 @@ int sub_14765E(int result, char *a2, unsigned int a3, int a4)
   char *v9; // edi
   int v10; // esi
 
-  v6 = *(int *)((char *)&dword_184532 + 2) - a3;
+  v6 = HIDWORD(qword_184530) - a3;
   do
   {
     memset(a2, result, a3);
@@ -4744,7 +4744,7 @@ int sub_147698(int result, char *a2, int a3, int a4)
   dword_188FC4 = result;
   v5 = a4;
   v6 = 4 * a3;
-  v7 = *(int *)((char *)&dword_184532 + 2) - v6;
+  v7 = HIDWORD(qword_184530) - v6;
   v8 = v6 >> 2;
   do
   {
@@ -4795,7 +4795,7 @@ char sub_147723(int a1, _BYTE *a2, int a3, int a4)
   v4 = a2;
   v5 = a2;
   dword_188FBC = a4;
-  v6 = *(int *)((char *)&dword_184532 + 2) - a3;
+  v6 = HIDWORD(qword_184530) - a3;
   dword_188FC0 = a3;
   v8 = 0;
   do
@@ -4837,7 +4837,7 @@ char sub_147760(int a1, _BYTE *a2, int a3, int a4)
   v5 = a2;
   dword_188FBC = a4;
   v6 = 4 * a3;
-  v7 = *(int *)((char *)&dword_184532 + 2) - v6;
+  v7 = HIDWORD(qword_184530) - v6;
   dword_188FC0 = v6 >> 2;
   v9 = 0;
   do
@@ -5132,7 +5132,7 @@ char *sub_14791B(char *result, unsigned int a2, int a3, char *a4)
   {
     qmemcpy(a4, v5, a2);
     a4 += a2;
-    v5 += *(int *)((char *)&dword_184532 + 2);
+    v5 += HIDWORD(qword_184530);
     --a3;
   }
   while ( a3 );

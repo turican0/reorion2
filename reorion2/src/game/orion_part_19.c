@@ -2896,8 +2896,8 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     v12 = 0;
   if ( v10 < 0 )
     v10 = 0;
-  if ( v8 >= *(int *)((char *)&dword_184532 + 2) )
-    v8 = *(int *)((char *)&dword_184532 + 2) - 1;
+  if ( v8 >= HIDWORD(qword_184530) )
+    v8 = HIDWORD(qword_184530) - 1;
   result = (dword_1B3E82 >> 16) + a2 + v7;
   if ( v11 >= *(int *)((char *)&dword_184536 + 2) )
   {
@@ -3170,7 +3170,7 @@ int sub_121DEB(int a1, int a2, unsigned int a3)
   // dword_1B3FA8[a3] (per-glyph offset table); ECX = word_1B3EA0; EBX =
   // &byte_1B3E7C. Without this the source pointer was uninitialized garbage,
   // crashing sub_1449CC's byte-stream read on the very first character drawn.
-  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * HIDWORD(qword_184530);
   HIDWORD(v5) = dword_1B3E74 + dword_1B3FA8[a3];
   // a2 = EBX = &byte_1B3E7C (color/pattern lookup table, used as [run+a2-1]);
   // a3 = ECX = word_1B3EA0 (glyph row count - drives the x86 `loop` instruction,
@@ -3203,7 +3203,7 @@ int sub_121E85(int a1, int a2, unsigned int a3)
 
   // PORT: same missing-HIDWORD(v5) bug as sub_121DEB (see comment there);
   // verified identical in Debug/diss/Orion2.exe.asm (sub_121E85 @ 0x121E85).
-  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * *(int *)((char *)&dword_184532 + 2);
+  LODWORD(v5) = dword_1BB904 + (int16_t)a1 + a2 * HIDWORD(qword_184530);
   HIDWORD(v5) = dword_1B3E74 + dword_1B3FA8[a3];
   // a2 = &byte_1B3E7C (color table), a3 = word_1B3EA0 (row count) - see sub_121DEB.
   v6 = (int)byte_1B3E7C;
@@ -3594,7 +3594,7 @@ int sub_1227EC(int a1, int a2, unsigned int a3, int a4, int a5, int a6, int a7)
   uint8_t k; // [esp+38h] [ebp-8h]
   int16_t v16; // [esp+58h] [ebp+18h]
 
-  v9 = *(int *)((char *)&dword_184532 + 2) * a2 + (int16_t)a1 - a4;
+  v9 = HIDWORD(qword_184530) * a2 + (int16_t)a1 - a4;
   v7 = 4 * a3;
   LOWORD(v7) = *(_WORD *)((char *)dword_1B3FA8 + v7);
   v14 = v7;
@@ -3625,7 +3625,7 @@ int sub_1227EC(int a1, int a2, unsigned int a3, int a4, int a5, int a6, int a7)
       ++v14;
     }
     ++v14;
-    v9 += *(int *)((char *)&dword_184532 + 2);
+    v9 += HIDWORD(qword_184530);
   }
   return a1 + (uint8_t)byte_1B3EA8[a3];
 }
@@ -4837,6 +4837,12 @@ int sub_124D7A()
 //----- (00124DEC) --------------------------------------------------------
 void *sub_124DEC()
 {
+  // PORT (wave 25r-6): the original pairs sub_124E36 (secondary -> primary)
+  // with sub_124DEC (primary -> secondary) at every screen-clear point; at
+  // blit 81 that pair is what actually makes the cleared background visible.
+  { extern unsigned g_blitCount;
+    PortDebug_Checkpoint("124DEC.blit", (int)g_blitCount);
+    PortDebug_CheckpointPtr("124DEC.ret", _ReturnAddress()); }
   return sub_138CE0(
            (void *)dword_1BB8FC,
            (void *)dword_1BB90C,
@@ -4850,6 +4856,9 @@ void *sub_124DEC()
 //----- (00124E36) --------------------------------------------------------
 void *sub_124E36()
 {
+  { extern unsigned g_blitCount;
+    PortDebug_Checkpoint("124E36.blit", (int)g_blitCount);
+    PortDebug_CheckpointPtr("124E36.ret", _ReturnAddress()); }
   return sub_138CE0(
            (void *)dword_1BB90C,
            (void *)dword_1BB8FC,
@@ -5236,8 +5245,11 @@ _DWORD *sub_12567F()
 // hranici banky kopiroval napevno po kusech (offsety 0x10000/0x20000/
 // 0x30000/0x40000; IDA je zkomolila na "sub_10000"/"loc_20000"). Na
 // linearnim framebufferu staci jednotna smycka pres vsechny radky.
+unsigned g_blitCount = 0; // PORT (wave 25r-4): blit sequence number, see sub_128C32 diagnostics
 void *sub_125814()
 {
+  // PORT (wave 25r-4): rate diagnostic, see PROGRESS.md wave 25r-4.
+  g_blitCount++;
   int16_t v0; // ax
   void *result; // eax
   int i; // [esp+10h] [ebp-10h]
@@ -5247,6 +5259,20 @@ void *sub_125814()
 
   v17 = (char *)dword_1BB910[0];
   v18 = dword_1BB90C;
+  // PORT (wave 25r-6): at the MICRO PROSE -> cinematic transition (blit 49)
+  // the original's framebuffer background becomes 0 while the port's stays
+  // 255, even though the sub_138CEE dirty-rect marking is byte-for-byte
+  // identical on both sides. Log both the SOURCE (back buffer) and the
+  // DESTINATION (framebuffer) background plus the row-5 dirty span, so it is
+  // clear whether the copy or its source is at fault.
+  if ( g_blitCount >= 79 && g_blitCount <= 84 )
+  {
+    PortDebug_Checkpoint("125814.blit", (int)g_blitCount);
+    PortDebug_Checkpoint("125814.src_backbuf_at_5_5", *(uint8_t *)(uintptr_t)(v18 + 5 * 640 + 5));
+    PortDebug_Checkpoint("125814.dst_framebuf_at_5_5", (uint8_t)v17[5 * 640 + 5]);
+    PortDebug_Checkpoint("125814.dirty_row5_start", *(int16_t *)(uintptr_t)(dword_1BB908 + 4 * 5));
+    PortDebug_Checkpoint("125814.dirty_row5_end", *((int16_t *)(uintptr_t)(dword_1BB908 + 4 * 5) + 1));
+  }
   result = 0;
   v6 = 0;
   for ( i = 0; i < 480; ++i )
@@ -5259,6 +5285,10 @@ void *sub_125814()
         (*(int *)(4 * i + dword_1BB908) >> 16) - v0 + 1);
     v6 += 160;
   }
+  // PORT (wave 25r-4): sample the framebuffer HERE - this is the exact point
+  // dosbox-x's `DUMPFRAME cond=eip:0x349814` samples the original, so the two
+  // dumps compare like for like (see PortVga_CaptureBlit).
+  PortVga_CaptureBlit((const void *)(uintptr_t)v18);
   return result;
 }
 // 1BB908: using guessed type int dword_1BB908;
@@ -5439,8 +5469,8 @@ int sub_125FFB(int a1, int a2, int a3)
     v7 = 0;
   if ( a2 < 0 )
     v9 = 0;
-  if ( a3 >= *(int *)((char *)&dword_184532 + 2) )
-    v10 = *(int *)((char *)&dword_184532 + 2) - 1;
+  if ( a3 >= HIDWORD(qword_184530) )
+    v10 = HIDWORD(qword_184530) - 1;
   if ( v9 >= *(int *)((char *)&dword_184536 + 2) )
     v9 = *(int *)((char *)&dword_184536 + 2) - 1;
   v8 = v7 >> 2;
@@ -5540,22 +5570,22 @@ int sub_126224( int a1, int a2, int a3, int a4)
     v18 = 0;
   if ( a2 < 0 )
     v15 = 0;
-  if ( a3 >= *(int *)((char *)&dword_184532 + 2) )
+  if ( a3 >= HIDWORD(qword_184530) )
     v16 = HIWORD(dword_184532) - 1;
   if ( a4 >= *(int *)((char *)&dword_184536 + 2) )
     v14 = HIWORD(dword_184536) - 1;
   v19 = v18 >> 2;
   v17 = v16 >> 2;
-  v7 = ((*(int *)((char *)&dword_184532 + 2)
-       - (__CFSHL__(*(int *)((char *)&dword_184532 + 2) >> 31, 2)
-        + 4 * (*(int *)((char *)&dword_184532 + 2) >> 31))) >> 2)
+  v7 = ((HIDWORD(qword_184530)
+       - (__CFSHL__(HIDWORD(qword_184530) >> 31, 2)
+        + 4 * (HIDWORD(qword_184530) >> 31))) >> 2)
      - ((int16_t)v17
       - (int16_t)v19
       + 1);
   v8 = (int16_t)v19
-     + ((*(int *)((char *)&dword_184532 + 2) * v15
-       - (__CFSHL__((*(int *)((char *)&dword_184532 + 2) * v15) >> 31, 2)
-        + 4 * ((*(int *)((char *)&dword_184532 + 2) * v15) >> 31))) >> 2);
+     + ((HIDWORD(qword_184530) * v15
+       - (__CFSHL__((HIDWORD(qword_184530) * v15) >> 31, 2)
+        + 4 * ((HIDWORD(qword_184530) * v15) >> 31))) >> 2);
   v12 = v8 % 0x4000;
   v6 = (v8 - (__CFSHL__(v8 >> 31, 14) + (v8 >> 31 << 14))) >> 14;
   dword_1BB8A4(v6 + v10);
@@ -6713,7 +6743,7 @@ int sub_128AB6( int a1, int a2, int a3, int a4)
     v6 = 0;
   if ( a2 < 0 )
     v7 = 0;
-  if ( a3 >= *(int *)((char *)&dword_184532 + 2) )
+  if ( a3 >= HIDWORD(qword_184530) )
     v8 = HIWORD(dword_184532) - 1;
   v4 = (int16_t)a4;
   if ( (int16_t)a4 >= *(int *)((char *)&dword_184536 + 2) )
@@ -6792,6 +6822,7 @@ int16_t sub_128BE7()
 
 
 //----- (00128C32) --------------------------------------------------------
+extern unsigned g_blitCount; /* PORT (wave 25r-4): defined at sub_125814 */
 char sub_128C32(int a1, int a2, int a3, int a4, int a5)
 {
   char result; // al
@@ -6810,6 +6841,29 @@ char sub_128C32(int a1, int a2, int a3, int a4, int a5)
   int v18; // [esp+54h] [ebp-Ch] BYREF
   int v19; // [esp+58h] [ebp-8h] BYREF
   int v20; // [esp+5Ch] [ebp-4h] BYREF
+
+  // PORT (wave 25r-2): full-screen-clear diagnostic. At the MICRO PROSE ->
+  // cinematic transition the original blits a screen cleared to index 0
+  // (reference frame 49: distinct_pix=2, top_pix=0 over 75% of the screen),
+  // while the port keeps index 255 and the previous scene's pixels, so the
+  // cinematic then decodes ON TOP of stale content (241 distinct values in
+  // the video rect versus the original's 111). This logs every full-screen
+  // fill so it can be checked whether the clear happens at all.
+  if ( (int16_t)a1 == 0 && (int16_t)a2 == 0 && (int16_t)a3 == 639 && (int16_t)a4 == 479 )
+  {
+    PortDebug_Checkpoint("128C32.fullscreen_fill_color", a5);
+    // The dirty-span marking (sub_138CEE) that makes the blit actually copy
+    // the cleared background to the screen only runs when this is >= 2.
+    PortDebug_Checkpoint("128C32.dword_1BBA28", dword_1BBA28);
+    PortDebug_Checkpoint("128C32.at_blit_no", (int)g_blitCount);
+    // Which surface does the clear land on? In the original the first
+    // full-screen clear at blit 81 targets the SECONDARY buffer (0x49E044)
+    // and sub_124E36 then copies secondary -> primary, which is what turns
+    // the background from 0xFF to 0x00. Filling the PRIMARY instead would be
+    // undone by that very copy.
+    PortDebug_Checkpoint("128C32.target_is_primary", dword_1BB904 == dword_1BB90C);
+    PortDebug_Checkpoint("128C32.target_is_secondary", dword_1BB904 == dword_1BB8FC);
+  }
 
   v18 = a1;
   v17 = a2;
@@ -6869,7 +6923,7 @@ char sub_128C32(int a1, int a2, int a3, int a4, int a5)
   if ( v10 == v11 )
     return sub_14759C(
              a5,
-             (char *)((int16_t)v18 + (int16_t)v17 * *(int *)((char *)&dword_184532 + 2) + dword_1BB904),
+             (char *)((int16_t)v18 + (int16_t)v17 * HIDWORD(qword_184530) + dword_1BB904),
              (int16_t)v20 - (int16_t)v18 + 1,
              (int16_t)v19 - (int16_t)v17 + 1);
   v12 = 4 - (v18 & 3);
@@ -6885,7 +6939,7 @@ char sub_128C32(int a1, int a2, int a3, int a4, int a5)
     v14 = 0;
     ++v13;
   }
-  v15 = (int16_t)v17 * *(int *)((char *)&dword_184532 + 2);
+  v15 = (int16_t)v17 * HIDWORD(qword_184530);
   result = v17;
   v16 = (int16_t)v19 - (int16_t)v17 + 1;
   if ( v12 )
@@ -7841,7 +7895,7 @@ int sub_12AAA1( int a1, int a2, int a3)
 
   v12 = *(_WORD *)(dword_1BC2A8 + 2);
   v8 = *(uint16_t *)(a3 + 2);
-  v9 = a1 + (v8 + a2) * *(int *)((char *)&dword_184532 + 2);
+  v9 = a1 + (v8 + a2) * HIDWORD(qword_184530);
   v7 = v9;
   v5 = 2;
   while ( 1 )
@@ -7897,8 +7951,8 @@ int sub_12ABCC( int a1, int a2, int a3)
   v10 = *(_WORD *)dword_1BC2A8;
   v9 = *(_WORD *)(dword_1BC2A8 + 2);
   v6 = 0;
-  v7 = a1 + a2 * *(int *)((char *)&dword_184532 + 2);
-  v8 = *(int *)((char *)&dword_184532 + 2) - *(int16_t *)dword_1BC2A8;
+  v7 = a1 + a2 * HIDWORD(qword_184530);
+  v8 = HIDWORD(qword_184530) - *(int16_t *)dword_1BC2A8;
   for ( i = 0; ; ++i )
   {
     result = v9;
@@ -7941,7 +7995,7 @@ int sub_12ACA4( int a1, int a2, int a3)
 
   v12 = *(_WORD *)(dword_1BC2A8 + 2);
   v8 = *(uint16_t *)(a3 + 2);
-  v9 = a1 + (v8 + a2) * *(int *)((char *)&dword_184532 + 2);
+  v9 = a1 + (v8 + a2) * HIDWORD(qword_184530);
   v7 = v9;
   v5 = 2;
   while ( 1 )
@@ -8029,8 +8083,8 @@ int sub_12AEC0( int a1, int a2, int a3)
   v10 = *(_WORD *)dword_1BC2A8;
   v9 = *(_WORD *)(dword_1BC2A8 + 2);
   v6 = 0;
-  v7 = a1 + a2 * *(int *)((char *)&dword_184532 + 2);
-  v8 = *(int *)((char *)&dword_184532 + 2) - *(int16_t *)dword_1BC2A8;
+  v7 = a1 + a2 * HIDWORD(qword_184530);
+  v8 = HIDWORD(qword_184530) - *(int16_t *)dword_1BC2A8;
   for ( i = 0; ; ++i )
   {
     result = v9;
