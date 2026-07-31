@@ -1529,6 +1529,19 @@ int *sub_157690(int *a1)
   int *result; // eax
   int v2; // edx
 
+  // PORT (vlna 26): AIL_init_sample. Pri otevirani audio stopy videa sem
+  // prisel neplatny handle (-1) a padalo to hned na prvnim zapisu.
+  {
+    static unsigned n = 0;
+    ++n;
+    if ( (intptr_t)a1 == -1 || ((uintptr_t)a1 & 3u) != 0 )
+    {
+      PortDebug_Checkpoint("157690.BAD_HANDLE.call_no", (int)n);
+      PortDebug_CheckpointPtr("157690.BAD_HANDLE.sample", (void *)a1);
+      return a1; // nesahat na neplatny handle
+    }
+  }
+
   result = a1;
   if ( a1 )
   {

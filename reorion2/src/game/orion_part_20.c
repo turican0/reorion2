@@ -3483,8 +3483,18 @@ int sub_13259F(int a1)
     v2 = 0;
   else
     v2 = nmalloc(a1 + 16);
+  // PORT (vlna 26): kdyz alokace neprobehla (v2 == 0 - bud a1 == -1, nebo
+  // nmalloc selhal), puvodni kod stejne zapsal zarovnavaci bajt na adresu
+  // `16 + 0 - 1` = 15. Pod DOS4GW to byl neskodny skrabanec do nulte
+  // stranky, tady je to pad (av_write na 0x0000000F). Vracime 0 = "nelze
+  // alokovat", coz volajici uz osetruje.
+  if ( !v2 )
+  {
+    PortDebug_Checkpoint("13259F.alloc_failed.size", a1);
+    return 0;
+  }
   v4 = 16 - (v2 & 0xF);
-  *(_BYTE *)(v4 + v2 - 1) = v4;
+  *(_BYTE *)(uintptr_t)(v4 + v2 - 1) = v4;
   return v4 + v2;
 }
 // 13CB78: using guessed type int nmalloc(_DWORD);

@@ -732,6 +732,12 @@ char sub_149890(unsigned int a1, int a2)
   unsigned int v2; // ebx
 
   v2 = a1;
+  // PORT (vlna 26): tenhle blok instaluje CELOU audio vtable vcetne
+  // `dword_189164` (otevreni audio streamu videa) - a je podminen tim, ze
+  // `dword_18A5AC` je jeste NULL. Nastavuje ho ale i `sub_15C730`; kdyz
+  // probehne driv, instalace se tise preskoci a video pak nema audio stopu
+  // (`a1[264]` zustane -1).
+  PortDebug_Checkpoint("149890.install_block", dword_18A5AC == NULL);
   if ( !dword_18A5AC )
   {
     dword_18916C = 0;
@@ -917,8 +923,16 @@ LABEL_12:
       if ( v11 )
       {
         sub_1543A1(a2[21], 2 * a2[15]);
-        sub_140BB1(dword_189140);
+        // PORT (vlna 26): ztracena navratova hodnota - asm dela
+        // `call sub_140BB1 / add esp,4 / mov [esi+38h], eax / cmp ..., 0`,
+        // tedy a2[14] (offset 0x38 = 56) je HANDLE SAMPLU pro audio stopu
+        // videa. Drive se sem ulozila neinicializovana `v12`, takze
+        // `sub_149E40` pak predal smeti do `sub_140FF1`/`sub_157780` a padalo
+        // to na zapisu do `handle+52`.
+        v12 = sub_140BB1(dword_189140);
         a2[14] = v12;
+        PortDebug_Checkpoint("149C80.sampleHandle", v12);
+        PortDebug_Checkpoint("149C80.digDriver_189140", dword_189140);
         if ( a2[14] )
         {
           a2[22] = a2[15] + a2[21];
@@ -963,7 +977,11 @@ void sub_149E40(int a1)
   int v2; // ebx
   int v3; // eax
 
-  sub_140DFC(*(int **)(a1 + 56));
+  // PORT (vlna 26): a1+56 je 32bitove ULOZENY ukazatel (sample handle) -
+  // `*(int**)` by ho na x64 precetlo jako 8bajtovy a natahlo sousedni a1+60
+  // jako horni pulku. O par radek niz uz se stejne pole cte spravne jako
+  // `*(_DWORD *)`. Stejna trida jako opravy ve vlne 25 (orion_part_22.c).
+  sub_140DFC((int *)(uintptr_t)*(_DWORD *)(a1 + 56));
   v2 = *(_DWORD *)(a1 + 72);
   if ( v2 )
   {
@@ -980,6 +998,11 @@ void sub_149E40(int a1)
   {
     v3 = 0;
   }
+  // PORT (vlna 26): `v3` je Miles sample type (bit0 = 16bit z a1+72,
+  // bit1 = stereo z a1+76) - stejna hodnota, kterou dostane
+  // AIL_set_sample_type. Predame ji port_sound, ktery podle ni otevre SDL
+  // zarizeni; frekvenci bere DIG_DRIVER na +20.
+  PortSound_SetStreamFormat(v3, *(int *)(uintptr_t)(*(_DWORD *)(a1 + 56) + 60));
   sub_140FF1(*(_DWORD *)(a1 + 56), v3, v2 != 0);
   sub_141227(*(_DWORD *)(a1 + 56), *(_DWORD *)(a1 + 64));
   sub_1420F9(*(_DWORD *)(a1 + 56), 0, a1);
@@ -2164,6 +2187,20 @@ _DWORD *sub_14B620(_DWORD *result)
   int v30; // [esp+Ch] [ebp-20h]
   uint8_t v31; // [esp+10h] [ebp-1Ch]
 
+  // PORT (vlna 26): brana audio cesty videa. `result[264]` je index audio
+  // stopy (-1 = zadna), `result[266]` ji umi docasne vypnout. Kdyz projde,
+  // dole se do ring bufferu bud kopiruje syrove PCM (qmemcpy vetev), nebo
+  // dekomprimuje pres `sub_1676F0` - a to je zvuk intra.
+  {
+    static unsigned n = 0;
+    if ( ++n <= 8 )
+    {
+      PortDebug_Checkpoint("14B620.n", (int)n);
+      PortDebug_Checkpoint("14B620.audioTrack_264", result[264]);
+      PortDebug_Checkpoint("14B620.mute_266", result[266]);
+      PortDebug_Checkpoint("14B620.flags_225", result[225]);
+    }
+  }
   v29 = result;
   if ( result[264] != -1 && !result[266] )
   {
@@ -2221,6 +2258,25 @@ LABEL_10:
           v30 = v11 - v10[4];
           ++v10[11];
         }
+        // PORT (vlna 26): tady se do audio ring bufferu bud KOPIRUJE syrove
+        // PCM (tato vetev, `v29[v31+18] >= 0`), nebo se dekomprimuje pres
+        // `sub_1676F0`. Intro pouziva tuhle - proto se sub_1676F0 nevolal.
+        {
+          static unsigned n = 0;
+          if ( ++n <= 6 )
+          {
+            PortDebug_Checkpoint("14B620.feed.n", (int)n);
+            PortDebug_Checkpoint("14B620.feed.bytes", v30);
+            PortDebug_Checkpoint("14B620.feed.compressed", v29[v31 + 18] < 0);
+            PortDebug_CheckpointPtr("14B620.feed.ringBase", (void *)(uintptr_t)v10[0]);
+            PortDebug_CheckpointPtr("14B620.feed.writePtr", (void *)(uintptr_t)v10[3]);
+          }
+        }
+        // Zdroj je souvisly (`v6 + 1`, delka v30) - posilame ho do SDL rovnou,
+        // misto abychom resili zalamovani v kruhovem bufferu. Tohle je to
+        // misto, odkud by data odebiral real-mode DIG driver.
+        if ( v29[v31 + 18] >= 0 && v30 > 0 )
+          PortSound_FeedStream((const void *)(v6 + 1), v30);
         if ( v29[v31 + 18] >= 0 )
         {
           v12 = (char *)v10[3];
@@ -3097,6 +3153,7 @@ char sub_14C4C0(_DWORD *a1, unsigned int a2)
   *(_DWORD *)(v16[257] + 64) = v19;
   *(_DWORD *)(v16[257] + 72) = v21;
   *(_DWORD *)(v16[257] + 76) = v22;
+  PortDebug_CheckpointPtr("openAudioStream.dword_189164", (void *)(uintptr_t)dword_189164);
   if ( (uint8_t)dword_189164(a1[225], v16[257]) )
   {
     *(_DWORD *)(v16[257] + 48) = v16[6] - (*(_DWORD *)(v16[257] + 28) >> 7);

@@ -4021,3 +4021,77 @@ dosazeno (= smycka alokace 16 handlu prosla), zadny novy SEH.
   - tam bude odbocka do SDL. Hlasitost/panorama nastavuji `sub_14129D` /
   `sub_141313` z `byte_1843A4` / `byte_1843A5` (to je ta cast zadani o
   hlasitosti).
+
+### Vlna 26 pokracovani: audio stopa videa - retez otevren, zatim nehraje
+
+**Zjisteno, kde zvuk intra vlastne je:** NEJSOU to efekty (`sub_1122C0` se
+behem intra nevola vubec), ale AUDIO STOPA SMK VIDEA. Brana je
+`result[264]` v `sub_14B620` (index audio stopy, -1 = zadna) - v portu byla
+**-1**, proto se `sub_1676F0` (dekomprese audia) nikdy nevolala.
+
+**Proc byla -1:** `a1[264]` se nastavi az kdyz uspeje `dword_189164(...)`
+(otevreni audio streamu). Tu vtable instaluje `sub_149890`, ale jen pokud je
+`dword_18A5AC` jeste NULL - a nastavuje ho i `sub_15C730`. Zmereno: blok se
+**provede** (`149890.install_block 1`) a `dword_189164` je nenulovy, takze
+tohle v poradku je; otevreni streamu se poprve realne zavola.
+
+**Retez pak pada v kodu, ktery nikdy nebezel** (stejny vzor jako u videa -
+nova cesta, kaskada latentnich bugu). Postupne odkryto a posunuto:
+1. `sub_156400` - cteni z null+0x18: **opraveno** doplnenim zpetneho
+   ukazatele na driver do samplu (`+0`), viz vyse.
+2. `sub_13259F` (zarovnavajici alokator) pri `a1 == -1` nechal `v2 = 0` a
+   presto zapsal zarovnavaci bajt na adresu `16 + 0 - 1` = **15**. Pod
+   DOS4GW neskodny skrabanec do nulte stranky, tady av_write na 0x0000000F.
+   **Opraveno**: kdyz alokace neprobehla, vraci 0 (= "nelze alokovat", coz
+   volajici uz osetruje).
+3. **Aktualni frontier:** `sub_157780+0x5b` (av_write), cesta
+   `sub_14BC40 -> sub_14C4C0 -> sub_149C80 -> sub_149E40 -> sub_140FF1 ->
+   sub_157780`. Jeste neanalyzovano.
+
+**Dalsi kroky:** dobrat tuhle kaskadu (stejnou metodikou - stack z SEH
+handleru + porovnani promennych s dosboxem), pak teprve overit obsah
+audio ring bufferu proti dosboxu a poslat ho do `Port::Sound::PlaySample`.
+Pozn.: `sub_157690` ma zatim obranny early-out na neplatny handle - zatim
+se ANI JEDNOU netrigrnul, takze nic nemaskuje.
+
+### Vlna 26 pokracovani 2: *** ZVUK POPRVE HRAJE *** (zatim kratky sum)
+
+**Kaskada dobrana, audio stopa videa je aktivni a PCM tece do SDL.**
+
+Dalsi nalezene a opravene bugy v teto vetvi:
+- `sub_149C80` (otevreni audio streamu): `sub_140BB1(dword_189140); a2[14] =
+  v12;` - **ztracena navratova hodnota**, `v12` neinicializovana. Overeno v
+  asm (`call sub_140BB1 / add esp,4 / mov [esi+38h], eax`, 0x38 = 56 =
+  a2[14] = HANDLE SAMPLU audio stopy). Bez toho sla do
+  `sub_140FF1`/`sub_157780` smet a padalo to na zapisu do `handle+52`.
+- `sub_149E40`: `sub_140DFC(*(int **)(a1 + 56))` - 32bitove ulozeny ukazatel
+  cteny jako 8bajtovy `int**` (x64 trida z vlny 25); o par radek niz se
+  stejne pole cte spravne jako `*(_DWORD *)`. Opraveno.
+
+**Napojeni na SDL (port_sound.cpp):**
+- `PortSound_SetStreamFormat(milesSampleType, rateHz)` - volano ze
+  `sub_149E40`, kde `v3` je presne ta hodnota, kterou dostava
+  AIL_set_sample_type (bit0 = 16bit z a1+72, bit1 = stereo z a1+76).
+- `PortSound_FeedStream(pcm, bytes)` - volano ze `sub_14B620` z mista, kde
+  hra zapisuje do sveho audio ring bufferu. Zdroj je souvisly (`v6 + 1`,
+  delka `v30`), takze se neresi zalamovani kruhoveho bufferu.
+- `Port::Sound::FeedStream` otevre SDL zarizeni podle formatu (U8/S16,
+  mono/stereo, dana frekvence) a pri zmene formatu ho znovu otevre.
+
+**ZMERENO:** `14B620.audioTrack_264` = **0** (drive -1), format hlasen jako
+**typ 2 = 8bit stereo, 11025 Hz**, zarizeni otevreno, jedna davka
+**23748 B** PCM. Uzivatel potvrdil, ze je slyset zvuk (kratky sum).
+
+**ZBYVA:**
+1. **Davka je jen JEDNA** - proto je zvuk kratky. `sub_14B620` se vola
+   1406x (na snimek), ale audio blok (`if (!v8)`) probehne jen jednou, tj.
+   dalsi snimky uz zadna audio data nemaji. Zjistit, proc se per-snimkove
+   audio nenacita (podezreni na cteni chunku ve SMK readeru, `v6 =
+   *((_DWORD*)v5 + 241)`).
+2. **Je to sum, ne zvuk** - overit format a offset dat PROTI DOSBOXU
+   (uzivatelovo puvodni zadani: "zkontrolovat, zda sound buffer ma stejna
+   data jako v dosboxu"). Konkretne: dumpnout obsah audio ring bufferu v
+   originale (DUMPMEM) a bajt po bajtu porovnat s tim, co portu prijde do
+   `PortSound_FeedStream`. Teprve pak ladit U8/S16 a mono/stereo.
+3. Hlasitost/panorama (`sub_14129D`/`sub_141313`, `byte_1843A4/A5`) zatim
+   nejsou napojene - PCM jde do SDL bez skalovani.

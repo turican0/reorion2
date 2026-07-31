@@ -22,6 +22,9 @@ void PlaySample(const uint8_t* pcmData, uint32_t lengthBytes, uint32_t sampleRat
 // DECOMP_TODO: potreba az najdeme funkce volajici port 388h/389h.
 void WriteOplRegister(uint8_t reg, uint8_t value);
 
+// Streamovane audio (audio stopa SMK videa) - viz PortSound_FeedStream.
+void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rateHz);
+
 } // namespace Port::Sound
 
 // ---------------------------------------------------------------------
@@ -42,6 +45,14 @@ extern "C" {
 // Volny sample pozna `sub_157610` (AIL_allocate_sample_handle) podle
 // `*(int*)(sample+4) == 1`, takze pole se takhle inicializuje.
 int PortSound_CreateDigDriver(void);
+
+// Format audio streamu videa (Miles sample type 0-3) a jeho vzorkovaci
+// frekvence; nastavuje se pri otevirani streamu v sub_149E40.
+void PortSound_SetStreamFormat(int milesSampleType, int rateHz);
+
+// Kus PCM tak, jak ho hra prave zapsala do sveho audio ring bufferu
+// (sub_14B620) - puvodne by ho odtud odebral real-mode DIG driver.
+void PortSound_FeedStream(const void* pcm, int bytes);
 
 } // extern "C"
 

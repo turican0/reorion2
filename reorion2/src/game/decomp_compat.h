@@ -178,6 +178,8 @@ void PortVga_BlitBackBuffer(const void* backBuffer);
 /* PORT (vlna 26): nahradni AIL DIG_DRIVER (DIG.INI + SB16.DIG nelze spustit) -
    rozlozeni opsane z originalu, viz port_sound.h/.cpp. */
 int PortSound_CreateDigDriver(void);
+void PortSound_SetStreamFormat(int milesSampleType, int rateHz);
+void PortSound_FeedStream(const void* pcm, int bytes);
 /* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
    prototypes the C build fell back to an implicit `int f()` declaration,
    which happily linked against the old `return 0;` stubs and silently made

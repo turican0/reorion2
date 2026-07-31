@@ -56,6 +56,48 @@ void PlaySample(const uint8_t* pcmData, uint32_t lengthBytes, uint32_t sampleRat
     SDL_PutAudioStreamData(g_stream, pcmData, static_cast<int>(lengthBytes));
 }
 
+// Prehravani streamovaneho audia (audio stopa SMK videa). Format se muze
+// lisit od toho, s jakym byl stream otevren pri Init(), takze se pri prvni
+// davce (nebo pri zmene) zarizeni znovu otevre.
+void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rateHz)
+{
+    if (!pcm || bytes == 0)
+        return;
+
+    static int s_type = -1;
+    static int s_rate = 0;
+    if (!g_initialized || s_type != milesSampleType || s_rate != rateHz) {
+        if (g_stream) {
+            SDL_DestroyAudioStream(g_stream);
+            g_stream = nullptr;
+        }
+        if (!SDL_Init(SDL_INIT_AUDIO)) {
+            SDL_Log("Port::Sound::FeedStream - SDL_Init selhalo: %s", SDL_GetError());
+            return;
+        }
+        SDL_AudioSpec spec{};
+        // Miles typ: bit0 = 16bit, bit1 = stereo. 8bitove PCM je u Sound
+        // Blasteru bez znamenka (0..255), 16bitove se znamenkem.
+        spec.format = (milesSampleType & 1) ? SDL_AUDIO_S16LE : SDL_AUDIO_U8;
+        spec.channels = (milesSampleType & 2) ? 2 : 1;
+        spec.freq = rateHz > 0 ? rateHz : 22050;
+        g_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, nullptr, nullptr);
+        if (!g_stream) {
+            SDL_Log("Port::Sound::FeedStream - SDL_OpenAudioDeviceStream selhalo: %s", SDL_GetError());
+            return;
+        }
+        SDL_ResumeAudioStreamDevice(g_stream);
+        g_initialized = true;
+        s_type = milesSampleType;
+        s_rate = rateHz;
+        SDL_Log("Port::Sound: audio zarizeni otevreno (%s %s, %d Hz)",
+                (milesSampleType & 1) ? "S16" : "U8",
+                (milesSampleType & 2) ? "stereo" : "mono", spec.freq);
+    }
+
+    SDL_PutAudioStreamData(g_stream, pcm, static_cast<int>(bytes));
+}
+
 void WriteOplRegister(uint8_t reg, uint8_t value)
 {
     // DECOMP_TODO: zatim jen zaslepka - hudebni OPL emulace (napr. napojeni
@@ -69,6 +111,36 @@ void WriteOplRegister(uint8_t reg, uint8_t value)
 
 // ---------------------------------------------------------------------
 extern "C" {
+
+// Format audio streamu videa. Miles "sample type": 0 = 8bit mono,
+// 1 = 16bit mono, 2 = 8bit stereo, 3 = 16bit stereo (viz sub_149E40, ktera
+// ho sklada z priznaku +72 = 16bit a +76 = stereo a posila do
+// AIL_set_sample_type/sub_157780).
+static int g_streamType = 0;
+static int g_streamRate = 22050;
+
+void PortSound_SetStreamFormat(int milesSampleType, int rateHz)
+{
+    g_streamType = milesSampleType;
+    if (rateHz > 0)
+        g_streamRate = rateHz;
+    SDL_Log("PortSound: format audio streamu = typ %d (%s, %s), %d Hz",
+            milesSampleType,
+            (milesSampleType & 1) ? "16bit" : "8bit",
+            (milesSampleType & 2) ? "stereo" : "mono",
+            g_streamRate);
+}
+
+// Prijme kus PCM tak, jak ho hra prave zapsala do sveho audio ring bufferu
+// (sub_14B620). Puvodne by ho odtud odebral real-mode DIG driver; tady jde
+// rovnou do SDL streamu.
+void PortSound_FeedStream(const void* pcm, int bytes)
+{
+    if (!pcm || bytes <= 0)
+        return;
+    Port::Sound::FeedStream(static_cast<const uint8_t*>(pcm), static_cast<uint32_t>(bytes),
+                            g_streamType, g_streamRate);
+}
 
 int PortSound_CreateDigDriver(void)
 {
