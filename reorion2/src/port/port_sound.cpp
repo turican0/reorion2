@@ -95,6 +95,29 @@ void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rat
                 (milesSampleType & 2) ? "stereo" : "mono", spec.freq);
     }
 
+    // Jednorazovy rozbor prvni davky - rozlozeni hodnot jednoznacne odlisi
+    // 8bit unsigned PCM (stred kolem 128) od 8bit signed (kolem 0) i od
+    // 16bit (sousedni bajty silne koreluji) a od negeneracniho smeti.
+    static bool s_dumped = false;
+    if (!s_dumped) {
+        s_dumped = true;
+        int mn = 255, mx = 0;
+        long sum = 0;
+        uint32_t n = bytes < 4096 ? bytes : 4096;
+        for (uint32_t i = 0; i < n; ++i) {
+            int v = pcm[i];
+            if (v < mn) mn = v;
+            if (v > mx) mx = v;
+            sum += v;
+        }
+        char hex[16 * 3 + 1];
+        for (int i = 0; i < 16; ++i)
+            SDL_snprintf(hex + i * 3, 4, "%02X ", pcm[i]);
+        SDL_Log("Port::Sound: prvni davka %u B, prvnich 16 bajtu: %s", bytes, hex);
+        SDL_Log("Port::Sound: rozlozeni na %u B - min=%d max=%d prumer=%ld",
+                n, mn, mx, n ? sum / static_cast<long>(n) : 0L);
+    }
+
     SDL_PutAudioStreamData(g_stream, pcm, static_cast<int>(bytes));
 }
 

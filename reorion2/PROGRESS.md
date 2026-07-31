@@ -4095,3 +4095,25 @@ Dalsi nalezene a opravene bugy v teto vetvi:
    `PortSound_FeedStream`. Teprve pak ladit U8/S16 a mono/stereo.
 3. Hlasitost/panorama (`sub_14129D`/`sub_141313`, `byte_1843A4/A5`) zatim
    nejsou napojene - PCM jde do SDL bez skalovani.
+
+### Vlna 26 pokracovani 3: proc je zvuk kratky - hra ceka na odbaveni bufferu
+
+**Mereni vysvetlilo i "obcas hraje, obcas ne":**
+- Audio stopu ma az CINEMATIC video (otevira se kolem blitu 81/82), ne logo.
+- V behu, kde se audio stopa otevrela (`audioTrack_264` = 0), mel trace jen
+  **421 radku za 100 s** a konci na `125814.blit 82` / `14DF7.loop3.enter` -
+  tedy hra se prakticky ZASTAVILA hned po otevreni audia.
+- V behach, kde se neotevrela, mel trace **29229 radku** - video bezelo
+  naplno.
+
+**Zaver:** po otevreni audio stopy hra taktuje prehravani PODLE AUDIA -
+`sub_14B5B0` se rozhoduje podle stavu audio bufferu (`dword_1C3C38` =
+`sub_149ED0`, a `a1[264]`/`a1[265]` v `sub_14B620`). Port ale zvuk jen
+"vysype" do SDL a nikdy nehlasi, ze se prehral, takze hra ceka a video
+stoji. Odtud jak kratky sum (jedna davka), tak zastaveni.
+
+**Dalsi krok (konkretni):** doplnit ucetnictvi prehraneho audia -
+`sub_149ED0`/`dword_1C3C38` musi vracet, kolik uz je odbaveno (napr. z
+`SDL_GetAudioStreamQueued`), aby `sub_14B5B0` pustil dalsi snimek a dalsi
+audio davku. Teprve pak ma smysl ladit format (U8/S16, mono/stereo) proti
+dosbox dumpu ring bufferu.
