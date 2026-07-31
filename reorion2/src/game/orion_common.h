@@ -8280,8 +8280,8 @@ extern int sub_13FBC8();
 extern void sub_13FCDE();
 // plna signatura: int sub_13FD50(int a1, char *a2);
 extern int sub_13FD50();
-// plna signatura: void sub_1400A9(int a1);
-extern void sub_1400A9();
+// plna signatura: int sub_1400A9(int a1); // PORT (vlna 26): vraci handle casovace
+extern int sub_1400A9();
 // plna signatura: void sub_140194(int a1, int32_t a2);
 extern void sub_140194();
 // plna signatura: void sub_140287(int a1, int a2);
@@ -8304,8 +8304,8 @@ extern void sub_140734();
 extern void sub_140819();
 // plna signatura: void sub_14090C(unsigned int a1);
 extern void sub_14090C();
-// plna signatura: void sub_140979();
-extern void sub_140979();
+// plna signatura: int sub_140979(); // PORT (vlna 26): vraci AIL DIG_DRIVER handle v EAX (asm sub_111F3E)
+extern int sub_140979();
 // plna signatura: void sub_140A57(char *a1, void *a2);
 extern void sub_140A57();
 // plna signatura: int sub_140BB1(int a1);
@@ -8316,8 +8316,8 @@ extern void sub_140C96();
 extern void sub_140D8F();
 // plna signatura: void sub_140DFC(int *a1);
 extern void sub_140DFC();
-// plna signatura: void sub_140E69(_DWORD *a1, int a2, int a3);
-extern void sub_140E69();
+// plna signatura: int sub_140E69(_DWORD *a1, int a2, int a3); // PORT (vlna 26)
+extern int sub_140E69();
 // plna signatura: _DWORD *sub_140F6F(_DWORD *a1, int a2, int a3);
 extern _DWORD *sub_140F6F();
 // plna signatura: int *sub_140FF1(int a1, int a2, int a3);
@@ -14539,7 +14539,7 @@ int sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4);
 void sub_13FCDE(int a1);
 int sub_13FD4B();
 int sub_13FD50(int a1, char *a2);
-void sub_1400A9(int a1);
+int sub_1400A9(int a1); // PORT (vlna 26): vraci handle casovace, viz orion_part_21.c
 void sub_140194(int a1, int32_t a2);
 void sub_140287(int a1, int a2);
 void sub_1402FD(int a1, unsigned int a2);
@@ -14551,13 +14551,13 @@ void sub_1406D2();
 void sub_140734(int a1);
 void sub_140819(int a1, int a2);
 void sub_14090C(unsigned int a1);
-void sub_140979();
+int sub_140979(); // PORT (vlna 26): vraci DIG_DRIVER handle, viz orion_part_21.c
 void sub_140A57(char *a1, void *a2);
 int sub_140BB1(int a1);
 void sub_140C96(int a1, int a2, int a3);
 void sub_140D8F(int a1);
 void sub_140DFC(int *a1);
-void sub_140E69(_DWORD *a1, int a2, int a3);
+int sub_140E69(_DWORD *a1, int a2, int a3); // PORT (vlna 26): vraci uspech, viz orion_part_21.c
 _DWORD *sub_140F6F(_DWORD *a1, int a2, int a3);
 int *sub_140FF1(int a1, int a2, int a3);
 void sub_141073(_DWORD *a1);
@@ -16534,7 +16534,7 @@ extern char aDma8Bit[10];
 extern char aDma16Bit[11];
 extern char aAil3dig[8];
 extern char aAil3mdi[8];
-extern char aWdigIni[9];
+extern char aWdigIni[14]; // PORT (vlna 26): "wDIG_fake.INI", viz orion_data.c
 extern char aFmt[5];
 extern char aData[5];
 extern char aCreative[9];
@@ -16542,7 +16542,7 @@ extern char aWave[5];
 extern char aForm[5];
 extern char aECat[8];
 extern char aAtexmid[8];
-extern char aRmdiIni[9];
+extern char aRmdiIni[14]; // PORT (vlna 26): "rMDI_fake.INI", viz orion_data.c
 extern char aTimb[5];
 extern char aAtcrbrn[8];
 extern char aNotevnt[8];

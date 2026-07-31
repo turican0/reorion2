@@ -175,6 +175,9 @@ void PortVga_CaptureBlit(const void* backBuffer);
 /* PORT (wave 25r-8): mirror the game back buffer into the presented surface -
    in VESA mode 5 that buffer IS the display; see port_vga.cpp. */
 void PortVga_BlitBackBuffer(const void* backBuffer);
+/* PORT (vlna 26): nahradni AIL DIG_DRIVER (DIG.INI + SB16.DIG nelze spustit) -
+   rozlozeni opsane z originalu, viz port_sound.h/.cpp. */
+int PortSound_CreateDigDriver(void);
 /* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
    prototypes the C build fell back to an implicit `int f()` declaration,
    which happily linked against the old `return 0;` stubs and silently made

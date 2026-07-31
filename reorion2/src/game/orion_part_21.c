@@ -922,16 +922,22 @@ int sub_13FD50(int a1, char *a2)
 
 
 //----- (001400A9) --------------------------------------------------------
-void sub_1400A9(int a1)
+// PORT (vlna 26): vraci handle casovace. `sub_155542` (skutecna registrace)
+// ho vraci v EAX a tahle obalka konci JUMPOUTem do sdileneho trace-epilogu,
+// ktery ho jen propusti - stejna trida ztracene navratove hodnoty jako u
+// `sub_140BB1` (vlna 22c). Volajici `sub_111F3E` ho porovnava s -1
+// ("Could not register timer with AIL"), takze bez nej to bylo nahodne.
+int sub_1400A9(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
+  int timerHandle;
 
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_timer(0x%X)\n", a1);
-  sub_155542(a1);
+  timerHandle = (int)sub_155542(a1);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -941,6 +947,7 @@ void sub_1400A9(int a1)
     JUMPOUT(0x1415CA);
   }
   JUMPOUT(0x13FCD2);
+  return timerHandle; // sdileny epilog jen propusti EAX ze sub_155542
 }
 // 14018F: control flows out of bounds to 1415CA
 // 14011E: control flows out of bounds to 13FCD2
@@ -1205,7 +1212,7 @@ void sub_14090C(unsigned int a1)
 
 
 //----- (00140979) --------------------------------------------------------
-void sub_140979()
+int sub_140979()
 {
   int v0; // edx
   unsigned int i; // edx
@@ -1214,14 +1221,21 @@ void sub_140979()
   v0 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v0 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_DIG_INI()\n");
-  // DECOMP_TODO (vlna 12): sub_157570 = skutecna instalace DOS zvukoveho
-  // driveru dle DIG.INI (real-mode .DIG driver, INT volani) - v portu
-  // padala a zadny DOS driver stejne neexistuje. Preskoceno = "zadny
-  // zvukovy driver nenalezen"; volajici sub_111F3E (pres v1=0 placeholder)
-  // pak bezi TISE a preskoci nacitani SOUND.LBX. Az vznikne port_sound
-  // (SDL3), napoji se sem.
-  PortDebug_Checkpoint("AIL.install_DIG_INI.skipped", 0);
-  // sub_157570();
+  // PORT (vlna 26): `sub_157570` je skutecna instalace DOS zvukoveho driveru
+  // dle DIG.INI - nacte a real-mode zavola SB16.DIG, coz v portu nejde (a uz
+  // driv tu padala). Misto preskoceni (= "zadny driver", hra pak bezi tise a
+  // preskoci i nacteni SOUND.LBX) vratime NAHRADNI DIG_DRIVER strukturu.
+  // Jeji rozlozeni i hodnoty jsou opsane z originalu pres dosbox-x DUMPMEM -
+  // viz PortSound_CreateDigDriver() v port_sound.cpp.
+  //
+  // Navratovy typ: asm v sub_111F3E dela `call sub_140979 / mov
+  // dword_17C388, eax / cmp dword_17C388, 0 / jz ...`, takze tahle funkce
+  // vraci handle driveru v EAX. IDA to ztratila (byla `void`).
+  {
+    int digDriver = PortSound_CreateDigDriver();
+    PortDebug_Checkpoint("AIL.install_DIG_INI.driver", digDriver);
+    return digDriver;
+  }
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1377,8 +1391,13 @@ void sub_140DFC(int *a1)
 
 
 //----- (00140E69) --------------------------------------------------------
-void sub_140E69(_DWORD *a1, int a2, int a3)
+// PORT (vlna 26): AIL_set_sample_file - vraci uspech v EAX (asm sub_1122C0:
+// `call sub_140E69 / test eax, eax / jnz`). IDA to ztratila (byla `void`),
+// takze `if (!v1)` v sub_1122C0 cetlo neinicializovanou promennou a zvuk se
+// nikdy nespustil. Skutecnou praci dela sub_1581CE.
+int sub_140E69(_DWORD *a1, int a2, int a3)
 {
+  int setFileResult;
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1386,7 +1405,7 @@ void sub_140E69(_DWORD *a1, int a2, int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sample_file(0x%X,0x%X,%d)\n", a1, a2, a3);
-  sub_1581CE(a1, a2, a3);
+  setFileResult = sub_1581CE(a1, a2, a3);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1396,6 +1415,7 @@ void sub_140E69(_DWORD *a1, int a2, int a3)
     JUMPOUT(0x13FCCA);
   }
   JUMPOUT(0x13FCD2);
+  return setFileResult; // sdileny epilog jen propusti EAX ze sub_1581CE
 }
 // 140F6A: control flows out of bounds to 13FCCA
 // 140EF2: control flows out of bounds to 13FCD2

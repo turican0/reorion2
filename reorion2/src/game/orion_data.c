@@ -1676,7 +1676,12 @@ char aDma8Bit[10] = "DMA_8_bit"; // weak
 char aDma16Bit[11] = "DMA_16_bit"; // weak
 char aAil3dig[8] = "AIL3DIG"; // weak
 char aAil3mdi[8] = "AIL3MDI"; // weak
-char aWdigIni[9] = "wDIG.INI"; // weak
+/* PORT (vlna 26, na zadost uzivatele): puvodne "wDIG.INI" - slitina dvou
+   retezcu, [0]='w' je fopen MOD (zapis!) a &[1] je jmeno souboru. Aby se
+   originalni DIG.INI v adresari hry nemohl prepsat, jmeno ukazuje na
+   _fake variantu. Zvukovy driver se stejne nenacita - nahradni DIG_DRIVER
+   staví PortSound_CreateDigDriver(), viz orion_part_21.c/sub_140979. */
+char aWdigIni[14] = "wDIG_fake.INI"; // weak
 char aFmt[5] = "fmt "; // weak
 char aData[5] = "data"; // weak
 char aCreative[9] = "Creative"; // weak
@@ -1684,7 +1689,8 @@ char aWave[5] = "WAVE"; // weak
 char aForm[5] = "FORM"; // weak
 char aECat[8] = "e; CAT "; // weak
 char aAtexmid[8] = "ateXMID"; // weak
-char aRmdiIni[9] = "rMDI.INI"; // weak
+/* PORT (vlna 26): totez pro hudebni config - viz aWdigIni vyse. */
+char aRmdiIni[14] = "rMDI_fake.INI"; // weak
 char aTimb[5] = "TIMB"; // weak
 char aAtcrbrn[8] = "atCRBRN"; // weak
 char aNotevnt[8] = "notEVNT"; // weak

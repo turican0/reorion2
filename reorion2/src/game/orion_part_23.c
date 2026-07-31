@@ -1736,6 +1736,13 @@ int sub_157890(int a1, int a2)
 
 
 //----- (001578A0) --------------------------------------------------------
+// PORT (vlna 26): AIL_start_sample. Prehrani samotne deleguje na real-mode
+// DIG driver (`sub_13FBC8(driver_image, 1025, ...)`), coz v portu neexistuje -
+// odsud se proto odbocuje do Port::Sound. `a1[1] = 4` = stav PLAYING
+// (sub_157920 ho meni na 8 = pauza, sub_157940 zpet na 4).
+// Buffer daneho bufferu: `v1 = &a1[a1[10]]`, `v1[4]` = ukazatel na PCM,
+// `v1[2]` = delka; vzorkovaci frekvence je v samplu na +60 (overeno dumpem
+// originalu: 11025 u prvniho samplu, driver ma 22050 na +20).
 void sub_1578A0(_DWORD *a1)
 {
   _DWORD *v1; // eax
@@ -1744,6 +1751,17 @@ void sub_1578A0(_DWORD *a1)
 
   if ( a1 )
   {
+    {
+      static unsigned n = 0;
+      if ( ++n <= 12 )
+      {
+        PortDebug_Checkpoint("1578A0.start_sample.n", (int)n);
+        PortDebug_Checkpoint("1578A0.state", a1[1]);
+        PortDebug_Checkpoint("1578A0.bufIndex_a1_10", a1[10]);
+        PortDebug_Checkpoint("1578A0.rate_at_60", a1[15]);
+        PortDebug_CheckpointPtr("1578A0.driver_at_0", (void *)(uintptr_t)a1[0]);
+      }
+    }
     if ( a1[1] != 1 )
     {
       v1 = &a1[a1[10]];

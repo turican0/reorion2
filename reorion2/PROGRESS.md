@@ -3965,3 +3965,59 @@ jen pro to, co obe strany vzorkuji. dosbox `DUMPFRAME framebuf=` cte
 konkretni ADRESU - je nutne vedet, CO na te adrese je (tady herni backbuffer,
 ne zobrazovana plocha portu). Pri hlaseni uzivatele "vidim neco jineho" vzdy
 nejdriv overit, ze merena plocha == zobrazovana plocha.
+
+## Vlna 26: zvuk - nahradni AIL DIG_DRIVER + 4 ztracene navratove hodnoty
+
+**Zadani:** podstrcit originalu falesny sound config, overit shodu zvukoveho
+bufferu s dosboxem a chovani port_sound (hlasitost atd.).
+
+**Proc zvuk vubec nebezel:** `sub_140979` (AIL_install_DIG_INI) mela od vlny
+12 zakomentovanou skutecnou instalaci (`sub_157570` cte DIG.INI a real-mode
+vola SB16.DIG - to v portu nejde). Vracela tedy nic, `dword_184388` zustalo 0
+a cely blok v `sub_111F3E` (nacteni SOUND.LBX + alokace 16 sample handlu) se
+TISE preskocil.
+
+**1) Nahradni DIG_DRIVER (`PortSound_CreateDigDriver`, port_sound.cpp).**
+Rozlozeni i hodnoty OPSANE Z ORIGINALU pres dosbox-x DUMPMEM
+(`dword_184388` -> 0x003EC8D8, pak dump struktury):
+`+16 = 2048` (DMA buffer), `+20 = 22050` (frekvence), `+68/72/76 =
+2048/1024/8192`, `+92` = pole samplu, `+96 = 17`.
+Sample ma 2196 B (= `AilSample`), `+4` je stav (1 = volny, hleda ho
+`sub_157610`) a **`+0` je zpetny ukazatel na DIG_DRIVER** - bez nej padal
+`sub_156400` na cteni z null+0x18 hned pri prvni alokaci. Overeno dumpem
+originalniho samplu (0x004F2038: +0 = 0x003EC8D8, +4 = 2, +60 = 11025).
+Handly `dword_1B0670[1..16]` v originale = 0x4F2038, 0x4F28CC, ... s krokem
+0x894 = 2196 - presne sedi.
+
+**2) Ctyri ztracene navratove hodnoty** (vsechny overene proti
+Debug/diss/Orion2.exe.asm, stejna trida jako vlna 22c):
+| funkce | asm | dusledek chyby |
+|---|---|---|
+| `sub_140979` | `call / mov dword_17C388, eax / cmp ..., 0 / jz` | zvuk se nikdy nezapnul |
+| `sub_1400A9` | `call / mov [ebp+var_4], eax / cmp ..., -1` | test "Could not register timer" byl nahodny |
+| `sub_140BB1` | `call / mov dword_1A8670[edx], eax` | sample handly se neukladaly |
+| `sub_140E69` | `call / test eax, eax / jnz` | `if (!v1)` v `sub_1122C0` cetlo neinicializovanou promennou -> sample se nikdy nerozehral |
+
+**3) Konfiguraky (na zadost uzivatele):** `aWdigIni` je slitina dvou retezcu -
+`[0]` je fopen MOD `'w'` (ZAPIS) a `&[1]` je jmeno souboru, takze riziko
+prepsani originalu bylo realne. Prejmenovano na `"wDIG_fake.INI"` /
+`"rMDI_fake.INI"` (orion_data.c + orion_common.h), originalni DIG.INI a
+MDI.INI v adresari hry se tim nemuzou dotknout.
+
+**OVERENO MERENIM:** init zvuku poprve DOBEHNE bez padu -
+`AIL.install_DIG_INI.driver` nenulovy, `111F3E.before_slots_memset`
+dosazeno (= smycka alokace 16 handlu prosla), zadny novy SEH.
+
+**ZBYVA:**
+- `sub_1122C0` (prehraj zvukovy EFEKT) se behem intra **vubec nevola** -
+  intro nema efekty, jeho zvuk je AUDIO STOPA SMK VIDEA: ring buffer v
+  `sub_14B620` (+ `sub_1676F0` = dekomprese audia, ktera se dosud nevolala)
+  a per-snimkove casovani v `sub_14B4D0` (`a5+1124/1128/1132`, audio track
+  `a1[264]`). **Dalsi krok: overit obsah toho ring bufferu proti dosboxu**
+  (DUMPMEM na `*(a5+...)` po nekolika snimcich) a teprve pak ho poslat do
+  `Port::Sound::PlaySample`.
+- `sub_1578A0` (AIL_start_sample) ma uz pripravenou diagnostiku; skutecne
+  prehrani deleguje na real-mode driver pres `sub_13FBC8(driver, 1025, ...)`
+  - tam bude odbocka do SDL. Hlasitost/panorama nastavuji `sub_14129D` /
+  `sub_141313` z `byte_1843A4` / `byte_1843A5` (to je ta cast zadani o
+  hlasitosti).

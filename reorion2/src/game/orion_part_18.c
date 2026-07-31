@@ -3582,8 +3582,13 @@ void sub_111F3E()
     PortDebug_Checkpoint("111F3E.after_memsets", 0);
     sub_13F640();
     PortDebug_Checkpoint("111F3E.after_13F640", 0);
-    sub_1400A9((int)sub_111ACD);
-    PortDebug_Checkpoint("111F3E.after_1400A9", 0);
+    // PORT (vlna 26): tri ztracene navratove hodnoty, vsechny overene proti
+    // Debug/diss/Orion2.exe.asm (sub_111F3E). Bez nich `v1` zustalo 0, takze
+    // `if (v1)` nikdy neplatilo a hra tise preskocila nacteni SOUND.LBX i
+    // alokaci sample handlu - proto v portu nebyl zvuk.
+    //   asm: `call sub_1400A9 / mov [ebp+var_4], eax / cmp ..., 0FFFFFFFFh`
+    v0 = sub_1400A9((int)sub_111ACD);
+    PortDebug_Checkpoint("111F3E.after_1400A9", v0);
     v5 = v0;
     if ( v0 == -1 )
     {
@@ -3601,18 +3606,22 @@ void sub_111F3E()
     sub_13F84F(8, 0);
     sub_13F84F(0, 80);
     PortDebug_Checkpoint("111F3E.after_13F84F", 0);
-    sub_140979();
-    PortDebug_Checkpoint("111F3E.after_140979", 0);
-    dword_184388 = v1;
-    if ( v1 )
+    //   asm: `call sub_140979 / mov dword_17C388, eax / cmp dword_17C388, 0`
+    //   - EAX jde PRIMO do dword_184388 a testuje se ta globalni promenna,
+    //     zadny mezi-lokal `v1` v originalu neexistuje.
+    dword_184388 = sub_140979();
+    PortDebug_Checkpoint("111F3E.after_140979", dword_184388);
+    v1 = dword_184388;
+    if ( dword_184388 )
     {
       sub_13AD33(word_1AE5D4, (int)aSoundLbx);
       memset(dword_1B0670, 0, 4);
       for ( i = 1; i <= 16; ++i )
       {
-        sub_140BB1(dword_184388);
+        //   asm: `call sub_140BB1 / ... / mov dword_1A8670[edx], eax`
+        v2 = sub_140BB1(dword_184388);
         dword_1B0670[i] = v2;
-        sub_140DFC((int *)dword_1B0670[i]);
+        sub_140DFC((int *)(uintptr_t)dword_1B0670[i]);
       }
       dword_184380 = 1;
     }
@@ -3747,15 +3756,33 @@ int sub_1122C0(int a1)
   int v1; // eax
   int v4; // [esp+4h] [ebp-8h]
 
+  // PORT (vlna 26): diagnostika prehravani zvuku - kde se retez zastavi.
+  {
+    static unsigned n = 0;
+    if ( ++n <= 12 )
+    {
+      PortDebug_Checkpoint("1122C0.play.n", (int)n);
+      PortDebug_Checkpoint("1122C0.soundOn_184380", dword_184380);
+      PortDebug_Checkpoint("1122C0.effectId", a1);
+    }
+  }
   if ( !dword_184380 )
     return 0;
   v4 = sub_111AE2();
+  {
+    static unsigned n2 = 0;
+    if ( ++n2 <= 12 )
+      PortDebug_Checkpoint("1122C0.freeSlot", v4);
+  }
   if ( !v4 )
     return 0;
   sub_140DFC((int *)dword_1B0670[v4]);
   sub_14129D(dword_1B0670[v4], (uint8_t)byte_1843A4);
   sub_141313(dword_1B0670[v4], (uint8_t)byte_1843A5);
-  sub_140E69((_DWORD *)dword_1B0670[v4], a1, -1);
+  // PORT (vlna 26): ztracena navratova hodnota - asm dela `call sub_140E69 /
+  // test eax, eax / jnz`, tedy zvuk se spusti jen kdyz set_sample_file uspel.
+  // Drive se cetla neinicializovana `v1`, takze se sample nikdy nerozehral.
+  v1 = sub_140E69((_DWORD *)(uintptr_t)dword_1B0670[v4], a1, -1);
   if ( !v1 )
     return 0;
   sub_141073((_DWORD *)dword_1B0670[v4]);

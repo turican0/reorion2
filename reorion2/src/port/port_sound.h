@@ -24,4 +24,25 @@ void WriteOplRegister(uint8_t reg, uint8_t value);
 
 } // namespace Port::Sound
 
+// ---------------------------------------------------------------------
+// C-linkage most pro dekompilovany herni kod (vlna 26).
+extern "C" {
+
+// Vyrobi nahradu za AIL (Miles) DIG_DRIVER, kterou by jinak postavil
+// `sub_157570` nactenim DIG.INI a real-mode driveru SB16.DIG - ten v portu
+// spustit nelze. Vraci ukazatel jako `int` (dekompilat ho tak uklada;
+// pamet je z haldy, takze pod /LARGEADDRESSAWARE:NO round-tripuje).
+//
+// Rozlozeni a hodnoty jsou OPSANE Z ORIGINALU (dosbox-x DUMPMEM na
+// dword_184388 -> 0x003EC8D8, pak dump te struktury):
+//   +16 = 2048   velikost DMA bufferu
+//   +20 = 22050  vzorkovaci frekvence
+//   +68 = 2048, +72 = 1024, +76 = 8192
+//   +92 = ukazatel na pole samplu, +96 = 17 polozek po 2196 B
+// Volny sample pozna `sub_157610` (AIL_allocate_sample_handle) podle
+// `*(int*)(sample+4) == 1`, takze pole se takhle inicializuje.
+int PortSound_CreateDigDriver(void);
+
+} // extern "C"
+
 #endif // PORT_SOUND_H
