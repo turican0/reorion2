@@ -119,6 +119,22 @@ void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rat
                 n, mn, mx, n ? sum / static_cast<long>(n) : 0L);
     }
 
+    // Statistika odesilaneho signalu (kazda 40. davka). 8bit unsigned PCM ma
+    // ticho na 128; prumer daleko od 128 = stejnosmerna slozka (brum),
+    // min/max na krajich = orezavani.
+    static int s_batch = 0;
+    if ((s_batch++ % 40) == 0 && SDL_getenv("REORION2_AUDIO_STATS")) {
+        int mn = 255, mx = 0; long sum = 0;
+        uint32_t n = bytes < 2048 ? bytes : 2048;
+        for (uint32_t i = 0; i < n; ++i) {
+            int v = pcm[i];
+            if (v < mn) mn = v;
+            if (v > mx) mx = v;
+            sum += v;
+        }
+        SDL_Log("PortSound: davka #%d  %u B  min=%d max=%d prumer=%ld",
+                s_batch - 1, bytes, mn, mx, n ? sum / (long)n : 0L);
+    }
     SDL_PutAudioStreamData(g_stream, pcm, static_cast<int>(bytes));
 }
 
@@ -170,6 +186,13 @@ void PortSound_SetStreamFormat(int milesSampleType, int rateHz)
 // kterou by jinak dodal real-mode DIG driver svym prerusenim.
 int PortSound_QueuedBytes(void)
 {
+    // PORT (vlna 26 pokr. 17): tep i odsud. Puvodne visel JEN na
+    // PortVga_BlitBackBuffer, jenze to je cesta videa - a video ceka na audio,
+    // ktere ceka na tep. Uzavreny kruh: zmereno, ze mixer probehl jen 3x, i
+    // kdyz na prepnuti head je potreba 8 volani. V DOSu PIT tikal nezavisle
+    // na tom, co hra delala; tohle je nejbliz - hra tuhle funkci pouziva ve
+    // svych cekacich smyckach (sub_157740).
+    PortSound_ServiceTimer();
     return Port::Sound::QueuedBytes();
 }
 
@@ -192,9 +215,16 @@ int PortSound_RefillThreshold(void)
     return s_threshold;
 }
 
+static bool PortSound_UseRingSource();
+
 void PortSound_FeedStream(const void* pcm, int bytes)
 {
     if (!pcm || bytes <= 0)
+        return;
+    // Kdyz bezi skutecny mixer hry, zvuk do SDL posila PortSound_ServiceTimer
+    // z hotoveho DMA pul-bufferu. Tahle stara nahrada (herni ring buffer) by
+    // se s nim michala - dva zdroje do jednoho streamu.
+    if (PortSound_TimerEnabled() && !PortSound_UseRingSource())
         return;
     // Diagnostika trhani zvuku: hloubka fronty TESNE PRED dodanim dalsi davky.
     // Kdyz tu opakovane vidime 0, zarizeni mezi davkami vyschlo = slysitelna
@@ -231,7 +261,24 @@ extern "C" void sub_156680(int a1);
 // posledniho prepnuti ubehla doba odpovidajici jedne polovine bufferu, a
 // zavola obsluhu hry - ta si sama vsimne zmeny indexu (`**(driver+52)`),
 // premixuje samply a posune jejich stav. Vola se z Present cesty.
-static bool PortSound_TimerEnabled()
+// Zdroj zvuku pro SDL: "mix" = vystup herniho mixeru z DMA pul-bufferu
+// (verne originalu), "ring" = stara nahrada z herniho ring bufferu (znela
+// spravne, ale prehravani se po chvili zastavilo). Prepinac je tu proto, aby
+// se dalo A/B porovnat POSLECHEM pri jinak uplne stejnem behu.
+// REORION2_AUDIO_SRC=ring|mix   (vychozi: mix)
+static bool PortSound_UseRingSource()
+{
+    static int s_ring = -1;
+    if (s_ring < 0) {
+        const char* env = SDL_getenv("REORION2_AUDIO_SRC");
+        s_ring = (env && SDL_strcmp(env, "ring") == 0) ? 1 : 0;
+        SDL_Log("PortSound: zdroj zvuku = %s", s_ring ? "ring (stara nahrada)"
+                                                      : "mix (vystup mixeru hry)");
+    }
+    return s_ring != 0;
+}
+
+extern "C" int PortSound_TimerEnabled(void)
 {
     static int s_on = -1;
     if (s_on < 0) {
@@ -239,21 +286,38 @@ static bool PortSound_TimerEnabled()
         s_on = (env && SDL_atoi(env)) ? 1 : 0;
         SDL_Log("PortSound: emulovany AIL casovac %s", s_on ? "ZAPNUT" : "vypnut");
     }
-    return s_on != 0;
+    return s_on;
 }
 
 extern "C" void PortSound_ServiceTimer(void)
 {
     if (!PortSound_TimerEnabled() || !g_digDriver || !g_playingHalf)
         return;
+    // Ochrana proti rekurzi: sub_156680 -> mixer -> ... -> PortSound_QueuedBytes,
+    // ktery tep taky budi (viz nize).
+    static bool s_inside = false;
+    if (s_inside)
+        return;
 
-    // Jedna polovina = 2048 B; pri 11025 Hz stereo 8bit to je ~93 ms.
-    // Odvozujeme z aktualniho formatu streamu, ne z konstanty, aby to sedelo
-    // i kdyz se stream otevre jinak.
-    const int bytesPerSec = (g_streamRate > 0 ? g_streamRate : 22050)
-                          * ((g_streamType & 1) ? 2 : 1)
-                          * ((g_streamType & 2) ? 2 : 1);
-    const uint64_t halfMs = bytesPerSec > 0 ? (2048ull * 1000ull / (uint64_t)bytesPerSec) : 93ull;
+    // Interval tepu = jak dlouho se prehrava jedna polovina DMA bufferu.
+    // POZOR: pocita se z VYSTUPNIHO formatu DRIVERU (+20 frekvence,
+    // +60 kanaly, +64 bajtu na vzorek), NE z formatu video streamu. Ten je
+    // 11025 Hz, kdezto driver mixuje na 22050 Hz stereo - pri pocitani z
+    // video streamu vysel interval 92 ms, ale zarizeni tech 2048 B spotrebuje
+    // za 46 ms, takze polovina casu bylo ticho a zvuk znìl "rozsekane".
+    const uint8_t* drvFmt = reinterpret_cast<const uint8_t*>(
+        static_cast<uintptr_t>(static_cast<uint32_t>(g_digDriver)));
+    uint32_t fRate = 0, fChannels = 0, fBps = 0, fHalf = 0;
+    SDL_memcpy(&fRate,     drvFmt + 20, sizeof(fRate));
+    SDL_memcpy(&fChannels, drvFmt + 60, sizeof(fChannels));
+    SDL_memcpy(&fBps,      drvFmt + 64, sizeof(fBps));
+    SDL_memcpy(&fHalf,     drvFmt + 68, sizeof(fHalf));
+    if (!fRate)     fRate = 22050;
+    if (!fChannels) fChannels = 2;
+    if (!fBps)      fBps = 1;
+    if (!fHalf)     fHalf = 2048;
+    const uint64_t bytesPerSec = (uint64_t)fRate * fChannels * fBps;
+    const uint64_t halfMs = bytesPerSec ? ((uint64_t)fHalf * 1000ull / bytesPerSec) : 46ull;
 
     static uint64_t s_lastFlip = 0;
     const uint64_t now = SDL_GetTicks();
@@ -263,8 +327,35 @@ extern "C" void PortSound_ServiceTimer(void)
         return;
     s_lastFlip = now;
 
-    *g_playingHalf = (int16_t)(*g_playingHalf ^ 1);
+    const int idx = *g_playingHalf ^ 1;
+    *g_playingHalf = (int16_t)idx;
+    s_inside = true;
     sub_156680(g_digDriver);
+    s_inside = false;
+
+    // Odeslani HOTOVEHO pul-bufferu do SDL. `sub_156680` na konci vola
+    // `sub_162201(driver, idx ^ 1)`, ktera prevede namixovana data do DMA
+    // pul-bufferu ulozeneho na `driver + 44 + 4*(idx^1)`; jeho velikost je
+    // `driver+68` (= 2048 B). Tohle je ta SPRAVNA cesta: mixuje hra, port uz
+    // jen preda hotovy buffer zarizeni - narozdil od stare nahrady, ktera do
+    // SDL posilala herni ring buffer (`PortSound_FeedStream`).
+    const uint8_t* drv = reinterpret_cast<const uint8_t*>(
+        static_cast<uintptr_t>(static_cast<uint32_t>(g_digDriver)));
+    uint32_t bufAddr = 0, halfSize = 0;
+    SDL_memcpy(&bufAddr,  drv + 44 + 4 * (idx ^ 1), sizeof(bufAddr));
+    SDL_memcpy(&halfSize, drv + 68, sizeof(halfSize));
+    if (bufAddr && halfSize && !PortSound_UseRingSource()) {
+        // Vystupni format driveru: +20 = frekvence, +60 = kanaly,
+        // +64 = bajtu na vzorek. Miles typ: bit0 = 16bit, bit1 = stereo.
+        uint32_t rate = 0, channels = 0, bytesPerSample = 0;
+        SDL_memcpy(&rate,           drv + 20, sizeof(rate));
+        SDL_memcpy(&channels,       drv + 60, sizeof(channels));
+        SDL_memcpy(&bytesPerSample, drv + 64, sizeof(bytesPerSample));
+        const int milesType = ((bytesPerSample == 2) ? 1 : 0) | ((channels == 2) ? 2 : 0);
+        Port::Sound::FeedStream(
+            reinterpret_cast<const uint8_t*>(static_cast<uintptr_t>(bufAddr)),
+            halfSize, milesType, (int)rate);
+    }
 }
 
 int PortSound_CreateDigDriver(void)
@@ -291,6 +382,10 @@ int PortSound_CreateDigDriver(void)
     auto put = [drv](int offset, uint32_t value) {
         SDL_memcpy(drv + offset, &value, sizeof(value));
     };
+    // +12 = 4: zmereno z originalu (dosbox DUMPMEM na 0x003EC8D8 v okamziku
+    // mixovani). Nahradni driver tu mel 0. Vsechna ostatni formatova pole
+    // (+16/+20/+24/+28/+60/+64/+68/+72/+76/+84/+96) uz s originalem sedi.
+    put(12, 4);
     put(16, 2048);
     put(20, 22050);
     put(24, 2);

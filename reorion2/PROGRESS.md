@@ -4622,3 +4622,378 @@ hodnotam v portu. Kdyz krok sedi, jit dal na obsah namixovaneho bufferu
 
 **Regrese zadna:** vychozi cesta porad 11 davek. (Build POZOR: vzdy
 `-t:Rebuild`, viz pokr. 15.)
+
+### Vlna 26 pokracovani 17: PROC DOSBOX MERENI NIC NEVRACELA - instrumentace
+### se vubec nespousti
+
+**Tohle je duvod, proc jsem se posledni vlny motal v kruhu na strane portu.**
+
+Zjisteni: `enginestep()` - a v nem `ctl_init_once()`, tedy nacteni celeho
+`DOSBOX_CTL_FILE` - se vola **JEN z `CPU_Core_Normal_Run`**
+(`src/cpu/core_normal.cpp:175`). V zadnem jinem jadru (dynrec, dyn_x86,
+simple, full) neni:
+```
+$ grep -rln enginestep src/
+src/cpu/core_normal.cpp
+src/engine/engine.cpp
+src/engine/engine.h
+```
+`dosbox_intro.conf` ma ale `core=auto` (+ `cycles=auto`), coz pro 32bitovou
+chranenou hru vybere dynamicke jadro -> `enginestep()` se nezavola ani
+jednou -> config se nenacte, zadny DUMP nefunguje a zadny STOP se
+nevyhodnoti.
+
+**DUKAZ (ne domnenka):** beh s `STOP cond=cycle_ge:20000000` bezel dal az do
+timeoutu a dosboxuv vlastni log v te dobe ukazoval cyklus **33 657 191**,
+tedy davno za prahem. Zaroven v celem logu neni ani jedna `[ctl]` radka
+(engine.cpp je tiskne pri nacteni watchu) a nevznikl zadny trace soubor.
+
+**Pozor:** prepnuti `core=normal` v konfiguraci samo o sobe NESTACILO -
+chovani zustalo stejne. Takze bud dosbox-x pro chraneny rezim stejne
+prepne jadro, nebo se uplatnuje jina konfigurace. **Tohle je ted hlavni
+blokator** - dokud se nerozbehne, nema smysl delat zadne dalsi porovnavani
+s originalem.
+
+**Dalsi krok:** overit, ktere jadro se opravdu pouziva (dosbox-x umi vypsat
+`core` za behu / lze pridat log do `CPU_Core_Normal_Run`), a bud vynutit
+normal core i pro chraneny rezim, nebo - lepe - pridat volani `enginestep()`
+i do ostatnich jader (dynrec/dyn_x86/simple), aby instrumentace fungovala
+nezavisle na volbe jadra.
+
+**Stav portu (nezmeneny, vse za prepinacem):**
+- vychozi cesta: 11 davek, video 600/600
+- s `REORION2_AUDIO_TIMER=1`: mixer bezi SPRAVNE (za jedno volani spotrebuje
+  1024 B zdroje a naplni celych 8192 B cile, zbytek klesa 7168 -> 6144 ->
+  5120), ale probehne jen 2-3x, takze head se neprepne ani jednou
+  (original: 8x).
+- Zjisteno pri tom, ze stara nahrada v `sub_157740` (falesne "dohrano" podle
+  SDL fronty) si se skutecnym mixerem PRIMO PROTIRECI: `sub_156680` mixuje
+  jen samply ve stavu 4 (SMP_PLAYING), takze predcasne prepnuti na 2
+  (SMP_DONE) mixer umlci. Nahrada je proto nove aktivni jen kdyz casovac
+  NEbezi. Samo o sobe to ale nestacilo (davky pak klesly na 0), takze
+  spravne poradi je: nejdriv zprovoznit dosbox instrumentaci, zmerit, jak
+  casto a s jakymi hodnotami bezi `sub_156680` v ORIGINALE, a teprve pak
+  ladit tep v portu.
+
+### Vlna 26 pokracovani 18: dosbox instrumentace ZPROVOZNENA + referencni
+### hodnoty casovace z originalu
+
+**PRICINA vsech prazdnych mereni: spousten byl STARY DEBUG BUILD dosboxu.**
+```
+bin/x64/Debug/dosbox-x.exe    28. unora    <- bez ctl instrumentace
+bin/x64/Release/dosbox-x.exe  31. cervence 16:27  <- 2 min po zmene engine.cpp
+```
+Debug exe je mesice stary, jeste pred celym ctl protokolem - proto se
+nenacetl config, netiskly se `[ctl]` radky a nefungoval ani STOP.
+Domnenka z pokr. 17, ze je to volbou CPU jadra, byla **MYLNA** - `core=auto`
+je v poradku, `enginestep()` v core_normal se vola normalne.
+**VZDY POUZIVAT `bin/x64/Release/dosbox-x.exe`.**
+(Pozn.: `[ctl] radek N: neznamy prikaz 'DUMPREGS'` je NEskodne varovani -
+DUMPREGS ma vlastni loader `ctl_load_dumpregs`, ktery config cte zvlast.)
+
+**REFERENCNI HODNOTY Z ORIGINALU** (`DUMPREGS cond=eip:` na 0x0037A680 =
+`sub_156680` a 0x00386000 = `sub_162000`, beh do 400M cyklu):
+- `sub_156680` (AIL casovaci obsluha): **1136 volani**, prvni uz v cyklu
+  **81 410 015**, posledni 399 787 281. Rozestupy jsou velmi pravidelne:
+  **~301 500 cyklu** (301517 / 301519 / 301499) = takt PIT.
+- `eax = 003EC8D8` pri kazdem volani = ukazatel na DIG_DRIVER (potvrzeno).
+- `ret = 00378E4E` -> IDA **0x154E4E** = volajici AIL dispatcher casovace.
+- `sub_162000` (mixer): **106 volani**, prvni az v cyklu **277 571 832**
+  (tedy dlouho po startu casovace - az kdyz skutecne hraje sample), dalsi
+  po ~221 000 cyklech.
+
+**POROVNANI S PORTEM:**
+| | original | port |
+|---|---|---|
+| `sub_156680` | 1136 | ~0 (bez tepu) |
+| `sub_162000` | 106  | 2-3 |
+| prepnuti head | 8+ | 0 |
+
+**ZAVER (uz podlozeny, ne odhad):** v originale casovac tika PRAVIDELNE a
+NEZAVISLE na tom, co hra prave dela - od inicializace zvuku az do konce.
+Port ho budi jen z `PortVga_BlitBackBuffer` (cesta videa) a z
+`PortSound_QueuedBytes`; jakmile se audio zadrhne, obe cesty prestanou
+chodit a tep umre. Proto mixer probehne 2-3x misto ~100x.
+
+**Dalsi krok:** dat portu opravdu nezavisly tep s poctem tiku odpovidajicim
+originalu (~301,5k cyklu odpovida pri dobovem taktovani radove stovkam Hz -
+presnou frekvenci lze dopocitat z `sub_13FBB5`/AIL nastaveni, pripadne
+zmerit `DUMPREGS` na AIL_set_timer_frequency). Az bude tep spravne, znovu
+porovnat pocty volani a teprve pak obsah namixovaneho bufferu.
+
+### Vlna 26 pokracovani 19: PROTOKOL MIXERU BEZI - head/tail se strida spravne
+
+**Tep presunut do `sub_14A090`** (herni obsluzna funkce, kterou `sub_132869`
+vola v cekaci smycce dokola). Predtim visel na `PortVga_BlitBackBuffer`,
+tedy na cesteVIDEA - a ta pri zadrhnutem audiu prestala chodit, takze tep
+umrel. Ted bezi i kdyz video stoji.
+
+**VYSLEDEK (mereno):** spotreba zdrojoveho bufferu je presne podle ocekavani
+```
+zbyva 7168 -> 6144 -> 5120 -> 4096 -> 3072 -> 2048 -> 1024 -> 0   (8 volani)
+pak se prehodi head a jede dalsi buffer: 8190 -> 7166 -> ...
+```
+- **prepnuti head: 80** (predtim 0; original v kratsim okne 8+)
+- volani mixeru: >=10 (strop trace; original 106)
+Mixer, protokol head/tail i stridani obou bufferu tedy funguji.
+
+**ZBYVA POSLEDNI CLANEK:** `davky = 0`. Je to logicke - zvuk ted mixuje
+SKUTECNY MIXER HRY do DMA pul-bufferu driveru (+44 / +48), zatimco stara
+nahrada posilala do SDL herni ring buffer. Namixovana data vznikaji
+spravne, jen je nikdo neodesila. Dalsi krok: po kazdem tiku vzit pul-buffer,
+ktery `sub_162201` prave naplnil (`driver + 44 + 4*(index^1)`, velikost
+`driver+68` = 2048 B), a poslat ho do SDL misto
+`PortSound_FeedStream` z ring bufferu. Tim se cela cesta srovna s
+originalem: hra mixuje, port jen predava hotovy buffer zarizeni.
+
+**K PRERUSENI (dotaz uzivatele):** v DOSu to NENI samostatny proces - AIL si
+zavesi INT 8 (PIT), tedy asynchronni PREEMPCE tehoz procesu. Vlastni vlakno
+v portu by bylo nejblizsi analogie, ale sahalo by hre do stavu uprostred
+operace (mixer i hra pracuji nad stejnymi strukturami bez zamku), takze tep
+pumpujeme z mist, kde by v DOSu preruseni stejne nastalo.
+**Co ale zlepsit:** tep ma vznikat TAM, KDE HO ZAKLADA DOS - ted je natvrdo
+`sub_156680`, spravne se ma registrovat pres `sub_1400A9`
+(AIL_register_timer, uklada callback do `dword_18986C[]` pres `sub_155542`)
+a spoustet tim, cim ho spousti hra. Pak by port zrcadlil zivotni cyklus
+originalu misto pevne zadrateneho volani.
+
+### Vlna 26 pokracovani 20: cesta mixer -> SDL uzavrena
+
+**Posledni clanek doplnen:** po kazdem tiku se bere HOTOVY DMA pul-buffer,
+ktery `sub_162201` prave naplnila (`driver + 44 + 4*(idx^1)`, velikost
+`driver+68`), a posila se do SDL. Format se cte z driveru (+20 frekvence,
++60 kanaly, +64 bajtu na vzorek) -> **U8 stereo 22050 Hz**. Stara nahrada
+(`PortSound_FeedStream` z herniho ring bufferu) je pri bezicim mixeru
+vypnuta, aby se dva zdroje nemichaly do jednoho streamu.
+Tim je cesta srovnana s originalem: **mixuje hra, port jen preda hotovy
+buffer zarizeni.**
+
+**Opraveno "rozsekane techno" (hlaseni uzivatele):** interval tepu se
+pocital z formatu VIDEO STREAMU (11025 Hz -> 2048 B = 92 ms), jenze driver
+mixuje na 22050 Hz stereo, kde se tychz 2048 B prehraje za **46 ms**. Data
+tedy chodila dvakrat pomaleji, nez je zarizeni spotrebovalo, a polovinu casu
+bylo ticho. Interval se ted pocita z VYSTUPNIHO FORMATU DRIVERU.
+
+**Stav:** head 80 prepnuti, zarizeni U8 stereo 22050 Hz, zadny pad mixeru
+(jediny SEH je znamy pad vedlejsiho vlakna, je i bez audia).
+Zbyva overit poslechem a pak porovnat OBSAH namixovaneho bufferu proti
+originalu (`DUMPMEM` na driver+80 / pul-buffery) - ted uz je cim, viz
+pokr. 18 (POUZIVAT `bin/x64/Release/dosbox-x.exe`).
+
+### Vlna 26 pokracovani 21: struktura driveru porovnana s originalem
+
+**Dumpnuta struktura DIG_DRIVERu originalu v okamziku mixovani**
+(`DUMPMEM cond=eip:0x00386000 addr=0x003EC8D8 size=128`, Release build):
+```
++0  003EC8A8   +4  000121EC   +8  000122DC   +12 00000004
++16 00000800   +20 00005622   +24 00000002   +28 00000000
++32 128F0000   +36 000001E8   +40 000128F0   +44 00013000
++48 00013800   +52 000122E4   +56 00000000   +60 00000002
++64 00000001   +68 00000800   +72 00000400   +76 00002000
++80 004EA038   +84 00000001   +88 00000000   +92 004F2038
++96 00000011   +100 00000000
+```
+Porovnani s nahradnim driverem portu: **vsechna formatova pole SEDI** -
++16=2048, +20=22050, +24=2, +28=0, +60=2 (kanaly), +64=1 (bajt na vzorek),
++68=2048, +72=1024, +76=8192, +84=1, +96=17. Take +44/+48 maji rozestup
+0x800 = 2048, stejne jako nase dve poloviny. Bitova hloubka ani polarita se
+tedy z techto poli kazit nemuze.
+Jediny nalezeny rozdil: **+12 = 4** (port mel 0) - doplneno.
+Nezname zustavaji +32/+36/+40 (0x128F0000 / 0x1E8 / 0x128F0) - vypadaji jako
+real-mode adresy DMA bufferu, ktere v portu smysl nemaji.
+
+**Dalsi krok (uz jen jeden a je primo mericky):** porovnat OBSAH namixovaneho
+pul-bufferu. V originale je na **0x00013000** (velikost 2048 B), takze
+`DUMPMEM cond=eip:0x00386000 addr=0x00013000 size=64` da referenci; v portu
+totez z `driver + 44`. Kdyz se lisi rozlozeni hodnot (prumer kolem 128 =
+zvuk vs. rozprostrene = sum), je jasne, jestli chyba vznika uz pri mixovani,
+nebo az pri prevodu v `sub_162201`.
+
+### Vlna 26 pokracovani 22: indexy mixeru sedi, ale HLASITOST NE
+
+**Porovnani indexu `dword_18AD28` s originalem** (`DUMPREGS
+cond=changed:0x003A0D28:4 repeat=always`, Release build, 181 zmen):
+original cykluje `0x23 -> 0x50 -> 0x03 -> 0x23 -> 0x50 ...`
+- **0x23 (35)** = index mixeru v `sub_162000` - **PORT POUZIVA STEJNY**, tedy
+  mixovaci rutina je vybrana spravne.
+- **0x50 (80)** vznika na eip 0x0038623E = IDA `0x16223E`, tj. uvnitr
+  `sub_162201` = index PREVODNI rutiny. `0x50 = 0x10 | 0x40`, kde 0x40 se
+  nastavi jen kdyz `driver+100` (pocet hrajicich samplu) neni nula.
+  V portu zatim NEZMERENO - dalsi krok.
+- Vedlejsi potvrzeni: `sample+64` = hlasitost (127 = max) a `sample+68` =
+  panorama (64 = stred); kdyz nejsou na techto hodnotach, mixer jde vetvi
+  0x40 (skalovanou). Original ma pri mixovani 0x23 (bez 0x40), takze
+  sample+64 == 127 - shodne s portem.
+
+**NALEZ - HLASITOST** (`DUMPREGS cond=changed:0x0039A3A4:1`, tj.
+`byte_1843A4`):
+```
+cycle 12865618  00 -> 7F   (127, inicializace)
+cycle 63643819  7F -> 3F   (63)  eip=003366FD = IDA 0x1126FD
+                           ebx=00000064 (100), edx=00000032 (50)
+```
+**Original si pred intrem stahne hlavni hlasitost na 63 ze 127, tedy na
+POLOVINU** (registry ukazuji prevod z procent: 100 -> 50 %). Port zadne
+skalovani neaplikuje - PCM jde do SDL v plne urovni. Pri 8bitovem mixu to
+znamena dvojnasobnou amplitudu, ktera orezava; presne to odpovida hlaseni
+uzivatele "zasumene / zkreslene".
+
+**Dalsi krok:** dohledat, kudy se `byte_1843A4` dostane k samplu
+(`sub_14129D` = AIL_set_sample_volume -> `sample+64`) a zajistit, aby to v
+portu probehlo stejne. Pozor: kdyz bude `sample+64 != 127`, mixer prejde na
+vetev 0x40 - a to je zaroven kontrola, ze je to udelane spravne, protoze
+original v te dobe mixuje s 0x23. Tedy: hlavni hlasitost 63 se NEaplikuje
+na `sample+64`, ale nekde jinde v retezci - zjistit kde (IDA 0x1126FD je
+misto, kde se 63 zapisuje).
+
+### Vlna 26 pokracovani 23: OPRAVA zaveru o hlasitosti + index prevodni rutiny
+
+**OPRAVA pokr. 22 - hlavni hlasitost 63 NENI pricinou zkresleni.**
+Dohledano, kam ta hodnota jde:
+```
+v3 = 127 * a1 / 100;      // a1 = procenta; pro 50 % vyjde 63  (sedi s dosboxem)
+byte_1843A4 = v2;
+sub_14129D(dword_1B0670[v4], (uint8_t)byte_1843A4);   // handles 1..16
+```
+Jde pres `AIL_set_sample_volume` na `sample+64`, ale JEN na 16 kanalu
+zvukovych EFEKTU (`dword_1B0670[]`). Sample videa mezi nimi neni. Potvrzuje
+to i mereni: original mixuje s indexem `0x23`, coz vyzaduje
+`sample+64 == 127`. Hlavni hlasitost se tedy na zvuk videa nevztahuje.
+
+**Index prevodni rutiny (`sub_162201`):** port **16 (0x10)**, original
+**80 (0x50)**; rozdil je bit `0x40`, ktery pochazi z `driver+100` (pocet
+hrajicich samplu, nastavuje ho `sub_156680` tesne pred volanim
+`sub_162201`).
+**POZOR - zatim NEJDE o srovnatelna mista:** zachycene vzorky portu maji
+`a2` = 0 a pak 1, coz jsou INICIALIZACNI volani
+`sub_162293; sub_162201(drv,0); sub_162201(drv,1)` pri startu driveru, kdy
+jeste nic nehraje (`driver+100` = 0 pravem). Original v te fazi ukazuje
+`0x03`. Ustaleny stav portu zmeren neni.
+
+**Dalsi krok:** v portu preskocit prvnich N volani `sub_162201` (nebo
+logovat az kdyz `driver+100 != 0`) a teprve to porovnat s originalnimi
+`0x50`. Kdyby port i v ustalenem stavu davall 0x10 misto 0x50, znamenalo by
+to, ze se `driver+100` nenastavuje - a prevod by pak bezel rutinou bez
+skalovani poctem hlasu, coz by presne odpovidalo zkreslenemu/prebuzenemu
+zvuku.
+
+### Vlna 26 pokracovani 24: VSECHNY parametry uz s originalem SEDI
+
+Doplneno mereni ustaleneho stavu (logovat az kdyz `driver+100 != 0`, protoze
+prvni volani `sub_162201` jsou inicializacni):
+
+| velicina | original | port | |
+|---|---|---|---|
+| index mixeru (`sub_162000`) | 0x23 = 35 | 35 | OK |
+| index prevodu (`sub_162201`) | 0x50 = 80 | **80** | OK |
+| `driver+100` (hrajicich samplu) | != 0 | 1 | OK |
+| `driver+24` / `+28` | 2 / 0 | 2 / 0 | OK |
+| `+60` kanaly / `+64` bajtu na vzorek | 2 / 1 | 2 / 1 | OK |
+| `+20` frekvence | 22050 | 22050 | OK |
+| `+68`/`+72`/`+76` | 2048/1024/8192 | totez | OK |
+
+**K poctu bitu (dotaz uzivatele):** nastavuje se pres `driver+64` (bajtu na
+vzorek = 1) a `driver+60` (kanaly = 2), tedy **8bit stereo**, 22050 Hz.
+Potvrzuje to i obsah bufferu: ticho je `0x80`, coz je 8bit UNSIGNED se
+stredem 128 - a presne tak se zarizeni otevira (U8 stereo 22050). Bitova
+hloubka tedy neni pricinou.
+
+**Stav: vsechny parametry, ktere sly porovnat, uz sedi, a zvuk presto brumi
+a sumi.** Uzivatel upozornuje, ze pred 1-2 vlnami znel spravne - tehdy ale
+sel do SDL HERNI RING BUFFER (`PortSound_FeedStream`), zatimco ted jde
+VYSTUP MIXERU. Rozdil uz tedy nebude v nastaveni, ale v DATECH.
+
+**Dalsi krok - jedina zbyvajici neporovnana vec: OBSAH bufferu.**
+V originale je DMA polovina na **0x00013000** (2048 B). Potreba vzorek z
+doby, kdy uz zvuk HRAJE (prvni volani mixeru je jeste ticho, samé 0x80 - a
+to portu sedi). `DUMPMEM` v tomhle buildu NECTI `repeat=always`, takze je
+nutny pozdejsi spousteci bod - napr. `cond=eip:` na 0x0038623E
+(= IDA 0x16223E, uvnitr `sub_162201`) v kombinaci s vyssim `STOP`, nebo
+`DUMPREGS cond=changed:` na prvnich 4 bajtech bufferu. Pak totez vypsat v
+portu z `driver+44` a porovnat rozlozeni hodnot (prumer kolem 128 = zvuk,
+rozprostrene = sum).
+
+### Vlna 26 pokracovani 25: PRICINA BRUMU ZMERENA - stejnosmerna slozka +37
+### a orezavani na vystupu mixeru
+
+Pridan prepinac zdroje zvuku pro A/B porovnani poslechem pri jinak uplne
+stejnem behu: **`REORION2_AUDIO_SRC=ring|mix`** (vychozi `mix`).
+K tomu statistika odesilaneho signalu (`REORION2_AUDIO_STATS=1`, kazda
+40. davka).
+
+**Namereno (a uzivatel obe varianty potvrdil poslechem):**
+```
+mix  (vystup mixeru):  min=95 max=255 prumer=165   <- brumi a sumi
+mix                     min=73 max=255 prumer=164
+ring (stara nahrada):  min=77 max=187 prumer=128   <- zni spravne
+ring                    min=98 max=158 prumer=126
+```
+8bit unsigned PCM ma ticho na **128**. Vystup mixeru ma prumer **165**, tedy
+**stejnosmernou slozku +37** (= slysitelny brum), a `max` je pripicnute na
+**255**, tedy signal ORE ZAVA (= sum/zkresleni). Ring buffer je vycentrovany
+na 128, jak ma byt.
+
+**Tim je vylouceno, ze jde o nastaveni** - vsechny parametry uz s originalem
+sedi (viz pokr. 24). Chyba je ve VYPOCTU, konkretne na ceste
+akumulator -> 8bit unsigned.
+
+Jak to ma fungovat: mixovaci rutina prevadi 8bit unsigned na signed 16bit
+pres `BYTE1(result) = *a5; result ^= 0x8000` (ticho 0x80 -> 0x8000 -> 0),
+akumuluje `*a4 += (int16_t)result`, a `sub_162201` (rutina `off_1602F8[80]`)
+prevadi akumulator zpet na 8bit unsigned, tedy +128 a orez.
+
+**Dalsi krok:** zkontrolovat prave rutinu `off_1602F8[80]` (prevod
+akumulatoru na U8) a `sub_162293` (nulovani mix bufferu, `driver+80`,
+velikost `driver+76` = 8192 B) - podezreni na chybejici/neuplne vynulovani
+mezi tiky nebo na spatnou konstantu posunu v prevodu. Referenci lze vzit z
+dosboxu: obsah DMA poloviny originalu na **0x00013000** by mel mit prumer
+kolem 128.
+
+### Vlna 26 pokracovani 26: *** BRUM ODSTRANEN - dve chyby dekompilatu v
+### pravem kanalu mixeru ***
+
+**Nalezeno v `sub_16177F` a overeno proti asm:**
+```
+cmp     esi, dword_182D30
+mov     ah, [esi]        ; EAX bity 8..15 = BYTE1   (levy kanal)
+mov     bh, [esi+1]      ; EBX bity 8..15 = BYTE1   (PRAVY kanal!)
+xor     eax, 8000h
+xor     ebx, 8000h
+...
+movsx   ebp, ax          ; orez na 16 bitu se znamenkem
+add     [edi], ebp
+movsx   ebp, bx          ; TOTEZ pro pravy kanal
+add     [edi+4], ebp
+```
+IDA z toho udelala:
+```c
+HIBYTE(a3) = a5[1];   // HIBYTE u 32bit hodnoty = bity 24..31, ne 8..15 !
+a4[1] += a3;          // chybi orez (int16_t) odpovidajici `movsx ebp, bx`
+```
+Pravy kanal tedy dostaval bajt o 16 bitu vys a pricital se neorezany ->
+obrovske kladne vychylene hodnoty.
+
+**Opraveno na `BYTE1(a3) = a5[1];` a `a4[1] += (int16_t)a3;`.**
+
+**VYSLEDEK (mereno na signalu odchazejicim do SDL):**
+```
+pred:  min=95 max=255 prumer=165   (stejnosmerna slozka +37, orezavani)
+po:    min=18 max=212 prumer=127   (vycentrovane, plna dynamika bez orezu)
+       min=19 max=241 prumer=126
+```
+Uzivatel potvrdil poslechem: **zvuk hraje v poradku.**
+
+**Stejna dvojice chyb opravena i v dalsich 7 rutinach tabulky**, u vsech
+overeno v asm, ze maji identicky vzor (`mov ?h, [..]` pro OBA kanaly +
+`movsx ebp, bx` pred pricitanim): `sub_1613A7`, `sub_161405`, `sub_1615A2`,
+`sub_1615EA`, `sub_1617F9`, `sub_161A1C`, `sub_161A80`. Ty se pro tenhle
+format nevolaji, ale uplatni se u jinych vzorkovacich frekvenci / mono
+stop, takze by stejny brum zpusobily jinde.
+
+**Overeno:**
+- 3 behy po sobe: zvuk stabilne hraje, prumer 125-127, zacatek zvuku vzdy na
+  stejne davce (determinismus v poradku)
+- **regrese videa zadna: `compare_frames` 600/600 matched, 0 diverged**
+
+**Pozn.:** `REORION2_AUDIO_SRC=ring|mix` zustava jako prepinac zdroje pro
+pripadne dalsi A/B porovnani poslechem; vychozi je ted spravne `mix`.

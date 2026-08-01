@@ -67,6 +67,9 @@ int PortSound_QueuedBytes(void);
 // ani jednou. Zapina REORION2_AUDIO_TIMER=1.
 void PortSound_ServiceTimer(void);
 
+// Bezi emulovany AIL casovac (a tedy skutecny mixer hry)?
+int PortSound_TimerEnabled(void);
+
 } // extern "C"
 
 #endif // PORT_SOUND_H

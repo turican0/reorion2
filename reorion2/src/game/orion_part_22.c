@@ -1195,6 +1195,15 @@ int sub_14A090(int a1, int a2, int a3, int a4, _DWORD *a5)
   unsigned int v10; // ebx
   unsigned int v11; // edi
 
+  // PORT (vlna 26 pokr. 19): tep emulovaneho AIL casovace. Tohle je herni
+  // obsluzna funkce, kterou `sub_132869` vola v cekaci smycce dokola, takze
+  // tep bezi i kdyz se video zastavi - narozdil od PortVga_BlitBackBuffer,
+  // kde visel drive a kde umrel spolu s videem.
+  // Referencni hodnoty z originalu (dosbox, Release build, DUMPREGS na
+  // 0x0037A680 / 0x00386000): casovac 1136 volani po ~301 500 cyklech,
+  // mixer 106 volani. Port mel pritom 2-3 volani mixeru.
+  PortSound_ServiceTimer();
+
   if ( !a5 )
     return 0;
   if ( dword_189154 )

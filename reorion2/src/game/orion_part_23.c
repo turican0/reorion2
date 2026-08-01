@@ -1610,7 +1610,16 @@ int sub_157740(int a1)
     // zvuk se trha. Original tuhle informaci dostaval od DIG driveru uz na
     // hranici pul-bufferu (driver+68 = 2048 B), tj. jeste kdyz druha
     // polovina hrala. Hlasime proto "dohrano" stejne predcasne.
-    if ( *(_DWORD *)(a1 + 4) == 4 && PortSound_QueuedBytes() < PORTSOUND_REFILL_THRESHOLD )
+    // POZOR (vlna 26 pokr. 17): tahle nahrada plati JEN kdyz nebezi emulovany
+    // casovac. Je to obchvat za chybejici mixer - rika "sample dohral" podle
+    // stavu SDL fronty. Jakmile ale mixer skutecne bezi, protireci si s nim:
+    // `sub_156680` mixuje jen samply ve stavu 4 (SMP_PLAYING), takze
+    // predcasnym prepnutim na 2 (SMP_DONE) se mixer prestane volat.
+    // Zmereno: s timto obchvatem probehl mixer jen 2-3x, i kdyz na prepnuti
+    // head je potreba 8 volani. Se skutecnym mixerem konec bufferu resi
+    // protokol head/tail (sub_157B90 = AIL_sample_buffer_ready).
+    if ( !PortSound_TimerEnabled()
+      && *(_DWORD *)(a1 + 4) == 4 && PortSound_QueuedBytes() < PORTSOUND_REFILL_THRESHOLD )
       *(_DWORD *)(a1 + 4) = 2;
     return *(_DWORD *)(a1 + 4);
   }

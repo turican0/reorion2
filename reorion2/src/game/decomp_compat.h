@@ -187,6 +187,8 @@ int PortSound_QueuedBytes(void);
    vyschnuti - proto se pri prahu 0 zvuk trhal. Laditelne pres
    REORION2_AUDIO_REFILL. */
 int PortSound_RefillThreshold(void);
+int PortSound_TimerEnabled(void);
+void PortSound_ServiceTimer(void);
 #define PORTSOUND_REFILL_THRESHOLD PortSound_RefillThreshold()
 /* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
    prototypes the C build fell back to an implicit `int f()` declaration,
