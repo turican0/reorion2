@@ -551,6 +551,13 @@ int sub_12C35B()
 //----- (0012C392) --------------------------------------------------------
 char sub_12C392()
 {
+  // PORT (vlna 26 pokr. 28): `byte_1BC2E4` v originale nastavuje INT 9
+  // obsluha klavesnice, ktera je v portu prazdna (KeyboardIsr_12C4D8).
+  // Bez toho tahle funkce vracela vzdy 0 a nesla preskocit intro
+  // (smycka loop3 v orion_part_01.c testuje prave sub_12C392).
+  // Doplnujeme tu informaci ze SDL - hranou, jako by prislo preruseni.
+  if ( PortInput_PollKeyPress() )
+    byte_1BC2E4 = 1;
   if ( byte_1BC2E4 != 1 )
     return 0;
   byte_1BC2E4 = 0;

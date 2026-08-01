@@ -189,6 +189,8 @@ int PortSound_QueuedBytes(void);
 int PortSound_RefillThreshold(void);
 int PortSound_TimerEnabled(void);
 void PortSound_ServiceTimer(void);
+/* Nahrada za INT 9 - viz port_mouse.cpp a sub_12C392. */
+int PortInput_PollKeyPress(void);
 #define PORTSOUND_REFILL_THRESHOLD PortSound_RefillThreshold()
 /* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
    prototypes the C build fell back to an implicit `int f()` declaration,
