@@ -282,8 +282,11 @@ extern "C" int PortSound_TimerEnabled(void)
 {
     static int s_on = -1;
     if (s_on < 0) {
+        // Vlna 26 pokr. 27: ZAPNUTO VE VYCHOZIM STAVU - emulovany AIL
+        // casovac je overeny (mixer hry bezi, zvuk hraje). Vypnuti
+        // `REORION2_AUDIO_TIMER=0` nechava starou nahradu z ring bufferu.
         const char* env = SDL_getenv("REORION2_AUDIO_TIMER");
-        s_on = (env && SDL_atoi(env)) ? 1 : 0;
+        s_on = (env && SDL_strcmp(env, "0") == 0) ? 0 : 1;
         SDL_Log("PortSound: emulovany AIL casovac %s", s_on ? "ZAPNUT" : "vypnut");
     }
     return s_on;

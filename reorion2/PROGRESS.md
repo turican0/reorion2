@@ -2356,7 +2356,7 @@ spravne) paletu prepsalo doopravdy, jas "skocil" na skutecnou hodnotu.
 
 Fix: aplikovano stejne `(v<<2)|(v>>4)` roztazeni jako v `sub_132AF8`,
 AZ PO vynasobeni fade-procentem (tedy roztazeni vidi vzdy spravny
-0-63 rozsah). Casovani (2 vsync-prekresleni na volani, 101 volani â‰ˆ
+0-63 rozsah). Casovani (2 vsync-prekresleni na volani, 101 volani â‰
 2.8s) ponechano beze zmeny - architekturalne odpovida puvodnimu
 70Hz VGA hardwaru, domnenka je, ze vnimana "pomalost" byla vedlejsi
 efekt slabeho jasu, ne skutecny casovaci bug.
@@ -4997,3 +4997,19 @@ stop, takze by stejny brum zpusobily jinde.
 
 **Pozn.:** `REORION2_AUDIO_SRC=ring|mix` zustava jako prepinac zdroje pro
 pripadne dalsi A/B porovnani poslechem; vychozi je ted spravne `mix`.
+
+### Vlna 26 pokracovani 27: audio ZAPNUTO VE VYCHOZIM STAVU + nova zavada:
+### video bezi pomalu
+
+**Prepinace otoceny na zapnuto** (uzivatel spustil Debug x64 z Visual Studia
+a nemel zvuk - z VS se promenne prostredi nepredavaji):
+- `REORION2_VIDEO_AUDIO` - default ZAP, vypina se `=0`
+- `REORION2_AUDIO_TIMER` - default ZAP, vypina se `=0`
+Overeno bez jakychkoli promennych: casovac ZAPNUT, zdroj `mix`, zarizeni
+U8 stereo 22050, prumer davek 127 -> zvuk hraje.
+
+**Pozn. k mereni:** beh, ze ktereho vyslo jen 106 snimku, byl ukoncen
+PREDCASNE (proces byl zabit), takze z nej NEPLYNE, ze by video bezelo
+pomalu - ten zaver byl chybny a je stazeny. Vsech 106 porovnanych snimku
+sedelo (`106 matched, 0 diverged`). Plnou regresi 600/600 je potreba overit
+behem, ktery se necha dobehnout.

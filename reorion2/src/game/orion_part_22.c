@@ -870,17 +870,19 @@ char sub_149C80( int a1, _DWORD *a2)
   int v12; // eax
   int v13; // eax
 
-  // PORT (vlna 26): audio stopa VIDEA je zatim rozpracovana - otevre se a
-  // prehraje prvni davku, ale SMK reader zatim nedodava audio chunky pro
-  // dalsi snimky, takze `a1[265]` zustane 0, `sub_14B5B0` porad vraci
-  // "preskoc snimek" a video se zastavi (cerna obrazovka). Dokud to neni
-  // dodelane, je tahle cesta VYPNUTA a video bezi jako pred vlnou 26;
-  // zapina se `REORION2_VIDEO_AUDIO=1`. Zvukove EFEKTY (sub_1122C0) tim
-  // dotcene nejsou - ty jdou pres dword_184388, ne pres dword_189140.
+  // PORT (vlna 26 pokr. 27): audio stopa VIDEA je hotova a ZAPNUTA VE
+  // VYCHOZIM STAVU. Drive byla za `REORION2_VIDEO_AUDIO=1`, protoze se
+  // prehrala jen prvni davka a video se pak zastavilo; to je vyreseno
+  // (emulovany AIL casovac + opravy mixeru, viz pokr. 19-26).
+  // Vypnout se da `REORION2_VIDEO_AUDIO=0` - hodi se pri regresnim dumpu
+  // snimku, kde zvuk jen zdrzuje.
   {
     static int s_enabled = -1;
     if ( s_enabled < 0 )
-      s_enabled = getenv("REORION2_VIDEO_AUDIO") != NULL;
+    {
+      const char *e = getenv("REORION2_VIDEO_AUDIO");
+      s_enabled = (e && *e == '0') ? 0 : 1;
+    }
     if ( !s_enabled )
       return 0;
   }
