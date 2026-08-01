@@ -4183,3 +4183,32 @@ promennou, na ktere se ceka).
 prvni davka, ale video se zastavi. Je to tedy zatim volba mezi "hrajici
 video bez zvuku" a "kousek zvuku a cerna obrazovka" - proto je vychozi to
 prvni. Zvukove EFEKTY (mimo video) prepinac neovlivnuje.
+
+### Vlna 26 pokracovani 6: zaseknuti odstraneno, audio se otevira spolehlive
+
+**Nalezena pricina zaseknuti** (merenim, ne odhadem): `sub_132869` ma
+`do { a1 = sub_14A090(...); } while (a1);` a namereno bylo **~2,5 miliardy
+iteraci** (124904 zaznamu po 20000). `sub_14A090` obsluhuje dal, dokud je
+prehrana pozice pod prahem:
+`dword_1C3C38(track) >= *(track+32) >> 7` -> konec. Pozice ale byla porad 0.
+
+Pozici pocita `sub_149ED0` z casoveho razitka `a1[27]` (= track+108). To se
+nastavuje v `sub_149F20` na radku
+`if ( !v8 || (sub_1413FF(...), v9 == 2) ) *(i+108) = v13;` - a **`v9` byla
+neinicializovana**: DALSI ztracena navratova hodnota. Asm:
+`call sub_1413FF / add esp,4 / cmp eax, 2 / jnz`. `sub_1413FF`
+(AIL_sample_status) byla `void`, skutecnou praci dela `sub_157740`.
+Opraveno; POZOR: volani musi zustat v DRUHEM operandu OR (zkracene
+vyhodnoceni), jinak se vola i kdyz nema.
+
+**VYSLEDEK (mereno):**
+- nedeterminismus otevirani audia je PRYC - `audioTrack_264 = 0` stabilne
+- nekonecna smycka je PRYC - trace z **429 radku vyrostl na ~175000**, hra
+  bezi dal misto zamrznuti
+- **regrese videa zadna: `compare_frames` 600/600 matched**
+
+**ZBYVA:** s zapnutym audiem se video porad nedostane za blit 82 (byt uz
+nezamrzne) a prehraje se jen JEDNA audio davka. Dalsi krok: proc SMK reader
+nedodava audio chunky pro dalsi snimky (`v6 = *((_DWORD*)v5 + 241)`, plni se
+v `sub_14C4C0`-cesty podle bitu 1 typoveho bajtu snimku `frameTypes[idx]` -
+zkontrolovat `v29+956` a `v29+880` proti dosboxu).

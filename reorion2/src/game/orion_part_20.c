@@ -3606,9 +3606,19 @@ void sub_132869(int a1, int a2, int a3, int a4)
   v6 = a1;
   if ( dword_1845F0 )
   {
-    do
-      a1 = sub_14A090(a1, a2, a3, a4, (_DWORD *)dword_1845F0);
-    while ( a1 );
+    // PORT (vlna 26): `sub_14A090` obsluhuje datove proudy videa a vraci
+    // nenulu, dokud ma co delat. Po zapnuti audia se hra zasekava prave
+    // tady - hlidame, kolikrat se to protoci.
+    {
+      static unsigned spin = 0;
+      do
+      {
+        a1 = sub_14A090(a1, a2, a3, a4, (_DWORD *)dword_1845F0);
+        if ( ++spin % 20000 == 0 )
+          PortDebug_Checkpoint("132869.serviceLoop.spin", (int)spin);
+      }
+      while ( a1 );
+    }
     if ( *(_DWORD *)(dword_1845F0 + 104) ) {
       sub_132A11();
       PortDebug_Checkpoint("sub_132869.paletteApplied",

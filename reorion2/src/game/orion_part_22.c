@@ -1093,7 +1093,15 @@ void sub_149F20()
         v7 = sub_14A010(v5, *(_DWORD *)(i + 4), *(char **)i, *(char **)(i + 8), *(char **)(i + 4 * v3 + 84));
         v8 = *(_DWORD *)(i + 108);
         *(_DWORD *)(i + 8) = v7;
-        if ( !v8 || (sub_1413FF(*(_DWORD *)(i + 56)), v9 == 2) )
+        // PORT (vlna 26): ztracena navratova hodnota - asm dela
+        // `call sub_1413FF / add esp,4 / cmp eax, 2 / jnz`. `v9` je stav
+        // samplu; bez nej se casove razitko startu prehravani (`i+108`)
+        // aktualizovalo nahodne, a prave z nej pocita `sub_149ED0` prehranou
+        // pozici. Kdyz pozice nerostla, `sub_14A090` obsluhoval donekonecna
+        // (namereno ~2,5 miliardy iteraci) a video stalo.
+        // Poradi zachovano: v asm je volani az v DRUHEM operandu OR, takze
+        // se provede jen kdyz `!v8` neplati (zkracene vyhodnoceni).
+        if ( !v8 || ((v9 = sub_1413FF(*(_DWORD *)(i + 56))) == 2) )
         {
           *(_DWORD *)(i + 108) = v13;
           v10 = *(_DWORD *)(i + 80);

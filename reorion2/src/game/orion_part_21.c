@@ -1627,8 +1627,12 @@ void sub_141389(int a1, int a2)
 
 
 //----- (001413FF) --------------------------------------------------------
-void sub_1413FF(int a1)
+// PORT (vlna 26): AIL_sample_status - vraci stav samplu v EAX (asm
+// sub_149F20: `call sub_1413FF / add esp,4 / cmp eax, 2 / jnz`).
+// IDA to ztratila (byla `void`). Realna prace je v sub_157740.
+int sub_1413FF(int a1)
 {
+  int sampleStatus;
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1636,7 +1640,7 @@ void sub_1413FF(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_status(0x%X)\n", a1);
-  sub_157740(a1);
+  sampleStatus = (int)sub_157740(a1);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1646,6 +1650,7 @@ void sub_1413FF(int a1)
     JUMPOUT(0x140189);
   }
   JUMPOUT(0x13FCD2);
+  return sampleStatus;
 }
 // 1414DF: control flows out of bounds to 140189
 // 141474: control flows out of bounds to 13FCD2

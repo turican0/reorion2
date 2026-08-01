@@ -8338,8 +8338,8 @@ extern void sub_14129D();
 extern void sub_141313();
 // plna signatura: void sub_141389(int a1, int a2);
 extern void sub_141389();
-// plna signatura: void sub_1413FF(int a1);
-extern void sub_1413FF();
+// plna signatura: int sub_1413FF(int a1); // PORT (vlna 26): vraci stav samplu
+extern int sub_1413FF();
 // plna signatura: void sub_1414E4(int a1);
 extern void sub_1414E4();
 // plna signatura: void sub_1415D5(int a1);
@@ -14568,7 +14568,7 @@ void sub_141227(int a1, int a2);
 void sub_14129D(int a1, int a2);
 void sub_141313(int a1, int a2);
 void sub_141389(int a1, int a2);
-void sub_1413FF(int a1);
+int sub_1413FF(int a1); // PORT (vlna 26): vraci stav samplu
 void sub_1414E4(int a1);
 void sub_1415D5(int a1);
 void sub_1416BA(int a1);
