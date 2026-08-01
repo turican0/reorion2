@@ -429,6 +429,10 @@ bool Init()
     EnsureFramebuffer(); // uz mohl byt alokovan drive (sub_1248AB volal Framebuffer())
     g_palette.fill(0xFF000000u); // vychozi cerna, dokud SetPaletteEntry nedorazi
 
+    // V DOSu zadny systemovy kurzor neexistoval - hra si kresli vlastni.
+    // Z logu INT 33h je videt, ze funkce 1/2 (zobraz/schovej) se nikdy
+    // nevolaji, takze se nelze spolehnout na ne a kurzor skryvame rovnou tady.
+    SDL_HideCursor();
     g_initialized = true;
     return true;
 }
@@ -467,6 +471,22 @@ void SetPaletteEntry(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
 {
     g_palette[index] = 0xFF000000u | (static_cast<uint32_t>(r) << 16) |
                         (static_cast<uint32_t>(g) << 8) | b;
+}
+
+// Rozmery OKNA (ne rezimu) - okno se vytvari ve dvojnasobku, viz
+// SDL_CreateWindow vyse, a SDL_GetMouseState vraci souradnice vuci oknu.
+int GetWindowWidth()
+{
+    int w = kModeWidth, h = kModeHeight;
+    if (g_window) SDL_GetWindowSize(g_window, &w, &h);
+    return w > 0 ? w : kModeWidth;
+}
+
+int GetWindowHeight()
+{
+    int w = kModeWidth, h = kModeHeight;
+    if (g_window) SDL_GetWindowSize(g_window, &w, &h);
+    return h > 0 ? h : kModeHeight;
 }
 
 void Present()

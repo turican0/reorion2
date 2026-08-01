@@ -275,10 +275,44 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
                 }
             }
             int vx = s.x, vy = s.y;
-            if (g_mouseMaxX > 0)
-                vx = s.x * (g_mouseMaxX + 1) / kPortModeWidth;
-            if (g_mouseMaxY > 0)
-                vy = s.y * (g_mouseMaxY + 1) / kPortModeHeight;
+            // POZOR (vlna 26 pokr. 39): prepocet musi vychazet z rozmeru
+            // OKNA, ne rezimu. Okno se vytvari ve dvojnasobku (1280x960),
+            // a SDL_GetMouseState vraci souradnice vuci oknu - deleni 640
+            // proto davalo dvojnasobnou hodnotu a kurzor se orezal na okraj.
+            // TEST (vlna 26 pokr. 40): vstrikovani falesne pozice a tlacitka,
+            // aby sla cesta mysi overit i bez cloveka u klavesnice.
+            //   REORION2_FAKE_MOUSE=1  -> kurzor krouzi po obrazovce
+            //   REORION2_FAKE_CLICK=1  -> navic drzi levé tlacitko
+            {
+                static int s_fake = -1;
+                if (s_fake < 0) s_fake = SDL_getenv("REORION2_FAKE_MOUSE") ? 1 : 0;
+                if (s_fake) {
+                    static int t = 0;
+                    ++t;
+                    // pomaly pohyb po ctverci uprostred obrazovky
+                    const int cx = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278) / 2;
+                    const int cy = (g_mouseMaxY > 0 ? g_mouseMaxY : 479) / 2;
+                    const int r = 120;
+                    const int phase = (t / 40) % 4;
+                    int fx = cx, fy = cy;
+                    if (phase == 0) { fx = cx - r; fy = cy - r; }
+                    else if (phase == 1) { fx = cx + r; fy = cy - r; }
+                    else if (phase == 2) { fx = cx + r; fy = cy + r; }
+                    else { fx = cx - r; fy = cy + r; }
+                    regs.ecx = (uint32_t)fx;
+                    regs.edx = (uint32_t)fy;
+                    regs.ebx = SDL_getenv("REORION2_FAKE_CLICK") ? 1u : 0u;
+                    if ((t % 200) == 0)
+                        SDL_Log("FAKE mouse -> x=%d y=%d tlacitka=%u", fx, fy, (unsigned)regs.ebx);
+                    break;
+                }
+            }
+            const int winW = Port::Vga::GetWindowWidth();
+            const int winH = Port::Vga::GetWindowHeight();
+            if (g_mouseMaxX > 0 && winW > 0)
+                vx = s.x * (g_mouseMaxX + 1) / winW;
+            if (g_mouseMaxY > 0 && winH > 0)
+                vy = s.y * (g_mouseMaxY + 1) / winH;
             if (g_mouseMaxX > 0 && vx > g_mouseMaxX) vx = g_mouseMaxX;
             if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
             if (vx < 0) vx = 0;

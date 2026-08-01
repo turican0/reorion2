@@ -11,6 +11,11 @@
 
 namespace Port::Vga {
 
+// Rozmery okna (okno je ve dvojnasobku rezimu) - potreba pro prepocet
+// souradnic myshi, viz port_dos.cpp INT 33h fn 3.
+int GetWindowWidth();
+int GetWindowHeight();
+
 // Vytvori SDL3 okno + renderer. Vlna 21: rozliseni 640x480 - hra bezi ve
 // vynucenem VESA modu 5 (640x480x8bpp, viz sub_1248AB vlna 16); mode-5
 // prezentacni funkce (sub_1255DF a spol.) kopiruji cely 307200B obraz.
