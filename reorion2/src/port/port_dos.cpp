@@ -163,6 +163,19 @@ struct WatcomRegs {
     uint32_t eax, ebx, ecx, edx, esi, edi, cflag;
 };
 
+// Rozsahy, ktere si hra nastavuje pres INT 33h funkce 7/8 (viz case 0x03).
+// Rozmery obrazoveho rezimu portu (viz kModeWidth/kModeHeight v port_vga.cpp,
+// kde jsou v anonymnim namespace, tedy mimo hlavicku).
+static constexpr int kPortModeWidth  = 640;
+static constexpr int kPortModeHeight = 480;
+// Citlivost myši - DOS ovladac ma vychozi 50/50/50; hra si ji stejne hned
+// prenastavuje funkci 26 (viz sub_12xxxx v orion_part_19.c).
+static int g_mouseSensX = 50;
+static int g_mouseSensY = 50;
+static int g_mouseSensD = 50;
+static int g_mouseMaxX = 0;
+static int g_mouseMaxY = 0;
+
 extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
 {
     WatcomRegs regs{};
@@ -171,17 +184,107 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
 
     if (intNum == 0x33) {
         const uint16_t fn = (uint16_t)regs.eax;
+        // PORT (vlna 26 pokr. 30): zaznam VSECH volani INT 33h. Uzivatel
+        // zmeril, ze `case 0x03` (cti pozici) se v menu vubec nevola, takze
+        // hra pozici ziskava jinak - podezreni na funkci 0x0C (registrace
+        // obsluzne rutiny myshi), kterou port ignoruje, takze se nikdy
+        // nezavola. Zapina REORION2_MOUSE_TRACE=1.
+        {
+            static int s_on = -1;
+            if (s_on < 0)
+                s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
+            if (s_on) {
+                static int s_seen[64] = {0};
+                static int s_n = 0;
+                bool isNew = true;
+                for (int i = 0; i < s_n; ++i)
+                    if (s_seen[i] == (int)fn) { isNew = false; break; }
+                if (isNew && s_n < 64) {
+                    s_seen[s_n++] = (int)fn;
+                    SDL_Log("INT33: NOVA funkce 0x%02X (AX=%u)  BX=%u CX=%u DX=%u",
+                            fn, fn, (unsigned)(uint16_t)regs.ebx,
+                            (unsigned)(uint16_t)regs.ecx, (unsigned)(uint16_t)regs.edx);
+                }
+            }
+        }
         switch (fn) {
         case 0x00: // reset/detekce driveru: AX=FFFF pokud nainstalovan, BX=pocet tlacitek
             regs.eax = 0xFFFF;
             regs.ebx = 2;
             break;
+        case 0x01: // zobraz kurzor
+            SDL_ShowCursor();
+            break;
+        case 0x02: // schovej kurzor - hra si kresli vlastni
+            SDL_HideCursor();
+            break;
+        case 0x04: // nastav pozici kurzoru (CX = x, DX = y) - ve VIRTUALNIM
+                   // rozsahu, ktery si hra nastavila pres fn 7/8. Prepocteme
+                   // zpet na pixely okna a rekneme to SDL, aby herni a
+                   // systemova pozice nebyly rozjete.
+            // POZOR: pokus volat tady SDL_WarpMouseInWindow casove sedel na
+            // zcernani obrazovky po zobrazeni menu, takze je ZATIM VYPNUTY.
+            // Nez to zapneme znovu, je potreba overit, jestli cernou
+            // obrazovku zpusobil warp, nebo neco jineho.
+            break;
+        case 0x0C: // registrace obsluzne rutiny myshi (ES:DX = callback, CX = maska)
+            SDL_Log("INT33: hra registruje OBSLUZNOU RUTINU myshi, maska=0x%04X, "
+                    "callback=0x%08X - port ji zatim nikdy nezavola!",
+                    (unsigned)(uint16_t)regs.ecx, (unsigned)regs.edx);
+            break;
+        case 0x1A: // nastav citlivost: BX = horiz, CX = vert, DX = prah zrychleni
+            g_mouseSensX = (int)(uint16_t)regs.ebx;
+            g_mouseSensY = (int)(uint16_t)regs.ecx;
+            g_mouseSensD = (int)(uint16_t)regs.edx;
+            break;
+        case 0x1B: // precti citlivost - hra si ji uklada do dword_1B91F0/F4/F8
+            // POZOR (vlna 26 pokr. 29): tohle port ignoroval, takze
+            // `sub_1233B4` ulozilo same NULY a hra pak s nimi pocitala
+            // meritko pohybu kurzoru -> kurzor nebyl videt a kliknuti
+            // koncilo padem. Hra si citlivost sama nastavuje funkci 26
+            // (100/100), takze ji jen zapamatujeme a vratime.
+            regs.ebx = (uint32_t)g_mouseSensX;
+            regs.ecx = (uint32_t)g_mouseSensY;
+            regs.edx = (uint32_t)g_mouseSensD;
+            break;
+        case 0x07: // nastav rozsah X (CX = min, DX = max)
+            g_mouseMaxX = (int)(int16_t)(uint16_t)regs.edx;
+            break;
+        case 0x08: // nastav rozsah Y (CX = min, DX = max)
+            g_mouseMaxY = (int)(int16_t)(uint16_t)regs.edx;
+            break;
         case 0x03: { // precti pozici a tlacitka: BX=tlacitka, CX=x, DX=y
             Port::Mouse::Poll();
             const Port::Mouse::State& s = Port::Mouse::GetState();
             regs.ebx = (s.leftButton ? 1u : 0u) | (s.rightButton ? 2u : 0u);
-            regs.ecx = (uint32_t)s.x;
-            regs.edx = (uint32_t)s.y;
+            // POZOR (vlna 26 pokr. 29): hra si pres funkci 7 nastavuje rozsah
+            // X na `2 * (sirka - 1)`, tedy 0..1278 pro 640 - dobovy zvyk DOS
+            // ovladace, ktery X vraci ve dvojnasobnem rozliseni. Port vracel
+            // syrove pixely okna, takze souradnice byly polovicni a testy
+            // kliknuti se netrefily (a herni kurzor se kreslil mimo).
+            // Pocitadlo dotazu na pozici - abych videl, jestli se menu vubec
+            // pta (uzivatel merenim zjistil, ze breakpoint se tu netrefil).
+            {
+                static int s_on = -1, s_calls = 0;
+                if (s_on < 0) s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
+                if (s_on && (s_calls++ % 200) == 0) {
+                    SDL_Log("INT33 fn3 #%d: SDL x=%d y=%d  tlacitka=%u  rozsah=%d/%d",
+                            s_calls - 1, s.x, s.y,
+                            (unsigned)((s.leftButton?1u:0u)|(s.rightButton?2u:0u)),
+                            g_mouseMaxX, g_mouseMaxY);
+                }
+            }
+            int vx = s.x, vy = s.y;
+            if (g_mouseMaxX > 0)
+                vx = s.x * (g_mouseMaxX + 1) / kPortModeWidth;
+            if (g_mouseMaxY > 0)
+                vy = s.y * (g_mouseMaxY + 1) / kPortModeHeight;
+            if (g_mouseMaxX > 0 && vx > g_mouseMaxX) vx = g_mouseMaxX;
+            if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
+            if (vx < 0) vx = 0;
+            if (vy < 0) vy = 0;
+            regs.ecx = (uint32_t)vx;
+            regs.edx = (uint32_t)vy;
             break;
         }
         default:

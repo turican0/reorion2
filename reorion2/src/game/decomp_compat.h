@@ -162,6 +162,7 @@ extern "C" {
 #endif
 void PortDebug_Checkpoint(const char* name, int value);
 void PortDebug_CheckpointPtr(const char* name, const void* value);
+void PortDebug_Symbolize(const char* tag, void* addr);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
 /* Stejne, ale ~1 BIOS tik (~55ms) mezi Present() volanimi - pro busy-wait

@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <windows.h>
 #include <dbghelp.h>
 #pragma comment(lib, "dbghelp.lib")
@@ -122,12 +123,133 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
+// ---------------------------------------------------------------------
+// HLIDAC ZAMRZNUTI (vlna 26 pokr. 35)
+// Kdyz se delsi dobu nezavola Present(), hra uvizla ve smycce a okno
+// prestane odpovidat - z logu se pak nepozna KDE. Na stroji neni cdb ani
+// windbg, ale dbghelp uz linkujeme kvuli SEH vypisu, takze si zasobnik
+// hlavniho vlakna rozvineme sami: pozastavime ho, precteme kontext a
+// vypiseme ramce. Presne to, co by ukazal debugger.
+// Zapina REORION2_WATCHDOG=<sekundy>.
+static HANDLE g_mainThread = nullptr;
+static volatile LONG64 g_lastPresentTick = 0;
+
+extern "C" void PortWatchdog_Ping(void)
+{
+    InterlockedExchange64(&g_lastPresentTick, (LONG64)GetTickCount64());
+}
+
+static DWORD WINAPI WatchdogProc(LPVOID param)
+{
+    const DWORD timeoutMs = (DWORD)(uintptr_t)param;
+    bool reported = false;
+    for (;;) {
+        Sleep(500);
+        const LONG64 last = InterlockedCompareExchange64(&g_lastPresentTick, 0, 0);
+        if (last == 0)
+            continue;
+        const ULONGLONG now = GetTickCount64();
+        if ((ULONGLONG)(now - (ULONGLONG)last) < timeoutMs) { reported = false; continue; }
+        if (reported)
+            continue;
+        reported = true;
+
+        std::fprintf(stderr, "\n=== HLIDAC: zadny Present uz %llu ms - zasobnik hlavniho vlakna ===\n",
+                     (unsigned long long)(now - (ULONGLONG)last));
+        if (SuspendThread(g_mainThread) == (DWORD)-1) {
+            std::fprintf(stderr, "HLIDAC: nelze pozastavit hlavni vlakno\n");
+            continue;
+        }
+        CONTEXT ctx = {};
+        ctx.ContextFlags = CONTEXT_FULL;
+        if (GetThreadContext(g_mainThread, &ctx)) {
+            SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+            HANDLE proc = GetCurrentProcess();
+            SymInitialize(proc, nullptr, TRUE);
+            STACKFRAME64 f = {};
+            f.AddrPC.Offset = ctx.Rip;    f.AddrPC.Mode = AddrModeFlat;
+            f.AddrFrame.Offset = ctx.Rbp; f.AddrFrame.Mode = AddrModeFlat;
+            f.AddrStack.Offset = ctx.Rsp; f.AddrStack.Mode = AddrModeFlat;
+            for (int i = 0; i < 20; ++i) {
+                if (!StackWalk64(IMAGE_FILE_MACHINE_AMD64, proc, g_mainThread, &f, &ctx,
+                                 nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
+                    break;
+                if (!f.AddrPC.Offset)
+                    break;
+                unsigned char buf[sizeof(SYMBOL_INFO) + 256] = {0};
+                auto* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+                sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+                sym->MaxNameLen = 255;
+                DWORD64 disp = 0;
+                IMAGEHLP_LINE64 line = {}; line.SizeOfStruct = sizeof(line);
+                DWORD lineDisp = 0;
+                if (SymFromAddr(proc, f.AddrPC.Offset, &disp, sym)) {
+                    if (SymGetLineFromAddr64(proc, f.AddrPC.Offset, &lineDisp, &line))
+                        std::fprintf(stderr, "  #%d %s+0x%llx  (%s:%lu)\n", i, sym->Name,
+                                     (unsigned long long)disp, line.FileName, line.LineNumber);
+                    else
+                        std::fprintf(stderr, "  #%d %s+0x%llx\n", i, sym->Name,
+                                     (unsigned long long)disp);
+                } else {
+                    std::fprintf(stderr, "  #%d %p\n", i, (void*)f.AddrPC.Offset);
+                }
+            }
+        }
+        ResumeThread(g_mainThread);
+        std::fflush(stderr);
+    }
+    return 0;
+}
+
+static void StartWatchdog()
+{
+    const char* env = getenv("REORION2_WATCHDOG");
+    if (!env)
+        return;
+    int seconds = atoi(env);
+    if (seconds <= 0)
+        seconds = 5;
+    DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
+                    GetCurrentProcess(), &g_mainThread, 0, FALSE, DUPLICATE_SAME_ACCESS);
+    PortWatchdog_Ping();
+    CreateThread(nullptr, 0, WatchdogProc, (LPVOID)(uintptr_t)(seconds * 1000), 0, nullptr);
+    std::fprintf(stderr, "HLIDAC zapnut, prah %d s\n", seconds);
+}
+
+
+// Prelozi adresu na jmeno funkce + radek (vlna 26 pokr. 37). Pouziva se z
+// dekompilovaneho kodu k identifikaci volajiciho pres _ReturnAddress().
+extern "C" void PortDebug_Symbolize(const char* tag, void* addr)
+{
+    static bool inited = false;
+    HANDLE proc = GetCurrentProcess();
+    if (!inited) { SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME); SymInitialize(proc, nullptr, TRUE); inited = true; }
+    unsigned char buf[sizeof(SYMBOL_INFO) + 256] = {0};
+    auto* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+    sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+    sym->MaxNameLen = 255;
+    DWORD64 disp = 0;
+    IMAGEHLP_LINE64 line = {}; line.SizeOfStruct = sizeof(line);
+    DWORD ld = 0;
+    if (SymFromAddr(proc, (DWORD64)addr, &disp, sym)) {
+        if (SymGetLineFromAddr64(proc, (DWORD64)addr, &ld, &line))
+            std::fprintf(stderr, "SYMBOL %s = %s+0x%llx  (%s:%lu)\n", tag, sym->Name,
+                         (unsigned long long)disp, line.FileName, line.LineNumber);
+        else
+            std::fprintf(stderr, "SYMBOL %s = %s+0x%llx\n", tag, sym->Name, (unsigned long long)disp);
+    } else {
+        std::fprintf(stderr, "SYMBOL %s = %p (nezname)\n", tag, addr);
+    }
+    std::fflush(stderr);
+}
+
 #include "game/orion_common.h"
 #include "port/port_dos.h"
 #include "port/port_vga.h"
 #include "port/port_sound.h"
 #include "port/port_mouse.h"
 #include "port/port_memory.h"
+
 
 int main(int argc, char* argv[])
 {
@@ -142,6 +264,7 @@ int main(int argc, char* argv[])
     Port::Vga::Init();
     Port::Sound::Init();
     Port::Mouse::Init();
+    StartWatchdog();
 
     // Predavame puvodni parametry programu i tehdy, kdyz uzivatel nezadal
     // zadny argument (argc je v takovem pripade 1 a argv obsahuje cestu EXE).

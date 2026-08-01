@@ -1,4 +1,6 @@
 #include "port_vga.h"
+
+extern "C" void PortWatchdog_Ping(void);
 #include "port_sound.h"
 
 #include <SDL3/SDL.h>
@@ -469,8 +471,38 @@ void SetPaletteEntry(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
 
 void Present()
 {
+    // PORT (vlna 26 pokr. 32): pocitadlo. Overujeme hypotezu, ze menu se
+    // vykresli do zadniho bufferu, ale nikdo ho nezobrazi - tim by se
+    // vysvetlila cerna obrazovka I to, ze neni videt kurzor (uzivatel spravne
+    // pripomnel, ze pri chybne pozici by byl videt aspon v rohu).
+    // Zapina REORION2_PRESENT_TRACE=1.
+    {
+        static int s_on = -1, s_n = 0;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_PRESENT_TRACE") ? 1 : 0;
+        if (s_on && (s_n++ % 100) == 0)
+            SDL_Log("PortVga: Present #%d", s_n - 1);
+    }
+    PortWatchdog_Ping();
     if (!g_initialized || !g_framebuffer)
         return;
+
+    // PORT (vlna 26 pokr. 34): rozlisit, jestli je cerna obrazovka PRAZDNY
+    // buffer (hra nekresli), nebo obsah s cernou paletou (kresli, ale barvy
+    // chybi). Zapina REORION2_PRESENT_TRACE=1.
+    {
+        static int s_on = -1, s_n = 0;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_PRESENT_TRACE") ? 1 : 0;
+        if (s_on && (s_n++ % 200) == 0) {
+            size_t nonZeroPixels = 0;
+            for (size_t i = 0; i < (size_t)kModeWidth * kModeHeight; ++i)
+                if (g_framebuffer[i]) ++nonZeroPixels;
+            int nonBlackPal = 0;
+            for (int i = 0; i < 256; ++i)
+                if ((g_palette[i] & 0x00FFFFFFu) != 0) ++nonBlackPal;
+            SDL_Log("PortVga: nenulovych pixelu=%zu z %d, necernych barev palety=%d/256",
+                    nonZeroPixels, kModeWidth * kModeHeight, nonBlackPal);
+        }
+    }
 
     void* pixels = nullptr;
     int pitch = 0;

@@ -22,6 +22,15 @@ void Poll();
 
 const State& GetState();
 
+// Presun kurzoru (INT 33h fn 4).
+void WarpTo(int x, int y);
+
+// Odebere priznak noveho stisku klavesy (nahrada za INT 9).
+bool ConsumeKeyPress();
+
+// Kod posledni stisknute klavesy (BIOS styl: scancode<<8 | ascii).
+int LastKeyCode();
+
 } // namespace Port::Mouse
 
 #endif // PORT_MOUSE_H

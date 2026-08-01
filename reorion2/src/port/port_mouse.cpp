@@ -7,6 +7,9 @@ namespace Port::Mouse {
 namespace {
 State g_state;
 bool g_initialized = false;
+bool g_keyPending = false;
+int  g_keyCode = 0;
+bool g_quitRequested = false;
 } // namespace
 
 bool Init()
@@ -31,18 +34,104 @@ void Poll()
     if (!g_initialized)
         return;
 
-    // POZOR (vlna 26 pokr. 28): bez SDL_PumpEvents() se vnitrni stav SDL
-    // nikdy neaktualizuje, takze SDL_GetMouseState vraci porad totez a
-    // klavesnice se necte vubec. Byl to spolecny duvod, proc slo intro
-    // preskocit ani mysi, ani klavesou.
-    SDL_PumpEvents();
+    // POZOR (vlna 26 pokr. 31): frontu udalosti je nutne SKUTECNE VYBIRAT.
+    // Drive tu bylo jen SDL_PumpEvents(), coz zpravy z fronty neodebira -
+    // okno se pak z pohledu Windows stane "neodpovidajicim", prestane
+    // dostavat vstup a prekreslovat se. Odtud pravdepodobne i cerna
+    // obrazovka po zobrazeni menu a to, ze SDL_GetMouseState vracelo porad
+    // 0,0 (namereno: 200+ dotazu hry, vzdy x=0 y=0).
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+        switch (e.type) {
+        case SDL_EVENT_MOUSE_MOTION:
+            g_state.x = (int)e.motion.x;
+            g_state.y = (int)e.motion.y;
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP: {
+            const bool down = (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+            if (e.button.button == SDL_BUTTON_LEFT)  g_state.leftButton  = down;
+            if (e.button.button == SDL_BUTTON_RIGHT) g_state.rightButton = down;
+            g_state.x = (int)e.button.x;
+            g_state.y = (int)e.button.y;
+            break;
+        }
+        case SDL_EVENT_KEY_DOWN: {
+            // Jen SKUTECNA klavesnice. Multimedialni a systemove klavesy
+            // (hlasitost, jas, prehravani...) v DOSu pres INT 9 nechodily -
+            // uzivatel zmeril, ze pouhe stazeni hlasitosti preskocilo menu.
+            // Opakovani (auto-repeat) taky ignorujeme, preruseni by ho
+            // hlasilo jako novy stisk az po uvolneni.
+            if (e.key.repeat)
+                break;
+            const SDL_Scancode sc0 = e.key.scancode;
+            const bool realKey =
+                (sc0 >= SDL_SCANCODE_A && sc0 <= SDL_SCANCODE_0) ||
+                sc0 == SDL_SCANCODE_RETURN || sc0 == SDL_SCANCODE_ESCAPE ||
+                sc0 == SDL_SCANCODE_BACKSPACE || sc0 == SDL_SCANCODE_TAB ||
+                sc0 == SDL_SCANCODE_SPACE ||
+                (sc0 >= SDL_SCANCODE_MINUS && sc0 <= SDL_SCANCODE_SLASH) ||
+                (sc0 >= SDL_SCANCODE_F1 && sc0 <= SDL_SCANCODE_F12) ||
+                (sc0 >= SDL_SCANCODE_HOME && sc0 <= SDL_SCANCODE_UP) ||
+                (sc0 >= SDL_SCANCODE_KP_DIVIDE && sc0 <= SDL_SCANCODE_KP_PERIOD);
+            if (!realKey)
+                break;
+            // Kod ve tvaru, v jakem ho ceka herni kruhovy buffer (BIOS styl:
+            // horni bajt = scancode, dolni = ASCII). Pro preskoceni intra
+            // staci nenulovy, ale v menu uz na konkretni klavese zalezi.
+            const int sc = (int)e.key.scancode;
+            int ascii = 0;
+            const SDL_Keycode kc = e.key.key;
+            if (kc >= 32 && kc < 127) ascii = (int)kc;
+            else if (kc == SDLK_RETURN) ascii = 13;
+            else if (kc == SDLK_ESCAPE) ascii = 27;
+            else if (kc == SDLK_BACKSPACE) ascii = 8;
+            else if (kc == SDLK_TAB) ascii = 9;
+            g_keyCode = ((sc & 0xFF) << 8) | (ascii & 0xFF);
+            g_keyPending = true;
+            break;
+        }
+        case SDL_EVENT_QUIT:
+            g_quitRequested = true;
+            break;
+        default:
+            break;
+        }
+    }
 
+    // Doplnkove i primy dotaz - kdyby udalost o pohybu unikla (napr. kurzor
+    // vstoupil do okna mimo nas pump), stav se tim srovna.
     float x = 0.0f, y = 0.0f;
-    SDL_MouseButtonFlags buttons = SDL_GetMouseState(&x, &y);
-    g_state.x = static_cast<int>(x);
-    g_state.y = static_cast<int>(y);
-    g_state.leftButton = (buttons & SDL_BUTTON_LMASK) != 0;
+    const SDL_MouseButtonFlags buttons = SDL_GetMouseState(&x, &y);
+    if (x != 0.0f || y != 0.0f) {
+        g_state.x = (int)x;
+        g_state.y = (int)y;
+    }
+    g_state.leftButton  = (buttons & SDL_BUTTON_LMASK) != 0;
     g_state.rightButton = (buttons & SDL_BUTTON_RMASK) != 0;
+}
+
+// Presun kurzoru tam, kam si ho hra nastavi pres INT 33h funkci 4.
+void WarpTo(int x, int y)
+{
+    if (!g_initialized)
+        return;
+    SDL_WarpMouseInWindow(nullptr, (float)x, (float)y);
+    g_state.x = x;
+    g_state.y = y;
+}
+
+// Odebere priznak "prisla nova klavesa" (nastavuje ho Poll z fronty udalosti).
+bool ConsumeKeyPress()
+{
+    const bool had = g_keyPending;
+    g_keyPending = false;
+    return had;
+}
+
+int LastKeyCode()
+{
+    return g_keyCode;
 }
 
 const State& GetState()
@@ -61,19 +150,12 @@ const State& GetState()
 // HRANOU (jen pri novem stisku), stejne jako by to udelalo preruseni.
 extern "C" int PortInput_PollKeyPress(void)
 {
-    SDL_PumpEvents();
-    int numKeys = 0;
-    const bool* keys = SDL_GetKeyboardState(&numKeys);
-    if (!keys)
+    // Bere se ze stejne fronty udalosti jako myš (viz Poll vyse) - hranou,
+    // tedy jen pri NOVEM stisku, stejne jako by prislo preruseni INT 9.
+    Port::Mouse::Poll();
+    if (!Port::Mouse::ConsumeKeyPress())
         return 0;
-
-    bool anyDown = false;
-    for (int i = 0; i < numKeys; ++i) {
-        if (keys[i]) { anyDown = true; break; }
-    }
-
-    static bool s_wasDown = false;
-    const bool pressed = anyDown && !s_wasDown;
-    s_wasDown = anyDown;
-    return pressed ? 1 : 0;
+    const int code = Port::Mouse::LastKeyCode();
+    return code ? code : 0x3900; // kdyz se kod nepodarilo urcit, mezernik
 }
+

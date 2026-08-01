@@ -5013,3 +5013,121 @@ PREDCASNE (proces byl zabit), takze z nej NEPLYNE, ze by video bezelo
 pomalu - ten zaver byl chybny a je stazeny. Vsech 106 porovnanych snimku
 sedelo (`106 matched, 0 diverged`). Plnou regresi 600/600 je potreba overit
 behem, ktery se necha dobehnout.
+
+### Vlna 26 pokracovani 28-32: vstup (klavesnice/mysh) a zaseknuti v menu
+
+**HOTOVO A OVERENO:**
+- **Preskoceni intra funguje.** Smycka loop3 (`orion_part_01.c`) testuje
+  `sub_12C392()` (klavesa) a `sub_124075()` (mysh). `sub_12C392` cetla
+  `byte_1BC2E4`, ktere v originale nastavuje INT 9 obsluha - a ta je v portu
+  prazdna zaslepka (`KeyboardIsr_12C4D8`), takze vracela vzdy 0. Doplnena
+  nahrada `PortInput_PollKeyPress()` (hranou, jako preruseni).
+- **INT 33h doplneno o funkce 1, 2, 7, 8, 26, 27** (port umel jen 0 a 3).
+  Klicove: hra si pres fn 7 nastavuje rozsah X na `2*(sirka-1)` = 0..1278
+  (dobovy zvyk DOS ovladace), port vracel syrove pixely okna -> polovicni
+  souradnice. Fn 27 (citlivost) port ignoroval, takze `sub_1233B4` ulozilo
+  do `dword_1B91F0/F4/F8` nuly; **v originale zmereno 50/50/50**
+  (`DUMPREGS cond=changed:0x003CF1F0:4`, eip 0034741C).
+- **Fronta udalosti SDL se ted skutecne VYBIRA** (drive jen
+  `SDL_PumpEvents()`, ktere zpravy neodebira -> okno "neodpovida").
+
+**NEVYRESENO - zaseknuti v menu (cerna, pak seda obrazovka):**
+Zmereno: `Present()` se po intru zavola jen ~100-200x a pak PRESTANE.
+Uzivatel spravne pripomnel, ze **kurzor by pri chybne pozici byl videt
+aspon na 0,0** - kdyz videt neni vubec, nekresli se NIC. Cerna obrazovka i
+neviditelny kurzor maji tedy nejspis SPOLECNOU pricinu: hlavni vlakno se
+zasekne ve smycce, ktera uz neprojde pres `Present()`.
+Vyvraceno: hra si NEregistruje obsluznou rutinu myshi (fn 0x0C se nevola
+vubec); pouziva jen 0x00, 0x03, 0x04, 0x07, 0x08, 0x1A, 0x1B.
+Fn 4 (nastav pozici) byla zkusmo implementovana pres
+`SDL_WarpMouseInWindow`, ale casove sedela na zcernani, takze je ZATIM
+VYPNUTA s poznamkou.
+
+**DALSI KROK (metodika, kterou uzivatel opakovane zada a ktera se osvedcila):
+porovnat s dosboxem, ne hadat.**
+1. Zjistit, KDE se hlavni vlakno toci - citac do menu smycky, stejne jako u
+   `sub_132869`.
+2. Porovnat s originalem, ktere funkce/podminky se v tom miste vyhodnocuji
+   (`DUMPREGS cond=eip:` na kandidatech) a jake maji klicove promenne
+   hodnoty.
+3. Teprve podle toho rozhodnout, jestli chybi `Present()`, nebo jde o
+   zacykleni v hernim kodu.
+**Nezapomenout:** dosbox spoustet vzdy z `bin/x64/Release/` (Debug build je
+z unora, bez ctl instrumentace - viz pokr. 18), a port prekladat
+`-t:Rebuild` (viz pokr. 15).
+
+### Vlna 26 pokracovani 33: ZAMRZNUTI V MENU ODSTRANENO - 16bitove parametry
+### v kreslici rutine fontu
+
+**Nalezeno porovnanim s asm** (`sub_1231B1`, orion_part_19.c): smycka
+hledajici zarazku 128 ve fontovych datech
+```c
+for ( i = 0; a6 > i; ++i )
+  while ( *(uint8_t *)((int16_t)v17 + dword_1B3E74) != 128 ) ++v17;
+```
+Asm ale cte pocty radku jako **16BITOVE**:
+```
+movsx   eax, word ptr [ebp+arg_4]     ; a6
+cmp     eax, [ebp+var_50]
+movsx   eax, word ptr [ebp+arg_8]     ; a7 (druha smycka)
+```
+IDA je otypovala jako `int` a porovnavala celych 32 bitu. **Zmereno v portu:
+`a6` = 0x1E0000 = 1966080** pri stropu `word_1B3EA0` = 13 -> smycka by bezela
+dva miliony krat -> hra zamrzla (cerna obrazovka, okno prestalo odpovidat).
+Original tam vidi spodni slovo, tedy 0.
+Pozn.: `(int16_t)v17` v te smycce je naopak SPRAVNE (asm ma
+`movsx edx, word ptr [ebp+var_18]`) - to nebyla chyba.
+
+**Opraveno na 2 mistech** (`a6 = (int16_t)a6; a7 = (int16_t)a7;`).
+
+**VYSLEDEK (mereno):**
+- `a6` = 0 misto 1966080
+- **`Present()` vyskocil z ~200 na 2000+** - hra uz nebezi do zaseknuti
+- zadny utek skenu fontu (pridana i pojistka, ktera by ho nahlasila)
+- uzivatel potvrdil, ze se vykreslil text **"LOAD GAME"** - kreslic fontu
+  funguje
+
+**ZBYVA:** vetsina obrazovky zustava cerna a kurzor je porad systemovy.
+To uz neni zamrznuti, ale otazka, co se do obrazu nedostane - dalsi krok je
+porovnat s dosboxem, ktere kreslici funkce se v menu volaji (`DUMPREGS
+cond=eip:` na kandidatech) a jestli port nektere preskakuje.
+
+### Vlna 26 pokracovani 34-36: menu se vykresli CELE a hned se smaze
+
+**Novy nastroj: HLIDAC ZAMRZNUTI** (`REORION2_WATCHDOG=<s>`, reorion2.cpp).
+Na stroji neni cdb ani windbg, ale dbghelp uz linkujeme kvuli SEH vypisu -
+hlidaci vlakno tedy pri delsim vypadku `Present()` pozastavi hlavni vlakno,
+precte jeho kontext a vypise zasobnik i s cisly radku. Nahrazuje debugger.
+
+**Nova metrika:** `Present()` vypisuje pocet nenulovych pixelu framebufferu
+a pocet necernych barev palety (`REORION2_PRESENT_TRACE=1`). Diky ni jde
+merit "co je na obrazovce" bez cizi pomoci.
+
+**ZMERENO (bez jakehokoli vstupu, opakovane):**
+```
+nenulovych pixelu: 76800 -> 307200 -> 3421 -> 3421 -> 3421 ...
+```
+Menu se tedy vykresli **KOMPLETNI** (vsech 307200 pixelu) a teprve pak se
+smaze na 3421 = samotny napis "LOAD GAME". `Present()` bezi dal (2400
+volani), hlidac se nespustil, zadny SEH - hra normalne jede, jen ukazuje
+smazanou obrazovku. **Neni to tedy chybejici vykresleni, ale mazani.**
+
+**VYVRACENE HYPOTEZY (obe merenim):**
+1. "Rozdil dela preskoceni klavesou vs. mysi" - stejny prubeh nastane i BEZ
+   vstupu. (Drivejsi merení bylo znecistene tim, ze uzivatel behem nej
+   mackal klavesy.)
+2. "Falesny stisk z multimedialnich klaves" - po odfiltrovani na skutecne
+   klavesy (+ ignorovani auto-repeat) je prubeh nezmeneny. Filtr je presto
+   spravne, INT 9 v DOSu multimedialni klavesy nedostaval.
+
+**VODITKO PRO DALSI KROK:** protoze kazdy dalsi snimek ukazuje STEJNYCH 3421
+pixelu, hra zjevne kazdy snimek prekresluje jen text, ne pozadi. Pozadi se
+nakresli jednou a pak uz ne. Hledat tedy: co v menu smycce maze
+buffer/prekresluje pozadi a proc v portu podruhe neudela nic. Porovnat s
+originalem (`DUMPREGS cond=eip:` na kreslicich funkcich menu), jestli se
+tam vola totez.
+
+**Dale opraveno:** klavesnice se emuluje spravne pres kruhovy buffer
+`dword_1BC2AC[10]` (zapisovy index `byte_1BC2E2`, ctecí `byte_1BC2E3`,
+priznak `byte_1BC2E4`) vcetne KODU klavesy - `sub_12C2E1` z nej cte, a
+drive tam port nic nevkladal, takze hra cetla prazdny prvek.

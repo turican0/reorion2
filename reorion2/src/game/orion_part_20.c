@@ -556,8 +556,20 @@ char sub_12C392()
   // Bez toho tahle funkce vracela vzdy 0 a nesla preskocit intro
   // (smycka loop3 v orion_part_01.c testuje prave sub_12C392).
   // Doplnujeme tu informaci ze SDL - hranou, jako by prislo preruseni.
-  if ( PortInput_PollKeyPress() )
-    byte_1BC2E4 = 1;
+  // Emulace INT 9 obsluhy: klavesa se musi VLOZIT DO KRUHOVEHO BUFFERU
+  // `dword_1BC2AC[10]` na zapisovy index `byte_1BC2E2`, ne jen nastavit
+  // priznak. `sub_12C2E1` totiz z bufferu cte kod klavesy - kdyz tam nic
+  // neni, precte smeti a hra se podle nej zachova (projevilo se to tim, ze
+  // preskoceni intra KLAVESOU dopadlo jinak nez MYSI).
+  {
+    int code = PortInput_PollKeyPress();
+    if ( code )
+    {
+      dword_1BC2AC[(uint8_t)byte_1BC2E2] = code;
+      byte_1BC2E2 = ((uint8_t)byte_1BC2E2 + 1) % 10;
+      byte_1BC2E4 = 1;
+    }
+  }
   if ( byte_1BC2E4 != 1 )
     return 0;
   byte_1BC2E4 = 0;

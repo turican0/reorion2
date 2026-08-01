@@ -140,25 +140,25 @@ int sub_11A92E(
     sub_126487(v12, a2);
   }
   v17 = 0;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16)) = v13;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 2) = v14;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 24) = a5;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 4) = v15;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 6) = v16;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 10) = sub_122201();
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 12) = sub_12222E();
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 53) = a10;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 44) = a6;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 36) = sub_12B6D4(a6);
-  *((_BYTE *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) = *a9;
-  if ( *((uint8_t *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) > 0x60u
-    && *((uint8_t *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) < 0x7Bu )
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = v13;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = v14;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 24) = a5;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = v15;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = v16;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 10) = sub_122201();
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 12) = sub_12222E();
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 53) = a10;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 44) = a6;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 36) = sub_12B6D4(a6);
+  *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a9;
+  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u
+    && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) < 0x7Bu )
   {
-    *((_BYTE *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) -= 32;
+    *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) -= 32;
   }
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 28) = a7;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 32) = a8;
-  v10 = 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16);
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 28) = a7;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 32) = a8;
+  v10 = 55 * word_1B3E0E;
   *(_WORD *)((char *)off_184480 + v10 + 8) = 13;
   LOWORD(v10) = ++word_1B3E0E;
   return v10 - 1;
@@ -295,16 +295,16 @@ int sub_11ADB4(int a1, int a2)
 
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aYouExceededThe, a2);
-  memset((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16), 0, 55);
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16)) = -1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 4) = -1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 2) = -1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 6) = -1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 8) = 8;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 24) = a1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 28) = 0;
+  memset((char *)off_184480 + 55 * word_1B3E0E, 0, 55);
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = -1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = -1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = -1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = -1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 8) = 8;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 24) = a1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 28) = 0;
   v2 = strlen(a1);
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 32) = v2;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 32) = v2;
   word_1844DC = 1;
   LOWORD(v2) = ++word_1B3E0E;
   return v2 - 1;
@@ -711,7 +711,7 @@ int sub_11C3C5( int a1, int a2, int a3, int16_t *a4, _BYTE *a5, int a6)
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aTooManyFields, (uint16_t)a2);
   sub_114FBA(a1, v8, a3, a4, a5, a6);
-  v6 = (char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16);
+  v6 = (char *)off_184480 + 55 * word_1B3E0E;
   *((_WORD *)v6 + 4) = 0;
   LOWORD(v6) = ++word_1B3E0E;
   return (int)(v6 - 1);
@@ -886,28 +886,28 @@ char *sub_11C83D( int a1, int a2, int a3,
 {
   char *v13; // eax
 
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16)) = a1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 2) = a2 - 1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 10) = sub_122201();
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 12) = byte_1B070C;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 20) = byte_1B0704;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 48) = &byte_1B0714;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 4) = a3 + a1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 6) = a2 + sub_122259() + 1;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 28) = a7;
-  *((_BYTE *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) = *a12;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 18) = a5;
-  if ( *((uint8_t *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) > 0x60u
-    && *((uint8_t *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) < 0x7Bu )
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = a1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = a2 - 1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 10) = sub_122201();
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 12) = byte_1B070C;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 20) = byte_1B0704;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 48) = &byte_1B0714;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = a3 + a1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = a2 + sub_122259() + 1;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 28) = a7;
+  *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a12;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 18) = a5;
+  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u
+    && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) < 0x7Bu )
   {
-    *((_BYTE *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 52) -= 32;
+    *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) -= 32;
   }
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 24) = a4;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 32) = a6;
-  *(_WORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 16) = a8;
-  *(_QWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 36) = a9;
-  *(_DWORD *)((char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16) + 44) = a10;
-  v13 = (char *)off_184480 + 55 * (*(int *)((char *)&dword_1B3E0A + 2) >> 16);
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 24) = a4;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 32) = a6;
+  *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 16) = a8;
+  *(_QWORD *)((char *)off_184480 + 55 * word_1B3E0E + 36) = a9;
+  *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 44) = a10;
+  v13 = (char *)off_184480 + 55 * word_1B3E0E;
   *((_WORD *)v13 + 4) = 10;
   LOWORD(v13) = ++word_1B3E0E;
   return v13 - 1;
@@ -1844,6 +1844,21 @@ int sub_11E718()
   sub_124D41();
   if ( (_WORD)dword_1844E6 )
   {
+    // PORT (vlna 26 pokr. 38): `word_1B3E0E` = pocet oken, pres ktera se
+    // iteruje. Kdyz je v portu vyssi nez v originale, sahne se do jeste
+    // nevyplnenych slotu tabulky `off_184480` (krok 55 B) a jejich ukazatel
+    // na zdroj na +44 je 0 -> blit se zahodi a pozadi zmizi.
+    { static int s_on = -1, s_n = 0;
+      if ( s_on < 0 ) { const char *e = getenv("REORION2_BLIT_STATS"); s_on = (e && *e != '0') ? 1 : 0; }
+      if ( s_on && (s_n++ % 300) == 0 )
+      {
+        int nullSlots = 0, i2;
+        for ( i2 = 1; i2 < word_1B3E0E; ++i2 )
+          if ( !*(_DWORD *)((char *)off_184480 + 55 * i2 + 44) ) ++nullSlots;
+        PortDebug_Checkpoint("okna.pocet_1B3E0E", word_1B3E0E);
+        PortDebug_Checkpoint("okna.prazdnych_slotu", nullSlots);
+      }
+    }
     v12 = 1;
     while ( v12 < word_1B3E0E )
     {
@@ -3598,6 +3613,15 @@ int sub_1227EC(int a1, int a2, unsigned int a3, int a4, int a5, int a6, int a7)
   v7 = 4 * a3;
   LOWORD(v7) = *(_WORD *)((char *)dword_1B3FA8 + v7);
   v14 = v7;
+  // PORT (vlna 26 pokr. 33): pocty radku `a6`/`a7` cte original jako
+  // 16BITOVE (asm: `movsx eax, word ptr [ebp+arg_4]` a stejne u arg_8), ale
+  // IDA je otypovala jako `int` a porovnavala celych 32 bitu. Zmereno, ze do
+  // portu prisel `a6` = 0x1E0000 = 1966080, zatimco strop `word_1B3EA0` je
+  // 13 - smycka hledajici zarazku 128 by bezela dva miliony krat a hra
+  // zamrzla (cerna obrazovka, okno prestalo odpovidat). Original tam vidi
+  // spodni slovo, tedy 0.
+  a6 = (int16_t)a6;
+  a7 = (int16_t)a7;
   if ( a7 > word_1B3EA0 )
     a7 = word_1B3EA0;
   for ( i = 0; a6 > i; ++i )
@@ -3946,12 +3970,48 @@ int sub_1231B1(
   v8 = 4 * a3;
   LOWORD(v8) = *(_WORD *)((char *)dword_1B3FA8 + v8);
   v17 = v8;
+  // PORT (vlna 26 pokr. 33): pocty radku `a6`/`a7` cte original jako
+  // 16BITOVE (asm: `movsx eax, word ptr [ebp+arg_4]`, resp. arg_8), ale IDA
+  // je otypovala jako `int` a porovnavala celych 32 bitu. Zmereno, ze do
+  // portu prisel `a6` = 0x1E0000 = 1966080 pri stropu 13 - smycka hledajici
+  // zarazku 128 by bezela dva miliony krat a hra zamrzla.
+  a6 = (int16_t)a6;
+  a7 = (int16_t)a7;
   if ( a7 > word_1B3EA0 )
     a7 = word_1B3EA0;
+  // PORT (vlna 26 pokr. 33): tahle smycka hleda zarazku 128 ve fontovych
+  // datech. `(int16_t)` je SPRAVNE (asm ma `movsx edx, word ptr [ebp+var_18]`),
+  // takze kdyz se zacykli, jsou spatna VSTUPNI DATA - tabulka offsetu
+  // `dword_1B3FA8` nebo font `dword_1B3E74`. Porovnavame je s originalem.
+  { static int s_on = -1, s_n = 0;
+    if ( s_on < 0 ) { const char *e = getenv("REORION2_FONT_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
+    if ( s_on && s_n < 8 )
+    {
+      ++s_n;
+      PortDebug_Checkpoint("font.dataPtr_1B3E74", dword_1B3E74);
+      PortDebug_Checkpoint("font.tablePtr_1B3FA8", (int)(uintptr_t)dword_1B3FA8);
+      PortDebug_Checkpoint("font.glyph_a3", a3);
+      PortDebug_Checkpoint("font.offset_v17", (int)(int16_t)v17);
+      PortDebug_Checkpoint("font.rows_a6", a6);
+      PortDebug_Checkpoint("font.maxRows_1B3EA0", word_1B3EA0);
+    }
+  }
   for ( i = 0; a6 > i; ++i )
   {
+    unsigned guard = 0;
     while ( *(uint8_t *)((int16_t)v17 + dword_1B3E74) != 128 )
+    {
       ++v17;
+      // Pojistka proti zamrznuti cele hry, dokud neni pricina odstranena:
+      // v originale je zarazka 128 vzdy nalezena. Kdyz ne, je to chyba dat a
+      // radeji to nahlasime, nez aby okno prestalo odpovidat.
+      if ( ++guard > 0x20000u )
+      {
+        PortDebug_Checkpoint("font.SCAN_UTEKL.glyph", a3);
+        PortDebug_Checkpoint("font.SCAN_UTEKL.offset", (int)(int16_t)v17);
+        break;
+      }
+    }
     ++v17;
   }
   v19 = a7 - a6;
@@ -7638,6 +7698,30 @@ int sub_12A478( int a1, int a2, int a3)
   // the original never checks a3 for NULL either, but this port's window-
   // slot init leaves some slots' resource pointer at 0 - root cause not yet
   // found, see PROGRESS.md wave 24.
+  // PORT (vlna 26 pokr. 37): merime, jak casto se blit zahodi kvuli
+  // nulovemu ukazateli na zdroj - podezreni, ze prave tak mizi pozadi menu
+  // (vykresli se cele, pak uz jen text). Zapina REORION2_BLIT_STATS=1.
+  {
+    static int s_on = -1, s_null = 0, s_ok = 0;
+    if ( s_on < 0 ) { const char *e = getenv("REORION2_BLIT_STATS"); s_on = (e && *e != '0') ? 1 : 0; }
+    if ( s_on )
+    {
+      if ( a3 ) ++s_ok; else ++s_null;
+      if ( ((s_ok + s_null) % 500) == 0 )
+        PortDebug_Checkpoint("blit.null_vs_ok", (s_null << 16) | (s_ok & 0xFFFF));
+      // Kdo nulovy zdroj posila - navratova adresa identifikuje volajiciho.
+      if ( !a3 )
+      {
+        static int s_shown = 0;
+        if ( s_shown < 6 )
+        {
+          ++s_shown;
+          PortDebug_Symbolize("blit.NULL_volajici", _ReturnAddress());
+          PortDebug_Checkpoint("blit.NULL_xy", (a1 << 16) | (a2 & 0xFFFF));
+        }
+      }
+    }
+  }
   if ( !a3 )
     return 0;
   v7 = 0;
