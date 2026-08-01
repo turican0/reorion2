@@ -53,9 +53,21 @@ typedef struct Int386xRegs
 #pragma pack(push, 1)
 typedef struct AilSample
 {
-    char reserved_0[4];        // +0
-    int  alloc_flag;           // +4     slot marker checked by sub_157610 (==1 -> pick slot)
-    char reserved_8[2116];     // +8 .. +2123
+    // Vlna 26 pokr. 16: prvnich 48 bajtu pojmenovano podle VEREJNE hlavicky
+    // Miles Sound System (MSS.H, struct SAMPLE) - stav samplu a kruhovy buffer
+    // se dvema polozkami. Zdroj jmen: https://github.com/domz1/SourceFlyFF
+    // (Program/_Common/mss.h). Prevzata jsou JEN jmena a semantika, ne kod.
+    // Offsety sedi na to, co je namerene z originalu v dosboxu.
+    int  driver;               // +0   zpetny ukazatel na DIG_DRIVER (32bit!)
+    int  status;               // +4   SMP_FREE 1 / SMP_DONE 2 / SMP_PLAYING 4 / SMP_STOPPED 8
+    int  buf_data[2];          // +8,  +12  buf[i].data  - ukazatele na PCM
+    int  buf_len[2];           // +16, +20  buf[i].len   - delka dat
+    int  buf_pos[2];           // +24, +28  buf[i].pos   - kolik uz mixer prectl
+    int  buf_done[2];          // +32, +36  buf[i].done  - priznak "dohrano"
+    int  head;                 // +40  posouva MIXER, kdyz buffer dohraje (sub_162000)
+    int  tail;                 // +44  posouva AIL_sample_buffer_ready (sub_157B90)
+    int  n_buffers;            // +48  pocet bufferu v kruhu (MSS default 2)
+    char reserved_52[2072];    // +52 .. +2123
     int  eob_callback;         // +2124 (0x84C)  AIL_register_EOB_callback (sub_1579D0)
     int  eos_callback;         // +2128 (0x850)  AIL_register_EOS_callback (sub_1579F0)
     char reserved_2132[32];    // +2132 .. +2163
@@ -17874,6 +17886,9 @@ extern MixStepBlock g_mixStepBlock;
 #define qword_18AD3C (g_mixStepBlock.step)
 #define dword_18AD44 (g_mixStepBlock.stepPlus1)
 extern void (__noreturn *off_18AD48)();
+// PORT (vlna 26 pokr. 15): viz orion_data.c - navratove ukazatele mixeru.
+extern _BYTE *g_mixSrcAfter;
+extern _DWORD *g_mixDstAfter;
 extern int dword_18AD4C;
 extern int dword_18AD50;
 extern char byte_18AD54;

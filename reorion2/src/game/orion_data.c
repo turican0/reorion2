@@ -18246,4 +18246,9 @@ int dword_1C9CCA; // weak
 int dword_1C9CCE; // weak
 char byte_1C9CD2; // weak
 
-
+// PORT (vlna 26 pokr. 15): mixerove rutiny maji registrovou konvenci a vraci
+// posunuty zdrojovy (ESI) i cilovy (EDI) ukazatel; IDA je otypovala jako cdecl
+// vracejici jen EAX, takze se posun ztracel. ZAMERNE az tady, aby se nerozbila
+// souvislost bloku 0x18AD28..0x18AD48 (`sub_1622BF` bere ten rozsah vcelku).
+_BYTE *g_mixSrcAfter = 0;
+_DWORD *g_mixDstAfter = 0;

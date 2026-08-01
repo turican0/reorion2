@@ -4534,3 +4534,91 @@ ukazatel nejspis chodi zpet v registru (dalsi ztracena navratova hodnota).
 **Regrese zadna:** video `compare_frames` **600/600 matched, 0 diverged**,
 vychozi audio cesta porad **11 davek**. Emulovany casovac zustava za
 `REORION2_AUDIO_TIMER=1`, takze bezne spousteni je nedotcene.
+
+### Vlna 26 pokracovani 15: registrova konvence mixeru OPRAVENA
+
+**Z asm odectena skutecna konvence** (`sub_162000`, loc_16211D):
+```
+mov esi, dword_182D2C   ; ESI = zdroj          -> a5
+lea edx, [ecx+48h]      ; EDX = &sample+0x48
+mov eax, 0              ; EAX = akumulator L   -> result
+mov ebx, 0              ; EBX = akumulator R   -> a3
+mov ecx, 80000000h      ; ECX = faze           -> a2
+call ds:funcs_16213C[ebp*4]
+pop ebp
+mov eax, esi            ; <- ESI se VRACI POSUNUTE
+```
+EDI (= `dword_182D34`) je cil. Dispatch tedy musi predat PET hodnot
+`(0, 0x80000000, 0, cil, zdroj)`, ne tri - jinak se cil a zdroj trefi do
+2. a 3. parametru a rutina sahne na zbytky v registrech.
+Navic se posunuty zdroj (ESI) i cil (EDI) VRACI; IDA to zahodila, protoze
+funkci otypovala jako cdecl vracejici jen EAX. Rutiny je proto ukladaji do
+`g_mixSrcAfter` / `g_mixDstAfter` (globaly ZAMERNE az na konci
+`orion_data.c`, aby se nerozbila souvislost bloku 0x18AD28..0x18AD48, ktery
+`sub_1622BF` bere vcelku).
+
+**Vysledek:** s `REORION2_AUDIO_TIMER=1` uz mixer NEPADA - 11 davek stejne
+jako ve vychozi ceste, a jediny SEH je ten drive zdokumentovany pad
+VEDLEJSIHO VLAKNA (0x7FFCDFA01800), ktery je i v behu bez audia.
+
+**POUCENI (stalo cely jeden kruh):** inkrementalni MSBuild tady obcas
+nerelinkuje a bezi stara binarka. Nejdriv to vypadalo, ze konvencni oprava
+rozbila i vychozi cestu (0 davek, pad v `sub_145BB3` s poskozenym
+zasobnikem), takze jsem ji revertoval - a po `-t:Rebuild` se ukazalo, ze
+zdroj byl v poradku po celou dobu. **Pred vyhodnocenim regrese vzdy
+`-t:Rebuild`.**
+
+**Metodicka poznamka (vytka uzivatele, opravnena):** posledni dve vlny jsem
+tahl skoro jen ctenim kodu a merenim na strane portu. Prave proto jsem
+uveril falesnemu signalu ze zastaraleho buildu. Dalsi krok patri zpatky k
+porovnani s dosboxem: mixer uz bezi, takze se da primo porovnat OBSAH
+namixovaneho bufferu (driver+80, 8192 B) a stav samplu mezi originalem a
+portem ve stejnem bode - `DUMPMEM cond=eip:` na navratu z `sub_162000`
+(IDA 0x162000 -> runtime 0x386000) proti stejnym hodnotam v portu.
+
+### Vlna 26 pokracovani 16: struktura SAMPLE pojmenovana, nalezen BOD ZLOMU
+
+**Zdroj jmen (jen jmena a semantika, zadny kod):** verejna hlavicka Miles
+Sound System (MSS.H, `struct SAMPLE`) -
+https://github.com/domz1/SourceFlyFF (Program/_Common/mss.h). Vnitrek
+`DIG_DRIVER` verejny NENI (to je kod ovladace slinkovany do hry), takze na
+nej dal plati jen dosbox. Potvrzeno, ze stavove konstanty sedi presne:
+`SMP_FREE 1 / SMP_DONE 2 / SMP_PLAYING 4 / SMP_STOPPED 8`.
+
+`AilSample` v `orion_common.h` ma ted prvnich 48 bajtu pojmenovanych misto
+`reserved_8[2116]`:
+```
++0  driver      zpetny ukazatel na DIG_DRIVER (32bit)
++4  status      SMP_*
++8  buf_data[2] +12
++16 buf_len[2]  +20
++24 buf_pos[2]  +28
++32 buf_done[2] +36
++40 head        posouva MIXER (sub_162000), kdyz buffer dohraje
++44 tail        posouva AIL_sample_buffer_ready (sub_157B90)
++48 n_buffers   MSS default 2
+```
+Tim se zpetne potvrzuje vsechno, co bylo drive namerene "naslepo": `+40` a
+`+44` jsou head/tail kruhu, `sub_157B90` je `AIL_sample_buffer_ready`.
+
+**BOD ZLOMU (primo porovnano s dosboxem):**
+- ORIGINAL: head (`sample+40` = 0x004FA9A0) se prepina 0<->1 **8x**
+  (`DUMPREGS cond=changed:0x004FA9A0:4`, zapisuje eip 0x003861AF uvnitr
+  `sub_162000`).
+- PORT se zapnutym casovacem: **0 prepnuti**.
+
+Head se v `sub_162000` posouva az ZA vetvi
+`if ( v11 < dword_18AD30 ) break;`, tedy jen kdyz mixer zdrojovy buffer
+DOJEL az na konec. V portu se tam nikdy nedojde -> zdrojovy ukazatel se
+neposouva dost (nebo vubec). Podezreni: krok `qword_18AD3C` zustava 0,
+protoze blok, ktery ho pocita, je za podminkou
+`if ( (unsigned int)v6 > dword_1C9558 )`.
+
+**Dalsi krok (uz konkretne mericky):** porovnat `qword_18AD3C` /
+`dword_18AD44` a `dword_1C9558` mezi originalem a portem ve stejnem bode -
+`DUMPMEM cond=eip:` na 0x386000 (= IDA 0x162000 + 0x224000) proti stejnym
+hodnotam v portu. Kdyz krok sedi, jit dal na obsah namixovaneho bufferu
+(driver+80, 8192 B).
+
+**Regrese zadna:** vychozi cesta porad 11 davek. (Build POZOR: vzdy
+`-t:Rebuild`, viz pokr. 15.)

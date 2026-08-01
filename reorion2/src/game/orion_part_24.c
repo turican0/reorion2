@@ -3316,6 +3316,9 @@ int sub_16177F(
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 15): posunute ukazatele chodi zpet v ESI/EDI.
+  g_mixSrcAfter = a5;
+  g_mixDstAfter = a4;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4503,10 +4506,29 @@ int sub_162000(int a1)
         PortDebug_Checkpoint("mix.18AD38", dword_18AD38);
       }
     }
-    ((void (*)(int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
+    // PORT (vlna 26 pokr. 15): ZDE JE ZNAMA, ZATIM NEOPRAVENA CHYBA.
+    // Rutiny v `funcs_16213C` maji VLASTNI (REGISTROVOU) konvenci: v asm
+    // (sub_162000, loc_16211D) se predava
+    //     EAX = 0 (akumulator L), EBX = 0 (akumulator R), ECX = 80000000h
+    //     (faze), EDX = &sample+0x48, ESI = zdroj, EDI = cil
+    // a posunuty zdroj (ESI) i cil (EDI) se VRACI - asm hned za volanim dela
+    // `mov eax, esi`. IDA to otypovala jako cdecl se 3 argumenty, takze se
+    // cil a zdroj trefi do 2. a 3. parametru misto 4. a 5.
+    // Pokus tohle prepsat na 5 argumentu + navratove globaly skoncil padem
+    // s poskozenym zasobnikem I VE VYCHOZI CESTE, takze je zatim vracen
+    // puvodni tvar. Spravne reseni chce nejdriv overit, jestli se sem hra
+    // dostava i bez emulovaneho casovace, a pak konvenci prevest na VSECH
+    // 128 polozek tabulky naraz (ruzne arity se michat nesmi).
+    g_mixSrcAfter = (_BYTE *)(uintptr_t)dword_18AD2C;
+    g_mixDstAfter = v9;
+    ((void (*)(int, unsigned int, int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
+      0,
+      0x80000000u,
       0,
       v9,
-      (_BYTE *)dword_18AD2C);
+      (_BYTE *)(uintptr_t)dword_18AD2C);
+    v9  = g_mixDstAfter;
+    v11 = (unsigned int)(uintptr_t)g_mixSrcAfter;
     v1 = a1;
     v12 = *(_DWORD *)(a1 + 40);
     result = v11 - *(_DWORD *)(a1 + 4 * v12 + 8);
@@ -4529,6 +4551,21 @@ int sub_162000(int a1)
         }
         if ( !*(_DWORD *)(a1 + 4 * v14 + 16) || *(_DWORD *)(a1 + 4 * v14 + 24) )
           return result;
+        // PORT (vlna 26 pokr. 16): tohle je posun HEAD kruhoveho bufferu
+        // samplu (MSS: SAMPLE.head; tail je +44, viz sub_157B90). V originalu
+        // se head prepina 0<->1 presne 8x (zmereno v dosboxu pres
+        // DUMPREGS cond=changed:0x004FA9A0:4) - tady se totez pocita, aby slo
+        // primo porovnat, kde se prubeh laame. Zapina REORION2_HEAD_TRACE=1.
+        { static int s_n = 0; static int s_on = -1;
+          if ( s_on < 0 ) { const char *e = getenv("REORION2_HEAD_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
+          if ( s_on && s_n < 40 )
+          {
+            ++s_n;
+            PortDebug_Checkpoint("head.n", s_n);
+            PortDebug_Checkpoint("head.novy", v14);
+            PortDebug_Checkpoint("head.tail_44", *(_DWORD *)(a1 + 44));
+          }
+        }
         *(_DWORD *)(a1 + 40) = v14;
       }
       else
