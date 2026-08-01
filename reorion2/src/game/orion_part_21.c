@@ -1256,7 +1256,14 @@ int sub_140979()
 
 
 //----- (00140A57) --------------------------------------------------------
-void sub_140A57(char *a1, void *a2)
+// PORT (vlna 26): AIL_install_DIG_driver_file - nacte real-mode .DIG driver
+// ze souboru (SB16.DIG / SBPRO.DIG / SBLASTER.DIG) a vraci jeho handle v EAX
+// (asm sub_149C80: `call sub_140A57 / add esp,8 / mov dword_181140, eax`).
+// V portu zadny takovy driver spustit nejde, takze vracime TENTYZ nahradni
+// DIG_DRIVER jako sub_140979 (PortSound_CreateDigDriver si ho cachuje).
+// IDA navratovou hodnotu ztratila, takze `dword_189140` dostaval smeti ze
+// zasobniku - odtud "audio jednou naskoci a jednou ne".
+int sub_140A57(char *a1, void *a2)
 {
   int v2; // edx
   unsigned int i; // edx
@@ -1265,7 +1272,7 @@ void sub_140A57(char *a1, void *a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_DIG_driver_file(%s,0x%X)\n", a1, a2);
-  sub_1574B0((int)a1, a2);
+  (void)sub_1574B0; // realny loader .DIG driveru - v portu se nevola
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1275,6 +1282,7 @@ void sub_140A57(char *a1, void *a2)
     JUMPOUT(0x140901);
   }
   JUMPOUT(0x13FCD2);
+  return PortSound_CreateDigDriver();
 }
 // 140B3F: control flows out of bounds to 140901
 // 140AD5: control flows out of bounds to 13FCD2
@@ -1832,8 +1840,13 @@ void sub_14197D(_DWORD *a1, int a2, int a3)
 
 
 //----- (00141A76) --------------------------------------------------------
-void sub_141A76(_DWORD *a1)
+// PORT (vlna 26): AIL_sample_buffer_ready - vraci v EAX, ktery buffer je
+// pripraveny. Asm ve `sub_149F20`: `call sub_141A76 / mov edi, eax /
+// cmp edi, 1 / ja`. IDA to ztratila (byla `void`), takze audio "pumpa"
+// testovala neinicializovanou promennou a dalsi davky se nikdy nefrontily.
+int sub_141A76(_DWORD *a1)
 {
+  int bufferReady;
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1841,7 +1854,7 @@ void sub_141A76(_DWORD *a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_buffer_ready(0x%X)\n", a1);
-  sub_157B90(a1);
+  bufferReady = (int)sub_157B90(a1);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1851,6 +1864,7 @@ void sub_141A76(_DWORD *a1)
     JUMPOUT(0x1415C4);
   }
   JUMPOUT(0x13FCD2);
+  return bufferReady; // sdileny epilog jen propusti EAX ze sub_157B90
 }
 // 141B56: control flows out of bounds to 1415C4
 // 141AEB: control flows out of bounds to 13FCD2

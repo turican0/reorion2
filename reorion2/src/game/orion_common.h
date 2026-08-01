@@ -8306,8 +8306,8 @@ extern void sub_140819();
 extern void sub_14090C();
 // plna signatura: int sub_140979(); // PORT (vlna 26): vraci AIL DIG_DRIVER handle v EAX (asm sub_111F3E)
 extern int sub_140979();
-// plna signatura: void sub_140A57(char *a1, void *a2);
-extern void sub_140A57();
+// plna signatura: int sub_140A57(char *a1, void *a2); // PORT (vlna 26)
+extern int sub_140A57();
 // plna signatura: int sub_140BB1(int a1);
 extern int sub_140BB1();
 // plna signatura: void sub_140C96(int a1, int a2, int a3);
@@ -8352,8 +8352,8 @@ extern void sub_14179F();
 extern void sub_141884();
 // plna signatura: void sub_14197D(_DWORD *a1, int a2, int a3);
 extern void sub_14197D();
-// plna signatura: void sub_141A76(_DWORD *a1);
-extern void sub_141A76();
+// plna signatura: int sub_141A76(_DWORD *a1); // PORT (vlna 26)
+extern int sub_141A76();
 // plna signatura: void sub_141B5B(int *a1, int a2, int a3, int a4);
 extern void sub_141B5B();
 // plna signatura: void sub_141C60(int a1);
@@ -14552,7 +14552,7 @@ void sub_140734(int a1);
 void sub_140819(int a1, int a2);
 void sub_14090C(unsigned int a1);
 int sub_140979(); // PORT (vlna 26): vraci DIG_DRIVER handle, viz orion_part_21.c
-void sub_140A57(char *a1, void *a2);
+int sub_140A57(char *a1, void *a2); // PORT (vlna 26): vraci DIG_DRIVER handle
 int sub_140BB1(int a1);
 void sub_140C96(int a1, int a2, int a3);
 void sub_140D8F(int a1);
@@ -14575,7 +14575,7 @@ void sub_1416BA(int a1);
 void sub_14179F(int a1);
 void sub_141884(int a1, int a2, void *a3);
 void sub_14197D(_DWORD *a1, int a2, int a3);
-void sub_141A76(_DWORD *a1);
+int sub_141A76(_DWORD *a1); // PORT (vlna 26): vraci pripraveny buffer
 void sub_141B5B(int *a1, int a2, int a3, int a4);
 void sub_141C60(int a1);
 void sub_141D45(int a1, int a2);

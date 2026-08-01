@@ -4117,3 +4117,69 @@ stoji. Odtud jak kratky sum (jedna davka), tak zastaveni.
 `SDL_GetAudioStreamQueued`), aby `sub_14B5B0` pustil dalsi snimek a dalsi
 audio davku. Teprve pak ma smysl ladit format (U8/S16, mono/stereo) proti
 dosbox dumpu ring bufferu.
+
+### Vlna 26 pokracovani 4: audio deterministicke, ale SMK reader dodava jen
+prvni chunk -> audio videa docasne za prepinacem
+
+**Odstranen nedeterminismus** ("audio jednou naskoci, jindy ne"):
+`sub_149C80` volalo `sub_140A57(aSb16Dig, 0); dword_189140 = v3;` - **tri
+ztracene navratove hodnoty** (v3/v4/v5, pro SB16/SBPRO/SBLASTER .DIG). Asm po
+kazdem volani dela `add esp,8 / mov dword_181140, eax`. Bez toho dostaval
+`dword_189140` SMETI ZE ZASOBNIKU: kdyz vyslo != 0 a != -1, audio se
+otevrelo, kdyz 0, ne. `sub_140A57` (AIL_install_DIG_driver_file) navic v
+portu nemuze nacist real-mode .DIG - vraci proto TENTYZ nahradni DIG_DRIVER
+jako `sub_140979` (PortSound_CreateDigDriver si ho cachuje).
+
+**Opraven vyber komprimovane vetve.** `sub_14B620` testovalo
+`v29[v31 + 18] >= 0`, ale `v29` je `_DWORD *` (**unsigned**), takze to
+platilo vzdy a port bral syrovou vetev. Asm dela
+`test byte ptr [eax+4Bh], 80h` = bit 7 bajtu na +75 = horni bajt dwordu na
++72, tedy ZNAMENKOVY test. Overeno dumpem: original i port maji na +72
+shodne **0xD0002B11** (dolni slovo 0x2B11 = 11025 Hz, horni bajt 0xD0 =
+priznaky vcetne komprese). Opraveno na `(int)v29[v31 + 18] >= 0`; od te doby
+se konecne vola `sub_1676F0` (dekomprese) - `komprese=1, dekomprese=1`
+stabilne pres vsechny behy.
+
+**Odesilani do SDL presunuto** ze zdrojoveho chunku na ring buffer az PO
+zapisu (funguje pro obe vetve a je to hotove PCM): posila se usek
+`[v19, v19+v30)` se zalomenim na `v21`/`*v10`. Drive se posilal zdroj
+`v6 + 1`, coz obsahovalo jeste 4bajtovou delku (`C4 5C 00 00` = 23748).
+
+**ZBYVA (proc to po chvili prestane):** SMK reader dodava audio chunk jen pro
+PRVNI snimek - `v6 = *((_DWORD*)v5 + 241)` je dal prazdny, takze
+`result[265]` (nastavuje se v sub_14B620 pri `result[256]`) zustane 0 a
+`sub_14B5B0` napored vraci "preskoc snimek" -> video se zastavi na blitu 82
+(uzivatel: cerna obrazovka misto druhe animace).
+
+**Aby to uzivatele nebrzdilo, je audio VIDEA docasne za prepinacem:**
+`sub_149C80` se bez `REORION2_VIDEO_AUDIO=1` hned vraci 0, tj. video bezi
+jako pred vlnou 26. Zvukove EFEKTY tim dotcene nejsou (jdou pres
+`dword_184388`, ne `dword_189140`).
+
+**OVERENO:**
+- vychozi (bez audia): max blit 84, 39104 radku trace = zdrave chovani
+- `REORION2_VIDEO_AUDIO=1`: audio se otevre, 1 davka, stop na blitu 82
+- **regrese videa zadna: `compare_frames` 600 snimku, 600 matched, 0 diverged**
+  (i po zasahu do sdileneho `sub_13259F`)
+
+### Vlna 26 pokracovani 5: zaseknuti presne lokalizovano (sub_14DF7 loop3)
+
+Postupne VYLOUCENO merenim (ne odhadem):
+- `sub_1676F0` (dekomprese audia) NEVISI: 1 vstup, **1 navrat**.
+- `sub_14B5B0` (rozhodnuti "dekoduj vs cekej na audio") rika **DEKODUJ**:
+  `ready_265 = 1`, `gate_256 = 7692`, `starved_68 = 0`,
+  **`played = 0` < `threshold = 12721`**. Zavola se ale jen JEDNOU.
+- Trace konci na `14DF7.loop3.enter 1407` -> hra se toci ve VNEJSI SMYCCE
+  prehravani videa (`sub_14DF7`, loop3), ne v dekoderu ani v pacingu.
+
+**Dalsi krok:** rozebrat `sub_14DF7` loop3 - na co ceka (podezreni na
+podminku navazanou na audio buffer / `dword_189154` / stav samplu), a
+porovnat tu podminku s originalem stejnou metodikou (DUMPREGS na vstupu
+smycky + portovni checkpointy, pripadne `DUMPREGS cond=changed:` na
+promennou, na ktere se ceka).
+
+**Stav pro uzivatele:** audio videa zustava za `REORION2_VIDEO_AUDIO=1`
+(vychozi = video bezi jako driv, ale je TICHO). Zapnute audio = slysitelna
+prvni davka, ale video se zastavi. Je to tedy zatim volba mezi "hrajici
+video bez zvuku" a "kousek zvuku a cerna obrazovka" - proto je vychozi to
+prvni. Zvukove EFEKTY (mimo video) prepinac neovlivnuje.

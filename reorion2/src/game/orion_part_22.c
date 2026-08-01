@@ -863,6 +863,20 @@ char sub_149C80( int a1, _DWORD *a2)
   int v12; // eax
   int v13; // eax
 
+  // PORT (vlna 26): audio stopa VIDEA je zatim rozpracovana - otevre se a
+  // prehraje prvni davku, ale SMK reader zatim nedodava audio chunky pro
+  // dalsi snimky, takze `a1[265]` zustane 0, `sub_14B5B0` porad vraci
+  // "preskoc snimek" a video se zastavi (cerna obrazovka). Dokud to neni
+  // dodelane, je tahle cesta VYPNUTA a video bezi jako pred vlnou 26;
+  // zapina se `REORION2_VIDEO_AUDIO=1`. Zvukove EFEKTY (sub_1122C0) tim
+  // dotcene nejsou - ty jdou pres dword_184388, ne pres dword_189140.
+  {
+    static int s_enabled = -1;
+    if ( s_enabled < 0 )
+      s_enabled = getenv("REORION2_VIDEO_AUDIO") != NULL;
+    if ( !s_enabled )
+      return 0;
+  }
   if ( dword_189140 )
     goto LABEL_12;
   if ( dword_189144 )
@@ -871,15 +885,19 @@ char sub_149C80( int a1, _DWORD *a2)
     v2 = (a1 & 0x20) != 0 || a2[19];
     sub_13F84F(7, v2);
     sub_13F84F(8, a2[18] != 0);
-    sub_140A57(aSb16Dig, 0);
+    // PORT (vlna 26): tri ztracene navratove hodnoty - asm po kazdem volani
+    // dela `add esp,8 / mov dword_181140, eax`. Bez nich dostaval
+    // `dword_189140` SMETI ZE ZASOBNIKU, takze audio jednou naskocilo
+    // (smeti != 0 a != -1) a jindy vubec (smeti == 0). Odtud nedeterminismus.
+    v3 = sub_140A57(aSb16Dig, 0);
     dword_189140 = v3;
     if ( !v3 )
     {
-      sub_140A57(aSbproDig, 0);
+      v4 = sub_140A57(aSbproDig, 0);
       dword_189140 = v4;
       if ( !v4 )
       {
-        sub_140A57(aSblasterDig, 0);
+        v5 = sub_140A57(aSblasterDig, 0);
         dword_189140 = v5;
       }
     }
@@ -1057,7 +1075,11 @@ void sub_149F20()
     v1 = *(_DWORD *)(i + 16);
     if ( v1 > *(_DWORD *)(i + 100) || *(_DWORD *)(i + 68) && v1 > 3 )
     {
-      sub_141A76((_DWORD *)(uintptr_t)*(_DWORD *)(i + 56));
+      // PORT (vlna 26): ztracena navratova hodnota - viz sub_141A76.
+      // Asm: `call sub_141A76 / mov edi, eax / mov ebp, eax / cmp edi, 1 /
+      // ja`. Bez toho testovala audio "pumpa" neinicializovanou promennou a
+      // dalsi audio davky se nikdy nezafrontily -> hra cekala a video stalo.
+      v2 = (unsigned int)sub_141A76((_DWORD *)(uintptr_t)*(_DWORD *)(i + 56));
       v3 = v2;
       if ( v2 <= 1 )
       {
@@ -2135,6 +2157,20 @@ char sub_14B5B0(_DWORD *a1)
   int v2; // edx
   char result; // al
 
+  // PORT (vlna 26): tady se rozhoduje "dekoduj dalsi snimek" vs "cekej na
+  // audio". Kdyz to porad vraci 1, video stoji (cerna obrazovka).
+  {
+    static unsigned n = 0;
+    if ( ++n <= 10 && a1[264] != -1 )
+    {
+      PortDebug_Checkpoint("14B5B0.n", (int)n);
+      PortDebug_Checkpoint("14B5B0.ready_265", a1[265]);
+      PortDebug_Checkpoint("14B5B0.gate_256", a1[256]);
+      PortDebug_Checkpoint("14B5B0.starved_68", *(_DWORD *)(uintptr_t)(a1[a1[264] + 257] + 68));
+      PortDebug_Checkpoint("14B5B0.played", (int)dword_1C3C38(a1[a1[264] + 257]));
+      PortDebug_Checkpoint("14B5B0.threshold", (int)(*(_DWORD *)(uintptr_t)(a1[a1[264] + 257] + 36) >> 7));
+    }
+  }
   v2 = a1[264];
   if ( v2 == -1 || a1[266] )
     return 0;
@@ -2263,21 +2299,29 @@ LABEL_10:
         // `sub_1676F0`. Intro pouziva tuhle - proto se sub_1676F0 nevolal.
         {
           static unsigned n = 0;
-          if ( ++n <= 6 )
+          ++n;
+          // Prubezne, at je videt, jestli se audio dodava porad, nebo prestane.
+          if ( n <= 6 || (n % 25) == 0 )
           {
             PortDebug_Checkpoint("14B620.feed.n", (int)n);
             PortDebug_Checkpoint("14B620.feed.bytes", v30);
-            PortDebug_Checkpoint("14B620.feed.compressed", v29[v31 + 18] < 0);
+            // Original ma tady 0xD0002B11: dolni slovo = 11025 Hz, horni
+            // bajt = priznaky (nejvyssi bit = KOMPRIMOVANO). Zaporna hodnota
+            // tedy vybira dekompresi pres sub_1676F0.
+            PortDebug_Checkpoint("14B620.feed.trackFlags_raw", v29[v31 + 18]);
+            PortDebug_Checkpoint("14B620.feed.compressed", (int)v29[v31 + 18] < 0);
             PortDebug_CheckpointPtr("14B620.feed.ringBase", (void *)(uintptr_t)v10[0]);
             PortDebug_CheckpointPtr("14B620.feed.writePtr", (void *)(uintptr_t)v10[3]);
           }
         }
-        // Zdroj je souvisly (`v6 + 1`, delka v30) - posilame ho do SDL rovnou,
-        // misto abychom resili zalamovani v kruhovem bufferu. Tohle je to
-        // misto, odkud by data odebiral real-mode DIG driver.
-        if ( v29[v31 + 18] >= 0 && v30 > 0 )
-          PortSound_FeedStream((const void *)(v6 + 1), v30);
-        if ( v29[v31 + 18] >= 0 )
+        // PORT (vlna 26): tenhle test MUSI byt ZNAMENKOVY. Asm dela
+        // `test byte ptr [eax+4Bh], 80h`, tedy bit 7 bajtu na +75 = horni
+        // bajt dwordu na +72 => "dword je zaporny" => audio je KOMPRIMOVANE.
+        // `v29` je ale `_DWORD *` (unsigned), takze `>= 0` platilo vzdy a
+        // port bral syrovou vetev, i kdyz jsou data komprimovana. Overeno
+        // dumpem: original i port maji na +72 shodne 0xD0002B11 (dolni slovo
+        // 0x2B11 = 11025 Hz, horni bajt 0xD0 = priznaky vcetne komprese).
+        if ( (int)v29[v31 + 18] >= 0 )
         {
           v12 = (char *)v10[3];
           v13 = v10[1];
@@ -2310,6 +2354,20 @@ LABEL_10:
         v10[3] = v20;
         if ( v20 >= v21 )
           v10[3] = v20 - v21 + *v10;
+        // PORT (vlna 26): posleme do SDL prave zapsany usek RING BUFFERU -
+        // funguje to pro obe vetve (syrovou i po dekompresi `sub_1676F0`) a
+        // uz je to hotove PCM. `v19` je stary zapisovy ukazatel, delka `v30`,
+        // `v21` je konec kruhu a `*v10` jeho zacatek - kdyz se to zalomi,
+        // posilame to nadvakrat.
+        if ( v30 > 0 )
+        {
+          unsigned int firstPart = ( (unsigned int)(v19 + v30) > (unsigned int)v21 )
+                                     ? (unsigned int)(v21 - v19)
+                                     : (unsigned int)v30;
+          PortSound_FeedStream((const void *)(uintptr_t)v19, (int)firstPart);
+          if ( (unsigned int)v30 > firstPart )
+            PortSound_FeedStream((const void *)(uintptr_t)*v10, (int)((unsigned int)v30 - firstPart));
+        }
         v22 = 0x2000;
         for ( i = 0; i < 7u; ++i )
         {

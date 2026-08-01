@@ -2186,6 +2186,9 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
   dword_18AC2C = a5;
   dword_18AC30 = a6;
   {
+    // PORT (vlna 26): dekomprese audia. Do vlny 26 se NIKDY nevolala, takze
+    // je to cerstve spusteny kod - hlidame i NAVRAT, protoze trace konci
+    // hned po prvni audio davce (podezreni na zacykleni uvnitr).
     static unsigned s_entryCount = 0;
     ++s_entryCount;
     if ( (s_entryCount % 50) == 1 )
@@ -2703,6 +2706,7 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
       }
     }
   }
+  PortDebug_Checkpoint("1676F0.RETURNED", 1);
 }
 // 167D64: variable 'v71' is possibly undefined
 // 18A68C: using guessed type int dword_18A68C;
