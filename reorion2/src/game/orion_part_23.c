@@ -735,6 +735,15 @@ int *sub_156400(int a1)
 //----- (00156680) --------------------------------------------------------
 void sub_156680(int a1)
 {
+  // PORT (vlna 26 pokr. 12): jednorazova diagnostika - tohle je AIL
+  // casovaci callback (registruje ho sub_1400A9). V DOSu ho budil PIT;
+  // v portu zadny periodicky tik neni, takze overujeme, jestli vubec
+  // nekdy bezi. Zapina REORION2_TIMER_TRACE=1.
+  { static int s_n = 0; static int s_on = -1;
+    if ( s_on < 0 ) { const char *e = getenv("REORION2_TIMER_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
+    if ( s_on && s_n < 20 )
+      printf("TIMER sub_156680 #%d drv=0x%08X reentry=%d\n", s_n++, (unsigned)a1, dword_18A4A4);
+  }
   int v1; // edi
   int v2; // edi
   int v3; // eax
@@ -1580,7 +1589,26 @@ int sub_157740(int a1)
 
   result = a1;
   if ( a1 )
+  {
+    // PORT (vlna 26): AIL_sample_status. Stav samplu (1=volny, 2=dohrano,
+    // 4=hraje, 8=pauza) prepinal na 2 real-mode DIG driver svym prerusenim,
+    // az buffer dohral. Ten je v portu zaslepeny (sub_13FBC8), takze by
+    // sample zustal navzdy ve stavu 4 - a `sub_149F20` prave podle stavu 2
+    // posouva zakladnu prehrane pozice (`+80 += +104; +104 = 0; +108 = ted`).
+    // Bez toho pozice nikdy nedohnala prah v `sub_14A090` a video se
+    // zastavilo hned na zacatku. Nahradou za prerusenie driveru je stav
+    // fronty SDL: kdyz uz neni co hrat, sample je dohrany.
+    //
+    // POZOR na prah (vlna 26 pokr. 12): puvodne tu bylo `== 0`, tedy hra se
+    // dozvedela "dohrano" az ve chvili, kdy uz zvukove zarizeni bylo UPLNE
+    // vyschle. Nez staci dodat dalsi davku, vznikne v prehravani mezera ->
+    // zvuk se trha. Original tuhle informaci dostaval od DIG driveru uz na
+    // hranici pul-bufferu (driver+68 = 2048 B), tj. jeste kdyz druha
+    // polovina hrala. Hlasime proto "dohrano" stejne predcasne.
+    if ( *(_DWORD *)(a1 + 4) == 4 && PortSound_QueuedBytes() < PORTSOUND_REFILL_THRESHOLD )
+      *(_DWORD *)(a1 + 4) = 2;
     return *(_DWORD *)(a1 + 4);
+  }
   return result;
 }
 

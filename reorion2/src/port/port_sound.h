@@ -25,6 +25,9 @@ void WriteOplRegister(uint8_t reg, uint8_t value);
 // Streamovane audio (audio stopa SMK videa) - viz PortSound_FeedStream.
 void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rateHz);
 
+// Kolik PCM jeste ceka ve fronte zvukoveho zarizeni.
+int QueuedBytes();
+
 } // namespace Port::Sound
 
 // ---------------------------------------------------------------------
@@ -53,6 +56,10 @@ void PortSound_SetStreamFormat(int milesSampleType, int rateHz);
 // Kus PCM tak, jak ho hra prave zapsala do sveho audio ring bufferu
 // (sub_14B620) - puvodne by ho odtud odebral real-mode DIG driver.
 void PortSound_FeedStream(const void* pcm, int bytes);
+
+// Kolik PCM jeste ceka ve fronte - nahrazuje informaci, kterou by jinak dodal
+// real-mode DIG driver svym prerusenim (viz sub_157740).
+int PortSound_QueuedBytes(void);
 
 } // extern "C"
 

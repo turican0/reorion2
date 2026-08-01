@@ -27,10 +27,39 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
         std::fprintf(stderr, "SEH code=0x%08lX addr=%p", code, ep->ExceptionRecord->ExceptionAddress);
         if (code == EXCEPTION_ACCESS_VIOLATION && ep->ExceptionRecord->NumberParameters >= 2)
         {
-            std::fprintf(stderr, " av_%s=0x%p",
-                ep->ExceptionRecord->ExceptionInformation[0] ? "write" : "read",
+            // ExceptionInformation[0]: 0 = cteni, 1 = zapis, 8 = DEP/spusteni.
+            // Puvodne se tu vsechno nenulove tisklo jako "write", takze skok
+            // pres rozbity funkcni ukazatel vypadal jako zapis - matouci.
+            ULONG_PTR kind = ep->ExceptionRecord->ExceptionInformation[0];
+            const char* kindName = kind == 0 ? "read" : (kind == 1 ? "write" : "execute");
+            std::fprintf(stderr, " av_%s(info0=%zu)=0x%p", kindName, (size_t)kind,
                 (void*)ep->ExceptionRecord->ExceptionInformation[1]);
         }
+#if !defined(_M_IX86)
+        // Kdyz RIP neni v zadnem modulu, StackWalk64 nema podle ceho rozvinout
+        // ramec a vypis konci hned. Skok pres rozbity ukazatel ale nechava
+        // navratovou adresu na vrcholu zasobniku - vypiseme prvnich par
+        // qwordu, ktere lezi v nejakem modulu, at je videt volajici.
+        HMODULE faultMod = nullptr;
+        if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                                (LPCSTR)ep->ExceptionRecord->ExceptionAddress, &faultMod))
+        {
+            const ULONG_PTR* sp = (const ULONG_PTR*)ep->ContextRecord->Rsp;
+            for (int i = 0, shown = 0; i < 24 && shown < 6; ++i)
+            {
+                HMODULE m = nullptr;
+                if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                                       (LPCSTR)sp[i], &m) && m)
+                {
+                    char p[MAX_PATH] = {0};
+                    GetModuleFileNameA(m, p, MAX_PATH);
+                    std::fprintf(stderr, "  stack[%d] = %p  %s+0x%zx\n", i, (void*)sp[i], p,
+                                 (size_t)((char*)sp[i] - (char*)m));
+                    ++shown;
+                }
+            }
+        }
+#endif
         HMODULE mod = nullptr;
         if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
                                 (LPCSTR)ep->ExceptionRecord->ExceptionAddress, &mod))

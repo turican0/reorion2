@@ -121,6 +121,14 @@ void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rat
     SDL_PutAudioStreamData(g_stream, pcm, static_cast<int>(bytes));
 }
 
+int QueuedBytes()
+{
+    if (!g_initialized || !g_stream)
+        return 0;
+    int q = SDL_GetAudioStreamQueued(g_stream);
+    return q > 0 ? q : 0;
+}
+
 void WriteOplRegister(uint8_t reg, uint8_t value)
 {
     // DECOMP_TODO: zatim jen zaslepka - hudebni OPL emulace (napr. napojeni
@@ -157,10 +165,53 @@ void PortSound_SetStreamFormat(int milesSampleType, int rateHz)
 // Prijme kus PCM tak, jak ho hra prave zapsala do sveho audio ring bufferu
 // (sub_14B620). Puvodne by ho odtud odebral real-mode DIG driver; tady jde
 // rovnou do SDL streamu.
+// Kolik PCM jeste ceka ve fronte zvukoveho zarizeni. Nahrazuje informaci,
+// kterou by jinak dodal real-mode DIG driver svym prerusenim.
+int PortSound_QueuedBytes(void)
+{
+    return Port::Sound::QueuedBytes();
+}
+
+// Prah pro "sample dohran" (viz sub_157740). Vychozi 2048 B = velikost
+// pul-bufferu DIG driveru (driver+68), tedy okamzik, kdy original dostal od
+// driveru preruseni - jeste kdyz druha polovina hrala. Pri prahu 0 se cekalo
+// na uplne vyschnuti fronty a mezi davkami vznikaly slysitelne mezery.
+int PortSound_RefillThreshold(void)
+{
+    static int s_threshold = -1;
+    if (s_threshold < 0) {
+        s_threshold = 2048;
+        if (const char* env = SDL_getenv("REORION2_AUDIO_REFILL")) {
+            int v = SDL_atoi(env);
+            if (v >= 0)
+                s_threshold = v;
+        }
+        SDL_Log("PortSound: prah doplneni = %d B", s_threshold);
+    }
+    return s_threshold;
+}
+
 void PortSound_FeedStream(const void* pcm, int bytes)
 {
     if (!pcm || bytes <= 0)
         return;
+    // Diagnostika trhani zvuku: hloubka fronty TESNE PRED dodanim dalsi davky.
+    // Kdyz tu opakovane vidime 0, zarizeni mezi davkami vyschlo = slysitelna
+    // mezera. Zapina se REORION2_AUDIO_TRACE=1.
+    static int s_traceLeft = -1;
+    if (s_traceLeft < 0) {
+        const char* env = SDL_getenv("REORION2_AUDIO_TRACE");
+        s_traceLeft = (env && SDL_atoi(env)) ? 400 : 0;
+    }
+    if (s_traceLeft > 0) {
+        --s_traceLeft;
+        static int s_n = 0, s_underruns = 0;
+        int q = Port::Sound::QueuedBytes();
+        if (q == 0)
+            ++s_underruns;
+        SDL_Log("PortSound: feed #%d  fronta_pred=%d B  davka=%d B  podteceni=%d",
+                s_n++, q, bytes, s_underruns);
+    }
     Port::Sound::FeedStream(static_cast<const uint8_t*>(pcm), static_cast<uint32_t>(bytes),
                             g_streamType, g_streamRate);
 }

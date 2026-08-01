@@ -292,8 +292,79 @@ int16_t word_155147 = -26215; // weak
 int dword_15B614[] = { 8 }; // weak
 _UNKNOWN *off_15C810 = (_UNKNOWN *)0x46CB8; // weak
 _UNKNOWN *off_15EEFC = &loc_E40C7; // weak
-int (*off_1602F8[2])() = { &sub_1606F8, &sub_160709 }; // weak
-int (*funcs_16213C[4])() = { &sub_161336, &sub_161357, &sub_16137B, &sub_1613A7 }; // weak
+// VLNA 26: IDA tyto dve tabulky orizla na 2 a 4 polozky, ale indexuji se
+// priznakem dword_18AD28, ktery nabyva 0..0x7F. V EXE zabiraji souvisly
+// blok 0x1602F8..0x1606F8 = presne 2x128 dwordu (dalsi je uz sub_1606F8).
+// Prevzato 1:1 z asm dumpu; prazdna mista jsou v originalu opravdu nulova.
+int (*off_1602F8[128])() = {
+  (int (*)())&sub_1606F8, (int (*)())&sub_160709, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  (int (*)())&sub_160715, (int (*)())&sub_160734, (int (*)())&sub_160748, (int (*)())&sub_160767,
+  0, 0, 0, 0,
+  (int (*)())&sub_16077B, (int (*)())&sub_160798, (int (*)())&sub_1607AA, (int (*)())&sub_1607C7,
+  0, 0, 0, 0,
+  (int (*)())&sub_1607D9, (int (*)())&sub_1607ED, 0, 0,
+  (int (*)())&sub_1607FC, (int (*)())&sub_160812, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  (int (*)())&sub_160823, (int (*)())&sub_160844, (int (*)())&sub_16085A, (int (*)())&sub_16087B,
+  (int (*)())&sub_160891, (int (*)())&sub_1608B6, (int (*)())&sub_1608D0, (int (*)())&sub_1608F5,
+  (int (*)())&sub_16090F, (int (*)())&sub_160932, (int (*)())&sub_16094A, (int (*)())&sub_16096D,
+  (int (*)())&sub_160985, (int (*)())&sub_1609AC, (int (*)())&sub_1609C8, (int (*)())&sub_1609EF,
+  (int (*)())&sub_160A0B, (int (*)())&sub_160A38, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  (int (*)())&sub_160A60, (int (*)())&sub_160AB9, (int (*)())&sub_160B07, (int (*)())&sub_160B60,
+  0, 0, 0, 0,
+  (int (*)())&sub_160BAE, (int (*)())&sub_160C05, (int (*)())&sub_160C51, (int (*)())&sub_160CA8,
+  0, 0, 0, 0,
+  (int (*)())&sub_160CF4, (int (*)())&sub_160D24, 0, 0,
+  (int (*)())&sub_160D4F, (int (*)())&sub_160D81, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  (int (*)())&sub_160DAE, (int (*)())&sub_160E09, (int (*)())&sub_160E59, (int (*)())&sub_160EB4,
+  (int (*)())&sub_160F04, (int (*)())&sub_160F63, (int (*)())&sub_160FB7, (int (*)())&sub_161016,
+  (int (*)())&sub_16106A, (int (*)())&sub_1610C7, (int (*)())&sub_161119, (int (*)())&sub_161176,
+  (int (*)())&sub_1611C8, (int (*)())&sub_161229, (int (*)())&sub_16127F, (int (*)())&sub_1612E0,
+};
+
+int (*funcs_16213C[128])() = {
+  (int (*)())&sub_161336, (int (*)())&sub_161357, (int (*)())&sub_16137B, (int (*)())&sub_1613A7,
+  0, 0, (int (*)())&sub_1613D9, (int (*)())&sub_161405,
+  (int (*)())&sub_161437, (int (*)())&sub_16145B, (int (*)())&sub_161482, (int (*)())&sub_1614B0,
+  0, 0, (int (*)())&sub_1614E4, (int (*)())&sub_161512,
+  (int (*)())&sub_161546, (int (*)())&sub_161562, (int (*)())&sub_161581, (int (*)())&sub_1615A2,
+  0, 0, (int (*)())&sub_1615C9, (int (*)())&sub_1615EA,
+  (int (*)())&sub_161611, (int (*)())&sub_161630, (int (*)())&sub_161652, (int (*)())&sub_161675,
+  0, 0, (int (*)())&sub_16169E, (int (*)())&sub_1616C1,
+  (int (*)())&sub_1616EA, (int (*)())&sub_161716, (int (*)())&sub_161745, (int (*)())&sub_16177F,
+  0, 0, (int (*)())&sub_1617BF, (int (*)())&sub_1617F9,
+  (int (*)())&sub_161839, (int (*)())&sub_16186B, (int (*)())&sub_1618A0, (int (*)())&sub_1618DC,
+  0, 0, (int (*)())&sub_16191E, (int (*)())&sub_16195A,
+  (int (*)())&sub_16199C, (int (*)())&sub_1619C3, (int (*)())&sub_1619ED, (int (*)())&sub_161A1C,
+  0, 0, (int (*)())&sub_161A51, (int (*)())&sub_161A80,
+  (int (*)())&sub_161AB5, (int (*)())&sub_161AE2, (int (*)())&sub_161B12, (int (*)())&sub_161B43,
+  0, 0, (int (*)())&sub_161B7A, (int (*)())&sub_161BAB,
+  (int (*)())&sub_161BE2, (int (*)())&sub_161BFE, (int (*)())&sub_161C24, (int (*)())&sub_161C45,
+  0, 0, (int (*)())&sub_161C70, (int (*)())&sub_161C91,
+  (int (*)())&sub_161CBC, (int (*)())&sub_161CDB, (int (*)())&sub_161D04, (int (*)())&sub_161D26,
+  0, 0, (int (*)())&sub_161D52, (int (*)())&sub_161D74,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  (int (*)())&sub_161DA0, (int (*)())&sub_161DC7, (int (*)())&sub_161DF8, (int (*)())&sub_161E27,
+  0, 0, (int (*)())&sub_161E60, (int (*)())&sub_161E8F,
+  (int (*)())&sub_161EC8, (int (*)())&sub_161EF5, (int (*)())&sub_161F2C, (int (*)())&sub_161F5C,
+  0, 0, (int (*)())&sub_161F96, (int (*)())&sub_161FC6,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+};
 _UNKNOWN loc_164A90; // weak
 _UNKNOWN loc_164DF0; // weak
 _UNKNOWN loc_165600; // weak

@@ -4212,3 +4212,226 @@ nezamrzne) a prehraje se jen JEDNA audio davka. Dalsi krok: proc SMK reader
 nedodava audio chunky pro dalsi snimky (`v6 = *((_DWORD*)v5 + 241)`, plni se
 v `sub_14C4C0`-cesty podle bitu 1 typoveho bajtu snimku `frameTypes[idx]` -
 zkontrolovat `v29+956` a `v29+880` proti dosboxu).
+
+### Vlna 26 pokracovani 7: retez predani driveru dohledan, stav zvuku
+
+**Overeno merenim, ze cesta k audio stope videa je kompletni a stabilni:**
+- typove bajty snimku jsou SPRAVNE: snimek 0 ma typ 3 (paleta+audio), dalsi
+  typ 2 (audio stopa 0), index snimku roste 0,1,2,... -> audio chunky se
+  prideluji kazdemu snimku, chyba tedy NENI ve SMK readeru (puvodni
+  podezreni vyvraceno).
+- `sub_149890(0x3C, dword_184388)` predava DIG_DRIVER do `dword_189140`,
+  odkud ho `sub_149C80` bere pro otevreni audio stopy. Zmereno: `a2` je
+  nenulovy driver, `dword_18913C` (bezici video) = 0, takze predani probehne.
+- `dword_189144` (druha brana v sub_149C80) je v celem dekompilatu jen
+  definovana na 0 a NIKDE se nenastavuje -> instalacni blok uvnitr
+  `sub_149C80` se nikdy nespousti; audio se otevira dik `dword_189140`
+  predanemu vyse. (Proto tam ty tri ztracene navratove hodnoty ve vysledku
+  nic nemenily - byly ale stejne spravne opravit.)
+
+**STAV ZVUKU (2 po sobe jdouci behy, stabilne):** `audioTrack_264 = 0`,
+dekomprese probehne, prehraje se **1 audio davka**, video dojde na blit 82 a
+dal uz nepokracuje (ale NEZAMRZA - trace ~150000 radku).
+
+**ZBYVA:** proc se audio blok v `sub_14B620` provede jen jednou, kdyz chunky
+jsou k dispozici pro kazdy snimek. Podminka je `v7 != 0`, kde
+`v7 = (v5[75] >= 0) ? (*v6 - 4) : v6[1]` a `v5[75]` je horni bajt priznaku
+(0xD0 -> zaporny -> bere se `v6[1]` = rozbalena delka). Dalsi krok: zmerit
+`v6` a `v7` pri kazdem volani `sub_14B620` a porovnat s dosboxem (staci
+DUMPREGS na vstupu smycky uvnitr sub_14B620).
+
+### Vlna 26 pokracovani 8: nedeterminismus odstranen, retez do driveru
+dokoncen, ale prehravani je stale prilis pomale
+
+**Odstranen ZBYTKOVY nedeterminismus** (audio se ted otevre VZDY):
+`sub_149C80` melo `sub_14197D(...); v8 += 3; ... a2[25] = v8;` - **dalsi
+ztracena navratova hodnota** (AIL_minimum_sample_buffer_size). Asm:
+`call sub_14197D / add eax, 3 / and al, 0FCh / mov [esi+64h], eax`
+(0x64 = a2[25]). Bez toho slo do `a2[25]` smeti ze zasobniku, z nej se
+pocitala velikost alokace `sub_13259F(2 * a2[15])`, ta pri velkem smeti
+selhala a audio se neotevrelo.
+
+**Dalsi dva x64 pointer-width bugy** v audio pumpe `sub_149F20` (stejna
+trida jako vlna 25): `*(char **)i`, `*(char **)(i + 8)`,
+`*(char **)(i + 4*v3 + 84)` v volani `sub_14A010` a `*(int **)(i + 56)` v
+`sub_141B5B` - 32bitove ULOZENE ukazatele ctene jako 8bajtove. Padalo to v
+qmemcpy/memmove (cteni z -1) a v `sub_157B00` (zapis na 0x00002000171D9CD8 -
+typicky "prilepeny" horni kus).
+
+**`sub_13FBC8` (AIL_call_driver) zastavena.** Je to skok do REALNEHO
+real-mode .DIG driveru; nas nahradni DIG_DRIVER nema kodovy obraz, takze
+`sub_15541F` cetla z null+8. Prehravani obstarava primo Port::Sound, takze
+tady staci tiche "nic se nestalo" (sluzba se loguje pro pripad, ze by bylo
+potreba nekterou emulovat - napr. 1025 = start prehravani).
+
+**VYSLEDEK:** zadny pad, `audioTrack_264 = 0` VZDY, audio davky **1 -> 6**,
+video se posune z blitu 81/82 na 84.
+
+**ALE porad je to prakticky zaseknute na zacatku videa** (uzivatel: "nic
+neslysim, vypada to zaseknute"). Zmereno v `sub_14A090`:
+`startStamp_27 = 9256` (nastaveno OK), `played` roste (9834 -> 11355), ale
+`threshold` je 11872 a smycka ceka, nez ho pozice dosahne - a spin je
+~1,2 miliardy iteraci na 240 s pri pouhych 6 davkach. Prahovou hodnotu
+(`*(track+32) >> 7`) drzi nahoru to, ze zastaveny driver buffer nikdy
+"nespotrebuje", takze cekani se prodluzuje misto zkracovani.
+
+**Dalsi krok:** dodelat ucetnictvi SPOTREBOVANEHO bufferu - `track+32`
+(kolik je zafrontovano) musi po prehrani klesat. Nabizi se navazat ho na
+`SDL_GetAudioStreamQueued()` v Port::Sound, nebo emulovat prislusne sluzby
+`AIL_call_driver` (`a2` = cislo sluzby, uz se loguje).
+
+**Vychozi stav ZUSTAVA bez audia** (`REORION2_VIDEO_AUDIO=1` ho zapne):
+s audiem je video zatim nepouzitelne, bez nej bezi kompletne a spravne.
+
+### Vlna 26 pokracovani 9: nalezen UZAVRENY KRUH v audio pacingu (nedoreseno)
+
+Pridano ucetnictvi spotrebovaneho bufferu: `PortSound_QueuedBytes()`
+(`SDL_GetAudioStreamQueued`) + v `sub_157740` (AIL_sample_status) se sample
+ve stavu 4 (hraje) prepne na 2 (dohrano), jakmile je fronta SDL prazdna -
+to je nahrada za preruseni real-mode driveru, ktere stav prepinalo.
+Dusledek: **busy-wait smycka uz se netoci** (spin log prazdny misto
+~1,2 miliardy iteraci).
+
+**Ale prehravani se stejne zastavi.** Zmereno v `sub_14A090`:
+`played = 16384` (ZAMRZLE), `threshold = 16960`, **`startStamp_27 = 0`**.
+
+**Pricina - uzavreny kruh:**
+1. `sub_149ED0` pocita pozici jako `(ted - a1[27]) * rate / 1000`, ale kdyz
+   vysledek prekroci `a1[26]`, sama si **vynuluje `a1[27]`** a od te chvile
+   vraci konstantu `a1[26] + a1[20]`.
+2. `a1[27]` znovu nastavuje jen `sub_149F20` pri DOKONCENI bufferu, a ten
+   blok se spusti jen kdyz jsou cekajici bajty (`i+16` > `i+100`).
+3. Cekajici bajty prijdou jen z dalsi audio davky, ta ale prijde az kdyz se
+   dekoduje dalsi snimek - a ten se dekoduje az kdyz pozice dozene prah.
+=> pozice stoji, snimek se nedekoduje, audio nedojde, pozice stoji...
+
+**Dalsi krok:** rozbit ten kruh na spravnem miste - overit proti dosboxu,
+jak se v originale chova `a1[26]` (`+104`) a `a1[20]` (`+80`) v prubehu
+prehravani (DUMPMEM na tyhle offsety track struktury behem videa) a jestli
+se `a1[27]` v originale opravdu nuluje tak, jak to dela dekompilovana
+`sub_149ED0` - tam muze byt dalsi decompiler artefakt.
+
+**Stav:** vychozi bez audia = video kompletni a spravne
+(**600/600 matched**, overeno i po vsech zmenach teto vlny).
+S `REORION2_VIDEO_AUDIO=1` se audio otevre, prehraje 6 davek a zastavi se.
+
+### Vlna 26 pokracovani 10: `sub_149ED0` OVERENA jako verna (podezreni
+vyvraceno)
+
+Podezreni z minuleho kola (ze vynulovani `a1[27]` je decompiler artefakt) je
+**VYVRACENO**. Asm `sub_149ED0` odpovida dekompilatu radek po radku:
+```
+cmp dword ptr [esi+6Ch], 0    ; a1[27] (+108)
+jnz loc_149EE6
+mov eax, [esi+68h]            ; a1[26] (+104)
+jmp loc_149EFF
+loc_149EE6:
+call dword_1825AC / mov ebx,[esi+6Ch] / mov eax,[esi+14h] (rate)
+sub ecx,ebx / mul ecx / div 3E8h        ; (ted - stamp) * rate / 1000
+loc_149EFF:
+cmp eax, [esi+68h] / jbe loc_149F12
+mov dword ptr [esi+6Ch], 0    ; ANO, opravdu se nuluje
+mov ecx, [esi+68h]
+loc_149F12:
+mov eax, [esi+50h] / add eax, ecx       ; + a1[20] (+80)
+```
+Nulovani `a1[27]` je tedy AUTENTICKE chovani originalu, ne chyba prevodu.
+
+**Kde tedy hledat dal:** kruh se musi rozpojit v `sub_149F20`, jehoz
+dokoncovaci blok posouva `+80`/`+104`/`+108`. Jeho vstupni branou je
+`v1 = *(i+16) > *(i+100)` (cekajici bajty nad spodni hranici). `+16` plni
+audio davky (v `sub_14B620` je to `v10[4] = v30 + v18`) a pumpa ho ubira o
+`v5`. **Dalsi krok: zmerit v portu `i+16` (cekajici) a `i+100` (hranice)
+v case a porovnat s dosboxem** - jestli hranice nesedi (nebo `+16` neroste,
+jak ma), je kruh prave tam.
+
+### Vlna 26 pokracovani 11: *** NALEZEN KOREN CELEHO ZASEKNUTI *** -
+AIL casovaci callback `sub_156680` v portu nikdy netika
+
+**Merenim proti dosboxu dohledan cely retez.** `DUMPREGS cond=changed:` na
+polich track/sample struktury originalu (track = 0x003ECD90, sample =
+0x004FA978, ziskano pres ctx+1028 a track+56):
+
+- `track+40` se meni 37x, ZAPISUJE HO SAMA HRA (eip 0x36F7FA = `sub_14B620`,
+  `v10[10] += v30`) - kumulativni pocitadlo bajtu, roste 0 -> 0x5CC4 ->
+  0x6364 -> ... To NENI index bufferu.
+- **`sample+40` se prepina 0 <-> 1** (dvojity buffer), 8x, a zapisuje ho
+  **eip 0x003861AF = IDA 0x1621AF = uvnitr `sub_162000`**.
+- `sub_162000` vola `sub_156680`, a to je **AIL CASOVACI CALLBACK** -
+  registruje se pres `sub_1400A9((int)sub_156680)` (orion_part_23.c:1286).
+  Cte z driveru index prave prehravaneho bufferu
+  (`v2 = **(int16_t **)(dword_1C95EC + 52)`), a kdyz se zmeni, projde vsechny
+  samply se stavem 4 (hraje) a zavola na ne `sub_162000`.
+
+**KOREN PROBLEMU:** retez je
+`AIL timer -> sub_156680 -> sub_162000 -> prepne sample+40 -> sub_157B90
+(buffer_ready) uz nevraci -1 -> pumpa sub_149F20 odesle dalsi buffer ->
+posune se +80/+104/+108 -> pozice v sub_149ED0 roste -> sub_14A090 pusti
+dalsi snimek -> prijde dalsi audio davka`.
+V portu **ten casovac nikdy netika** (Miles PIT ISR je od vlny 22i zaslepeny,
+viz sub_149A20), takze se retez nikdy nerozjede - odtud VSECHNY pozorovane
+symptomy: jedna davka, zamrzla pozice, busy-wait, zastavene video.
+
+**Dalsi krok (konkretni navrh):**
+1. nahradnimu DIG_DRIVERu dat na `+52` ukazatel na 16bitove slovo, ktere
+   port vlastni (= "ktery buffer hardware prave hraje"),
+2. to slovo prepinat podle odbaveni SDL fronty (`PortSound_QueuedBytes`),
+3. periodicky volat `sub_156680(dword_184388)` - napr. z Present()/vsync
+   cesty, kde uz port ma pravidelny tik.
+Tim se zachova PUVODNI logika hry (nic se neobchazi), jen se doda tep, ktery
+v DOSu obstarval PIT.
+
+**Pozn.:** zmereno taky, ze original ma `track+100` (spodni hranice) = 1280,
+port 1024 - drobny rozdil k overeni pri dalsim kole.
+
+### Vlna 26 pokracovani 12: mixerove tabulky opraveny, casovac potvrzen jako
+### chybejici, "pad" odhalen jako cizi
+
+**1) OPRAVENO: `off_1602F8` a `funcs_16213C` byly orizle na 2 a 4 polozky.**
+Obe se indexuji priznakem `dword_18AD28`, ktery nabyva 0..0x7F, takze
+puvodni pole se cetla DALEKO ZA KONCEM (sousedni globaly jako funkcni
+ukazatele). V EXE zabiraji souvisly blok 0x1602F8..0x1606F8 = presne
+**2x128 dwordu** (hned za nim uz zacina `sub_1606F8`), coz sedi i s
+komentarem dekompilatu "1604F8: funcs_16213C". Obe tabulky prevzaty 1:1 z
+asm dumpu (60 resp. 72 nenulovych polozek, zbytek jsou v originalu opravdu
+nuly); vsech 132 cilovych funkci uz v portu existuje. Latentni pad, ktery by
+nastal, jakmile se mixer rozbehne.
+
+**2) POTVRZENO MERENIM: AIL casovaci callback v portu NETIKA.**
+Do `sub_156680` pridan citac (`REORION2_TIMER_TRACE=1`): za 90 s behu
+**0 volani**. Tim je primo overena hypoteza z minule vlny - retez
+`AIL timer -> sub_156680 -> sub_162000 -> prepnuti sample+40` se nikdy
+nerozjede, protoze port nema periodicky tik, ktery v DOSu delal PIT.
+
+**3) "Pad" po 11. audio davce NENI audio bug.** SEH hlaseni rozsireno o
+`ExceptionInformation[0]` a o dohledani navratovych adres na zasobniku:
+`av_execute(info0=8)` (tedy skok do nespustitelne pameti, ne zapis - stary
+vypis to hlasil jako "write") a na zasobniku uz jen
+`BaseThreadInitThunk`/`RtlUserThreadStart`. Jde o VEDLEJSI VLAKNO. Tentyz
+pad je i v behu BEZ audia - v tom samem, ktery da `compare_frames`
+**600/600 matched**. Existoval tedy uz driv a s videem ani zvukem nesouvisi.
+
+**4) Prah doplneni bufferu** (`sub_157740`) prepnut z `== 0` na
+`< 2048 B` (= pul-buffer driveru, `driver+68`; laditelne
+`REORION2_AUDIO_REFILL`). **Zmereno jako neutralni**: pri prazich 0, 512 i
+2048 vyjde beh bit po bitu stejne (11 davek, stejne hloubky fronty), takze
+trhani zvuku timhle NEZPUSOBENE. Ponechano, protoze to odpovida chovani
+originalu.
+
+**Namerena data audio cesty** (`REORION2_AUDIO_TRACE=1`):
+format = 8bit **stereo 11025 Hz**, prvni davka 23748 B (same 0x80 = ticho),
+pak davky po 1696 B; fronta se drzi na ~22 kB a zdrave se odbavuje
+(zadne podteceni po prvni davce). Po 11. davce uz zadna dalsi neprijde =
+~2 s zvuku, presne jak ceka bod 2.
+
+**Dalsi krok** je nezmeneny a ted uz mericky podepreny: dodat portu tep,
+ktery v DOSu delal PIT. K tomu je potreba domerit v dosboxu strukturu
+DIG_DRIVERu originalu (chybi +28, +44, +48, +52, +84, +80) - dnesni pokusy
+`DUMPMEM cond=eip:0x0036DF20 addr=0x003EC8D8 size=128` trace nevyprodukovaly
+a beh se protahoval, takze to chce jiny spousteci bod.
+Odhadovat ty hodnoty NEMA smysl - jsou to presne ty adresy bufferu, o ktere
+cely mechanismus stoji.
+
+**Pozn. k dosboxu:** instrumentace `cond=eip:` kontroluje EIP na kazdem
+kroku, takze emulace znatelne zpomali a grafika se trha. Na spravnost dumpu
+to vliv nema (ctou se presne hodnoty pameti), jen to prodluzuje beh.

@@ -752,6 +752,13 @@ char sub_149890(unsigned int a1, int a2)
     dword_18A5AC = (int (*)(_DWORD))sub_149B30;
     dword_1C9830 = (int)sub_1499C0;
   }
+  // PORT (vlna 26): `a2` je DIG_DRIVER (volajici predava dword_184388) a
+  // stava se z nej `dword_189140`, ze ktereho pak `sub_149C80` otevira audio
+  // stopu videa. Kdyz uz nejake video bezi (`dword_18913C`), funkce se vraci
+  // driv a `dword_189140` zustane 0 -> audio se neotevre. Odtud zbytkovy
+  // nedeterminismus "jednou zvuk je, jindy neni".
+  PortDebug_Checkpoint("149890.a2_digDriver", a2);
+  PortDebug_Checkpoint("149890.activeVideo_18913C", dword_18913C);
   if ( dword_18913C )
     return 0;
   dword_189140 = a2;
@@ -926,7 +933,8 @@ LABEL_12:
       {
         v7 = 0;
       }
-      sub_14197D((_DWORD *)dword_189140, a2[16], v7);
+      // PORT (vlna 26): ztracena navratova hodnota - viz sub_14197D.
+      v8 = sub_14197D((_DWORD *)(uintptr_t)dword_189140, a2[16], v7);
       v8 += 3;
       LOBYTE(v8) = v8 & 0xFC;
       a2[25] = v8;
@@ -1072,8 +1080,23 @@ void sub_149F20()
 
   for ( i = dword_18913C; i; i = *(_DWORD *)(i + 52) )
   {
-    v1 = *(_DWORD *)(i + 16);
-    if ( v1 > *(_DWORD *)(i + 100) || *(_DWORD *)(i + 68) && v1 > 3 )
+    v1 = *(_DWORD *)(uintptr_t)(i + 16);
+    // PORT (vlna 26): vstupni brana dokoncovaciho bloku audio pumpy. `+16` =
+    // cekajici bajty (plni je audio davky), `+100` = spodni hranice. Kdyz
+    // brana neprojde, neposune se `+80`/`+104`/`+108` a prehravani se zasekne.
+    {
+      static unsigned n = 0;
+      if ( ++n <= 6 || (n % 5000) == 0 )
+      {
+        PortDebug_Checkpoint("149F20.n", (int)n);
+        PortDebug_Checkpoint("149F20.pending_16", v1);
+        PortDebug_Checkpoint("149F20.lowWater_100", *(_DWORD *)(uintptr_t)(i + 100));
+        PortDebug_Checkpoint("149F20.starved_68", *(_DWORD *)(uintptr_t)(i + 68));
+        PortDebug_Checkpoint("149F20.submitted_104", *(_DWORD *)(uintptr_t)(i + 104));
+        PortDebug_Checkpoint("149F20.base_80", *(_DWORD *)(uintptr_t)(i + 80));
+      }
+    }
+    if ( v1 > *(_DWORD *)(uintptr_t)(i + 100) || *(_DWORD *)(uintptr_t)(i + 68) && v1 > 3 )
     {
       // PORT (vlna 26): ztracena navratova hodnota - viz sub_141A76.
       // Asm: `call sub_141A76 / mov edi, eax / mov ebp, eax / cmp edi, 1 /
@@ -1090,7 +1113,15 @@ void sub_149F20()
         v6 = *(_DWORD *)(i + 60);
         if ( v5 > v6 )
           v5 = v6 & 0xFFFFFFFC;
-        v7 = sub_14A010(v5, *(_DWORD *)(i + 4), *(char **)i, *(char **)(i + 8), *(char **)(i + 4 * v3 + 84));
+        // PORT (vlna 26): vsechny tri jsou 32bitove ULOZENE ukazatele - `*(char**)`
+        // by je na x64 precetlo jako 8bajtove a natahlo sousedni dword jako horni
+        // pulku (pad v qmemcpy/memmove na cteni z -1). Stejna trida jako opravy
+        // ve vlne 25.
+        v7 = sub_14A010(v5,
+                        *(_DWORD *)(uintptr_t)(i + 4),
+                        (char *)(uintptr_t)*(_DWORD *)(uintptr_t)i,
+                        (char *)(uintptr_t)*(_DWORD *)(uintptr_t)(i + 8),
+                        (char *)(uintptr_t)*(_DWORD *)(uintptr_t)(i + 4 * v3 + 84));
         v8 = *(_DWORD *)(i + 108);
         *(_DWORD *)(i + 8) = v7;
         // PORT (vlna 26): ztracena navratova hodnota - asm dela
@@ -1109,7 +1140,11 @@ void sub_149F20()
           *(_DWORD *)(i + 104) = 0;
           *(_DWORD *)(i + 80) = v11 + v10;
         }
-        sub_141B5B(*(int **)(i + 56), v3, *(_DWORD *)(i + 4 * v3 + 84), v5);
+        // PORT (vlna 26): i+56 je 32bitovy ulozeny sample handle - viz vyse.
+        sub_141B5B((int *)(uintptr_t)*(_DWORD *)(uintptr_t)(i + 56),
+                   v3,
+                   *(_DWORD *)(uintptr_t)(i + 4 * v3 + 84),
+                   v5);
         v12 = *(_DWORD *)(i + 16) - v5;
         *(_DWORD *)(i + 104) += v5;
         *(_DWORD *)(i + 16) = v12;
@@ -1169,7 +1204,18 @@ int sub_14A090(int a1, int a2, int a3, int a4, _DWORD *a5)
   {
     if ( !a5[265] || a5[266] )
       return 0;
-    if ( (unsigned int)dword_1C3C38(a5[v6 + 257]) >= *(_DWORD *)(a5[a5[264] + 257] + 32) >> 7 )
+    // PORT (vlna 26): sem se to zacyklilo - obsluhuje se dal, dokud je
+    // prehrana pozice pod prahem. Merime obe strany.
+    {
+      static unsigned n = 0;
+      if ( (++n % 200000) == 1 )
+      {
+        PortDebug_Checkpoint("14A090.played", (int)dword_1C3C38(a5[v6 + 257]));
+        PortDebug_Checkpoint("14A090.threshold", (int)(*(_DWORD *)(uintptr_t)(a5[a5[264] + 257] + 32) >> 7));
+        PortDebug_Checkpoint("14A090.startStamp_27", *(int *)(uintptr_t)(a5[v6 + 257] + 108));
+      }
+    }
+    if ( (unsigned int)dword_1C3C38(a5[v6 + 257]) >= *(_DWORD *)(uintptr_t)(a5[a5[264] + 257] + 32) >> 7 )
     {
       a5[265] = 0;
       return 0;
@@ -2237,7 +2283,8 @@ _DWORD *sub_14B620(_DWORD *result)
   // dekomprimuje pres `sub_1676F0` - a to je zvuk intra.
   {
     static unsigned n = 0;
-    if ( ++n <= 8 )
+    ++n;
+    if ( n <= 8 || (n % 200) == 0 )
     {
       PortDebug_Checkpoint("14B620.n", (int)n);
       PortDebug_Checkpoint("14B620.audioTrack_264", result[264]);
@@ -2284,6 +2331,20 @@ LABEL_10:
     else
     {
       v7 = 0;
+    }
+    // PORT (vlna 26): `v6` = ukazatel na audio chunk snimku, `v7` jeho delka.
+    // Audio blok nize se provede jen kdyz `v7 != 0`. Merime, proc se to deje
+    // jen jednou, kdyz chunky maji byt u kazdeho snimku.
+    {
+      static unsigned n = 0;
+      ++n;
+      if ( n <= 8 || (n % 100) == 0 )
+      {
+        PortDebug_Checkpoint("14B620.chunk.n", (int)n);
+        PortDebug_CheckpointPtr("14B620.chunk.ptr_v6", (void *)v6);
+        PortDebug_Checkpoint("14B620.chunk.len_v7", v7);
+        PortDebug_Checkpoint("14B620.chunk.flagByte75", (int)(signed char)v5[75]);
+      }
     }
     v30 = v7;
     v8 = v7 == 0;
@@ -3307,7 +3368,20 @@ LABEL_9:
   v3 = v29;
   v4 = (_DWORD *)(uintptr_t)*(_DWORD *)(v29 + 944);
   *(_DWORD *)(v29 + 960) = v4;
-  result = *(_BYTE *)(*(_DWORD *)(v29 + 880) + *(_DWORD *)(v3 + 956));
+  result = *(_BYTE *)(uintptr_t)(*(_DWORD *)(v29 + 880) + *(_DWORD *)(v3 + 956));
+  // PORT (vlna 26): typovy bajt snimku. bit0 = paleta, bit1 = audio stopa 0,
+  // bit2 = audio stopa 1. Zvuk se dodava jen pro snimky s bitem 1 - merime,
+  // jestli se vubec u dalsich snimku objevuje.
+  {
+    static unsigned n = 0;
+    if ( ++n <= 16 )
+    {
+      PortDebug_Checkpoint("frameChunks.n", (int)n);
+      PortDebug_Checkpoint("frameChunks.frameIdx", *(_DWORD *)(v29 + 880));
+      PortDebug_Checkpoint("frameChunks.typeByte", result);
+      PortDebug_CheckpointPtr("frameChunks.typesBase", (void *)(uintptr_t)*(_DWORD *)(v3 + 956));
+    }
+  }
   if ( (result & 1) != 0 )
     v4 += *(uint8_t *)v4;
   if ( (result & 2) != 0 )

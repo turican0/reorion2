@@ -8350,8 +8350,8 @@ extern void sub_1416BA();
 extern void sub_14179F();
 // plna signatura: void sub_141884(int a1, int a2, void *a3);
 extern void sub_141884();
-// plna signatura: void sub_14197D(_DWORD *a1, int a2, int a3);
-extern void sub_14197D();
+// plna signatura: int sub_14197D(_DWORD *a1, int a2, int a3); // PORT (vlna 26)
+extern int sub_14197D();
 // plna signatura: int sub_141A76(_DWORD *a1); // PORT (vlna 26)
 extern int sub_141A76();
 // plna signatura: void sub_141B5B(int *a1, int a2, int a3, int a4);
@@ -14574,7 +14574,7 @@ void sub_1415D5(int a1);
 void sub_1416BA(int a1);
 void sub_14179F(int a1);
 void sub_141884(int a1, int a2, void *a3);
-void sub_14197D(_DWORD *a1, int a2, int a3);
+int sub_14197D(_DWORD *a1, int a2, int a3); // PORT (vlna 26): min. velikost bufferu
 int sub_141A76(_DWORD *a1); // PORT (vlna 26): vraci pripraveny buffer
 void sub_141B5B(int *a1, int a2, int a3, int a4);
 void sub_141C60(int a1);
@@ -15827,8 +15827,8 @@ extern int16_t word_155147;
 extern int dword_15B614[];
 extern _UNKNOWN *off_15C810;
 extern _UNKNOWN *off_15EEFC;
-extern int (*off_1602F8[2])();
-extern int (*funcs_16213C[4])();
+extern int (*off_1602F8[128])();
+extern int (*funcs_16213C[128])();
 extern _UNKNOWN loc_164A90;
 extern _UNKNOWN loc_164DF0;
 extern _UNKNOWN loc_165600;

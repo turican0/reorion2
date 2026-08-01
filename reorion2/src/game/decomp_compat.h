@@ -180,6 +180,14 @@ void PortVga_BlitBackBuffer(const void* backBuffer);
 int PortSound_CreateDigDriver(void);
 void PortSound_SetStreamFormat(int milesSampleType, int rateHz);
 void PortSound_FeedStream(const void* pcm, int bytes);
+int PortSound_QueuedBytes(void);
+/* PORT (vlna 26 pokr. 12): kolik bajtu jeste smi byt ve fronte, aby se sample
+   uz hlasil jako dohrany (sub_157740). Original tuhle informaci dostaval od
+   DIG driveru na hranici pul-bufferu (driver+68 = 2048 B), ne az pri uplnem
+   vyschnuti - proto se pri prahu 0 zvuk trhal. Laditelne pres
+   REORION2_AUDIO_REFILL. */
+int PortSound_RefillThreshold(void);
+#define PORTSOUND_REFILL_THRESHOLD PortSound_RefillThreshold()
 /* PORT (wave 25q): real 32-bit rotates (see link_stubs.c). Without these
    prototypes the C build fell back to an implicit `int f()` declaration,
    which happily linked against the old `return 0;` stubs and silently made

@@ -805,7 +805,21 @@ int sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4)
   v4 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v4 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_call_driver(0x%X,0x%X,0x%X,0x%X)\n", a1, a2, a3, a4);
-  v6 = sub_15541F(a1, a2, a3, a4);
+  // PORT (vlna 26): AIL_call_driver = skok do REALNEHO real-mode .DIG driveru
+  // (SB16.DIG). Ten v portu neexistuje - nas nahradni DIG_DRIVER
+  // (PortSound_CreateDigDriver) nema kodovy obraz, takze `sub_15541F` cetla
+  // z null+8 a padalo to. Prehravani obstarava primo Port::Sound (PCM se
+  // posila ze `sub_14B620`), takze tady staci tiche "nic se nestalo".
+  // DECOMP_TODO: az bude potreba emulovat konkretni sluzbu driveru
+  // (napr. 1025 = start prehravani), odbocit tady podle `a2`.
+  {
+    static unsigned n = 0;
+    if ( ++n <= 8 )
+      PortDebug_Checkpoint("13FBC8.AIL_call_driver.service", a2);
+    v6 = 0;
+  }
+  if ( 0 )
+    v6 = sub_15541F(a1, a2, a3, a4);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1812,8 +1826,16 @@ void sub_141884(int a1, int a2, void *a3)
 
 
 //----- (0014197D) --------------------------------------------------------
-void sub_14197D(_DWORD *a1, int a2, int a3)
+// PORT (vlna 26): AIL_minimum_sample_buffer_size - vraci v EAX minimalni
+// velikost bufferu pro dany format/frekvenci. Asm v sub_149C80:
+// `call sub_14197D / add eax, 3 / and al, 0FCh / mov [esi+64h], eax`.
+// IDA to ztratila (byla `void`), takze `a2[25]` dostalo SMETI ZE ZASOBNIKU;
+// z nej se pak pocitala velikost alokace (`sub_13259F(2 * a2[15])`), ktera
+// pri velkem smeti selhala a audio stopa videa se neotevrela. Odtud
+// zbytkove "jednou zvuk je, jindy neni".
+int sub_14197D(_DWORD *a1, int a2, int a3)
 {
+  int minBufferSize;
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1824,7 +1846,7 @@ void sub_14197D(_DWORD *a1, int a2, int a3)
     v3 = dword_1C0E50;
     fprintf(dword_1C0E50, "AIL_minimum_sample_buffer_size(0x%X,%d,%d)\n", a1, a2, a3);
   }
-  sub_157A60(v3, a1, a2, a3);
+  minBufferSize = (int)sub_157A60(v3, a1, a2, a3);
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
@@ -1834,6 +1856,7 @@ void sub_14197D(_DWORD *a1, int a2, int a3)
     JUMPOUT(0x140F5D);
   }
   JUMPOUT(0x13FCD2);
+  return minBufferSize; // sdileny epilog jen propusti EAX ze sub_157A60
 }
 // 141A71: control flows out of bounds to 140F5D
 // 141A06: control flows out of bounds to 13FCD2
