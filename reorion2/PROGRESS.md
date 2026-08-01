@@ -4490,3 +4490,47 @@ bookkeeping kolem `sub_141A76`/`sub_157B90` je porad zaslepeny.
 Pozn.: pri prvnim pokusu byl gate omylem PRED inicializaci samplu, cimz se
 preskocilo oznaceni volnych samplu a audio se vubec nerozjelo (0 davek);
 opraveno, gate obaluje jen buffery.
+
+### Vlna 26 pokracovani 14: mixer se rozjel, nalezena VLASTNI KONVENCE VOLANI
+
+Postup po opravach z pokr. 13: tep bezi, `sub_156680` dobehne, mixer
+`sub_162000` se rozskoci pres obnovenou tabulku - a pad se posunul do
+`sub_16177F+0x43` (cteni z adresy ~2x vetsi nez adresa bufferu).
+
+**1) Opraveno: `qword_18AD3C` a `dword_18AD44` nelezely za sebou.**
+`sub_16177F` dela `a5 += *((_DWORD *)&qword_18AD3C + v5 + 1);` kde v5 je
+prenos 0/1 - index 1 = horni pulka qwordu (krok), index 2 = `dword_18AD44`
+(krok+1). V originale je to souvisly blok 0x18AD28..0x18AD48; IDA ho
+rozdrobila na samostatne promenne a `int64_t` si navic vynuti 8bajtove
+zarovnani. Slepeno do `MixStepBlock` (`#pragma pack(4)`) s makry, ktera
+zachovavaji puvodni jmena. Nutne, ale pad to samo neodstranilo.
+
+**2) NALEZENA SKUTECNA PRICINA - mixerove rutiny maji vlastni konvenci
+volani (registry), IDA je otypovala jako cdecl.** Zmereno checkpointy:
+- v `sub_162000` je VSECHNO spravne: driver 0x176E06C0, `+76` = 8192,
+  `+80` = mix buffer, `dword_18AD34` = mix buffer,
+  `dword_18AD38` = 18AD34 + 8192. Konzistentni.
+- v `sub_16177F` ale dorazi `a4` = 0x0140A810 a `dword_18AD38` = 0x172104E0,
+  tj. mez o ~370 MB dal, v uplne jine oblasti -> smycka zapisuje mimo
+  buffer, dokud nenarazi.
+
+Duvod je primo v kodu, staci porovnat obe strany:
+```
+int sub_16177F(int result, unsigned int a2, int a3, _DWORD *a4, _BYTE *a5)   // 5 parametru
+((void (*)(int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(0, v9, src);  // predava 3
+```
+Cil (`v9`) a zdroj (`dword_18AD2C`) se trefi do 2. a 3. parametru misto 4. a
+5.; `a4`/`a5` jsou zbytky v registrech. Obe IDA-ovske "pravdy" si tedy
+primo protireci - jasny priznak toho, ze tyhle rutiny jsou rucne psany asm a
+argumenty berou v REGISTRECH (EAX/EBX/ECX/EDI/ESI), ne po zasobniku.
+
+**Dalsi krok:** z asm dumpu odecist skutecnou registrovou konvenci
+`funcs_16213C` / `off_1602F8` (staci jedna rutina, budou stejne) a upravit
+oba dispatchery tak, aby predavaly vsech 5 hodnot na spravne pozice:
+pravdepodobne `(akumulator_L, faze, akumulator_R, cil, zdroj)`. Pozor taky
+na to, ze `v9` se ve smycce `sub_162000` nikdy neposouva - vysledny posunuty
+ukazatel nejspis chodi zpet v registru (dalsi ztracena navratova hodnota).
+
+**Regrese zadna:** video `compare_frames` **600/600 matched, 0 diverged**,
+vychozi audio cesta porad **11 davek**. Emulovany casovac zustava za
+`REORION2_AUDIO_TIMER=1`, takze bezne spousteni je nedotcene.

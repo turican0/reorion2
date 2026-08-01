@@ -3285,6 +3285,21 @@ int sub_16177F(
 {
   int v5; // ebp
 
+  // PORT (vlna 26 pokr. 14): diagnostika mezi. Zapina REORION2_MIX_TRACE=1.
+  { static int s_n = 0; static int s_on = -1;
+    if ( s_on < 0 ) { const char *e = getenv("REORION2_MIX_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
+    if ( s_on && s_n < 4 )
+    {
+      ++s_n;
+      PortDebug_CheckpointPtr("m77.a5_zdroj", a5);
+      PortDebug_CheckpointPtr("m77.a4_cil",   a4);
+      PortDebug_Checkpoint("m77.konec_zdroje", dword_18AD30);
+      PortDebug_Checkpoint("m77.konec_cile",   dword_18AD38);
+      PortDebug_Checkpoint("m77.krok_lo", (int)(uint32_t)qword_18AD3C);
+      PortDebug_Checkpoint("m77.krok_hi", (int)(uint32_t)(qword_18AD3C >> 32));
+      PortDebug_Checkpoint("m77.krok_plus1", dword_18AD44);
+    }
+  }
   do
   {
     if ( (unsigned int)a5 >= dword_18AD30 )
@@ -4466,6 +4481,28 @@ int sub_162000(int a1)
     if ( *(_DWORD *)(v1 + 2120) )
       VCALL(v1 + 2120, void (*)(int))(v1);
     v11 = dword_18AD2C;
+    // PORT (vlna 26 pokr. 14): diagnostika vstupu do mixeru - odkud se ctou
+    // zvukova data. printf se z tohohle kodu ztraci, takze pres checkpointy.
+    // Zapina REORION2_MIX_TRACE=1.
+    { static int s_n = 0; static int s_on = -1;
+      if ( s_on < 0 ) { const char *e = getenv("REORION2_MIX_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
+      if ( s_on && s_n < 6 )
+      {
+        ++s_n;
+        PortDebug_Checkpoint("mix.pulka",   v10);
+        PortDebug_Checkpoint("mix.base",    *(_DWORD *)(v1 + 4 * v10 + 8));
+        PortDebug_Checkpoint("mix.off",     *(_DWORD *)(v1 + 4 * v10 + 24));
+        PortDebug_Checkpoint("mix.len",     *(_DWORD *)(v1 + 4 * v10 + 16));
+        PortDebug_Checkpoint("mix.cti",     dword_18AD2C);
+        PortDebug_Checkpoint("mix.konec",   dword_18AD30);
+        PortDebug_Checkpoint("mix.idx",     dword_18AD28);
+        PortDebug_CheckpointPtr("mix.driver_v2", v2);
+        PortDebug_Checkpoint("mix.drv76_velikost", v2[19]);
+        PortDebug_Checkpoint("mix.drv80_mixbuf",   v2[20]);
+        PortDebug_Checkpoint("mix.18AD34", dword_18AD34);
+        PortDebug_Checkpoint("mix.18AD38", dword_18AD38);
+      }
+    }
     ((void (*)(int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
       0,
       v9,

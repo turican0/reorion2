@@ -17859,8 +17859,20 @@ extern int dword_18AD2C;
 extern int dword_18AD30;
 extern int dword_18AD34;
 extern int dword_18AD38;
-extern int64_t qword_18AD3C;
-extern int dword_18AD44;
+// PORT (vlna 26 pokr. 14): tyhle dva globaly MUSI lezet za sebou.
+// `sub_16177F` (a sourozenci v mixeru) dela
+//     a5 += *((_DWORD *)&qword_18AD3C + v5 + 1);
+// kde v5 je prenos 0/1 - tedy index 1 = horni pulka qwordu (krok) a
+// index 2 = `dword_18AD44` (krok+1). V originale je to souvisly blok
+// 0x18AD28..0x18AD48; IDA ho rozdrobila na samostatne promenne a int64_t
+// si navic vynuti 8bajtove zarovnani, takze index 2 cetl smeti a zdrojovy
+// ukazatel odskocil mimo buffer (namereno: cetlo se z ~2x adresy bufferu).
+#pragma pack(push, 4)
+typedef struct { int64_t step; int stepPlus1; } MixStepBlock;
+#pragma pack(pop)
+extern MixStepBlock g_mixStepBlock;
+#define qword_18AD3C (g_mixStepBlock.step)
+#define dword_18AD44 (g_mixStepBlock.stepPlus1)
 extern void (__noreturn *off_18AD48)();
 extern int dword_18AD4C;
 extern int dword_18AD50;
