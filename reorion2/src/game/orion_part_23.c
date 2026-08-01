@@ -761,7 +761,12 @@ void sub_156680(int a1)
     dword_1C95F4 = v1;
     if ( *(_DWORD *)(dword_1C95EC + 84) )
     {
-      v2 = **(int16_t **)(dword_1C95EC + 52);
+      // PORT (vlna 26 pokr. 13): sirka ukazatele. `+52` je 32bitovy ukazatel na
+      // slovo "kterou polovinu DMA hraje hardware"; `**(int16_t **)` z nej na
+      // x64 nacte 8 bajtu a jako horni pulku prilepi sousedni `+56` - do
+      // ktereho si tahle funkce o par radku niz sama uklada index, takze uz
+      // pri druhem tiku z toho byla adresa 0x1_16B000F0 a pad.
+      v2 = *(int16_t *)(uintptr_t)*(uint32_t *)(dword_1C95EC + 52);
       dword_1C95F0 = v2;
       if ( v2 != -1 && v2 != *(_DWORD *)(dword_1C95EC + 56) )
       {

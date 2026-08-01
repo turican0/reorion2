@@ -1,4 +1,5 @@
 #include "port_vga.h"
+#include "port_sound.h"
 
 #include <SDL3/SDL.h>
 #include <array>
@@ -561,6 +562,12 @@ void PortVga_BlitBackBuffer(const void* backBuffer)
     // the port's only other Present() callers), so without this the screen
     // froze on the last logo frame while ~600 correct video frames went by.
     Port::Vga::Present();
+    // PORT (vlna 26 pokr. 13): tep pro emulovany AIL casovac. V DOSu ho budil
+    // PIT; port zadny periodicky tik nema (zmereno: obsluha sub_156680 se za
+    // 90 s behu nezavolala ani jednou), takze se prehravani zvuku po par
+    // davkach zastavi. Present je behem videa jedina spolehlive periodicka
+    // cesta, takze tep visi tady. Bez REORION2_AUDIO_TIMER=1 nedela nic.
+    PortSound_ServiceTimer();
 }
 
 void PortVga_CaptureBlit(const void* backBuffer)

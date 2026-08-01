@@ -4402,7 +4402,11 @@ int sub_162000(int a1)
   int v14; // ebx
 
   v1 = a1;
-  v2 = *(_DWORD **)a1;
+  // PORT (vlna 26 pokr. 13): sirka ukazatele. Na `sample+0` je 32bitovy zpetny
+  // ukazatel na DIG_DRIVER; `*(_DWORD **)` z nej na x64 nacte 8 bajtu a jako
+  // horni pulku prilepi `sample+4` = stav samplu (4 = hraje), takze vysla
+  // adresa 0x4_16D69A24.
+  v2 = (_DWORD *)(uintptr_t)*(uint32_t *)a1;
   v3 = 0;
   if ( *(_DWORD *)(*(_DWORD *)a1 + 24) == 2 || v2[6] == 3 )
     v3 = 1;
@@ -4552,7 +4556,11 @@ int sub_162293(int a1)
   int result; // eax
   unsigned int v3; // [esp-Ch] [ebp-18h]
 
-  v1 = *(char **)(a1 + 80);
+  // PORT (vlna 26 pokr. 13): sirka ukazatele. `+80` je 32bitovy ukazatel na
+  // mixovaci buffer, ale `*(char **)` z nej na x64 nacte 8 bajtu a jako horni
+  // pulku prilepi sousedni `+84` (priznak "driver bezi" = 1). Vysledkem byla
+  // adresa 0x1_16CA7280 a pad v memset uvnitr VCRUNTIME.
+  v1 = (char *)(uintptr_t)*(uint32_t *)(a1 + 80);
   result = 0;
   v3 = *(_DWORD *)(a1 + 76);
   memset(v1, 0, v3 & 3);

@@ -4435,3 +4435,58 @@ cely mechanismus stoji.
 **Pozn. k dosboxu:** instrumentace `cond=eip:` kontroluje EIP na kazdem
 kroku, takze emulace znatelne zpomali a grafika se trha. Na spravnost dumpu
 to vliv nema (ctou se presne hodnoty pameti), jen to prodluzuje beh.
+
+### Vlna 26 pokracovani 13: tep pro AIL casovac + tri chyby sirky ukazatele
+
+**Rozlozeni driveru dohledano BEZ dalsiho behu dosboxu.** Misto dlouheho
+mereni staci precist, co do tech poli zapisuje sama inicializace driveru v
+originalu (`orion_part_23.c` kolem r. 1265):
+```
+v3[17] = +68 = +16 / +64                 -> 2048
+v3[18] = +72 = +16 / (+64 * +60)         -> 1024
+v3[19] = +76 = 4 * (+16 / +64)           -> 8192   velikost mix bufferu
+v3[20] = +80 = alloc(4 * (+16 / +64))    -> MIX BUFFER
+```
+a o kus vys (r. 1032) se z dvojice far-pointeru na `+8` linearizuji adresy
+obou DMA pul-bufferu do `+44` / `+48`. Sedi to na vsechny drive namerene
+hodnoty. **Nahradni driver mel `+80` = 0**, takze prvni `sub_162293` (memset
+mix bufferu) by sahl na NULL - latentni pad.
+
+**Doplneno do `PortSound_CreateDigDriver`:** mix buffer (8192 B), dva DMA
+pul-buffery po 2048 B, pole ukazatelu na `+8`, `+44`/`+48`, `+84` = 1 a na
+`+52` ukazatel na 16bitove slovo "kterou polovinu hraje hardware". To slovo
+je JEDINE, co se z originalu opsat neda - v DOSu ho plnil real-mode driver
+podle DMA; presne tuhle informaci musi port dodat sam.
+
+**Pridan tep (`PortSound_ServiceTimer`)**, ktery v DOSu delal PIT: prepne
+"hranou polovinu" vzdy po dobe odpovidajici jedne polovine bufferu a zavola
+`sub_156680`. Visi na `PortVga_BlitBackBuffer` (behem videa jedina
+spolehlive periodicka cesta). Cele rozsireni je za `REORION2_AUDIO_TIMER=1`.
+
+**Cestou opraveny TRI skutecne chyby sirky ukazatele** (vsechny stejna
+trida, vsechny odhalene z adresy v SEH hlaseni - horni pulka adresy vzdy
+prozradila, ktere sousedni pole se prilepilo):
+1. `sub_162293`: `*(char **)(a1 + 80)` -> nacetlo 8 B a jako horni pulku
+   vzalo `+84` (= 1, "driver bezi") -> adresa `0x1_16CA7280`.
+2. `sub_156680`: `**(int16_t **)(dword_1C95EC + 52)` -> horni pulka `+56`,
+   do ktereho si tataz funkce o par radku niz uklada index -> az pri DRUHEM
+   tiku adresa `0x1_16B000F0`.
+3. `sub_162000`: `*(_DWORD **)a1` na `sample+0` -> horni pulka `sample+4` =
+   stav samplu (4 = hraje) -> adresa `0x4_16D69A24`.
+Take opraveno `SDL_calloc` -> CRT `calloc` pro tyhle buffery (SDL vracel
+adresy kolem 4,6 GB, ktere se do 32bitovych poli hry nevejdou) + kontrola
+`fits32`.
+
+**Zmereno po opravach:** tep bezi, `sub_156680` dobehne, zavola mixer
+`sub_162000` a ten se uz spravne rozskoci pres obnovenou 128polozkovou
+tabulku `funcs_16213C` - cimz je oprava tabulek z pokr. 12 potvrzena i v
+praxi. Dalsi hranice: **`sub_16177F+0x43`** cte z `0x2E0BF8FC`, tj. sample
+jeste nema naplnene ukazatele na data (`sample+8` / `sample+24`), protoze
+bookkeeping kolem `sub_141A76`/`sub_157B90` je porad zaslepeny.
+
+**Regrese zadna:**
+- video `compare_frames`: **600/600 matched, 0 diverged**
+- vychozi audio cesta (bez `REORION2_AUDIO_TIMER`): porad 11 davek
+Pozn.: pri prvnim pokusu byl gate omylem PRED inicializaci samplu, cimz se
+preskocilo oznaceni volnych samplu a audio se vubec nerozjelo (0 davek);
+opraveno, gate obaluje jen buffery.

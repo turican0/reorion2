@@ -1,6 +1,7 @@
 #include "port_sound.h"
 
 #include <SDL3/SDL.h>
+#include <cstdlib>
 
 namespace Port::Sound {
 
@@ -216,6 +217,56 @@ void PortSound_FeedStream(const void* pcm, int bytes)
                             g_streamType, g_streamRate);
 }
 
+// Adresa slova "kterou polovinu DMA hraje hardware" a driveru - naplni je
+// PortSound_CreateDigDriver, pouziva PortSound_ServiceTimer.
+static int16_t* g_playingHalf = nullptr;
+static int g_digDriver = 0;
+
+// AIL casovaci callback hry (registruje se pres sub_1400A9). V DOSu ho budil
+// PIT; v portu zadny takovy tik neni - zmereno, ze se za 90 s behu nezavolal
+// ANI JEDNOU, cimz se cely retez prehravani zastavi.
+extern "C" void sub_156680(int a1);
+
+// Tep, ktery v DOSu delal PIT. Prepne "hranou polovinu" DMA vzdy, kdyz od
+// posledniho prepnuti ubehla doba odpovidajici jedne polovine bufferu, a
+// zavola obsluhu hry - ta si sama vsimne zmeny indexu (`**(driver+52)`),
+// premixuje samply a posune jejich stav. Vola se z Present cesty.
+static bool PortSound_TimerEnabled()
+{
+    static int s_on = -1;
+    if (s_on < 0) {
+        const char* env = SDL_getenv("REORION2_AUDIO_TIMER");
+        s_on = (env && SDL_atoi(env)) ? 1 : 0;
+        SDL_Log("PortSound: emulovany AIL casovac %s", s_on ? "ZAPNUT" : "vypnut");
+    }
+    return s_on != 0;
+}
+
+extern "C" void PortSound_ServiceTimer(void)
+{
+    if (!PortSound_TimerEnabled() || !g_digDriver || !g_playingHalf)
+        return;
+
+    // Jedna polovina = 2048 B; pri 11025 Hz stereo 8bit to je ~93 ms.
+    // Odvozujeme z aktualniho formatu streamu, ne z konstanty, aby to sedelo
+    // i kdyz se stream otevre jinak.
+    const int bytesPerSec = (g_streamRate > 0 ? g_streamRate : 22050)
+                          * ((g_streamType & 1) ? 2 : 1)
+                          * ((g_streamType & 2) ? 2 : 1);
+    const uint64_t halfMs = bytesPerSec > 0 ? (2048ull * 1000ull / (uint64_t)bytesPerSec) : 93ull;
+
+    static uint64_t s_lastFlip = 0;
+    const uint64_t now = SDL_GetTicks();
+    if (s_lastFlip == 0)
+        s_lastFlip = now;
+    if (now - s_lastFlip < halfMs)
+        return;
+    s_lastFlip = now;
+
+    *g_playingHalf = (int16_t)(*g_playingHalf ^ 1);
+    sub_156680(g_digDriver);
+}
+
 int PortSound_CreateDigDriver(void)
 {
     // Popis rozlozeni a puvod hodnot viz port_sound.h.
@@ -251,6 +302,65 @@ int PortSound_CreateDigDriver(void)
     put(92, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(samples)));
     put(96, kSampleCount);
 
+    // --- DMA a mixovaci buffery (vlna 26 pokr. 13) ---------------------
+    // Rozlozeni NEODHADNUTE, ale odectene primo z inicializace driveru v
+    // originalu (orion_part_23.c kolem r. 1265):
+    //     v3[17] = +68 = +16 / +64                 -> 2048
+    //     v3[18] = +72 = +16 / (+64 * +60)         -> 1024
+    //     v3[19] = +76 = 4 * (+16 / +64)           -> 8192  velikost mixu
+    //     v3[20] = +80 = alloc(4 * (+16 / +64))    -> MIX BUFFER
+    // a o kus dal (r. 1032) se ze dvojice far-pointeru na +8 linearizuji
+    // adresy obou DMA pul-bufferu:
+    //     *(a2+44) = lin(ptr[0]);  *(a2+48) = lin(ptr[1]);
+    // Nahradni driver mel dosud +80 = 0, takze prvni `sub_162293` (memset
+    // mix bufferu) by sahnul na NULL - latentni pad, jakmile se mixer
+    // rozbehne.
+    // Cele tohle rozsireni je za stejnym prepinacem jako tep (viz
+    // PortSound_ServiceTimer). Duvod: nastavenim +84 = 1 ("driver bezi") a
+    // dodanim bufferu se hra pusti do kodovych cest, ktere dosud preskakovala,
+    // a bez doladeneho tepu z toho zatim padala. Vychozi chovani musi zustat
+    // nedotcene.
+    // POZOR: gate obaluje JEN buffery. Inicializace samplu nize musi probehnout
+    // vzdy - kdyz se preskocila, zadny sample nebyl oznaceny jako volny a
+    // audio se vubec nerozjelo (zmereno: 0 davek misto 11).
+    if (PortSound_TimerEnabled()) {
+        const uint32_t kHalfSize = 2048;  // = +16, velikost jedne poloviny DMA
+        // Alokuje se CRT `calloc`, ne SDL_calloc: dekompilat ty ukazatele
+        // uklada do 32bitovych poli, takze musi lezet pod 4 GB. SDL ma vlastni
+        // alokator a vracel adresy kolem 0x1_16E37B80 (~4,6 GB) - po orezu na
+        // 32 bitu z toho byl divoky ukazatel a pad ve VCRUNTIME memcpy.
+        // Pod /LARGEADDRESSAWARE:NO drzi CRT halda adresy pod 2 GB.
+        auto* mixBuf  = static_cast<uint8_t*>(std::calloc(1, 8192));
+        auto* dmaBuf  = static_cast<uint8_t*>(std::calloc(2, kHalfSize));
+        auto* bufPtrs = static_cast<uint32_t*>(std::calloc(2, sizeof(uint32_t)));
+        // +52 ukazuje na 16bitove slovo "kterou polovinu zrovna hraje
+        // hardware". Tohle JEDINE se z originalu opsat neda - v DOSu to slovo
+        // plnil real-mode driver podle DMA. Presne tu informaci musi dodat
+        // port sam (viz PortSound_ServiceTimer vyse).
+        auto* playingHalf = static_cast<int16_t*>(std::calloc(1, sizeof(int16_t)));
+        if (!mixBuf || !dmaBuf || !bufPtrs || !playingHalf) {
+            SDL_Log("PortSound_CreateDigDriver: alokace bufferu selhala");
+            return 0;
+        }
+        auto fits32 = [](const void* p) {
+            return (reinterpret_cast<uintptr_t>(p) >> 32) == 0;
+        };
+        if (!fits32(mixBuf) || !fits32(dmaBuf) || !fits32(bufPtrs) || !fits32(playingHalf)) {
+            SDL_Log("PortSound_CreateDigDriver: buffer nad 4 GB, 32bitova pole hry "
+                    "by ho neunesla - emulovany casovac se nezapina");
+        } else {
+            bufPtrs[0] = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(dmaBuf));
+            bufPtrs[1] = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(dmaBuf + kHalfSize));
+            put(8,  static_cast<uint32_t>(reinterpret_cast<uintptr_t>(bufPtrs)));
+            put(44, bufPtrs[0]);
+            put(48, bufPtrs[1]);
+            put(52, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(playingHalf)));
+            put(80, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(mixBuf)));
+            put(84, 1); // driver bezi (v originalu se nastavi po uspesnem startu)
+            g_playingHalf = playingHalf;
+        }
+    }
+
     // Kazdy sample nese na +0 ZPETNY UKAZATEL na svuj DIG_DRIVER a na +4 stav
     // (1 = volny). Overeno dumpem originalu (sample[1] na 0x004F2038:
     // +0 = 0x003EC8D8 = presne DIG_DRIVER, +4 = 2 po inicializaci).
@@ -264,6 +374,7 @@ int PortSound_CreateDigDriver(void)
         SDL_memcpy(s + 4, &freeMark, sizeof(freeMark));
     }
 
+    g_digDriver = static_cast<int>(reinterpret_cast<uintptr_t>(drv));
     s_driver = static_cast<int>(reinterpret_cast<uintptr_t>(drv));
     SDL_Log("PortSound_CreateDigDriver: DIG_DRIVER=0x%08X, %d samplu po %d B na 0x%08X",
             s_driver, kSampleCount, kSampleStride,

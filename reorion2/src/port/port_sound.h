@@ -61,6 +61,12 @@ void PortSound_FeedStream(const void* pcm, int bytes);
 // real-mode DIG driver svym prerusenim (viz sub_157740).
 int PortSound_QueuedBytes(void);
 
+// Tep, ktery v DOSu obstaraval PIT: prepne "hranou polovinu" DMA bufferu a
+// zavola AIL casovacovou obsluhu hry (sub_156680). Bez nej se retez
+// prehravani po par davkach zastavi - zmereno, ze obsluha se jinak nezavola
+// ani jednou. Zapina REORION2_AUDIO_TIMER=1.
+void PortSound_ServiceTimer(void);
+
 } // extern "C"
 
 #endif // PORT_SOUND_H
