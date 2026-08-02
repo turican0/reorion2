@@ -2356,7 +2356,7 @@ spravne) paletu prepsalo doopravdy, jas "skocil" na skutecnou hodnotu.
 
 Fix: aplikovano stejne `(v<<2)|(v>>4)` roztazeni jako v `sub_132AF8`,
 AZ PO vynasobeni fade-procentem (tedy roztazeni vidi vzdy spravny
-0-63 rozsah). Casovani (2 vsync-prekresleni na volani, 101 volani �
+0-63 rozsah). Casovani (2 vsync-prekresleni na volani, 101 volani 
 2.8s) ponechano beze zmeny - architekturalne odpovida puvodnimu
 70Hz VGA hardwaru, domnenka je, ze vnimana "pomalost" byla vedlejsi
 efekt slabeho jasu, ne skutecny casovaci bug.
@@ -5131,3 +5131,203 @@ tam vola totez.
 `dword_1BC2AC[10]` (zapisovy index `byte_1BC2E2`, ctecí `byte_1BC2E3`,
 priznak `byte_1BC2E4`) vcetne KODU klavesy - `sub_12C2E1` z nej cte, a
 drive tam port nic nevkladal, takze hra cetla prazdny prvek.
+
+---
+
+## PRIRUCKA PRO DALSI AI (stav k 2026-08-01, konec vlny 26)
+
+Tahle sekce je napsana pro nekoho, kdo prichazi bez kontextu. Prvni tri
+kapitoly jsou o METODE - bez nich se tady da ztratit cely den, jak se mi
+dnes dvakrat stalo. Ctvrta kapitola rika, kde jsme skoncili.
+
+### 1. DOSBOX-X: jak z originalu ziskat referencni hodnoty
+
+**PASTI, ktere me dnes staly cely kruh - prectete si je DRIV, nez neco
+zmerite:**
+
+1. **Spoustet VYHRADNE `bin/x64/Release/dosbox-x.exe`.**
+   `bin/x64/Debug/dosbox-x.exe` je z UNORA, tedy z doby pred celym ctl
+   protokolem. Tise se spusti, hra normalne bezi, ale **zadny config se
+   nenacte, nevznikne trace soubor a nevyhodnoti se ani STOP**. Vypada to,
+   jako by mereni "nefungovalo" nebo jako by byl problem ve volbe CPU
+   jadra - neni. Kdyz v logu neni ani jedna radka `[ctl]`, je to skoro
+   jiste tohle.
+2. **Kontrolni test, jestli instrumentace vubec bezi:** dej do configu
+   `STOP cond=cycle_ge:20000000`. Kdyz dosbox bezi dal a jeho vlastni log
+   ukazuje vyssi cyklus, ctl NEBEZI.
+3. Varovani `[ctl] radek N: neznamy prikaz DUMPREGS` je **neskodne** -
+   DUMPREGS ma vlastni loader (`ctl_load_dumpregs`), ktery config cte
+   zvlast. Neresit.
+4. `core=auto` je v poradku, do jader nesahat (dynamicka jadra zahazuji
+   instrukce kvuli rychlosti, mereni by nesedelo).
+
+**Jak se to spousti:**
+
+    cd /c/prenos/dosbox-x-remc2/bin/x64/Release
+    DOSBOX_CTL_FILE="<cesta>/muj.cfg" ./dosbox-x.exe -conf "<cesta>/dosbox_intro.conf"
+
+Trace soubor vznikne v CWD dosboxu (tedy v `bin/x64/Release/`).
+
+**Format configu** (plna dokumentace: `genCompare/DOSBOX_CTL_PROTOCOL.md`):
+
+    OUTPUT file=muj_trace.txt
+    DUMPREGS cond=eip:0x0037A680 label=jmeno repeat=always
+    DUMPREGS cond=changed:0x003A0D28:4 label=jmeno repeat=always
+    DUMPMEM  cond=eip:0x00386000 addr=0x003EC8D8 size=128 label=jmeno
+    STOP     cond=cycle_ge:400000000
+
+- `DUMPMEM` umi JEN `cond=eip:` a v tomhle buildu **nectí `repeat=always`**
+  (vypali jednou). Kdyz potrebujes pozdejsi vzorek, zvol jiny spousteci eip.
+- `DUMPREGS` umi `eip:`, `changed:ADR:sirka`, `eq:`, `call:` a `repeat=always`
+  funguje. **`changed:` je nejsilnejsi nastroj** - odpovi na otazku "kdo a
+  kdy tuhle promennou meni", protoze vypise i EIP zapisujici instrukce.
+
+**PREPOCET ADRES (naprosto zasadni, plete se to):**
+
+    runtime KOD  = IDA adresa + 0x224000     (sub_162000 -> 0x386000)
+    runtime DATA = IDA adresa + 0x216000     (dword_18AD28 -> 0x3A0D28)
+
+Pozor: adresa se pocita z **C jmena** (`orion_common.h`), NE ze jmena v asm
+dumpu - ten ma jina jmena (napr. `dword_182D28` = C `dword_18AD28`).
+
+**Doba behu:** k videu se dosbox dostane kolem 80M cyklu, do menu pozdeji;
+beh do 400M cyklu trva jednotky minut. Instrumentace (`cond=eip:` se
+vyhodnocuje kazdy krok) emulaci znatelne zpomali a grafika se trha - to je
+normalni a na spravnost dumpu to vliv nema.
+
+### 2. JAK HLEDAT CHYBY (metoda, ktera tady funguje)
+
+**Zlate pravidlo: MERIT, ne premyslet.** Kdykoliv jsem se dnes odchylil k
+"tohle bude urcite tim", stalo to cas. Kdyz jsem misto toho zmeril obe
+strany, chyba vypadla behem minut.
+
+**Postup:**
+
+1. Najdi MERITELNY priznak (pocet snimku, pocet volani, prumer vzorku,
+   pocet nenulovych pixelu). Bez cisla se neda poznat zlepseni.
+2. Zmer stejnou velicinu v ORIGINALE (dosbox) i v PORTU ve stejnem bode.
+3. Rozdil zuzuj pulenim, dokud nezbyde jedna funkce/promenna.
+4. **Nez neco "opravis", over si to v asm dumpu** (`Debug/diss/Orion2.exe.asm`).
+   Dnes jsem dvakrat chtel opravit misto, ktere bylo SPRAVNE - a jednou
+   naopak nasel chybu presne tam, kde dekompilat vypadal nevinne.
+
+**Katalog opakujicich se chyb dekompilatoru** (kazda z nich se tu uz
+vyskytla vicekrat, hledej je prednostne):
+
+| Vzor | Jak vypada | Jak poznat |
+|---|---|---|
+| 16bitovy parametr jako `int` | `for (i = 0; a6 > i; ++i)` s a6 = 0x1E0000 | asm ma `movsx eax, word ptr [ebp+arg_N]` |
+| Sirka ukazatele | `*(TYPE **)(x + N)` na x64 nacte 8 B misto 4 | horni pulka padove adresy = sousedni pole |
+| Ztracena navratova hodnota | funkce je `void`, hodnota chodi pres `JUMPOUT` | asm ma `call` a vysledek se pouzije |
+| Rozdrobeny souvisly blok | `*((_DWORD *)&x + 2)` cte sousedni global | v EXE jsou promenne za sebou, v portu ne |
+| Orizla velikost pole | tabulka `[2]`, ale index az 0x7F | v EXE souvisly blok az k dalsi funkci |
+| Vlastni (registrova) konvence | volani predava 3 argumenty, funkce ma 5 | asm plni EAX/EBX/ECX/ESI/EDI pred `call` |
+| Konstanta jako navesti | `sub_10000` pouzite jako cislo | v asm je to `10000h` |
+
+**Diagnosticky trik na horni pulku adresy:** kdyz pad hlasi adresu typu
+`0x1_16CA7280` nebo `0x4_16D69A24`, dolni polovina je platny 32bitovy
+ukazatel a **horni polovina rovnou rekne, ktere sousedni pole se prilepilo**
+(1 = priznak vedle, 4 = stav samplu...). Tim se chyba najde behem minuty.
+
+### 3. JAK PRACOVAT S PORTEM
+
+- **Preklad VZDY pres `-t:Rebuild`:**
+
+      MSBuild.exe reorion2.sln -t:Rebuild -p:Configuration=Debug -p:Platform=x64
+
+  Inkrementalni build tu obcas NErelinkuje a bezi stara binarka. Dnes me to
+  dostalo: vypadalo to, ze spravna oprava rozbila i vychozi cestu, revertoval
+  jsem ji, a po Rebuildu se ukazalo, ze zdroj byl cely cas v poradku.
+- **Kdyz linker hlasi "soubor se neda otevrit"**, bezi instance hry - zavrit.
+- **Pri zasahu do dekompilatu overit, ze mirime do SPRAVNE funkce** - stejny
+  vzor kodu byva ve vice funkcich a nahrazeni trefi prvni vyskyt. Dnes tak
+  jedna oprava spadla vedle a vypadalo to, ze nefunguje.
+- **Komentovat cesky a u kazde opravy uvest, CO bylo namereno** - komentare
+  jsou tu hlavni pamet projektu.
+- **cdb ani windbg na stroji NENI** (jsou tam jen dbghelp DLL). Misto nich
+  slouzi vestaveny hlidac (viz `REORION2_WATCHDOG` nize) - umi pozastavit
+  hlavni vlakno a vypsat jeho zasobnik i s cisly radku.
+
+**Diagnosticke prepinace, ktere uz existuji:**
+
+    REORION2_PRESENT_TRACE=1   pocet volani Present + pocet nenulovych pixelu
+                               a necernych barev palety  (3421 = rozbite menu,
+                               230887 = spravne vykreslene)
+    REORION2_BLIT_STATS=1      kolik blitu se zahodi kvuli nulovemu zdroji,
+                               kolik okennich slotu je prazdnych, kdo je vola
+    REORION2_FAKE_MOUSE=1      kurzor sam krouzi po obrazovce (test bez cloveka)
+    REORION2_FAKE_CLICK=1      k tomu drzi leve tlacitko
+    REORION2_WATCHDOG=5        pri vypadku Present pozastavi hlavni vlakno a
+                               vypise jeho ZASOBNIK i s cisly radku
+    REORION2_MOUSE_TRACE=1     vypise vsechny volane funkce INT 33h
+    REORION2_TRACE=1           zapina PortDebug_Checkpoint (vypis "DIAG ...")
+    REORION2_AUDIO_STATS=1     min/max/prumer odesilanych vzorku (128 = ticho)
+    REORION2_AUDIO_SRC=ring|mix  prepinac zdroje zvuku pro A/B porovnani
+    REORION2_VIDEO_AUDIO=0     vypne zvuk videa (hodi se pri dumpu snimku)
+    REORION2_AUDIO_TIMER=0     vypne emulovany AIL casovac
+    REORION2_BLIT_DUMP_DIR=<d> + REORION2_BLIT_DUMP_COUNT=600
+      + REORION2_DUMP_INCLUDE_PALETTE=1     ulozi snimky pro compare_frames
+
+**Regresni test videa** (musi zustat 600/600, jinak je oprava spatne):
+
+    genCompare/compare_frames.exe <dosbox_frames5> <port_frames> 640 480
+
+Referencni snimky jsou ve scratchpadu (`dosbox_frames5`). Pri dumpu se
+vyplati `REORION2_VIDEO_AUDIO=0`, at beh nezdrzuje zvuk.
+
+### 4. KDE JSME SKONCILI
+
+**HOTOVO A OVERENE:**
+
+- **Video**: `compare_frames` 600/600 matched, 0 diverged.
+- **Zvuk videa**: hraje spravne a je ZAPNUTY ve vychozim stavu. Bezi pres
+  skutecny mixer hry (emulovany AIL casovac + DMA pul-buffery), signal ma
+  prumer 127 (spravne vycentrovany; drive 165 = stejnosmerna slozka a orez).
+- **Intro jde preskocit** klavesou i mysi.
+- **Zamrznuti v menu odstraneno** (16bitove parametry v kreslici rutine
+  fontu `sub_1231B1`), `Present()` z ~200 na 2000+.
+- **Klavesnice** se emuluje pres skutecny kruhovy buffer `dword_1BC2AC[10]`
+  vcetne kodu klavesy; multimedialni klavesy jsou odfiltrovane.
+- **Mys**: INT 33h doplneno o fn 1, 2, 7, 8, 26, 27; souradnice se prepocitavaji
+  z rozmeru OKNA (okno je ve dvojnasobku rezimu!) na rozsah, ktery si hra
+  nastavuje pres fn 7/8 (X je 0..2*(sirka-1), dobovy zvyk DOS ovladace).
+  Systemovy kurzor se skryva pri inicializaci obrazu (hra fn 1/2 nikdy nevola).
+
+**NEVYRESENO - jedna spolecna pricina, tri projevy:**
+
+1. Pozadi menu obcas zmizi (obraz spadne z 230887 na 3421 nenulovych pixelu,
+   zustane jen napis "LOAD GAME"). **Nedeterministicke.**
+2. **Softwarovy kurzor se nekresli vubec** - overeno `REORION2_FAKE_MOUSE=1`:
+   pozice se meni, ale obraz zustane bit po bitu stejny.
+3. Klikani nema efekt.
+
+**Co je o tom zmereno:**
+
+- Blity se tise zahazuji obranou `if (!a3) return 0;` v `sub_12A478`
+  (`orion_part_19.c`, pochazi z vlny 24 s poznamkou "pricina se nenasla").
+- Vsechny nulove blity maji **jednoho volajiciho**: `sub_11E718`
+  (`orion_part_19.c:1862`) a souradnice **(0,0)** = celoobrazovkove pozadi.
+- Zdroj se bere z okenni tabulky: `off_184480 + 55*i + 44`.
+- **Zmereno: 9 oken, z toho 8 ma na +44 nulu** (pozdeji 7/6). Sloty se tedy
+  neplni.
+- Tabulka sama je v poradku (`unk_1B0848[13750]` = 250 slotu po 55 B).
+- **Overeny negativni vysledek:** `sub_114DCA` (tvorba okna) vraci hodnotu,
+  jejiz horni pulka je zbytek adresy - ale **ORIGINAL DELA TOTEZ**
+  (`inc word_1ABE0E` / `mov ax, word_1ABE0E` / `dec eax`). Tam se sahat NEMA.
+- Take opraveno: 191 vyskytu `*(int *)((char *)&dword_1B3E0A + 2) >> 16`
+  nahrazeno primo `word_1B3E0E` (v originale ty globaly lezi za sebou, v
+  portu to zaviselo na rozlozeni od prekladace). Samo o sobe to nestacilo.
+
+**DALSI KROK (konkretne):**
+
+Protoze callee je shodne s originalem, riziko je na strane VOLAJICICH:
+funkce pro tvorbu oken je fakticky 16bitova (volajici si v originale berou
+jen `AX`), ale IDA ji otypovala jako `int`. Overit u vsech volajicich
+(mista s `++word_1B3E0E` v `orion_part_18.c`), jestli navratovou hodnotu
+orezavaji na 16 bitu - kdyz ne, dostanou misto indexu okna obrovske cislo a
+zapisuji sloty jinam, nez se ctou. To by vysvetlilo vsechny tri projevy
+najednou, protoze kurzor i pozadi jdou stejnou kreslici cestou.
+
+Paralelne se to da potvrdit z dosboxu: `DUMPMEM addr=0x3C6848` (sloty) a
+`word_1B3E0E` na `0x3C9E0E` - kdyz ma original na +44 platne ukazatele tam,
+kde port nuly, je to potvrzene.
