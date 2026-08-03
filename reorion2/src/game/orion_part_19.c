@@ -14,7 +14,7 @@ int sub_11A558()
 
   for ( i = 0; !i; i = v6 || v1 )
   {
-    LOBYTE(v0) = sub_12C392();
+    v0 = (uint8_t)sub_12C392();
     v6 = v0;
     v1 = sub_124075();
     v3 = v1;
@@ -1046,7 +1046,13 @@ int sub_11CACE(int16_t *a1)
 
 
 //----- (0011CEF5) --------------------------------------------------------
-void sub_11CEF5(int a1, int a2, int a3, int a4)
+// PORT (vlna 26 pokr. 43): funkce VRACI HODNOTU (index polozky, na kterou se
+// kliklo). V asm konci `mov eax, [ebp+var_8]` a volajici sub_1171AB dela
+// `call sub_11CEF5 / mov [ebp+var_C], eax` - IDA z ni presto udelala `void` a
+// volajici pak cetl neinicializovanou promennou. Klasicky vzor "ztracena
+// navratova hodnota" z katalogu chyb dekompilatoru.
+// `v50` = asm var_8 (navratovy slot), `v49` = asm var_C (vysledek vetvi).
+int sub_11CEF5(int a1, int a2, int a3, int a4)
 {
   int v4; // eax
   int v5; // eax
@@ -1094,7 +1100,10 @@ void sub_11CEF5(int a1, int a2, int a3, int a4)
   int v47; // [esp+54h] [ebp-14h] BYREF
   int v48; // [esp+58h] [ebp-10h]
   int v49; // [esp+5Ch] [ebp-Ch]
-  int v50; // [esp+60h] [ebp-8h]
+  // PORT: v originale je var_8 na nekterych cestach neinicializovany
+  // (viz `return` bez prirazeni nize) - tam cetl smeti ze zasobniku.
+  // V portu ho nulujeme, aby chovani bylo urcite.
+  int v50 = 0; // [esp+60h] [ebp-8h]
   char v51; // [esp+64h] [ebp-4h]
 
   v49 = 0;
@@ -1105,7 +1114,14 @@ void sub_11CEF5(int a1, int a2, int a3, int a4)
   v39 = sub_123ABA();
   v42 = sub_123AE7();
   LOWORD(dword_1B3E14) = sub_123FFB();
-  LOBYTE(v4) = sub_12C392();
+  // PORT (vlna 26 pokr. 43): `sub_12C392` vraci v asm NULOVE ROZSIRENY EAX
+  // (`xor eax, eax` + `mov al, ...`), takze volajici `test eax, eax` testuje
+  // cistou 0/1. Dekompilat plnil jen spodni bajt (`LOBYTE(v4) = ...`) a
+  // hornich 24 bitu nechaval NEINICIALIZOVANYCH - podminka "je pripravena
+  // klavesa?" pak vychazela skoro vzdy jako splnena a hra se odsud nikdy
+  // nedostala k vyhodnoceni MYSI. Zmereno: test zasahu okna probehl za 30 s
+  // jen JEDNOU, proto klikani v menu nic nedelalo.
+  v4 = (uint8_t)sub_12C392();
   if ( v4 )
   {
     v48 = sub_11CACE((int16_t *)&v47);
@@ -1204,7 +1220,7 @@ void sub_11CEF5(int a1, int a2, int a3, int a4)
       if ( !(_WORD)v29 )
       {
         v50 = 0;
-        return;
+        return v50;
       }
       if ( (int16_t)v29 > 0 )
       {
@@ -1401,7 +1417,7 @@ LABEL_135:
       byte_1B071D[m] = 0;
       for ( n = 0; n < 10; ++n )
       {
-        LOBYTE(v17) = sub_12C392();
+        v17 = (uint8_t)sub_12C392();
         if ( v17 == 1
           && sub_12C35B() % 256 >= 65
           && sub_12C35B() % 256 <= 122
@@ -1708,7 +1724,7 @@ LABEL_234:
         if ( !**(_WORD **)((char *)off_184480 + 55 * (int16_t)v47 + 32) )
         {
           sub_16937A(*(char **)((char *)off_184480 + 55 * (int16_t)v47 + 32));
-          return;
+          return v50;
         }
         **(_WORD **)((char *)off_184480 + 55 * (int16_t)v47 + 32) = 0;
       }
@@ -1749,7 +1765,7 @@ LABEL_234:
           LOWORD(v25) = *((_WORD *)v25 + 12);
           v50 = (int)v25;
         }
-        return;
+        return v50;
       }
     }
   }
@@ -1777,6 +1793,8 @@ LABEL_325:
     if ( v51 )
       sub_11AEF7();
   }
+  v50 = v49; // asm: mov eax, [ebp+var_C] / mov [ebp+var_8], eax
+  return v50;
 }
 // 11D0CE: conditional instruction was optimized away because %var_14.2!=0
 // 11D491: conditional instruction was optimized away because %var_44.2!=0
@@ -2339,7 +2357,7 @@ int16_t sub_120486(int a1)
   {
     while ( !v6 )
     {
-      LOBYTE(v3) = sub_12C392();
+      v3 = (uint8_t)sub_12C392();
       v6 = v3 != 0;
       if ( sub_124075() )
         v6 = 1;
@@ -2353,7 +2371,7 @@ int16_t sub_120486(int a1)
   {
     while ( !v6 )
     {
-      LOBYTE(v2) = sub_12C392();
+      v2 = (uint8_t)sub_12C392();
       v6 = v2 != 0;
       if ( sub_124075() )
         v6 = 1;

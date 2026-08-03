@@ -2155,6 +2155,7 @@ void sub_142268(int a1)
 //----- (0014234D) --------------------------------------------------------
 void sub_14234D()
 {
+  PortDebug_Checkpoint("MDI.install_INI", 1); /* PORT: docasne mereni hudebniho retezce */
   int v0; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2185,6 +2186,7 @@ void sub_14234D()
 //----- (00142425) --------------------------------------------------------
 void sub_142425(char *a1, void *a2)
 {
+  PortDebug_Checkpoint("MDI.install_driver_file", 1); /* PORT: docasne mereni hudebniho retezce */
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2215,6 +2217,7 @@ void sub_142425(char *a1, void *a2)
 //----- (0014257F) --------------------------------------------------------
 void sub_14257F(int a1)
 {
+  PortDebug_Checkpoint("MDI.allocate_sequence", 1); /* PORT: docasne mereni hudebniho retezce */
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2245,6 +2248,7 @@ void sub_14257F(int a1)
 //----- (001426D1) --------------------------------------------------------
 void sub_1426D1(int **a1, int a2, int a3)
 {
+  PortDebug_Checkpoint("MDI.init_sequence", 1); /* PORT: docasne mereni hudebniho retezce */
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2275,6 +2279,7 @@ void sub_1426D1(int **a1, int a2, int a3)
 //----- (001427CA) --------------------------------------------------------
 void sub_1427CA(_DWORD *a1)
 {
+  PortDebug_Checkpoint("MDI.start_sequence", 1); /* PORT: docasne mereni hudebniho retezce */
   int v1; // edx
 
   v1 = ++dword_1C0E40;

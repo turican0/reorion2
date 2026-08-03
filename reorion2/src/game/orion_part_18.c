@@ -3195,7 +3195,7 @@ int FindMoxSetPath_1114D7(_BYTE *a1, _BYTE *a2)
   }
   else
   {
-    strcpy(a2, &unk_1AD846);
+    strcpy(a2, unk_1AD828.name);
     return 1;
   }
 }
@@ -3210,7 +3210,7 @@ int sub_111610(int a1)
   if ( unknown_libname_1(a1, 0, &unk_1AD828) )
     return 0;
   else
-    return dword_1AD842;
+    return unk_1AD828.size;
 }
 // 139A4C: using guessed type int unknown_libname_1(_DWORD, _DWORD, _DWORD);
 // 1AD842: using guessed type int dword_1AD842;
@@ -3221,12 +3221,12 @@ int *sub_111660(int a1)
 {
   if ( unknown_libname_1(a1, 0, &unk_1AD828) )
     return 0;
-  dword_1AD818 = ((word_1AD840 & 0xFE00) >> 9) + 1980;
-  dword_1AD814 = ((word_1AD840 & 0x1E0) >> 5) - 1;
-  dword_1AD810 = word_1AD840 & 0x1F;
-  dword_1AD80C = (word_1AD83E & 0xF800) >> 11;
-  dword_1AD808 = (word_1AD83E & 0x7E0) >> 5;
-  dword_1AD804 = 2 * (word_1AD83E & 0x1F);
+  dword_1AD818 = ((unk_1AD828.date & 0xFE00) >> 9) + 1980;
+  dword_1AD814 = ((unk_1AD828.date & 0x1E0) >> 5) - 1;
+  dword_1AD810 = unk_1AD828.date & 0x1F;
+  dword_1AD80C = (unk_1AD828.time & 0xF800) >> 11;
+  dword_1AD808 = (unk_1AD828.time & 0x7E0) >> 5;
+  dword_1AD804 = 2 * (unk_1AD828.time & 0x1F);
   dword_1AD81C = 0;
   dword_1AD820 = 0;
   dword_1AD824 = 0;
@@ -3242,8 +3242,8 @@ int *sub_111660(int a1)
 // 1AD81C: using guessed type int dword_1AD81C;
 // 1AD820: using guessed type int dword_1AD820;
 // 1AD824: using guessed type int dword_1AD824;
-// 1AD83E: using guessed type int16_t word_1AD83E;
-// 1AD840: using guessed type int16_t word_1AD840;
+// 1AD83E: using guessed type int16_t unk_1AD828.time;
+// 1AD840: using guessed type int16_t unk_1AD828.date;
 
 
 //----- (00111763) --------------------------------------------------------
@@ -6255,7 +6255,7 @@ int sub_1171AB(int a1, int a2, int a3, int a4)
       HIWORD(dword_1B3E10) = 0;
     if ( word_1B3E0E > 1 )
     {
-      sub_11CEF5(word_1B3E0E, a2, a3, a4);
+      v4 = sub_11CEF5(word_1B3E0E, a2, a3, a4);
       v6 = v4;
       sub_124D41();
       if ( (_WORD)v6 )
@@ -7129,7 +7129,7 @@ int16_t sub_11951E()
   word_1844A6 = 0;
   while ( 1 )
   {
-    LOBYTE(v0) = sub_12C392();
+    v0 = (uint8_t)sub_12C392();
     if ( !v0 )
       break;
     sub_12C2E1();

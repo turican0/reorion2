@@ -5468,3 +5468,58 @@ TRVALE a `sub_124105` je smycka "cekej, dokud neni zadne tlacitko stisknute"
 -> hra se zasekla uz v inicializaci myshi. Prepsano na cyklicke mackani a
 `REORION2_FAKE_MOUSE` na PLYNULY pohyb (drive teleport mezi 4 rohy, coz se
 nedalo pouzit na mereni plynulosti).
+
+### Vlna 26 pokracovani 43: KLIKANI V MENU FUNGUJE - tri chyby na jedne ceste
+
+**1) Podminka "je pripravena klavesa?" byla skoro vzdy splnena.**
+`sub_11CEF5` (vyhodnoceni vstupu v menu) zacina:
+```c
+LOBYTE(v4) = sub_12C392();
+if ( v4 ) { ...klavesnicova vetev... }
+```
+V asm ale `sub_12C392` vraci NULOVE ROZSIRENY EAX (`xor eax, eax` +
+`mov al, [ebp+var_4]`) a volajici dela `test eax, eax`. Dekompilat plnil jen
+spodni bajt a hornich 24 bitu nechal NEINICIALIZOVANYCH -> podminka vychazela
+skoro vzdy jako splnena a hra se **nikdy nedostala k vyhodnoceni MYSI**.
+**Zmereno:** test zasahu okna probehl za 30 s JEDNOU; po oprave bezi
+prubezne a hlasi skutecne souradnice kurzoru. Opraveno na 11 mistech
+(`v = (uint8_t)sub_12C392()`).
+
+**2) Ztracena navratova hodnota `sub_11CEF5`.**
+Asm: `call sub_11CEF5 / mov [ebp+var_C], eax`, uvnitr konci
+`mov eax, [ebp+var_8]`. IDA z funkce udelala `void`, takze volajici
+`sub_1171AB` cetl neinicializovanou promennou misto indexu polozky, na
+kterou se kliklo. Doplneno: `v50` (= asm var_8) je navratovy slot, na konci
+se plni z `v49` (= var_C).
+
+**3) DTA pro FINDFIRST prepisovala sousedni globaly.**
+Po opravach 1+2 zacala hra pri kliknuti PADAT ve `fread` uvnitr `sub_12C607`
+(nacteni hlavicky LBX). Hlidac zabudovany do `PortDebug_Checkpoint` ukazal,
+ze `dword_1B06FC` (buffer pro tu hlavicku) nekdo prepisuje - a zuzil to na
+`FindMoxSetPath_1114D7` -> `unknown_libname_1` (DOS FINDFIRST).
+Ten zapisuje celych **43 bajtu** (`struct DosDta`), ale `unk_1AD828` byl v
+portu `_UNKNOWN`, tedy **1 bajt**. IDA navic jeho pole rozdrobila do
+samostatnych promennych (`word_1AD83E` = +0x16 cas, `word_1AD840` = +0x18
+datum, `dword_1AD842` = +0x1A velikost, `unk_1AD846` = +0x1E jmeno).
+Kazde hledani souboru tak prepsalo 42 bajtu sousednich globalu.
+Vytknuto do jedne `struct DosDta unk_1AD828` a pole se ctou z ni.
+
+**VYSLEDEK (potvrdil uzivatel):** kliknuti na polozku menu (QUIT) **zabere**.
+
+**ZBYVA (dalsi krok):** po kliknuti polozky menu "zhasnou" a nova obrazovka
+se nevykresli; kurzor na miste kliknuti nechava problikavajiciho "ducha".
+Tedy: akce se spusti, ale prekresleni nasledujici obrazovky ne.
+
+### Poznamka k HUDBE (mereno, nedokonceno)
+
+Do `sub_14234D` (AIL_install_MDI_INI), `sub_142425`
+(AIL_install_MDI_driver_file), `sub_14257F` (AIL_allocate_sequence_handle),
+`sub_1426D1` (AIL_init_sequence) ani `sub_1427CA` (AIL_start_sequence) se
+hra v portu **VUBEC NEDOSTANE** - overeno docasnymi kontrolnimi body, ani
+jeden se za cely beh v menu nezavolal. Instalace hudebniho ovladace se tedy
+preskakuje jeste driv (obdoba toho, co ve vlne 26 resil DIG: `sub_111F3E`
+plni jen DIGITALNI vetev - `sub_140979`/`PortSound_CreateDigDriver`).
+**Dalsi krok podle zadani uzivatele:** udelat pro MDI totez co pro DIG -
+podstrcit fake config a nahradni MDI_DRIVER, aby si hra myslela, ze hudebni
+zarizeni existuje, a retez dosel az k `AIL_start_sequence`. Teprve pak resit
+skutecne prehrani XMI.

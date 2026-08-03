@@ -4029,7 +4029,7 @@ int sub_14AAC( int a1, int16_t *a2)
     sub_12C2A0();
     sub_11C2F0();
     v4 = sub_11438B(0, 0, 639, 479, &unk_178A08, 0);
-    if ( (uint16_t)sub_1171AB(v4, v4, 639, 479) == (_WORD)v4 || (LOBYTE(v5) = sub_12C392(), v5 == 1) )
+    if ( (uint16_t)sub_1171AB(v4, v4, 639, 479) == (_WORD)v4 || (v5 = (uint8_t)sub_12C392(), v5 == 1) )
       v3 = 1;
     if ( !v3 )
     {
@@ -4199,7 +4199,7 @@ void sub_14DF7(int a1, int a2, int a3)
     static int loop3_iters = 0;
     if ((++loop3_iters % 200) == 0)
       PortDebug_Checkpoint("14DF7.loop3.tick", (sub_132825() << 16) | (uint16_t)v7);
-    LOBYTE(v9) = sub_12C392();
+    v9 = (uint8_t)sub_12C392();
     if ( v9 == 1 )
     {
       sub_12C2E1();

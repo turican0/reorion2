@@ -1353,7 +1353,7 @@ void sub_24ED3(int16_t *a1)
       if ((++loop1_iters % 200) == 0)
         PortDebug_Checkpoint("24ED3.loop1.tick", (sub_12D70B() << 16) | (uint16_t)v5);
       sub_12C2A0();
-      LOBYTE(v9) = sub_12C392();
+      v9 = (uint8_t)sub_12C392();
       if ( v9 == 1 )
       {
         v8 = 1;
@@ -1406,7 +1406,7 @@ void sub_24ED3(int16_t *a1)
       if ((++loop2_iters % 200) == 0)
         PortDebug_Checkpoint("24ED3.loop2.tick", (sub_12D70B() << 16) | (uint16_t)v12);
       sub_12C2A0();
-      LOBYTE(v15) = sub_12C392();
+      v15 = (uint8_t)sub_12C392();
       if ( v15 == 1 )
       {
         v8 = 1;
@@ -1505,7 +1505,7 @@ int sub_251EF(int16_t *a1)
   v3 = 0;
   while ( (v1 & 0x8000u) == 0 && !v3 )
   {
-    LOBYTE(v4) = sub_12C392();
+    v4 = (uint8_t)sub_12C392();
     if ( v4 == 1 )
     {
       v3 = 1;

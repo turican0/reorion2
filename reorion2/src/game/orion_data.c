@@ -17807,11 +17807,15 @@ int dword_1AD818; // weak
 int dword_1AD81C; // weak
 int dword_1AD820; // weak
 int dword_1AD824; // weak
-_UNKNOWN unk_1AD828; // weak
-int16_t word_1AD83E; // weak
-int16_t word_1AD840; // weak
-int dword_1AD842; // weak
-_UNKNOWN unk_1AD846; // weak
+/* PORT (vlna 26 pokr. 43): DTA (Disk Transfer Area) pro DOS FINDFIRST/FINDNEXT.
+   `unknown_libname_1/2` do ni zapisuji celych 43 bajtu (struct DosDta), ale IDA
+   z nej udelala jednobajtovy `_UNKNOWN` plus ctyri samostatne promenne, ktere
+   jsou ve skutecnosti JEJI POLE: +0x16 cas, +0x18 datum, +0x1A velikost,
+   +0x1E jmeno. V portu tedy kazde hledani souboru prepsalo 42 bajtu sousednich
+   globalu - zmereno hlidacem v PortDebug_Checkpoint, ze takhle prisel o obsah
+   `dword_1B06FC` (buffer pro hlavicku LBX) a hra pak pri kliknuti v menu
+   spadla ve `fread`. Vytknuto do jedne struktury, at je rozlozeni jiste. */
+struct DosDta unk_1AD828; // weak
 _UNKNOWN unk_1AD854; // weak
 char byte_1AE054[80]; // weak
 // vlna 12: tentativni "int dword_1AE0A4[]" nevytvarel definici (LNK2001
