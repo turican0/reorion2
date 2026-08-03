@@ -5523,3 +5523,122 @@ plni jen DIGITALNI vetev - `sub_140979`/`PortSound_CreateDigDriver`).
 podstrcit fake config a nahradni MDI_DRIVER, aby si hra myslela, ze hudebni
 zarizeni existuje, a retez dosel az k `AIL_start_sequence`. Teprve pak resit
 skutecne prehrani XMI.
+
+### Vlna 26 pokracovani 44: HUDBA - nalezena pricina (chybi cely blok
+### "nacti nastaveni / jinak vychozi hodnoty" v GameMain)
+
+**Test originalu v dosboxu (provedl uzivatel):** hra nabehne, v animaci s
+kosmickymi lodemi hraje zvuk; po SPACE nasleduje **animace otevirajiciho se
+menu, TAKE SE ZVUKEM**. Port tuhle animaci/hudbu nema vubec.
+
+**Zmereno v portu:** kontrolni body `tail.before_2484F` a `tail.after_2484F`
+jsou v logu HNED ZA SEBOU - `sub_2484F` se okamzite vrati.
+
+`sub_2484F` (orion_part_02.c) NENI animace, ale **spusteni hudby menu**
+(`sub_1136EC(aStreamLbx)` = STREAM.LBX, pak `sub_113A20/113BAC/113AF2/
+113CBD`). Cela je obalena `if ( byte_199BEF == 1 )` - a `byte_199BEF`
+(= "hudba zapnuta") je v portu NULA.
+
+**Kdo ho ma nastavit:** `sub_127E1` (orion_part_01.c:2080) = vychozi
+nastaveni voleb, mimo jine `byte_199BED = 1` (zvuk), `byte_199BEE = 50`,
+**`byte_199BEF = 1` (hudba)**, `byte_199BF0 = 50`.
+
+**Rozdil proti originalu (overeno v asm):**
+```
+                test    eax, eax          ; nacetla se konfigurace?
+                jz      short loc_100E1   ; NE -> vychozi hodnoty
+                call    sub_11C39
+                cmp     word_191CBE, 82h  ; sedi verze configu?
+                jz      short loc_100E6
+                call    sub_12227         ; NE -> prevod stareho configu
+                jmp     short loc_100E6
+loc_100E1:      call    sub_127E1         ; <<< VYCHOZI HODNOTY (hudba ZAP)
+loc_100E6:      call    sub_10C2F
+```
+V portu **zadny z techto ctyr symbolu neexistuje** - `sub_127E1`, `sub_11C39`,
+`sub_12227` ani `sub_10C2F` nema v `src/game/*.c` jedine volani (v asm ma
+`sub_127E1` volani dve: z `main__0` a z `sub_12227`). Cely blok
+"nacti nastaveni / jinak vychozi" tedy pri rekonstrukci `GameMain_10057`
+vypadl a vsechny volby zustavaji na nulach.
+
+**DALSI KROK:** doplnit ten blok do `GameMain_10057` podle asm (`main__0`
+kolem `loc_100E1`). Tim se rozsviti nejen hudba, ale i ostatni vychozi volby
+(hlasitosti, `byte_199BED`, `byte_199CAF`, `word_199CBE` = 130, ...), ktere
+jsou dnes nulove.
+
+**Pozn.:** drivejsi stopa pres MDI ovladac (`dword_18438C`) je timto
+ODSUNUTA - ta promenna nema v originalnim EXE zadny zapis (jediny xref je
+cteni v `sub_112D4F+17`), takze hudba menu evidentne nechodi pres
+`sub_112DA6`, ale prave pres `sub_2484F`/STREAM.LBX (digitalni stopa, ne
+MIDI - odpovida i tomu, ze uzivatel mluvi o "zvuku", ne o MIDI).
+
+**Vyvracena hypoteza (merenim):** "jeden stisk SPACE se spotrebuje dvakrat"
+(intro + animace menu). Zmereno pri jednom stisku: `klav.vlozeno` 1x,
+`klav.ohlaseno` 1x, `klav.precteno` 1x (kod 0x2C20 = scancode mezerniku).
+Klavesnicovy buffer je v poradku, animace menu se neprehrava z jineho
+duvodu - viz vyse.
+
+### Vlna 26 pokracovani 44 - OPRAVA PREDCHOZIHO ZAVERU (merenim)
+
+Predchozi zaver "v portu chybi cely blok nacti nastaveni / jinak vychozi
+hodnoty" byl **CHYBNY a timto se stahuje**. Blok v `GameMain_10057` JE -
+hledal jsem ho podle puvodnich jmen (`sub_127E1`, `sub_11C39`, `sub_12227`,
+`sub_10C2F`), zatimco v portu jsou uz prejmenovana:
+`InitDefaultSettings_127E1`, `LoadSettingsFile_11C39`,
+`LoadOrResetSettings_12227`, `LoadLanguageSetting_10C2F`.
+
+**Zmereno (kontrolni body v GameMain):**
+```
+nastaveni.mox_set_nalezen 1     <- MOX.SET se najde
+nastaveni.hudba_199BEF    1     <- po nacteni je HUDBA ZAPNUTA
+nastaveni.zvuk_199BED     1
+tail.before_2484F         1     <- i v okamziku volani sub_2484F
+```
+Blok nastaveni (`stateBlock_199BDC`) je uz spravne vytknuty do packed
+struktury a `MOX.SET` ma na offsetu 19 hodnotu 1 - vse sedi.
+
+Take neplati odvozeni "`sub_2484F` se okamzite vraci, protoze mezi
+`tail.before_2484F` a `tail.after_2484F` neni v logu nic" - v tom useku
+proste zadny jiny kontrolni bod NENI, takze z toho nic neplyne.
+`sub_2484F` do hudebni vetve vstupuje.
+
+**Kde tedy hudba mizi - dalsi krok:** druha podminka uvnitr
+`if ( word_180EB4 != 1 && word_180EB4 != 2 && word_180EB4 != 3 )`
+(= "uz nejaka skladba hraje"), a pak samotny retez
+`sub_1136EC(aStreamLbx)` -> `sub_113A20` -> `sub_113BAC` -> `sub_113AF2` ->
+`sub_113CBD(30)`. Je to DIGITALNI stopa (STREAM.LBX), ne MIDI - to sedi s
+tim, ze uzivatel mluvi o "zvuku". Zmerit postupne: hodnotu `word_180EB4`
+pri prvnim volani a pak jestli se `sub_1136EC`/`sub_113CBD` skutecne
+provedou az do konce.
+
+### Vlna 26 pokracovani 45: hudba se SPOUSTI (zmereno), zbyva zjistit proc
+### neni slyset; a novy pad v kopii spinavych pruhu
+
+**Zmereno uvnitr `sub_2484F`** (kontrolni body zustavaji v kodu, jsou
+gatovane `REORION2_TRACE`):
+```
+hudba.2484F_vstup       -1   <- word_180EB4 pri prvnim volani (podminka projde)
+hudba.2484F_spousti      1   <- vetev spousteni hudby SE PROVEDE
+hudba.2484F_pred_113CBD  1   <- vybrana skladba 1, dojde az k sub_113CBD(30)
+```
+Cely retez `sub_1136EC(aStreamLbx)` -> `sub_113A20` -> `sub_113BAC` ->
+`sub_113AF2` -> `sub_113CBD(30)` se tedy PROVEDE. Hudba presto neni slyset,
+takze problem lezi az ZA nim - ve streamovani STREAM.LBX do zvukoveho
+vystupu (digitalni stopa, stejna cesta jako zvuk videa: `Port::Sound`).
+**Dalsi krok:** overit, jestli se do `PortSound_FeedStream` (nebo do mixeru
+hry) z teto cesty vubec neco dostane - stejnym zpusobem, jakym se ve vlne 26
+ladil zvuk videa (`REORION2_AUDIO_STATS=1`: prumer 128 = ticho).
+
+**Novy pad (nesouvisi s hudbou, je na kreslici ceste):**
+```
+SEH 0xC0000005 av_read = 0x0000000_1_184F19A0
+  #0 memmove  #1 qmemcpy  #2 sub_1276BD  #3 sub_125D4F  #4 sub_124ECB
+  #5 sub_1077D  #6 sub_8F1C4  #7 sub_816F2
+```
+Horni pulka padove adresy je **1**, dolni (0x184F19A0) je platny 32bitovy
+ukazatel - podle katalogu ("diagnosticky trik na horni pulku adresy") jde o
+`*(TYPE **)(x + N)`, ktere na x64 nacetlo 8 B misto 4 a prilepilo sousedni
+pole s hodnotou 1. Hledat v `sub_1276BD` / `sub_125D4F` (kopie spinavych
+pruhu do obrazu). Je to pravdepodobne TENTYZ koren jako "obcas se
+neprekresli pozadi" - obe veci sedi na stejnou kreslici cestu pres
+`sub_124ECB`.

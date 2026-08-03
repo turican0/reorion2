@@ -5487,7 +5487,17 @@ int sub_125D4F()
     if ( v6 != -1 )
     {
       v1 = (*(int *)(4 * i + dword_1BB8C0) >> 16) - v6 + 1;
-      v2 = (void *)sub_1694B7(v6 + v3, v1, destBase);
+      // PORT (vlna 26 pokr. 46): CIL se pocita PRESNE STEJNE jako zdroj -
+      // overeno v asm (Debug/diss/Orion2.exe.asm, sub_125D4F):
+      //   mov edx,[var_20] / add edx,[var_C] / shl edx,2 / add edx,[var_8]  ; zdroj
+      //   mov eax,[var_20] / add eax,[var_C] / shl eax,2 / add eax,[var_4]  ; cil
+      //   call sub_1276BD
+      // Zadne orezavani tam NENI a sub_1694B7 se odsud v originale VUBEC
+      // nevola. Port ho tu mel navic a ten pri prekroceni rozsahu srazil
+      // offset na 0, takze se spinavy pruh zkopiroval na ZACATEK obrazu -
+      // presne projev "obcas se spatne vykresluje pozadi". Navic tim
+      // vznikala neshoda mezi cilem a zdrojem.
+      v2 = (void *)(destBase + 4 * (v6 + v3));
       sub_1276BD(v2, (void *)(v7 + 4 * (v6 + v3)), v1);
     }
     v3 += v5;

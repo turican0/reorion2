@@ -882,11 +882,13 @@ int sub_2484F()
   int result = 0; // eax  // vlna 15: Hex-Rays artefakt neinicializovaneho navratu
                           // (byte_199BEF != 1 -> return result). Debug RTC jinak pada.
 
+  PortDebug_Checkpoint("hudba.2484F_vstup", (int)word_180EB4);
   if ( byte_199BEF == 1 )
   {
     word_180EB8 = -1;
     if ( word_180EB4 != 1 && word_180EB4 != 2 && word_180EB4 != 3 )
     {
+      PortDebug_Checkpoint("hudba.2484F_spousti", 1);
       sub_113C28(1);
       v0 = sub_113B56();
       while ( v0 > 0 )
@@ -902,6 +904,7 @@ int sub_2484F()
       sub_113BAC(-1);
       word_180EB8 = -1;
       sub_113AF2(0);
+      PortDebug_Checkpoint("hudba.2484F_pred_113CBD", (int)word_180EB4);
       return sub_113CBD(30);
     }
   }

@@ -62,9 +62,12 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   dword_19916C = PoolAlloc_110B89(0x64000);
   PortDebug_Checkpoint("GameMain.pool64000.done", dword_19916C != 0);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
+  PortDebug_Checkpoint("nastaveni.mox_set_nalezen", v4);
   if ( v4 )
   {
     LoadSettingsFile_11C39(v4);
+    PortDebug_Checkpoint("nastaveni.hudba_199BEF", (uint8_t)byte_199BEF);
+    PortDebug_Checkpoint("nastaveni.zvuk_199BED", (uint8_t)byte_199BED);
     if ( word_199CBE != 130 )
       LoadOrResetSettings_12227();
   }
@@ -138,7 +141,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
       sub_1205E6(5, 0, 255);                  // 01017F
       sub_123E6C((int)unk_17CF00, 1);        // 01018E
     }
-    PortDebug_Checkpoint("tail.before_2484F", 0);
+    PortDebug_Checkpoint("tail.before_2484F", (uint8_t)byte_199BEF);
     sub_2484F();                              // 010193
     PortDebug_Checkpoint("tail.after_2484F", 0);
     // DECOMP_TODO: ServiceAudioTick_FE8BE/sub_CDF65 zde dostavaji leftover registry (zadne
