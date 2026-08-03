@@ -212,13 +212,24 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
         ++t;
         const int cx = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278) / 2;
         const int cy = (g_mouseMaxY > 0 ? g_mouseMaxY : 479) / 2;
+        // PLYNULY pohyb po ctverci (1 krok na volani) - drivejsi verze
+        // kurzor TELEPORTOVALA mezi ctyrmi rohy, coz se nedalo pouzit na
+        // mereni plynulosti.
         const int r = 120;
-        const int phase = (t / 40) % 4;
-        if (phase == 0)      { vx = cx - r; vy = cy - r; }
-        else if (phase == 1) { vx = cx + r; vy = cy - r; }
-        else if (phase == 2) { vx = cx + r; vy = cy + r; }
-        else                 { vx = cx - r; vy = cy + r; }
-        buttons = SDL_getenv("REORION2_FAKE_CLICK") ? 1 : 0;
+        const int per = 240;              // kroku na jednu stranu ctverce
+        const int phase = (t / per) % 4;
+        const int k = (t % per) * (2 * r) / per - r;
+        if (phase == 0)      { vx = cx + k; vy = cy - r; }
+        else if (phase == 1) { vx = cx + r; vy = cy + k; }
+        else if (phase == 2) { vx = cx - k; vy = cy + r; }
+        else                 { vx = cx - r; vy = cy - k; }
+        // POZOR: tlacitko se musi STRIDAVE MACKAT A POUSTET, ne drzet.
+        // `sub_124105` ("cekej, dokud neni zadne tlacitko stisknute") je
+        // smycka, ktera se pri trvale stisknutem tlacitku zatoci donekonecna
+        // - zmereno: hra se s trvalym stiskem zasekla uz v inicializaci myshi
+        // (posledni vypis "RunGame.before_MouseInit"). Mackame proto jen v
+        // jedne ze ctyr fazi obchuzky.
+        buttons = (SDL_getenv("REORION2_FAKE_CLICK") && phase == 1) ? 1 : 0;
         return;
     }
 
@@ -417,6 +428,19 @@ extern "C" int PortDos_Int386x(int intNum, const void* inRegs)
 //   DX = Y, SI/DI = prirustky v "mickey" jednotkach.
 extern "C" void PortDos_ServiceMouse(void)
 {
+    // REORION2_MOUSE_CALLBACK=0 emulaci preruseni vypne. Hodi se pri dumpu
+    // snimku pro `compare_frames`: kdyz kurzor pri porovnani s dosboxem lezi
+    // nad oknem, hra ho vykresli do obrazu a snimky se lisi, i kdyz je jinak
+    // vsechno spravne (referencni beh dosboxu mysi nehybal).
+    {
+        static int s_on = -1;
+        if (s_on < 0) {
+            const char* e = SDL_getenv("REORION2_MOUSE_CALLBACK");
+            s_on = (e && *e == '0') ? 0 : 1;
+        }
+        if (!s_on)
+            return;
+    }
     if (!g_mouseHandler)
         return;
     // Zabrana proti rekurzi: kreslici cast rutiny muze skoncit dalsim
@@ -449,9 +473,14 @@ extern "C" void PortDos_ServiceMouse(void)
     {
         static int s_on = -1, s_calls = 0;
         if (s_on < 0) s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
-        if (s_on && (s_calls++ % 100) == 0)
-            SDL_Log("INT33 callback #%d: udalosti=0x%02X tlacitka=%d x=%d y=%d",
-                    s_calls - 1, events, buttons, vx, vy);
+        if (s_on && (s_calls++ % 100) == 0) {
+            static uint64_t s_lastTick = 0;
+            const uint64_t now = SDL_GetTicks();
+            SDL_Log("INT33 callback #%d: udalosti=0x%02X tlacitka=%d x=%d y=%d  (100 volani za %llu ms)",
+                    s_calls - 1, events, buttons, vx, vy,
+                    (unsigned long long)(s_lastTick ? now - s_lastTick : 0));
+            s_lastTick = now;
+        }
     }
 
     s_inService = true;

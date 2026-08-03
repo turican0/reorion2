@@ -3,8 +3,6 @@
 extern "C" void PortWatchdog_Ping(void);
 // Emulace preruseni od myshi - viz komentar v Present() a port_dos.cpp.
 extern "C" void PortDos_ServiceMouse(void);
-extern "C" void PortDebug_Checkpoint(const char* name, int value);
-extern "C" int g_kurzorSeq;
 #include "port_sound.h"
 
 #include <SDL3/SDL.h>
@@ -517,7 +515,6 @@ void Present()
     // spravne misto - hra tu ceka na obraz, tedy presne tam, kde v originale
     // preruseni chodila. Volani samo kontroluje, jestli je rutina vubec
     // zaregistrovana a jestli se stav zmenil.
-    PortDebug_Checkpoint("obraz.present", ++g_kurzorSeq);
     PortDos_ServiceMouse();
 
     // PORT (vlna 26 pokr. 34): rozlisit, jestli je cerna obrazovka PRAZDNY
@@ -538,6 +535,12 @@ void Present()
         }
     }
 
+    // PORT (docasne mereni): kolik casu zabere prevod pres paletu a kolik
+    // samotne SDL vykresleni - hleda se pricina trhaneho kurzoru (Present
+    // bezi v menu jen ~30x/s a kurzor se aktualizuje presne s nim).
+    const uint64_t tPresentStart = SDL_GetTicksNS();
+    uint64_t tAfterConvert = 0;
+
     void* pixels = nullptr;
     int pitch = 0;
     if (SDL_LockTexture(g_texture, nullptr, &pixels, &pitch)) {
@@ -550,12 +553,28 @@ void Present()
         SDL_UnlockTexture(g_texture);
     }
 
+    tAfterConvert = SDL_GetTicksNS();
+
     DumpFrameIfRequested(g_framebuffer, g_palette, kModeWidth, kModeHeight);
     CompareAgainstReferenceIfChanged(g_framebuffer, g_palette, kModeWidth, kModeHeight);
 
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
     SDL_RenderPresent(g_renderer);
+
+    {
+        static int s_on = -1;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_PRESENT_TRACE") ? 1 : 0;
+        if (s_on) {
+            static uint64_t sumConvert = 0, sumRest = 0; static int n = 0;
+            const uint64_t tEnd = SDL_GetTicksNS();
+            sumConvert += tAfterConvert - tPresentStart;
+            sumRest    += tEnd - tAfterConvert;
+            if (++n % 100 == 0)
+                SDL_Log("PortVga: Present prumer - prevod palety %.2f ms, zbytek %.2f ms",
+                        (double)sumConvert / n / 1e6, (double)sumRest / n / 1e6);
+        }
+    }
 }
 
 } // namespace Port::Vga
@@ -604,10 +623,31 @@ unsigned char* PortVga_VideoWindow(void)
 // Misto toho se snimek VYKRESLI (Present - vsync je prirozeny okamzik,
 // kdy ma byt framebuffer na obrazovce) a kratce se pocka, cimz se herni
 // smycka taktuje zhruba na puvodnich ~70 Hz VGA a netoci 100 % CPU.
+// PORT (vlna 26 pokr. 41): cekani se NESMI prospat v jednom kuse. V DOSu
+// kreslil kurzor ovladac myshi z preruseni primo do videopameti, tedy uplne
+// nezavisle na herni smycce. V portu je kurzor videt az po Present(), a ten
+// se volal jen jednou za cele cekani - zmereno: Present bezel v menu jen
+// ~23x/s (pritom sam stoji 1.4 ms, takze to nebylo vykreslovanim, ale
+// prave temi 14/50 ms spanku) a kurzor se hybal presne s nim -> trhal se.
+// Cekani proto krajime na kratke useky a v kazdem obraz obnovime; celkova
+// doba cekani zustava STEJNA, aby se nezmenilo casovani hry (na nem stoji
+// regresni test videa).
+static void PortVga_WaitSliced(uint32_t totalMs)
+{
+    const uint64_t end = SDL_GetTicks() + totalMs;
+    for (;;) {
+        Port::Vga::Present(); // Present sam obslouzi emulovane preruseni myshi
+        const uint64_t now = SDL_GetTicks();
+        if (now >= end)
+            break;
+        const uint64_t left = end - now;
+        SDL_Delay((uint32_t)(left > 8 ? 8 : left));
+    }
+}
+
 void PortVga_WaitVsync(void)
 {
-    Port::Vga::Present();
-    SDL_Delay(14); // ~70 Hz VGA refresh
+    PortVga_WaitSliced(14); // ~70 Hz VGA refresh
 }
 
 // PORT (wave 25r-4): capture the framebuffer AT THE BLIT (game sub_125814),
@@ -720,8 +760,7 @@ void PortVga_CaptureBlit(const void* backBuffer)
 // same still frame 4 times per tick while accumulating real delay.
 void PortVga_WaitVsyncSlow(void)
 {
-    Port::Vga::Present();
-    SDL_Delay(50); // ~1 BIOS tick (~54.9ms) - see comment above
+    PortVga_WaitSliced(50); // ~1 BIOS tick (~54.9ms) - see comment above
 }
 
 // Replaces the VGA DAC palette write (game sub_132AF8 wrote a 6-bit index/R/G/B

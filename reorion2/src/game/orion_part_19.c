@@ -4218,10 +4218,6 @@ void sub_1236D1(int a1_eventMask, int a2_buttons, int a3_x, int a4_y)
       LOWORD(dword_1BBA38) = (int16_t)a3_x >> 1;
       HIWORD(dword_1BBA34) = a4_y;
       word_1B921A = a2_buttons;
-      { static int n = 0;
-        if ( (n++ % 20) == 0 )
-          PortDebug_Checkpoint("mysh.cb_xy",
-                               (((int)(int16_t)dword_1BBA38) << 16) | (HIWORD(dword_1BBA34) & 0xFFFF)); }
     }
     else
     {

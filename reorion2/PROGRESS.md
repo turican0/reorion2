@@ -5413,3 +5413,58 @@ az za behu - jeji pole +8/+10 byla v dekompilatu samostatne promenne
 Overeno merenim i uzivatelem: kurzor se kresli, sleduje mys po CELE
 obrazovce. Zbyva overit klikani a dobehnout regresni test videa
 (`compare_frames`, musi zustat 600/600).
+
+### Vlna 26 pokracovani 42: duch grafiky na prechodu banky, plynulost kurzoru
+### a co je se zvukem
+
+**1) "Duch" - kus grafiky na spatnem miste (jen v urcitych bodech).**
+Na 12 mistech v `orion_part_21.c` (obe vetve kurzoru pretinajici hranici
+64 KB banky) stalo:
+```c
+LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+```
+V asm je to ale `add si, word ptr dword_1BBA42`, tedy **16bitovy soucet do
+zakladu VESA okna** (0xA0000, spodni slovo NULA) - vysledek je proste
+"zaklad okna + x". Port ma okno na malloc adrese, ktera na 64 KB zarovnana
+neni, takze zapis do spodnich 16 bitu ukazatel POSUNUL. Projevovalo se to
+jen na prechodu banky - odtud "jen v urcitych bodech".
+Opraveno na `v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;`
+Uzivatel potvrdil: **duch je pryc**.
+
+**2) Trhany kurzor - zmereno, ze to nebylo vykreslovanim.**
+```
+Present v menu:            ~23x/s
+cena jednoho Present:      prevod palety 1.03 ms + zbytek 0.34 ms
+callback myshi:            ~25x/s (presne s Presentem)
+```
+Pricina: `PortVga_WaitVsync`/`WaitVsyncSlow` se prospaly **14 resp. 50 ms
+v jednom kuse** a Present zavolaly jen jednou za cele cekani. V DOSu kreslil
+kurzor ovladac z PRERUSENI primo do videopameti, tedy nezavisle na herni
+smycce; v portu je videt az po Presentu.
+Reseni: `PortVga_WaitSliced()` - cekani se kraji na useky po 8 ms a v kazdem
+se obraz obnovi. **Celkova doba cekani je stejna**, aby se nezmenilo
+casovani hry.
+```
+po oprave: Present ~132x/s, callback myshi ~136x/s (100 volani za 733 ms)
+```
+
+**3) Zvuk.** Menu v portu zadny zvuk nema a nikdy nemelo:
+- **MIDI/hudba** - napojena NENI. `AIL_install_MDI_driver_file` vede pres
+  `sub_15A340` na real-mode ovladac (ADLIB.MDI), ktery port nespousti.
+  Port ma jen digitalni vetev AIL (`DIG_DRIVER`).
+- **Zvuk, ktery hral drive, je zvukova stopa INTRO VIDEA.** Behy s
+  `REORION2_SKIPINTRO=1` (rychla iterace) nebo `REORION2_VIDEO_AUDIO=0`
+  (dump snimku) proto tise - neni to regrese.
+
+**4) Regresni test videa.** Prvni beh po opravach dal 536/600. Pricina se
+NASLA a nebyla to chyba: kdyz kurzor lezi nad oknem, hra ho vykresli do
+obrazu, zatimco referencni beh dosboxu mysi nehybal. Doplnen prepinac
+**`REORION2_MOUSE_CALLBACK=0`** (vypne emulaci preruseni myshi) - s nim
+`compare_frames` hlasi **600/600 matched, 0 diverged**. Pri dumpu snimku ho
+od ted vzdy pouzivat.
+
+**Pozn. k testovacimu prepinaci:** `REORION2_FAKE_CLICK=1` drzel tlacitko
+TRVALE a `sub_124105` je smycka "cekej, dokud neni zadne tlacitko stisknute"
+-> hra se zasekla uz v inicializaci myshi. Prepsano na cyklicke mackani a
+`REORION2_FAKE_MOUSE` na PLYNULY pohyb (drive teleport mezi 4 rohy, coz se
+nedalo pouzit na mereni plynulosti).

@@ -1,5 +1,4 @@
 #include "orion_common.h"
-int g_kurzorSeq = 0; /* PORT: docasne mereni poradi operaci kurzoru */
 
 /* Adresni rozsah: 0x13DABB - 0x14814C  (200 funkci) */
 
@@ -3496,7 +3495,6 @@ void sub_144A48()
 //----- (00144A91) --------------------------------------------------------
 void sub_144A91()
 {
-  PortDebug_Checkpoint("kurzor.uloz", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3516,10 +3514,6 @@ void sub_144A91()
   dword_188D90 = 0;
   LOWORD(dword_1BBA42) = dword_1BBA38;
   HIWORD(dword_1BBA3E) = HIWORD(dword_1BBA34);
-  { static int n = 0;
-    if ( (n++ % 20) == 0 )
-      PortDebug_Checkpoint("mysh.draw_xy",
-                           (((int)(int16_t)dword_1BBA42) << 16) | (HIWORD(dword_1BBA3E) & 0xFFFF)); }
   byte_188D95 = 26;
   byte_188D96 = 24;
   if ( (uint16_t)(HIWORD(dword_1BBA34) + 24) >= 0x1E0u )
@@ -3578,7 +3572,13 @@ void sub_144A91()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 257 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 257];
                 }
                 else
@@ -3590,7 +3590,13 @@ void sub_144A91()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 513 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 513];
                 }
                 else
@@ -3602,7 +3608,13 @@ void sub_144A91()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 129 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 129];
                 }
                 else
@@ -3614,7 +3626,13 @@ void sub_144A91()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 385 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 385];
                 }
                 else
@@ -3686,7 +3704,6 @@ void sub_144A91()
 //----- (00144EAC) --------------------------------------------------------
 void sub_144EAC()
 {
-  PortDebug_Checkpoint("kurzor.obnov", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3759,7 +3776,13 @@ void sub_144EAC()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 257 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 257];
                 }
                 else
@@ -3771,7 +3794,13 @@ void sub_144EAC()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 513 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 513];
                 }
                 else
@@ -3783,7 +3812,13 @@ void sub_144EAC()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 129 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 129];
                 }
                 else
@@ -3795,7 +3830,13 @@ void sub_144EAC()
                 LOWORD(v8) = dword_1BBA42;
                 if ( dword_188D97 + v8 + 1 >= 385 )
                 {
-                  LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                  /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                   v10 = &v7[dword_188D97 - 385];
                 }
                 else
@@ -3865,7 +3906,6 @@ void sub_144EAC()
 //----- (0014529D) --------------------------------------------------------
 void sub_14529D()
 {
-  PortDebug_Checkpoint("kurzor.kresli", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3939,7 +3979,13 @@ void sub_14529D()
               LOWORD(v8) = dword_1BBA42;
               if ( dword_188D97 + v8 + 1 >= 257 )
               {
-                LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                 v10 = &v7[dword_188D97 - 257];
               }
               else
@@ -3951,7 +3997,13 @@ void sub_14529D()
               LOWORD(v8) = dword_1BBA42;
               if ( dword_188D97 + v8 + 1 >= 513 )
               {
-                LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                 v10 = &v7[dword_188D97 - 513];
               }
               else
@@ -3963,7 +4015,13 @@ void sub_14529D()
               LOWORD(v8) = dword_1BBA42;
               if ( dword_188D97 + v8 + 1 >= 129 )
               {
-                LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                 v10 = &v7[dword_188D97 - 129];
               }
               else
@@ -3975,7 +4033,13 @@ void sub_14529D()
               LOWORD(v8) = dword_1BBA42;
               if ( dword_188D97 + v8 + 1 >= 385 )
               {
-                LOWORD(v7) = dword_1BBA42 + (uint16_t)&loc_9FFFD + 3;
+                /* PORT (vlna 26 pokr. 41): v asm je tady `add si, word ptr dword_1BBA42`,
+   tedy 16BITOVY soucet do zakladu VESA okna (0xA0000, spodni slovo 0) -
+   vysledek je proste "zaklad okna + x". IDA z toho udelala
+   `LOWORD(v7) = x + (uint16_t)&loc_9FFFD + 3`, coz v portu prepisovalo
+   spodnich 16 bitu SKUTECNEHO ukazatele (okno portu neni zarovnane na
+   64 KB) -> na prechodu banky se kus grafiky vykreslil na spatne misto. */
+                  v7 = (char *)PortVga_VideoWindow() + (uint16_t)dword_1BBA42;
                 v10 = &v7[dword_188D97 - 385];
               }
               else
@@ -4060,10 +4124,6 @@ void sub_145719()
   dword_1BB8AC = 0;
   LOWORD(dword_1BBA42) = dword_1BBA38;
   HIWORD(dword_1BBA3E) = HIWORD(dword_1BBA34);
-  { static int n = 0;
-    if ( (n++ % 20) == 0 )
-      PortDebug_Checkpoint("mysh.draw_xy",
-                           (((int)(int16_t)dword_1BBA42) << 16) | (HIWORD(dword_1BBA3E) & 0xFFFF)); }
   byte_188D95 = 26;
   byte_188D96 = 24;
   if ( (uint16_t)(HIWORD(dword_1BBA34) + 24) >= 0x1E0u )
