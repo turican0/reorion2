@@ -1611,7 +1611,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
   v9 = 255;
   sub_124C08();
   byte_199EFE = 1;
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_C5BB9();
   sub_1205E6(8, 0, 255);
   sub_1318D4(0, 255);
@@ -1632,7 +1632,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
   }
   v10 = sub_131922(0, 255);
   sub_1077D(v10, 255, v9, a2);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_C5C44();
   sub_1172FC();
   while ( 1 )
@@ -1648,7 +1648,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
           sub_91A40();
         }
       }
-      sub_123E6C((int)&unk_17CF00, 1);
+      sub_123E6C((int)unk_17CF00, 1);
       byte_199F38 = 0;
       word_199992 = v89;
       JUMPOUT(0x734A3);
@@ -1672,7 +1672,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
       {
         byte_19BED1 = 0;
         v13 = 1;
-        v14 = &unk_17CF00;
+        v14 = unk_17CF00;
         byte_19BED0 = 0;
       }
       else
@@ -1728,7 +1728,7 @@ LABEL_19:
       if ( byte_19BED0 )
       {
         byte_19BED0 = 0;
-        sub_123E6C((int)&unk_17CF00, 1);
+        sub_123E6C((int)unk_17CF00, 1);
         byte_19BED1 = 0;
         sub_785EC(v73, word_19999C);
         v39 = 113 * v73 + dword_19306C;
@@ -1931,7 +1931,7 @@ LABEL_53:
         if ( byte_19BED1 == 1 )
         {
           v24 = 1;
-          sub_123E6C((int)&unk_17CF00, 1);
+          sub_123E6C((int)unk_17CF00, 1);
           byte_19BED1 = 0;
           v77 = -1;
           v74 = -1;
@@ -1940,7 +1940,7 @@ LABEL_53:
       else
       {
         v24 = 4;
-        sub_123E6C((int)&unk_181FE8, 4);
+        sub_123E6C((int)unk_181FE8, 4);
         byte_19BED1 = 1;
       }
     }
@@ -2038,7 +2038,7 @@ LABEL_53:
   v77 = -1;
   v74 = -1;
   v13 = 1;
-  v14 = &unk_17CF00;
+  v14 = unk_17CF00;
   byte_19BED1 = 0;
 LABEL_18:
   sub_123E6C((int)v14, v13);
@@ -2758,7 +2758,7 @@ char sub_74F8A( int a1)
   char v1; // bl
 
   v1 = sub_75035(a1, 0);
-  sub_123E6C((int)&unk_181FE8, 4);
+  sub_123E6C((int)unk_181FE8, 4);
   return v1;
 }
 
@@ -2775,7 +2775,7 @@ char sub_74FAA( int a1, int a2)
   _BYTE v10[100]; // [esp+0h] [ebp-64h] BYREF
 
   v3 = sub_75035(a2, 1);
-  sub_123E6C((int)&unk_182018, 4);
+  sub_123E6C((int)unk_182018, 4);
   if ( v3 )
   {
     v4 = 113 * a1;
@@ -2840,7 +2840,7 @@ LABEL_4:
   if ( v6 )
   {
     sub_784A0(v15, v14);
-    sub_123E6C((int)&unk_17CF00, 1);
+    sub_123E6C((int)unk_17CF00, 1);
     if ( a2 )
     {
       v10 = v3 + dword_19306C;
@@ -2883,11 +2883,11 @@ char sub_75180(int16_t *a1, int16_t *a2, int a3)
   if ( v4 == -1 )
   {
     v6 = sub_75035(a3, 0);
-    result = sub_123E6C((int)&unk_181FE8, 4);
+    result = sub_123E6C((int)unk_181FE8, 4);
     if ( v6 )
     {
       *a1 = a3;
-      return sub_123E6C((int)&unk_182018, 4);
+      return sub_123E6C((int)unk_182018, 4);
     }
   }
   else
@@ -2896,12 +2896,12 @@ char sub_75180(int16_t *a1, int16_t *a2, int a3)
     if ( result )
     {
       *a2 = a3;
-      sub_123E6C((int)&unk_17CF00, 1);
+      sub_123E6C((int)unk_17CF00, 1);
       if ( *a2 == *a1 )
         sub_7522B(*a2);
       else
         sub_787EA(*a1, word_19999C, a3);
-      result = sub_123E6C((int)&unk_181FE8, 4);
+      result = sub_123E6C((int)unk_181FE8, 4);
       *a1 = -1;
       *a2 = -1;
     }
@@ -4900,7 +4900,7 @@ LABEL_6:
 void sub_77961()
 {
   sub_7A795();
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_C5C44();
   sub_1112EC(dword_192ED4, 1);
   sub_107AF(&dword_19BED8);

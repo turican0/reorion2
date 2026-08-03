@@ -168,13 +168,77 @@ struct WatcomRegs {
 // kde jsou v anonymnim namespace, tedy mimo hlavicku).
 static constexpr int kPortModeWidth  = 640;
 static constexpr int kPortModeHeight = 480;
-// Citlivost myši - DOS ovladac ma vychozi 50/50/50; hra si ji stejne hned
+// Citlivost myï¿½i - DOS ovladac ma vychozi 50/50/50; hra si ji stejne hned
 // prenastavuje funkci 26 (viz sub_12xxxx v orion_part_19.c).
 static int g_mouseSensX = 50;
 static int g_mouseSensY = 50;
 static int g_mouseSensD = 50;
 static int g_mouseMaxX = 0;
 static int g_mouseMaxY = 0;
+
+// ---------------------------------------------------------------------
+// OBSLUZNA RUTINA MYSHI (vlna 26 pokr. 41) - klicova vec, ktera v portu
+// chybela. Zmereno: hra si obsluhu NEregistruje funkci 0x0C pres int386,
+// ale pres int386x (Watcom varianta se segmentovymi registry) - a ta byla
+// v link_stubs.c prazdny stub vracejici 0. Volani jsou dve:
+//   sub_1237F3  -> fn 0x0C, maska 1  (jen pohyb)          - pri inicializaci
+//   sub_12386C  -> fn 0x14, maska 43 (pohyb + tlacitka)   - v menu
+//   sub_123926  -> fn 0x14, maska 1
+// V DOSu ovladac tuhle rutinu (sub_1236D1) volal pri kazdem pohybu/kliknuti
+// a TEPRVE ONA aktualizuje herni pozici kurzoru (dword_1BBA38/1BBA34),
+// stav tlacitek (word_1B921A) a KRESLI kurzor (dword_1B9208/920C/9210).
+// Bez ni kurzor zustaval na 0,0 a kliknuti nemela zadny ucinek - presne
+// tri projevy, ktere jsme meli otevrene.
+using MouseCallback = void (*)(int eax, int ebx, int ecx, int edx, int esi, int edi);
+static uint32_t g_mouseHandler = 0; // adresa herni rutiny (LAA:NO -> vejde se do 32 bitu)
+static uint16_t g_mouseMask    = 0; // maska udalosti, na ktere se ma volat
+static int g_lastVx = -1, g_lastVy = -1, g_lastButtons = 0;
+
+// Prepocet pozice ze SDL do virtualniho rozsahu, ktery si hra nastavila
+// funkcemi 7/8 - spolecny pro dotaz fn 3 i pro callback, aby obe cesty
+// hlasily TOTEZ (drive byl vypocet jen uvnitr case 0x03).
+static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
+{
+    Port::Mouse::Poll();
+    const Port::Mouse::State& s = Port::Mouse::GetState();
+    buttons = (s.leftButton ? 1 : 0) | (s.rightButton ? 2 : 0);
+
+    // TEST: vstrikovani falesne pozice a tlacitka, aby sla cesta mysi overit
+    // i bez cloveka u klavesnice (REORION2_FAKE_MOUSE / REORION2_FAKE_CLICK).
+    static int s_fake = -1;
+    if (s_fake < 0) s_fake = SDL_getenv("REORION2_FAKE_MOUSE") ? 1 : 0;
+    if (s_fake) {
+        static int t = 0;
+        ++t;
+        const int cx = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278) / 2;
+        const int cy = (g_mouseMaxY > 0 ? g_mouseMaxY : 479) / 2;
+        const int r = 120;
+        const int phase = (t / 40) % 4;
+        if (phase == 0)      { vx = cx - r; vy = cy - r; }
+        else if (phase == 1) { vx = cx + r; vy = cy - r; }
+        else if (phase == 2) { vx = cx + r; vy = cy + r; }
+        else                 { vx = cx - r; vy = cy + r; }
+        buttons = SDL_getenv("REORION2_FAKE_CLICK") ? 1 : 0;
+        return;
+    }
+
+    // POZOR (vlna 26 pokr. 39): prepocet musi vychazet z rozmeru OKNA, ne
+    // rezimu. Okno se vytvari ve dvojnasobku (1280x960) a SDL_GetMouseState
+    // vraci souradnice vuci oknu. Cilovy rozsah X je 0..2*(sirka-1) = 0..1278
+    // (dobovy zvyk DOS ovladace; hra si ho pak deli dvema - viz sub_1236D1).
+    vx = s.x;
+    vy = s.y;
+    const int winW = Port::Vga::GetWindowWidth();
+    const int winH = Port::Vga::GetWindowHeight();
+    if (g_mouseMaxX > 0 && winW > 0)
+        vx = s.x * (g_mouseMaxX + 1) / winW;
+    if (g_mouseMaxY > 0 && winH > 0)
+        vy = s.y * (g_mouseMaxY + 1) / winH;
+    if (g_mouseMaxX > 0 && vx > g_mouseMaxX) vx = g_mouseMaxX;
+    if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
+    if (vx < 0) vx = 0;
+    if (vy < 0) vy = 0;
+}
 
 extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
 {
@@ -228,10 +292,18 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
             // obrazovku zpusobil warp, nebo neco jineho.
             break;
         case 0x0C: // registrace obsluzne rutiny myshi (ES:DX = callback, CX = maska)
-            SDL_Log("INT33: hra registruje OBSLUZNOU RUTINU myshi, maska=0x%04X, "
-                    "callback=0x%08X - port ji zatim nikdy nezavola!",
-                    (unsigned)(uint16_t)regs.ecx, (unsigned)regs.edx);
+        case 0x14: // vymena obsluzne rutiny - vraci puvodni v ES:DX a CX
+        {
+            const uint32_t oldHandler = g_mouseHandler;
+            const uint16_t oldMask    = g_mouseMask;
+            g_mouseHandler = regs.edx;
+            g_mouseMask    = (uint16_t)regs.ecx;
+            if (fn == 0x14) {
+                regs.edx = oldHandler;
+                regs.ecx = oldMask;
+            }
             break;
+        }
         case 0x1A: // nastav citlivost: BX = horiz, CX = vert, DX = prah zrychleni
             g_mouseSensX = (int)(uint16_t)regs.ebx;
             g_mouseSensY = (int)(uint16_t)regs.ecx;
@@ -254,69 +326,23 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
             g_mouseMaxY = (int)(int16_t)(uint16_t)regs.edx;
             break;
         case 0x03: { // precti pozici a tlacitka: BX=tlacitka, CX=x, DX=y
-            Port::Mouse::Poll();
-            const Port::Mouse::State& s = Port::Mouse::GetState();
-            regs.ebx = (s.leftButton ? 1u : 0u) | (s.rightButton ? 2u : 0u);
             // POZOR (vlna 26 pokr. 29): hra si pres funkci 7 nastavuje rozsah
             // X na `2 * (sirka - 1)`, tedy 0..1278 pro 640 - dobovy zvyk DOS
             // ovladace, ktery X vraci ve dvojnasobnem rozliseni. Port vracel
             // syrove pixely okna, takze souradnice byly polovicni a testy
             // kliknuti se netrefily (a herni kurzor se kreslil mimo).
-            // Pocitadlo dotazu na pozici - abych videl, jestli se menu vubec
-            // pta (uzivatel merenim zjistil, ze breakpoint se tu netrefil).
+            // Vypocet je od vlny 26 pokr. 41 v ComputeVirtualMouse, aby dotaz
+            // fn 3 i emulovany callback hlasily uplne totez.
+            int vx = 0, vy = 0, buttons = 0;
+            ComputeVirtualMouse(vx, vy, buttons);
             {
                 static int s_on = -1, s_calls = 0;
                 if (s_on < 0) s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
-                if (s_on && (s_calls++ % 200) == 0) {
-                    SDL_Log("INT33 fn3 #%d: SDL x=%d y=%d  tlacitka=%u  rozsah=%d/%d",
-                            s_calls - 1, s.x, s.y,
-                            (unsigned)((s.leftButton?1u:0u)|(s.rightButton?2u:0u)),
-                            g_mouseMaxX, g_mouseMaxY);
-                }
+                if (s_on && (s_calls++ % 200) == 0)
+                    SDL_Log("INT33 fn3 #%d: x=%d y=%d  tlacitka=%d  rozsah=%d/%d",
+                            s_calls - 1, vx, vy, buttons, g_mouseMaxX, g_mouseMaxY);
             }
-            int vx = s.x, vy = s.y;
-            // POZOR (vlna 26 pokr. 39): prepocet musi vychazet z rozmeru
-            // OKNA, ne rezimu. Okno se vytvari ve dvojnasobku (1280x960),
-            // a SDL_GetMouseState vraci souradnice vuci oknu - deleni 640
-            // proto davalo dvojnasobnou hodnotu a kurzor se orezal na okraj.
-            // TEST (vlna 26 pokr. 40): vstrikovani falesne pozice a tlacitka,
-            // aby sla cesta mysi overit i bez cloveka u klavesnice.
-            //   REORION2_FAKE_MOUSE=1  -> kurzor krouzi po obrazovce
-            //   REORION2_FAKE_CLICK=1  -> navic drzi levé tlacitko
-            {
-                static int s_fake = -1;
-                if (s_fake < 0) s_fake = SDL_getenv("REORION2_FAKE_MOUSE") ? 1 : 0;
-                if (s_fake) {
-                    static int t = 0;
-                    ++t;
-                    // pomaly pohyb po ctverci uprostred obrazovky
-                    const int cx = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278) / 2;
-                    const int cy = (g_mouseMaxY > 0 ? g_mouseMaxY : 479) / 2;
-                    const int r = 120;
-                    const int phase = (t / 40) % 4;
-                    int fx = cx, fy = cy;
-                    if (phase == 0) { fx = cx - r; fy = cy - r; }
-                    else if (phase == 1) { fx = cx + r; fy = cy - r; }
-                    else if (phase == 2) { fx = cx + r; fy = cy + r; }
-                    else { fx = cx - r; fy = cy + r; }
-                    regs.ecx = (uint32_t)fx;
-                    regs.edx = (uint32_t)fy;
-                    regs.ebx = SDL_getenv("REORION2_FAKE_CLICK") ? 1u : 0u;
-                    if ((t % 200) == 0)
-                        SDL_Log("FAKE mouse -> x=%d y=%d tlacitka=%u", fx, fy, (unsigned)regs.ebx);
-                    break;
-                }
-            }
-            const int winW = Port::Vga::GetWindowWidth();
-            const int winH = Port::Vga::GetWindowHeight();
-            if (g_mouseMaxX > 0 && winW > 0)
-                vx = s.x * (g_mouseMaxX + 1) / winW;
-            if (g_mouseMaxY > 0 && winH > 0)
-                vy = s.y * (g_mouseMaxY + 1) / winH;
-            if (g_mouseMaxX > 0 && vx > g_mouseMaxX) vx = g_mouseMaxX;
-            if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
-            if (vx < 0) vx = 0;
-            if (vy < 0) vy = 0;
+            regs.ebx = (uint32_t)buttons;
             regs.ecx = (uint32_t)vx;
             regs.edx = (uint32_t)vy;
             break;
@@ -339,6 +365,98 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
     // cflag, vyresit cilene u ni.
     std::memcpy(outRegs, &regs, 24);
     return (int)regs.eax; // Watcom int386 vraci AX/EAX po preruseni
+}
+
+// ---------------------------------------------------------------------
+// int386x - Watcom varianta int386 se segmentovymi registry. V originale
+// (Debug/diss/Orion2.exe.asm, volajici sub_1237F3 / sub_12386C / sub_123926)
+// se vola registrove: EAX = cislo preruseni, EDX = vstupni REGS,
+// EBX = vystupni REGS, ECX = SREGS. IDA z toho videla jen dva argumenty
+// (`int386x(51, &dword_1BB8E0)`), takze i tady bereme jen ty dva - vystupni
+// buffer je jiny (byte_1BB8C4) a hra ho u techto volani stejne necte,
+// proto ZAMERNE nic nezapisujeme zpet.
+//
+// Doted to byl v link_stubs.c stub `int int386x(void) { return 0; }`, takze
+// registrace obsluzne rutiny myshi (fn 0x0C a 0x14) se nikam nedostala -
+// viz komentar u g_mouseHandler vyse.
+extern "C" int PortDos_Int386x(int intNum, const void* inRegs)
+{
+    // Ostatni preruseni (49 = DPMI v orion_part_21.c, VESA rezimy) se chovaji
+    // presne jako drivejsi stub - vraci 0 a nic nemeni. Menit je tady by byla
+    // neoverena zmena chovani; napoji se, az na ne kod skutecne narazi.
+    if (intNum != 0x33)
+        return 0;
+
+    WatcomRegs regs{};
+    std::memcpy(&regs, inRegs, sizeof(regs));
+    const uint16_t fn = (uint16_t)regs.eax;
+    switch (fn) {
+    case 0x0C: // nastav obsluznou rutinu (ES:DX = rutina, CX = maska)
+    case 0x14: // vymen obsluznou rutinu
+        g_mouseHandler = regs.edx;
+        g_mouseMask    = (uint16_t)regs.ecx;
+        {
+            static int s_on = -1;
+            if (s_on < 0) s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
+            if (s_on)
+                SDL_Log("INT33x fn 0x%02X: obsluzna rutina myshi = 0x%08X, maska = 0x%04X",
+                        fn, (unsigned)g_mouseHandler, (unsigned)g_mouseMask);
+        }
+        break;
+    default:
+        break;
+    }
+    return (int)regs.eax;
+}
+
+// Emulace preruseni od myshi: v DOSu volal ovladac zaregistrovanou rutinu
+// sam pri kazde zmene, v portu ji musime zavolat my. Vola se z
+// Port::Vga::Present() (tedy z mist, kde hra beztak ceka na obraz - v
+// originale prave tam preruseni chodila).
+//   AX = maska udalosti, BX = stav tlacitek, CX = X (dvojnasobny rozsah),
+//   DX = Y, SI/DI = prirustky v "mickey" jednotkach.
+extern "C" void PortDos_ServiceMouse(void)
+{
+    if (!g_mouseHandler)
+        return;
+    // Zabrana proti rekurzi: kreslici cast rutiny muze skoncit dalsim
+    // Present() a tedy dalsim volanim teto funkce (herni rutina ma vlastni
+    // zabranu, ale nespolehame se na ni).
+    static bool s_inService = false;
+    if (s_inService)
+        return;
+
+    int vx = 0, vy = 0, buttons = 0;
+    ComputeVirtualMouse(vx, vy, buttons);
+
+    int events = 0;
+    if (vx != g_lastVx || vy != g_lastVy)
+        events |= 0x01; // pohyb
+    if ((buttons & 1) && !(g_lastButtons & 1)) events |= 0x02; // leve stisknuto
+    if (!(buttons & 1) && (g_lastButtons & 1)) events |= 0x04; // leve uvolneno
+    if ((buttons & 2) && !(g_lastButtons & 2)) events |= 0x08; // prave stisknuto
+    if (!(buttons & 2) && (g_lastButtons & 2)) events |= 0x10; // prave uvolneno
+
+    const int dx = (g_lastVx < 0) ? 0 : vx - g_lastVx;
+    const int dy = (g_lastVy < 0) ? 0 : vy - g_lastVy;
+    g_lastVx = vx;
+    g_lastVy = vy;
+    g_lastButtons = buttons;
+
+    if (!(events & g_mouseMask))
+        return;
+
+    {
+        static int s_on = -1, s_calls = 0;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_MOUSE_TRACE") ? 1 : 0;
+        if (s_on && (s_calls++ % 100) == 0)
+            SDL_Log("INT33 callback #%d: udalosti=0x%02X tlacitka=%d x=%d y=%d",
+                    s_calls - 1, events, buttons, vx, vy);
+    }
+
+    s_inService = true;
+    ((MouseCallback)(uintptr_t)g_mouseHandler)(events, buttons, vx, vy, dx, dy);
+    s_inService = false;
 }
 
 unsigned int PortDos_BiosTick(void)

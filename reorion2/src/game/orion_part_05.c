@@ -6219,7 +6219,7 @@ void sub_6B9B2(int a1, int a2, int16_t *a3)
   sub_1191CA((int)sub_6C6CD, 2);
   sub_11C2F0();
   word_19B9B6 = -1000;
-  LOWORD(v4) = sub_123E6C((int)&unk_17CF0C, 1);
+  LOWORD(v4) = sub_123E6C((int)unk_17CF0C, 1);
   if ( byte_199EF2 )
   {
     byte_199EEF = 1;
@@ -6284,7 +6284,7 @@ void sub_6B9B2(int a1, int a2, int16_t *a3)
     v10 = sub_24677(8, -1, 1);
     sub_1077D(v10, -1, 1, a3);
   }
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   v11 = *(int16_t *)(dword_1927A8 + 248);
   sub_6F544(*(_WORD *)(dword_1927A8 + 246), v11);
   v38 = 0;

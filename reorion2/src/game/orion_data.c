@@ -2034,13 +2034,20 @@ char IsTable[256] =
   '\0'
 }; // weak
 char byte_17CD98[6] = { '\x01', '\x02', '\x04', '\b', '\x10', ' ' }; // weak
-_UNKNOWN unk_17CF00; // weak
-_UNKNOWN unk_17CF0C; // weak
+/* PORT (vlna 26 pokr. 41): TABULKA OBLASTI KURZORU pro sub_123E6C.
+   Kazda polozka ma 12 bajtu: {tvar, 0, x0, y0, x1, y1} - sub_123EA7 v ni
+   hleda oblast, ve ktere lezi kurzor, a vezme z ni CISLO TVARU; sub_12439D
+   pak kresli jen kdyz je tvar > 0. IDA z techto tabulek udelala jednobajtove
+   `_UNKNOWN`, takze se cetly nuly/smeti -> tvar vzdy 0 a kurzor se NIKDY
+   nenakreslil (misto nej se jen posouval ulozeny kus pozadi).
+   Bajty jsou doslova z EXE (Debug/diss/Orion2.exe.asm). */
+_UNKNOWN unk_17CF00[12] = { 1, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
+_UNKNOWN unk_17CF0C[12] = { 20, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 char byte_17CF18[10] = { '\0', '\x12', '7', '9', '\x1D', '\a', '\x16', '\x1C', '\n', 'J' }; // weak
 char *off_17CF22 = "MULTIGM.LBX"; // weak
 int16_t word_17CF38[] = { 3 }; // weak
-_UNKNOWN unk_17CF4A; // weak
-int16_t word_17CF82 = 1; // weak
+_UNKNOWN unk_17CF4A[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
+int16_t word_17CF82[6] = { 1, 0, 0, 0, 639, 479 }; // weak
 char aCombatShips[13] = "combat ships"; // weak
 char aColonyShip[96] =
 {
@@ -3405,9 +3412,9 @@ int16_t word_180146 = 120; // weak
 int16_t word_180156 = -10; // weak
 int16_t word_180158 = 500; // weak
 _UNKNOWN *off_18015A = &unk_178A04; // weak
-_UNKNOWN unk_180164; // weak
+_UNKNOWN unk_180164[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_180170; // weak
-_UNKNOWN unk_180178; // weak
+_UNKNOWN unk_180178[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 char byte_180184[] = { '\x02' }; // weak
 char byte_180185[] = { '\a' }; // weak
 char byte_180186[2208] =
@@ -6274,7 +6281,7 @@ char byte_180A28[648] =
   '\0',
   '\0'
 }; // weak
-_UNKNOWN unk_180CB0; // weak
+_UNKNOWN unk_180CB0[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_180CBC; // weak
 _UNKNOWN unk_180CC4; // weak
 int16_t word_180CCC[6] = { -50, -20, -20, 0, 20, 30 }; // weak
@@ -6389,7 +6396,7 @@ _UNKNOWN unk_180E22; // weak
 _UNKNOWN unk_180E30; // weak
 _UNKNOWN unk_180E3E; // weak
 _UNKNOWN unk_180E54; // weak
-_UNKNOWN unk_180E62; // weak
+_UNKNOWN unk_180E62[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_180E7C; // weak
 char byte_180E84[36] =
 {
@@ -6430,12 +6437,12 @@ char byte_180E84[36] =
   '\x01',
   '\x01'
 }; // weak
-_UNKNOWN unk_180EA8; // weak
+_UNKNOWN unk_180EA8[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 int16_t word_180EB4 = -1; // weak
 int16_t word_180EB6 = -1; // weak
 int16_t word_180EB8 = -1; // weak
 int16_t word_180EBA = -1; // weak
-_UNKNOWN unk_180EBC; // weak
+_UNKNOWN unk_180EBC[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 int16_t word_180EC8[6] = { 20, 30, 40, 50, 80, 100 }; // weak
 char byte_180ED4[] = { '\0' }; // weak
 int16_t word_18105C[10] = { 5, 10, 20, 5, 50, 40, 5, 0, 0, 0 }; // weak
@@ -7188,8 +7195,8 @@ _UNKNOWN *off_181D1C = &loc_90139; // weak
 _UNKNOWN unk_181F06; // weak
 _UNKNOWN unk_181F60; // weak
 char *off_181FE4 = "FLEET.LBX"; // weak
-_UNKNOWN unk_181FE8; // weak
-_UNKNOWN unk_182018; // weak
+_UNKNOWN unk_181FE8[48] = { 2, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1, 17, 0, 0, 0, 15, 0, 52, 0, 63, 1, (char)0xE9, 0, 17, 0, 0, 0, (char)0xBF, 1, 127, 1, 5, 2, (char)0x95, 1, 1, 0, 0, 0, 89, 1, (char)0xAC, 1, 113, 2, (char)0xCA, 1 }; // weak
+_UNKNOWN unk_182018[48] = { 2, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1, 18, 0, 0, 0, 15, 0, 52, 0, 63, 1, (char)0xE9, 0, 1, 0, 0, 0, (char)0xBF, 1, 127, 1, 5, 2, (char)0x95, 1, 1, 0, 0, 0, 89, 1, (char)0xAC, 1, 113, 2, (char)0xCA, 1 }; // weak
 _UNKNOWN unk_182048; // weak
 char byte_182078[8] = { 'o', 't', 'r', 't', 't', 't', 't', 't' }; // weak
 _UNKNOWN unk_182080; // weak
@@ -7216,8 +7223,8 @@ int16_t word_18215B = -1000; // weak
 int16_t word_18215D = -1000; // weak
 int16_t word_18215F = -1000; // weak
 int16_t word_182163 = -1000; // weak
-_UNKNOWN unk_182175; // weak
-_UNKNOWN unk_1821B1; // weak
+_UNKNOWN unk_182175[60] = { 6, 0, 0, 0, 22, 0, 22, 0, 14, 2, (char)0xA4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 127, 2, 21, 0, 1, 0, 0, 0, 0, 0, 0, 0, 21, 0, (char)0xDF, 1, 1, 0, 0, 0, 15, 2, 0, 0, 127, 2, (char)0xDF, 1, 1, 0, 0, 0, 0, 0, (char)0xA5, 1, 127, 2, (char)0xDF, 1 }; // weak
+_UNKNOWN unk_1821B1[24] = { 2, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1, 18, 0, 0, 0, 22, 0, 22, 0, 14, 2, (char)0xA4, 1 }; // weak
 _UNKNOWN unk_1821CC; // weak
 _UNKNOWN unk_182208; // weak
 char byte_182244 = '\0'; // weak
@@ -7228,7 +7235,7 @@ _UNKNOWN unk_182248; // weak
 char *off_182278 = "OFFICER.LBX"; // weak
 _UNKNOWN unk_18227C; // weak
 _UNKNOWN unk_182284; // weak
-_UNKNOWN unk_18228C; // weak
+_UNKNOWN unk_18228C[12] = { 19, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_182298; // weak
 _UNKNOWN unk_1822A0; // weak
 _UNKNOWN unk_1822A8; // weak
@@ -7323,9 +7330,9 @@ int dword_182620[] = { 115 }; // weak
 int dword_1826C0[] = { 95 }; // weak
 int dword_182710[] = { 150 }; // weak
 int dword_182760 = 0; // weak
-_UNKNOWN unk_182765; // weak
-_UNKNOWN unk_182795; // weak
-_UNKNOWN unk_1827A1; // weak
+_UNKNOWN unk_182765[48] = { 18, 0, 0, 0, (char)0xC7, 0, 68, 1, (char)0xD1, 1, (char)0xD8, 1, 16, 0, 0, 0, (char)0xDC, 1, 10, 0, 120, 2, 50, 1, 16, 0, 0, 0, 10, 0, 10, 0, (char)0xBC, 0, (char)0xD7, 1, 1, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
+_UNKNOWN unk_182795[12] = { 16, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
+_UNKNOWN unk_1827A1[12] = { 17, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_1827AD; // weak
 _UNKNOWN unk_1827B5; // weak
 char byte_1827BD = '\0'; // weak
@@ -7402,7 +7409,7 @@ int16_t word_1828B8 = 0; // weak
 int16_t word_1828BA = -1; // weak
 int16_t word_1828BC = -1; // weak
 int16_t word_1828BE = -1000; // weak
-_UNKNOWN unk_1828C0; // weak
+_UNKNOWN unk_1828C0[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 int16_t word_1828CC = 0; // weak
 char byte_1828CE = '\x03'; // weak
 char byte_1828CF = '\x03'; // weak
@@ -8141,7 +8148,7 @@ int16_t word_18448C = 0; // weak
 int dword_18448E = -65536; // weak
 int dword_184492 = -65535; // weak
 _UNKNOWN *off_184496 = (_UNKNOWN *)0x20000; // weak (was &loc_20000 - see sub_10000 comment, same false-positive-address class)
-_UNKNOWN unk_18449A; // weak
+_UNKNOWN unk_18449A[12] = { 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1, 0, 0 }; // weak
 _UNKNOWN unk_1844A4; // weak
 int16_t word_1844A6 = 0; // weak
 int16_t word_1844A8 = 1; // weak
@@ -8170,9 +8177,19 @@ int16_t word_184518 = 1; // weak
 int dword_18451A = 0; // weak
 int16_t word_18451E = 0; // weak
 int16_t word_184520 = 0; // weak
-_UNKNOWN unk_184522; // weak
-int16_t word_18452A = 0; // weak
-int16_t word_18452C = 0; // weak
+/* PORT (vlna 26 pokr. 41): stejna 12bajtova tabulka oblasti kurzoru jako
+   unk_17CF00 & spol. (viz komentar tam), jen se plni az za behu - sub_123491
+   do ni ulozi rozmery obrazovky. IDA z ni udelala 1bajtovy `_UNKNOWN` plus
+   dve samostatne promenne word_18452A/word_18452C, coz jsou ve skutecnosti
+   jeji pole +8 (x1) a +10 (y1); v portu na sebe nemusely navazovat. */
+int16_t unk_184522[6] = { 0, 0, 0, 0, 0, 0 }; // weak
+// PORT (vlna 26 pokr. 41): zabrana proti opakovanemu vstupu do obsluzne
+// rutiny myshi (asm: "cmp dword ptr unk_17C52E, 1" v sub_1236D1). IDA ji
+// mezi globaly vubec nevytvorila. V originale je to dword na 0x18452E, ktery
+// dvema hornimi bajty zasahuje do qword_184530 - tam jsou ale trvale nuly
+// (uzitecna cast te promenne zacina az na +4, viz WORD2/SHIDWORD pouziti),
+// takze samostatna promenna je s originalem shodna.
+int dword_18452E = 0; // weak
 int64_t qword_184530 = 2748779069440LL; // weak
 // VLNA 11: drive "_UNKNOWN unk_184538" (= char!) - vyska obrazovky
 // (200/240/480 dle rezimu, viz sub_1248AB). Jako char se 480 orezalo na
@@ -8683,7 +8700,7 @@ int dword_184A54 = 0; // weak
 int dword_184A58 = 15; // weak
 int dword_184A5C[19] = { 0, 0, 0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14 }; // weak
 int dword_184AA8[19] = { 0, 2, 4, 6, 8, 10, 11, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // weak
-_UNKNOWN unk_184AF4; // weak
+_UNKNOWN unk_184AF4[12] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // weak
 int dword_184B00[4096] =
 {
   0,

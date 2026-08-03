@@ -11684,9 +11684,9 @@ void sub_F4D99(int16_t *a1)
   int v12; // [esp+628h] [ebp-4h] BYREF
 
   LOBYTE(word_18FF78) = 0;
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_107AF(&v12);
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   LOWORD(v1) = sub_11C2F0();
   sub_F42CA(v1, 1, 255, a1);
   sub_C5BB9();
@@ -11694,7 +11694,7 @@ void sub_F4D99(int16_t *a1)
   sub_1318D4(0, 255);
   sub_131F7B();
   sub_132C80(100);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_6FAD5();
   sub_124D41();
   v2 = sub_127C27((int)aMultigmLbx, 0, dword_193174);
@@ -11710,7 +11710,7 @@ void sub_F4D99(int16_t *a1)
   sub_1191CA((int)sub_F2082, 1);
   HIDWORD(v6) = 1;
   v5 = 0;
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_F009A();
   while ( 1 )
   {

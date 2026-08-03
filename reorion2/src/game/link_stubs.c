@@ -248,7 +248,17 @@ int PortDos_Int386(int intNum, const void* inRegs, void* outRegs);
 int int386(int inum, void* inregs, void* outregs) {
     return PortDos_Int386(inum, inregs, outregs);
 }
-int int386x(void) { return 0; }
+/* int386x UZ NENI no-op stub (vlna 26 pokr. 41). Prave pres nej si hra
+   registruje OBSLUZNOU RUTINU MYSHI (INT 33h fn 0x0C v sub_1237F3 a fn 0x14
+   v sub_12386C/sub_123926) - dokud to byl stub vracejici 0, port se o rutine
+   nikdy nedozvedel, nikdy ji nezavolal, a tim padem se herni pozice kurzoru
+   (dword_1BBA38/1BBA34) ani stav tlacitek (word_1B921A) nikdy nezmenily:
+   kurzor zustaval na 0,0 a kliknuti nemela ucinek. Emulace je v
+   src/port/port_dos.cpp. */
+int PortDos_Int386x(int intNum, const void* inRegs);
+int int386x(int inum, void* inregs) {
+    return PortDos_Int386x(inum, inregs);
+}
 int j___clock(void) { return 0; }
 int j___delay(void) { return 0; }
 int j__nfree(void) { return 0; }

@@ -9127,8 +9127,8 @@ void sub_5D03C(int16_t *a1, int a2, int a3)
   }
   sub_11C2F0();
   sub_119281();
-  word_17CF82 = 7;
-  sub_123E6C((int)&word_17CF82, 1);
+  word_17CF82[0] = 7;
+  sub_123E6C((int)word_17CF82, 1);
   sub_124D41();
   sub_5CF37();
   sub_1077D(v17, 1, v4, a1);
@@ -13323,7 +13323,7 @@ void *sub_6264E(int16_t *a1)
   sub_1318D4(0, 255);
   sub_131F7B();
   sub_132C80(100);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_124D41();
   v1 = dword_19B87C;
   sub_12A478(0, 0, dword_19B87C);

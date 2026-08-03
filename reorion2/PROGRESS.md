@@ -5331,3 +5331,85 @@ najednou, protoze kurzor i pozadi jdou stejnou kreslici cestou.
 Paralelne se to da potvrdit z dosboxu: `DUMPMEM addr=0x3C6848` (sloty) a
 `word_1B3E0E` na `0x3C9E0E` - kdyz ma original na +44 platne ukazatele tam,
 kde port nuly, je to potvrzene.
+
+---
+
+## Vlna 26 pokracovani 41: MYS - obsluzna rutina, VESA banky a tabulky
+## oblasti kurzoru (3 chyby, vsechny zmerene)
+
+Vychozi stav: kurzor se nekreslil vubec, klikani nemelo ucinek. Predchozi
+zaver "hra si NEregistruje obsluznou rutinu myshi (fn 0x0C se nevola)" byl
+CHYBNY a je timto stazen - registrace jde pres `int386x`, ktery byl v
+`link_stubs.c` prazdny stub `int int386x(void) { return 0; }`, takze port o
+volani vubec nevedel (a `REORION2_MOUSE_TRACE` sledoval jen `int386`).
+
+### Chyba 1: obsluzna rutina myshi se nikdy nezaregistrovala ani nezavolala
+
+Zmereno v asm (`sub_1237F3`, `sub_12386C`, `sub_123926`): hra vola
+`int386x` s EAX=0x33 a funkci **0x0C (maska 1)** resp. **0x14 (maska 0x2B)**,
+rutina je `sub_1236D1`. V DOSu ji ovladac volal pri kazde udalosti a TEPRVE
+ONA nastavuje pozici kurzoru (`dword_1BBA38` / `HIWORD(dword_1BBA34)`), stav
+tlacitek (`word_1B921A`) a kurzor i kresli.
+
+`sub_1236D1` navic IDA vubec nedekompilovala (zbyla jedna nesmyslna radka
+`_GETDS(...)`) - prepsana rucne podle asm. Argumenty odpovidaji registrum
+AX/BX/CX/DX; X chodi ve dvojnasobnem rozsahu a rutina ho deli dvema.
+Prepinani SS:ESP na vlastni zasobnik je DOS specificke a v portu vynechane.
+
+Doplneno:
+- `PortDos_Int386x` (port_dos.cpp) - fn 0x0C/0x14 si pamatuji adresu rutiny
+  a masku; ostatni preruseni se chovaji jako drivejsi stub (vraci 0).
+- `PortDos_ServiceMouse()` - emuluje preruseni: prepocte pozici, spocita
+  masku udalosti a rutinu zavola. Vola se z `Port::Vga::Present()`.
+- Prepocet pozice vytknut do `ComputeVirtualMouse`, aby dotaz fn 3 i
+  callback hlasily totez.
+
+### Chyba 2: neprepinaly se VESA banky (kurzor fungoval jen v 1/5 obrazovky)
+
+Nizkourovnove rutiny kurzoru (`sub_144A91` uloz pozadi, `sub_144EAC` obnov,
+`sub_14529D` kresli) sahaji primo do VESA okna (v originale 0xA0000, 64 KB) a
+mezi radky si prepinaji BANKU pres `sub_138C34`/`sub_138C58` (INT 10h
+AX=4F05h, cislo banky v AX z `word_188D82`). Obe prepinaci rutiny byly v
+portu prazdne stuby, takze cely obraz padal do banky 0.
+
+**Zmereno uzivatelem:** kurzor sledoval mys jen v horni petine obrazovky -
+64 KB / 640 B = 102 radku z 480, presne jedna banka.
+
+Doplneno `PortVga_SetVideoWindow()` / `PortVga_VideoWindow()` (framebuffer
+portu ma presne 5 bank, stejne jako jedna obrazova stranka originalu, proto
+`bank % 5`), obe prepinaci rutiny je volaji a 21 mist v `orion_part_21.c`
+bere zaklad z okna misto z `PortVga_Framebuffer()`.
+
+### Chyba 3: tabulky oblasti kurzoru mely misto 12 bajtu jen 1
+
+`sub_123EA7` hleda v tabulce (`dword_1B9204`, polozky po 12 B
+`{tvar, 0, x0, y0, x1, y1}`) oblast, ve ktere kurzor lezi, a vezme z ni
+CISLO TVARU; `sub_12439D` kresli jen kdyz je tvar > 0. IDA vsechny tyhle
+tabulky (`unk_17CF00` a dalsich 20) udelala jako jednobajtove `_UNKNOWN`,
+takze se cetly nuly -> tvar 0 -> kurzor se NIKDY nenakreslil. Misto nej se
+jen posouval ulozeny kus pozadi (uloz + obnov bez kresli) - presne to, co
+uzivatel popsal jako "kus pozadi misto kurzoru".
+
+**Zmereno instrumentaci poradi operaci:** pri pohybu myshi se volalo
+`kurzor.obnov` a `kurzor.uloz`, ale `kurzor.kresli` ANI JEDNOU. Po oprave
+14x kresli / 15x uloz na stejnem useku behu.
+
+Vsech 21 tabulek dostalo doslovna data z EXE (`Debug/diss/Orion2.exe.asm`);
+`unk_17CF00` = `{1, 0, 0, 0, 639, 479}`. Zvlast `unk_184522`, ktera se plni
+az za behu - jeji pole +8/+10 byla v dekompilatu samostatne promenne
+`word_18452A`/`word_18452C` a v portu na sebe nemusely navazovat.
+
+### Dale opraveno pri teze prilezitosti
+
+- 8 mist typu `*(int *)((char *)&dword_1BBA34 + 2) >> 16` (cteni pres hranici
+  sousedni globalni promenne - viz katalog "rozdrobeny souvisly blok")
+  nahrazeno primym pristupem: `(int16_t)dword_1BBA38`, `word_1BBA3C`,
+  `(int16_t)dword_1BBA42`.
+- Doplnena chybejici globalni promenna `dword_18452E` - zabrana proti
+  opakovanemu vstupu do obsluzne rutiny myshi (v asm `unk_17C52E`).
+
+### Stav
+
+Overeno merenim i uzivatelem: kurzor se kresli, sleduje mys po CELE
+obrazovce. Zbyva overit klikani a dobehnout regresni test videa
+(`compare_frames`, musi zustat 600/600).

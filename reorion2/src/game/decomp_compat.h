@@ -200,6 +200,14 @@ int PortInput_PollKeyPress(void);
 unsigned int __ROL4__(unsigned int value, int count);
 unsigned int __ROR4__(unsigned int value, int count);
 unsigned char *PortVga_Framebuffer(void);
+/* PORT (vlna 26 pokr. 41): VESA "okno" do videopameti (v originale 0xA0000).
+   Nizkourovnove rutiny kurzoru (sub_144A91/144EAC/14529D) do nej sahaji primo
+   a mezi radky si prepinaji BANKU pres INT 10h AX=4F05h (sub_138C34/138C58).
+   Port mel obe prepinaci rutiny prazdne, takze vsechno padalo do prvni banky
+   (64 KB = ~102 radku) - namereno uzivatelem: kurzor sledoval mys jen v horni
+   petine obrazovky a niz uz se kreslil na spatne misto. */
+void PortVga_SetVideoWindow(int bank);
+unsigned char *PortVga_VideoWindow(void);
 void PortVga_SetPaletteEntry(int index, int r, int g, int b);
 /* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */
 unsigned int PortDos_BiosTick(void);

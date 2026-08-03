@@ -1282,7 +1282,7 @@ int16_t sub_24E96(int a1)
   sub_12F578(dword_19F7C4, a1);
   sub_12E332(0);
   sub_12E1E0(0, 0, (int16_t *)dword_19F7C4, 0);
-  return sub_123E6C((int)&unk_17CF00, 1);
+  return sub_123E6C((int)unk_17CF00, 1);
 }
 // 19F7C4: using guessed type int dword_19F7C4;
 
@@ -1310,7 +1310,7 @@ void sub_24ED3(int16_t *a1)
 
   sub_119281();
   v1 = 0;
-  sub_123E6C((int)&unk_180EBC, 1);
+  sub_123E6C((int)unk_180EBC, 1);
   word_19ACF4 = 0;
   sub_11C2F0();
   sub_124C08();
@@ -1333,7 +1333,7 @@ void sub_24ED3(int16_t *a1)
     sub_12C607((int)aLogoLbx, 0, 639, 479);
     sub_124D41();
     sub_132C80(100);
-    sub_123E6C((int)&unk_180EBC, 1);
+    sub_123E6C((int)unk_180EBC, 1);
     sub_131922(0, 255);
     v4 = sub_124ECB();
     v5 = sub_81547(v4, 255);
@@ -1344,7 +1344,7 @@ void sub_24ED3(int16_t *a1)
     word_19ACF4 = 0;
     v1 = sub_251EF(a1);
     v7 = 15;
-    sub_123E6C((int)&unk_180EBC, 1);
+    sub_123E6C((int)unk_180EBC, 1);
     v8 = 0;
     PortDebug_Checkpoint("24ED3.loop1.enter", v5);
     while ( !(_WORD)v8 && !v1 )
@@ -1397,7 +1397,7 @@ void sub_24ED3(int16_t *a1)
     sub_124ECB();
     sub_C5C44();
     v14 = 5;
-    sub_123E6C((int)&unk_180EBC, 1);
+    sub_123E6C((int)unk_180EBC, 1);
     v8 = 0;
     PortDebug_Checkpoint("24ED3.loop2.enter", v12);
     while ( !(_WORD)v8 )
@@ -10965,7 +10965,7 @@ int sub_33C05( int a1)
   sub_2F4EE(v3);
   v4 = sub_124DEC();
   sub_1077D(v4);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   for ( i = 0; i < 81; ++i )
   {
     v6 = 0;
@@ -11924,7 +11924,7 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
   sub_124D41();
   sub_34EC8();
   sub_1077D(v12);
-  LOWORD(v13) = sub_123E6C((int)&unk_17CF00, 1);
+  LOWORD(v13) = sub_123E6C((int)unk_17CF00, 1);
   while ( 1 )
   {
     v9 = (void *)sub_1171AB(v13, v11, (int)v9, (int)v10);

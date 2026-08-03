@@ -238,7 +238,7 @@ void *sub_C63BB()
     word_18319F = 0;
     word_1831A1 = 0;
   }
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_C6313();
   sub_1191CA((int)sub_C6313, 1);
   sub_1112EC(dword_192ED4, 1);
@@ -261,7 +261,7 @@ uint8_t sub_C64AB()
 
   sub_C63BB();
   sub_14DF7((int)aAmebafinLbx, 0, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_119281();
   sub_107BA(&dword_1A08F4);
   result = (uint8_t)sub_1113CC(dword_192ED4, 1);
@@ -288,7 +288,7 @@ uint8_t sub_C6513()
 
   sub_C63BB();
   sub_14DF7((int)aPlntdfinLbx, 0, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_119281();
   sub_107BA(&dword_1A08F4);
   result = (uint8_t)sub_1113CC(dword_192ED4, 1);
@@ -315,7 +315,7 @@ uint8_t sub_C657B()
 
   sub_C63BB();
   sub_14DF7((int)aDimtvfinLbx, 0, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_119281();
   sub_107BA(&dword_1A08F4);
   result = (uint8_t)sub_1113CC(dword_192ED4, 1);
@@ -344,7 +344,7 @@ uint8_t sub_C65E3()
   sub_C63BB();
   v0 = sub_CDF5C(174);
   sub_14DF7(v0, 0, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_119281();
   sub_107BA(&dword_1A08F4);
   result = (uint8_t)sub_1113CC(dword_192ED4, 1);
@@ -373,7 +373,7 @@ uint8_t sub_C6650()
   sub_C63BB();
   v0 = sub_CDF5C(404);
   sub_14DF7(v0, 0, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_119281();
   sub_107BA(&dword_1A08F4);
   result = (uint8_t)sub_1113CC(dword_192ED4, 1);
@@ -399,20 +399,20 @@ int16_t sub_C66BD()
   int v0; // eax
   int v1; // eax
 
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   v0 = sub_CDF5C(556);
   sub_14DF7(v0, 0, 1);
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   v1 = sub_CDF5C(310);
   sub_14DF7(v1, 0, 1);
-  return sub_123E6C((int)&unk_17CF00, 1);
+  return sub_123E6C((int)unk_17CF00, 1);
 }
 
 
 //----- (000C671B) --------------------------------------------------------
 void sub_C671B()
 {
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   JUMPOUT(0xC66FF);
 }
 // C673B: control flows out of bounds to C66FF
@@ -421,7 +421,7 @@ void sub_C671B()
 //----- (000C673D) --------------------------------------------------------
 void sub_C673D()
 {
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   JUMPOUT(0xC66DA);
 }
 // C675D: control flows out of bounds to C66DA
@@ -430,7 +430,7 @@ void sub_C673D()
 //----- (000C6762) --------------------------------------------------------
 void sub_C6762()
 {
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   JUMPOUT(0xC66FD);
 }
 // C677D: control flows out of bounds to C66FD
@@ -1065,7 +1065,7 @@ void sub_C702E( int a1, int16_t *a2)
   dword_19F82C = a1;
   sub_119441();
   sub_117174(3);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_128BE7();
   sub_12B65C();
   sub_124DEC();
@@ -5823,7 +5823,7 @@ void sub_CD435(int16_t *a1)
   sub_127776((_BYTE *)dword_197F98, 0x7548u);
   sub_127776((_BYTE *)dword_1930DC, 0xF71u);
   v3 = 255;
-  sub_123E6C((int)&unk_1828C0, 1);
+  sub_123E6C((int)unk_1828C0, 1);
   sub_C5BB9();
   sub_1205E6(9, 0, 255);
   v4 = 0;
@@ -5866,7 +5866,7 @@ void sub_CD435(int16_t *a1)
   sub_C5C44();
   v8 = 1;
   v9 = 0;
-  LOWORD(v10) = sub_123E6C((int)&unk_17CF00, 1);
+  LOWORD(v10) = sub_123E6C((int)unk_17CF00, 1);
   while ( !v9 )
   {
     v8 = sub_1171AB(v10, v8, v3, v5);

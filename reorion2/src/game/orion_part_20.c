@@ -6282,16 +6282,24 @@ int sub_1387B2( int a1, int *a2, int *a3)
 
 
 //----- (00138C34) --------------------------------------------------------
+// PREPNUTI BANKY VESA OKNA B (INT 10h AX=4F05h). Podle asm:
+//   mov ax, word_188D82 ; ... mul word_1BBA5C ; mov bx, word_1BBA5E ; int 10h
+// tedy cislo banky prijde v AX a vzdy se do nej nacita `word_188D82` (overeno
+// na vsech volajicich mistech v sub_144EAC/sub_14529D), proto ho tady bereme
+// primo z te promenne - argument dekompilat stejne ztratil.
+// Doted to byl prazdny stub, takze se banka nikdy neprepla a kurzor se pod
+// 102. radkem kreslil na spatne misto - viz PortVga_SetVideoWindow.
 void sub_138C34()
 {
-  /* __asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS - CPU VIDEO MEMORY CONTROL */ DECOMP_TODO("inline asm");
+  PortVga_SetVideoWindow(word_188D82);
 }
 
 
 //----- (00138C58) --------------------------------------------------------
+// Totez pro okno A (viz sub_138C34 vyse) - vola ho sub_144A91.
 void sub_138C58()
 {
-  /* __asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS - CPU VIDEO MEMORY CONTROL */ DECOMP_TODO("inline asm");
+  PortVga_SetVideoWindow(word_188D82);
 }
 
 

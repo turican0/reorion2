@@ -11230,14 +11230,14 @@ void sub_46F42()
   if ( byte_199F3A != 1 && *(uint8_t *)(dword_192864 + 313 * word_1998F8 + 32) != word_19999C )
   {
     v0 = 1;
-    word_17CF82 = word_19987C;
-    v1 = &word_17CF82;
+    word_17CF82[0] = word_19987C;
+    v1 = word_17CF82;
     goto LABEL_69;
   }
   if ( word_199876 != 1 )
   {
     v0 = 1;
-    v1 = (int16_t *)&unk_17CF00;
+    v1 = (int16_t *)unk_17CF00;
     goto LABEL_69;
   }
   v41 = 1;
@@ -12441,7 +12441,7 @@ LABEL_107:
   sub_4545B(v98, v95);
   *(_DWORD *)((char *)&a7 + 2) = v130;
   sub_1191CA((int)sub_2F4EE, 1);
-  LOWORD(v131) = sub_123E6C((int)&unk_17CF00, 1);
+  LOWORD(v131) = sub_123E6C((int)unk_17CF00, 1);
   if ( word_19988E == 8 )
   {
     LOWORD(v95) = 8;

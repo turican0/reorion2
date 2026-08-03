@@ -1537,7 +1537,7 @@ void sub_8A6C2()
     byte_19C18E = 1;
     sub_1172D4();
     sub_124C08();
-    sub_123E6C((int)&unk_17CF4A, 1);
+    sub_123E6C((int)unk_17CF4A, 1);
     sub_C5BB9();
     ServiceAudioTick_FE8BE(v2, 0, 0, 0);
     v3 = sub_1205E6(0, 0, 255);
@@ -1564,7 +1564,7 @@ void sub_8A6C2()
     ServiceAudioTick_FE8BE(v9, 0, 0, 0);
     v10 = sub_131922(0, 255);
     sub_1077D(v10);
-    sub_123E6C((int)&unk_17CF00, 1);
+    sub_123E6C((int)unk_17CF00, 1);
     if ( byte_199F38 && !sub_918D5(2) )
     {
       sub_C5B94(0);
@@ -1878,7 +1878,7 @@ void sub_8AB6D()
     }
     sub_12C2C6(1);
   }
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   word_199A08 = 0;
   JUMPOUT(0x8AB3C);
 }
@@ -1920,7 +1920,7 @@ void sub_8AD82(int16_t *a1)
   if ( byte_199BDD || v13[0] || byte_1AB124[word_19999C] || !byte_19C198 || byte_199F3A || v1 )
   {
     byte_19C194 = 0;
-    sub_123E6C((int)&unk_17CF00, 1);
+    sub_123E6C((int)unk_17CF00, 1);
     byte_19C198 = 0;
     sub_11C2F0();
   }
@@ -2470,7 +2470,7 @@ void sub_8B956(int16_t *a1)
   v2 = v1;
   v3 = 0;
   if ( v1 )
-    sub_123E6C((int)&unk_17CF00, 1);
+    sub_123E6C((int)unk_17CF00, 1);
   sub_124C08();
   sub_1191CA((int)sub_84E9D, 1);
   if ( !dword_1975B8 )
@@ -5687,13 +5687,13 @@ void sub_8F1C4(void (*a1)(int, int), _BYTE *a2, int a3)
   sub_1172D4();
   *a2 = 1;
   sub_131922(0, 255);
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_C5BB9();
   sub_1205E6(a3, 0, 255);
   sub_1318D4(0, 255);
   sub_131F7B();
   sub_132C80(100);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   v3 = sub_124D41();
   a1(v3, 1);
   sub_131922(0, 255);
@@ -9272,7 +9272,7 @@ void sub_92D72( int a1)
   }
   else if ( !byte_19C544 )
   {
-    sub_123E6C((int)&unk_18228C, 1);
+    sub_123E6C((int)unk_18228C, 1);
     byte_199F15 = -1;
   }
   sub_9872C();
@@ -9468,7 +9468,7 @@ LABEL_29:
         v9 = (int16_t *)((char *)v9 + 1);
       }
       while ( v11 );
-      sub_123E6C((int)&unk_17CF00, 1);
+      sub_123E6C((int)unk_17CF00, 1);
       v12 = sub_97588(byte_199F15, 1);
       sprintf(v33, (char *)v32, v12);
       if ( (uint16_t)sub_94B3A((int)v33, 1u, v7, v32, (int16_t)v10) )
@@ -9479,7 +9479,7 @@ LABEL_16:
         byte_199F11 = 1;
         return;
       }
-      v13 = &unk_18228C;
+      v13 = unk_18228C;
 LABEL_15:
       sub_123E6C((int)v13, 1);
       goto LABEL_16;
@@ -9493,7 +9493,7 @@ LABEL_15:
         goto LABEL_16;
       }
       byte_199F15 = -1;
-      v13 = &unk_17CF00;
+      v13 = unk_17CF00;
       byte_19C544 = -1;
       goto LABEL_15;
     }

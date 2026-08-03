@@ -1,4 +1,5 @@
 #include "orion_common.h"
+int g_kurzorSeq = 0; /* PORT: docasne mereni poradi operaci kurzoru */
 
 /* Adresni rozsah: 0x13DABB - 0x14814C  (200 funkci) */
 
@@ -3362,7 +3363,7 @@ int16_t sub_14475C()
       }
     }
   }
-  return sub_123E6C((int)&unk_184AF4, 1);
+  return sub_123E6C((int)unk_184AF4, 1);
 }
 // 184A58: using guessed type int dword_184A58;
 // 1BB900: using guessed type int dword_1BB900;
@@ -3495,6 +3496,7 @@ void sub_144A48()
 //----- (00144A91) --------------------------------------------------------
 void sub_144A91()
 {
+  PortDebug_Checkpoint("kurzor.uloz", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3514,6 +3516,10 @@ void sub_144A91()
   dword_188D90 = 0;
   LOWORD(dword_1BBA42) = dword_1BBA38;
   HIWORD(dword_1BBA3E) = HIWORD(dword_1BBA34);
+  { static int n = 0;
+    if ( (n++ % 20) == 0 )
+      PortDebug_Checkpoint("mysh.draw_xy",
+                           (((int)(int16_t)dword_1BBA42) << 16) | (HIWORD(dword_1BBA3E) & 0xFFFF)); }
   byte_188D95 = 26;
   byte_188D96 = 24;
   if ( (uint16_t)(HIWORD(dword_1BBA34) + 24) >= 0x1E0u )
@@ -3548,7 +3554,7 @@ void sub_144A91()
   dword_1BB8AC = v1;
   sub_138C58();
   v3 = (_DWORD *)dword_1BB8B0;
-  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
+  v4 = ((char *)PortVga_VideoWindow() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   if ( byte_188D95 == 26 )
@@ -3563,7 +3569,7 @@ void sub_144A91()
           {
             ++word_188D82;
             sub_138C58();
-            v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
+            v7 = ((char *)PortVga_VideoWindow() - 3) + 3;
             HIWORD(v8) = 0;
             v9 = (uint16_t)word_188D82 - dword_188D7A;
             switch ( v9 )
@@ -3577,7 +3583,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
                 }
                 break;
               case 2:
@@ -3589,7 +3595,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
                 }
                 break;
               case 3:
@@ -3601,7 +3607,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
                 }
                 break;
               default:
@@ -3613,7 +3619,7 @@ void sub_144A91()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
                 }
                 break;
             }
@@ -3630,7 +3636,7 @@ void sub_144A91()
         {
           ++word_188D82;
           sub_138C58();
-          v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
+          v4 = ((char *)PortVga_VideoWindow() - 3) + 3;
         }
         ++dword_188D9B;
         v4 += 614;
@@ -3680,6 +3686,7 @@ void sub_144A91()
 //----- (00144EAC) --------------------------------------------------------
 void sub_144EAC()
 {
+  PortDebug_Checkpoint("kurzor.obnov", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3728,7 +3735,7 @@ void sub_144EAC()
   }
   sub_138C34();
   v3 = (char *)dword_1BB8B0;
-  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
+  v4 = ((char *)PortVga_VideoWindow() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   if ( byte_188D95 == 26 )
@@ -3743,7 +3750,7 @@ void sub_144EAC()
           {
             ++word_188D82;
             sub_138C34();
-            v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
+            v7 = ((char *)PortVga_VideoWindow() - 3) + 3;
             HIWORD(v8) = 0;
             v9 = (uint16_t)word_188D82 - dword_188D7A;
             switch ( v9 )
@@ -3757,7 +3764,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
                 }
                 break;
               case 2:
@@ -3769,7 +3776,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
                 }
                 break;
               case 3:
@@ -3781,7 +3788,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
                 }
                 break;
               default:
@@ -3793,7 +3800,7 @@ void sub_144EAC()
                 }
                 else
                 {
-                  v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
+                  v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
                 }
                 break;
             }
@@ -3809,7 +3816,7 @@ void sub_144EAC()
         {
           ++word_188D82;
           sub_138C34();
-          v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
+          v4 = ((char *)PortVga_VideoWindow() - 3) + 3;
         }
         ++dword_188D9B;
         v4 += 614;
@@ -3858,6 +3865,7 @@ void sub_144EAC()
 //----- (0014529D) --------------------------------------------------------
 void sub_14529D()
 {
+  PortDebug_Checkpoint("kurzor.kresli", ++g_kurzorSeq);
   int64_t v0; // rt2
   int v1; // ebx
   int v2; // eax
@@ -3906,7 +3914,7 @@ void sub_14529D()
   }
   sub_138C34();
   v3 = (char *)dword_1BBA18;
-  v4 = ((char *)PortVga_Framebuffer() - 3) + dword_188D84 + 3;
+  v4 = ((char *)PortVga_VideoWindow() - 3) + dword_188D84 + 3;
   dword_188D97 = 0;
   dword_188D9B = 0;
   while ( 1 )
@@ -3922,7 +3930,7 @@ void sub_14529D()
         {
           ++word_188D82;
           sub_138C34();
-          v7 = ((char *)PortVga_Framebuffer() - 3) + 3;
+          v7 = ((char *)PortVga_VideoWindow() - 3) + 3;
           HIWORD(v8) = 0;
           v9 = (uint16_t)word_188D82 - dword_188D7A;
           switch ( v9 )
@@ -3936,7 +3944,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
+                v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 383) + 3;
               }
               break;
             case 2:
@@ -3948,7 +3956,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
+                v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 127) + 3;
               }
               break;
             case 3:
@@ -3960,7 +3968,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
+                v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 511) + 3;
               }
               break;
             default:
@@ -3972,7 +3980,7 @@ void sub_14529D()
               }
               else
               {
-                v10 = ((char *)PortVga_Framebuffer() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
+                v10 = ((char *)PortVga_VideoWindow() - 3) + (uint16_t)(dword_1BBA42 + 255) + 3;
               }
               break;
           }
@@ -3992,7 +4000,7 @@ void sub_14529D()
           {
             ++word_188D82;
             sub_138C34();
-            v4 = ((char *)PortVga_Framebuffer() - 3) + 3;
+            v4 = ((char *)PortVga_VideoWindow() - 3) + 3;
           }
           break;
         }
@@ -4052,6 +4060,10 @@ void sub_145719()
   dword_1BB8AC = 0;
   LOWORD(dword_1BBA42) = dword_1BBA38;
   HIWORD(dword_1BBA3E) = HIWORD(dword_1BBA34);
+  { static int n = 0;
+    if ( (n++ % 20) == 0 )
+      PortDebug_Checkpoint("mysh.draw_xy",
+                           (((int)(int16_t)dword_1BBA42) << 16) | (HIWORD(dword_1BBA3E) & 0xFFFF)); }
   byte_188D95 = 26;
   byte_188D96 = 24;
   if ( (uint16_t)(HIWORD(dword_1BBA34) + 24) >= 0x1E0u )

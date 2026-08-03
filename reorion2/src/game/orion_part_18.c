@@ -482,7 +482,7 @@ int16_t sub_10D31C(
   sub_12D8F5(600, 60, (int)v29);
   sub_120DED(0, 240);
   sub_120D79(4, (int)&unk_184144);
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_C5BB9();
   sub_12D1C5(v60, 0, 1, (int)v29);
   sub_11438B(0, 0, 639, 479, &unk_17A399, 0);
@@ -494,7 +494,7 @@ int16_t sub_10D31C(
   sub_12D8F5(30, 30, dword_1AD598);
   sub_12F578(dword_1AD598, (int)v25);
   sub_12E1E0(0, 0, (int16_t *)dword_1AD598, 0);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_249F9(aBilltextLbx_2, 4, v62, 80);
   sub_127C27((int)aScienceLbx, 1, dword_193174);
   v31 = 479;
@@ -6288,7 +6288,7 @@ int sub_1171AB(int a1, int a2, int a3, int a4)
 //----- (00117262) --------------------------------------------------------
 int16_t sub_117262()
 {
-  sub_123E6C((int)&unk_18449A, 1);
+  sub_123E6C((int)unk_18449A, 1);
   HIWORD(dword_1B3E10) = 0;
   HIWORD(dword_18448E) = -1;
   word_1844B0 = 0;

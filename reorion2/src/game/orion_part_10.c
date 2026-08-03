@@ -168,7 +168,7 @@ void sub_9F712(int a1, int16_t *a2)
               HIDWORD(v7) = 1;
               sub_77433(v18);
               v26 = 1;
-              sub_123E6C((int)&unk_17CF00, 1);
+              sub_123E6C((int)unk_17CF00, 1);
             }
             else
             {
@@ -312,7 +312,7 @@ void sub_9F981()
   *(_BYTE *)(v14 + 186) = 0;
   *(_WORD *)(dword_19C7C0 + 80) = sub_11ADB4((int)aC_3, 239);
   sub_1172D4();
-  sub_123E6C((int)&unk_17CF4A, 1);
+  sub_123E6C((int)unk_17CF4A, 1);
   sub_C5BB9();
   sub_124D41();
   LOBYTE(v15) = sub_128C32(0, 0, 639, 479, 0);
@@ -5687,7 +5687,7 @@ int sub_A62E0(int a1)
   int v3; // eax
 
   sub_7A795();
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   word_19D364 = word_1844D8;
   word_1844D8 = 0;
   sub_107AF(&dword_19D358);

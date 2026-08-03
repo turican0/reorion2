@@ -117,7 +117,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     sub_11919E((int)ServiceAudioTick_FE8BE);               // 010119 (eax=&ServiceAudioTick_FE8BE)
     sub_1205E6(5, 0, 255);                    // 010125 (eax=5,edx=0,ebx=0xFF)
     PortDebug_Checkpoint("tail.after_1205E6", 0);
-    sub_123E6C((int)&unk_17CF00, 1);          // 010134 (eax=&unk_17CF00,edx=1)
+    sub_123E6C((int)unk_17CF00, 1);          // 010134 (eax=unk_17CF00,edx=1)
     sub_123387(2);                            // 01013E
     byte_199F3A = 0;                          // 010143
     sub_7A06C();                              // 01014A
@@ -136,7 +136,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
       PortDebug_Checkpoint("tail.after_intro", 0);
       sub_11919E((int)ServiceAudioTick_FE8BE);             // 010173
       sub_1205E6(5, 0, 255);                  // 01017F
-      sub_123E6C((int)&unk_17CF00, 1);        // 01018E
+      sub_123E6C((int)unk_17CF00, 1);        // 01018E
     }
     PortDebug_Checkpoint("tail.before_2484F", 0);
     sub_2484F();                              // 010193
@@ -2975,7 +2975,7 @@ int16_t sub_136B3(
   result = sub_10208A();
   ++dword_192FD8;
   if ( !byte_19C196 )
-    return sub_123E6C((int)&unk_17CF00, 1);
+    return sub_123E6C((int)unk_17CF00, 1);
   return result;
 }
 // 136ED: variable 'v6' is possibly undefined
@@ -4010,7 +4010,7 @@ int sub_14AAC( int a1, int16_t *a2)
   sub_1172FC();
   sub_128BE7();
   sub_12B65C();
-  sub_123E6C((int)&unk_180164, 1);
+  sub_123E6C((int)unk_180164, 1);
   sub_24677(120, -1, 1);
   sub_C5B94(0);
   sub_C5B85(10);
@@ -4042,7 +4042,7 @@ int sub_14AAC( int a1, int16_t *a2)
   sub_119281();
   sub_11C2F0();
   sub_12D78E();
-  sub_123E6C((int)&unk_180164, 1);
+  sub_123E6C((int)unk_180164, 1);
   sub_2484F();
   sub_C5B94(0);
   sub_C5B85(10);
@@ -4102,7 +4102,7 @@ int16_t sub_14C83()
   sub_131F7B();
   sub_124DEC();
   sub_12E1E0(0, 0, (int16_t *)dword_19A010, 0);
-  return sub_123E6C((int)&unk_17CF00, 1);
+  return sub_123E6C((int)unk_17CF00, 1);
 }
 // 192ED4: using guessed type int dword_192ED4;
 // 19A010: using guessed type int dword_19A010;
@@ -4141,7 +4141,7 @@ void sub_14DF7(int a1, int a2, int a3)
   if ( a3 == 1 )
   {
     sub_15085(4);
-    sub_123E6C((int)&unk_180178, 1);
+    sub_123E6C((int)unk_180178, 1);
   }
   else
   {
@@ -4356,7 +4356,7 @@ void sub_15239(int16_t *a1)
   sub_1172FC();
   sub_128BE7();
   sub_12B65C();
-  sub_123E6C((int)&unk_180CB0, 1);
+  sub_123E6C((int)unk_180CB0, 1);
   sub_24677(119, -1, 1);
   sub_C5B94(0);
   sub_C5B85(10);
@@ -4767,7 +4767,7 @@ void sub_156D4(int a1)
   sub_12D408(0);
   v25 = sub_124DEC();
   ServiceAudioTick_FE8BE((int)v25, 1, 0, (int16_t *)v13);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   LOBYTE(v26) = sub_1695A();
   ServiceAudioTick_FE8BE(v26, 1, 0, (int16_t *)v13);
   byte_19A0DA = -1;
@@ -5544,7 +5544,7 @@ void sub_16C4E( int a1, int16_t *a2)
   sub_1172FC();
   sub_128BE7();
   sub_12B65C();
-  sub_123E6C((int)&unk_180E62, 1);
+  sub_123E6C((int)unk_180E62, 1);
   sub_119281();
   sub_11C2F0();
   word_19AA36 = -1;
@@ -8434,7 +8434,7 @@ int sub_1AFA6( int a1, int a2, /*int16_t *a3,*/ int a4)
     sub_1172FC();
     sub_128BE7();
     sub_12B65C();
-    sub_123E6C((int)&unk_180E62, 1);
+    sub_123E6C((int)unk_180E62, 1);
     sub_107AF(&dword_19ABA0);
     sub_119281();
     sub_11C2F0();
@@ -9101,7 +9101,7 @@ int sub_1B881(int a1)
   int v2; // ecx
   int v3; // edx
 
-  sub_123E6C((int)&unk_180E62, 1);
+  sub_123E6C((int)unk_180E62, 1);
   sub_119281();
   sub_11C2F0();
   sub_C5B94(0);
@@ -9116,7 +9116,7 @@ int sub_1B881(int a1)
   v3 = (int16_t)(2 * *(uint8_t *)(v2 + (uint8_t*)dword_197F98 + 37) + 14);
   byte_19AA66 = a1;
   sub_12C607((int)aDiplomatLbx_0, v3, a1, v2);
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   return sub_12CD2D();
 }
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -12526,7 +12526,7 @@ int sub_2031D()
   sub_12B65C();
   sub_119281();
   sub_11C2F0();
-  sub_123E6C((int)&unk_180EA8, 1);
+  sub_123E6C((int)unk_180EA8, 1);
   sub_24677(118, -1, 1);
   sub_C5B94(0);
   sub_C5B85(10);
@@ -12647,7 +12647,7 @@ int16_t sub_20538()
   sub_12C7CC();
   sub_124DEC();
   sub_12E1E0(0, 0, (int16_t *)dword_19AA6C, 0);
-  return sub_123E6C((int)&unk_17CF00, 1);
+  return sub_123E6C((int)unk_17CF00, 1);
 }
 // 192ED4: using guessed type int dword_192ED4;
 // 19AA6C: using guessed type int dword_19AA6C;

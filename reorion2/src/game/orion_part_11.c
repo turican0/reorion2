@@ -773,7 +773,7 @@ void sub_B1458()
           sub_1297C3(207, 20 * (v0 - 1) + 332, 252, 16, 1, 100);
         if ( v0 < 6 && word_1828AE[v0] == -10 )
           sub_1297C3(207, 20 * (v0 + 1) + 332, 252, 16, 1, 100);
-        sub_123E6C((int)&unk_182765, 4);
+        sub_123E6C((int)unk_182765, 4);
       }
     }
   }
@@ -1778,7 +1778,7 @@ LABEL_30:
   }
   if ( v6 == word_19DE9A )
   {
-    sub_123E6C((int)&unk_1827A1, 1);
+    sub_123E6C((int)unk_1827A1, 1);
     byte_1827BF = 1;
   }
   else
@@ -1886,7 +1886,7 @@ LABEL_30:
       goto LABEL_79;
     }
     byte_1827BF = 2;
-    sub_123E6C((int)&unk_182795, 1);
+    sub_123E6C((int)unk_182795, 1);
   }
 LABEL_79:
   if ( byte_1827BF != 1 )
@@ -5246,7 +5246,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   sub_B7825();
   if ( byte_182AC9 )
     sub_BC30B((int16_t)dword_19F7A8, 1);
-  sub_123E6C((int)&unk_1828C0, 1);
+  sub_123E6C((int)unk_1828C0, 1);
   sub_C5BB9();
   sub_BF55A();
   sub_132C80(100);
@@ -5265,7 +5265,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   v7 = sub_131922(0, 255);
   sub_1077D(v7);
   sub_C5C44();
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_124C08();
   sub_119441();
   sub_117174(5);
@@ -8597,7 +8597,7 @@ int sub_BB1A6( int a1, int a2)
 void sub_BB1FA()
 {
   word_182AC6 = -1;
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_1172FC();
   sub_1172FC();
 }

@@ -7577,12 +7577,12 @@ LABEL_37:
         }
         else if ( byte_19C19C )
         {
-          sub_123E6C((int)&unk_17CF00, 1);
+          sub_123E6C((int)unk_17CF00, 1);
           byte_19C19C = 0;
         }
         else
         {
-          sub_123E6C((int)&unk_1821B1, 2);
+          sub_123E6C((int)unk_1821B1, 2);
           byte_19C19C = 1;
         }
         return;
@@ -8339,7 +8339,7 @@ int16_t sub_83411(_WORD *a1, int a2, int a3)
     if ( (_BYTE)result )
     {
       byte_19C194 = 0;
-      sub_123E6C((int)&unk_17CF00, 1);
+      sub_123E6C((int)unk_17CF00, 1);
       byte_19C198 = 0;
       result = sub_11C2F0();
       word_199A08 = 0;
@@ -10834,7 +10834,7 @@ void sub_86188(char *a1)
     if ( (v85 & 0x8000u) != 0 && byte_199F0C == 1 )
     {
       byte_199F0C = 0;
-      sub_123E6C((int)&unk_17CF00, 1);
+      sub_123E6C((int)unk_17CF00, 1);
       v3 = 1;
       v82 = 0;
       sub_1191CA((int)sub_84555, 1);
@@ -10894,7 +10894,7 @@ void sub_86188(char *a1)
       if ( !v21 && *(_BYTE *)(dword_19306C + 113 * v73 + 22) != 6 && byte_19C19C )
       {
         byte_19C19C = 0;
-        sub_123E6C((int)&unk_17CF00, 1);
+        sub_123E6C((int)unk_17CF00, 1);
         sub_785EC(v73, word_19999C);
         v64 = dword_19306C + 113 * v73;
         v23 = sub_7A990(0xDDu);
@@ -11260,7 +11260,7 @@ LABEL_207:
         {
           v82 = v47;
           byte_199F0C = 0;
-          sub_123E6C((int)&unk_17CF00, 1);
+          sub_123E6C((int)unk_17CF00, 1);
           sub_1191CA((int)sub_84555, 1);
           sub_6F280();
         }
@@ -11272,7 +11272,7 @@ LABEL_207:
           sub_9191D();
           byte_199F0C = 0;
           sub_6F280();
-          sub_123E6C((int)&unk_17CF00, 1);
+          sub_123E6C((int)unk_17CF00, 1);
           sub_1191CA((int)sub_84555, 1);
           sub_7927F();
           word_19998C += v57;
@@ -11362,7 +11362,7 @@ LABEL_207:
       byte_199F0C = 1;
       sub_119400(word_19C154);
       sub_81D73();
-      sub_123E6C((int)&unk_182175, 5);
+      sub_123E6C((int)unk_182175, 5);
       sub_78FE6();
       byte_199F28 = 1;
     }

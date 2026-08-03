@@ -1,6 +1,10 @@
 #include "port_vga.h"
 
 extern "C" void PortWatchdog_Ping(void);
+// Emulace preruseni od myshi - viz komentar v Present() a port_dos.cpp.
+extern "C" void PortDos_ServiceMouse(void);
+extern "C" void PortDebug_Checkpoint(const char* name, int value);
+extern "C" int g_kurzorSeq;
 #include "port_sound.h"
 
 #include <SDL3/SDL.h>
@@ -506,6 +510,16 @@ void Present()
     if (!g_initialized || !g_framebuffer)
         return;
 
+    // PORT (vlna 26 pokr. 41): emulace PRERUSENI OD MYSHI. V DOSu volal
+    // ovladac zaregistrovanou herni rutinu (sub_1236D1) asynchronne pri
+    // kazdem pohybu/kliknuti; ta aktualizuje pozici kurzoru, stav tlacitek
+    // a kurzor i vykresli. V portu ji musime zavolat sami a tohle je pro to
+    // spravne misto - hra tu ceka na obraz, tedy presne tam, kde v originale
+    // preruseni chodila. Volani samo kontroluje, jestli je rutina vubec
+    // zaregistrovana a jestli se stav zmenil.
+    PortDebug_Checkpoint("obraz.present", ++g_kurzorSeq);
+    PortDos_ServiceMouse();
+
     // PORT (vlna 26 pokr. 34): rozlisit, jestli je cerna obrazovka PRAZDNY
     // buffer (hra nekresli), nebo obsah s cernou paletou (kresli, ale barvy
     // chybi). Zapina REORION2_PRESENT_TRACE=1.
@@ -556,6 +570,32 @@ extern "C" {
 unsigned char* PortVga_Framebuffer(void)
 {
     return Port::Vga::Framebuffer();
+}
+
+// ---------------------------------------------------------------------
+// VESA okno do videopameti (vlna 26 pokr. 41). V originale lezelo na
+// 0xA0000 a melo 64 KB; obraz 640x480 se do nej nevejde, takze se mezi
+// radky prepina BANKA pres INT 10h AX=4F05h - v asm to delaji sub_138C34
+// (okno B) a sub_138C58 (okno A), obe s cislem banky v AX (nactenym z
+// word_188D82). Dekompilat z nich udelal prazdne stuby s "inline asm"
+// poznamkou, takze port cely obraz mackal do banky 0: zmereno, ze kurzor
+// sledoval mys jen v horni petine obrazovky (64 KB / 640 B = 102 radku).
+//
+// Framebuffer portu je linearni a ma presne 5 bank (viz kFramebufferBytes),
+// coz je i pocet bank na jednu obrazovou stranku v originale - proto se
+// cislo banky bere modulo 5 (hra si k nemu pricita 5 * cislo stranky, ale
+// port ma jen jednu stranku).
+static int g_videoWindowBank = 0;
+
+void PortVga_SetVideoWindow(int bank)
+{
+    g_videoWindowBank = ((bank % 5) + 5) % 5;
+}
+
+unsigned char* PortVga_VideoWindow(void)
+{
+    unsigned char* base = Port::Vga::Framebuffer();
+    return base ? base + (size_t)g_videoWindowBank * 0x10000u : base;
 }
 
 // Nahrada za VGA "cekani na vertical retrace" (busy-wait na portu 0x3DA,

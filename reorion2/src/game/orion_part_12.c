@@ -3831,7 +3831,7 @@ int16_t sub_C058A(int a1, int16_t *a2)
     sub_11C2F0();
     sub_120DED(80, 80);
     sub_BB04E(3u);
-    sub_123E6C((int)&unk_1828C0, 1);
+    sub_123E6C((int)unk_1828C0, 1);
     sub_124D41();
     sub_124C08();
     if ( sub_C5C85() )
@@ -3857,7 +3857,7 @@ int16_t sub_C058A(int a1, int16_t *a2)
     sub_C5C44();
     sub_124C08();
     v15 = 1;
-    sub_123E6C((int)&unk_17CF00, 1);
+    sub_123E6C((int)unk_17CF00, 1);
     sub_C035E((uint16_t)a2);
     do
     {
@@ -4017,7 +4017,7 @@ int16_t sub_C0A5F(int16_t *a1)
   sub_12F578(dword_19F7C4, (int)a1);
   sub_12E332(19);
   sub_12E1E0(0, 0, (int16_t *)dword_19F7C4, 19);
-  return sub_123E6C((int)&unk_17CF0C, 1);
+  return sub_123E6C((int)unk_17CF0C, 1);
 }
 // 182978: using guessed type char byte_182978;
 // 19F7C4: using guessed type int dword_19F7C4;
@@ -4027,7 +4027,7 @@ int16_t sub_C0A5F(int16_t *a1)
 void sub_C0ABC()
 {
   sub_12E332(19);
-  sub_123E6C((int)&unk_17CF0C, 1);
+  sub_123E6C((int)unk_17CF0C, 1);
   if ( word_182974 != -1 && (int16_t)sub_B9AD7(word_182974) != -1 )
     sub_1172D4();
 }
@@ -4037,7 +4037,7 @@ void sub_C0ABC()
 //----- (000C0AF4) --------------------------------------------------------
 void sub_C0AF4()
 {
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   JUMPOUT(0xBB218);
 }
 // C0B04: control flows out of bounds to BB218
@@ -6949,7 +6949,7 @@ void sub_C4562(int a1, int16_t *a2, int a3)
   }
   sub_120CCB(1, (int)&unk_182C2E);
   sub_107AF(&v10);
-  sub_123E6C((int)&unk_1828C0, 1);
+  sub_123E6C((int)unk_1828C0, 1);
   sub_119281();
   if ( sub_C5C85() )
   {
@@ -6981,7 +6981,7 @@ void sub_C4562(int a1, int16_t *a2, int a3)
   byte_182ACA = 0;
   v5 = 1;
   sub_C5C44();
-  sub_123E6C((int)&unk_17CF00, 1);
+  sub_123E6C((int)unk_17CF00, 1);
   sub_124C08();
   sub_C3996();
   do
@@ -7990,7 +7990,7 @@ int16_t sub_C5B94( int result)
 {
   byte_18319C = result;
   if ( !result )
-    return sub_123E6C((int)&unk_17CF00, 1);
+    return sub_123E6C((int)unk_17CF00, 1);
   return result;
 }
 // 18319C: using guessed type char byte_18319C;

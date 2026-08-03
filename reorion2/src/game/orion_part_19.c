@@ -4156,9 +4156,9 @@ void sub_123491()
   word_1B9228 = 0;
   word_1B9220 = 0;
   sub_144A48();
-  word_18452A = WORD2(qword_184530) - 1;
-  word_18452C = screenHeight_184538 - 1;
-  sub_123E6C((int)&unk_184522, 1);
+  unk_184522[4] = WORD2(qword_184530) - 1;   // puvodne word_18452A = pole +8 (x1)
+  unk_184522[5] = screenHeight_184538 - 1;   // puvodne word_18452C = pole +10 (y1)
+  sub_123E6C((int)unk_184522, 1);
   sub_123B14(SHIDWORD(qword_184530) / 2, screenHeight_184538 / 2);
   word_184518 = 1;
   LOWORD(dword_18451A) = 0;
@@ -4166,8 +4166,6 @@ void sub_123491()
 // 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);
 // 184518: using guessed type int16_t word_184518;
 // 18451A: using guessed type int dword_18451A;
-// 18452A: using guessed type int16_t word_18452A;
-// 18452C: using guessed type int16_t word_18452C;
 // 184530: using guessed type int64_t qword_184530;
 // 1B9220: using guessed type int16_t word_1B9220;
 // 1B9228: using guessed type int16_t word_1B9228;
@@ -4183,9 +4181,68 @@ void sub_123491()
 
 
 //----- (001236D1) --------------------------------------------------------
-void sub_1236D1()
+// OBSLUZNA RUTINA MYSHI (vlna 26 pokr. 41). IDA ji nedokazala dekompilovat
+// (viz "could not find valid save-restore pair" nize) a zbyla z ni jedina
+// nesmyslna radka `_GETDS(...)`. Prepsano RUCNE podle asm
+// (Debug/diss/Orion2.exe.asm, sub_1236D1 @ 0x1236D1).
+//
+// V DOSu ji volal ovladac myshi pri kazde udalosti (registruje se pres
+// INT 33h fn 0x0C/0x14 - viz sub_1237F3 / sub_12386C / sub_123926) a v
+// registrech dostavala:  AX = maska udalosti, BX = stav tlacitek,
+// CX = X (ve dvojnasobnem rozsahu), DX = Y.  V portu ji stejnymi argumenty
+// vola PortDos_ServiceMouse() z port_dos.cpp.
+//
+// TEPRVE TAHLE RUTINA aktualizuje herni pozici kurzoru a stav tlacitek a
+// zaridi jeho vykresleni - bez ni kurzor zustaval na 0,0 a kliknuti nemela
+// zadny ucinek.
+//
+// Odchylka od originalu (zamerna, DOS specificka): asm si tu prepina
+// SS:ESP na vlastni zasobnik (dword_1B9E2B/word_1B9E2F), protoze ovladac
+// volal rutinu na svem malinkem zasobniku. V portu bezime na normalnim
+// zasobniku volajiciho, takze prepinani nema smysl a je vynechano.
+void sub_1236D1(int a1_eventMask, int a2_buttons, int a3_x, int a4_y)
 {
-  ((void (__noreturn *)(_DWORD))_GETDS)((uint16_t)__DS__);
+  (void)a1_eventMask; // asm si ji ulozi do [ebp-8] a uz ji nikdy nepouzije
+
+  if ( dword_18452E == 1 )              // zabrana proti opakovanemu vstupu
+    return;
+  dword_18452E = 1;
+  sub_144A46();                         // _disable (cli)
+  if ( !(int16_t)dword_18451A )         // uz uvnitr obsluhy? pak jen ven
+  {
+    if ( !HIWORD(dword_18451A) )
+    {
+      // X chodi z ovladace ve dvojnasobnem rozsahu (0..2*(sirka-1)), hra si
+      // ho deli dvema - viz i sub_123B58, ktere pri nastaveni pozice naopak
+      // dvema nasobi.
+      LOWORD(dword_1BBA38) = (int16_t)a3_x >> 1;
+      HIWORD(dword_1BBA34) = a4_y;
+      word_1B921A = a2_buttons;
+      { static int n = 0;
+        if ( (n++ % 20) == 0 )
+          PortDebug_Checkpoint("mysh.cb_xy",
+                               (((int)(int16_t)dword_1BBA38) << 16) | (HIWORD(dword_1BBA34) & 0xFFFF)); }
+    }
+    else
+    {
+      word_1B921A = word_184520 + word_18451E;
+    }
+    sub_123D53();
+    if ( !byte_1B922A )
+    {
+      LOWORD(dword_18451A) = 1;
+      sub_123EA7();
+      if ( word_184518 == 1 )
+      {
+        ((int(*)())(void*)dword_1B9208)();
+        ((int(*)())(void*)dword_1B920C)();
+        ((int(*)())(void*)dword_1B9210)();
+      }
+      LOWORD(dword_18451A) = 0;
+    }
+  }
+  sub_144A48();                         // _enable (sti)
+  dword_18452E = 0;
 }
 // 1236D1: could not find valid save-restore pair for ebp
 // 1236D1: could not find valid save-restore pair for edi
@@ -4494,8 +4551,8 @@ int16_t sub_123EA7()
   HIWORD(dword_1BBA38) = -1;
   for ( i = 0; dword_1B9222 >> 16 > i; ++i )
   {
-    if ( (*(int *)((char *)&dword_1BBA34 + 2) >> 16) + (*(int *)(dword_1B9204 + 12 * i) >> 16) >= *(int *)(dword_1B9204 + 12 * i + 2) >> 16
-      && (*(int *)((char *)&dword_1BBA34 + 2) >> 16) + (*(int *)(dword_1B9204 + 12 * i) >> 16) <= *(int *)(dword_1B9204 + 12 * i + 6) >> 16
+    if ( ((int16_t)dword_1BBA38) + (*(int *)(dword_1B9204 + 12 * i) >> 16) >= *(int *)(dword_1B9204 + 12 * i + 2) >> 16
+      && ((int16_t)dword_1BBA38) + (*(int *)(dword_1B9204 + 12 * i) >> 16) <= *(int *)(dword_1B9204 + 12 * i + 6) >> 16
       && (dword_1BBA34 >> 16) + (*(int *)(dword_1B9204 + 12 * i) >> 16) >= *(int *)(dword_1B9204 + 12 * i + 4) >> 16
       && (dword_1BBA34 >> 16) + (*(int *)(dword_1B9204 + 12 * i) >> 16) <= *(int *)(dword_1B9204 + 12 * i + 8) >> 16 )
     {
@@ -4594,7 +4651,7 @@ int sub_12435C()
 
   if ( word_1BBA3C > 0 )
   {
-    result = 576 * ((*(int *)((char *)&dword_1BBA38 + 2) >> 16) - 1);
+    result = 576 * (((int16_t)word_1BBA3C) - 1);
     dword_1BBA18 = result + dword_1BB900;
     sub_14595F();
   }
@@ -4614,7 +4671,7 @@ int sub_12439D()
 
   if ( word_1BBA3C > 0 )
   {
-    result = 576 * ((*(int *)((char *)&dword_1BBA38 + 2) >> 16) - 1);
+    result = 576 * (((int16_t)word_1BBA3C) - 1);
     dword_1BBA18 = result + dword_1BB900;
     sub_14529D();
   }
@@ -4958,16 +5015,16 @@ int sub_124ECB()
   if ( dword_184540 )
   {
     sub_138CEE(
-      *(int *)((char *)&dword_1BBA3E + 2) >> 16,
+      (int16_t)dword_1BBA42,
       dword_1BBA3E >> 16,
-      (*(int *)((char *)&dword_1BBA3E + 2) >> 16) + 26,
+      ((int16_t)dword_1BBA42) + 26,
       (dword_1BBA3E >> 16) + 24);
     sub_145719();
     sub_12435C();
     v1 = sub_138CEE(
-           *(int *)((char *)&dword_1BBA3E + 2) >> 16,
+           (int16_t)dword_1BBA42,
            dword_1BBA3E >> 16,
-           (*(int *)((char *)&dword_1BBA3E + 2) >> 16) + 26,
+           ((int16_t)dword_1BBA42) + 26,
            (dword_1BBA3E >> 16) + 24);
     if ( dword_184540 == 1 )
       dword_1BB898(v1);
