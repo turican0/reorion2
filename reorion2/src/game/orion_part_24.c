@@ -2715,7 +2715,19 @@ int16_t sub_1612E0(int a1, _WORD *a2, _WORD *a3, int *a4)
 
 
 //----- (00161336) --------------------------------------------------------
-int sub_161336(int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161336@<eax>, <edi>, <esi>
+int sub_161336(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -2727,6 +2739,11 @@ int sub_161336(int result, _DWORD *a2, _BYTE *a3)
     *a2++ += (int16_t)result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2734,7 +2751,19 @@ int sub_161336(int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (00161357) --------------------------------------------------------
-int sub_161357(int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161357@<eax>, <edi>, <esi>
+int sub_161357(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -2748,6 +2777,11 @@ int sub_161357(int result, _DWORD *a2, _BYTE *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2755,7 +2789,19 @@ int sub_161357(int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (0016137B) --------------------------------------------------------
-int sub_16137B(int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16137B@<eax>, <edi>, <esi>
+int sub_16137B(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -2767,6 +2813,11 @@ int sub_16137B(int result, _DWORD *a2, _BYTE *a3)
     *a2++ += (int16_t)result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2774,7 +2825,19 @@ int sub_16137B(int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (001613A7) --------------------------------------------------------
-int sub_1613A7(int result, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1613A7@<eax>, <ebx>, <edi>, <esi>
+int sub_1613A7(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int a2,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -2794,6 +2857,11 @@ int sub_1613A7(int result, int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2801,7 +2869,19 @@ int sub_1613A7(int result, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (001613D9) --------------------------------------------------------
-int sub_1613D9(int result, _DWORD *a2, unsigned int a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1613D9@<eax>, <edi>, <esi>
+int sub_1613D9(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        unsigned int a3)
 {
   do
   {
@@ -2813,6 +2893,11 @@ int sub_1613D9(int result, _DWORD *a2, unsigned int a3)
     *a2++ += (int16_t)result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2820,7 +2905,19 @@ int sub_1613D9(int result, _DWORD *a2, unsigned int a3)
 
 
 //----- (00161405) --------------------------------------------------------
-int sub_161405(int result, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161405@<eax>, <ebx>, <edi>, <esi>
+int sub_161405(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int a2,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -2840,6 +2937,11 @@ int sub_161405(int result, int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2847,7 +2949,19 @@ int sub_161405(int result, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161437) --------------------------------------------------------
-int16_t sub_161437(_DWORD *a1, _WORD *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161437@<edi>, <esi>
+int16_t sub_161437(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        _WORD *a2)
 {
   int16_t result; // ax
 
@@ -2859,6 +2973,11 @@ int16_t sub_161437(_DWORD *a1, _WORD *a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2866,7 +2985,19 @@ int16_t sub_161437(_DWORD *a1, _WORD *a2)
 
 
 //----- (0016145B) --------------------------------------------------------
-int16_t sub_16145B(_DWORD *a1, _WORD *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16145B@<edi>, <esi>
+int16_t sub_16145B(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        _WORD *a2)
 {
   int16_t result; // ax
 
@@ -2880,6 +3011,11 @@ int16_t sub_16145B(_DWORD *a1, _WORD *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2887,7 +3023,19 @@ int16_t sub_16145B(_DWORD *a1, _WORD *a2)
 
 
 //----- (00161482) --------------------------------------------------------
-int16_t sub_161482(_DWORD *a1, _WORD *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161482@<edi>, <esi>
+int16_t sub_161482(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        _WORD *a2)
 {
   int16_t result; // ax
 
@@ -2900,6 +3048,11 @@ int16_t sub_161482(_DWORD *a1, _WORD *a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2907,7 +3060,19 @@ int16_t sub_161482(_DWORD *a1, _WORD *a2)
 
 
 //----- (001614B0) --------------------------------------------------------
-int16_t sub_1614B0(_DWORD *a1, _WORD *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1614B0@<edi>, <esi>
+int16_t sub_1614B0(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        _WORD *a2)
 {
   int16_t result; // ax
   int16_t v3; // bx
@@ -2924,6 +3089,11 @@ int16_t sub_1614B0(_DWORD *a1, _WORD *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2931,7 +3101,19 @@ int16_t sub_1614B0(_DWORD *a1, _WORD *a2)
 
 
 //----- (001614E4) --------------------------------------------------------
-int16_t sub_1614E4(_DWORD *a1, unsigned int a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1614E4@<edi>, <esi>
+int16_t sub_1614E4(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        unsigned int a2)
 {
   int16_t result; // ax
 
@@ -2944,6 +3126,11 @@ int16_t sub_1614E4(_DWORD *a1, unsigned int a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2951,7 +3138,19 @@ int16_t sub_1614E4(_DWORD *a1, unsigned int a2)
 
 
 //----- (00161512) --------------------------------------------------------
-int16_t sub_161512(_DWORD *a1, _WORD *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161512@<edi>, <esi>
+int16_t sub_161512(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        _WORD *a2)
 {
   int16_t result; // ax
   int16_t v3; // bx
@@ -2968,6 +3167,11 @@ int16_t sub_161512(_DWORD *a1, _WORD *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2975,7 +3179,19 @@ int16_t sub_161512(_DWORD *a1, _WORD *a2)
 
 
 //----- (00161546) --------------------------------------------------------
-int16_t sub_161546( int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161546@<eax>, <edi>, <esi>
+int16_t sub_161546(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -2985,6 +3201,11 @@ int16_t sub_161546( int result, _DWORD *a2, _BYTE *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -2992,7 +3213,19 @@ int16_t sub_161546( int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (00161562) --------------------------------------------------------
-int16_t sub_161562( int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161562@<eax>, <edi>, <esi>
+int16_t sub_161562(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -3004,6 +3237,11 @@ int16_t sub_161562( int result, _DWORD *a2, _BYTE *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3011,7 +3249,19 @@ int16_t sub_161562( int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (00161581) --------------------------------------------------------
-int16_t sub_161581( int result, _DWORD *a2, _BYTE *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161581@<eax>, <edi>, <esi>
+int16_t sub_161581(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        _BYTE *a3)
 {
   do
   {
@@ -3022,6 +3272,11 @@ int16_t sub_161581( int result, _DWORD *a2, _BYTE *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3029,7 +3284,19 @@ int16_t sub_161581( int result, _DWORD *a2, _BYTE *a3)
 
 
 //----- (001615A2) --------------------------------------------------------
-int16_t sub_1615A2( int result, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1615A2@<eax>, <ebx>, <edi>, <esi>
+int16_t sub_1615A2(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int a2,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3047,6 +3314,11 @@ int16_t sub_1615A2( int result, int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3054,7 +3326,19 @@ int16_t sub_1615A2( int result, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (001615C9) --------------------------------------------------------
-int16_t sub_1615C9( int result, _DWORD *a2, unsigned int a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1615C9@<eax>, <edi>, <esi>
+int16_t sub_1615C9(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a2,
+        unsigned int a3)
 {
   do
   {
@@ -3065,6 +3349,11 @@ int16_t sub_1615C9( int result, _DWORD *a2, unsigned int a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3072,7 +3361,19 @@ int16_t sub_1615C9( int result, _DWORD *a2, unsigned int a3)
 
 
 //----- (001615EA) --------------------------------------------------------
-int16_t sub_1615EA( int result, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1615EA@<eax>, <ebx>, <edi>, <esi>
+int16_t sub_1615EA(
+        int result,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int a2,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3090,6 +3391,11 @@ int16_t sub_1615EA( int result, int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3097,7 +3403,19 @@ int16_t sub_1615EA( int result, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161611) --------------------------------------------------------
-int16_t sub_161611(_DWORD *a1, int16_t *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161611@<edi>, <esi>
+int16_t sub_161611(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        int16_t *a2)
 {
   int16_t result; // ax
 
@@ -3109,6 +3427,11 @@ int16_t sub_161611(_DWORD *a1, int16_t *a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3116,7 +3439,19 @@ int16_t sub_161611(_DWORD *a1, int16_t *a2)
 
 
 //----- (00161630) --------------------------------------------------------
-int16_t sub_161630(_DWORD *a1, int16_t *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161630@<edi>, <esi>
+int16_t sub_161630(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        int16_t *a2)
 {
   int16_t result; // ax
 
@@ -3130,6 +3465,11 @@ int16_t sub_161630(_DWORD *a1, int16_t *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3137,7 +3477,19 @@ int16_t sub_161630(_DWORD *a1, int16_t *a2)
 
 
 //----- (00161652) --------------------------------------------------------
-int16_t sub_161652(_DWORD *a1, int16_t *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161652@<edi>, <esi>
+int16_t sub_161652(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        int16_t *a2)
 {
   int16_t result; // ax
 
@@ -3150,6 +3502,11 @@ int16_t sub_161652(_DWORD *a1, int16_t *a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3157,7 +3514,19 @@ int16_t sub_161652(_DWORD *a1, int16_t *a2)
 
 
 //----- (00161675) --------------------------------------------------------
-int16_t sub_161675(_DWORD *a1, int16_t *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161675@<edi>, <esi>
+int16_t sub_161675(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        int16_t *a2)
 {
   int16_t result; // ax
   int16_t v3; // bx
@@ -3174,6 +3543,11 @@ int16_t sub_161675(_DWORD *a1, int16_t *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3181,7 +3555,19 @@ int16_t sub_161675(_DWORD *a1, int16_t *a2)
 
 
 //----- (0016169E) --------------------------------------------------------
-int16_t sub_16169E(_DWORD *a1, unsigned int a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16169E@<edi>, <esi>
+int16_t sub_16169E(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        unsigned int a2)
 {
   int16_t result; // ax
 
@@ -3194,6 +3580,11 @@ int16_t sub_16169E(_DWORD *a1, unsigned int a2)
     *a1++ += result;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3201,7 +3592,19 @@ int16_t sub_16169E(_DWORD *a1, unsigned int a2)
 
 
 //----- (001616C1) --------------------------------------------------------
-int16_t sub_1616C1(_DWORD *a1, int16_t *a2)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1616C1@<edi>, <esi>
+int16_t sub_1616C1(
+        int mix_eax,
+        int mix_edx,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a1,
+        int16_t *a2)
 {
   int16_t v2; // bx
   int16_t result; // ax
@@ -3218,6 +3621,11 @@ int16_t sub_1616C1(_DWORD *a1, int16_t *a2)
     a1 += 2;
   }
   while ( (unsigned int)a1 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a2;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a1;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3225,7 +3633,19 @@ int16_t sub_1616C1(_DWORD *a1, int16_t *a2)
 
 
 //----- (001616EA) --------------------------------------------------------
-int sub_1616EA(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1616EA@<eax>, <ecx>, <edi>, <esi>
+int sub_1616EA(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3238,6 +3658,11 @@ int sub_1616EA(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += (int16_t)result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3246,7 +3671,19 @@ int sub_1616EA(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161716) --------------------------------------------------------
-int sub_161716(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161716@<eax>, <ecx>, <edi>, <esi>
+int sub_161716(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3261,6 +3698,11 @@ int sub_161716(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3269,7 +3711,19 @@ int sub_161716(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161745) --------------------------------------------------------
-int sub_161745(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161745@<eax>, <ecx>, <edi>, <esi>
+int sub_161745(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   int v4; // ebp
 
@@ -3285,6 +3739,11 @@ int sub_161745(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += (int16_t)result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3293,9 +3752,17 @@ int sub_161745(int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (0016177F) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16177F@<eax>, <ecx>, <ebx>, <edi>, <esi>
 int sub_16177F(
         int result,
-        unsigned int a2, int a3,
+        int mix_edx,
+        unsigned int a2,
+        int a3,
         _DWORD *a4,
         _BYTE *a5)
 {
@@ -3358,7 +3825,19 @@ int sub_16177F(
 
 
 //----- (001617BF) --------------------------------------------------------
-int sub_1617BF(int result, unsigned int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1617BF@<eax>, <ecx>, <edi>, <esi>
+int sub_1617BF(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   int v4; // ebp
 
@@ -3374,6 +3853,11 @@ int sub_1617BF(int result, unsigned int a2, _DWORD *a3, unsigned int a4)
     *a3++ += (int16_t)result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3382,9 +3866,17 @@ int sub_1617BF(int result, unsigned int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (001617F9) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1617F9@<eax>, <ecx>, <ebx>, <edi>, <esi>
 int sub_1617F9(
         int result,
-        unsigned int a2, int a3,
+        int mix_edx,
+        unsigned int a2,
+        int a3,
         _DWORD *a4,
         _BYTE *a5)
 {
@@ -3410,6 +3902,11 @@ int sub_1617F9(
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3418,7 +3915,19 @@ int sub_1617F9(
 
 
 //----- (00161839) --------------------------------------------------------
-int16_t sub_161839(unsigned int a1, _DWORD *a2, _WORD *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161839@<ecx>, <edi>, <esi>
+int16_t sub_161839(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        _WORD *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3434,6 +3943,11 @@ int16_t sub_161839(unsigned int a1, _DWORD *a2, _WORD *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3442,7 +3956,19 @@ int16_t sub_161839(unsigned int a1, _DWORD *a2, _WORD *a3)
 
 
 //----- (0016186B) --------------------------------------------------------
-int16_t sub_16186B(unsigned int a1, _DWORD *a2, _WORD *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16186B@<ecx>, <edi>, <esi>
+int16_t sub_16186B(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        _WORD *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3460,6 +3986,11 @@ int16_t sub_16186B(unsigned int a1, _DWORD *a2, _WORD *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3468,7 +3999,19 @@ int16_t sub_16186B(unsigned int a1, _DWORD *a2, _WORD *a3)
 
 
 //----- (001618A0) --------------------------------------------------------
-int16_t sub_1618A0(unsigned int a1, _DWORD *a2, _WORD *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1618A0@<ecx>, <edi>, <esi>
+int16_t sub_1618A0(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        _WORD *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3484,6 +4027,11 @@ int16_t sub_1618A0(unsigned int a1, _DWORD *a2, _WORD *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3492,7 +4040,19 @@ int16_t sub_1618A0(unsigned int a1, _DWORD *a2, _WORD *a3)
 
 
 //----- (001618DC) --------------------------------------------------------
-int16_t sub_1618DC(unsigned int a1, _DWORD *a2, _WORD *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1618DC@<ecx>, <edi>, <esi>
+int16_t sub_1618DC(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        _WORD *a3)
 {
   int16_t result; // ax
   int16_t v4; // bx
@@ -3512,6 +4072,11 @@ int16_t sub_1618DC(unsigned int a1, _DWORD *a2, _WORD *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3520,7 +4085,19 @@ int16_t sub_1618DC(unsigned int a1, _DWORD *a2, _WORD *a3)
 
 
 //----- (0016191E) --------------------------------------------------------
-int16_t sub_16191E(unsigned int a1, _DWORD *a2, unsigned int a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16191E@<ecx>, <edi>, <esi>
+int16_t sub_16191E(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        unsigned int a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3536,6 +4113,11 @@ int16_t sub_16191E(unsigned int a1, _DWORD *a2, unsigned int a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3544,7 +4126,19 @@ int16_t sub_16191E(unsigned int a1, _DWORD *a2, unsigned int a3)
 
 
 //----- (0016195A) --------------------------------------------------------
-int16_t sub_16195A(unsigned int a1, _DWORD *a2, _WORD *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16195A@<ecx>, <edi>, <esi>
+int16_t sub_16195A(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        _WORD *a3)
 {
   int16_t result; // ax
   int16_t v4; // bx
@@ -3564,6 +4158,11 @@ int16_t sub_16195A(unsigned int a1, _DWORD *a2, _WORD *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3572,7 +4171,19 @@ int16_t sub_16195A(unsigned int a1, _DWORD *a2, _WORD *a3)
 
 
 //----- (0016199C) --------------------------------------------------------
-int16_t sub_16199C( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_16199C@<eax>, <ecx>, <edi>, <esi>
+int16_t sub_16199C(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3584,6 +4195,11 @@ int16_t sub_16199C( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3592,7 +4208,19 @@ int16_t sub_16199C( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (001619C3) --------------------------------------------------------
-int16_t sub_1619C3( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1619C3@<eax>, <ecx>, <edi>, <esi>
+int16_t sub_1619C3(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3606,6 +4234,11 @@ int16_t sub_1619C3( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3614,7 +4247,19 @@ int16_t sub_1619C3( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (001619ED) --------------------------------------------------------
-int16_t sub_1619ED( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_1619ED@<eax>, <ecx>, <edi>, <esi>
+int16_t sub_1619ED(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   int v4; // ebp
 
@@ -3629,6 +4274,11 @@ int16_t sub_1619ED( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3637,8 +4287,17 @@ int16_t sub_1619ED( int result, unsigned int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161A1C) --------------------------------------------------------
-int16_t sub_161A1C( int result,
-        unsigned int a2, int a3,
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161A1C@<eax>, <ecx>, <ebx>, <edi>, <esi>
+int16_t sub_161A1C(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int a3,
         _DWORD *a4,
         _BYTE *a5)
 {
@@ -3662,6 +4321,11 @@ int16_t sub_161A1C( int result,
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3670,7 +4334,19 @@ int16_t sub_161A1C( int result,
 
 
 //----- (00161A51) --------------------------------------------------------
-int16_t sub_161A51( int result, unsigned int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161A51@<eax>, <ecx>, <edi>, <esi>
+int16_t sub_161A51(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   int v4; // ebp
 
@@ -3685,6 +4361,11 @@ int16_t sub_161A51( int result, unsigned int a2, _DWORD *a3, unsigned int a4)
     *a3++ += result;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3693,8 +4374,17 @@ int16_t sub_161A51( int result, unsigned int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161A80) --------------------------------------------------------
-int16_t sub_161A80( int result,
-        unsigned int a2, int a3,
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161A80@<eax>, <ecx>, <ebx>, <edi>, <esi>
+int16_t sub_161A80(
+        int result,
+        int mix_edx,
+        unsigned int a2,
+        int a3,
         _DWORD *a4,
         _BYTE *a5)
 {
@@ -3718,6 +4408,11 @@ int16_t sub_161A80( int result,
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3726,7 +4421,19 @@ int16_t sub_161A80( int result,
 
 
 //----- (00161AB5) --------------------------------------------------------
-int16_t sub_161AB5(unsigned int a1, _DWORD *a2, int16_t *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161AB5@<ecx>, <edi>, <esi>
+int16_t sub_161AB5(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        int16_t *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3742,6 +4449,11 @@ int16_t sub_161AB5(unsigned int a1, _DWORD *a2, int16_t *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3750,7 +4462,19 @@ int16_t sub_161AB5(unsigned int a1, _DWORD *a2, int16_t *a3)
 
 
 //----- (00161AE2) --------------------------------------------------------
-int16_t sub_161AE2(unsigned int a1, _DWORD *a2, int16_t *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161AE2@<ecx>, <edi>, <esi>
+int16_t sub_161AE2(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        int16_t *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3768,6 +4492,11 @@ int16_t sub_161AE2(unsigned int a1, _DWORD *a2, int16_t *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3776,7 +4505,19 @@ int16_t sub_161AE2(unsigned int a1, _DWORD *a2, int16_t *a3)
 
 
 //----- (00161B12) --------------------------------------------------------
-int16_t sub_161B12(unsigned int a1, _DWORD *a2, int16_t *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161B12@<ecx>, <edi>, <esi>
+int16_t sub_161B12(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        int16_t *a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3792,6 +4533,11 @@ int16_t sub_161B12(unsigned int a1, _DWORD *a2, int16_t *a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3800,7 +4546,19 @@ int16_t sub_161B12(unsigned int a1, _DWORD *a2, int16_t *a3)
 
 
 //----- (00161B43) --------------------------------------------------------
-int16_t sub_161B43(unsigned int a1, _DWORD *a2, int16_t *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161B43@<ecx>, <edi>, <esi>
+int16_t sub_161B43(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        int16_t *a3)
 {
   int16_t result; // ax
   int16_t v4; // bx
@@ -3820,6 +4578,11 @@ int16_t sub_161B43(unsigned int a1, _DWORD *a2, int16_t *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3828,7 +4591,19 @@ int16_t sub_161B43(unsigned int a1, _DWORD *a2, int16_t *a3)
 
 
 //----- (00161B7A) --------------------------------------------------------
-int16_t sub_161B7A(unsigned int a1, _DWORD *a2, unsigned int a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161B7A@<ecx>, <edi>, <esi>
+int16_t sub_161B7A(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        unsigned int a3)
 {
   int16_t result; // ax
   int v4; // ebp
@@ -3844,6 +4619,11 @@ int16_t sub_161B7A(unsigned int a1, _DWORD *a2, unsigned int a3)
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3852,7 +4632,19 @@ int16_t sub_161B7A(unsigned int a1, _DWORD *a2, unsigned int a3)
 
 
 //----- (00161BAB) --------------------------------------------------------
-int16_t sub_161BAB(unsigned int a1, _DWORD *a2, int16_t *a3)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161BAB@<ecx>, <edi>, <esi>
+int16_t sub_161BAB(
+        int mix_eax,
+        int mix_edx,
+        unsigned int a1,
+        int mix_ebx,
+        _DWORD *a2,
+        int16_t *a3)
 {
   int16_t v3; // bx
   int16_t result; // ax
@@ -3872,6 +4664,11 @@ int16_t sub_161BAB(unsigned int a1, _DWORD *a2, int16_t *a3)
     a2 += 2;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a3;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a2;
   return result;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3880,7 +4677,19 @@ int16_t sub_161BAB(unsigned int a1, _DWORD *a2, int16_t *a3)
 
 
 //----- (00161BE2) --------------------------------------------------------
-char sub_161BE2(int a1, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161BE2@<eax>, <edx>, <edi>, <esi>
+char sub_161BE2(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3890,6 +4699,11 @@ char sub_161BE2(int a1, int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3897,7 +4711,19 @@ char sub_161BE2(int a1, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161BFE) --------------------------------------------------------
-char sub_161BFE(int a1, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161BFE@<eax>, <edx>, <edi>, <esi>
+char sub_161BFE(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3909,6 +4735,11 @@ char sub_161BFE(int a1, int a2, _DWORD *a3, _BYTE *a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3916,7 +4747,19 @@ char sub_161BFE(int a1, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161C24) --------------------------------------------------------
-char sub_161C24(int a1, int a2, _DWORD *a3, _BYTE *a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161C24@<eax>, <edx>, <edi>, <esi>
+char sub_161C24(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        _BYTE *a4)
 {
   do
   {
@@ -3927,6 +4770,11 @@ char sub_161C24(int a1, int a2, _DWORD *a3, _BYTE *a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3934,7 +4782,19 @@ char sub_161C24(int a1, int a2, _DWORD *a3, _BYTE *a4)
 
 
 //----- (00161C45) --------------------------------------------------------
-char sub_161C45(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161C45@<eax>, <edx>, <ebx>, <edi>, <esi>
+char sub_161C45(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int a3,
+        _DWORD *a4,
+        _BYTE *a5)
 {
   do
   {
@@ -3948,6 +4808,11 @@ char sub_161C45(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3955,7 +4820,19 @@ char sub_161C45(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
 
 
 //----- (00161C70) --------------------------------------------------------
-char sub_161C70(int a1, int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161C70@<eax>, <edx>, <edi>, <esi>
+char sub_161C70(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   do
   {
@@ -3966,6 +4843,11 @@ char sub_161C70(int a1, int a2, _DWORD *a3, unsigned int a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3973,7 +4855,19 @@ char sub_161C70(int a1, int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161C91) --------------------------------------------------------
-char sub_161C91(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161C91@<eax>, <edx>, <ebx>, <edi>, <esi>
+char sub_161C91(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int a3,
+        _DWORD *a4,
+        _BYTE *a5)
 {
   do
   {
@@ -3987,6 +4881,11 @@ char sub_161C91(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -3994,7 +4893,19 @@ char sub_161C91(int a1, int a2, int a3, _DWORD *a4, _BYTE *a5)
 
 
 //----- (00161CBC) --------------------------------------------------------
-char sub_161CBC(int a1, int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161CBC@<eax>, <edx>, <edi>, <esi>
+char sub_161CBC(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   do
   {
@@ -4005,6 +4916,11 @@ char sub_161CBC(int a1, int a2, _DWORD *a3, unsigned int a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4012,7 +4928,19 @@ char sub_161CBC(int a1, int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161CDB) --------------------------------------------------------
-char sub_161CDB(int a1, int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161CDB@<eax>, <edx>, <edi>, <esi>
+char sub_161CDB(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   do
   {
@@ -4025,6 +4953,11 @@ char sub_161CDB(int a1, int a2, _DWORD *a3, unsigned int a4)
     a3 += 2;
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4032,7 +4965,19 @@ char sub_161CDB(int a1, int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161D04) --------------------------------------------------------
-char sub_161D04(int a1, int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161D04@<eax>, <edx>, <edi>, <esi>
+char sub_161D04(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   do
   {
@@ -4043,6 +4988,11 @@ char sub_161D04(int a1, int a2, _DWORD *a3, unsigned int a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4050,7 +5000,19 @@ char sub_161D04(int a1, int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161D26) --------------------------------------------------------
-char sub_161D26(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161D26@<eax>, <edx>, <ebx>, <edi>, <esi>
+char sub_161D26(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int a3,
+        _DWORD *a4,
+        unsigned int a5)
 {
   do
   {
@@ -4064,6 +5026,11 @@ char sub_161D26(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4071,7 +5038,19 @@ char sub_161D26(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
 
 
 //----- (00161D52) --------------------------------------------------------
-char sub_161D52(int a1, int a2, _DWORD *a3, unsigned int a4)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161D52@<eax>, <edx>, <edi>, <esi>
+char sub_161D52(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int mix_ebx,
+        _DWORD *a3,
+        unsigned int a4)
 {
   do
   {
@@ -4082,6 +5061,11 @@ char sub_161D52(int a1, int a2, _DWORD *a3, unsigned int a4)
     *a3++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a3 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a4;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a3;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4089,7 +5073,19 @@ char sub_161D52(int a1, int a2, _DWORD *a3, unsigned int a4)
 
 
 //----- (00161D74) --------------------------------------------------------
-char sub_161D74(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161D74@<eax>, <edx>, <ebx>, <edi>, <esi>
+char sub_161D74(
+        int a1,
+        int a2,
+        unsigned int mix_ecx,
+        int a3,
+        _DWORD *a4,
+        unsigned int a5)
 {
   do
   {
@@ -4103,6 +5099,11 @@ char sub_161D74(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4110,7 +5111,19 @@ char sub_161D74(int a1, int a2, int a3, _DWORD *a4, unsigned int a5)
 
 
 //----- (00161DA0) --------------------------------------------------------
-char sub_161DA0(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161DA0@<eax>, <edx>, <ecx>, <edi>, <esi>
+char sub_161DA0(
+        int a1,
+        int a2,
+        unsigned int a3,
+        int mix_ebx,
+        _DWORD *a4,
+        _BYTE *a5)
 {
   do
   {
@@ -4122,6 +5135,11 @@ char sub_161DA0(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4130,7 +5148,19 @@ char sub_161DA0(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
 
 
 //----- (00161DC7) --------------------------------------------------------
-char sub_161DC7(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161DC7@<eax>, <edx>, <ecx>, <edi>, <esi>
+char sub_161DC7(
+        int a1,
+        int a2,
+        unsigned int a3,
+        int mix_ebx,
+        _DWORD *a4,
+        _BYTE *a5)
 {
   do
   {
@@ -4144,6 +5174,11 @@ char sub_161DC7(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4152,7 +5187,19 @@ char sub_161DC7(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
 
 
 //----- (00161DF8) --------------------------------------------------------
-char sub_161DF8(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161DF8@<eax>, <edx>, <ecx>, <edi>, <esi>
+char sub_161DF8(
+        int a1,
+        int a2,
+        unsigned int a3,
+        int mix_ebx,
+        _DWORD *a4,
+        _BYTE *a5)
 {
   int v5; // ebp
 
@@ -4167,6 +5214,11 @@ char sub_161DF8(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4175,6 +5227,12 @@ char sub_161DF8(int a1, int a2, unsigned int a3, _DWORD *a4, _BYTE *a5)
 
 
 //----- (00161E27) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161E27@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
 char sub_161E27(
         int a1,
         int a2,
@@ -4199,6 +5257,11 @@ char sub_161E27(
     a5 += 2;
   }
   while ( (unsigned int)a5 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a6;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a5;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4207,10 +5270,17 @@ char sub_161E27(
 
 
 //----- (00161E60) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161E60@<eax>, <edx>, <ecx>, <edi>, <esi>
 char sub_161E60(
         int a1,
         int a2,
         unsigned int a3,
+        int mix_ebx,
         _DWORD *a4,
         unsigned int a5)
 {
@@ -4227,6 +5297,11 @@ char sub_161E60(
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4235,6 +5310,12 @@ char sub_161E60(
 
 
 //----- (00161E8F) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161E8F@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
 char sub_161E8F(
         int a1,
         int a2,
@@ -4259,6 +5340,11 @@ char sub_161E8F(
     a5 += 2;
   }
   while ( (unsigned int)a5 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a6;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a5;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4267,10 +5353,17 @@ char sub_161E8F(
 
 
 //----- (00161EC8) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161EC8@<eax>, <edx>, <ecx>, <edi>, <esi>
 char sub_161EC8(
         int a1,
         int a2,
         unsigned int a3,
+        int mix_ebx,
         _DWORD *a4,
         unsigned int a5)
 {
@@ -4287,6 +5380,11 @@ char sub_161EC8(
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4295,10 +5393,17 @@ char sub_161EC8(
 
 
 //----- (00161EF5) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161EF5@<eax>, <edx>, <ecx>, <edi>, <esi>
 char sub_161EF5(
         int a1,
         int a2,
         unsigned int a3,
+        int mix_ebx,
         _DWORD *a4,
         unsigned int a5)
 {
@@ -4317,6 +5422,11 @@ char sub_161EF5(
     a4 += 2;
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4325,10 +5435,17 @@ char sub_161EF5(
 
 
 //----- (00161F2C) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161F2C@<eax>, <edx>, <ecx>, <edi>, <esi>
 char sub_161F2C(
         int a1,
         int a2,
         unsigned int a3,
+        int mix_ebx,
         _DWORD *a4,
         unsigned int a5)
 {
@@ -4345,6 +5462,11 @@ char sub_161F2C(
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4353,6 +5475,12 @@ char sub_161F2C(
 
 
 //----- (00161F5C) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161F5C@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
 char sub_161F5C(
         int a1,
         int a2,
@@ -4377,6 +5505,11 @@ char sub_161F5C(
     a5 += 2;
   }
   while ( (unsigned int)a5 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a6;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a5;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4385,10 +5518,17 @@ char sub_161F5C(
 
 
 //----- (00161F96) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161F96@<eax>, <edx>, <ecx>, <edi>, <esi>
 char sub_161F96(
         int a1,
         int a2,
         unsigned int a3,
+        int mix_ebx,
         _DWORD *a4,
         unsigned int a5)
 {
@@ -4405,6 +5545,11 @@ char sub_161F96(
     *a4++ += *(_DWORD *)(a2 + 4 * a1);
   }
   while ( (unsigned int)a4 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a5;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a4;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4413,6 +5558,12 @@ char sub_161F96(
 
 
 //----- (00161FC6) --------------------------------------------------------
+// PORT (vlna 26 pokr. 51): VLASTNI (registrova) konvence originalu -
+// parametry jsou v poradi EAX, EDX, ECX, EBX, EDI, ESI. IDA vypustila ty
+// registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
+// VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
+// Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
+// asm: sub_161FC6@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
 char sub_161FC6(
         int a1,
         int a2,
@@ -4437,6 +5588,11 @@ char sub_161FC6(
     a5 += 2;
   }
   while ( (unsigned int)a5 < dword_18AD38 );
+  // PORT (vlna 26 pokr. 51): posunuty zdroj (ESI) a cil (EDI) se v
+  // originale VRACEJI v registrech (volajici hned za `call` dela
+  // `mov eax, esi`), v portu chodi zpet pres tyto globaly.
+  g_mixSrcAfter = (_BYTE *)(uintptr_t)a6;
+  g_mixDstAfter = (_DWORD *)(uintptr_t)a5;
   return a1;
 }
 // 18AD30: using guessed type int dword_18AD30;
@@ -4549,27 +5705,35 @@ int sub_162000(int a1)
         PortDebug_Checkpoint("mix.18AD38", dword_18AD38);
       }
     }
-    // PORT (vlna 26 pokr. 15): ZDE JE ZNAMA, ZATIM NEOPRAVENA CHYBA.
-    // Rutiny v `funcs_16213C` maji VLASTNI (REGISTROVOU) konvenci: v asm
-    // (sub_162000, loc_16211D) se predava
-    //     EAX = 0 (akumulator L), EBX = 0 (akumulator R), ECX = 80000000h
-    //     (faze), EDX = &sample+0x48, ESI = zdroj, EDI = cil
+    // PORT (vlna 26 pokr. 51): OPRAVENO. Rutiny v `funcs_16213C` maji VLASTNI
+    // (REGISTROVOU) konvenci; asm (sub_162000, loc_16211D) predava
+    //     mov esi, dword_182D2C   ; ESI = zdroj (dword_18AD2C)
+    //     lea edx, [ecx+48h]      ; EDX = &sample+0x48 = tabulka hlasitosti
+    //     mov eax, 0              ; EAX = akumulator L
+    //     mov ebx, 0              ; EBX = akumulator R
+    //     mov ecx, 80000000h      ; ECX = faze pro prevzorkovani
+    //                             ; EDI = cil (mix buffer), drzi se pres smycku
     // a posunuty zdroj (ESI) i cil (EDI) se VRACI - asm hned za volanim dela
-    // `mov eax, esi`. IDA to otypovala jako cdecl se 3 argumenty, takze se
-    // cil a zdroj trefi do 2. a 3. parametru misto 4. a 5.
-    // Pokus tohle prepsat na 5 argumentu + navratove globaly skoncil padem
-    // s poskozenym zasobnikem I VE VYCHOZI CESTE, takze je zatim vracen
-    // puvodni tvar. Spravne reseni chce nejdriv overit, jestli se sem hra
-    // dostava i bez emulovaneho casovace, a pak konvenci prevest na VSECH
-    // 128 polozek tabulky naraz (ruzne arity se michat nesmi).
+    // `mov eax, esi`.
+    // Driv se volalo jen s peti argumenty ve tvaru varianty sub_16177F (ta
+    // ECX pouziva, EDX ne), takze u kazde jine varianty sedly argumenty o
+    // jedno vedle. U hudby menu se tak do EDX (tabulka hlasitosti) dostala
+    // faze 0x80000000 a sub_161C45 cetla `*(0x80000000 + 4*vzorek)` -> pad na
+    // adrese 0x80000008.
+    // Vsech 72 rutin tabulky proto dostalo JEDNOTNY tvar parametru
+    // (EAX, EDX, ECX, EBX, EDI, ESI) - viz komentare u nich; mesit ruzne
+    // arity nejde, protoze volani je jedno pro celou tabulku.
+    // Tabulka hlasitosti opravdu konci na +2120: tam uz je callback
+    // `*(_DWORD *)(v1 + 2120)` volany o par radek vys (0x48 + 2048 = 2120).
     g_mixSrcAfter = (_BYTE *)(uintptr_t)dword_18AD2C;
     g_mixDstAfter = v9;
-    ((void (*)(int, unsigned int, int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
-      0,
-      0x80000000u,
-      0,
-      v9,
-      (_BYTE *)(uintptr_t)dword_18AD2C);
+    ((void (*)(int, int, unsigned int, int, _DWORD *, _BYTE *))funcs_16213C[dword_18AD28])(
+      0,                                    /* EAX */
+      v1 + 72,                              /* EDX = &sample+0x48 */
+      0x80000000u,                          /* ECX */
+      0,                                    /* EBX */
+      v9,                                   /* EDI */
+      (_BYTE *)(uintptr_t)dword_18AD2C);    /* ESI */
     v9  = g_mixDstAfter;
     v11 = (unsigned int)(uintptr_t)g_mixSrcAfter;
     // PORT (vlna 26 pokr. 17): o kolik mixer POSUNUL zdroj a cil za jedno

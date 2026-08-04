@@ -314,7 +314,7 @@ extern "C" void PortSound_ServiceTimer(void)
     // +60 kanaly, +64 bajtu na vzorek), NE z formatu video streamu. Ten je
     // 11025 Hz, kdezto driver mixuje na 22050 Hz stereo - pri pocitani z
     // video streamu vysel interval 92 ms, ale zarizeni tech 2048 B spotrebuje
-    // za 46 ms, takze polovina casu bylo ticho a zvuk znìl "rozsekane".
+    // za 46 ms, takze polovina casu bylo ticho a zvuk znï¿½l "rozsekane".
     const uint8_t* drvFmt = reinterpret_cast<const uint8_t*>(
         static_cast<uintptr_t>(static_cast<uint32_t>(g_digDriver)));
     uint32_t fRate = 0, fChannels = 0, fBps = 0, fHalf = 0;
@@ -326,16 +326,25 @@ extern "C" void PortSound_ServiceTimer(void)
     if (!fChannels) fChannels = 2;
     if (!fBps)      fBps = 1;
     if (!fHalf)     fHalf = 2048;
-    const uint64_t bytesPerSec = (uint64_t)fRate * fChannels * fBps;
-    const uint64_t halfMs = bytesPerSec ? ((uint64_t)fHalf * 1000ull / bytesPerSec) : 46ull;
 
-    static uint64_t s_lastFlip = 0;
-    const uint64_t now = SDL_GetTicks();
-    if (s_lastFlip == 0)
-        s_lastFlip = now;
-    if (now - s_lastFlip < halfMs)
+    // PORT (vlna 26 pokr. 51): tep se NEODMERUJE hodinami, ale HLOUBKOU FRONTY
+    // zvukoveho zarizeni. Puvodne tu bylo `if (now - s_lastFlip < halfMs)
+    // return; s_lastFlip = now;`, coz ma dve vady:
+    //   - `s_lastFlip = now` (misto `+= halfMs`) zahodi kazde zpozdeni, takze
+    //     po kazdem zadrhnuti Presentu vznikne ve fronte diera = prasknuti;
+    //   - halfMs vychazelo cele cislo 46 ms, kdezto 2048 B na 22050 Hz stereo
+    //     trva 46,44 ms - drobny, ale trvaly rozjezd obou casovych os.
+    // V DOSu davalo tempo samo zarizeni (preruseni DMA po dohrani poloviny
+    // bufferu). Nejblizsi ekvivalent je mixovat prave tehdy, kdyz ma SDL
+    // fronta min nez `cilova zasoba` - tim se tempo dlouhodobe rovna presne
+    // rychlosti prehravani a kratkodobe vykyvy Presentu se pohlti zasobou.
+    const uint32_t targetQueue = fHalf * 4;   // ~186 ms zasoba
+    const int      maxFlips    = 8;           // strop na jedno volani (dohnani vypadku)
+
+    for (int flips = 0; flips < maxFlips; ++flips)
+    {
+    if (Port::Sound::QueuedBytes() >= (int)targetQueue)
         return;
-    s_lastFlip = now;
 
     const int idx = *g_playingHalf ^ 1;
     *g_playingHalf = (int16_t)idx;
@@ -372,6 +381,7 @@ extern "C" void PortSound_ServiceTimer(void)
             reinterpret_cast<const uint8_t*>(static_cast<uintptr_t>(bufAddr)),
             halfSize, milesType, (int)rate);
     }
+    }   // konec smycky "dopln frontu na cilovou zasobu"
 }
 
 int PortSound_CreateDigDriver(void)

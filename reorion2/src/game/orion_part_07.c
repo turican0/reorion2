@@ -6547,7 +6547,13 @@ void sub_81147()
     dword_19C07C = 66;
     dword_19C078 = 422;
   }
-  JUMPOUT(0x810C0);
+  // PORT (vlna 26 pokr. 52): `locret_810C0` je SDILENY EPILOG sub_80DB4
+  // (`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`),
+  // ktery Watcom sdili mezi funkcemi se shodnym prologem - skok tam
+  // znamena NAVRAT. Tady stoji az na konci tela, takze no-op stub
+  // JUMPOUT nevadil; pojmenovano vyslovne, at je vzor jasny (v teze
+  // funkci sub_816F2 tentyz vzor uprostred smycky hru zamrazoval).
+  return;
 }
 // 8137C: control flows out of bounds to 810C0
 // 80ACC: using guessed type int dword_80ACC[2];
@@ -6572,11 +6578,24 @@ int sub_81381()
 
 
 //----- (00081395) --------------------------------------------------------
+// PORT (vlna 26 pokr. 52): IDA z teto funkce nechala jen `JUMPOUT(0x81389)`,
+// tedy PRAZDNE telo. V asm je to plnohodnotne dvojce sub_81381 - obe skoci do
+// stejneho spolecneho ocasu a lisi se JEN zdrojovym obrazkem v EBX:
+//     sub_81395:  push ebx / push edx / mov ebx, dword_194088 / jmp loc_81389
+//     sub_81381:  push ebx / push edx / mov ebx, dword_19408C
+//     loc_81389:  xor edx, edx / xor eax, eax / call sub_12A478 / pop.. / retn
+// (datove symboly v asm dumpu jsou o -0x8000: dword_194088 = C dword_19C088,
+//  coz je prave nactena MAINMENU.LBX ze zacatku sub_816F2.)
+// sub_816F2 tuhle funkci predava jako kreslici callback do sub_8F1C4 v
+// jedine vetvi `if (byte_19A005)`, tedy pri PRVNIM vstupu do hlavniho menu.
+// Prazdne telo znamenalo, ze se behem nabihani menu nevykreslilo nic - to je
+// ta "po SPACE neni videt animace otevirajiciho se menu". sub_8F1C4 pritom
+// kolem tohohle volani dela roztmivani palety, takze se roztmivalo do prazdna.
 void sub_81395()
 {
-  JUMPOUT(0x81389);
+  sub_12A478(0, 0, dword_19C088);
 }
-// 8139D: control flows out of bounds to 81389
+// 19C088: using guessed type int dword_19C088;
 
 
 //----- (000813A4) --------------------------------------------------------
@@ -6646,7 +6665,13 @@ LABEL_16:
   sub_120BB5(1, (int)v6);
   v5 = sub_122259();
   sub_1210FD(517, 443 - (v5 + 1), (int)aVer140b23);
-  JUMPOUT(0x810C0);
+  // PORT (vlna 26 pokr. 52): `locret_810C0` je SDILENY EPILOG sub_80DB4
+  // (`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`),
+  // ktery Watcom sdili mezi funkcemi se shodnym prologem - skok tam
+  // znamena NAVRAT. Tady stoji az na konci tela, takze no-op stub
+  // JUMPOUT nevadil; pojmenovano vyslovne, at je vzor jasny (v teze
+  // funkci sub_816F2 tentyz vzor uprostred smycky hru zamrazoval).
+  return;
 }
 // 81526: control flows out of bounds to 810C0
 // 19994C: using guessed type int16_t word_19994C;
@@ -6765,7 +6790,13 @@ void sub_8156B(int a1, int a2, int16_t *a3)
   v10 = sub_12DAA4(289, 14);
   dword_19C070 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v10);
   ServiceAudioTick_FE8BE(dword_19C070, v10, v4, a3);
-  JUMPOUT(0x810C0);
+  // PORT (vlna 26 pokr. 52): `locret_810C0` je SDILENY EPILOG sub_80DB4
+  // (`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`),
+  // ktery Watcom sdili mezi funkcemi se shodnym prologem - skok tam
+  // znamena NAVRAT. Tady stoji az na konci tela, takze no-op stub
+  // JUMPOUT nevadil; pojmenovano vyslovne, at je vzor jasny (v teze
+  // funkci sub_816F2 tentyz vzor uprostred smycky hru zamrazoval).
+  return;
 }
 // 816ED: control flows out of bounds to 810C0
 // 1820C0: using guessed type int16_t word_1820C0;
@@ -6867,7 +6898,18 @@ LABEL_13:
           word_19994C = 0;
           byte_19C1A0 = 1;
           sub_119281();
-          JUMPOUT(0x810C0);
+          // PORT (vlna 26 pokr. 52): TADY HRA MRZLA PO KLIKNUTI NA QUIT.
+          // `JUMPOUT` je v decomp_compat.h no-op stub, takze se pokracovalo
+          // dal ve `while (1)` a smycka menu uz nikdy neskoncila.
+          // `locret_810C0` NENI cizi kod - je to SDILENY EPILOG funkce
+          // sub_80DB4 (`leave / pop edi / pop esi / pop edx / pop ecx /
+          // pop ebx / retn`). Watcom ho sdili mezi funkcemi se shodnym
+          // prologem; sub_816F2 ma presne stejny (`push ebx/ecx/edx/esi/edi`
+          // + `enter 4,0`) a jeji POSLEDNI instrukce je prave
+          // `81AB9: jmp locret_810C0`. Skok tam tedy znamena proste NAVRAT.
+          // (Stejny vzor je v tomhle souboru jeste 4x - viz nize; tam ale
+          // JUMPOUT stoji az na konci tela, takze se choval spravne.)
+          return;
         }
         v12 = sub_1171AB(v16, v17, v13, v12);
         v13 = v12;
@@ -7032,7 +7074,10 @@ void sub_81ABE(int a1, int a2, int a3, int16_t *a4)
     ServiceAudioTick_FE8BE(v14, (int)v13, v12, v7);
   }
   while ( v6 < 6 );
-  JUMPOUT(0x810C1);
+  // PORT (vlna 26 pokr. 52): `loc_810C1` je tyz sdileny epilog sub_80DB4,
+  // jen o instrukci dal (bez `leave`, protoze sub_81ABE nema `enter`):
+  // `pop edi / pop esi / pop edx / pop ecx / pop ebx / retn` = NAVRAT.
+  return;
 }
 // 81B63: control flows out of bounds to 810C1
 // 192ED4: using guessed type int dword_192ED4;

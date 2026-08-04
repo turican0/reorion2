@@ -5846,3 +5846,140 @@ nastavenym hornim bitem (0x80000000). Hledat, odkud ji bere - pravdepodobne
 priznakove pole/marker, ktery se v portu dostal tam, kde ma byt ukazatel
 (fake DIG_DRIVER dava samplum na +0 zpetny ukazatel a na +4 stav; viz
 PortSound_CreateDigDriver).
+
+### Vlna 26 pokracovani 51: HUDBA MENU HRAJE - registrova konvence mixeru,
+### chybejici seek na skladbu v STREAM.LBX a tempo tepu podle fronty
+
+Vychozi stav: s `REORION2_MUSIC=1` padal mixer na ukazateli `0x80000008`
+(pokr. 50). Vsechny tri chyby nize jsou zmerene, ne odhadnute.
+
+**1) `funcs_16213C` - VLASTNI (registrova) konvence, 72 rutin naraz.**
+Pad byl presne to, pred cim varoval komentar z pokr. 15. Volajici
+`sub_162000` (loc_16211D) plni pred `call ds:funcs_16213C[ebp*4]` sest
+registru:
+```
+mov     esi, dword_182D2C   ; ESI = zdroj
+lea     edx, [ecx+48h]      ; EDX = &sample+0x48 = tabulka hlasitosti
+mov     eax, 0              ; EAX = akumulator L
+mov     ebx, 0              ; EBX = akumulator R
+mov     ecx, 80000000h      ; ECX = faze pro prevzorkovani
+                            ; EDI = cil (mix buffer)
+```
+Port ale volal jen s peti argumenty ve tvaru varianty `sub_16177F` (ta ECX
+pouziva, EDX ne) - tedy tvaru, na kterem se ladil zvuk videa. U kazde jine
+varianty sedly argumenty o jedno vedle. U hudby menu vysel index tabulky
+0x43 = `sub_161C45` (ta ma EDX misto ECX), takze se do EDX dostala faze
+`0x80000000` a rutina cetla `*(0x80000000 + 4*vzorek)` -> pad na
+`0x80000008`.
+
+IDA kazde rutine dala JEN ty parametry, ktere odpovidaji registrum, jez
+prave ona pouziva (`__usercall f@<al>(int@<eax>, int@<edx>, ...)`), takze
+kazda ma jinou aritu - a volani je pritom pro celou tabulku jedno. Vsech
+**72 rutin** proto dostalo JEDNOTNY tvar parametru v poradi registru
+**EAX, EDX, ECX, EBX, EDI, ESI** (nepouzite maji jmeno `mix_<reg>`), a
+kazda na konci uklada posunuty zdroj/cil do `g_mixSrcAfter`/`g_mixDstAfter`
+(v originale se vraceji v ESI/EDI - asm hned za `call` dela `mov eax, esi`).
+Overeno, ze registrove seznamy vsech 72 jsou podmnozinou toho poradi.
+Potvrzeni rozsahu tabulky hlasitosti: `0x48 + 2048 = 2120`, a `+2120` uz je
+callback volany o par radek vys v teze funkci.
+
+**2) `sub_113765` - DECOMP_TODO fseek z vlny 07 byl skutecna chyba.**
+Zastupny `fseek(f, 0, SEEK_CUR)` (no-op) mel byt seek na offset SKLADBY:
+```
+mov     eax, [ebp+var_10]       ; cislo skladby
+shl     eax, 2
+mov     edx, dword_1A585C[eax]  ; 0x1A585C = unk_1A5854 + 8 -> offsety LBX
+xor     ebx, ebx                ; SEEK_SET
+call    fseek_
+```
+**Zmereno primo na datech** (STREAM.LBX, 29 231 344 B): 11 zaznamu, na
+offsetu 2048 lezi zaznam 0 se znackou `cats` a na +40 hodnota **65536**;
+skladba 1, kterou hra vybira, zacina na 2070 hlavickou `RIFF` s delkou
+**5 011 968 B** (~113 s). Port tedy cetl vzdy od 2048, stream skoncil po
+dvou pul-bufferech (2x 32768 B) a rozjel se znovu - v logu 4x
+`hudba.113765_skladba` za 20 s. Po oprave 1x.
+Pri teze prilezitosti: `sub_113475` mela STEJNOU ztracenou navratovou
+hodnotu jako `sub_113765` z pokr. 46 (`call sub_14197D / shl eax, 5`).
+
+**3) Tempo tepu - podle FRONTY zarizeni, ne podle hodin.**
+Tep v `Present()` byl ve vlne 48 zakomentovan (podezreni z padu); bisekce
+ve vlne 49 ale ukazala, ze pad byl v hudebni ceste. Po opravach 1+2 je zase
+zapnuty. **Zmereno bez nej:** za 25 s behu jen ~121 davek po 2048 B = 5,6 s
+zvuku (tep budil jen `PortSound_QueuedBytes` z hernich cekacich smycek,
+~5-8x/s misto 21,7x/s) - to bylo to hlavni trhani.
+Druha polovina: `PortSound_ServiceTimer` merila interval hodinami
+(`if (now - s_lastFlip < halfMs) return; s_lastFlip = now;`). To zahazuje
+kazde zpozdeni Presentu (diera ve fronte = prasknuti) a `halfMs` vychazelo
+cele cislo 46 ms proti skutecnym 46,44 ms. Prepsano na tempo podle hloubky
+SDL fronty (cilova zasoba `4 * driver+68` = 8192 B ~ 186 ms, strop 8 flipu
+na volani) - v DOSu davalo tempo taky zarizeni (preruseni DMA po dohrani
+poloviny bufferu), takze je to i vernejsi.
+**Zmereno po oprave:** 520+ davek za 25 s = realny cas.
+
+**STAV (potvrdil uzivatel poslechem):** hudba menu HRAJE, bez trhani,
+zbyva jen drobny sum - zatim nevime, jestli ho nema i original; chce to
+porovnat s dosboxem na datove urovni.
+**Regresni test videa: `compare_frames` 600/600 matched, 0 diverged.**
+
+**ZBYVA:** (a) po SPACE neni videt animace otevirajiciho se menu;
+(b) po kliknuti na QUIT hra zamrzne; (c) datove porovnani zvuku menu
+s dosboxem kvuli tomu sumu.
+
+### Vlna 26 pokracovani 52: animace otevirajiciho se menu + QUIT uz nemrzne
+### (obojí byla nedokoncena rekonstrukce control-flow, ne "chyba v logice")
+
+**1) `sub_81395` mela PRAZDNE telo - proto po SPACE nebyla videt animace
+otevirajiciho se menu.**
+IDA z ni nechala jedinou radku `JUMPOUT(0x81389)`. V asm je to pritom
+plnohodnotne dvojce `sub_81381` - obe skoci do stejneho spolecneho ocasu a
+lisi se JEN zdrojovym obrazkem v EBX:
+```
+sub_81395:  push ebx / push edx / mov ebx, dword_194088 / jmp short loc_81389
+sub_81381:  push ebx / push edx / mov ebx, dword_19408C
+loc_81389:  xor edx, edx / xor eax, eax / call sub_12A478 / pop edx / pop ebx / retn
+```
+(datove symboly v asm dumpu jsou o -0x8000: `dword_194088` = C
+`dword_19C088` = prave nactena MAINMENU.LBX ze zacatku `sub_816F2`.)
+`sub_816F2` tuhle funkci predava jako KRESLICI CALLBACK do `sub_8F1C4`, a to
+v jedine vetvi `if (byte_19A005)`, tedy pri PRVNIM vstupu do hlavniho menu.
+`sub_8F1C4` kolem toho volani dela roztmivani palety - roztmivalo se tedy do
+prazdna. Doplneno `sub_12A478(0, 0, dword_19C088)`.
+(Pozn.: `byte_19A005` je tataz promenna, kterou ve vlne 24 prepisoval pretok
+`unk_1A1370` - tehdejsi priznak "hlavni menu preskocilo svuj one-time init"
+byl tenhle stejny kus kodu, jen z druhe strany.)
+
+**2) `JUMPOUT(0x810C0)` uprostred smycky menu = ZAMRZNUTI PO QUIT.**
+`JUMPOUT` je v `decomp_compat.h` **no-op stub**. V `sub_816F2` ale stoji
+uprostred `while (1)`:
+```c
+if ( (_WORD)v17 ) { word_19994C = 0; byte_19C1A0 = 1; sub_119281();
+                    JUMPOUT(0x810C0); }   /* <- nic neudela -> smycka bezi dal */
+```
+`locret_810C0` neni cizi kod: je to **SDILENY EPILOG funkce `sub_80DB4`**
+(`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`). Watcom ho
+sdili mezi funkcemi se shodnym prologem - `sub_816F2` ma presne stejny
+(`push ebx/ecx/edx/esi/edi` + `enter 4,0`) a jeji POSLEDNI instrukce je
+`81AB9: jmp locret_810C0`. Skok tam tedy znamena proste **`return`**.
+Opraveno; ve stejnem souboru je tentyz vzor jeste 4x (`0x810C0` 3x,
+`0x810C1` 1x - ten je o instrukci dal, bez `leave`, protoze `sub_81ABE` nema
+`enter`), tam ale stal az na konci tela, takze se no-op stub choval spravne.
+Vsech 5 mist je ted vyslovne `return` s komentarem.
+
+**Pravidlo (nova polozka do katalogu): `JUMPOUT(adr)` na adresu, ktera lezi
+v CIZI funkci tesne pred jejim `retn`, je skoro vzdy Watcomuv SDILENY
+EPILOG, tedy `return`. Poznas ho podle toho, ze cilova adresa ma v asm
+navesti `locret_*` a ze prolog obou funkci je totozny. Protoze je JUMPOUT
+no-op, projevi se to jen tam, kde nestoji na konci tela - a tam pak jako
+zamrznuti.**
+
+**OVERENO MERENIM:** kliknuti na QUIT (v okne na hernich souradnicich
+~(490,295); polozky menu jsou x 415..567, y 172/195/217/240/262/285 - viz
+`sub_813A4`) ted hru korektne ukonci: v logu
+`Thanks for playing Master of Orion ][` a proces skonci. Drive se v tomhle
+miste tocila smycka donekonecna.
+Animaci menu je potreba overit okem (mereni na ni v portu neni).
+
+**Pozn. k diagnostice:** vypis `FATAL: <hlaska>` doplneny do `sub_126487` ve
+vlne 48 se objevi i pri NORMALNIM ukonceni hry ("Thanks for playing") - ta
+funkce je zaroven bezny konec programu, ne jen fatalni chyba. Neni to
+priznak problemu.

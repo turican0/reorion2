@@ -5,7 +5,7 @@
 // nahrazeny primo `word_1B3E0E`. V originale lezi `dword_1B3E0A`
 // (0x1B3E0A..0x1B3E0D) a `word_1B3E0E` (0x1B3E0E) tesne za sebou, takze ten
 // vyraz cetl pres jejich hranici a horni pulka BYLA prave `word_1B3E0E` =
-// poradi okna. V portu to ale zavisi na tom, jak si globaly poskladá
+// poradi okna. V portu to ale zavisi na tom, jak si globaly poskladï¿½
 // prekladac - a index oken se tim rozjel: zmereno 9 oken, z toho 8 melo na
 // +44 nulovy ukazatel na zdroj, takze se jejich blit zahodil a pozadi menu
 // zmizelo.
@@ -4615,7 +4615,12 @@ int sub_113475(char *a1, int a2)
     return 0;
   if ( !dword_184427 )
   {
-    sub_14197D((_DWORD *)dword_184388, 22050, 2);
+    // PORT (vlna 26 pokr. 51): STEJNA ztracena navratova hodnota jako v
+    // sesterske sub_113765 (vlna 26 pokr. 46). asm (sub_113475, loc_1134BE):
+    //     call sub_14197D / add esp, 0Ch / shl eax, 5 / mov dword_17C433, eax
+    // Dekompilat volani zahodil a nasobil neinicializovane `v2`, takze
+    // velikost obou nmalloc bufferu vysla ze smeti.
+    v2 = sub_14197D((_DWORD *)dword_184388, 22050, 2);
     dword_184433 = 32 * v2;
     dword_1AE0A4[0] = nmalloc(32 * v2);
     dword_1AE0A8 = nmalloc(dword_184433);
@@ -4794,15 +4799,22 @@ int sub_113765(int a1, int a2)
   if ( !dword_18442F )
     return 0;
   fread(unk_1AD854, 2048, 1, dword_18442F);
-  // DECOMP_TODO - NEJISTE (vlna 07): fseek() melo 0 parametru. Na rozdil
-  // od podobnych pripadu v orion_part_19/20.c (jasny LBX "table[idx]"
-  // vzor) tu zadna offset-tabulka neni pouzita pred timto seekem - jen
-  // primy prechod z 2048bajtoveho header cteni na 44bajtove cteni.
-  // Soubor je po fread() jiz presne na pozici 2048 (kam by SEEK_SET s
-  // offsetem 2048 i tak smeroval), takze jako bezpecny, chovani-zachovavajici
-  // placeholder pouzito "seek na aktualni pozici" (SEEK_CUR, 0) - funkcne
-  // no-op, nez se najde duvod pro jiny cil.
-  fseek(dword_18442F, 0, SEEK_CUR);
+  // PORT (vlna 26 pokr. 51): DECOMP_TODO z vlny 07 VYRESENO podle asm
+  // (sub_113765, loc_113944) - offsetova tabulka LBX tu JE, jen ji IDA
+  // schovala do adresy sousedniho symbolu:
+  //     mov     eax, [ebp+var_10]       ; cislo skladby (a1)
+  //     shl     eax, 2
+  //     mov     edx, dword_1A585C[eax]  ; 0x1A585C = unk_1A5854 + 8
+  //     xor     ebx, ebx                ; SEEK_SET
+  //     call    fseek_
+  // Prectenych 2048 B je hlavicka STREAM.LBX; od offsetu 8 v ni lezi pole
+  // 32bitovych offsetu jednotlivych skladeb.
+  // Zastupny "SEEK_CUR, 0" cetl VZDY od pozice 2048. Zmereno na datech:
+  // na 2048 lezi zaznam 0 se znackou "cats" a na +40 hodnota 65536, kdezto
+  // skladba 1 (kterou hra vybira) zacina na 2070 hlavickou "RIFF" s delkou
+  // 5 011 968 B. Stream tedy skoncil uz po dvou pul-bufferech (2x 32768 B)
+  // a znovu se rozjel - to bylo to trhani hudby.
+  fseek(dword_18442F, *(int *)((char *)unk_1AD854 + 8 + 4 * v8), SEEK_SET);
   fread(dword_1AE0A4[0], 1, 44, dword_18442F);
   dword_18443F = *(_DWORD *)(dword_1AE0A4[0] + 40);
   strcpy(byte_1AE054, aStreamLbx_0);

@@ -517,13 +517,16 @@ void Present()
     // zaregistrovana a jestli se stav zmenil.
     PortDos_ServiceMouse();
 
-    // PORT (vlna 26 pokr. 47): POKUS budit odsud i emulovany AIL casovac
-    // (aby hudba menu mela kudy ven, viz PROGRESS.md) je ZATIM VYPNUTY -
-    // po plnem rebuildu, kdy se zmena skutecne projevila, hra hned po startu
-    // skoncila. Tep je tedy porad jen v PortVga_BlitBackBuffer (tj. jen behem
-    // videa). Nez se zapne znovu, je potreba zjistit, proc volani herniho
-    // mixeru (sub_156680) mimo video hru ukonci.
-    // PortSound_ServiceTimer();
+    // PORT (vlna 26 pokr. 51): tep emulovaneho AIL casovace i mimo video.
+    // Ve vlne 47 se sem pridal, ve vlne 48 zase zakomentoval (hra po startu
+    // koncila) - jenze bisekce ve vlne 49 ukazala, ze na vine nebyl tep, ale
+    // chyby v hudebni ceste (pole pul-bufferu dword_1AE0A4 a registrova
+    // konvence mixeru). Po jejich oprave je tep zase ZAPNUTY.
+    // Bez nej budil casovac jen PortSound_QueuedBytes z hernich cekacich
+    // smycek - zmereno ~5-8 tepu/s misto potrebnych 21,7 (jedna polovina
+    // DMA bufferu = 2048 B = 46 ms), takze se za 25 s behu vyprodukovalo jen
+    // ~5,6 s zvuku. Presne to bylo slyset jako trhana hudba menu.
+    PortSound_ServiceTimer();
 
     // PORT (vlna 26 pokr. 34): rozlisit, jestli je cerna obrazovka PRAZDNY
     // buffer (hra nekresli), nebo obsah s cernou paletou (kresli, ale barvy
