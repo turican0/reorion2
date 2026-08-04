@@ -5642,3 +5642,207 @@ pole s hodnotou 1. Hledat v `sub_1276BD` / `sub_125D4F` (kopie spinavych
 pruhu do obrazu). Je to pravdepodobne TENTYZ koren jako "obcas se
 neprekresli pozadi" - obe veci sedi na stejnou kreslici cestu pres
 `sub_124ECB`.
+
+### Vlna 26 pokracovani 46: HUDBA MENU - retez opraven az k obsluze; ctyri
+### opravy overene proti asm
+
+**Metoda:** dosbox trace (`DUMPREGS cond=eip:` na `sub_2484F`, `sub_1136EC`,
+`sub_113A20`, `sub_113AF2`, `sub_113CBD`) ukazal, ze ORIGINAL projde presne
+toutez sekvenci jako port - rozdil tedy musel byt UVNITR. Pulenim
+kontrolnich bodu v `sub_113765` vypadlo `hudba.113765_slot = 0`.
+
+**1) `sub_125D4F` (kopie spinavych pruhu) - PAD i ROZBITE POZADI.**
+Port volal `sub_1694B7`, ktere pri prekroceni rozsahu srazi offset na 0,
+takze se pruh zkopiroval na ZACATEK obrazu. V asm zadne orezavani neni a
+cil se pocita stejnym vyrazem jako zdroj (viz komentar u kodu). Byla to
+ZATKA z vlny 24 s poznamkou "root cause not found" - a sama vyrobila druhy,
+hur dohledatelny projev. **Ponauceni: u kazde takove zatky precist asm CELE
+funkce, ne jen okoli padu.**
+
+**2) `unk_1AD854` - 1 bajt misto 2048.** `sub_113765` do nej cte
+`fread(&unk_1AD854, 2048, 1, ...)`. Velikost overena vzdalenosti k dalsimu
+symbolu (`0x1AE054 - 0x1AD854 = 0x800`). Kazde spusteni hudby prepsalo 2047
+bajtu sousednich globalu - stejna trida chyby jako DTA `unk_1AD828`.
+
+**3) `sub_111AE2` - ztracena navratova hodnota (PRIMA pricina chybejici
+hudby).**
+```c
+sub_1413FF(dword_1B0670[i]);   // asm: call sub_1413FF / cmp eax, 2
+if ( v0 == 2 ) return i;       // v0 se NIKDE neprirazuje
+```
+Hledani volneho slotu vracelo 0 -> `sub_113765` skoncila hned na zacatku.
+Zmereno: `hudba.113765_slot` 0 -> 1.
+
+**4) `sub_113765` - druha ztracena navratova hodnota.** `sub_14197D`
+(velikost bufferu) se zahazovala a nasobilo se neinicializovane `v2`.
+asm: `call sub_14197D / add esp,0Ch / mov edx,[var_68] / imul edx, eax`.
+
+**VYSLEDEK (zmereno):** cely retez uz probehne az do konce -
+`hudba.113765_hledani 1` (STREAM.LBX nalezen), `_jmeno0 83` ('S'),
+`_hotovo_handle` platny, a hlidka obsluhy hlasi `hudba.obsluha_437_42B
+0x10001`, tedy **oba priznaky (`dword_184437`, `dword_18442B`) jsou
+nastavene a streamovaci obsluha bezi**.
+
+**ZBYVA (dalsi krok, uz je to vec PORT VRSTVY, ne dekompilatu):** SDL
+zvukove zarizeni se otevira LINE az uvnitr `Port::Sound::FeedStream`
+(port_sound.cpp), tedy az kdyz PCM tlaci cesta VIDEA. Pri behu se
+`REORION2_SKIPINTRO=1` a hudbou v menu se `FeedStream` nezavola a v logu
+chybi radek "Port::Sound: audio zarizeni otevreno" - zmereno. Je tedy treba
+napojit vystup HERNIHO MIXERU (cesta `PortSound_ServiceTimer` ->
+`dword_1BB90C`/mix buffer, stejna, jakou uz pouziva zvuk videa pres
+`REORION2_AUDIO_SRC=mix`) i pro pripad, kdy zadne video nebezi.
+
+### Vlna 26 pokracovani 47: tep casovace i mimo video + dalsi dve ztracene
+### navratove hodnoty v obsluze streamu
+
+**1) Tep emulovaneho AIL casovace visel jen na `PortVga_BlitBackBuffer`,**
+ktere se vola POUZE pri prehravani videa. V menu se tedy herni mixer vubec
+neroztocil. Doplneno volani `PortSound_ServiceTimer()` i do
+`Port::Vga::Present()` (stejna uvaha jako u emulovaneho preruseni myshi -
+Present je jedina spolehlive periodicka cesta portu, ~130x/s). Funkce si
+sama hlida svuj interval i to, jestli je casovac zapnuty.
+
+**2) `sub_1131F0`/obsluha streamu - dalsi dve ztracene navratove hodnoty:**
+```c
+sub_1413FF(dword_18442B);            // stav samplu
+v11 = v2 == 2;                       // v2 NEINICIALIZOVANE
+sub_141A76((_DWORD *)dword_18442B);  // index hotoveho bufferu
+v10 = v3;                            // v3 NEINICIALIZOVANE
+```
+asm: `call sub_141A76 / add esp,4 / mov [ebp+var_8], eax /
+cmp [ebp+var_8], 0FFFFFFFFh`. Obsluha skakala do nahodne vetve - zmereno,
+ze po rozjeti hudby menu skoncila na fatalnim `sub_126487(aAilError, ...)`.
+Po oprave uz "AIL error" v logu NENI a hra bezi dal.
+
+**ZBYVA:** v logu z menu porad chybi radek "Port::Sound: audio zarizeni
+otevreno", tedy SDL zarizeni se stale neotevre - vystup mixeru se do nej
+nedostane. Dalsi krok: projit cestu `PortSound_ServiceTimer` ->
+`sub_156680` -> `sub_162201` -> odeslani pul-bufferu a zjistit, ve kterem
+kroku se to zastavi (stejnym pulenim kontrolnich bodu, jake dnes fungovalo
+u `sub_113765`).
+
+### Vlna 26 pokracovani 48: POZOR - hra po PLNEM REBUILDU hned skonci
+
+**Stav ke konci sezeni: `-t:Rebuild` build je funkcni co do prekladu, ale
+hra se po startu ukonci** (v logu jen dve radky, posledni
+`PortSound_CreateDigDriver: ...`; zadny SEH, zadne "AIL error" - vypada to
+na `sub_126487` = fatalni hlaska, ktera nekonci pres SEH).
+
+**Jak se to stalo:** posledni buildy behem ladeni hudby byly INKREMENTALNI a
+- presne jak varuje kapitola "JAK PRACOVAT S PORTEM" - zjevne NErelinkovaly.
+Diagnostika pridana do `PortSound_ServiceTimer` se v logu neobjevila vubec,
+i kdyz volani v `Present()` prokazatelne bylo. Teprve `-t:Rebuild` zmeny
+skutecne zapojil a hra zacala koncit.
+
+**Co je od posledniho ZNAME funkcniho plneho rebuildu (build36) zmeneno -
+kandidati na bisekci, kazdy je nezavisly:**
+1. `sub_125D4F` - zruseno orezavani pres `sub_1694B7` (cil = zdroj, dle asm)
+2. `unk_1AD854` - 1 B -> 2048 B (ZMENA ROZLOZENI GLOBALU!)
+3. `sub_111AE2` - `v0/v1 = sub_1413FF(...)`
+4. `sub_113765` - `v2 = sub_14197D(...)`
+5. `sub_1131F0`/obsluha streamu - `v2 = sub_1413FF(...)`, `v3 = sub_141A76(...)`
+6. tep `PortSound_ServiceTimer()` v `Present()` - UZ ZAKOMENTOVAN (nepomohlo)
+
+**Nejpravdepodobnejsi:** (2) meni rozlozeni globalu a v tomhle kodu uz
+nekolikrat neco zaviselo na sousedstvi; nebo se hudba konecne rozjede a
+spadne az v ni (kandidat 3-5) do `sub_126487`.
+
+**PRVNI KROK PRISTE:** vzit build36 (nebo revertovat 1-5), overit plnym
+rebuildem, ze hra bezi, a pak pridavat po jedne s `-t:Rebuild`. A DUSLEDNE
+prekladat `-t:Rebuild` - dnesni mereni z inkrementalnich buildu mezi
+build37 a build46 muze byt neplatne.
+
+**Upresneni k pokr. 48 (zmereno):** ukonceni NENI `sub_126487`. Do te funkce
+byl doplnen vypis "FATAL: <hlaska>" (stdout + `fflush(0)`; POZOR: `stderr`
+neni v hernich .c deklarovane, decomp_compat.h zamerne nevklada <stdio.h>) -
+a v logu se NEOBJEVI. Proces konci s **navratovym kodem 3**, coz je typicky
+CRT `abort()` (debug assert / kontrola haldy), ne `exit(1)`.
+Hledat tedy poruseni haldy nebo debug-assert, ne herni fatalni hlasku.
+Prvni podezreli zustavaji zmeny 2-5 z predchoziho seznamu - zvlast (4)
+`v2 = sub_14197D(...)`, protoze nove urcuje VELIKOSTI obou `nmalloc`
+bufferu (`dword_184433`), do kterych se pak kopiruje audio.
+
+### Vlna 26 pokracovani 49: BISEKCE HOTOVA - pad je uvnitr hudebni cesty,
+### ostatni opravy jsou v poradku
+
+Plnym rebuildem po jedne zmene (kazdy krok `-t:Rebuild`):
+- pripnuti `v2 = 2048` v `sub_113765` (kandidat 4) ... **hra porad konci**
+- navrat `sub_111AE2` na `return 0` (kandidat 3) ... **hra BEZI**
+
+**Zaver:** zmeny 1, 2, 4, 5 jsou v poradku. Oprava (3) je podle asm SPRAVNA
+(`call sub_1413FF / cmp eax, 2`), ale nove zpristupnuje hudebni cestu, ve
+ktere je JESTE DALSI, doted maskovana chyba - proces konci s navratovym
+kodem **3 = CRT abort** (ne `sub_126487`, ten by vypsal "FATAL:", a ne SEH).
+
+**Reseni pro tuto chvili:** oprava zustava v kodu, ale hudebni cesta je za
+prepinacem, aby build zustal pouzitelny:
+```
+REORION2_MUSIC=1   zapne hledani volneho slotu (a tim hudbu menu)
+```
+Bez nej se `sub_111AE2` chova jako driv (vraci 0) a hra bezi normalne -
+overeno plnym rebuildem.
+
+**DALSI KROK:** spustit s `REORION2_MUSIC=1` a najit, kde presne to
+abortuje. Abort bez vypisu = debug CRT (poruseni haldy / assert), takze
+prvni podezreni je zapis pres konec nektereho z bufferu hudebni cesty:
+`dword_1AE0A4[0]` a `dword_1AE0A8` (obe `nmalloc(dword_184433)`),
+`unk_1AD854` (uz opraveno na 2048 B) a `dword_1B06B4[dword_184447]` v
+`sub_113CBD` - tam se indexuje polem o 17 prvcich hodnotou, ktera se nikde
+nekontroluje (a soused `dword_1B06F8`/`dword_1B06FC` uz dnes jednou obeti
+prepisu byl).
+
+**Upresneni k pokr. 49 (zmereno):** podezreni na prekroceni pole
+`dword_1B06B4[17]` v `sub_113CBD` je VYVRACENE - index je 1, tedy v rozsahu.
+Cela pripravna cast hudby probehne (`hudba.113765_hotovo_handle` platny,
+`hudba.obsluha_437_42B 0x10001`, `hudba.2484F_pred_113CBD 1`) a posledni
+vypis pred abortem je uz `tail.after_2484F`. **Abort tedy nastava AZ ZA
+spustenim hudby, v prubehu streamovaci obsluhy** (`sub_1131F0` / cesta
+`sub_141A76` -> kopie do `dword_1AE0A4[0]`/`dword_1AE0A8` o velikosti
+`dword_184433`). Tam hledat dal - napr. porovnat `dword_184433` a delku
+kopirovanych dat s originalem pres `DUMPREGS cond=changed:`.
+
+### Vlna 26 pokracovani 50: pul-buffery audio streamu byly JEDNO pole, ne
+### pole + promenna; tichy abort je pryc, pad se posunul do mixeru
+
+**Nalezeno:** `sub_1131F0` indexuje `dword_1AE0A4[v3]` / `[v10]`, kde v3/v10
+je index pul-bufferu (0/1) vraceny z `sub_141A76`. V originale je to tedy
+JEDNO DVOUPRVKOVE pole na 0x1AE0A4 (prvek [1] = 0x1AE0A8). Port mel pole o
+JEDNOM prvku plus samostatnou promennou `dword_1AE0A8`, takze
+`dword_1AE0A4[1]` sahalo MIMO pole a `fread` cetl do smeti -> poruseni haldy
+a tichy `abort()` (kod 3). Poznamka z vlny 12 to u te promenne primo
+predpovidala ("pouziva se i s indexem [v3]/[v10] ... presna sirka se doresi
+az se zvukovou vlnou").
+Opraveno na `int dword_1AE0A4[2]` + `#define dword_1AE0A8 dword_1AE0A4[1]`.
+
+**Druha chyba na stejnem miste:** `sub_113475` zamenila POLE za UKAZATEL -
+`memset(dword_1AE0A4, 0, ...)` a `fread(dword_1AE0A4, 1, 44, ...)` zapisovaly
+do pameti, kde lezi samo pole, misto do bufferu, na ktery ukazuje prvek [0].
+Sesterska `sub_113765` to ma spravne - podle ni opraveno.
+
+**VYSLEDEK (zmereno):** tichy abort je PRYC, log z 6 radku na 145 - hudebni
+cesta bezi mnohem dal. Pad se posunul do MIXERU:
+```
+SEH 0xC0000005 av_read = 0xFFFFFFFF80000008
+  #0 sub_161C45+0x74   #1 sub_162000+0x4ca   #2 sub_156680+0x1cd
+  #3 PortSound_ServiceTimer  #4 PortVga_BlitBackBuffer  #5 sub_125814
+```
+Tedy emulovany AIL casovac uz skutecne MIXUJE hudebni sample a mixovaci
+rutina cte z neplatneho ukazatele `0x80000008` (sign-extended, nastaveny
+horni bit - typicky "int -> pointer" ze zaporne hodnoty).
+**Dalsi krok:** najit, odkud se do samplu dostane `0x80000008` - podezreni na
+`sub_141B5B((int *)dword_18442B, v10, dword_1AE0A4[v10], v9)` (zarazeni
+pul-bufferu do fronty) a na hodnoty, ktere mixer cte ze struktury samplu.
+
+**Upresneni k pokr. 50 (zmereno):** zarazovani pul-bufferu do samplu je
+V PORADKU - `hudba.zarad_index` 0 a 1, `hudba.zarad_buffer` 406713088 a
+406745920 (dva platne ukazatele presne 32768 B od sebe),
+`hudba.zarad_delka` 32768. Chyba tedy NENI na strane `sub_141B5B`/
+`sub_157B00`, ale az v MIXERU.
+
+Voditko: `sub_157B00` uklada ukazatel na pul-buffer do `a1[a2 + 2]`, tedy na
+BAJTOVY OFFSET 8 struktury samplu - a padova adresa je `0x80000008`, tedy
+"zaklad 0x80000000 + 8". Mixer si tedy jako zaklad samplu vzal hodnotu s
+nastavenym hornim bitem (0x80000000). Hledat, odkud ji bere - pravdepodobne
+priznakove pole/marker, ktery se v portu dostal tam, kde ma byt ukazatel
+(fake DIG_DRIVER dava samplum na +0 zpetny ukazatel a na +4 stav; viz
+PortSound_CreateDigDriver).

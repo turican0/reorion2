@@ -294,6 +294,13 @@ extern "C" int PortSound_TimerEnabled(void)
 
 extern "C" void PortSound_ServiceTimer(void)
 {
+    {   // PORT (docasne mereni): proc se v menu neotevre zvukove zarizeni
+        static int s_on = -1, s_n = 0;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_AUDIO_STATS") ? 1 : 0;
+        if (s_on && (s_n++ % 200) == 0)
+            SDL_Log("ServiceTimer: casovac=%d driver=%d half=%p",
+                    PortSound_TimerEnabled(), g_digDriver, (void*)g_playingHalf);
+    }
     if (!PortSound_TimerEnabled() || !g_digDriver || !g_playingHalf)
         return;
     // Ochrana proti rekurzi: sub_156680 -> mixer -> ... -> PortSound_QueuedBytes,
@@ -347,6 +354,12 @@ extern "C" void PortSound_ServiceTimer(void)
     uint32_t bufAddr = 0, halfSize = 0;
     SDL_memcpy(&bufAddr,  drv + 44 + 4 * (idx ^ 1), sizeof(bufAddr));
     SDL_memcpy(&halfSize, drv + 68, sizeof(halfSize));
+    {   static int s_on = -1, s_n = 0;
+        if (s_on < 0) s_on = SDL_getenv("REORION2_AUDIO_STATS") ? 1 : 0;
+        if (s_on && (s_n++ % 100) == 0)
+            SDL_Log("ServiceTimer: buf=0x%08X half=%u ring=%d",
+                    bufAddr, halfSize, PortSound_UseRingSource());
+    }
     if (bufAddr && halfSize && !PortSound_UseRingSource()) {
         // Vystupni format driveru: +20 = frekvence, +60 = kanaly,
         // +64 = bajtu na vzorek. Miles typ: bit0 = 16bit, bit1 = stereo.

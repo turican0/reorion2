@@ -3398,9 +3398,29 @@ int sub_111AE2()
   int i; // [esp+0h] [ebp-8h]
   int j; // [esp+0h] [ebp-8h]
 
+  // PORT (vlna 26 pokr. 46): ZTRACENA NAVRATOVA HODNOTA. `sub_1413FF`
+  // (AIL_sample_status) vraci stav vzorku v EAX a asm ho pouziva primo:
+  //   push dword_1A8670[eax] / call sub_1413FF / add esp,4 / cmp eax, 2
+  // IDA z toho udelala volani zahozene do prazdna a porovnavala
+  // NEINICIALIZOVANE `v0`/`v1`. Hledani volneho slotu proto vracelo 0,
+  // `sub_113765` na tom hned na zacatku skoncilo a HUDBA MENU se nikdy
+  // nerozjela (zmereno: hudba.113765_slot = 0).
+  // PORT (vlna 26 pokr. 49): oprava nize je podle asm SPRAVNA, ale nove
+  // zpristupnuje hudebni cestu, ktera nekde dal PADA (proces konci s
+  // navratovym kodem 3 = CRT abort, hned po vytvoreni DIG_DRIVERu; NENI to
+  // `sub_126487`, ten by vypsal "FATAL:"). Bisekci overeno: kdyz se tady
+  // vrati 0 jako driv, hra bezi; jinak konci. Nez se ta chyba najde, je
+  // hudba za prepinacem, aby build zustal pouzitelny.
+  //   REORION2_MUSIC=1 ... zapne hledani volneho slotu (a tim hudbu menu)
+  {
+    static int s_on = -1;
+    if ( s_on < 0 ) { const char *e = getenv("REORION2_MUSIC"); s_on = (e && *e != '0') ? 1 : 0; }
+    if ( !s_on )
+      return 0;
+  }
   for ( i = 1; i < 16; ++i )
   {
-    sub_1413FF(dword_1B0670[i]);
+    v0 = sub_1413FF(dword_1B0670[i]);
     if ( v0 == 2 )
       return i;
   }
@@ -3408,7 +3428,7 @@ int sub_111AE2()
   {
     if ( j >= 16 )
       return 0;
-    sub_1413FF(dword_1B0670[j]);
+    v1 = sub_1413FF(dword_1B0670[j]);
     if ( v1 == 8 )
       break;
   }
@@ -4484,6 +4504,10 @@ void sub_1131F0(int a1, int a2)
         }
       }
     }
+    { static int n = 0;
+      if ( (n++ % 200) == 0 )
+        PortDebug_Checkpoint("hudba.obsluha_437_42B",
+                             ((dword_184437 != 0) << 16) | (dword_18442B != 0)); }
     if ( dword_184437 && dword_18442B )
     {
       if ( dword_1843AB )
@@ -4497,9 +4521,17 @@ void sub_1131F0(int a1, int a2)
         }
         sub_113AF2(v7);
       }
-      sub_1413FF(dword_18442B);
+      // PORT (vlna 26 pokr. 47): dalsi dve ZTRACENE NAVRATOVE HODNOTY ze
+      // stejne rodiny jako v sub_111AE2/sub_113765. `sub_1413FF`
+      // (stav samplu) i `sub_141A76` (index hotoveho bufferu) vraci vysledek
+      // v EAX a asm ho uklada:  call sub_141A76 / add esp,4 /
+      // mov [ebp+var_8], eax / cmp [ebp+var_8], 0FFFFFFFFh
+      // Dekompilat volani zahodil a porovnaval neinicializovane `v2`/`v3`,
+      // takze obsluha streamu skakala do nahodne vetve - zmereno, ze skoncila
+      // na fatalnim "AIL error" hned po rozjeti hudby menu.
+      v2 = sub_1413FF(dword_18442B);
       v11 = v2 == 2;
-      sub_141A76((_DWORD *)dword_18442B);
+      v3 = sub_141A76((_DWORD *)dword_18442B);
       v10 = v3;
       if ( v3 == -1 )
       {
@@ -4534,6 +4566,13 @@ void sub_1131F0(int a1, int a2)
           v4 = dword_184433;
         v9 = fread(dword_1AE0A4[v3], 1, v4, dword_18442F);
         dword_18443F -= v9;
+        // PORT (docasne mereni): pad v mixeru na ukazateli 0x80000008 -
+        // overujeme, co se do samplu vlastne zaradi.
+        { static int n = 0;
+          if ( n++ < 6 ) {
+            PortDebug_Checkpoint("hudba.zarad_index", v10);
+            PortDebug_Checkpoint("hudba.zarad_buffer", dword_1AE0A4[v10 & 1]);
+            PortDebug_Checkpoint("hudba.zarad_delka", v9); } }
         sub_141B5B((int *)dword_18442B, v10, dword_1AE0A4[v10], v9);
       }
     }
@@ -4580,7 +4619,7 @@ int sub_113475(char *a1, int a2)
     dword_184433 = 32 * v2;
     dword_1AE0A4[0] = nmalloc(32 * v2);
     dword_1AE0A8 = nmalloc(dword_184433);
-    if ( !dword_1AE0A4 || !dword_1AE0A8 )
+    if ( !dword_1AE0A4[0] || !dword_1AE0A4[1] )
       sub_126487(aOutOfMemory, a2);
     dword_184427 = 1;
   }
@@ -4590,8 +4629,12 @@ int sub_113475(char *a1, int a2)
     fclose(dword_18442F);
   dword_18443F = 0;
   dword_184443 = -1;
-  memset(dword_1AE0A4, 0, dword_184433);
-  memset(dword_1AE0A8, 0, dword_184433);
+  // PORT (vlna 26 pokr. 50): `dword_1AE0A4` je POLE UKAZATELU - nulovat se
+  // musi buffer, na ktery ukazuje prvek [0], ne pamet, kde lezi samotne pole.
+  // Sesterska `sub_113765` to ma spravne; tady dekompilat zamenil pole za
+  // ukazatel a memset prepisoval globaly.
+  memset(dword_1AE0A4[0], 0, dword_184433);
+  memset(dword_1AE0A4[1], 0, dword_184433);
   if ( sub_11181C((int)v5) )
   {
     dword_18442F = fopen(v5, aRb_2);
@@ -4609,8 +4652,8 @@ int sub_113475(char *a1, int a2)
     sprintf(v4, "\nError opening %s\n", v5);
     sub_126487(v4, (int)aRb_2);
   }
-  fread(dword_1AE0A4, 1, 44, dword_18442F);
-  dword_18443F = *(_DWORD *)(dword_1AE0A4 + 40);
+  fread(dword_1AE0A4[0], 1, 44, dword_18442F);
+  dword_18443F = *(_DWORD *)(dword_1AE0A4[0] + 40);
   if ( !dword_18442F )
     return 0;
   strcpy(&unk_1AE054, v5);
@@ -4691,9 +4734,14 @@ int sub_113765(int a1, int a2)
 
   v8 = a1;
   v7 = a2;
+  PortDebug_Checkpoint("hudba.113765_skladba", a1);
+  PortDebug_Checkpoint("hudba.113765_povoleno_184453", dword_184453);
+  PortDebug_Checkpoint("hudba.113765_zvuk_184380", dword_184380);
   if ( a1 < 1 || !dword_184453 || !dword_184380 )
     return 0;
+  PortDebug_Checkpoint("hudba.113765_prosel", 1);
   v9 = sub_111AE2();
+  PortDebug_Checkpoint("hudba.113765_slot", v9);
   if ( !v9 )
     return 0;
   if ( !dword_184427 )
@@ -4703,7 +4751,14 @@ int sub_113765(int a1, int a2)
     dword_1AE0A8 = 0;
     while ( v5 && (!dword_1AE0A4[0] || !dword_1AE0A8) )
     {
-      sub_14197D((_DWORD *)dword_184388, 22050, 2);
+      // PORT (vlna 26 pokr. 46): dalsi ZTRACENA NAVRATOVA HODNOTA.
+      // `sub_14197D` (velikost bufferu pro dany format) vraci vysledek v EAX
+      // a asm ho hned nasobi poctem bufferu:
+      //   call sub_14197D / add esp,0Ch / mov edx,[var_68] / imul edx, eax
+      // IDA volani zahodila a nasobila NEINICIALIZOVANE `v2`, takze
+      // `dword_184433` (a tim i velikosti obou nmalloc bufferu) vysly ze
+      // smeti - alokace pak selhala a hudba menu se nerozjela.
+      v2 = sub_14197D((_DWORD *)dword_184388, 22050, 2);
       a2 = v2 * v5;
       dword_184433 = v2 * v5;
       dword_1AE0A4[0] = nmalloc(v2 * v5);
@@ -4722,6 +4777,8 @@ int sub_113765(int a1, int a2)
   dword_184443 = v8;
   memset(dword_1AE0A4[0], 0, dword_184433);
   memset(dword_1AE0A8, 0, dword_184433);
+  PortDebug_Checkpoint("hudba.113765_hledani", sub_11181C((int)aStreamLbx_0));
+  PortDebug_Checkpoint("hudba.113765_jmeno0", (uint8_t)aStreamLbx_0[0]);
   if ( sub_11181C((int)aStreamLbx_0) )
   {
     dword_18442F = fopen(aStreamLbx_0, aRb_2);
@@ -4736,7 +4793,7 @@ int sub_113765(int a1, int a2)
   }
   if ( !dword_18442F )
     return 0;
-  fread(&unk_1AD854, 2048, 1, dword_18442F);
+  fread(unk_1AD854, 2048, 1, dword_18442F);
   // DECOMP_TODO - NEJISTE (vlna 07): fseek() melo 0 parametru. Na rozdil
   // od podobnych pripadu v orion_part_19/20.c (jasny LBX "table[idx]"
   // vzor) tu zadna offset-tabulka neni pouzita pred timto seekem - jen
@@ -4757,6 +4814,7 @@ int sub_113765(int a1, int a2)
   sub_141227(dword_18442B, 22050);
   sub_113AF2(v7);
   sub_1131F0(v3, (int)aStreamLbx_0);
+  PortDebug_Checkpoint("hudba.113765_hotovo_handle", dword_18442B);
   return v9;
 }
 // 113814: variable 'v2' is possibly undefined
@@ -4936,6 +4994,10 @@ int sub_113C9B()
 //----- (00113CBD) --------------------------------------------------------
 int sub_113CBD(int result)
 {
+  // PORT (docasne mereni): `dword_1B06B4` ma 17 prvku a index se nikde
+  // nekontroluje - podezreni na zapis mimo pole (soused dword_1B06F8/FC uz
+  // jednou obeti prepisu byl).
+  PortDebug_Checkpoint("hudba.113CBD_index", dword_184447);
   dword_1B06B4[dword_184447] = 0;
   dword_18444F = result;
   dword_1843AB = 1;

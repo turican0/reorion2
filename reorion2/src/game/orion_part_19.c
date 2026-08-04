@@ -5798,6 +5798,13 @@ void sub_12643D(int a1, int a2)
 //----- (00126487) --------------------------------------------------------
 void sub_126487(char *a1, int a2)
 {
+  // PORT (vlna 26 pokr. 48): hlaska sla jen pres printf na stdout a pri
+  // exit(1) se ztratila - hra se jevila, ze "tise skonci". Duplikujeme ji
+  // na stderr JESTE PRED sub_113DBD() (uklidovy retez, ktery sam muze
+  // spadnout), at je vzdy videt, PROC hra konci.
+  printf("FATAL: %s\n", a1 ? a1 : "(null)");
+  fflush(0); // POZOR: `stderr` tu neni deklarovane (decomp_compat.h zamerne
+             // nevklada <stdio.h>), proto stdout + rucni flush.
   sub_113DBD();
   printf("%s\n", a1);
   exit(1);

@@ -17816,15 +17816,29 @@ int dword_1AD824; // weak
    `dword_1B06FC` (buffer pro hlavicku LBX) a hra pak pri kliknuti v menu
    spadla ve `fread`. Vytknuto do jedne struktury, at je rozlozeni jiste. */
 struct DosDta unk_1AD828; // weak
-_UNKNOWN unk_1AD854; // weak
+/* PORT (vlna 26 pokr. 46): hlavicka STREAM.LBX. `sub_113765` do ni cte
+   `fread(&unk_1AD854, 2048, 1, ...)`, ale IDA z nej udelala jednobajtovy
+   `_UNKNOWN` -> kazde spusteni hudby menu prepsalo 2047 bajtu sousednich
+   globalu. Skutecna velikost je 0x800 = 2048 B (vzdalenost k dalsimu
+   symbolu byte_1AE054: 0x1AE054 - 0x1AD854). Stejna trida chyby jako u
+   DTA `unk_1AD828` o par radku vyse. */
+_UNKNOWN unk_1AD854[2048]; // weak
 char byte_1AE054[80]; // weak
 // vlna 12: tentativni "int dword_1AE0A4[]" nevytvarel definici (LNK2001
 // po odstraneni duplikatu z link_stubs.c). V puvodnich datech ma symbol
 // 4 bajty (0x1AE0A4..0x1AE0A8). DECOMP_TODO: pouziva se i s indexem
 // [v3]/[v10] (streamovani zvukovych samplu, sub_113xxx) - presna sirka
 // se doresi az se zvukovou vlnou (kod ted nebezi, zvuk je vypnuty).
-int dword_1AE0A4[1]; // weak
-int dword_1AE0A8; // weak
+/* PORT (vlna 26 pokr. 50): DVA ukazatele na pul-buffery audio streamu.
+   `sub_1131F0` je indexuje `dword_1AE0A4[v3]` / `[v10]`, kde v3/v10 je index
+   pul-bufferu (0/1) vraceny z `sub_141A76` - v originale tedy jde o jedno
+   dvouprvkove pole na 0x1AE0A4 (prvek [1] = 0x1AE0A8). Port mel pole o
+   JEDNOM prvku a druhy ukazatel jako samostatnou promennou, takze
+   `dword_1AE0A4[1]` sahalo MIMO pole a `fread` pak cetl do smeti ->
+   poruseni haldy a tichy `abort()` (navratovy kod 3) hned po rozjeti hudby
+   menu. Puvodni poznamka u teto promenne to predpovidala: "pouziva se i s
+   indexem [v3]/[v10] ... presna sirka se doresi az se zvukovou vlnou". */
+int dword_1AE0A4[2]; // weak  ([1] = puvodni dword_1AE0A8)
 // VLNA 12: blok 0x1AE0AC..0x1AE5D4 = tabulka 33 zvukovych slotu po 40 B
 // (10 int) - sub_111F3E ji nuluje memset(..., 1320) a kod k ni pristupuje
 // striden "dword_1AE0XX[10 * slot]" pres NEKOLIK ruznych symbolu zaroven

@@ -20527,10 +20527,10 @@ extern int dword_1AD81C;
 extern int dword_1AD820;
 extern int dword_1AD824;
 extern struct DosDta unk_1AD828; /* PORT: DTA pro FINDFIRST, viz orion_data.c */
-extern _UNKNOWN unk_1AD854;
+extern _UNKNOWN unk_1AD854[2048];
 extern char byte_1AE054[80];
-extern int dword_1AE0A4[];
-extern int dword_1AE0A8;
+extern int dword_1AE0A4[2];
+#define dword_1AE0A8 dword_1AE0A4[1] /* PORT: prvek [1] tehoz pole, viz orion_data.c */
 // VLNA 12: tabulka zvukovych slotu - jeden souvisly blok 1320 B, puvodni
 // IDA symboly jsou PREKRYVY do nej (viz komentar v orion_data.c). Makra
 // zachovavaji vsechny dekompilovane vyrazy (dword_1AE0B4[10*slot] apod.)
