@@ -416,7 +416,8 @@ int unk_1AD418;
 int unk_1AD454;
 int unk_1AD494;
 int unk_1AE054;
-int unk_1AE5D4;
+/* unk_1AE5D4 zrusen (vlna 26 pokr. 54) - je to tentyz symbol jako
+   word_1AE5D4[2086] v orion_data.c; viz prekryvove makro v orion_common.h. */
 int unk_1B000D;
 int unk_1B0020;
 int unk_1B002B;

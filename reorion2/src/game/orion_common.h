@@ -21059,7 +21059,17 @@ extern _UNKNOWN unk_1AD418;
 extern _UNKNOWN unk_1AD454;
 extern _UNKNOWN unk_1AD494;
 extern _UNKNOWN unk_1AE054;
-extern _UNKNOWN unk_1AE5D4;
+// PORT (vlna 26 pokr. 54): `unk_1AE5D4` a `word_1AE5D4` jsou V ORIGINALE
+// TENTYZ SYMBOL (IDA ho na ruznych mistech pojmenovala jednou jako pole slov,
+// jednou jako `_UNKNOWN`). V portu z toho vznikly DVA RUZNE objekty:
+// `word_1AE5D4[2086]` (= 4172 B, do nej se nacita SOUND.LBX pres
+// `sub_13AD33`) a ctyrbajtovy stub `unk_1AE5D4` v link_stubs.c. Zvukove
+// efekty se hledaly PRES TEN STUB (`sub_13AFD2(&unk_1AE5D4, id)` cte
+// `*(_DWORD *)(base + 8*id + 16)`), takze vracely 0 a nic nehralo - a
+// `sub_13AE74(&unk_1AE5D4)` navic delal `memset(base, 0, 4172)`, tedy
+// prepisoval 4168 bajtu sousednich globalu.
+// Prekryv makrem, at obe jmena ukazuji na tentyz blok.
+#define unk_1AE5D4 (*(uint8_t *)word_1AE5D4)
 extern _UNKNOWN unk_1B000D;
 extern _UNKNOWN unk_1B0020;
 extern _UNKNOWN unk_1B002B;

@@ -6250,7 +6250,18 @@ char sub_80C8A( int a1, int a2)
   if ( *v2 || v2[127] )
   {
     strcpy(v9, (char *)(dword_19C06C + 254 * a1));
-    sub_122A6E(v10, 0, (int)v9, a2);
+    // PORT (vlna 26 pokr. 55): `v10` (vodorovny kurzor, asm var_8) se v
+    // originale VZDY cte jako WORD: `movsx eax, word ptr [ebp+var_8]` pred
+    // kazdym sub_122A6E a `cmp ax, word ptr [ebp+var_8]` v podmince smycky.
+    // Je to nutne, protoze `sub_12066F` (sirka textu) vraci hodnotu se
+    // SMETIM V HORNI PULCE: v ni je `mov ax, word_1ABEA6` nad EAX, ktery
+    // jeste drzi UKAZATEL na text, takze se ke kazdemu znaku pricte i
+    // (ukazatel >> 16) << 16. Dolnich 16 bitu tim ale zustava spravnych
+    // (pricitaji se nasobky 0x10000).
+    // Zmereno v portu: sirka 11znakoveho retezce vysla 149225554, sirka
+    // tecky 9371651 - dekompilat totiz `v10` pouzival CELY, takze se text
+    // titulku kreslil daleko mimo obraz a v okne zbyl jen jeden blob.
+    sub_122A6E((int16_t)v10, 0, (int)v9, a2);
     if ( v9[0] )
       v3 = sub_12066F((int)v9) + 4;
     else
@@ -6262,7 +6273,7 @@ char sub_80C8A( int a1, int a2)
       v11 = 0;
       do
       {
-        sub_122A6E(v10, 0, (int)&aLnmhq[5], a2);
+        sub_122A6E((int16_t)v10, 0, (int)&aLnmhq[5], a2);   // asm: movsx eax, word ptr [ebp+var_8]
         v5 = sub_12066F((int)&aLnmhq[5]);
         v10 += v5;
         if ( (uint8_t)byte_19C09A <= (int16_t)v10 )
@@ -6349,6 +6360,7 @@ int sub_80DB4(int a1, int a2, int a3, int a4)
     sub_12C2A0();
     v12 = sub_1171AB(v11, v9, v10, 479);
     LOWORD(v13) = sub_12D70B();
+    PortDebug_Checkpoint("anim.snimek_12D70B", (int16_t)v13);
     v9 = v13;
     if ( (_WORD)v13 == 5 )
     {
@@ -6466,6 +6478,16 @@ char sub_810C7(int16_t *a1)
 //----- (00081147) --------------------------------------------------------
 void sub_81147()
 {
+  { static int n = 0; ++n; if ( (n % 50) == 1 ) {
+      PortDebug_Checkpoint("tit.81147_volani", n);
+      PortDebug_Checkpoint("tit.radku_19C098", (int16_t)word_19C098);
+      PortDebug_Checkpoint("tit.pozice_19C078", dword_19C078);
+      // zdroj blitu (sub_12A478 tise zahazuje blit s nulovym zdrojem)
+      // a buffer s textem titulku
+      PortDebug_Checkpoint("tit.kreslici_buffer_19C070", dword_19C070);
+      PortDebug_Checkpoint("tit.text_buffer_19C06C", dword_19C06C);
+      if ( dword_19C06C )
+        PortDebug_Checkpoint("tit.prvni_znak_textu", *(uint8_t *)(uintptr_t)dword_19C06C); } }
   int v0; // eax
   int v1; // edx
   char v2; // bl
@@ -6548,6 +6570,14 @@ void sub_81147()
       sub_128AB6(66, 179, 354, 422);
       sub_12B634();
       ++v15;
+      { static int n = 0; if ( n++ < 4 ) {
+          PortDebug_Checkpoint("tit.blit_x", (int16_t)v11);
+          PortDebug_Checkpoint("tit.blit_y", (int16_t)v13);
+          // hlavicka sprite bufferu radku: +0 sirka, +2 vyska, +11 priznaky
+          PortDebug_Checkpoint("tit.sprite_sirka",  *(uint16_t *)(uintptr_t)dword_19C070);
+          PortDebug_Checkpoint("tit.sprite_vyska",  *(uint16_t *)(uintptr_t)(dword_19C070 + 2));
+          PortDebug_Checkpoint("tit.sprite_prizn",  *(uint8_t  *)(uintptr_t)(dword_19C070 + 11));
+          PortDebug_Checkpoint("tit.sirka_okna_19C09A", (uint8_t)byte_19C09A); } }
       sub_12A478(v11, v13, dword_19C070);
       sub_12B65C();
       v13 += 14;
@@ -6671,6 +6701,9 @@ LABEL_16:
     sub_12A478(415, 172, *(_DWORD *)(dword_19C090 + 8));
   if ( *(int16_t *)(dword_19C090 + 26) == -1000 )
     sub_12A478(415, 195, *(_DWORD *)(dword_19C090 + 22));
+  { static int n = 0; if ( n++ < 5 ) {
+      PortDebug_Checkpoint("tit.813A4_vstup", n);
+      PortDebug_Checkpoint("tit.povoleno_19C09D", (uint8_t)byte_19C09D); } }
   if ( byte_19C09D )
     sub_81147();
   qmemcpy(v6, sub_8E5C5(1u, 210, 215), sizeof(v6));

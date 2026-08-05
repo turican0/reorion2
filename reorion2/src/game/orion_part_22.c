@@ -218,6 +218,16 @@ char *sub_148605(char *a1, int a2, int a3)
 
 
 //----- (0014861D) --------------------------------------------------------
+// PORT (vlna 26 pokr. 55): OREZANY blit sprite typu 1 - tudy jdou rolujici
+// titulky v hlavnim menu (radky pretinaji horni/dolni hranu okna, takze
+// sub_12A478 vola tuhle vetev; jinde v menu se skoro nepouziva, proto se
+// chyby nize projevily az na titulcich).
+// Souradnice jsou 16bitove: asm dela `movsx eax, word ptr [ebp+var_4]`
+// (a1) i `movsx eax, word ptr [ebp+var_8]` (a2) - viz orez nize.
+// Zaroven tu byl 2x vzor "cteni pres hranici dvou globalu"
+// (`*(int *)((char *)&dword_1BBA4A + 2) >> 16`), hromadne opraveny na
+// `(int16_t)dword_1BBA4E` / `(int16_t)dword_1BBA52` - viz komentar u
+// sub_128AB6 v orion_part_19.c.
 int sub_14861D( int a1, int a2, char *a3)
 {
   int result; // eax
@@ -228,20 +238,22 @@ int sub_14861D( int a1, int a2, char *a3)
   int v8; // [esp+14h] [ebp-18h]
   char *v9; // [esp+18h] [ebp-14h]
 
+  a1 = (int16_t)a1;   // asm: movsx eax, word ptr [ebp+var_4]
+  a2 = (int16_t)a2;   // asm: movsx eax, word ptr [ebp+var_8]
   v9 = a3;
   v8 = a1 + 640 * a2 + dword_1BB904;
-  if ( a1 + *(int16_t *)dword_1BC2A8 - 1 <= *(int *)((char *)&dword_1BBA4A + 2) >> 16 )
+  if ( a1 + *(int16_t *)dword_1BC2A8 - 1 <= (int16_t)dword_1BBA4E )
     *(_DWORD *)v5 = a1 + *(int16_t *)dword_1BC2A8 - 1;
   else
-    *(_DWORD *)v5 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
+    *(_DWORD *)v5 = (int16_t)dword_1BBA4E;
   if ( a1 >= SHIWORD(dword_1BBA4A) )
     HIWORD(v6) = a1;
   else
     HIWORD(v6) = HIWORD(dword_1BBA4A);
-  if ( a2 + (*(int *)dword_1BC2A8 >> 16) - 1 <= *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+  if ( a2 + (*(int *)dword_1BC2A8 >> 16) - 1 <= (int16_t)dword_1BBA52 )
     v4 = a2 + (*(int *)dword_1BC2A8 >> 16) - 1;
   else
-    v4 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+    v4 = (int16_t)dword_1BBA52;
   if ( a2 >= SHIWORD(dword_1BBA4E) )
     *(_WORD *)&v5[4] = a2;
   else
@@ -292,18 +304,18 @@ int sub_1487E0(int a1, int a2, _BYTE *a3)
 
   v8 = a3;
   v13 = 640 * a2 + dword_1BB904 + a1;
-  if ( *(int16_t *)dword_1BC2A8 + a1 <= *(int *)((char *)&dword_1BBA4A + 2) >> 16 )
+  if ( *(int16_t *)dword_1BC2A8 + a1 <= (int16_t)dword_1BBA4E )
     v4 = *(int16_t *)dword_1BC2A8 + a1;
   else
-    v4 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
+    v4 = (int16_t)dword_1BBA4E;
   if ( dword_1BBA4A >> 16 <= a1 )
     v5 = a1;
   else
     v5 = dword_1BBA4A >> 16;
-  if ( (*(int *)dword_1BC2A8 >> 16) + a2 <= *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+  if ( (*(int *)dword_1BC2A8 >> 16) + a2 <= (int16_t)dword_1BBA52 )
     v6 = (*(int *)dword_1BC2A8 >> 16) + a2;
   else
-    v6 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+    v6 = (int16_t)dword_1BBA52;
   if ( dword_1BBA4E >> 16 <= a2 )
     v7 = a2;
   else
@@ -377,10 +389,10 @@ int sub_1489F4(int a1, int a2, int *a3)
     v9 = dword_1BBA4A >> 16;
   if ( dword_1BBA4E >> 16 > a2 )
     v10 = dword_1BBA4E >> 16;
-  if ( *(int *)((char *)&dword_1BBA4A + 2) >> 16 < a1 + *(int16_t *)dword_1BC2A8 )
-    v11 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
-  if ( *(int *)((char *)&dword_1BBA4E + 2) >> 16 < a2 + (*(int *)dword_1BC2A8 >> 16) )
-    v12 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+  if ( (int16_t)dword_1BBA4E < a1 + *(int16_t *)dword_1BC2A8 )
+    v11 = (int16_t)dword_1BBA4E;
+  if ( (int16_t)dword_1BBA52 < a2 + (*(int *)dword_1BC2A8 >> 16) )
+    v12 = (int16_t)dword_1BBA52;
   v6 = a1;
   v8 = (*a3 >> 16) + a2;
   v17 = dword_1BB904 + 640 * v8 + a1;
@@ -480,10 +492,10 @@ int sub_148C33(int a1, int a2, int *a3)
     v11 = dword_1BBA4A >> 16;
   if ( dword_1BBA4E >> 16 > a2 )
     v12 = dword_1BBA4E >> 16;
-  if ( *(int *)((char *)&dword_1BBA4A + 2) >> 16 < a1 + (*(int *)dword_1BC2A8 >> 16) )
-    v13 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
-  if ( *(int *)((char *)&dword_1BBA4E + 2) >> 16 < a2 + (*(int *)dword_1BC2A8 >> 16) )
-    v14 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+  if ( (int16_t)dword_1BBA4E < a1 + (*(int *)dword_1BC2A8 >> 16) )
+    v13 = (int16_t)dword_1BBA4E;
+  if ( (int16_t)dword_1BBA52 < a2 + (*(int *)dword_1BC2A8 >> 16) )
+    v14 = (int16_t)dword_1BBA52;
   v8 = a1;
   v10 = (*a3 >> 16) + a2;
   v19 = dword_1BB904 + 640 * v10 + a1;

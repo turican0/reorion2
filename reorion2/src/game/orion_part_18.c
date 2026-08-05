@@ -3405,19 +3405,20 @@ int sub_111AE2()
   // NEINICIALIZOVANE `v0`/`v1`. Hledani volneho slotu proto vracelo 0,
   // `sub_113765` na tom hned na zacatku skoncilo a HUDBA MENU se nikdy
   // nerozjela (zmereno: hudba.113765_slot = 0).
-  // PORT (vlna 26 pokr. 49): oprava nize je podle asm SPRAVNA, ale nove
-  // zpristupnuje hudebni cestu, ktera nekde dal PADA (proces konci s
-  // navratovym kodem 3 = CRT abort, hned po vytvoreni DIG_DRIVERu; NENI to
-  // `sub_126487`, ten by vypsal "FATAL:"). Bisekci overeno: kdyz se tady
-  // vrati 0 jako driv, hra bezi; jinak konci. Nez se ta chyba najde, je
-  // hudba za prepinacem, aby build zustal pouzitelny.
-  //   REORION2_MUSIC=1 ... zapne hledani volneho slotu (a tim hudbu menu)
-  {
-    static int s_on = -1;
-    if ( s_on < 0 ) { const char *e = getenv("REORION2_MUSIC"); s_on = (e && *e != '0') ? 1 : 0; }
-    if ( !s_on )
-      return 0;
-  }
+  // PORT (vlna 26 pokr. 49): oprava nize je podle asm SPRAVNA, ale tehdy nove
+  // zpristupnila hudebni cestu, ktera dal padala (navratovy kod 3 = CRT
+  // abort), takze byla docasne za prepinacem `REORION2_MUSIC`.
+  // PORT (vlna 26 pokr. 56): PREPINAC UPLNE ODSTRANEN (na zadost uzivatele).
+  // Obe chyby, kvuli kterym existoval, jsou opravene a overene:
+  //   pokr. 50 - `dword_1AE0A4` musi byt DVOUPRVKOVE pole pul-bufferu
+  //              (indexovalo se [1] mimo pole -> poruseni haldy -> ten abort)
+  //   pokr. 51 - registrova konvence vsech 72 rutin tabulky `funcs_16213C`
+  //              (mixer cetl z ukazatele 0x80000008)
+  // Zmereno po opravach: hudba menu hraje v realnem case (520+ davek po
+  // 2048 B za 25 s), regresni test videa 600/600 matched.
+  // POZOR: tahle funkce hleda volny slot samplu i pro ZVUKOVE EFEKTY, takze
+  // prepinac vypinal i je - proto tu ted zadny neni a hraje se vzdy, stejne
+  // jako v originale.
   for ( i = 1; i < 16; ++i )
   {
     v0 = sub_1413FF(dword_1B0670[i]);
@@ -3834,11 +3835,20 @@ int sub_112399(int a1)
   int v6; // [esp+Ch] [ebp-Ch]
   int v7; // [esp+10h] [ebp-8h]
 
+  PortDebug_Checkpoint("zvuk.112399_vstup", a1);
   if ( !dword_184380 )
+  {
+    PortDebug_Checkpoint("zvuk.112399_zvuk_vypnut", 0);
     return 0;
+  }
   v7 = sub_111AE2();
   if ( !v7 || !a1 || !dword_184394 || !dword_184398 )
+  {
+    PortDebug_Checkpoint("zvuk.112399_slot", v7);
+    PortDebug_Checkpoint("zvuk.112399_184394", dword_184394);
+    PortDebug_Checkpoint("zvuk.112399_184398", dword_184398);
     return 0;
+  }
   for ( i = 0; i < 33; ++i )
   {
     if ( dword_1AE0C8[10 * i] == a1 && dword_1AE0B4[10 * i] )
@@ -3855,6 +3865,7 @@ LABEL_21:
         sub_140E69((_DWORD *)dword_1B0670[v7], dword_184394 + dword_1AE0AC[10 * i], -1);
         sub_141073((_DWORD *)dword_1B0670[v7]);
         ++dword_184457;
+        PortDebug_Checkpoint("zvuk.112399_spusteno_z_cache", a1);
         return v7;
       }
       if ( dword_1AE0B4[10 * i] > 0 )
@@ -3866,20 +3877,42 @@ LABEL_21:
   }
   v1 = sub_13AFD2((int)&unk_1AE5D4, a1);
   if ( !v1 )
+  {
+    PortDebug_Checkpoint("zvuk.112399_13AFD2_nenasel", a1);
     return 0;
+  }
   v6 = sub_111D70(v7, a1, v1);
   if ( !v6 )
+  {
+    PortDebug_Checkpoint("zvuk.112399_111D70_selhal", a1);
     return 0;
+  }
   sub_13AEBB((int)&unk_1AE5D4, a1, v6);
   sub_140DFC((int *)dword_1B0670[v7]);
   sub_14129D(dword_1B0670[v7], (uint8_t)byte_1843A4);
   sub_141313(dword_1B0670[v7], (uint8_t)byte_1843A5);
-  sub_140E69((_DWORD *)dword_1B0670[v7], v6, -1);
+  // PORT (vlna 26 pokr. 54): ZTRACENA NAVRATOVA HODNOTA - proto nehral zvuk
+  // pri otevirani menu. Tahle vetev se jde poprve, kdyz jeste neni vzorek v
+  // cache (`sub_13AFD2` ho nenajde) - a prave sem spadaji zvuky animace
+  // otevirajiciho se menu (`sub_147D7(53)` na snimku 5 a `(54)` na 46).
+  // asm (sub_112399, 0x1125FB):
+  //     call sub_140E69 / add esp, 0Ch / test eax, eax / jnz loc_112610
+  // Dekompilat volani zahodil a testoval NEINICIALIZOVANE `v2`, takze se
+  // nahodne (a vetsinou) vracelo 0 JESTE PRED `sub_141073`, coz je az to
+  // skutecne spusteni prehravani. Cesta pres cache (LABEL_21 vyse) tuhle
+  // kontrolu vubec nema, proto uz jednou nacteny zvuk hral.
+  v2 = sub_140E69((_DWORD *)dword_1B0670[v7], v6, -1);
   if ( !v2 )
+  {
+    PortDebug_Checkpoint("zvuk.112399_neuspech_140E69", a1);
     return 0;
+  }
   sub_141F1F(dword_1B0670[v7], (int)sub_1119BE);
   sub_141073((_DWORD *)dword_1B0670[v7]);
   ++dword_184457;
+  // Kontrolni bod (REORION2_TRACE=1): cislo prave spustenehoe zvukoveho
+  // efektu. Zvuky animace otevirajiciho se menu jsou 53 a 54.
+  PortDebug_Checkpoint("zvuk.112399_spusteno", a1);
   return v7;
 }
 // 112605: variable 'v2' is possibly undefined
@@ -5310,15 +5343,15 @@ int sub_1146FD( int a1, int a2, int a3, _BYTE *a4, int a5)
   v5 = a3 + a2;
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aTooManyFields, v5);
-  if ( dword_1BBA4A >> 16 > v9 || *(int *)((char *)&dword_1BBA4A + 2) >> 16 < v8 )
+  if ( dword_1BBA4A >> 16 > v9 || (int16_t)dword_1BBA4E < v8 )
     return -10000;
-  if ( dword_1BBA4E >> 16 > v5 || *(int *)((char *)&dword_1BBA4E + 2) >> 16 < v10 )
+  if ( dword_1BBA4E >> 16 > v5 || (int16_t)dword_1BBA52 < v10 )
     return -10000;
   if ( dword_1BBA4A >> 16 > v8 )
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = HIWORD(dword_1BBA4A);
   else
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = v8;
-  if ( *(int *)((char *)&dword_1BBA4A + 2) >> 16 < v9 )
+  if ( (int16_t)dword_1BBA4E < v9 )
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = dword_1BBA4E;
   else
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = v9;
@@ -5326,7 +5359,7 @@ int sub_1146FD( int a1, int a2, int a3, _BYTE *a4, int a5)
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = HIWORD(dword_1BBA4E);
   else
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = v10;
-  if ( *(int *)((char *)&dword_1BBA4E + 2) >> 16 < v5 )
+  if ( (int16_t)dword_1BBA52 < v5 )
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = dword_1BBA52;
   else
     *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = v5;

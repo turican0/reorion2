@@ -700,12 +700,12 @@ int sub_11C3C5( int a1, int a2, int a3, int16_t *a4, _BYTE *a5, int a6)
   {
     if ( a1 < SHIWORD(dword_1BBA4A) )
       return -1000;
-    if ( *a4 + a1 > *(int *)((char *)&dword_1BBA4A + 2) >> 16 )
+    if ( *a4 + a1 > (int16_t)dword_1BBA4E )
       return -1000;
     if ( (int16_t)a2 < SHIWORD(dword_1BBA4E) )
       return -1000;
     a2 = a4[1] + (int16_t)a2;
-    if ( a2 > *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+    if ( a2 > (int16_t)dword_1BBA52 )
       return -1000;
   }
   if ( word_1B3E0E >= word_18447E )
@@ -2576,7 +2576,18 @@ int sub_120BB5(int a1, int a2)
   word_1B3EA6 = word_1B43B8[a1];
   word_1B3EA2 = word_1B3EA4 + HIWORD(dword_1B3E82);
   memcpy(byte_1B3EA8, &byte_1B43D8[256 * a1], 256);
-  return memcpy(dword_1B3FA8, &dword_1B49D8[256 * a1], sizeof(dword_1B3FA8));
+  // PORT (vlna 26 pokr. 56): TADY BYLY ROZSYPANE GLYFY TITULKU.
+  // `dword_1B3FA8` NENI pole, ale PREKRYVOVE MAKRO
+  // (`(int *)(fontBlock_1B3E7C + 2908)`, viz orion_common.h), takze
+  // `sizeof(dword_1B3FA8)` je `sizeof(int *)` = 8 na x64 - misto 1024.
+  // Zkopirovaly se tedy jen DVA offsety glyfu a zbytek tabulky zustal z
+  // drive vybraneho fontu. Sirky (memcpy vyse, 256 B natvrdo) pritom sedely,
+  // proto vychazely spravne POZICE a rozestupy, ale spatne TVARY znaku.
+  // asm (sub_120BB5): `mov ebx, 400h` = 1024 B (256 polozek po 4 B).
+  // Zmereno proti originalu (DUMPREGS na 0x00347243 = offset glyfu):
+  // 'G' original 12418 vs port 4568, 'a' 14049 vs 6460 - nerovnomerne, tedy
+  // ne posun baze, ale uplne jina tabulka.
+  return memcpy(dword_1B3FA8, &dword_1B49D8[256 * a1], 1024);
 }
 // 13F35A: using guessed type int memcpy(_DWORD, _DWORD, _DWORD);
 // 1B3E82: using guessed type int dword_1B3E82;
@@ -3045,9 +3056,9 @@ unsigned int sub_121814( int a1, int a2, int a3, int a4, int a5)
       }
 LABEL_57:
       if ( (_WORD)dword_184510 )
-        LOWORD(dword_1B61E8) = sub_121E85(*(int *)((char *)&dword_1B61E4 + 2) >> 16, SHIWORD(dword_1B61E0), v5);
+        LOWORD(dword_1B61E8) = sub_121E85((int16_t)dword_1B61E8, SHIWORD(dword_1B61E0), v5);
       else
-        LOWORD(dword_1B61E8) = sub_121DEB(*(int *)((char *)&dword_1B61E4 + 2) >> 16, SHIWORD(dword_1B61E0), v5);
+        LOWORD(dword_1B61E8) = sub_121DEB((int16_t)dword_1B61E8, SHIWORD(dword_1B61E0), v5);
       if ( (_WORD)a5 && v7 == 32 )
       {
         LOWORD(dword_1B61E8) = v11 + dword_1B61E8;
@@ -3162,7 +3173,7 @@ int16_t sub_121C24(int a1, int a2, int a3, int a4)
   for ( i = 0; *(_BYTE *)(i + v8); ++i )
     ;
   v13 = dword_1B61E4 >> 16;
-  v12 = *(int *)((char *)&dword_1B61E0 + 2) >> 16;
+  v12 = (int16_t)dword_1B61E4;
   sub_120705(dword_1B61E8 >> 16, 15);
   sub_121F7B(v9, v6, v8);
   v11 = ((int16_t)sub_12066F(v8) + 2) / 10;
@@ -3297,11 +3308,11 @@ int16_t sub_121F7B( int a1, int a2, int a3)
     v11 = screenHeight_184538 / 25 * a2;
     v14 = dword_1BBA4A >> 16;
     v15 = dword_1BBA4E >> 16;
-    v16 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
-    v17 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+    v16 = (int16_t)dword_1BBA4E;
+    v17 = (int16_t)dword_1BBA52;
     sub_128AB6(0, 0, 1000, 1000);
     v13 = dword_1B61E4 >> 16;
-    v12 = *(int *)((char *)&dword_1B61E0 + 2) >> 16;
+    v12 = (int16_t)dword_1B61E4;
     sub_120705(dword_1B61E8 >> 16, 0);
     sub_124D41();
     v8 = dword_184510 >> 16;
@@ -3521,7 +3532,7 @@ LABEL_66:
       }
     }
 LABEL_60:
-    LOWORD(dword_1B61E8) = sub_12260F(*(int *)((char *)&dword_1B61E4 + 2) >> 16, SHIWORD(dword_1B61E0), v5);
+    LOWORD(dword_1B61E8) = sub_12260F((int16_t)dword_1B61E8, SHIWORD(dword_1B61E0), v5);
     if ( (_WORD)a5 && v7 == 32 )
     {
       LOWORD(dword_1B61E8) = v11 + dword_1B61E8;
@@ -3569,9 +3580,9 @@ int sub_12260F(int a1, int a2, unsigned int a3)
     LOWORD(v3) = word_1B3EA6;
     v12 = v3;
     if ( (int16_t)v7 >= SHIWORD(dword_1BBA4A)
-      && (int16_t)v11 + (int16_t)v7 <= *(int *)((char *)&dword_1BBA4A + 2) >> 16
+      && (int16_t)v11 + (int16_t)v7 <= (int16_t)dword_1BBA4E
       && a2 >= SHIWORD(dword_1BBA4E)
-      && SHIWORD(dword_1B3E82) + a2 <= *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+      && SHIWORD(dword_1B3E82) + a2 <= (int16_t)dword_1BBA52 )
     {
       sub_121DEB((int16_t)v7, a2, a3);
     }
@@ -3594,8 +3605,8 @@ int sub_12260F(int a1, int a2, unsigned int a3)
         v7 = v4;
         v11 -= v10;
       }
-      v5 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
-      if ( (int16_t)v11 + (int16_t)v7 > *(int *)((char *)&dword_1BBA4A + 2) >> 16 )
+      v5 = (int16_t)dword_1BBA4E;
+      if ( (int16_t)v11 + (int16_t)v7 > (int16_t)dword_1BBA4E )
       {
         LOWORD(v5) = dword_1BBA4E;
         v11 = v5 + 1 - v7;
@@ -3611,7 +3622,7 @@ int sub_12260F(int a1, int a2, unsigned int a3)
         v9 = HIWORD(dword_1BBA4E) - a2;
         v8 = HIWORD(dword_1BBA4E);
       }
-      if ( SHIWORD(dword_1B3E82) + v8 <= *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+      if ( SHIWORD(dword_1B3E82) + v8 <= (int16_t)dword_1BBA52 )
         v14 = HIWORD(dword_1B3E82);
       else
         v14 = dword_1BBA52 + 1 - v8;
@@ -3670,7 +3681,7 @@ int sub_1227EC(int a1, int a2, unsigned int a3, int a4, int a5, int a6, int a7)
       if ( k <= 0x80u )
       {
         if ( v12 >= a4 + v9 && v12 < a5 + a4 + v9 )
-          *(_BYTE *)(v12 + dword_1BB904) = *((_BYTE *)&dword_1B3E78 + k + 3);
+          *(_BYTE *)(v12 + dword_1BB904) = byte_1B3E7C[k - 1];
         ++v12;
       }
       else
@@ -3902,7 +3913,7 @@ LABEL_62:
             return v6;
           }
 LABEL_56:
-          sub_123070(*(int *)((char *)&dword_1B61E4 + 2) >> 16, dword_1B61E0 >> 16, v17, a6);
+          sub_123070((int16_t)dword_1B61E8, dword_1B61E0 >> 16, v17, a6);
           LOWORD(dword_1B61E8) = word_1B3EA6 + (uint8_t)byte_1B3EA8[v17] + dword_1B61E8;
           if ( (_WORD)a5 && v17 == 32 )
           {
@@ -3994,6 +4005,23 @@ int sub_1231B1(
   uint8_t k; // [esp+48h] [ebp-8h]
   int16_t v19; // [esp+68h] [ebp+18h]
 
+  // PORT (vlna 26 pokr. 55): VSECHNY souradnicove parametry jsou 16BITOVE.
+  // asm cte kazdy z nich pres `movsx ... word ptr`:
+  //     var_28 = a1, var_24 = a2, var_2C = a4, arg_0 = a5 (deklarovan
+  //     primo jako `word ptr`), arg_4 = a6, arg_8 = a7
+  // Volajici `sub_123070` pritom `v7` (= a4) i `v9` (= a6) plni jen pres
+  // `LOWORD(...) = 0`, takze jejich HORNI PULKA ZUSTAVA NEDEFINOVANA.
+  // Dekompilat je pouzival cele, takze `v14 = a1 + sirka*a2 - a4` vyslo
+  // mimo - glyfy se kreslily posunute a s poskozenym obsahem ("jsou tam
+  // znaky, ale ne ty co tam maji byt, a jakoby posunute").
+  // `a6`/`a7` uz orezane byly (vlna 26 pokr. 33, tehdy kvuli zamrznuti);
+  // chybely `a1`, `a2`, `a4`, `a5`.
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  a4 = (int16_t)a4;
+  a5 = (int16_t)a5;
+  a6 = (int16_t)a6;
+  a7 = (int16_t)a7;
   dword_1BC2A8 = (int)a8;
   v13 = (char *)a8 + *(_DWORD *)&a8[2 * (*(int *)(a8 + 1) >> 16) + 6];
   v15 = *a8;
@@ -4001,29 +4029,33 @@ int sub_1231B1(
   v8 = 4 * a3;
   LOWORD(v8) = *(_WORD *)((char *)dword_1B3FA8 + v8);
   v17 = v8;
-  // PORT (vlna 26 pokr. 33): pocty radku `a6`/`a7` cte original jako
-  // 16BITOVE (asm: `movsx eax, word ptr [ebp+arg_4]`, resp. arg_8), ale IDA
-  // je otypovala jako `int` a porovnavala celych 32 bitu. Zmereno, ze do
-  // portu prisel `a6` = 0x1E0000 = 1966080 pri stropu 13 - smycka hledajici
-  // zarazku 128 by bezela dva miliony krat a hra zamrzla.
-  a6 = (int16_t)a6;
-  a7 = (int16_t)a7;
+  // Pozn. (vlna 26 pokr. 33): tady se drive orezavaly jen `a6`/`a7` - tehdy
+  // kvuli zamrznuti (do portu prisel a6 = 0x1E0000 = 1966080 pri stropu 13,
+  // takze smycka hledajici zarazku 128 bezela dva miliony krat). Orez je ted
+  // pro vsechny souradnicove parametry naraz nahore.
   if ( a7 > word_1B3EA0 )
     a7 = word_1B3EA0;
   // PORT (vlna 26 pokr. 33): tahle smycka hleda zarazku 128 ve fontovych
   // datech. `(int16_t)` je SPRAVNE (asm ma `movsx edx, word ptr [ebp+var_18]`),
   // takze kdyz se zacykli, jsou spatna VSTUPNI DATA - tabulka offsetu
   // `dword_1B3FA8` nebo font `dword_1B3E74`. Porovnavame je s originalem.
+  // Porovnani s originalem (vlna 26 pokr. 56): glyfy TITULKU se kresli do
+  // radkoveho sprite sirky 289 vzdy na y = 0 - podle toho se daji v traceu
+  // odfiltrovat od ostatniho textu. V dosboxu totez:
+  //   DUMPREGS cond=eip:0x003471B1 repeat=always  (= IDA 0x1231B1 + 0x224000)
+  //   eax = a1 (x), edx = a2 (y), bl = a3 (znak), ecx = a4
   { static int s_on = -1, s_n = 0;
     if ( s_on < 0 ) { const char *e = getenv("REORION2_FONT_TRACE"); s_on = (e && *e != '0') ? 1 : 0; }
-    if ( s_on && s_n < 8 )
+    if ( s_on && s_n < 14 && a2 == 0 && *a8 == 289 )
     {
       ++s_n;
-      PortDebug_Checkpoint("font.dataPtr_1B3E74", dword_1B3E74);
-      PortDebug_Checkpoint("font.tablePtr_1B3FA8", (int)(uintptr_t)dword_1B3FA8);
-      PortDebug_Checkpoint("font.glyph_a3", a3);
+      PortDebug_Checkpoint("font.x_a1", a1);
+      PortDebug_Checkpoint("font.znak_a3", a3);
+      PortDebug_Checkpoint("font.a4", a4);
       PortDebug_Checkpoint("font.offset_v17", (int)(int16_t)v17);
+      PortDebug_Checkpoint("font.sirka_znaku", (uint8_t)byte_1B3EA8[a3]);
       PortDebug_Checkpoint("font.rows_a6", a6);
+      PortDebug_Checkpoint("font.rows_a7", a7);
       PortDebug_Checkpoint("font.maxRows_1B3EA0", word_1B3EA0);
     }
   }
@@ -4054,7 +4086,15 @@ int sub_1231B1(
       if ( k <= 0x80u )
       {
         if ( k && v12 >= a4 + v14 && v12 < a5 + a4 + v14 )
-          v13[v12] = *((_BYTE *)&dword_1B3E78 + k + 3);
+          // PORT (vlna 26 pokr. 55): BARVA PIXELU GLYFU. asm:
+          //     mov al, byte ptr (dword_1ABE78+3)[eax]
+          // tedy adresa 0x1ABE78 + 3 + k, v C jmenech 0x1B3E7B + k, coz je
+          // `byte_1B3E7C[k - 1]` = OSMIPRVKOVA TABULKA BAREV FONTU (plni ji
+          // sub_122AAB z word_18450E/word_18450C, resp. sub_120D79).
+          // `dword_1B3E78` je ale v portu SAMOSTATNY globál, ne soused
+          // prekryvoveho bloku fontBlock_1B3E7C, takze se barva cetla ze
+          // smeti za nim - glyfy vychazely jako "rozsypany cas".
+          v13[v12] = byte_1B3E7C[k - 1];
         ++v12;
       }
       else
@@ -6905,12 +6945,30 @@ int sub_128AB6( int a1, int a2, int a3, int a4)
     v6 = 0;
   if ( a2 < 0 )
     v7 = 0;
-  if ( a3 >= HIDWORD(qword_184530) )
-    v8 = HIWORD(dword_184532) - 1;
+  // PORT (vlna 26 pokr. 55): TADY SE ZTRACELY ROLUJICI TITULKY V MENU.
+  // Dolni hrana orezoveho obdelniku vychazela -1 misto 422 (zmereno:
+  // `blit.orez_dolni -1`), takze `sub_12A478` zahodilo KAZDY blit s y > -1.
+  // asm (sub_128AB6, loc_128B09):
+  //     movsx eax, word ptr [ebp+var_4]   ; (int16_t)a4
+  //     cmp   eax, dword ptr unk_17C538   ; = C adresa 0x184538 = vyska obrazovky
+  //     jl    short loc_128B1F
+  //     mov   ax, word ptr unk_17C538     ; prepise jen AX
+  //     dec   eax
+  // Dekompilat misto symbolu na 0x184538 napsal
+  // `*(int *)((char *)&dword_184536 + 2)`, coz je sice tataz ADRESA, ale jen
+  // v originale, kde ty globaly lezi za sebou. V portu je `dword_184536`
+  // samostatny objekt, takze se cetlo smeti za nim - porovnani vyslo true a
+  // dolni hrana se prepsala na `0 - 1`. Spravny symbol port uz ma:
+  // `screenHeight_184538` (vytknut ve vlne 11).
+  // Stejny vzor je o dva radky vys u prave hrany (`HIWORD(dword_184532)`
+  // misto dolniho slova `HIDWORD(qword_184530)`) - taky opraveno; neprojevilo
+  // se to jen proto, ze se na nej sahne az kdyz a3 prekroci sirku obrazovky.
+  if ( (int16_t)a3 >= (int)HIDWORD(qword_184530) )
+    v8 = (int16_t)((uint16_t)HIDWORD(qword_184530) - 1);
   v4 = (int16_t)a4;
-  if ( (int16_t)a4 >= *(int *)((char *)&dword_184536 + 2) )
+  if ( (int16_t)a4 >= screenHeight_184538 )
   {
-    LOWORD(v4) = HIWORD(dword_184536);
+    LOWORD(v4) = (uint16_t)screenHeight_184538;
     v9 = v4 - 1;
   }
   HIWORD(dword_1BBA4A) = v6;
@@ -7825,6 +7883,20 @@ int sub_12A478( int a1, int a2, int a3)
   }
   if ( !a3 )
     return 0;
+  // PORT (vlna 26 pokr. 55): SOURADNICE JSOU 16BITOVE. V asm se `a1`/`a2`
+  // (var_10/var_C) pouzivaji VYHRADNE pres dolni slovo - orezove testy delaji
+  // `cmp ax, word ptr ...` a vsech ~30 dalsich pouziti je
+  // `movsx edx, word ptr [ebp+var_C]`. Dekompilat z nich udelal plnohodnotne
+  // 32bitove `int`.
+  // Volajici pritom bezne predava hodnotu, ktera ma v horni pulce zbytek
+  // predchoziho vypoctu - rolovani titulku v hlavnim menu (`sub_81147`) dela
+  //     v0 = (422 - dword_19C078) / 14;  LOWORD(v0) = dword_19C078;  v13 = v0;
+  // takze uz po prvnich 14 odrolovanych pixelech je horni pulka nenulova,
+  // `a2 > clip` vyjde true a blit se ZAHODI. Presne proto se titulky po
+  // chvilce prestaly kreslit.
+  // Orez tady je ekvivalent toho `movsx` a plati pro celou funkci naraz.
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
   v7 = 0;
   dword_1BC2A8 = a3;
   v12 = *(_WORD *)a3 + a1 - 1;
@@ -7840,6 +7912,13 @@ int sub_12A478( int a1, int a2, int a3)
       || v12 < SHIWORD(dword_1BBA4A)
       || v11 < SHIWORD(dword_1BBA4E) )
     {
+      { static int n = 0; if ( n++ < 8 ) {
+          PortDebug_Checkpoint("blit.orez_zahozen_x", a1);
+          PortDebug_Checkpoint("blit.orez_zahozen_y", a2);
+          PortDebug_Checkpoint("blit.orez_prava", (int16_t)dword_1BBA4E);
+          PortDebug_Checkpoint("blit.orez_dolni", (int16_t)dword_1BBA52);
+          PortDebug_Checkpoint("blit.orez_leva", SHIWORD(dword_1BBA4A));
+          PortDebug_Checkpoint("blit.orez_horni", SHIWORD(dword_1BBA4E)); } }
       goto LABEL_57;
     }
     if ( a1 < SHIWORD(dword_1BBA4A)

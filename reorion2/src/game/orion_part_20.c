@@ -2499,12 +2499,12 @@ int sub_130098(int a1, int a2, int a3, int a4, int a5)
       v9 = dword_1BBA4E >> 16;
     else
       v9 = v12;
-    if ( *(int *)((char *)&dword_1BBA4A + 2) >> 16 <= v13 )
-      v8 = *(int *)((char *)&dword_1BBA4A + 2) >> 16;
+    if ( (int16_t)dword_1BBA4E <= v13 )
+      v8 = (int16_t)dword_1BBA4E;
     else
       v8 = v13;
-    if ( *(int *)((char *)&dword_1BBA4E + 2) >> 16 <= v14 )
-      v7 = *(int *)((char *)&dword_1BBA4E + 2) >> 16;
+    if ( (int16_t)dword_1BBA52 <= v14 )
+      v7 = (int16_t)dword_1BBA52;
     else
       v7 = v14;
     sub_138CEE(v10, v9, v8, v7);
@@ -2863,7 +2863,7 @@ int sub_1311D5( int a1, int a2, int a3, int a4, int a5, int a6)
       v31 = 0;
     else
       v31 = HIWORD(dword_1BBA4E) - a4;
-    if ( a3 + a4 > *(int *)((char *)&dword_1BBA4E + 2) >> 16 )
+    if ( a3 + a4 > (int16_t)dword_1BBA52 )
       v23 = dword_1BBA52 - a4;
     for ( i = 0; ; ++i )
     {
@@ -2890,7 +2890,7 @@ int sub_1311D5( int a1, int a2, int a3, int a4, int a5, int a6)
           v18 = (v15 - v14) / (v28 - 1);
           v8 = (v16 - v19) / (v28 - 1);
         }
-        if ( v28 + (int16_t)v22 > *(int *)((char *)&dword_1BBA4A + 2) >> 16 )
+        if ( v28 + (int16_t)v22 > (int16_t)dword_1BBA4E )
           v28 = dword_1BBA4E - v22;
         v29 = v28 - v30;
         if ( v29 > 0 )
@@ -4782,7 +4782,7 @@ int sub_135357(int16_t *a1, int16_t *a2, int16_t *a3, int16_t *a4)
     {
       if ( *a3 > (int16_t)dword_1BBA4E )
       {
-        *a4 = *a2 + v14 * ((*(int *)((char *)&dword_1BBA4A + 2) >> 16) - *a1) / v12;
+        *a4 = *a2 + v14 * (((int16_t)dword_1BBA4E) - *a1) / v12;
         *a3 = dword_1BBA4E;
       }
       if ( *a3 < *a1 )
@@ -4842,7 +4842,7 @@ int sub_135357(int16_t *a1, int16_t *a2, int16_t *a3, int16_t *a4)
     {
       if ( *a4 > (int16_t)dword_1BBA52 )
       {
-        *a3 = *a1 + v13 * ((*(int *)((char *)&dword_1BBA4E + 2) >> 16) - *a2) / v15;
+        *a3 = *a1 + v13 * (((int16_t)dword_1BBA52) - *a2) / v15;
         *a4 = dword_1BBA52;
       }
       if ( *a4 < *a2 )

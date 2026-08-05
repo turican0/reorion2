@@ -5983,3 +5983,274 @@ Animaci menu je potreba overit okem (mereni na ni v portu neni).
 vlne 48 se objevi i pri NORMALNIM ukonceni hry ("Thanks for playing") - ta
 funkce je zaroven bezny konec programu, ne jen fatalni chyba. Neni to
 priznak problemu.
+
+### Vlna 26 pokracovani 53: ANIMACE OTEVIRAJICIHO SE MENU - nalezena
+### porovnanim s dosboxem; + novy nastroj SENDKEY v dosbox-x
+
+Priznak (uzivatel): v originale po SPACE skonci animace s lodemi a spusti se
+animace otevirajiciho se menu; v portu se menu objevi rovnou otevrene.
+Uzivatelova hypoteza "engine reaguje na klavesu dvakrat" NEPLATI - vyvraceno
+uz merenim ve vlne 44 (1x vlozeno / 1x ohlaseno / 1x precteno).
+
+#### Novy nastroj: `SENDKEY` v dosbox-x (src/engine/engine.cpp)
+
+Bez nej se automatizovany beh k tomuhle useku vubec nedostal (trace zustal
+prazdny) - hra ceka na vstup hrace. Format:
+
+    SENDKEY cond=cycle_ge:N key=space [hold=200000] [label=x]
+    SENDKEY cond=eip:0xADDR    key=q     ...
+
+Stiskne a po `hold` cyklech pusti klavesu pres `KEYBOARD_AddKey`, tedy pres
+skutecny radic klavesnice (hra to vidi jako normalni scancode vcetne sve
+ISR). Kazdy watch se spusti jen jednou. Klavesy jsou v `ctl_parse_key`.
+
+#### Kde animace je
+
+`sub_80DB4` (z `sub_816F2`, vetev `if (byte_19A005)` = PRVNI vstup do menu)
+NENI dialog, ale PREHRAVAC ANIMACE: otevre zaznam 0 z MAINMENU.LBX
+(`sub_12C607`), vezme z hlavicky pocet snimku
+(`v20 = *(_WORD *)(dword_1B06FC + 6) - 1`) a ve smycce dekoduje snimek po
+snimku (`sub_12C7CC`), se zvukem na snimcich 5 a 46 (`sub_147D7(53)` / `(54)`).
+Konci dobehnutim snimku, nebo kdyz uzivatel klikne/zmackne klavesu.
+
+**Zmereno (DUMPREGS cond=eip:0x002A4FA5 repeat=always = loc_80FA5):**
+
+| | original | port pred | port po |
+|---|---|---|---|
+| pruchodu smyckou | 51 | **1** | 50 |
+| pocet snimku (dolni slovo v20) | 49 | 49 | 49 |
+
+(51 vs 50 neni rozdil - dosbox loguje i posledni pruchod hlavou smycky, kde
+se z ni vyskakuje, port pocita az telo.)
+
+#### Skutecna pricina: `sub_11CEF5` - dalsi "jen dolni pulka registru"
+
+Zuzovano merenim: v portu `word_1B921A`=0 (zadne tlacitko),
+`word_1B9228`/`word_1B9220`=0 (zadny zatrzeny klik), `sub_12C392()`=0
+(zadna klavesa), `sub_124075()`=0, `word_1B3E0E`=9 oken - UPLNE STEJNE jako
+v originale (`DUMPMEM addr=0x003C9E0A size=16`). A presto vratila 8.
+
+```c
+LOWORD(v18) = sub_123C48();   /* v18 je NEINICIALIZOVANY lokal */
+if ( !v18 )                   /* -> skoro nikdy neplatilo */
+```
+
+V asm `sub_123C48` plni JEN AX (`mov ax, word_1B1228`), horni pulka EAX
+prezije z predchoziho `call sub_124075`, a volajici testuje `test eax, eax`
+(celych 32 bitu). Dekompilat z toho udelal prirazeni do dolni pulky
+neinicializovaneho LOKALU, jehoz horni bity jsou nahodne smeti. Podminka
+"nikdo neklikl" proto skoro nikdy neplatila, hra sla hledat okno pod
+kurzorem - a celoobrazovkova oblast sedne vzdy.
+**Overeno v originale** (`DUMPREGS cond=eip:0x00341B69` = presne to
+`test eax, eax`): EAX je tam ve VSECH 33 zaznamech `0x00000000`.
+Opraveno na `v18 = (uint16_t)sub_123C48();`; stejny vzor i v
+`orion_part_18.c` (`sub_124075() || (LOWORD(v5) = sub_123C48(), v5)`).
+Tataz trida jako `sub_12C392` ve vlne 43 - hledat dal:
+`LOWORD(x) = f();` nad lokalem, ktery se pak testuje jako 32bitovy.
+
+#### Co tim padlo
+
+Klikani v menu drive "fungovalo" PRAVE DIKY teto chybe - jakakoli pozice
+kurzoru se brala jako klik. Zaver vlny 43 i automaticky test QUITu z vlny 52
+tedy prochazely pres chybu, ne pres skutecny klik. Uzivatel po oprave
+potvrdil, ze animace i klikani funguji.
+
+Pozn. k testovani: synteticky klik (`SetCursorPos` + `mouse_event`) se do hry
+NEDOSTANE - s `REORION2_MOUSE_TRACE=1` nejsou v logu zadne radky
+`INT33 callback`, jen registrace rutiny; SDL takto ovladanemu oknu nedava
+vstupni fokus. Klikani se musi overit rukou.
+Zmereno take: hra masku obsluhy stridave prepina mezi `0x0001` (jen pohyb) a
+`0x002B` (pohyb + tlacitka) pres INT33x fn 0x14.
+
+#### Metodicka poznamka (stalo to jeden soubor)
+
+Skript upravujici `orion_part_07.c` spadl na `UnicodeEncodeError` pri zapisu
+(do latin-1 textu se dostal cesky znak) UZ PO OTEVRENI SOUBORU PRO ZAPIS -
+soubor tim zustal NULOVY. **Pri davkove uprave zdrojaku: psat obsah jen v
+ASCII, nebo zapisovat pres docasny soubor a prejmenovat.** Obnoveno pres
+`git show HEAD:<cesta> > <cesta>` + prevod na CRLF (`git show` dava LF).
+
+### Vlna 26 pokracovani 54: hudba zapnuta ve vychozim stavu + ZVUKY
+### animace menu (dve chyby, obe merene)
+
+**1) Zatka `REORION2_MUSIC=1` zrusena.** Byla z vlny 49, kdy hudebni cesta
+jeste padala. Obe pricine jsou opravene a overene (pokr. 50 - dvouprvkove
+pole pul-bufferu `dword_1AE0A4`; pokr. 51 - registrova konvence 72 rutin
+`funcs_16213C`). Hudba je proto ZAPNUTA VE VYCHOZIM STAVU jako v originale,
+`REORION2_MUSIC=0` ji vypne. **Pozor: ten prepinac gatoval `sub_111AE2`
+(hledani volneho slotu samplu), takze s `=0` nehraji ani ZVUKOVE EFEKTY.**
+
+**2) Zvuky pri otevirani menu nehraly - DVE nezavisle chyby v `sub_112399`.**
+
+(a) **`unk_1AE5D4` a `word_1AE5D4` jsou V ORIGINALE TENTYZ SYMBOL**, ale
+v portu z toho vznikly dva ruzne objekty: `word_1AE5D4[2086]` (= 4172 B, do
+nej se pres `sub_13AD33` nacita SOUND.LBX) a ctyrbajtovy stub `unk_1AE5D4`
+v link_stubs.c. Vyhledani zvuku slo PRES TEN STUB
+(`sub_13AFD2(&unk_1AE5D4, id)` = `*(_DWORD *)(base + 8*id + 16)`), takze
+vracelo 0 a nehralo nic; `sub_13AE74(&unk_1AE5D4)` navic delal
+`memset(base, 0, 4172)`, tedy prepisoval 4168 bajtu sousednich globalu.
+Velikost potvrzena dvakrat: tim memsetem a vzdalenosti k dalsimu symbolu
+(`0x1AF620 - 0x1AE5D4 = 0x104C = 4172`). Sesterska tabulka `unk_1AF620` uz
+takhle opravena BYLA (vlna 12) - na tuhle se zapomnelo.
+Reseno prekryvovym makrem `#define unk_1AE5D4 (*(uint8_t *)word_1AE5D4)`.
+**Pravidlo: kdyz ma IDA na tomtez miste dve jmena (`unk_X` a `word_X`),
+musi v portu ukazovat na TENTYZ objekt - jinak jedna cesta pise a druha
+cte prazdno.**
+
+(b) **Ztracena navratova hodnota `sub_140E69`** v teze funkci:
+```c
+sub_140E69((_DWORD *)dword_1B0670[v7], v6, -1);
+if ( !v2 )   /* v2 se NIKDE neprirazuje */
+```
+asm (0x1125FB): `call sub_140E69 / add esp,0Ch / test eax,eax / jnz ...`.
+Nahodne se tedy vracelo 0 JESTE PRED `sub_141073` (skutecne spusteni
+prehravani). Cesta pres cache (LABEL_21) tuhle kontrolu nema - proto uz
+jednou nacteny zvuk hral.
+
+**Zmereno po opravach:** `zvuk.112399_spusteno 53` i `54` (pred opravou
+`zvuk.112399_13AFD2_nenasel`). Uzivatel potvrdil poslechem.
+**Regresni test videa po zmene rozlozeni globalu: 600/600 matched.**
+
+Nove trvale kontrolni body (gatovane `REORION2_TRACE=1`):
+`anim.iterace`, `anim.snimek_12D70B`, `zvuk.112399_*`.
+
+### Vlna 26 pokracovani 55: ROLUJICI TITULKY V MENU - tri chyby opraveny,
+### ctvrta (vykresleni glyfu) zustava otevrena
+
+Priznak (uzivatel): v menu se nerolovaly titulky. Postupne meneno a opravovano;
+po kazdem kroku uzivatel hlasil, jak to vypada.
+
+**1) Dolni hrana orezoveho obdelniku vychazela -1 misto 422** -> `sub_12A478`
+zahazovalo KAZDY blit titulku (zmereno: `blit.orez_dolni -1`, ostatni hrany
+66/179/354 spravne). V `sub_128AB6`:
+```c
+if ( (int16_t)a4 >= *(int *)((char *)&dword_184536 + 2) )   /* smeti */
+```
+asm (loc_128B09): `movsx eax, word ptr [ebp+var_4] / cmp eax, dword ptr
+unk_17C538 / mov ax, word ptr unk_17C538 / dec eax`. Cilem je symbol na
+0x184538 = **vyska obrazovky**, kterou port uz ma vytknutou jako
+`screenHeight_184538` (vlna 11). Dekompilatoruv zapis mel sice spravnou
+ADRESU, ale jen v originale, kde ty globaly lezi za sebou; v portu je
+`dword_184536` samostatny objekt, takze se cetlo smeti za nim. Stejny vzor
+byl o dva radky vys u prave hrany - opraveno taky.
+
+**2) Souradnice `sub_12A478` jsou 16bitove.** V asm se `a1`/`a2` pouzivaji
+VYHRADNE pres dolni slovo (`cmp ax, ...` v orezu, `movsx edx, word ptr
+[ebp+var_C]` na ~30 dalsich mistech). Rolovani titulku pritom predava
+```c
+v0 = (422 - dword_19C078) / 14;  LOWORD(v0) = dword_19C078;  v13 = v0;
+```
+tedy hodnotu, ktera ma po prvnich 14 odrolovanych pixelech nenulovou horni
+pulku -> `a2 > clip` a blit se zahodil. Reseno orezem `a1 = (int16_t)a1;
+a2 = (int16_t)a2;` hned na zacatku funkce (ekvivalent toho `movsx` pro celou
+funkci naraz). Totez doplneno v `sub_14861D`.
+
+**3) 37x vzor "cteni pres hranici dvou globalu"** u orezovych hran:
+`*(int *)((char *)&dword_1BBA4A + 2) >> 16` -> `(int16_t)dword_1BBA4E` (prava)
+a `*(int *)((char *)&dword_1BBA4E + 2) >> 16` -> `(int16_t)dword_1BBA52`
+(dolni). Rozlozeni orezoveho obdelniku: 0x1BBA4C leva, 0x1BBA4E prava,
+0x1BBA50 horni, 0x1BBA52 dolni. Opraveno hromadne v part_18/19/20/22.
+Nejvic jich je v `sub_14861D` (orezany blit sprite typu 1) - a prave tudy
+titulky jdou, protoze jejich radky pretinaji hranu okna; jinde v menu se ta
+vetev skoro nepouziva, proto se to projevilo az tady.
+
+**VYSLEDEK:** titulky se rolují (pixely v okne se meni, uzivatel potvrdil
+"roluje to spravne" a "barvu to ma uz dobrou").
+
+#### CO ZUSTAVA OTEVRENE (dalsi krok)
+
+Glyfy se do radkoveho sprite porad nevykresluji spravne - v okne je misto
+textu svisla cara na jednom x. **Zmereno**: `sub_12066F` (sirka textu) vraci
+`149225554` pro 11znakovy retezec a `9371651` pro tecku.
+Neni to chyba `sub_12066F` - ta je verna: asm dela `mov ax, word_1ABEA6` nad
+EAX, ktery jeste drzi UKAZATEL na text, takze se ke kazdemu znaku pricte i
+`(ukazatel >> 16) << 16`. **Dolnich 16 bitu ale zustava spravnych**, protoze
+se pricitaji nasobky 0x10000, a original tu hodnotu vsude cte jen jako WORD.
+V `sub_80C8A` uz opraveno (`sub_122A6E((int16_t)v10, ...)`, asm:
+`movsx eax, word ptr [ebp+var_8]`), ale samo to nestacilo.
+
+**Kde hledat dal:** `sub_122AAB` (pres `sub_122A6E`) ma tentyz vzor
+`*(int *)((char *)&dword_1B3E82 + 2) >> 16` a dal vola `sub_122D8A` (vlastni
+kresleni glyfu do sprite). Celkem je v `src/game/*.c` jeste **67 vyskytu**
+toho vzoru u 15 symbolu:
+```
+19 dword_1BC28C   10 dword_1B3E10    8 off_1845D4     8 dword_1844C2
+ 4 dword_1B61E4    4 dword_1B3E82    3 dword_1844C6   2 dword_1BBA46
+ 2 dword_1BBA28    2 dword_1B61E0    1 dword_1BBA4A   1 dword_1BBA2C
+ 1 dword_1B3E0A    1 dword_1845DC    1 dword_18447A
+```
+Pravidlo pro prevod: `*(int *)((char *)&X + 2) >> 16` je 16bitove slovo na
+adrese X+2, znamenkove rozsirene - najit v portu symbol, ktery na te adrese
+skutecne lezi, a pouzit ho primo.
+
+**Regresni test videa po vsech zmenach: 600/600 matched, 0 diverged.**
+
+#### Vlna 55 pokracovani: dalsi dve chyby na ceste kresleni textu
+
+**4) Vodorovny kurzor glyfu se cetl pres hranici dvou globalu.**
+`sub_122D8A` predava X do `sub_123070` jako
+`*(int *)((char *)&dword_1B61E4 + 2) >> 16`, coz je slovo na 0x1B61E8, tedy
+`dword_1B61E8` - kurzor, ktery si tataz funkce o par radek niz posouva
+(`LOWORD(dword_1B61E8) = word_1B3EA6 + byte_1B3EA8[v17] + dword_1B61E8`).
+Overeno v asm: `mov eax, dword_1AE1E4+2 / sar eax, 10h`. V portu jsou
+`dword_1B61E0/E4/E8` tri samostatne `int`, takze se cetlo smeti -> vsechny
+glyfy padaly na jedno x (v okne byla svisla cara). Opraveno 6 mist
+(`+ dword_1B61E4 + 2` -> `(int16_t)dword_1B61E8`, `+ dword_1B61E0 + 2` ->
+`(int16_t)dword_1B61E4`). **Po teto oprave uzivatel potvrdil spravnou sirku
+a rozestupy.**
+
+**5) Barva pixelu glyfu.** `*((_BYTE *)&dword_1B3E78 + k + 3)` je podle asm
+(`mov al, byte ptr (dword_1ABE78+3)[eax]`) adresa 0x1B3E7B + k, tedy
+`byte_1B3E7C[k - 1]` = osmiprvkova tabulka barev fontu uvnitr prekryvoveho
+bloku `fontBlock_1B3E7C`. `dword_1B3E78` lezi TESNE PRED tim blokem a je to
+samostatny globál - vyraz fungoval jen dokud je prekladac polozil vedle sebe.
+Prepsano na primy pristup (2 mista: kreslic do obrazovky i do sprite).
+
+**STAV:** titulky roluji, maji spravnou sirku, rozestupy i barvu, ale znaky
+jsou porad spatne ("jsou tam znaky, ale ne ty co tam maji byt, a jakoby
+posunute"). **Dalsi krok:** overit vstupni data, ne kreslic - `sub_8156B`
+nacita titulky z LBX stridavymi volanimi
+`sub_126C37(v12, 0, dword_192ED4, v15, 1u, 127)` (v15 se zvysuje mezi levou
+a pravou polovinou radku) do `dword_19C06C` po 254 B na radek. Porovnat
+obsah toho bufferu s originalem (dosbox `DUMPMEM` na odpovidajici adrese) -
+kdyz sedi, hledat dal v `sub_1231B1` (tabulka offsetu glyfu `dword_1B3FA8`,
+sirky `byte_1B3EA8`, preskok radku `a6`).
+
+**Regresni test videa po vsech zmenach vlny 55: 600/600 matched.**
+
+**6) `sub_1231B1` - vsechny souradnicove parametry jsou 16bitove.** asm cte
+`a1` (var_28), `a2` (var_24), `a4` (var_2C), `a5` (arg_0, deklarovan primo
+jako `word ptr`), `a6` (arg_4) i `a7` (arg_8) vzdy pres `movsx ... word ptr`.
+Volajici `sub_123070` pritom `v7` (= a4) i `v9` (= a6) plni jen pres
+`LOWORD(...) = 0`, takze horni pulka zustava nedefinovana. Orezany uz byly
+jen `a6`/`a7` (vlna 26 pokr. 33, tehdy kvuli zamrznuti) - doplneno pro
+vsechny naraz na zacatku funkce.
+
+**STAV NA KONCI VLNY 55:** titulky roluji, maji spravnou sirku, rozestupy,
+barvu i pozici - ale jednotlive GLYFY jsou porad spatne.
+
+Co je uz OVERENE a netreba znovu zkoumat:
+- **vstupni data jsou v poradku** - vypis bufferu `dword_19C06C` dal
+  radek 0 = `"Game Design"` / `"Steve Barcia"`, radek 1 pravy = `"Ken Burd"`
+  (zbytek radku je vypln 0xCD, tedy nealokovana cast - v poradku);
+- vyber fontu je v poradku: `word_19C094` = 3, `byte_19C09A` = 124,
+  `byte_19C09E` = 1 (nastavuje default vetev "CREDITS.LBX");
+- sprite radku je 289x14, priznaky 1, orez okna 66/179/354/422 - vse sedi;
+- **vnitrni RLE smycka `sub_1231B1` byla porovnana radek po radku s asm a
+  ODPOVIDA** (vcetne toho, ze `++v12` se dela i pro orezany pixel, ale ne
+  pro preskocenou serii `k > 0x80`, a ze na konci radku `++v17; v14 += v15`).
+
+**DALSI KROK (konkretne):** porovnat s originalem STAV FONTU v okamziku
+kresleni glyfu titulku. V portu uz na to instrumentace JE
+(`REORION2_FONT_TRACE=1` v `sub_1231B1` vypisuje `dword_1B3E74`,
+`dword_1B3FA8`, `a3`, `v17`, `a6`, `word_1B3EA0`). Na strane originalu staci
+`DUMPREGS cond=eip:0x003471B1 repeat=always` (= IDA 0x1231B1 + 0x224000) -
+registrove argumenty daji `a1`(eax), `a2`(edx), `a3`(bl), `a4`(ecx) - a
+`DUMPMEM` na tabulku offsetu glyfu (`dword_1B3FA8` = C 0x1B3FA8 -> runtime
+0x3C9FA8 + ... pozor, prepocet DAT = IDA + 0x216000) a na sirky
+`byte_1B3EA8`. Kdyz se lisi `v17` (offset do fontovych dat) nebo `a6`
+(kolik radku glyfu se preskakuje), je chyba tam; kdyz sedi vse, hledat v
+`sub_120705`/`sub_120BB5` (nastaveni fontu) nebo v samotnych fontovych
+datech `dword_1B3E74`.
+
+**Regresni test videa po vsech zmenach vlny 55: 600/600 matched, 0 diverged.**
