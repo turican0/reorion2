@@ -6332,8 +6332,20 @@ int sub_80DB4(int a1, int a2, int a3, int a4)
   v9 = 1;
   v10 = sub_11438B(0, 0, 639, 479, (_BYTE *)&off_1796B7 + 2, 41);
   sub_1191CA((int)sub_8139F, 1);
+  // PORT (vlna 26 pokr. 53): tohle je prehravac ANIMACE OTEVIRAJICIHO SE MENU
+  // (zaznam 0 z MAINMENU.LBX, snimek po snimku pres sub_12C7CC, se zvukem na
+  // snimcich 5 a 46). Konci bud dobehnutim snimku (v9 == v20), nebo kdyz
+  // uzivatel klikne / zmackne klavesu.
+  // REGRESNI MIRA: v ORIGINALE se smycka otoci 51x - zmereno v dosboxu
+  // (DUMPREGS cond=eip:0x002A4FA5 repeat=always, tj. loc_80FA5 =
+  // IDA 0x80FA5 + 0x224000). Port se drive otocil JEN 1x, protoze
+  // sub_11CEF5 hlasila "kliknuto" hned v prvni iteraci a v12 vyslo rovno
+  // celoobrazovkove oblasti v10 - proto se menu objevilo rovnou otevrene.
+  // Skutecna pricina byla az v sub_11CEF5 (orion_part_19.c), tady bylo vse
+  // v poradku: pocet snimku sedel, dolni slovo v20 = 49 na obou stranach.
   while ( !(_WORD)v21 )
   {
+    { static int n = 0; PortDebug_Checkpoint("anim.iterace", ++n); }
     sub_12C2A0();
     v12 = sub_1171AB(v11, v9, v10, 479);
     LOWORD(v13) = sub_12D70B();

@@ -1439,7 +1439,20 @@ LABEL_135:
   sub_123926();
   if ( !sub_124075() )
   {
-    LOWORD(v18) = sub_123C48();
+    // PORT (vlna 26 pokr. 53): TADY SE ZTRACELA ANIMACE OTEVIRAJICIHO SE MENU.
+    // `sub_123C48` (odber zatrzeneho kliku) plni v asm JEN AX
+    // (`mov ax, word_1B1228`), horni pulka EAX prezije z predchoziho
+    // `call sub_124075`, a volajici testuje `test eax, eax`, tedy CELYCH
+    // 32 bitu. Dekompilat z toho udelal `LOWORD(v18) = ...` nad
+    // NEINICIALIZOVANYM lokalem, takze `!v18` skoro nikdy neplatilo, hra si
+    // myslela, ze uzivatel klikl, a hledala okno pod kurzorem - a
+    // celoobrazovkova oblast sedne vzdy.
+    // Zmereno v dosboxu (DUMPREGS cond=eip:0x00341B69, tj. `test eax, eax`
+    // hned po tom volani): EAX je tam ve VSECH 33 zaznamech 0x00000000, horni
+    // pulka je tedy nulova (nastavil ji sub_124075, ktery vraci cistou nulu).
+    // Testujeme proto 16bitovou hodnotu - stejna trida chyby jako
+    // `sub_12C392` ve vlne 26 pokr. 43.
+    v18 = (uint16_t)sub_123C48();
     if ( !v18 )
     {
       word_1844E2 = 0;

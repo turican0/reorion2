@@ -5966,7 +5966,11 @@ int16_t sub_1160AE(int a1)
       v22 = sub_12C5AE();
       if ( !(_WORD)v21 )
         break;
-      if ( sub_124075() || (LOWORD(v5) = sub_123C48(), v5) )
+      // PORT (vlna 26 pokr. 53): stejny vzor jako v sub_11CEF5 - `sub_123C48`
+      // plni jen AX a horni pulka EAX prezije z predchoziho volani, takze
+      // dekompilatorovo `LOWORD(v5) = ...` nad neinicializovanym lokalem
+      // hlasi "kliknuto" i kdyz se neklikalo. Testuje se 16bitova hodnota.
+      if ( sub_124075() || (uint16_t)sub_123C48() )
       {
         v19 = 1;
         break;
