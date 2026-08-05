@@ -17216,7 +17216,7 @@ int dword_1A1298; // weak
 int dword_1A129C; // weak
 int dword_1A12A0; // weak
 int dword_1A12A4; // weak
-_UNKNOWN unk_1A12A8; // weak
+char unk_1A12A8[20]; // weak - viz orion_common.h (vlna 26 pokr. 57)
 int dword_1A12BC; // weak
 int dword_1A12C0; // weak
 int dword_1A12C4; // weak

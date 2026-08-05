@@ -19974,7 +19974,10 @@ extern int dword_1A1298;
 extern int dword_1A129C;
 extern int dword_1A12A0;
 extern int dword_1A12A4;
-extern _UNKNOWN unk_1A12A8;
+// PORT (vlna 26 pokr. 57): 1bajtovy placeholder, do ktereho ale
+// `sub_CC81C` sprintf-uje retezce ("Piccola", "Media", "%sen").
+// Vzdalenost k dalsimu symbolu 0x1A12BC - 0x1A12A8 = 20 B.
+extern char unk_1A12A8[20];
 extern int dword_1A12BC;
 extern int dword_1A12C0;
 extern int dword_1A12C4;

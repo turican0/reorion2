@@ -5855,7 +5855,11 @@ void sub_126487(char *a1, int a2)
   // exit(1) se ztratila - hra se jevila, ze "tise skonci". Duplikujeme ji
   // na stderr JESTE PRED sub_113DBD() (uklidovy retez, ktery sam muze
   // spadnout), at je vzdy videt, PROC hra konci.
-  printf("FATAL: %s\n", a1 ? a1 : "(null)");
+  // PORT (vlna 26 pokr. 56): drive tu bylo "FATAL: %s" - matouci, protoze
+  // `sub_126487` NENI jen chybova cesta, ale JEDINY konec programu vubec:
+  // stejnou funkci vola i normalni ukonceni hry z GameMain po QUIT
+  // ("Thanks for playing Master of Orion ]["). Neutralni popisek.
+  printf("KONEC (sub_126487): %s\n", a1 ? a1 : "(null)");
   fflush(0); // POZOR: `stderr` tu neni deklarovane (decomp_compat.h zamerne
              // nevklada <stdio.h>), proto stdout + rucni flush.
   sub_113DBD();

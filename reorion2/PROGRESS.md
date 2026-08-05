@@ -6254,3 +6254,113 @@ registrove argumenty daji `a1`(eax), `a2`(edx), `a3`(bl), `a4`(ecx) - a
 datech `dword_1B3E74`.
 
 **Regresni test videa po vsech zmenach vlny 55: 600/600 matched, 0 diverged.**
+
+### Vlna 26 pokracovani 56: TITULKY OPRAVENY - `sizeof()` nad prekryvovym
+### makrem; + prepinac hudby/zvuku uplne odstranen
+
+**1) `REORION2_MUSIC` ZRUSEN (zadani uzivatele).** Gatoval `sub_111AE2`, tedy
+hledani volneho slotu samplu - a tim NEJEN hudbu, ale i ZVUKOVE EFEKTY.
+Puvodni kontroly hry (`byte_199BED` zvuk, `byte_199BEF` hudba,
+`dword_184380`, `dword_184453`) zustavaji netknute - odstranen byl jen
+portovni prepinac.
+
+**2) ROZSYPANE GLYFY TITULKU - `sizeof()` nad prekryvovym makrem.**
+Postup byl cistě meritelny a stoji za zapamatovani:
+
+- v dosboxu `DUMPREGS cond=eip:0x003471B1 repeat=always` (vstup `sub_1231B1`:
+  eax=x, edx=y, bl=znak, ecx=a4). **Glyfy titulku poznas podle `edx == 0`** -
+  kresli se do radkoveho sprite vzdy na y=0. Dekodovanim `bl` vypadlo
+  `"Game DesignGame Design..."`, tedy presna reference;
+- v portu totez pres `REORION2_FONT_TRACE=1` (gatovano navic na
+  `a2 == 0 && *a8 == 289`, tedy sprite radku titulku);
+- **vsechny vstupy sedely**: x = 1/10/17/28, znaky G/a/m/e, sirky 8/6/10/6,
+  a4=0, a6=0, a7=13. Take vnitrni RLE smycka `sub_1231B1` odpovida asm
+  radek po radku a textovy buffer obsahuje spravna data;
+- rozdil vypadl az na OFFSETU GLYFU do fontovych dat. Druhy dosbox beh
+  s `DUMPREGS cond=eip:0x00347243` (hned za `mov [ebp+var_18], eax`, takze
+  EAX = ten offset) dal:
+
+  | znak | original | port |
+  |---|---|---|
+  | G | 12418 | 4568 |
+  | a | 14049 | 6460 |
+  | m | 14639 | 7268 |
+  | e | 14258 | 6728 |
+
+  Rozdily nejsou konstantni -> neni to posun baze, ale UPLNE JINA TABULKA.
+
+**Vinik** (`sub_120BB5`, vyber fontu):
+```c
+memcpy(byte_1B3EA8, &byte_1B43D8[256 * a1], 256);                      /* sirky - OK */
+memcpy(dword_1B3FA8, &dword_1B49D8[256 * a1], sizeof(dword_1B3FA8));   /* offsety   */
+```
+`dword_1B3FA8` NENI pole, ale **prekryvove makro**
+`((int *)(fontBlock_1B3E7C + 300))` - `sizeof` z nej je `sizeof(int *)`,
+tedy **8 bajtu na x64** misto 1024. Zkopirovaly se dva offsety a zbytek
+tabulky zustal z drive vybraneho fontu. Sirky se pritom kopirovaly natvrdo
+256 B, proto vychazely spravne POZICE a rozestupy, ale spatne TVARY znaku.
+asm: `mov ebx, 400h` = 1024. Opraveno na konstantu.
+
+**PRAVIDLO (nova polozka do katalogu): po vytknuti symbolu do prekryvoveho
+bloku PREKONTROLOVAT vsechna `sizeof(<ten symbol>)` v kodu** - z pole se
+stal ukazatel a `sizeof` tise zmeni vyznam. Prohledano cele `src/game/*.c`:
+`dword_1B3FA8` byl jediny takovy pripad (ostatni `sizeof` nad makry jsou
+`char` cleny struktury `stateBlock_199BDC`, kde 1 B sedi).
+
+**Pozn. k rozsahu:** `dword_1B49D8[256*a1]` + 1024 B se do bloku vejde pro
+fonty 0..5 (2908 + 6*1024 = 9052 = presne konec bloku). `word_1B43A8` je
+pritom `int16_t[8]`; pro font 6/7 by se cetlo za konec pole. V originale to
+bylo neskodne (za blokem nasleduje dalsi pamet), v portu je to UB - zatim
+nenastalo (hra pouziva fonty 0..5), ale je to zname riziko.
+
+**VYSLEDEK: uzivatel potvrdil - titulky v menu jsou opravene.**
+
+**3) Hlaska pri ukonceni.** `sub_126487` neni jen chybova cesta, ale JEDINY
+konec programu - stejnou funkci vola i normalni ukonceni po QUIT
+("Thanks for playing Master of Orion ]["). Diagnosticky prefix z vlny 48
+proto uz nehlasi "FATAL:", ale neutralni "KONEC (sub_126487):".
+Odpoved na dotaz uzivatele: **FATAL ve vetvi QUIT NEBYL problem, jen
+matouci popisek.**
+
+**Regresni test videa: 600/600 matched, 0 diverged.**
+
+### Vlna 26 pokracovani 57: ZACATEK ladeni NEW GAME (rozpracovano)
+
+Uzivatel spustil New Game; hra pada. Debugger (VS):
+```
+Vyjimka 0xC0000005: Poruseni pristupu V MISTE PROVEDENI 0x0000000012B1104
+  #0 reorion2.exe!0x0000000012b1104()      <- divoka adresa
+  #1 sub_CC81C()            radek 5314     (orion_part_13.c)
+  #2 sub_CCA1C()            radek 5493
+  #3 sub_CD435(short *a1)   radek 5846
+  #4 sub_1049B(...)         radek 325
+  #5 GameMain_10057         radek 224
+```
+**Poznamka k adrese:** modul ma bazi 0x00A00000 a velikost ~4,3 MB, takze
+0x12B1104 (rva 0x8B1104) lezi UZ ZA OBRAZEM - je to skutecne divoky skok,
+ne jen spatna datova adresa.
+
+Co uz je zjisteno:
+
+- `sub_CDF5C(a1)` je jen `return dword_1A6578[a1];` - PRIME volani takhle
+  divoce skocit nemuze. Bud je poskozeny zasobnik nekde v retezu
+  `sub_CD435 -> sub_CCA1C -> sub_CC81C`, nebo debugger rozvinul ramec spatne.
+- **`sub_CC81C` je plna zname tridy "IDA slepila 16bitovy citac indexu do
+  horni pulky int64"**: `int64_t v0/v3`, `WORD2(v0) = 0`, `LODWORD(v3) = v1`,
+  `WORD2(v3) = v1 + 1`, `dword_1A124C[SWORD2(v3)]`. Pro anglictinu
+  (`byte_199CAE == 0`) vyjdou indexy 1/2/3 a do `dword_1A124C[4]` se vejdou,
+  ALE bity 48..63 obou promennych se nikdy neinicializuji. **Tuhle funkci je
+  potreba cele overit proti asm** (IDA 0xCC81C -> runtime 0x2F081C).
+- **OPRAVENO uz ted:** `unk_1A12A8` byl `_UNKNOWN` (1 bajt), pritom se do nej
+  na trech mistech `sprintf`uji retezce ("Piccola", "Media", "%sen").
+  Vzdalenost k dalsimu symbolu `0x1A12BC - 0x1A12A8 = 20` -> `char[20]`.
+  (Projevi se jen u italstiny/francouzstiny, ale je to stejna trida chyby.)
+- **PRVNI PODEZRELY pro dalsi session:** `dword_1A6578` - tabulka retezcu,
+  ze ktere `sub_CDF5C` cte. Ve vlne 23 se jen ZVETSILA na [812]
+  ("data zatim nulova, jen velikost opravena - OTEVRENY DEFICIT"), takze
+  `sub_CDF5C` nejspis vraci nuly/smeti. Overit, jestli ji neco vubec plni,
+  je nejlevnejsi prvni krok.
+
+**Dalsi krok:** (1) zkontrolovat, jestli je `dword_1A6578` naplnena;
+(2) `sub_CC81C` porovnat radek po radku s asm a rozbit fuzi int64 na skutecne
+registry (stejny postup jako vlna 20 u sub_14852C).
