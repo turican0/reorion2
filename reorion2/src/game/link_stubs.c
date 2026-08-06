@@ -173,8 +173,8 @@ int dword_1904C8;
 int dword_1906B0;
 int dword_192210;
 int dword_192228;
-int dword_192630;
-int dword_192644;
+/* vlna 58: dword_192630/192644 jsou ted souvisly blok v orion_data.c
+   (a dword_192644 makro do nej), duplicitni skalary tu byly navic. */
 int dword_19291C;
 int dword_192BE0;
 int dword_192BF4;

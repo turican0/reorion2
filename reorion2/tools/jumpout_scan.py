@@ -28,7 +28,14 @@ def classify(addr):
         if not ln.strip() or ln.lstrip().startswith(";") or re.match(r"^\S+\s+endp", ln):
             j += 1
             continue
-        if re.match(r"^(loc|sub_|\S+\s+proc)", ln):
+        # Vlna 58 (oprava): navesti UVNITR epilogu neni konec analyzy -
+        # `locret_X: leave` / `loc_Y: pop edi ... retn` je bezny tvar
+        # sdileneho epilogu. Pokracujeme dal, dokud nenarazime na skutecnou
+        # instrukci, ktera epilog neni.
+        if re.match(r"^loc(ret)?_[0-9A-F]+:", ln):
+            j += 1
+            continue
+        if re.match(r"^(sub_|\S+\s+proc)", ln):
             return "pokracuje jinam"
         if EPI.match(ln):
             if re.match(r"^\s+(retn|retf|ret)\b", ln):

@@ -89,7 +89,12 @@ void sub_9F540()
         fwrite(&word_19C5FC, 452, 1, v18);
         fclose(v18);
       }
-      JUMPOUT(0x9D945);
+      // vlna 58: `JUMPOUT` je NO-OP, takze se rizeni vratilo na zacatek
+      // `while (1)` a cely blok bezel znovu - `v19` se pritom uz nenastavuje
+      // na 10, jen dal klesa, takze druhy pruchod zavolal
+      // `sub_1247A0((int16_t)v19 + 1)` s nulou -> DELENI NULOU (0xC0000094).
+      // `locret_9D945` je pritom jen epilog (`leave; pop ...; retn`).
+      return;
     }
   }
 }
@@ -287,7 +292,9 @@ void sub_9F981()
   v5 = 153;
   v18 = 131;
   v6 = 0;
-  qsort(v3 + 253, 10, 4);
+  // vlna 58: dohledany komparator (asm sub_9F981: `mov ecx, offset sub_9F447`)
+  qsort((void *)(uintptr_t)(v3 + 253), 10, 4,
+        (int (*)(const void *, const void *))sub_9F447);
   do
   {
     v7 = v18;
@@ -361,21 +368,38 @@ int sub_9FBE9(int a1)
     *(_WORD *)(a1 + 4 * v3) = v4;
   }
   while ( (int16_t)v2 < 10 );
-  return qsort(a1, 10, 4);
+  // PORT (vlna 58): dekompilator ZAHODIL 4. argument qsort - porovnavaci
+  // funkci, kterou Watcom predava v ECX (asm: `mov ecx, offset sub_9F47A`
+  // tesne pred `call qsort_`). Volani se tremi argumenty se diky implicitni
+  // deklaraci `int qsort()` prelozilo, ale CRT dostalo jako komparator smeti
+  // -> `__debugbreak` v ucrtbased pri otevreni HALL OF FAME.
+  // `a1` je v dekompilatu `int`, proto explicitni pretypovani na ukazatel -
+  // implicitni deklarace by predala jen 32 bitu.
+  qsort((void *)(uintptr_t)a1, 10, 4,
+        (int (*)(const void *, const void *))sub_9F47A);
+  return a1;
 }
 // 19C6C6: using guessed type int16_t word_19C6C6[];
 
 
 //----- (0009FC27) --------------------------------------------------------
-char sub_9FC27()
+// PORT (vlna 58): funkce bere v EAX UKAZATEL na serazene pole, ktere pred ni
+// naplnil `sub_9FBE9` - asm sub_9F4AD dela dvakrat po sobe
+// `lea eax, [ebp+var_28]` a vola nejdriv sub_9FBE9, pak sub_9FC27. Hex-Rays
+// ten registrovy argument zahodila a nechala z nej NEINICIALIZOVANY lokal
+// (`v6`, u nej i vlastni poznamka "variable 'v6' is possibly undefined"),
+// takze se cetlo ze smeti -> pad na adrese 0x2 pri HALL OF FAME.
+// V asm se argument uklada hned na zacatku (`push eax` za `enter`) do
+// var_1D4 a smycka z nej cte `add eax, [ebp+82h+var_1D4]`.
+// Navratovou hodnotu funkce nenastavuje (`al` si plni az volajici), proto 0.
+char sub_9FC27(int a1)
 {
   int v0; // edx
   int v1; // ecx
   int v2; // eax
   char *v3; // edi
   char *v4; // esi
-  char result; // al
-  int v6; // [esp+0h] [ebp-152h]
+  int v6 = a1; // [esp+0h] [ebp-152h] - vlna 58: byl to registrovy argument
   _WORD v7[226]; // [esp+4h] [ebp-14Eh] BYREF
   int v8; // [esp+1C8h] [ebp+76h]
   int v9; // [esp+1CCh] [ebp+7Ah]
@@ -401,7 +425,7 @@ char sub_9FC27()
   }
   while ( (int16_t)v10 < 10 );
   qmemcpy(&word_19C5FC, v7, 0x1C4u);
-  return result;
+  return 0;
 }
 // 9FC53: variable 'v6' is possibly undefined
 // 19C5FC: using guessed type int16_t word_19C5FC;

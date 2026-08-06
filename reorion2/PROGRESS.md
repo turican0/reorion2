@@ -6571,3 +6571,186 @@ s poctem 7 resp. 2, tedy tabulky):
 Jednoznacne retezcove pouziti maji `unk_178F79` (`v3 = (char *)&unk_178F79;`),
 `unk_179356` (`strcmp(off_17D5E4[v5], &unk_179356)`) a `unk_178C83`
 (`sub_1212B3(..., (int)&unk_178C83)`) - tam zacit.
+
+#### Vlna 58, dodatek 2: HALL OF FAME - proc hlaska o chybe nebyla videt
+
+Po opravach vyse uzivatel hlasil, ze HALL OF FAME pada dal. Podarilo se
+zachytit jeden pad a ten ukazal na NECEKANOU vec:
+
+    #0 sub_155E62+0x23   (cteni z adresy 0x21)
+    #1 sub_14090C+0x7b
+    #2 sub_15607C+0x53
+    #3 sub_13F7BC+0x71
+    #4 sub_11215B+0x61
+    #5 sub_113DBD+0x38
+    #6 sub_126487+0x5a
+    #7 sub_1273DC+0x272
+
+`sub_1273DC` je **hlasic chyb LBX** ("... entry N could not be found" /
+"has been corrupted" / "is not an LBX file" ...). Hra tedy nespadla - ona
+sama zjistila chybu a slo se KORREKTNE ukoncit pres `sub_126487`. Az uklidovy
+retez (`sub_113DBD` -> audio teardown) spadl v `sub_155E62`, protoze dostal
+ukazatel na ovladac = 1 (cteni `*(_DWORD *)(a1 + 32)` s a1 == 1 da adresu 0x21).
+
+**A hlavni zjisteni: hlaska o TE PUVODNI chybe nebyla nikde videt.**
+`sub_126487` ji posilalo `printf`em do bufferovaneho stdout a hned za tim
+volalo `fflush(0)` - jenze `fflush` je v `decomp_compat.h` presmerovany na
+`PortFile_Flush(handle)` a s nulou NEDELA NIC. Buffer se pak pri padu
+teardownu zahodil. Opraveno: novy `PortDebug_Message()` (`port_dos.cpp`) pise
+primo na `stderr` a flushne. **Od ted je u kazdeho konce programu videt PROC.**
+
+**Novy prepinac pro testovani menu: `REORION2_SENDKEY=<kod>[:<ms>]`**
+(`port_mouse.cpp`, v `PortInput_PollKeyPress`). Po zadanem case od startu
+vlozi JEDNOU umely stisk klavesy, jako by prislo preruseni - obdoba prikazu
+`SENDKEY` v dosbox-x z vlny 53. Kod ma stejny tvar jako z realneho stisku,
+tedy `(scancode << 8) | ascii` (prijima i hex): 'H' = 0x2348, 'N' = 0x314E,
+'Q' = 0x1051. Doplnen tez `REORION2_STATE2` pro navratovy stav `word_199A10`
+(tlacitka menu ho plni spolu s `word_199A08`; HALL OF FAME dela 14 + 10).
+
+**POZOR - co se JESTE NEPODARILO:** injektovany kod klavesy hra v hlavnim menu
+zatim NEPRIJME (obrazovka zustane na menu, overeno dumpem snimku), takze pad
+HALL OF FAME se timhle zpusobem nepodari spolehlive zopakovat. Zkratky menu
+nejdou pres `v7` v `sub_816F2` (ta se plni jen na ceste prvniho vstupu ze
+`sub_80DB4`), ale registruji se pres `sub_114C72(&aLnmhq[1], 2)` a
+vyhodnocuji uvnitr `sub_1171AB`. **Dalsi krok: zmerit, co presne
+`sub_1171AB` s registrovanymi zkratkami porovnava** (checkpoint na kod
+vraceny `sub_12C2E1`), a podle toho opravit tvar injektovaneho kodu -
+pripadne misto klavesy injektovat KLIK (souradnice tlacitka HALL OF FAME jsou
+z dumpu snimku zname).
+
+Dokud to nejde zopakovat, nejrychlejsi cesta je nechat hru spustit rucne a
+precist radek `KONEC (sub_126487): ...` - ten uz ted rekne PRESNE, ktery
+soubor a ktery zaznam LBX chybi.
+
+**Regresni test videa po vsech zmenach tohoto dodatku: 600/600 matched.**
+(Pozn. k mereni: kdyz se beh ukonci driv, nez se zapise vsech 600 snimku,
+compare_frames hlasi falesne divergence na poslednim, prave zapisovanem
+snimku - je potreba pockat, az `ls | wc -l` ukaze 600.)
+
+#### Vlna 58, dodatek 3: SKUTECNA pricina padu HALL OF FAME - `qsort` bez
+#### porovnavaci funkce (35 mist v cele hre)
+
+Uzivatel poslal zasobnik z VS, ktery mel na vrcholu `ucrtbased.dll` a pod nim:
+
+    reorion2.exe!sub_9FBE9(int a1)   radek 365
+    reorion2.exe!sub_9F4AD(...)      radek 10165
+    reorion2.exe!sub_9F286(...)      radek 10013
+    reorion2.exe!sub_1049B(...)      radek 357
+
+Nesel o pristup do pameti, ale o `__debugbreak()` z CRT. Na konci `sub_9FBE9`
+je totiz
+
+    return qsort(a1, 10, 4);
+
+tedy **qsort se TREMI argumenty**. Skutecny `qsort` ma ctyri - chybi
+POROVNAVACI FUNKCE. Watcom ji predava v ECX, takze ji dekompilator
+neprevzal:
+
+    mov     ecx, offset sub_9F47A
+    mov     ebx, 4
+    mov     edx, 0Ah
+    mov     eax, esi
+    call    qsort_
+
+Prelozilo se to jen proto, ze `qsort` nema v portu deklaraci (implicitni
+`int qsort()`, viz seznam varovani C4013) - CRT pak dostane jako komparator
+smeti. Stejna trida jako `SWORD2` vyse: chybejici deklarace + pahyl/registrova
+konvence.
+
+Navic je `a1` v dekompilatu `int`, takze implicitni deklarace by predala jen
+32 bitu - proto se pretypovava explicitne na `void *`.
+
+**Opraveno na ceste HALL OF FAME (2 mista v `orion_part_10.c`):**
+`sub_9FBE9` -> `sub_9F47A`, `sub_9F981` -> `sub_9F447`.
+
+**Cela trida je vsak sirsi: 35 volani `qsort` v 11 souborech nema komparator.**
+`tools/qsort_scan.py` pro kazde z nich dohleda v asm dumpu `mov ecx, offset ...`
+pred `call qsort_` a vypise tabulku (ulozeno v `tools/qsort_report.txt`);
+**33 z 35 se podarilo dohledat automaticky**, zbyva:
+
+- `orion_part_09.c:7368` a `:7373` (`sub_9BBED`) - dekompilator udelal ze
+  jednoho volani v asm tri vetve v C, komparator je pravdepodobne stejny
+  `sub_9CD0C` jako na radku 7363, ale je potreba overit rucne;
+- `orion_part_04.c:13906` (`sub_63156`) - komparator je NAVESTI `loc_62BE1`,
+  ne samostatna funkce; v portu pro nej neni C protejsek.
+
+**Kazde neopravene misto je jista havarie, jakmile se ta cesta spusti**
+(razeni planet, lodi, technologii, vysledkovych tabulek...). Doporuceny postup
+pro dalsi vlnu: opravit zbylych 31 automaticky dohledanych, a AZ POTOM pridat
+do `decomp_compat.h` skutecnou deklaraci
+`void qsort(void *, size_t, size_t, int (*)(const void *, const void *));` -
+prekladac tim zacne hlasit kazde dalsi trojargumentove volani jako chybu
+misto aby ho tise pustil.
+
+#### Vlna 58, dodatek 4: HALL OF FAME FUNGUJE (dalsich 5 chyb)
+
+Uzivateluv zasobnik z VS dovedl k `sub_9FBE9` a odtud padaly chyby jedna za
+druhou. Vsechny overene proti asm, kazda odkryla tu dalsi:
+
+**1) `qsort` bez porovnavaci funkce** - viz dodatek 3 (2 mista opravena,
+`sub_9F47A` / `sub_9F447`).
+
+**2) `sub_9FC27` mela zahozeny REGISTROVY ARGUMENT.** Asm `sub_9F4AD` dela
+dvakrat po sobe `lea eax, [ebp+var_28]` - nejdriv pro `sub_9FBE9`, pak pro
+`sub_9FC27`. Hex-Rays ten druhy argument nezachytila a nechala z nej
+NEINICIALIZOVANY lokal `v6` (sama u nej pise "variable 'v6' is possibly
+undefined"). Uvnitr funkce se argument uklada hned za `enter` (`push eax` ->
+var_1D4) a smycka z nej cte. Pad byl na adrese 0x2.
+Opraveno na `char sub_9FC27(int a1)` + upraveno volani.
+
+**3) `dword_192630` byla rozsekana tabulka 20 ukazatelu.**
+`sub_CE0E5` ji plni po sobe jdoucimi zapisy 0x192630..0x19267C, ctenari do ni
+indexuji jak `dword_192630[i]`, tak `dword_192644[i]` (= offset 5). V portu to
+bylo 20 samostatnych globalu, takze `dword_192630[i]` pro i>0 vracelo NULU ->
+`strcpy` z NULL v `sub_9F540`. Sjednoceno do bloku `dword_192630[20]` + makra;
+duplicity z `link_stubs.c` odstraneny.
+
+**4) DELENI NULOU (0xC0000094) - opet no-op `JUMPOUT`.**
+Na konci `sub_9F540` je `JUMPOUT(0x9D945)`, takze se rizeni vratilo na zacatek
+`while (1)` a cely blok bezel ZNOVU. `v19` se pritom uz nenastavuje na 10, jen
+dal klesa, takze druhy pruchod zavolal `sub_1247A0((int16_t)v19 + 1)` s nulou
+a `sub_1247A0` dela `0xFFFFFFFF / a1`. `locret_9D945` je jen epilog -> `return`.
+
+**5) ZAMRZNUTI - dalsi no-op `JUMPOUT`.** Hlidac (`REORION2_WATCHDOG=6`)
+nachytal beh primo na `DECOMP_JUMPOUT_STUB` v `sub_8FDA1`
+(`orion_part_08.c:6559`): `if (v9) JUMPOUT(0x8F542);` uvnitr `while (1)`.
+Cil je epilog -> `return`.
+
+**OPRAVA MERICIHO NASTROJE:** `tools/jumpout_scan.py` mel chybu - navesti
+UVNITR epilogu (`locret_X: leave` nasledovane `loc_Y: pop edi ... retn`, coz
+je tady bezny tvar sdileneho epilogu) povazoval za "pokracuje jinam".
+Po oprave vychazi:
+
+| trida | drive | SPRAVNE |
+|---|---|---|
+| **EPILOG (chybejici `return`)** | 400 | **611** |
+| skutecny skok | 512 | 512 |
+| pokracuje jinam | 214 | 2 |
+| cil nenalezen | 24 | 24 |
+
+**Vic nez polovina vsech `JUMPOUT` v portu je tise chybejici `return`.**
+
+**6) `aMoise` - doplnena skutecna data.** Predchozi oprava velikosti na [200]
+byla spravna, ale nechala v tabulce jen "Moise" a zbytek nuly, takze se
+HALL OF FAME vykreslila s prazdnym sloupcem jmen. Vypis bajtu z asm ukazal
+**vsech 10 vychozich jmen** (200 B, 63 nenulovych, 10 slotu po 20 B):
+Moise, Irma, Justin, Jalen, Cereal, Lan_Doan, Cadfael, J W R, Ripping_Fang,
+Chewy. Doplneno.
+
+**VYSLEDEK: HALL OF FAME se cela vykresli** - ramecek, nadpis, 10 radku se
+jmeny, rasami i skore, bez padu a bez zamrznuti.
+**Regresni test videa: 600/600 matched, 0 diverged.**
+
+**Zbyva (drobnost):** jeden radek tabulky ma prazdne jmeno (rasa i skore
+sedi). Data v binarce jsou pritom spravna - overeno vypisem z `reorion2.exe`,
+vsech 10 slotu po 20 B obsahuje sve jmeno. Chyba je tedy az v miche/kopirovani
+v `sub_9F540` nebo v indexaci pri vykresleni, ne ve zdrojove tabulce.
+
+#### Metodicka poznamka (skoro to stalo soubor)
+
+Skript, ktery doplnoval `aMoise`, zapsal do `orion_data.c` misto escapu `\0`
+SKUTECNE NULOVE BAJTY - heredoc v shellu escape zpracoval driv. Chyba se
+nasla az kontrolou `repr()` obsahu souboru. **Plati to, co uz je v prirucce:
+pri davkove uprave zdrojaku vzdy po zapisu OVERIT obsah** (tady `grep` rovnou
+hlasil "Binary file matches"). Backslash se do skriptu bezpecne dostane pres
+`chr(92)`.

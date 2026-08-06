@@ -1,6 +1,8 @@
 #include "port_mouse.h"
 
 #include <SDL3/SDL.h>
+#include <cstdlib> /* getenv - REORION2_SENDKEY, vlna 58 */
+#include <cstdio>  /* sscanf - dtto */
 
 namespace Port::Mouse {
 
@@ -150,7 +152,43 @@ const State& GetState()
 // HRANOU (jen pri novem stisku), stejne jako by to udelalo preruseni.
 extern "C" int PortInput_PollKeyPress(void)
 {
-    // Bere se ze stejne fronty udalosti jako myš (viz Poll vyse) - hranou,
+    // PORT (ladeni, vlna 58): REORION2_SENDKEY=<scancode>[:<ms>] vlozi po
+    // <ms> od startu (vychozi 6000) JEDNOU umely stisk klavesy, jako by ho
+    // ohlasilo preruseni. Obdoba prikazu SENDKEY v dosbox-x z vlny 53 -
+    // synteticky vstup pres SetCursorPos/mouse_event se do SDL okna
+    // nedostane, takze bez tohohle nejde projit menu automatizovane.
+    // Zkratky hlavniho menu (sub_816F2, porovnava ASCII v `v7`):
+    //   'C' 67 continue, 'N' 78 new game, 'L' 76 load, 'M' 77 multiplayer,
+    //   'H' 72 hall of fame, 'Q' 81 quit.
+    {
+        static int s_code = -1;
+        static unsigned s_atMs = 6000;
+        static bool s_done = false;
+        if (s_code == -1) {
+            s_code = 0;
+            if (const char* e = std::getenv("REORION2_SENDKEY")) {
+                int c = 0, ms = 6000;
+                // %i => prijme i hex ("0x2348"). Kod klavesy ma stejny tvar
+                // jako z realneho stisku: (scancode << 8) | ascii, tedy napr.
+                // 'H' = 0x2348, 'N' = 0x314E, 'Q' = 0x1051.
+                if (std::sscanf(e, "%i:%d", &c, &ms) >= 1 && c > 0) {
+                    s_code = c;
+                    s_atMs = (unsigned)ms;
+                }
+            }
+        }
+        if (s_code) {
+            static int s_seen = 0;
+            if (s_seen < 3) { ++s_seen; SDL_Log("Port: PollKeyPress volano, t=%llu ms",
+                                                (unsigned long long)SDL_GetTicks()); }
+        }
+        if (s_code && !s_done && SDL_GetTicks() >= (Uint64)s_atMs) {
+            s_done = true;
+            SDL_Log("Port: REORION2_SENDKEY vklada kod %d", s_code);
+            return s_code;
+        }
+    }
+    // Bere se ze stejne fronty udalosti jako myï¿½ (viz Poll vyse) - hranou,
     // tedy jen pri NOVEM stisku, stejne jako by prislo preruseni INT 9.
     Port::Mouse::Poll();
     if (!Port::Mouse::ConsumeKeyPress())

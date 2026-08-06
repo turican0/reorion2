@@ -12262,7 +12262,7 @@ void sub_9F540();
 // void sub_9F712(int a1, int16_t *a2);
 void sub_9F981();
 int sub_9FBE9(int a1);
-char sub_9FC27();
+char sub_9FC27(int a1); // vlna 58: registrovy argument (EAX) - ukazatel na serazene pole
 void sub_9FCF0(int16_t a1);
 int16_t sub_9FF36(int a1, int16_t a2, int16_t a3, _WORD *a4, int16_t *a5);
 int sub_9FFEC(uint8_t *a1, uint8_t *a2);
@@ -18054,26 +18054,27 @@ extern int dword_19223C;
 extern int dword_192240;
 extern int dword_192244;
 extern int16_t word_192248[500];
-extern int dword_192630[];
-extern int dword_192634;
-extern int dword_192638;
-extern int dword_19263C;
-extern int dword_192640;
-extern int dword_192644[];
-extern int dword_192648;
-extern int dword_19264C;
-extern int dword_192650;
-extern int dword_192654;
-extern int dword_192658;
-extern int dword_19265C;
-extern int dword_192660;
-extern int dword_192664;
-extern int dword_192668;
-extern int dword_19266C;
-extern int dword_192670;
-extern int dword_192674;
-extern int dword_192678;
-extern int dword_19267C;
+// Souvisla tabulka 20 ukazatelu na retezce (vlna 58) - viz orion_data.c.
+extern int dword_192630[20];
+#define dword_192634 (dword_192630[1])
+#define dword_192638 (dword_192630[2])
+#define dword_19263C (dword_192630[3])
+#define dword_192640 (dword_192630[4])
+#define dword_192644 (dword_192630 + 5) /* pouziva se i jako pole */
+#define dword_192648 (dword_192630[6])
+#define dword_19264C (dword_192630[7])
+#define dword_192650 (dword_192630[8])
+#define dword_192654 (dword_192630[9])
+#define dword_192658 (dword_192630[10])
+#define dword_19265C (dword_192630[11])
+#define dword_192660 (dword_192630[12])
+#define dword_192664 (dword_192630[13])
+#define dword_192668 (dword_192630[14])
+#define dword_19266C (dword_192630[15])
+#define dword_192670 (dword_192630[16])
+#define dword_192674 (dword_192630[17])
+#define dword_192678 (dword_192630[18])
+#define dword_19267C (dword_192630[19])
 extern int dword_192680;
 extern int dword_192688;
 extern int dword_19268C;

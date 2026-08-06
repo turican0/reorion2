@@ -509,6 +509,17 @@ void PortDebug_Checkpoint(const char* name, int value)
     std::fflush(stderr);
 }
 
+void PortDebug_Message(const char* text)
+{
+    // Vlna 58: hlaska z sub_126487 (JEDINY konec programu) se ztracela.
+    // Slo o `printf` do bufferovaneho stdout + `fflush(0)`, jenze `fflush` je
+    // v decomp_compat.h presmerovany na PortFile_Flush(handle) a s nulou
+    // neudela nic. Kdyz pak uklidovy retez (sub_113DBD) spadne, uzivatel vidi
+    // jen pad bez duvodu. Tady jde vypis primo na stderr a hned se flushne.
+    std::fprintf(stderr, "KONEC (sub_126487): %s\n", text ? text : "(null)");
+    std::fflush(stderr);
+}
+
 int PortDebug_EnvInt(const char* name, int fallback)
 {
     // Vlna 58: v dekompilovanem kodu neni <stdlib.h>, takze `getenv` tam ma jen

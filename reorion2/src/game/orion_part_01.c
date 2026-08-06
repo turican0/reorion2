@@ -223,11 +223,18 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     // PORT (ladeni, vlna 58): REORION2_STATE=<cislo> presadi pocatecni herni
     // stav (word_199A08) a obejde tim rucni proklikani menu. Synteticky klik
     // se do hry nedostane (vlna 53), takze bez tohohle prepinace nejde stavy
-    // za menu vubec automatizovane testovat. 13 = NEW GAME (sub_CD435).
+    // za menu vubec automatizovane testovat. 13 = NEW GAME (sub_CD435),
+    // 14 = HALL OF FAME (sub_9F286), 15 = LOAD GAME, 7 = QUIT.
+    // REORION2_STATE2 nastavi navratovy stav `word_199A10` - tlacitka menu ho
+    // plni spolu s `word_199A08` (napr. HALL OF FAME dela 14 + 10), a bez nej
+    // se obrazovka chova jinak nez pri skutecnem kliknuti.
     {
       int envState = PortDebug_EnvInt("REORION2_STATE", -1);
       if ( envState >= 0 )
         word_199A08 = (int16_t)envState;
+      envState = PortDebug_EnvInt("REORION2_STATE2", -1);
+      if ( envState >= 0 )
+        word_199A10 = (int16_t)envState;
     }
     PortDebug_Checkpoint("GameMain.beforeMenu", word_199A08);
     sub_1049B(0, 0, 0, 0, 0, (char *)menuBuf);   // <<< HLAVNI MENU/HERNI SMYCKA

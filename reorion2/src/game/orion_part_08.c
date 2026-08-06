@@ -6555,8 +6555,11 @@ void sub_8FDA1(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
     word_1B3E86 = a5;
     if ( (int16_t)sub_12066F(a1) < a6 || (--a4, a4 < 1) && (--a3, a4 = v8, a3 < a7) )
       v9 = 1;
+    // vlna 58: `JUMPOUT` je NO-OP, takze tahle smycka NIKDY neskoncila a
+    // hra pri HALL OF FAME zamrzla (hlidac ji nachytal presne tady).
+    // `loc_8F542` je jen sdileny epilog - viz tools/jumpout_report.txt.
     if ( v9 )
-      JUMPOUT(0x8F542);
+      return;
   }
 }
 // 8FE05: control flows out of bounds to 8F542

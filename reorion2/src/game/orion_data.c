@@ -7291,7 +7291,21 @@ char *off_182314 = "SCORE.LBX"; // weak
 // dela mezi sloty `strcpy` - s [6] to cetlo a PSALO daleko za konec.
 // Velikost overena vzdalenosti k dalsimu symbolu v asm
 // (aMoise -> byte_1823E0 = 200 bajtu = 10 * 20).
-char aMoise[200] = "Moise"; // weak
+// Vlna 58: tabulka ma v originale VSECH 10 vychozich jmen (overeno
+// vypisem bajtu z Debug/diss/Orion2.exe.asm: 200 B, 63 nenulovych,
+// 10 slotu po 20 B). Puvodne tu bylo jen "Moise" a zbytek nuly,
+// takze se HALL OF FAME vykreslila s prazdnym sloupcem jmen.
+char aMoise[200] =
+    "Moise\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Irma\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Justin\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Jalen\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Cereal\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Lan_Doan\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Cadfael\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "J W R\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    "Ripping_Fang\0\0\0\0\0\0\0\0"
+    "Chewy\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 char byte_1823E0[] = { '\n' }; // weak
 char byte_1823E1 = '\x14'; // weak
 char byte_1823E2 = '\x1E'; // weak
@@ -15297,26 +15311,14 @@ int dword_19223C; // weak
 int dword_192240; // weak
 int dword_192244; // weak
 int16_t word_192248[500]; // weak
-int dword_192630[]; // weak
-int dword_192634; // weak
-int dword_192638; // weak
-int dword_19263C; // weak
-int dword_192640; // weak
-int dword_192644[]; // weak
-int dword_192648; // weak
-int dword_19264C; // weak
-int dword_192650; // weak
-int dword_192654; // weak
-int dword_192658; // weak
-int dword_19265C; // weak
-int dword_192660; // weak
-int dword_192664; // weak
-int dword_192668; // weak
-int dword_19266C; // weak
-int dword_192670; // weak
-int dword_192674; // weak
-int dword_192678; // weak
-int dword_19267C; // weak
+// PORT (vlna 58): 0x192630..0x192680 je JEDNA souvisla tabulka 20
+// ukazatelu na retezce; sub_CE0E5 ji plni po sobe jdoucimi zapisy
+// (asm sub_CE0E5+1BD az +2CB) a ctenari do ni indexuji jak pres
+// dword_192630[i], tak pres dword_192644[i] (= offset 5). IDA ji
+// rozsekala na 20 samostatnych globalu, takze v portu vracelo
+// dword_192630[i] pro i>0 nulu -> strcpy z NULL v sub_9F540
+// (pad HALL OF FAME). Ostatni jmena jsou makra v orion_common.h.
+int dword_192630[20]; // weak
 int dword_192680; // weak
 int dword_192688; // weak
 int dword_19268C; // weak

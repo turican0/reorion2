@@ -5859,9 +5859,12 @@ void sub_126487(char *a1, int a2)
   // `sub_126487` NENI jen chybova cesta, ale JEDINY konec programu vubec:
   // stejnou funkci vola i normalni ukonceni hry z GameMain po QUIT
   // ("Thanks for playing Master of Orion ]["). Neutralni popisek.
-  printf("KONEC (sub_126487): %s\n", a1 ? a1 : "(null)");
-  fflush(0); // POZOR: `stderr` tu neni deklarovane (decomp_compat.h zamerne
-             // nevklada <stdio.h>), proto stdout + rucni flush.
+  // PORT (vlna 58): `fflush(0)` je tady presmerovane na PortFile_Flush(handle)
+  // a s nulou nedela NIC, takze hlaska zustala v bufferu stdout a pri padu
+  // uklidoveho retezu se ztratila (prave to se stalo u HALL OF FAME - hra
+  // hlasila chybu LBX, ale videt byl jen pad v sub_155E62). Vypis jde ted
+  // primo na stderr a hned se flushne.
+  PortDebug_Message(a1);
   sub_113DBD();
   printf("%s\n", a1);
   exit(1);

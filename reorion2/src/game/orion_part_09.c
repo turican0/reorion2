@@ -10163,7 +10163,9 @@ void sub_9F4AD()
     fread(&word_19C5FC, 452, 1, v0);
     fclose(v1);
     sub_9FBE9((int)v2);
-    sub_9FC27();
+    // vlna 58: asm dela `lea eax, [ebp+var_28]` znovu i pred timhle volanim -
+    // sub_9FC27 dostava TENTYZ buffer (dekompilator ten argument zahodil).
+    sub_9FC27((int)v2);
   }
   JUMPOUT(0x9DB1B);
 }

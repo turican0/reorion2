@@ -1,0 +1,37 @@
+Volani qsort bez porovnavaci funkce: 33
+soubor             radek   funkce       komparator z asm
+orion_part_02.c    2726    sub_26D19    sub_26D0D
+orion_part_02.c    2727    sub_26D19    sub_26D12
+orion_part_02.c    2825    sub_27094    sub_26D12
+orion_part_02.c    2904    sub_2720F    sub_26D12
+orion_part_03.c    8196    sub_42781    sub_42744
+orion_part_03.c    11921   sub_47939    sub_478FC
+orion_part_03.c    12186   sub_47939    sub_478FC
+orion_part_04.c    13906   sub_63156    loc_62BE1
+orion_part_05.c    4319    sub_69583    sub_69E59
+orion_part_05.c    4576    sub_69583    sub_69E59
+orion_part_07.c    2003    sub_7BD87    sub_7CDC0
+orion_part_07.c    2169    sub_7C107    sub_7CDA3
+orion_part_09.c    7363    sub_9BBED    sub_9CD0C
+orion_part_09.c    7368    sub_9BBED    !! NENALEZEN (qsort volani v asm: 1)
+orion_part_09.c    7373    sub_9BBED    !! NENALEZEN (qsort volani v asm: 1)
+orion_part_09.c    8778    sub_9D816    sub_9FFEC
+orion_part_10.c    12446   sub_AFEFC    sub_AFEE0
+orion_part_13.c    8955    sub_D10EE    sub_D0C7F
+orion_part_13.c    11731   sub_D3D34    sub_D356F
+orion_part_13.c    11736   sub_D3D34    sub_D3318
+orion_part_13.c    12171   sub_D5795    sub_D5761
+orion_part_13.c    12544   sub_D5FE1    sub_D5FA9
+orion_part_14.c    58      sub_D61E7    sub_D614D
+orion_part_14.c    200     sub_D652C    sub_D63A6
+orion_part_14.c    226     sub_D652C    sub_D6315
+orion_part_14.c    456     sub_D6A00    sub_D68CB
+orion_part_14.c    519     sub_D6AD4    sub_D68CB
+orion_part_14.c    2222    sub_D896F    sub_D8847
+orion_part_14.c    2270    sub_D8C79    sub_D7662
+orion_part_14.c    4562    sub_DB47E    sub_D7662
+orion_part_14.c    4732    sub_DB6D2    sub_DB659
+orion_part_15.c    127     sub_E5BE3    sub_E5BD8
+orion_part_17.c    3992    sub_1067C4   sub_1067BB
+
+dohledano: 31 / 33
