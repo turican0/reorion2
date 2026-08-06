@@ -6364,3 +6364,162 @@ Co uz je zjisteno:
 **Dalsi krok:** (1) zkontrolovat, jestli je `dword_1A6578` naplnena;
 (2) `sub_CC81C` porovnat radek po radku s asm a rozbit fuzi int64 na skutecne
 registry (stejny postup jako vlna 20 u sub_14852C).
+
+### Vlna 26 pokracovani 58: NEW GAME UZ NEPADA A VYKRESLI SE
+### (pet chyb, vsechny overene proti asm; regrese videa 600/600)
+
+Vychozi stav: vlna 57 nechala pad `0xC0000005 pri PROVEDENI 0x12B1104`
+(divoka adresa za obrazem modulu) v retezu
+`sub_CD435 -> sub_CCA1C -> sub_CC81C`.
+
+#### Jak se to merilo (levny postup, vyplatilo se)
+
+1. **Novy prepinac `REORION2_STATE=<cislo>`** (`orion_part_01.c`, tesne pred
+   `sub_1049B`) presadi pocatecni herni stav `word_199A08`. `13` = NEW GAME.
+   Bez nej se stav za menu neda automatizovane testovat, protoze synteticky
+   klik se do hry nedostane (vlna 53). S `REORION2_SKIPINTRO=1` je pad na
+   prikazove radce za ~10 s.
+   Pozn.: hodnota se cte pres novy `PortDebug_EnvInt()` (`port_dos.cpp`) -
+   `getenv` volany primo z dekompilatu nema deklaraci a na x64 by orezal
+   ukazatel na 32 bitu.
+2. Pad pak vypsal **vestaveny SEH handler** (`reorion2.cpp`) sam, bez VS:
+   `#0 SWORD2+0x0 / #1 sub_CC81C+0x1b6`. Tim byla prvni chyba hotova za minutu.
+
+#### Chyba 1 (PRICINA PADU): `SWORD2` a `__PAIR64__` byly DATOVE symboly
+
+`decomp_compat.h` mel `WORD1/WORD2/...`, ale **znamenkove varianty
+`SWORD1..SWORD6`, `SDWORD1/2`, `SBYTE4` a dal `abs16/abs32`, `__PAIR32__`,
+`__PAIR64__` chybely**. Herni `.c` se prekladaji jako C (`/TC`), takze kazde
+jejich pouziti spadlo na implicitni deklaraci `int NAME()` a slinkovalo se
+s pahyly v `link_stubs.c`:
+
+| pahyl | pouziti | co delal |
+|---|---|---|
+| `int SWORD2;` | **144** | DATOVY symbol -> `SWORD2(x)` je CALL do .bss = divoky skok |
+| `int __PAIR64__;` | 15 | totez |
+| `SWORD1/3/4/5/6`, `SDWORD1/2`, `SBYTE4` | ~150 | `return 0;` - tise se pocitalo s nulou |
+| `abs32` / `abs16` | 48 / 33 | `return 0;` - kazdy vypocet vzdalenosti vysel 0 |
+| `__PAIR32__` | 2 | `return 0;` |
+
+`dword_1A124C[SWORD2(v3)]` v `sub_CC81C` tedy nebyl indexovy vyraz, ale
+**volani adresy globalni promenne** - presne ta "divoka adresa za obrazem".
+Stejna trida jako no-op `__ROL4__`/`__ROR4__` z vlny 25q, jen prehlednuta.
+Vse prepsano na skutecna makra/funkce v `decomp_compat.h`; `abs32/abs16` jsou
+zamerne `static __inline` funkce, ne makra (argument byva volani funkce a
+makro by ho vyhodnotilo dvakrat). Semantika `abs32` overena v asm
+(`sub_81147`: `cdq / xor eax,edx / sub eax,edx`).
+
+**Audit celeho `link_stubs.c`:** proti seznamu 295 datovych pahylu bylo
+zkontrolovano, ktere se v `orion_part_*.c` volaji jako funkce - jsou uz jen
+ty dva vyse. `sub_CC81C` sama je jinak proti asm SPRAVNA (pro anglictinu
+vyjdou indexy 0/1/2/3 a do `dword_1A124C[4]` se vejdou) - podezreni z vlny 57
+se tim uzavira. Stejne tak `dword_1A6578` JE plnena (`sub_CDF65`), takze ani
+tam deficit nebyl.
+
+#### Chyba 2: pole zaznamu 0x1A09FE bylo rozsypane na 10 globalu
+
+`sub_C68C4` cetlo `*(int16_t **)((char *)&dword_1A0A10 + 23*i)` - **8 bajtu
+z ctyrbajtoveho pole** (pad na `0x0000000500A9BEF4`, horni pulka 5 = sousedni
+bajty zaznamu; presne ten diagnosticky trik z prirucky). Sirsi problem: v asm
+je 0x1A09FE..0x1A0C40 **jedno pole 25 zaznamu po 23 bajtech**
+(`imul esi, 17h` + `word_1989FE[esi]`), potvrzeno i `memset(&word_1A09FE, 0, 575)`
+= 25*23. V portu to bylo 10 samostatnych globalu, takze od `i>=1` se cetlo
+a psalo mimo.
+Reseno blokem `winRecs_1A09FE[578]` + prekryvova makra (orion_common.h) a
+novym makrem **`PORT_PTR32(typ, adresa)`** pro 32bitove cteni ulozeneho
+ukazatele (datova obdoba `VCALL` z vlny 25l).
+
+#### Chyba 3: `sub_C68C4` a `sub_C6AA4` mely v dekompilatu VYMYSLENY control flow
+
+Hex-Rays do obou pridala vetve `(v3 & 0xFFF) == 0x360 / 0x35E` a cteni typu
+`*(_BYTE *)(v3 - 167554)`. **V asm nic z toho neni** - `sub_C68C4` ma jediny
+podmineny skok (`cmp byte_198A14[esi], 0`), `sub_C6AA4` taky jediny (shoda
+klavesy). Obe funkce prepsany podle asm radek po radku.
+**Ponauceni do katalogu: kdyz dekompilat obsahuje vetve nad magickymi
+konstantami a "adresami" typu `x - 167554`, overit control flow v asm DRIV,
+nez se to zacne ladit - muze byt cely smysleny.**
+
+#### Chyba 4: `JUMPOUT` je NO-OP, a je jich 1148
+
+`decomp_compat.h` ma `JUMPOUT(adr)` jako prazdny stub. Na ceste NEW GAME to
+zpusobilo dva bugy:
+- `sub_C68C4`: `if (i >= byte_1831A5) JUMPOUT(0xC6808);` -> smycka bezela i po
+  vycerpani zaznamu a sahla na prazdny -> pad na NULL;
+- `sub_CCC3D`: `if (++v1 >= 3) JUMPOUT(0xCCC36);` -> vnejsi smycka nikdy
+  neskoncila, sprity se kreslily na x = 911, 1066, 1221, ... (zmereno) a
+  `sub_14852C` se zacyklilo na nulovem RLE proudu (`v4 -= rc` s rc == 0).
+Oba cile jsou pritom jen SDILENE EPILOGY (`leave; pop ...; retn`), takze
+spravny preklad je `return`.
+
+**Kvantifikovano pro dalsi session** - `tools/jumpout_scan.py` porovna vsech
+1148 `JUMPOUT` proti asm dumpu a klasifikuje cil (vystup je
+`tools/jumpout_report.txt`):
+
+| trida | pocet | vyznam |
+|---|---|---|
+| **EPILOG** | **400** | cil je jen `leave/pop/retn` -> da se nahradit `return` |
+| skutecny skok | 512 | cil je skutecny kod, nutna rekonstrukce |
+| pokracuje jinam | 214 | cil je navesti jine funkce |
+| cil nenalezen | 24 | navesti v dumpu neni |
+
+**Tech 400 je tise chybejicich `return` - stejna trida, ktera uz stala vlny
+13, 24c, 24e a 52.** Hromadna nahrada je dalsi velky ukol (v nevoid funkcich
+je potreba i navratova hodnota), proto ted opraveny jen dva vyskyty na ceste
+NEW GAME.
+
+#### Chyba 5: ctyri dalsi rozsypane bloky ukazatelu (0x1A1260/12D4/12FC/1310)
+
+`sub_CCA1C` PISE pres `dword_1A1260[1..4]`, `dword_1A12D4[0..5]`,
+`dword_1A12FC[0..3]`, `dword_1A1310[1..7]`, `dword_1A132C[1..3]`, zatimco
+`sub_CCC3D` CTE pres `dword_1A1264[]`, `dword_1A12D8[]`, `dword_1A1300[]`,
+`dword_1A1314[]`, `dword_1A1330[]`. V originale jsou to tytez souvisle bloky
+(asm: `mov dword_199260[edi], eax` s edi = 4,8,12,...), v portu to byly ruzne
+ctyrbajtove objekty - zapis pretekal do sousedu a cteni vracelo nuly.
+Navic je `link_stubs.c` definoval jeste jednou jako SKALARY, takze se dve
+tentativni definice slily na spolecny symbol o velikosti 4 B.
+Sjednoceno na souvisle bloky + makra; duplicity z `link_stubs.c` odstraneny.
+(Pozn.: `dword_1A1314` musi mit 7 polozek, ne 6 - posledni zapis smycky padne
+az na 0x1A132C, kde IDA jen nasla dalsi jmeno.)
+
+#### VYSLEDEK
+
+- **NEW GAME uz nepada a obrazovka se cela vykresli** (307200/307200
+  nenulovych pixelu, 255/256 barev palety, Present bezi): ram, nadpis
+  NEW GAME, vsech pet obrazku (DIFFICULTY / GALAXY SIZE / GALAXY AGE /
+  PLAYERS / TECH LEVEL), tri zaskrtavatka i tlacitka CANCEL/ACCEPT.
+- **Regresni test videa: 600/600 matched, 0 diverged** (dulezite - zmenila se
+  semantika ~200 mist, kde `SWORD*`/`abs32` drive vracely nulu).
+- Hlavni menu: 5/5 behu bez padu.
+
+#### CO ZUSTAVA OTEVRENE (konkretni dalsi kroky)
+
+1. **Popisky v rameccich pod obrazky chybi** (maji tam byt "Easy", "Small",
+   "Young", "2", "Pre-Warp"). Pricina je nalezena a zmerena:
+   **`sub_102FD8` je porad `DECOMP_TODO` pahyl** ("call analysis failed
+   (funcsize=111)") a stejne tak `sub_103952`. Cely retez centrovaneho
+   a zalamovaneho textu tedy nedela nic.
+   Navic `sub_1031C6(a1, a2)` zahazuje REGISTROVE argumenty: asm mu predava
+   `eax = x1`, `edx = y1+2`, `ebx = sirka`, `ecx = vyska-2` (z `sub_C68C4`) a
+   `sub_102FD8` je dostava jako `eax = x`, `edx = svisly stred`, `ebx = sirka`,
+   `ecx = vyska`, `arg_0 = retezec`. Rekonstrukce `sub_102FD8` z asm je
+   primocara (~110 instrukci): merici smycka pres `[ebp+var_24]`
+   (= `sub_103CAF` kdyz `arg_C != 0`, jinak `sub_103952`) zmensuje
+   `byte_1B3EC8` a `word_1B3EA4`, dokud se text nevejde do vysky, pak kresli
+   pres `sub_103BE2` / `sub_10370A` a obnovi globaly.
+2. **Nedeterministicky pad ve vstupni smycce NEW GAME - 2 z 5 behu:**
+
+       #0 sub_16937A+0x2c   (cteni z adresy 0x0000000E)
+       #1 sub_11CEF5+0x1c9d
+       #2 sub_1171AB+0x6f
+       #3 sub_CD435+0x328
+
+   `sub_16937A` (`orion_part_26.c:3225`) je zjevne rozsypany dekompilat
+   (nesmyslny vyraz `a1 - (char *)((_BYTE *)GetGameFlagsTable_F4B81() != 136183)`)
+   a jeho jediny volajici `orion_part_19.c:1739` ma DALSI sirku-ukazatele:
+   `sub_16937A(*(char **)((char *)off_184480 + 55 * (int16_t)v47 + 32))` -
+   `off_184480 + 55*i + 32` je 32bitove pole okenni tabulky. Adresa 0x0E
+   sedi na `NULL + 14`. **Zacit tady** (asm: IDA 0x16937A -> runtime 0x38D37A).
+3. Drobnost v nastroji: `REORION2_DUMP_FRAME_RANGE` odmita `start = 0`
+   (`start > 0` v `port_vga.cpp`), takze `0:600` tise nedumpne nic. Regresni
+   snimky se stejne musi brat pres `REORION2_BLIT_DUMP_DIR` (blit, ne Present)
+   - viz komentar u `PortVga_CaptureBlit`.

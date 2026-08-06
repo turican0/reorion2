@@ -220,6 +220,15 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     }
 
     nullsub_3(0);                             // 010360
+    // PORT (ladeni, vlna 58): REORION2_STATE=<cislo> presadi pocatecni herni
+    // stav (word_199A08) a obejde tim rucni proklikani menu. Synteticky klik
+    // se do hry nedostane (vlna 53), takze bez tohohle prepinace nejde stavy
+    // za menu vubec automatizovane testovat. 13 = NEW GAME (sub_CD435).
+    {
+      int envState = PortDebug_EnvInt("REORION2_STATE", -1);
+      if ( envState >= 0 )
+        word_199A08 = (int16_t)envState;
+    }
     PortDebug_Checkpoint("GameMain.beforeMenu", word_199A08);
     sub_1049B(0, 0, 0, 0, 0, (char *)menuBuf);   // <<< HLAVNI MENU/HERNI SMYCKA
     PortDebug_Checkpoint("GameMain.afterMenu", 0);

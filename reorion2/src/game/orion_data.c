@@ -17098,16 +17098,15 @@ int16_t word_1A0904[]; // weak
 int16_t word_1A0906[]; // weak
 int16_t word_1A0908[]; // weak
 int dword_1A090A; // weak
-int16_t word_1A09FE; // weak
-int16_t word_1A0A00; // weak
-int16_t word_1A0A02; // weak
-int16_t word_1A0A04; // weak
-int16_t word_1A0A06; // weak
-int16_t word_1A0A08; // weak
-int dword_1A0A0A; // weak
-int16_t word_1A0A0E; // weak
-int dword_1A0A10; // weak
-char byte_1A0A14[556]; // weak
+// PORT (vlna 58): 0x1A09FE az 0x1A0C40 je JEDNO pole zaznamu po 23 bajtech
+// (aktivni oblasti okna - souradnice, ukazatel na text, kurzor). Hex-Rays z
+// nej udelala 10 samostatnych globalu, ale VSECHNA pristupova mista v
+// orion_part_13.c indexuji pres `(char*)&pole + 23*i`, takze v portu se od
+// i>=1 cetlo/psalo mimo. Potvrzeno v asm (sub_C68C4: `imul esi, 17h` a
+// `word_1989FE[esi]`, `byte_198A14[esi]`) a take memsetem v sub_C6A0C
+// (`memset(&word_1A09FE, 0, 575)` = 25 zaznamu * 23 B). Jmena poli jsou ted
+// prekryvova makra nad timhle blokem - viz orion_common.h.
+char winRecs_1A09FE[578]; // weak (0x1A0C40 - 0x1A09FE)
 int dword_1A0C40[]; // weak
 int dword_1A0C60; // weak
 int16_t word_1A0C64[]; // weak
@@ -17201,8 +17200,7 @@ char byte_1A125C[]; // weak
 char byte_1A125D; // weak
 char byte_1A125E; // weak
 char byte_1A125F; // weak
-int dword_1A1260[]; // weak
-int dword_1A1264[4]; // weak
+int dword_1A1260[5]; // weak - vlna 58: souvisly blok, dword_1A1264 je makro
 int dword_1A1274; // weak
 int dword_1A1278; // weak
 int dword_1A127C; // weak
@@ -17223,18 +17221,13 @@ int dword_1A12C4; // weak
 int dword_1A12C8; // weak
 int dword_1A12CC; // weak
 int dword_1A12D0; // weak
-int dword_1A12D4[]; // weak
-int dword_1A12D8[5]; // weak
+int dword_1A12D4[6]; // weak - vlna 58: souvisly blok, dword_1A12D8 je makro
 int dword_1A12EC; // weak
 int dword_1A12F0; // weak
 int dword_1A12F4; // weak
 int dword_1A12F8; // weak
-int dword_1A12FC[]; // weak
-int dword_1A1300[]; // weak
-int dword_1A1310[]; // weak
-int dword_1A1314[6]; // weak
-int dword_1A132C[]; // weak
-int dword_1A1330[3]; // weak
+int dword_1A12FC[5]; // weak - vlna 58: souvisly blok, dword_1A1300 je makro
+int dword_1A1310[11]; // weak - vlna 58: souvisly blok, 1A1314/132C/1330 jsou makra
 int16_t word_1A133C; // weak
 int16_t word_1A133E; // weak
 int16_t word_1A1340; // weak

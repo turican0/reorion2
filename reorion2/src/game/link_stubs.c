@@ -11,8 +11,9 @@ int __DS__;
 int __ES__;
 int __FS__;
 int __GS__;
-int __PAIR32__(void) { return 0; }
-int __PAIR64__;
+/* PORT (vlna 58): __PAIR32__/__PAIR64__ presunuty do decomp_compat.h jako
+   skutecna makra. __PAIR64__ tu byl DATOVY symbol, takze 15 jeho "volani"
+   skakalo do .bss - viz komentar u maker a PROGRESS.md vlna 58. */
 /* PORT (wave 25q): these were `return 0;` no-op stubs - and the decompiled
    code calls __ROR4__ 219 times and __ROL4__ once, so EVERY 32-bit rotate in
    the whole dump silently evaluated to zero. Same class as the memset32 no-op
@@ -51,8 +52,9 @@ int _SF;
 int _terminate;
 int _wcpp_1_unwind_leave(void) { return 0; }
 int _ZF;
-int abs16(void) { return 0; }
-int abs32(void) { return 0; }
+/* PORT (vlna 58): abs16/abs32 jsou ted skutecne funkce v decomp_compat.h.
+   Jako pahyly vracely 0, takze 81 porovnani vzdalenosti/rozdilu v cele hre
+   pocitalo s nulou (napr. reset rolovani titulku v sub_81147). */
 int byte_190488;
 int byte_192E80;
 int byte_192ECC;
@@ -203,12 +205,10 @@ int dword_19EB04;
 int dword_19FA2C;
 int dword_1A0C40;
 int dword_1A0C6A;
-int dword_1A1260;
-int dword_1A12D4;
-int dword_1A12FC;
-int dword_1A1300;
-int dword_1A1310;
-int dword_1A132C;
+/* PORT (vlna 58): dword_1A1260/12D4/12FC/1300/1310/132C tady byly jako
+   SKALARY, zatimco orion_data.c je definuje jako pole - dve tentativni
+   definice se v C slily na spolecny symbol o velikosti 4 B. Ted jsou to
+   souvisle bloky v orion_data.c (a cast z nich makra v orion_common.h). */
 int dword_1A7254;
 int dword_1A7294;
 int dword_1A72B8;
@@ -342,9 +342,7 @@ int nullsub_9(void) { return 0; }
 void* qmemcpy(void* dst, const void* src, size_t n) {
     return memcpy(dst, src, n);
 }
-int SBYTE4(void) { return 0; }
-int SDWORD1(void) { return 0; }
-int SDWORD2(void) { return 0; }
+/* PORT (vlna 58): SBYTE4/SDWORD1/SDWORD2 -> makra v decomp_compat.h. */
 int segread(void) { return 0; }
 int sound(void) { return 0; }
 /* sprintf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
@@ -390,12 +388,8 @@ int sub_A162D(void) { return 0; }
 int sub_A5EBC(void) { return 0; }
 int sub_B3E75(void) { return 0; }
 int sub_C5B5F(void) { return 0; }
-int SWORD1(void) { return 0; }
-int SWORD2;
-int SWORD3(void) { return 0; }
-int SWORD4(void) { return 0; }
-int SWORD5(void) { return 0; }
-int SWORD6(void) { return 0; }
+/* PORT (vlna 58): SWORD1..SWORD6 -> makra v decomp_compat.h. SWORD2 tu byl
+   DATOVY symbol -> 144 jeho "volani" skakalo do .bss (pad NEW GAME). */
 int unk_178A04;
 int unk_183938;
 int unk_183B46;

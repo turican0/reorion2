@@ -9754,10 +9754,11 @@ void sub_31F25( int a1)
     byte_1A125D = sub_133DE1(0x8Cu);
     byte_1A125E = sub_133DE1(0x8Au);
     byte_1A125F = sub_133DE1(0x8Cu);
-    LOBYTE(dword_1A1260) = sub_133DE1(0x8Cu);
-    BYTE1(dword_1A1260) = sub_133DE1(0x8Cu);
-    BYTE2(dword_1A1260) = sub_133DE1(0x8Cu);
-    HIBYTE(dword_1A1260) = sub_133DE1(0x8Cu);
+    // vlna 58: dword_1A1260 je ted pole (souvisly blok) - bajty prvniho prvku.
+    LOBYTE(dword_1A1260[0]) = sub_133DE1(0x8Cu);
+    BYTE1(dword_1A1260[0]) = sub_133DE1(0x8Cu);
+    BYTE2(dword_1A1260[0]) = sub_133DE1(0x8Cu);
+    HIBYTE(dword_1A1260[0]) = sub_133DE1(0x8Cu);
   }
   if ( word_199ABF == -1 )
   {

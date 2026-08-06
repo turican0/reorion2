@@ -19856,16 +19856,21 @@ extern int16_t word_1A0904[];
 extern int16_t word_1A0906[];
 extern int16_t word_1A0908[];
 extern int dword_1A090A;
-extern int16_t word_1A09FE;
-extern int16_t word_1A0A00;
-extern int16_t word_1A0A02;
-extern int16_t word_1A0A04;
-extern int16_t word_1A0A06;
-extern int16_t word_1A0A08;
-extern int dword_1A0A0A;
-extern int16_t word_1A0A0E;
-extern int dword_1A0A10;
-extern char byte_1A0A14[556];
+// Pole aktivnich oblasti okna - 25 zaznamu po 23 bajtech (vlna 58).
+// Viz komentar u definice v orion_data.c. Rozlozeni zaznamu podle asm:
+//   +0 x1, +2 y1, +4 x2, +6 y2, +8 klavesa, +10 klavesa2, +12 ukazatel na
+//   tabulku textu, +16 index, +18 ukazatel na kurzor (WORD), +22 barva/priznak
+extern char winRecs_1A09FE[578];
+#define word_1A09FE  (*(int16_t *)(winRecs_1A09FE + 0))
+#define word_1A0A00  (*(int16_t *)(winRecs_1A09FE + 2))
+#define word_1A0A02  (*(int16_t *)(winRecs_1A09FE + 4))
+#define word_1A0A04  (*(int16_t *)(winRecs_1A09FE + 6))
+#define word_1A0A06  (*(int16_t *)(winRecs_1A09FE + 8))
+#define word_1A0A08  (*(int16_t *)(winRecs_1A09FE + 10))
+#define dword_1A0A0A (*(int *)(winRecs_1A09FE + 12))
+#define word_1A0A0E  (*(int16_t *)(winRecs_1A09FE + 16))
+#define dword_1A0A10 (*(int *)(winRecs_1A09FE + 18))
+#define byte_1A0A14  ((char *)(winRecs_1A09FE + 22))
 extern int dword_1A0C40[];
 extern int dword_1A0C60;
 extern int16_t word_1A0C64[];
@@ -19959,8 +19964,13 @@ extern char byte_1A125C[];
 extern char byte_1A125D;
 extern char byte_1A125E;
 extern char byte_1A125F;
-extern int dword_1A1260[];
-extern int dword_1A1264[4];
+// PORT (vlna 58): 0x1A1260..0x1A1274 je JEDNO pole 5 ukazatelu na sprite.
+// sub_CCA1C do nej PISE pres `dword_1A1260[1..4]` (asm: `mov dword_199260[edi],
+// eax`, edi = 4,8,12,16), sub_CCC3D z nej CTE pres `dword_1A1264[index]`.
+// V portu to byly dva ruzne ctyrbajtove objekty - zapis pretekl a cteni vracelo
+// nuly. Stejna trida i u 1A12D4, 1A12FC a 1A1310 nize.
+extern int dword_1A1260[5];
+#define dword_1A1264 (dword_1A1260 + 1)
 extern int dword_1A1274;
 extern int dword_1A1278;
 extern int dword_1A127C;
@@ -19984,18 +19994,26 @@ extern int dword_1A12C4;
 extern int dword_1A12C8;
 extern int dword_1A12CC;
 extern int dword_1A12D0;
-extern int dword_1A12D4[];
-extern int dword_1A12D8[5];
+// 0x1A12D4..0x1A12EC: 6 ukazatelu (zapis dword_1A12D4[0] a [1..5], cteni
+// dword_1A12D8[index]) - viz komentar u dword_1A1260.
+extern int dword_1A12D4[6];
+#define dword_1A12D8 (dword_1A12D4 + 1)
 extern int dword_1A12EC;
 extern int dword_1A12F0;
 extern int dword_1A12F4;
 extern int dword_1A12F8;
-extern int dword_1A12FC[];
-extern int dword_1A1300[];
-extern int dword_1A1310[];
-extern int dword_1A1314[6];
-extern int dword_1A132C[];
-extern int dword_1A1330[3];
+// 0x1A12FC..0x1A1310 (v asm nasleduje `align 10h`): zapis dword_1A12FC[0] a
+// [1..3], cteni dword_1A1300[index].
+extern int dword_1A12FC[5];
+#define dword_1A1300 (dword_1A12FC + 1)
+// 0x1A1310..0x1A133C: dva prekryvajici se useky jednoho bloku. sub_CCA1C pise
+// dword_1A1310[1..7] (posledni zapis uz padne na 0x1A132C!) a dword_1A132C[1..3];
+// sub_CCC3D cte dword_1A1314[index] a dword_1A1330[index]. IDA orezala
+// dword_1A1314 na [6] jen proto, ze na 0x1A132C nasel dalsi jmeno.
+extern int dword_1A1310[11];
+#define dword_1A1314 (dword_1A1310 + 1)
+#define dword_1A132C (dword_1A1310 + 7)
+#define dword_1A1330 (dword_1A1310 + 8)
 extern int16_t word_1A133C;
 extern int16_t word_1A133E;
 extern int16_t word_1A1340;

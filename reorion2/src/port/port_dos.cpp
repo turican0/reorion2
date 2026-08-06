@@ -509,6 +509,17 @@ void PortDebug_Checkpoint(const char* name, int value)
     std::fflush(stderr);
 }
 
+int PortDebug_EnvInt(const char* name, int fallback)
+{
+    // Vlna 58: v dekompilovanem kodu neni <stdlib.h>, takze `getenv` tam ma jen
+    // implicitni deklaraci vracejici int - na x64 by se ukazatel orezal na 32
+    // bitu. Cteni hodnoty env promenne proto vzdy pres tenhle pomocnik.
+    const char* v = std::getenv(name);
+    if (!v || !*v)
+        return fallback;
+    return std::atoi(v);
+}
+
 void PortDebug_CheckpointPtr(const char* name, const void* value)
 {
     static const bool enabled = std::getenv("REORION2_TRACE") != nullptr;

@@ -519,18 +519,31 @@ unsigned int sub_C685B( int a1, int a2, int a3, _WORD *a4, _BYTE *a5, int a6)
 
 
 //----- (000C68C4) --------------------------------------------------------
+// PORT (vlna 58): PREPSANO PODLE ASM. Hex-Rays sem vyrobila tri vetve nad
+// `(v3 & 0xFFF) == 0x360` / `0x35E` a cteni typu `*(_BYTE *)(v3 - 167554)`,
+// ktere v originale VUBEC NEJSOU - sub_C68C4 v asm zadny podmineny skok krome
+// testu `cmp byte_198A14[esi], 0` nema (Debug/diss/Orion2.exe.asm). Zbyva
+// prima cesta, ktera v dekompilatu byla LABEL_11.
+// Druha (padajici) chyba: `*(int16_t **)((char *)&dword_1A0A10 + 23*i)` cetlo
+// na x64 OSM bajtu z ctyrbajtoveho pole zaznamu - horni pulka se brala ze
+// sousednich bajtu zaznamu. Pad: cteni z 0x0000000500A9BEF4 (dolni pulka =
+// platny ukazatel, horni = 5). Asm dela `mov eax, dword_198A10[esi]`, tedy
+// 32bitove cteni; port ho musi rozsirit na skutecny ukazatel.
 void sub_C68C4()
 {
   int16_t i; // di
   int v1; // edx
-  int16_t *v2; // eax
-  int v3; // [esp-18h] [ebp-1Ch]
-  int v4; // [esp-18h] [ebp-1Ch]
+  const int16_t *v2; // eax
+  int v4;
 
   for ( i = 0; ; ++i )
   {
+    // vlna 58: `JUMPOUT(0xC6808)` je v decomp_compat.h NO-OP, takze smycka
+    // bezela dal i po vycerpani zaznamu (i == byte_1831A5) a sahala na prazdny
+    // zaznam -> pad na NULL. loc_C6808 je pritom jen SDILENY EPILOG
+    // (`pop edi/esi/edx/ecx/ebx; retn`) funkce sub_C6782, tedy proste navrat.
     if ( i >= (uint8_t)byte_1831A5 )
-      JUMPOUT(0xC6808);
+      return;
     if ( byte_1A0A14[23 * i] )
       sub_1297C3(
         *(int16_t *)((char *)&word_1A09FE + 23 * i),
@@ -545,32 +558,9 @@ void sub_C68C4()
       *(int16_t *)((char *)&word_1A0A02 + 23 * i),
       *(int16_t *)((char *)&word_1A0A04 + 23 * i));
     sub_12B634();
-    v1 = *(int *)((char *)&dword_1A0A0A + 23 * i);
-    v3 = *(int *)((char *)&dword_1A0A10 + 23 * i);
-    if ( (v3 & 0xFFF) == 0x360 )
-    {
-      v2 = *(int16_t **)((char *)&dword_1A0A10 + 23 * i);
-      if ( *(_BYTE *)(v3 - 167554) != 1 )
-        goto LABEL_11;
-      v4 = v3 - 167500;
-    }
-    else
-    {
-      if ( (v3 & 0xFFF) != 0x35E )
-      {
-        v2 = *(int16_t **)((char *)&dword_1A0A10 + 23 * i);
-LABEL_11:
-        v4 = *(_DWORD *)(v1 + 4 * *v2);
-        goto LABEL_5;
-      }
-      v2 = *(int16_t **)((char *)&dword_1A0A10 + 23 * i);
-      if ( *(_BYTE *)(v3 - 29765) != 10 )
-        *(_BYTE *)(v3 - 167551) = 0;
-      if ( *(_BYTE *)(v3 - 167551) != 1 )
-        goto LABEL_11;
-      v4 = v3 - 167550;
-    }
-LABEL_5:
+    v1 = *(int *)((char *)&dword_1A0A0A + 23 * i);        /* mov edx, dword_198A0A[esi] */
+    v2 = PORT_PTR32(const int16_t *, (char *)&dword_1A0A10 + 23 * i);
+    v4 = *(_DWORD *)(uintptr_t)(v1 + 4 * *v2);            /* push dword ptr [edx+eax*4] */
     sub_1031C6(v4, 2);
     sub_12B65C();
   }
@@ -647,6 +637,11 @@ unsigned int sub_C6A43( int a1, int a2, int a3, int a4,
 
 
 //----- (000C6AA4) --------------------------------------------------------
+// PORT (vlna 58): PREPSANO PODLE ASM, stejne jako sub_C68C4 vys. Vetve
+// `v7 == 864` / `862` (= 0x360 / 0x35E) a zapisy `*(_BYTE *)(v10 - 167554)`
+// v originale NEEXISTUJI - asm ma jediny podmineny skok (shoda klavesy) a pak
+// primo `mov ebx, dword_198A10[eax] / movsx edx, [ebx] / idiv / mov [ebx], dx`.
+// Tez opraveno 32bitove cteni ulozeneho ukazatele (viz PORT_PTR32).
 void sub_C6AA4( int a1)
 {
   int16_t i; // cx
@@ -654,51 +649,20 @@ void sub_C6AA4( int a1)
   int16_t *v4; // ebx
   int v5; // edx
   int v6; // edi
-  int16_t v7; // bx
-  _WORD *v8; // ebx
-  _BOOL1 v9; // zf
-  int v10; // [esp-14h] [ebp-18h]
 
   for ( i = 0; i < (uint8_t)byte_1831A5; ++i )
   {
-    if ( a1 == *(int16_t *)((char *)&word_1A0A06 + 23 * i) || a1 == *(int16_t *)((char *)&word_1A0A08 + 23 * i) )
+    if ( (int16_t)a1 == *(int16_t *)((char *)&word_1A0A06 + 23 * i)
+      || (int16_t)a1 == *(int16_t *)((char *)&word_1A0A08 + 23 * i) )
     {
       v3 = 23 * i;
-      v4 = *(int16_t **)((char *)&dword_1A0A10 + v3);
-      v5 = *v4;
+      v4 = PORT_PTR32(int16_t *, (char *)&dword_1A0A10 + v3);
+      v5 = *v4;                                            /* movsx edx, word ptr [ebx] */
       v6 = *(int16_t *)((char *)&word_1A0A0E + v3);
-      v10 = *(int *)((char *)&dword_1A0A10 + 23 * i);
-      v7 = (uint16_t)v4 & 0xFFF;
-      if ( v7 == 864 )
-      {
-        v8 = *(_WORD **)((char *)&dword_1A0A10 + 23 * i);
-        if ( (_BYTE)v5 == 1 )
-        {
-          v9 = *(_BYTE *)(v10 - 167554) == 1;
-          *(_BYTE *)(v10 - 167554) ^= 1u;
-          if ( !v9 )
-            --v5;
-        }
-      }
-      else if ( v7 == 862 )
-      {
-        v8 = *(_WORD **)((char *)&dword_1A0A10 + 23 * i);
-        if ( *(_BYTE *)(v10 - 29765) == 10 && (_BYTE)v5 == 2 )
-        {
-          v9 = *(_BYTE *)(v10 - 167551) == 1;
-          *(_BYTE *)(v10 - 167551) ^= 1u;
-          if ( !v9 )
-            --v5;
-        }
-      }
-      else
-      {
-        v8 = *(_WORD **)((char *)&dword_1A0A10 + 23 * i);
-      }
-      *v8 = (v5 + 1) % v6;
+      *v4 = (int16_t)((v5 + 1) % v6);                      /* idiv edi / mov [ebx], dx */
     }
   }
-  JUMPOUT(0xC6808);
+  /* vlna 58: loc_C6808 = sdileny epilog, tedy navrat (viz sub_C68C4). */
 }
 // C6AF4: control flows out of bounds to C6808
 // 1831A5: using guessed type char byte_1831A5;
@@ -5559,8 +5523,12 @@ void sub_CCC3D(int a1)
       v4 += 140;
     }
     while ( v2 < 2 );
+    // vlna 58: `JUMPOUT(0xCCC36)` je NO-OP, takze vnejsi smycka nikdy
+    // neskoncila - `i` rostlo dal a sprity se kreslily na x = 911, 1066,
+    // 1221, ... (zmereno). locret_CCC36 je pritom jen epilog
+    // (`leave; pop edi/esi/edx/ecx/ebx; retn`), tedy navrat.
     if ( ++v1 >= 3 )
-      JUMPOUT(0xCCC36);
+      return;
   }
 }
 // CCD37: control flows out of bounds to CCC36

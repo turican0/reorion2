@@ -163,6 +163,9 @@ extern "C" {
 void PortDebug_Checkpoint(const char* name, int value);
 void PortDebug_CheckpointPtr(const char* name, const void* value);
 void PortDebug_Symbolize(const char* tag, void* addr);
+/* Cislo z env promenne (vlna 58). V dekompilatu neni <stdlib.h>, takze primy
+   `getenv` tam ma implicitni deklaraci vracejici int -> orezany ukazatel. */
+int PortDebug_EnvInt(const char* name, int fallback);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
 /* Stejne, ale ~1 BIOS tik (~55ms) mezi Present() volanimi - pro busy-wait
@@ -343,6 +346,14 @@ typedef int64_t  __int64;
    the given type before calling through it - use as
    `VCALL(base + offset, RETTYPE (*)(ARGS))(args...)`. */
 #define VCALL(addr, functype) ((functype)(uintptr_t)*(unsigned int *)(addr))
+
+/* PORT (vlna 58): tataz vec pro DATOVE ukazatele. Dekompilat pise
+   `*(TYPE **)(adresa)`, coz na x64 nacte 8 bajtu z ctyrbajtoveho pole a horni
+   pulku vezme ze sousedni promenne (typicky pad na adrese 0x0000000N_XXXXXXXX).
+   PORT_PTR32 precte ulozenou 32bitovou hodnotu a rozsiri ji na skutecny
+   ukazatel. Alokace portu lezi diky LARGEADDRESSAWARE:NO pod 4 GB, takze
+   ulozeni ukazatele do 32bit pole je v poradku. */
+#define PORT_PTR32(type, addr) ((type)(uintptr_t)*(const unsigned int *)(addr))
 #define BYTE5(x) (*((unsigned char*)&(x)+5))
 #define BYTE6(x) (*((unsigned char*)&(x)+6))
 #define BYTE7(x) (*((unsigned char*)&(x)+7))
@@ -363,6 +374,46 @@ typedef int64_t  __int64;
 
 #define DWORD1(x) (*((unsigned int*)&(x)+1))
 #define DWORD2(x) (*((unsigned int*)&(x)+2))
+
+/* PORT (vlna 58): ZNAMENKOVE varianty pristupovych maker a par aritmetickych
+   pseudo-funkci dekompilatoru tady CHYBELY. Protoze se herni .c prekladaji
+   jako C (/TC), spadlo kazde jejich pouziti na implicitni deklaraci
+   `int NAME()` a slinkovalo se s pahyly v link_stubs.c:
+     - SWORD1/3/4/5/6, SDWORD1/2, SBYTE4, abs16, abs32, __PAIR32__
+       byly `return 0;` -> ~200 mist tise pocitalo s nulou;
+     - SWORD2 (144 pouziti) a __PAIR64__ (15) byly dokonce DATOVE symboly
+       (`int SWORD2;`), takze se na ne SKAKALO. Presne tohle byl pad NEW GAME:
+       "0xC0000005 pri PROVEDENI", zasobnik #0 = SWORD2+0x0, #1 = sub_CC81C
+       (`dword_1A124C[SWORD2(v3)]`).
+   Stejna trida jako no-op __ROL4__/__ROR4__ z vlny 25q - viz katalog v
+   PROGRESS.md. Semantika podle IDA defs.h: SWORDn(x) = *((int16*)&x + n),
+   obdobne SDWORDn/SBYTEn. abs32/abs16 = absolutni hodnota; overeno v asm
+   (sub_81147: `cdq / xor eax,edx / sub eax,edx`). __PAIR64__/__PAIR32__
+   sklada dva registry do jedne sirsi hodnoty. */
+#define SWORD1(x) (*((short*)&(x)+1))
+#define SWORD2(x) (*((short*)&(x)+2))
+#define SWORD3(x) (*((short*)&(x)+3))
+#define SWORD4(x) (*((short*)&(x)+4))
+#define SWORD5(x) (*((short*)&(x)+5))
+#define SWORD6(x) (*((short*)&(x)+6))
+#define SWORD7(x) (*((short*)&(x)+7))
+#define SDWORD1(x) (*((int*)&(x)+1))
+#define SDWORD2(x) (*((int*)&(x)+2))
+#define SDWORD3(x) (*((int*)&(x)+3))
+#define SBYTE4(x) (*((signed char*)&(x)+4))
+#define SBYTE5(x) (*((signed char*)&(x)+5))
+#define SBYTE6(x) (*((signed char*)&(x)+6))
+#define SBYTE7(x) (*((signed char*)&(x)+7))
+
+/* abs16/abs32 jsou funkce (ne makra) schvalne - argument byva volani funkce
+   (`abs32((int16_t)sub_3F5F1(...) - v13)`) a makro by ho vyhodnotilo dvakrat. */
+static __inline int abs32(int v) { return v < 0 ? -v : v; }
+static __inline int abs16(short v) { return v < 0 ? -(int)v : (int)v; }
+
+#define __PAIR64__(high, low) \
+    (((long long)(unsigned int)(uintptr_t)(high) << 32) | (unsigned int)(uintptr_t)(low))
+#define __PAIR32__(high, low) \
+    (((unsigned int)(unsigned short)(uintptr_t)(high) << 16) | (unsigned short)(uintptr_t)(low))
 
 /* ---- flagova pseudo-makra (presna hodnota neni pro preklad podstatna) ---- */
 #define __CFSHL__(x,y) 0
