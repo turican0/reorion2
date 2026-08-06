@@ -10150,7 +10150,13 @@ void sub_9F4AD()
   int v1; // esi
   _BYTE v2[40]; // [esp+0h] [ebp-28h] BYREF
 
-  v0 = fopen(aHofM2, &unk_179BCD);
+  // PORT (vlna 58): `unk_179BCD` NENI promenna, ale RETEZEC "rb" - IDA ho
+  // nechala jako nepojmenovane bajty (asm: `unk_171BCD db 72h,62h,0` hned za
+  // `word_171BCB`, viz Debug/diss/Orion2.exe.asm), takze v portu z nej vznikl
+  // jednobajtovy `_UNKNOWN` placeholder s nulou. Do fopen se tim predaval
+  // PRAZDNY mod -> Debug Assertion `*mode != 0` v fopen.cpp pri HALL OF FAME.
+  // Sesterska funkce sub_9F505 ma na tomtez miste normalne `aWb_2` = "wb".
+  v0 = fopen(aHofM2, "rb");
   v1 = v0;
   if ( v0 )
   {

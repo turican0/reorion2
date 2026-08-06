@@ -6523,3 +6523,51 @@ az na 0x1A132C, kde IDA jen nasla dalsi jmeno.)
    (`start > 0` v `port_vga.cpp`), takze `0:600` tise nedumpne nic. Regresni
    snimky se stejne musi brat pres `REORION2_BLIT_DUMP_DIR` (blit, ne Present)
    - viz komentar u `PortVga_CaptureBlit`.
+
+#### Dodatek k vlne 58: HALL OF FAME - dve chyby (obe "IDA zmensila symbol")
+
+Uzivatel po opravach NEW GAME zkusil HALL OF FAME. Padalo to dvakrat, obe
+pricine jsou stejna trida jako `unk_1AE5D4` z vlny 54.
+
+**1) `Debug Assertion Failed: *mode != 0` (fopen.cpp:32).**
+`sub_9F4AD` (`orion_part_09.c`) volalo `fopen(aHofM2, &unk_179BCD)`.
+`unk_179BCD` **neni promenna, ale RETEZEC "rb"** - IDA ho nechala jako
+nepojmenovane bajty hned za `word_171BCB` (asm: `unk_171BCD db 72h,62h,0`),
+takze v portu z nej vznikl jednobajtovy `_UNKNOWN` placeholder s nulou a do
+fopen sel PRAZDNY mod. Sesterska `sub_9F505` ma na tomtez miste `aWb_2`="wb".
+Opraveno na literal `"rb"`.
+
+**2) Pad ve `strcpy` (`sub_9F540+0x2e0`, cteni z NULL).**
+`aMoise` byl v portu `char aMoise[6] = "Moise"`, ale v originale je to
+**TABULKA 10 jmen po 20 bajtech** (200 B; jen prvni slot je predvyplneny,
+zbytek nulovy). `sub_9F540` mezi sloty prohazuje jmena
+(`v7 = &aMoise[20 * idx]; strcpy(v17, v7); strcpy(v7, v9); ...`) pro idx az 8,
+takze s [6] cetla i PSALA daleko za konec. Velikost overena vzdalenosti
+k dalsimu symbolu v asm (`aMoise` -> `byte_1823E0` = 200 B = 10*20).
+
+**Stav:** Hall of Fame uz nepada (SEH=0). Obrazovka se ale pri skoku pres
+`REORION2_STATE=14` nevykresli (226 nenulovych pixelu) - stav 14 nejspis
+potrebuje inicializaci, kterou dela az prechod z menu, takze se to musi
+overit kliknutim z menu.
+**Regresni test videa po obou opravach: 600/600 matched, 0 diverged.**
+
+#### Nastroj + seznam k dalsimu proverovani: `tools/unkstr_scan.py`
+
+Skript projde vsechny `_UNKNOWN unk_X` v `orion_data.c`, najde odpovidajici
+adresu v asm dumpu (asm jmeno = C jmeno - 0x8000) a ohlasi ty, jejichz bajty
+tvori tisknutelny retezec zakonceny nulou. Z 246 pouzivanych `_UNKNOWN`
+symbolu jich takhle vypadlo 15; `unk_179BCD` byl jeden z nich (opraveno).
+**Zbylych 14 je potreba proverit jednotlivemu podle pouziti** - cast z nich
+retezce nejspis NENI (napr. `unk_17FE42` se plni ve smycce po 322 bajtech,
+`unk_183F8F` se indexuje s krokem 14, `unk_1811A4`/`unk_1811C0` se predavaji
+s poctem 7 resp. 2, tedy tabulky):
+
+    unk_178C83 = '-'     unk_178F79 = ', '    unk_179356 = 'I'
+    unk_17C220 = '='     unk_17C240 = 'R'     unk_17C244 = ';'
+    unk_17C26C = '?'     unk_17FE42 = 'K'     unk_18113C = '#'
+    unk_1811A4 = '"'     unk_1811C0 = '"'     unk_18386C = 's'
+    unk_18386E = 'es'    unk_183F8F = 'y'
+
+Jednoznacne retezcove pouziti maji `unk_178F79` (`v3 = (char *)&unk_178F79;`),
+`unk_179356` (`strcmp(off_17D5E4[v5], &unk_179356)`) a `unk_178C83`
+(`sub_1212B3(..., (int)&unk_178C83)`) - tam zacit.

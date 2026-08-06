@@ -17091,7 +17091,7 @@ extern int16_t word_18230A;
 extern int16_t word_18230C;
 extern void (__noreturn *off_18230E)();
 extern char *off_182314;
-extern char aMoise[6];
+extern char aMoise[200]; // vlna 58: tabulka 10 jmen po 20 B, viz orion_data.c
 extern char byte_1823E0[];
 extern char byte_1823E1;
 extern char byte_1823E2;

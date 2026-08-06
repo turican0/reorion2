@@ -7285,7 +7285,13 @@ int16_t word_18230A = 0; // weak
 int16_t word_18230C = 0; // weak
 void (__noreturn *off_18230E)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
 char *off_182314 = "SCORE.LBX"; // weak
-char aMoise[6] = "Moise"; // weak
+// PORT (vlna 58): NENI to sesti bajtovy retezec, ale TABULKA 10 jmen po 20
+// bajtech (jen prvni je predvyplnene "Moise", zbytek je v originale nulovy).
+// sub_9F540 (Hall of Fame) do ni indexuje `&aMoise[20 * idx]` pro idx az 8 a
+// dela mezi sloty `strcpy` - s [6] to cetlo a PSALO daleko za konec.
+// Velikost overena vzdalenosti k dalsimu symbolu v asm
+// (aMoise -> byte_1823E0 = 200 bajtu = 10 * 20).
+char aMoise[200] = "Moise"; // weak
 char byte_1823E0[] = { '\n' }; // weak
 char byte_1823E1 = '\x14'; // weak
 char byte_1823E2 = '\x1E'; // weak
