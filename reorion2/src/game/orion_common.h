@@ -19570,23 +19570,26 @@ extern char byte_19C5E7;
 extern char byte_19C5E8;
 extern char byte_19C5E9;
 extern char byte_19C5EA;
-extern int16_t word_19C5FC;
-extern char byte_19C5FE[200];
-extern int16_t word_19C6C6[];
-extern int16_t word_19C6C8[9];
-extern int16_t word_19C6DA[];
-extern int16_t word_19C6DC[9];
-extern char byte_19C6EE[];
-extern char byte_19C6EF[9];
-extern char byte_19C6F8[28];
+// Zaznam Hall of Fame - 452 B vcelku (vlna 58), viz orion_data.c.
+extern char hofBlock_19C5FC[452];
+#define word_19C5FC  (*(int16_t *)(hofBlock_19C5FC + 0))
+#define byte_19C5FE  ((char *)(hofBlock_19C5FC + 2))
+#define word_19C6C6  ((int16_t *)(hofBlock_19C5FC + 202))
+#define word_19C6C8  (word_19C6C6 + 1)
+#define word_19C6DA  ((int16_t *)(hofBlock_19C5FC + 222))
+#define word_19C6DC  (word_19C6DA + 1)
+#define byte_19C6EE  ((char *)(hofBlock_19C5FC + 242))
+#define byte_19C6EF  (byte_19C6EE + 1)
+#define byte_19C6F8  ((char *)(hofBlock_19C5FC + 252))
 extern char byte_19C714[];
 extern int dword_19C7C0;
 extern int16_t word_19C7C4;
-extern char byte_19C7C6[15];
-extern char byte_19C7D5[15];
-extern char byte_19C7E4[15];
-extern char byte_19C7F3[15];
-extern int16_t word_19C802[8];
+// Nazvy obtiznosti - souvisle sloty po 15 B (vlna 58), viz orion_data.c.
+extern char byte_19C7C6[76];
+#define byte_19C7D5 (byte_19C7C6 + 15)
+#define byte_19C7E4 (byte_19C7C6 + 30)
+#define byte_19C7F3 (byte_19C7C6 + 45)
+#define word_19C802 ((int16_t *)(byte_19C7C6 + 60)) /* vlna 58: paty slot */
 extern char byte_19C813[2561];
 extern int dword_19D214;
 extern int dword_19D218;
@@ -21070,8 +21073,13 @@ extern _UNKNOWN unk_199A12;
 extern _UNKNOWN unk_19B772;
 extern _UNKNOWN unk_19C048;
 extern _UNKNOWN unk_19C348;
-extern _UNKNOWN unk_19C6F8;
-extern _UNKNOWN unk_19C7C6;
+// vlna 58: TENTYZ objekt jako byte_19C6F8 (nazvy ras v zaznamu Hall of
+// Fame). sub_9FC27 z nej pri prestavbe zaznamu CTE (`&unk_19C6F8 + v8`),
+// zatimco sub_9F540 do nej PISE pres byte_19C6F8 - jako dva ruzne objekty
+// se cetly prazdne retezce, takze sloupec ras zustal prazdny.
+#define unk_19C6F8 (*byte_19C6F8)
+// vlna 58: TENTYZ objekt jako byte_19C7C6 (dve jmena IDA pro jednu adresu).
+#define unk_19C7C6 (*byte_19C7C6)
 extern _UNKNOWN unk_19DA6C;
 extern _UNKNOWN unk_1A74B4;
 extern _UNKNOWN unk_1AA414;

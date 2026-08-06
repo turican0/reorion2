@@ -75,7 +75,8 @@ int byte_19B688;
 int byte_19C120;
 int byte_19C148;
 int byte_19C31C;
-int byte_19C6EE;
+/* vlna 58: byte_19C6EE je ted makro do bloku hofBlock_19C5FC - tenhle
+   pahyl uz nic nealiasoval a jen mrtve zabiral symbol. */
 int byte_19C714;
 int byte_19DECA;
 int byte_19DECD;
@@ -399,8 +400,9 @@ int unk_199A12;
 int unk_19B772;
 int unk_19C048;
 int unk_19C348;
-int unk_19C6F8;
-int unk_19C7C6;
+/* vlna 58: unk_19C6F8 a unk_19C7C6 jsou druha jmena IDA pro byte_19C6F8
+   resp. byte_19C7C6 - ted makra v orion_common.h; pahyly by z nich zase
+   udelaly samostatne objekty a cetlo by se prazdno. */
 int unk_19DA6C;
 int unk_1A74B4;
 int unk_1AA414;

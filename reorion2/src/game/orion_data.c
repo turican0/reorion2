@@ -16819,23 +16819,28 @@ char byte_19C5E7; // weak
 char byte_19C5E8; // weak
 char byte_19C5E9; // weak
 char byte_19C5EA; // weak
-int16_t word_19C5FC; // weak
-char byte_19C5FE[200]; // weak
-int16_t word_19C6C6[]; // weak
-int16_t word_19C6C8[9]; // weak
-int16_t word_19C6DA[]; // weak
-int16_t word_19C6DC[9]; // weak
-char byte_19C6EE[]; // weak
-char byte_19C6EF[9]; // weak
-char byte_19C6F8[28]; // weak
+// PORT (vlna 58): 0x19C5FC..0x19C7C0 je JEDEN 452bajtovy zaznam Hall of
+// Fame - hra ho cte i zapisuje vcelku (`fread/fwrite(&word_19C5FC, 452, 1)`,
+// `memset(..., 452)`, `qmemcpy(..., 0x1C4)`). IDA ho rozsekala na 9
+// globalu a vetsinu z nich orezala na jeden prvek, takze `byte_19C6EE[i]`
+// vracelo pro i>=4 smeti (zmereno: 239, 244, 244 misto 0..4) a jedno jmeno
+// bylo poskozene. Rozlozeni: +0 magic, +2 jmena 10x20, +202 skore 10x2,
+// +222 rasa 10x2, +242 obtiznost 10x1, +252 nazev rasy 10x20.
+char hofBlock_19C5FC[452]; // weak
 char byte_19C714[]; // weak
 int dword_19C7C0; // weak
 int16_t word_19C7C4; // weak
-char byte_19C7C6[15]; // weak
-char byte_19C7D5[15]; // weak
-char byte_19C7E4[15]; // weak
-char byte_19C7F3[15]; // weak
-int16_t word_19C802[8]; // weak
+// PORT (vlna 58): ctyri nazvy obtiznosti po 15 B lezi za sebou a
+// sub_9EE43 do nich indexuje `&unk_19C7C6 + 15 * idx`. `unk_19C7C6` byl
+// pritom v portu SAMOSTATNY jednobajtovy _UNKNOWN (stejna past jako
+// unk_1AE5D4 ve vlne 54: dve jmena IDA pro tutez adresu), takze treti
+// sloupec tabulky zustaval prazdny. Souvisly blok + makra nize.
+// Poznamka: `idx` muze byt 0..4 (v12 % 5), pate slovo uz v originale
+// zasahuje do nasledujiciho symbolu - proto 75 B, aby to nebylo UB.
+char byte_19C7C6[76]; // weak
+// vlna 58: PATY slot tabulky obtiznosti (sub_9F286 do nej dela
+// `strcpy(word_19C802, sub_CDF5C(328))`), lezi tesne za byte_19C7F3 -
+// proto je ted makro do bloku byte_19C7C6, ne samostatne pole.
 char byte_19C813[2561]; // weak
 int dword_19D214; // weak
 int dword_19D218; // weak

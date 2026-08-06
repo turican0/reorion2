@@ -9906,6 +9906,12 @@ void sub_9EE43()
     sub_120E8C(1);
     sub_128AB6(164, v19, 281, (int16_t)(v19 + 20));
     sub_12B634();
+    { static int n = 0; if ( n++ < 12 ) {
+        PortDebug_Checkpoint("hof.radek", v20);
+        PortDebug_Checkpoint("hof.index", v21);
+        PortDebug_Message(&byte_19C5FE[20 * v21]);
+        PortDebug_Message(&byte_19C6F8[20 * v21]);
+        PortDebug_Checkpoint("hof.obtiznost_idx", (uint8_t)byte_19C6EE[v21]); } }
     sub_1212B3(164, v19, (int)&byte_19C5FE[20 * v21]);
     if ( byte_199CAE )
     {
