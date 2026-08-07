@@ -160,27 +160,40 @@ extern "C" int PortInput_PollKeyPress(void)
     // Zkratky hlavniho menu (sub_816F2, porovnava ASCII v `v7`):
     //   'C' 67 continue, 'N' 78 new game, 'L' 76 load, 'M' 77 multiplayer,
     //   'H' 72 hall of fame, 'Q' 81 quit.
+    // Format: REORION2_SENDKEY=<kod>[:<ms>[:<perioda_ms>]]
+    // Bez periody se klavesa vlozi JEDNOU; s periodou se opakuje - to se hodi
+    // na obrazovky, ktere po prvni klavese cekaji na dalsi (napr. cekani
+    // sub_6497C na chybove ceste CONTINUE).
     {
         static int s_code = -1;
         static unsigned s_atMs = 6000;
+        static unsigned s_periodMs = 0;
+        static Uint64 s_lastMs = 0;
         static bool s_done = false;
         if (s_code == -1) {
             s_code = 0;
             if (const char* e = std::getenv("REORION2_SENDKEY")) {
-                int c = 0, ms = 6000;
+                int c = 0, ms = 6000, period = 0;
                 // %i => prijme i hex ("0x2348"). Kod klavesy ma stejny tvar
                 // jako z realneho stisku: (scancode << 8) | ascii, tedy napr.
-                // 'H' = 0x2348, 'N' = 0x314E, 'Q' = 0x1051.
-                if (std::sscanf(e, "%i:%d", &c, &ms) >= 1 && c > 0) {
+                // 'H' = 0x2348, 'N' = 0x314E, 'Q' = 0x1051, 'C' = 0x2E43.
+                if (std::sscanf(e, "%i:%d:%d", &c, &ms, &period) >= 1 && c > 0) {
                     s_code = c;
                     s_atMs = (unsigned)ms;
+                    s_periodMs = (unsigned)(period > 0 ? period : 0);
                 }
             }
         }
-        if (s_code && !s_done && SDL_GetTicks() >= (Uint64)s_atMs) {
-            s_done = true;
-            SDL_Log("Port: REORION2_SENDKEY vklada kod %d", s_code);
-            return s_code;
+        if (s_code) {
+            const Uint64 now = SDL_GetTicks();
+            const bool first = !s_done && now >= (Uint64)s_atMs;
+            const bool again = s_done && s_periodMs && now - s_lastMs >= (Uint64)s_periodMs;
+            if (first || again) {
+                s_done = true;
+                s_lastMs = now;
+                SDL_Log("Port: REORION2_SENDKEY vklada kod 0x%X", s_code);
+                return s_code;
+            }
         }
     }
     // Bere se ze stejne fronty udalosti jako my� (viz Poll vyse) - hranou,

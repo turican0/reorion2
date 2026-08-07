@@ -6919,3 +6919,112 @@ TOTAL ENTERTAINMENT NETWORK i CANCEL.
 `(_WORD **)` mimo `sub_F009A` - stejna trida, zatim neproverene. A dal plati
 poradi otevrenych veci z konce vlny 58 (611 chybejicich `return`, 33 volani
 `qsort` bez komparatoru, `sub_102FD8`).
+
+### Vlna 60: CONTINUE v menu - zamrznute okno; a pri tom NALEZENA A OPRAVENA
+### dlouholeta NEDETERMINISTICKA chyba (poskozeny jazyk)
+
+Priznak (uzivatel): CONTINUE nespadne, ale "zasekne se ve smycce a nic noveho
+nevykresli".
+
+#### Reprodukce
+
+`REORION2_SENDKEY=0x2E43:7000` (klavesa 'C' = zkratka CONTINUE) +
+`REORION2_SKIPINTRO=1` + `REORION2_WATCHDOG=8`. Hlidac nachytal presne to:
+
+    #6 sub_12C392   (cteni klavesnice)
+    #7 sub_12C574   (orion_part_20.c:645)
+    #8 sub_6497C    (orion_part_05.c:502)
+    #9 sub_10E2F    (orion_part_01.c:1057)
+    #10 sub_816F2   (orion_part_07.c:7030)
+
+#### Chyba 1: cekani na klavesu bez jedineho Present()
+
+`sub_10E2F` (nacteni savu) pri neuspesnem `fopen` zavola `sub_6497C`, coz je
+"stiskni klavesu" - vykresli `*` (`sub_121CE5(0, 24, asc_1791A9)`) a ceka.
+Cekani je `sub_12C574`:
+
+```c
+while ( !sub_12C392() )
+  ;                      /* CISTY busy-wait, zadny Present */
+```
+
+V DOSu to stacilo - CRT scanuje plochu porad dokola. V portu se do okna nic
+nedostane, takze hra vypadala zamrznuta. Doplneno `PortVga_WaitVsyncSlow()`
+do tela smycky - stejne reseni jako u `sub_12C2C6` ve vlne 15/25p.
+**Overeno: hlidac uz nevystreli, obraz zije.**
+
+Pozn.: `asc_1791A9` je jen `"*"` na pozici (0,24), tedy textovy indikator, ne
+chybove okno - original tu take jen ceka na klavesu. Zadna dalsi hlaska tedy
+nechybi.
+
+#### Chyba 2 (VETSI NALEZ): tabulky nazvu technologii pretekaly o kilobajty
+
+Pri hledani reprodukce se ukazalo, ze hra **asi 1 beh ze 6** konci hlaskou
+`HISTRNGS.LBX [entry 0] could not be found.` (jindy `HFSTRNGS.LBX`), zatimco
+v datech je jen `HESTRNGS.LBX`. Jmeno souboru se vybira podle `byte_199CAE`
+(0 = EN, 2 = FR, 4 = IT), takze jazyk byl POSKOZENY.
+
+**Postup (kontrolni body, pulen po pulce):**
+
+| bod | jazyk |
+|---|---|
+| `tail.before_switch1` | 0 |
+| `tail.after_124ECB` | 0 |
+| **`tail.after_13174`** | **252 / 108 / 110 / 12 / 111 / 244 ...** |
+
+-> vinik je `sub_13174`; uvnitr nej dalsi pulenim `sub_5E1E3`; a v nem az
+uplne posledni volani - **`sub_5DF0A`** (nacteni nazvu technologii
+z TECHNAME.LBX).
+
+`sub_5DF0A` rozdava ukazatele na retezce do PATNACTI tabulek zaznamu vyrazy
+typu
+
+```c
+*(int *)((char *)&dword_17D8ED + v4) = (int)v7;   /* v4 az 1909 */
+for ( i = 0; i != 2756; *(int *)((char *)&dword_17E06C + i) = (int)v9 )
+```
+
+a v portu byly **vsechny ty cile skalary nebo jednoprvkova pole**, takze se
+zapisovaly stovky az tisice bajtu ZA jejich konec a prepisovaly sousedni
+globaly. Jednim z postizenych byl `byte_199CAE`.
+
+Opraveno 15 tabulek (`orion_data.c` + `orion_common.h`); velikosti odvozeny
+primo z meze prislusne smycky:
+
+    dword_17D8ED  1916 B     dword_17E06C  2764 B     dword_17EB2A   960 B
+    off_17EEB1    1920 B     dword_17F629   128 B     off_17F665     384 B
+    dword_17F7E7  322 int    dword_17FDD6   160 B     unk_17FE42     352 B
+    dword_17FFA6   16 int    off_17FFD6      96 B     dword_17FCFC   256 B
+    dword_17FD00   256 B     dword_17F7EB  322 int    off_180014     352 B
+
+Pri tom take opraveny dve tabulky, ktere ty divoke hodnoty dal roznasely:
+`word_17D90E` (zaznamy po 23 B, blok 0x17D90E..0x17E06C = 1886 B; byla `[4]`)
+a `word_17E07F` (prvni pole 13bajtoveho zaznamu technologii, blok konci
+u 0x17EB2A = 2731 B; byl SKALAR). U nich to uz vlna 23 predvidala poznamkou
+"the full struct merge is a follow-up if other fields are needed".
+
+**Vsech 15 cilu se v portu pouziva JEN na tom jednom miste zapisu** (overeno
+grepem), takze zvetseni nemuze rozbit zadneho ctenare.
+
+**Zmereno po oprave: jazyk je 0 v 8 bezich z 8** (pred opravou byl pokazde
+jiny a asi kazdy sesty beh na tom umrel).
+
+**Pozn.:** clamp `if ((uint8_t)byte_199CAE >= 6u) byte_199CAE = 0;` v
+`sub_7A816` tuhle chybu vetsinu casu MASKOVAL - projevila se jen kdyz smeti
+nahodou padlo do rozsahu 0..5. To je pravdepodobne stejny mechanismus, ktery
+stoji za starou polozkou "nedeterministicke mizeni pozadi v menu"; tu je
+potreba znovu premerit, jestli uz nezmizela.
+
+#### Overeno po vsech zmenach
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test: hlavni menu, NEW GAME (13), HALL OF FAME (14),
+  MULTI PLAYER (15) - bez padu a bez chybove hlasky;
+- CONTINUE pres klavesu 'C': bez padu, bez zamrznuti hlidace, bez hlasky.
+
+#### Rozsireni nastroje
+
+`REORION2_SENDKEY` ma nove volitelne treti pole - periodu opakovani:
+`REORION2_SENDKEY=<kod>[:<ms>[:<perioda_ms>]]`. Bez ni se klavesa vlozi
+jednou; s ni se opakuje, coz je potreba na obrazovkach, ktere po prvni
+klavese cekaji na dalsi.

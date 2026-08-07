@@ -176,7 +176,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     sub_124ECB();                             // 01027B
     PortDebug_Checkpoint("tail.after_124ECB", 0);
     sub_13174(0, 0, menuBuf);                 // 010280 (a3=buffer)
-    PortDebug_Checkpoint("tail.after_13174", 0);
+    PortDebug_Checkpoint("tail.after_13174", (uint8_t)byte_199CAE); // vlna 59: hlida poskozeni jazyka
     sub_7A816();                              // 010285
     sub_FECDA();                              // 01028A
     sub_CDF65(0, 0, 0);                       // 01028F
@@ -2645,7 +2645,6 @@ int sub_13174(int a1, int a2, int16_t *a3)
   int v5; // eax
   int v6; // eax
   int v7; // eax
-
   v3 = sub_131C2(a3);
   ServiceAudioTick_FE8BE(v3, a1, a2, a3);
   v4 = sub_BBC16();

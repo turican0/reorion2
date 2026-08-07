@@ -642,8 +642,15 @@ void KeyboardIsr_12C4D8()
 //----- (0012C574) --------------------------------------------------------
 int sub_12C574()
 {
+  // PORT (vlna 59): cekani na klavesu bylo CISTY busy-wait bez jedineho
+  // Present(). V DOSu to stacilo - CRT scanuje plochu porad dokola, takze
+  // hlaska nakreslena tesne pred tim (sub_121CE5 v sub_6497C) byla videt.
+  // V portu se do okna nic nedostane, takze hra vypadala "zaseknuta v smycce,
+  // ktera nic nekresli" - presne tenhle projev mel CONTINUE v menu, kdyz
+  // nesel otevrit sav ("File read error"). Stejne reseni jako u busy-wait
+  // smycky sub_12C2C6 ve vlne 15/25p.
   while ( !sub_12C392() )
-    ;
+    PortVga_WaitVsyncSlow();
   return (uint8_t)sub_12C2E1();
 }
 

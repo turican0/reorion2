@@ -3182,17 +3182,41 @@ _UNKNOWN unk_17D879; // weak
 int16_t word_17D881[] = { 12 }; // weak
 char aLanguageIni[13] = "language.ini"; // weak
 int16_t word_17D8AC[] = { 41 }; // weak
-int dword_17D8ED = 486548480; // weak
+// PORT (vlna 59): pole nazvu v tabulce zaznamu po 23 bajtech. sub_5DF0A do
+// nej pise ukazatele na retezce z TECHNAME.LBX vyrazem
+// `*(int *)((char *)&dword_17D8ED + v4) = v7` pro v4 = 46, 69, ... 1909,
+// tedy skoro 2 kB ZA konec skalaru. Prepisovalo to sousedni globaly (mimo
+// jine `byte_199CAE` = jazyk) - viz komentar u word_17D90E.
+int dword_17D8ED[479] = { 486548480 }; // weak - 1916 B (zapis az na +1909)
 _UNKNOWN *off_17D904 = &unk_178A04; // weak
 int16_t word_17D90C = 0; // weak
-int16_t word_17D90E[4] = { 0, 0, 0, 0 }; // weak
+// PORT (vlna 59): NENI to ctyrprvkove pole, ale ZACATEK tabulky zaznamu po
+// 23 bajtech - sub_5E1E3 do ni pise `*(int16_t *)((char *)&word_17D90E[v23]
+// + 23 * techId) = v21`. V asm blok bezi od 0x17590E az k dalsimu skutecnemu
+// symbolu dword_17606C (jmena dword_175916 / byte_17591A / word_175998 uvnitr
+// jsou jen odkazy do jeho stredu), tedy 0x17E06C - 0x17D90E = 0x75E = 1886 B
+// = 23 * 82 zaznamu. Se ctyrmi prvky zapisy odchazely DALEKO za konec a
+// prepisovaly sousedni globaly - mimo jine `byte_199CAE` (jazyk). Zmereno
+// kontrolnimi body: pred sub_5E1E3 je jazyk 0, po nem 81/108/110/112/244/252
+// (= hodnoty citace v21). Clamp `>= 6 -> 0` to vetsinou zamaskoval, ale kdyz
+// smeti padlo do 0..5, hra sahla po cizim jazyce a spadla na chybejicim
+// HISTRNGS.LBX / HFSTRNGS.LBX (asi 1 beh ze 6).
+int16_t word_17D90E[943] = { 0 }; // weak - 1886 B
 int dword_17D916 = 0; // weak
 char byte_17D91A[] = { '\0' }; // weak
 int16_t word_17D998[] = { 0 }; // weak
-int dword_17E06C = 0; // weak
+// PORT (vlna 59): totez pro tabulku zaznamu po 13 bajtech - sub_5DF0A pise
+// `*(int *)((char *)&dword_17E06C + i)` pro i = 0, 13, ... 2756.
+int dword_17E06C[691] = { 0 }; // weak - 2764 B (zapis az na +2756)
 _UNKNOWN *off_17E079 = &unk_178A04; // weak
 int16_t word_17E07D = 0; // weak
-int16_t word_17E07F = 0; // weak
+// PORT (vlna 59): prvni pole 13bajtoveho zaznamu technologii - tehoz bloku,
+// jehoz sedmy bajt uz je vytknuty jako byte_17E085 (viz komentar nize).
+// sub_5E1E3 z nej cte `*(int16_t *)((char *)&word_17E07F + 13 * i)` pro i az
+// ~210, takze jako SKALAR vracelo smeti -> nesmyslna technId a s nimi i ty
+// divoke zapisy do word_17D90E vyse. Blok konci u dword_17EB2A:
+// 0x17EB2A - 0x17E07F = 0xAAB = 2731 B.
+int16_t word_17E07F[1366] = { 0 }; // weak - 2732 B
 char byte_17E082[] = { '\0' }; // weak
 char byte_17E084[] = { '\x01' }; // weak
 // PORT: Hex-Rays declared this as a single byte, but Debug/diss/Orion2.exe.asm
@@ -3211,7 +3235,7 @@ char byte_17E085[2730] = { 0 }; // weak
 _UNKNOWN *off_17E0EE = &unk_178A04; // weak
 _UNKNOWN *off_17E7F0 = &unk_178A04; // weak
 _UNKNOWN *off_17EA60 = &unk_178A04; // weak
-int dword_17EB2A = 2686976; // weak
+int dword_17EB2A[240] = { 2686976 }; // weak - vlna 59: zapis az na +931
 _UNKNOWN *off_17EB3D = &unk_178A04; // weak
 // PORT (wave 23): Hex-Rays declared word_17EB43/17EEE6/17F63E/17F6A7/17F80D/
 // 17FDF2/17FE76/17FFE8 as single int16 scalars, but sub_5E1E3 (and several
@@ -3260,7 +3284,7 @@ _UNKNOWN *off_17EE22 = &unk_178A04; // weak
 int dword_17EE3D = 400; // weak
 _UNKNOWN *off_17EE5B = &unk_178A04; // weak
 _UNKNOWN *off_17EE6E = &unk_178A04; // weak
-_UNKNOWN *off_17EEB1 = (_UNKNOWN *)0x30000; // weak
+char off_17EEB1[1920]; // weak - vlna 59: zapis az na +1880 (8B ukazatele)
 _UNKNOWN *off_17EEBA = &unk_178A04; // weak
 _UNKNOWN *off_17EEE0 = &unk_178A04; // weak
 int16_t word_17EEE6[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
@@ -3275,14 +3299,14 @@ int16_t word_17F0ED = 12; // weak
 int16_t word_17F178 = 82; // weak
 int16_t word_17F3DB = 56; // weak
 int16_t word_17F582 = 192; // weak
-int dword_17F629 = 3; // weak
+int dword_17F629[32] = { 3 }; // weak - vlna 59: zapis az na +105
 _UNKNOWN *off_17F638 = &unk_178A04; // weak
 int16_t word_17F63E[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 char byte_17F641[] = { '\0' }; // weak
 int16_t word_17F642 = -100; // weak
 int16_t word_17F644 = 0; // weak
 char byte_17F646[] = { '\0' }; // weak
-_UNKNOWN *off_17F665 = &unk_178A04; // weak
+char off_17F665[384]; // weak - vlna 59: zapis az na +355
 char byte_17F698 = '\xC9'; // weak
 char byte_17F69B = '\x1E'; // weak
 _UNKNOWN *off_17F6A1 = &unk_178A04; // weak
@@ -3290,8 +3314,8 @@ int16_t word_17F6A7[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17F6A9 = 0; // weak
 int16_t word_17F6B5[6] = { 0, 0, 0, 0, 0, 0 }; // weak
 int16_t word_17F6C1 = 0; // weak
-int dword_17F7E7[] = { 2560 }; // weak
-int dword_17F7EB[] = { 0 }; // weak
+int dword_17F7E7[322] = { 2560 }; // weak - vlna 59: index az 321
+int dword_17F7EB[322] = { 0 }; // weak - vlna 59: index az 321
 _UNKNOWN *off_17F803 = &unk_178A04; // weak
 _UNKNOWN *off_17F807 = &unk_178A04; // weak
 int16_t word_17F80B[] = { 0 }; // weak
@@ -3324,8 +3348,8 @@ int16_t word_17FC09 = 24; // weak
 int16_t word_17FC41 = 400; // weak
 int16_t word_17FCE7 = 10; // weak
 int16_t word_17FCE9 = 40; // weak
-int dword_17FCFC = 1677798655; // weak
-int dword_17FD00 = 419430400; // weak
+int dword_17FCFC[64] = { 1677798655 }; // weak - vlna 59: zapis az na +225
+int dword_17FD00[64] = { 419430400 }; // weak - vlna 59: zapis az na +225
 _UNKNOWN *off_17FD0B = &unk_178A04; // weak
 _UNKNOWN *off_17FD0F = &unk_178A04; // weak
 char byte_17FD14[] = { '\0' }; // weak
@@ -3351,14 +3375,14 @@ char byte_17FDB9 = '\x01'; // weak
 int16_t word_17FDBC = 25; // weak
 char byte_17FDC8 = '\x01'; // weak
 int16_t word_17FDCB = 25; // weak
-int dword_17FDD6 = 19660813; // weak
+int dword_17FDD6[40] = { 19660813 }; // weak - vlna 59: zapis az na +132
 int16_t word_17FDDA = 300; // weak
 int16_t word_17FDE9 = 50; // weak
 _UNKNOWN *off_17FDEC = &unk_178A04; // weak
 int16_t word_17FDF2[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FDF4[] = { 0 }; // weak
 int16_t word_17FE00[] = { 0 }; // weak
-_UNKNOWN unk_17FE42; // weak
+char unk_17FE42[352]; // weak - vlna 59: zapis az na +322
 _UNKNOWN *off_17FE70 = &unk_178A04; // weak
 int16_t word_17FE76[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FE78[] = { 0 }; // weak
@@ -3368,13 +3392,13 @@ char byte_17FE92[4] = { '\0', '\0', '\0', '\0' }; // weak
 char byte_17FE96[6] = { '\0', '\0', '\0', '\0', '\0', '\0' }; // weak
 int16_t word_17FE9C[] = { 0 }; // weak
 char byte_17FEEE = '\b'; // weak
-int dword_17FFA6[] = { 219025168 }; // weak
+int dword_17FFA6[16] = { 219025168 }; // weak - vlna 59: index az 11
 _UNKNOWN *off_17FFB2 = &unk_178A04; // weak
-_UNKNOWN *off_17FFD6 = &unk_178A04; // weak
+char off_17FFD6[96]; // weak - vlna 59: zapis az na +62
 int16_t word_17FFDE = 2; // weak
 int16_t word_17FFE8[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17FFEA[] = { 0 }; // weak
-_UNKNOWN *off_180014 = &unk_178A04; // weak
+char off_180014[352]; // weak - vlna 59: zapis az na +326
 int dword_18001A[] = { 16711864 }; // weak
 int16_t word_18001E[] = { 20 }; // weak
 int16_t word_180020[] = { 25 }; // weak
