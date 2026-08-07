@@ -6857,3 +6857,65 @@ vraci do hlavniho menu. Potvrdil uzivatel.
    jednoznacne retezcove pouziti maji `unk_178F79`, `unk_179356`, `unk_178C83`.
 5. Nedeterministicky pad ve vstupni smycce NEW GAME (`sub_16937A`, dodatek 2,
    bod 2) - dalsi sirka-ukazatele na `off_184480 + 55*i + 32`.
+
+### Vlna 59: MULTI PLAYER - dve chyby, obe ze zavedeneho katalogu
+
+Priznak (uzivatel): po kliknuti na MULTI PLAYER v menu pad
+`0xC0000005` ve `stricmp` volanem ze `sub_127C27`.
+Reprodukce: `REORION2_SKIPINTRO=1 REORION2_STATE=15 REORION2_STATE2=10`
+(MULTI PLAYER nastavuje `word_199A08 = 15` a `word_199A10 = 10`).
+
+#### Chyba 1: pocet polozek cache se cetl pres hranici dvou globalu
+
+```c
+for ( i = 0; *(int *)((char *)&dword_1BC28C + 2) >> 16 > i; ++i )
+{
+  a2 = 4530 * i + dword_1BC28C;
+  if ( !stricmp(a1, a2) )
+```
+asm (`sub_127C27`): `mov eax, dword_1B428C+2 / sar eax, 10h` - nacte 4 bajty
+od adresy X+2 a posunem o 16 z nich necha **znamenkove 16bitove slovo na
+X+4**, tedy `word_1BC290`. V originale ty dva globaly lezi za sebou, v portu
+je `dword_1BC28C` samostatny `int`, takze se cetla SMETI za nim -> mez smycky
+vysla obrovska, `4530 * i + dword_1BC28C` odesel mimo pamet a `stricmp` spadlo.
+
+**Pikantni detail:** `word_1BC290` se pritom spravne nuluje (`sub_1279AF`)
+i inkrementuje (`sub_127C27`), ale do teto opravy ho **NIKDO NECETL** - vsech
+19 cteni slo pres ten rozbity vyraz. Opraveno hromadne na
+`(int16_t)word_1BC290`.
+
+Stejna trida jako 37 oprav ve vlne 55. **Upresneni pravidla do katalogu:**
+`*(int *)((char *)&X + 2) >> 16` je slovo na **X+4**, ne na X+2 (poznamka
+u vlny 55 to mela napsane nepresne, ackoli nahrady tam byly spravne).
+
+#### Chyba 2: sirka ukazatele ve strukture obrazovky MULTI PLAYER
+
+Po prvni oprave se pad posunul do `sub_F009A`, cteni z adresy
+`0xFFFFFFFFFFFFFFFF`. Dekompilat cetl ukazatele na sprity jako
+```c
+**(_WORD **)(dword_192680 + 95)
+```
+tedy OSM bajtu z ctyrbajtoveho pole; horni pulka se slepila ze sousedniho
+pole struktury. asm dela `mov edx, [eax+5Fh]` (0x5F = 95), tedy prosty
+32bitovy load.
+
+**Zmereno pred opravou**, ze samotna pole jsou v poradku (0x1949BFF0,
+0x1949F1B4, 0x194A2338, 0x194A547C) - slo tedy VYHRADNE o sirku cteni, ne o
+nenactene zdroje. Opraveno 10 mist (4x `**(_WORD **)`, 6x `*(_WORD **)`)
+makrem `PORT_PTR32` z vlny 58.
+
+#### VYSLEDEK
+
+Obrazovka **MULTI-PLAYER GAME SET UP se cela vykresli** - NETWORK, MODEM,
+NULL MODEM, HOTSEAT, START NEW GAME, LOAD GAME, JOIN GAME, COMM INFO,
+TOTAL ENTERTAINMENT NETWORK i CANCEL.
+
+**Overeno po zmenach:**
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test ctyr obrazovek bez padu a bez chybove hlasky: hlavni menu,
+  NEW GAME (13), HALL OF FAME (14), MULTI PLAYER (15).
+
+**Pozn. k dalsimu postupu:** v `orion_part_15.c` zbyva jeste 8 vyskytu
+`(_WORD **)` mimo `sub_F009A` - stejna trida, zatim neproverene. A dal plati
+poradi otevrenych veci z konce vlny 58 (611 chybejicich `return`, 33 volani
+`qsort` bez komparatoru, `sub_102FD8`).

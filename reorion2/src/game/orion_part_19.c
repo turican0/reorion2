@@ -6662,7 +6662,16 @@ int sub_127C27(int a1, int a2, int a3)
   if ( *(_DWORD *)(a3 - 12 + 4) != dword_1BC284 )
     sub_126487(aErrorCacheCorr, a2);
   v11 = 0;
-  for ( i = 0; *(int *)((char *)&dword_1BC28C + 2) >> 16 > i; ++i )
+  // PORT (vlna 59): pocet polozek cache se cetl vyrazem
+  // `*(int *)((char *)&dword_1BC28C + 2) >> 16`, coz je znamenkove rozsirene
+  // 16bitove slovo na adrese dword_1BC28C+4, tedy `word_1BC290` (asm
+  // sub_127C27: `mov eax, dword_1B428C+2 / sar eax, 10h`). V originale ty dva
+  // globaly lezi za sebou, v portu je `dword_1BC28C` samostatny int, takze se
+  // cetla SMETI za nim -> mez smycky vysla obrovska a `stricmp` sahlo mimo
+  // pamet (pad pri MULTI PLAYER). `word_1BC290` se pritom spravne nuluje
+  // i inkrementuje, jen ho do ted NIKDO NECETL. Opraveno na vsech 19 mistech
+  // v tomhle souboru. Stejna trida jako 37 oprav ve vlne 55.
+  for ( i = 0; (int16_t)word_1BC290 > i; ++i )
   {
     a2 = 4530 * i + dword_1BC28C;
     if ( !stricmp(a1, a2) )
@@ -6703,32 +6712,32 @@ int sub_127C27(int a1, int a2, int a3)
   }
   else
   {
-    if ( (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 1 >= 50 )
+    if ( ((int16_t)word_1BC290) + 1 >= 50 )
       sub_126487(aMaxFileBufferC, a2);
     ++dword_184580;
-    strcpy(4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + dword_1BC28C, a1);
-    *(_DWORD *)(dword_1BC28C + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 4526) = 0;
-    *(_WORD *)(4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16)
+    strcpy(4530 * ((int16_t)word_1BC290) + dword_1BC28C, a1);
+    *(_DWORD *)(dword_1BC28C + 4530 * ((int16_t)word_1BC290) + 4526) = 0;
+    *(_WORD *)(4530 * ((int16_t)word_1BC290)
              + dword_1BC28C
-             + 11 * *(_DWORD *)(dword_1BC28C + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 4526)
+             + 11 * *(_DWORD *)(dword_1BC28C + 4530 * ((int16_t)word_1BC290) + 4526)
              + 17) = v6;
-    *(_DWORD *)(4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16)
+    *(_DWORD *)(4530 * ((int16_t)word_1BC290)
               + dword_1BC28C
-              + 11 * *(_DWORD *)(dword_1BC28C + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 4526)
+              + 11 * *(_DWORD *)(dword_1BC28C + 4530 * ((int16_t)word_1BC290) + 4526)
               + 19) = dword_184580;
-    *(_DWORD *)(11 * *(_DWORD *)(dword_1BC28C + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 4526)
-              + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16)
+    *(_DWORD *)(11 * *(_DWORD *)(dword_1BC28C + 4530 * ((int16_t)word_1BC290) + 4526)
+              + 4530 * ((int16_t)word_1BC290)
               + dword_1BC28C
               + 23) = sub_12816C(a1, v6, a3, (int *)2);
-    *(_BYTE *)(11 * (*(_DWORD *)(dword_1BC28C + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16) + 4526))++
+    *(_BYTE *)(11 * (*(_DWORD *)(dword_1BC28C + 4530 * ((int16_t)word_1BC290) + 4526))++
              + dword_1BC28C
-             + 4530 * (*(int *)((char *)&dword_1BC28C + 2) >> 16)
+             + 4530 * ((int16_t)word_1BC290)
              + 16) = 1;
     ++word_1BC290;
     return *(_DWORD *)(11
-                     * (*(_DWORD *)(4530 * ((*(int *)((char *)&dword_1BC28C + 2) >> 16) - 1) + dword_1BC28C + 4526) - 1)
+                     * (*(_DWORD *)(4530 * (((int16_t)word_1BC290) - 1) + dword_1BC28C + 4526) - 1)
                      + dword_1BC28C
-                     + 4530 * ((*(int *)((char *)&dword_1BC28C + 2) >> 16) - 1)
+                     + 4530 * (((int16_t)word_1BC290) - 1)
                      + 23);
   }
 }
@@ -6834,7 +6843,7 @@ _DWORD *sub_12816C(int a1, int a2, int a3, int *a4)
       {
         a4 = (int *)(dword_1BC28C + 4530 * v15);
         sub_12779E(*(_BYTE **)((char *)a4 + 11 * v16 + 23), *(_BYTE **)(4530 * v17 + dword_1BC28C + 11 * v18 + 23), v20);
-        for ( i = 0; *(int *)((char *)&dword_1BC28C + 2) >> 16 > i; ++i )
+        for ( i = 0; (int16_t)word_1BC290 > i; ++i )
         {
           for ( j = 0; j < *(_DWORD *)(dword_1BC28C + 4530 * i + 4526); ++j )
           {
@@ -6884,8 +6893,8 @@ int sub_12857C(int a1, int a2, int *a3, _DWORD *a4, int a5)
   *a3 = 1000;
   for ( i = 0; ; ++i )
   {
-    result = *(int *)((char *)&dword_1BC28C + 2) >> 16;
-    if ( *(int *)((char *)&dword_1BC28C + 2) >> 16 <= i )
+    result = (int16_t)word_1BC290;
+    if ( (int16_t)word_1BC290 <= i )
       break;
     for ( j = 0; j < *(_DWORD *)(dword_1BC28C + 4530 * i + 4526); ++j )
     {
@@ -6915,8 +6924,8 @@ int sub_1286BB(int *a1, _DWORD *a2)
   v6 = -1;
   for ( i = 0; ; ++i )
   {
-    result = *(int *)((char *)&dword_1BC28C + 2) >> 16;
-    if ( *(int *)((char *)&dword_1BC28C + 2) >> 16 <= i )
+    result = (int16_t)word_1BC290;
+    if ( (int16_t)word_1BC290 <= i )
       break;
     for ( j = 0; j < *(_DWORD *)(dword_1BC28C + 4530 * i + 4526); ++j )
     {

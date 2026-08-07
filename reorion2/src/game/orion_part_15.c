@@ -8418,10 +8418,15 @@ int sub_F009A()
   int v17; // eax
 
   sub_11C2F0();
+  // PORT (vlna 59): ukazatele na sprity jsou v teto strukture ulozene jako
+  // 32bitove (asm: `mov edx, [eax+5Fh]` = prosty 32bitovy load), ale dekompilat
+  // je cetl pres `**(_WORD **)(...)`, coz na x64 vezme OSM bajtu a horni pulku
+  // slepi ze sousedniho pole -> pad. Zmereno, ze samotna pole jsou v poradku
+  // (0x1949BFF0 atd.), takze slo jen o sirku cteni. Reseno makrem PORT_PTR32.
   v0 = sub_11438B(
          *(_WORD *)(dword_192680 + 243) + 59,
          *(_WORD *)(dword_192680 + 245) + 91,
-         *(_WORD *)(dword_192680 + 243) + 59 + **(_WORD **)(dword_192680 + 95),
+         *(_WORD *)(dword_192680 + 243) + 59 + *PORT_PTR32(uint16_t *, dword_192680 + 95),
          *(_WORD *)(dword_192680 + 245) + 91 + *(_WORD *)(*(_DWORD *)(dword_192680 + 95) + 2),
          byte_17A06F,
          40);
@@ -8431,7 +8436,7 @@ int sub_F009A()
   v3 = sub_11438B(
          *(_WORD *)(v1 + 243) + 59,
          v2 + 122,
-         *(_WORD *)(v1 + 243) + 59 + **(_WORD **)(v1 + 99),
+         *(_WORD *)(v1 + 243) + 59 + *PORT_PTR32(uint16_t *, v1 + 99),
          v2 + 122 + *(_WORD *)(*(_DWORD *)(v1 + 99) + 2),
          byte_17A071,
          40);
@@ -8441,7 +8446,7 @@ int sub_F009A()
   v6 = sub_11438B(
          *(_WORD *)(v4 + 243) + 59,
          v5 + 155,
-         *(_WORD *)(v4 + 243) + 59 + **(_WORD **)(v4 + 103),
+         *(_WORD *)(v4 + 243) + 59 + *PORT_PTR32(uint16_t *, v4 + 103),
          v5 + 155 + *(_WORD *)(*(_DWORD *)(v4 + 103) + 2),
          byte_17A073,
          40);
@@ -8450,7 +8455,7 @@ int sub_F009A()
   v8 = sub_11438B(
          *(_WORD *)(v7 + 243) + 59,
          *(_WORD *)(v7 + 245) + 187,
-         *(_WORD *)(v7 + 243) + 59 + **(_WORD **)(v7 + 107),
+         *(_WORD *)(v7 + 243) + 59 + *PORT_PTR32(uint16_t *, v7 + 107),
          *(_WORD *)(v7 + 245) + 187 + *(_WORD *)(*(_DWORD *)(v7 + 107) + 2),
          byte_17A075,
          40);
@@ -8460,7 +8465,7 @@ int sub_F009A()
                             *(_WORD *)(v9 + 243) + 110,
                             *(_WORD *)(v9 + 245) + 220,
                             (int)&unk_17A061,
-                            *(_WORD **)(v9 + 139),
+                            PORT_PTR32(uint16_t *, v9 + 139),
                             byte_17A077,
                             40);
   v11 = dword_192680;
@@ -8470,7 +8475,7 @@ int sub_F009A()
                             *(_WORD *)(v11 + 243) + 176,
                             *(_WORD *)(v11 + 245) + 286,
                             (int)&unk_17A061,
-                            *(_WORD **)(v11 + 115),
+                            PORT_PTR32(uint16_t *, v11 + 115),
                             (_BYTE *)&off_17A06B + 2,
                             40);
   v13 = dword_192680;
@@ -8491,7 +8496,7 @@ LABEL_12:
                             *(_WORD *)(dword_192680 + 243) + 269,
                             *(_WORD *)(dword_192680 + 245) + 91,
                             (int)&unk_17A061,
-                            *(_WORD **)(dword_192680 + 123),
+                            PORT_PTR32(uint16_t *, dword_192680 + 123),
                             aS_21,
                             40);
   v15 = dword_192680;
@@ -8500,7 +8505,7 @@ LABEL_12:
                             *(_WORD *)(v15 + 243) + 269,
                             *(_WORD *)(v15 + 245) + 122,
                             (int)&unk_17A061,
-                            *(_WORD **)(v15 + 127),
+                            PORT_PTR32(uint16_t *, v15 + 127),
                             byte_17A079,
                             40);
   v17 = dword_192680;
@@ -8512,7 +8517,7 @@ LABEL_12:
                                                          *(_WORD *)(v17 + 243) + 269,
                                                          *(_WORD *)(v17 + 245) + 155,
                                                          (int)&unk_17A061,
-                                                         *(_WORD **)(v17 + 131),
+                                                         PORT_PTR32(uint16_t *, v17 + 131),
                                                          byte_17A07B,
                                                          40);
   v13 = dword_192680;
@@ -8522,7 +8527,7 @@ LABEL_12:
                                                        *(_WORD *)(dword_192680 + 243) + 269,
                                                        *(_WORD *)(dword_192680 + 245) + 187,
                                                        (int)&unk_17A061,
-                                                       *(_WORD **)(dword_192680 + 135),
+                                                       PORT_PTR32(uint16_t *, dword_192680 + 135),
                                                        &off_17A06B,
                                                        40);
   return sub_F5691();
