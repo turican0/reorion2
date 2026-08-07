@@ -78,11 +78,6 @@ void sub_9F540()
           v15 = (char *)dword_192630[(int16_t)v16[v13]];
         else
           v15 = (char *)dword_192644[0];
-        { static int n = 0; if ( n++ < 12 ) {
-            PortDebug_Checkpoint("hof.fill_slot", v12);
-            PortDebug_Checkpoint("hof.fill_rasa_idx", (int16_t)v16[v13]);
-            PortDebug_CheckpointPtr("hof.fill_ptr", v15);
-            PortDebug_Message(v15 ? v15 : "(NULL)"); } }
         strcpy(&byte_19C6F8[v14], v15);
         v20 -= 125;
         ++v21;

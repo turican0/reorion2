@@ -9906,12 +9906,6 @@ void sub_9EE43()
     sub_120E8C(1);
     sub_128AB6(164, v19, 281, (int16_t)(v19 + 20));
     sub_12B634();
-    { static int n = 0; if ( n++ < 12 ) {
-        PortDebug_Checkpoint("hof.radek", v20);
-        PortDebug_Checkpoint("hof.index", v21);
-        PortDebug_Message(&byte_19C5FE[20 * v21]);
-        PortDebug_Message(&byte_19C6F8[20 * v21]);
-        PortDebug_Checkpoint("hof.obtiznost_idx", (uint8_t)byte_19C6EE[v21]); } }
     sub_1212B3(164, v19, (int)&byte_19C5FE[20 * v21]);
     if ( byte_199CAE )
     {
@@ -10073,7 +10067,11 @@ void sub_9F286( int a1, int a2, int a3, int a4)
       word_199A08 = word_199A10;
       sub_11C2F0();
       sub_119281();
-      JUMPOUT(0x9D946);
+      // vlna 58: `JUMPOUT` je NO-OP, takze se po kliknuti neodeslo zpet do
+      // menu - smycka bezela dal a prekreslovala uz UVOLNENOU obrazovku
+      // (sub_C5BB9/sub_11C2F0/sub_119281 jsou uklid), coz uzivatel videl jako
+      // CERNOU OBRAZOVKU. `loc_9D946` je jen epilog -> navrat.
+      return;
     }
     sub_124D41();
     sub_9EE43();

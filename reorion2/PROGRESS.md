@@ -6754,3 +6754,106 @@ nasla az kontrolou `repr()` obsahu souboru. **Plati to, co uz je v prirucce:
 pri davkove uprave zdrojaku vzdy po zapisu OVERIT obsah** (tady `grep` rovnou
 hlasil "Binary file matches"). Backslash se do skriptu bezpecne dostane pres
 `chr(92)`.
+
+#### Vlna 58, dodatek 5: HALL OF FAME DOKONCENA - rozsekany 452bajtovy zaznam,
+#### dve "dve jmena pro jednu adresu" a cerna obrazovka po kliknuti
+
+Po dodatku 4 se tabulka sice vykreslila, ale sloupce byly rozbite (jedno jmeno
+prazdne, na jednom radku se prekryvaly tri retezce, treti sloupec prazdny).
+Merenim (docasne kontrolni body v `sub_9EE43` a `sub_9F540`) vypadlo tohle:
+
+**1) Zaznam Hall of Fame je JEDEN 452bajtovy blok, IDA ho rozsekala na 9.**
+Hra ho cte i zapisuje VCELKU - `fread`/`fwrite(&word_19C5FC, 452, 1, ...)`,
+`memset(..., 452)`, `qmemcpy(..., 0x1C4)`. Rozlozeni 0x19C5FC..0x19C7C0:
+
+| offset | obsah |
+|---|---|
+| +0 | magic (130) |
+| +2 | jmena, 10 x 20 B |
+| +202 | skore, 10 x 2 B |
+| +222 | rasa (index), 10 x 2 B |
+| +242 | obtiznost (index), 10 x 1 B |
+| +252 | nazev rasy, 10 x 20 B |
+
+V portu z toho bylo 9 samostatnych globalu a vetsina orezana na JEDEN prvek
+(`int16_t word_19C6C6[]`, `char byte_19C6EE[]`, `char byte_19C6F8[28]`...).
+**Zmereno:** `byte_19C6EE[i]` vracelo pro i>=4 hodnoty 239 / 244 / 244 misto
+0..4, a jedno jmeno bylo "n". Sjednoceno do `hofBlock_19C5FC[452]` + makra.
+Pozn.: sousedni jmena `word_19C6C8` / `word_19C6DC` / `byte_19C6EF` jsou
+posunute pohledy o jeden prvek (pouzivaji se v posouvaci smycce
+`word_19C6DA[i] = word_19C6DC[i]`), takze jsou to makra `(... + 1)`.
+
+**2) `unk_19C6F8` a `byte_19C6F8` byly V PORTU DVA RUZNE OBJEKTY** - tataz past
+jako `unk_1AE5D4` ve vlne 54. `sub_9F540` do nazvu ras PISE pres `byte_19C6F8`,
+`sub_9FC27` z nich pri prestavbe zaznamu CTE pres `&unk_19C6F8 + v8`. Sloupec
+ras proto zustal prazdny. **Zmereno, ze zapis byl cely spravny** (Human,
+Human, Sakkra, Elerian, Human, Trilarian, Psilon, Darlok, Mrrshan, Klackon) -
+chyba byla az na cteci strane. Totez `unk_19C7C6` vs `byte_19C7C6` (nazvy
+obtiznosti, treti sloupec). Obe nahrazena makrem na tentyz objekt a pahyly
+z `link_stubs.c` odstraneny.
+
+**Pozor na diagnosticky omyl, ktery to zpusobilo:** PRED sjednocenim bloku
+sloupec ras "fungoval" - jenze `byte_19C6F8` bylo `char[28]` a cetlo se
+`byte_19C6F8[20*i]` az do offsetu 180, tedy DALEKO ZA KONCEM, kde nahodou
+lezely nazvy ras. Po spravnem osazeni bloku se sloupec vyprazdnil a vypadalo
+to jako regrese - ve skutecnosti se teprve tim odhalila skutecna chyba (2).
+
+**3) `word_19C802` je PATY slot tabulky obtiznosti, ne samostatne pole.**
+`sub_9F286` dela `strcpy(word_19C802, sub_CDF5C(328))` = "Impossible", a
+`sub_9EE43` cte `&unk_19C7C6 + 15 * idx` s idx 0..4. Ctyri sloty
+(`byte_19C7C6/D5/E4/F3`) + tenhle paty tvori souvislych 76 B. Bez toho meli
+radky s obtiznosti 4 prazdny sloupec.
+
+**4) CERNA OBRAZOVKA po kliknuti v Hall of Fame - opet no-op `JUMPOUT`.**
+`sub_9F286` po kliknuti nastavi `word_199A08 = word_199A10`, zavola uklid
+(`sub_C5BB9`, `sub_11C2F0`, `sub_119281`) a pak `JUMPOUT(0x9D946)`. Protoze je
+to NO-OP, funkce se nevratila do herni smycky - pokracovala dal a prekreslovala
+uz UVOLNENOU obrazovku. `loc_9D946` je pritom cisty epilog -> `return`.
+
+**5) `aMoise` doplnena o skutecna data** (viz dodatek 4) - 10 vychozich jmen.
+
+**VYSLEDEK: HALL OF FAME je kompletni** - jmena, rasy, vsech pet obtiznosti
+(Tutor / Easy / Average / Hard / Impossible) i skore, a kliknutim se korektne
+vraci do hlavniho menu. Potvrdil uzivatel.
+
+#### Stav na konci vlny 58
+
+**Overeno:**
+- regresni test videa **600/600 matched, 0 diverged** (po VSECH zmenach vlny,
+  vcetne sjednoceni bloku, ktere meni rozlozeni globalu);
+- kourovy test tri obrazovek bez padu a bez chybove hlasky:
+  hlavni menu, NEW GAME (`REORION2_STATE=13`), HALL OF FAME
+  (`REORION2_STATE=14 REORION2_STATE2=10`).
+
+**Nove diagnosticke prepinace (vsechny vypnute ve vychozim stavu):**
+
+    REORION2_STATE=<n>     pocatecni herni stav word_199A08
+                           (13 = NEW GAME, 14 = HALL OF FAME, 15 = LOAD, 7 = QUIT)
+    REORION2_STATE2=<n>    navratovy stav word_199A10 (menu ho plni spolu
+                           s word_199A08; HALL OF FAME dela 14 + 10)
+    REORION2_SENDKEY=<kod>[:<ms>]   umely stisk klavesy po <ms> od startu;
+                           kod ma tvar (scancode << 8) | ascii, prijima i hex
+                           ('H' = 0x2348, 'N' = 0x314E, mezera = 0x3920)
+
+**Nove nastroje:**
+
+    tools/jumpout_scan.py  klasifikuje vsech 1148 JUMPOUT proti asm dumpu
+    tools/qsort_scan.py    dohleda chybejici porovnavaci funkce qsort
+    tools/unkstr_scan.py   najde _UNKNOWN symboly, ktere jsou ve skutecnosti retezce
+
+**OTEVRENE (poradi podle ocekavaneho dopadu):**
+
+1. **611 z 1148 `JUMPOUT` jsou tise chybejici `return`** (`tools/jumpout_report.txt`).
+   Behem teto vlny jich pet zpusobilo pad, zamrznuti, deleni nulou i cernou
+   obrazovku - je to nejvetsi zbyvajici zdroj chyb v portu. Hromadna oprava je
+   samostatny ukol (v nevoid funkcich je potreba i navratova hodnota).
+2. **33 volani `qsort` bez porovnavaci funkce** je stale neopravenych
+   (`tools/qsort_report.txt`, komparatory uz dohledane). Kazde je jista havarie,
+   jakmile se ta cesta spusti. Az potom pridat do `decomp_compat.h` skutecnou
+   deklaraci `qsort`, aby prekladac dalsi takova volani hlasil.
+3. **Popisky v rameccich NEW GAME chybi** - `sub_102FD8` a `sub_103952` jsou
+   porad `DECOMP_TODO` pahyly; rekonstrukce z asm je rozepsana v dodatku 1.
+4. **14 dalsich `_UNKNOWN` symbolu, ktere mohou byt retezce** (dodatek 2);
+   jednoznacne retezcove pouziti maji `unk_178F79`, `unk_179356`, `unk_178C83`.
+5. Nedeterministicky pad ve vstupni smycce NEW GAME (`sub_16937A`, dodatek 2,
+   bod 2) - dalsi sirka-ukazatele na `off_184480 + 55*i + 32`.

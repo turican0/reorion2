@@ -177,11 +177,6 @@ extern "C" int PortInput_PollKeyPress(void)
                 }
             }
         }
-        if (s_code) {
-            static int s_seen = 0;
-            if (s_seen < 3) { ++s_seen; SDL_Log("Port: PollKeyPress volano, t=%llu ms",
-                                                (unsigned long long)SDL_GetTicks()); }
-        }
         if (s_code && !s_done && SDL_GetTicks() >= (Uint64)s_atMs) {
             s_done = true;
             SDL_Log("Port: REORION2_SENDKEY vklada kod %d", s_code);
