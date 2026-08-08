@@ -7183,3 +7183,76 @@ jednu chybu teto tridy opravovala).
 
 - regresni test videa **600/600 matched, 0 diverged**;
 - kliknuti na TACTICAL COMBAT: bez padu, zaskrtavatko se prepne.
+
+### Vlna 63: NEW GAME - jedno kliknuti uz je JEDNO kliknuti
+### (`off_1844B2` byla "konstanta jako navesti")
+
+Uzivatel hlasil ctyri veci: (1) hodnoty se prepinaji divoce, (2) vybrane
+hodnoty se nevykresluji, (3) zaskrtavatka nic nedelaji, (4) CANCEL nic nedela.
+Body 1 a 3 mely SPOLECNOU pricinu - nalezena a opravena.
+
+#### Postup (diky skriptovane mysi z vlny 62 uz cele merenim)
+
+| co | pred | po |
+|---|---|---|
+| `sub_123D53` (zachyceni kliku) volano s tlacitkem | **1x** | 1x |
+| `sub_124075` hlasi stisk (behem 150 ms drzeni) | 216x | 216x |
+| **`sub_1171AB` ohlasi ovladaci prvek** | **71x** | **1x** |
+| posunu hodnoty na jedno kliknuti (`sub_C6AA4`) | **76x** | 1x |
+
+Zachyceni kliku i cteni tlacitek tedy byly v poradku - chyba byla az v tom,
+ze `sub_11CEF5` hlasilo prvek porad dokola po celou dobu drzeni.
+
+#### Pricina
+
+`sub_11CEF5` ma pro drzene tlacitko "vlaceci" smycku
+
+```c
+while ( sub_124075() )
+{
+  ...
+  if ( (_WORD)off_1844B2 )
+    break;
+  ...
+}
+```
+
+V asm je `off_17C4B2 dd offset loc_E0000`, jenze **`loc_E0000` je KONSTANTA
+0xE0000, ne adresa** - polozka katalogu "konstanta jako navesti", tataz past
+jako `loc_FFFF8` ve vlne 25q. Port z toho udelal `_UNKNOWN *off_1844B2 =
+&loc_E0000;`, tedy UKAZATEL na stub. `(_WORD)off_1844B2` pak byla dolni pulka
+te adresy - skoro vzdy nenulova -> `break` hned na prvni iteraci -> smycka
+neblokovala do pusteni tlacitka, prvek se ohlasil znovu a znovu.
+
+Ze jde o obycejnou 32bitovou promennou, potvrzuje i zbytek pouziti:
+`LOWORD(off_1844B2) = 1/0` (priznak), `HIWORD(off_1844B2) = result`,
+`SHIWORD(off_1844B2)` (hodnota) - 13 mist celkem. Opraveno na
+`int off_1844B2 = 0xE0000;` (dolni pulka 0, horni 0xE).
+
+#### Vysledek
+
+- **(1) hodnoty**: jedno kliknuti = jeden posun (zmereno 76 -> 1);
+- **(3) zaskrtavatka**: kliknuti na TACTICAL COMBAT ho prepne a NECHA
+  prepnute (overeno snimkem: prazdne kolecko, ostatni dve modra). Driv se
+  prepinalo 76x za kliknuti, takze skoncilo na nahodne hodnote a vypadalo,
+  ze "nic nedela".
+
+#### Co zustava
+
+- **(2) vybrane hodnoty se nevykresluji** - viz vlna 61: retez
+  `sub_C68C4 -> sub_1031C6 -> sub_102FD8 -> sub_103952 -> sub_10370A` uz
+  bezi a dostava spravna data ("Tutor" na (120,214) atd.), ale text se
+  nevykresli. Zbyvaji tri ZASOBNIKOVE argumenty `sub_10370A`, ktere telo cte
+  pres posunute pohledy (`HIWORD(a34)`, `SBYTE2(a35)`,
+  `*(int *)((char *)&a36 + 2)`) - je potreba je srovnat podle asm.
+- **(4) CANCEL nic nedela** - overeno skriptovanym klikem na (163,402):
+  bez padu, ale obrazovka zustane. `sub_CD435` konci na
+  `if ((_WORD)v8 == word_1A1348 || (_WORD)v8 == word_1A134A)`, tedy na id
+  tlacitek CANCEL/ACCEPT, ktera plni `sub_CCE2E`. **Dalsi krok:** zmerit,
+  jake id vraci `sub_1171AB` pri kliknuti na CANCEL a co je ve
+  `word_1A1348`/`word_1A134A` - ted uz to jde jednim behem.
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kliknuti na TACTICAL COMBAT i na DIFFICULTY: bez padu, jeden ucinek na klik.

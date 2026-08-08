@@ -17526,7 +17526,7 @@ extern _UNKNOWN unk_1844A4;
 extern int16_t word_1844A6;
 extern int16_t word_1844A8;
 extern int16_t word_1844B0;
-extern _UNKNOWN *off_1844B2;
+extern int off_1844B2; // vlna 63: 32bitova promenna, ne ukazatel - viz orion_data.c
 extern int16_t word_1844B6;
 extern int dword_1844C2;
 extern int dword_1844C6;

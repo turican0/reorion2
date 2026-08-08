@@ -4541,7 +4541,6 @@ int16_t sub_123C84()
 int16_t sub_123D53()
 {
   int16_t result; // ax
-
   result = word_1B921A & 3;
   if ( (word_1B921A & 3) != 0 )
   {

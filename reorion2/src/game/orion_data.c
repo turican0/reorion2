@@ -8197,7 +8197,19 @@ _UNKNOWN unk_1844A4; // weak
 int16_t word_1844A6 = 0; // weak
 int16_t word_1844A8 = 1; // weak
 int16_t word_1844B0 = 0; // weak
-_UNKNOWN *off_1844B2 = &loc_E0000; // weak
+// PORT (vlna 63): NENI to ukazatel, ale obycejna 32bitova promenna s dvema
+// 16bitovymi pulkami. V asm je to `off_17C4B2 dd offset loc_E0000`, jenze
+// `loc_E0000` je KONSTANTA 0xE0000, ne adresa (stejna past jako `loc_FFFF8`
+// ve vlne 25q - polozka katalogu "konstanta jako navesti").
+// Pouziti to potvrzuje: `LOWORD(off_1844B2) = 1/0` (priznak),
+// `HIWORD(off_1844B2) = result`, `SHIWORD(off_1844B2)` (hodnota).
+// Dusledek chyby: `(_WORD)off_1844B2` = dolni pulka ADRESY stubu, tedy skoro
+// vzdy nenulova -> `if ((_WORD)off_1844B2) break;` ukoncilo vlacecí smycku
+// `while (sub_124075())` v sub_11CEF5 HNED na prvni iteraci. Ovladaci prvek
+// se proto ohlasil znovu a znovu po celou dobu drzeni tlacitka (zmereno:
+// 71 ohlaseni a 76 posunu hodnoty na JEDNO kliknuti).
+// U spravne hodnoty 0xE0000 je dolni pulka 0, takze se smycka nepreursi.
+int off_1844B2 = 0xE0000; // weak
 int16_t word_1844B6 = 180; // weak
 int dword_1844C2 = 0; // weak
 int dword_1844C6 = 0; // weak
