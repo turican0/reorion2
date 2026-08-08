@@ -7550,3 +7550,80 @@ prostredka dat, kde uz zadne radkove znacky nejsou.
 
 Pozn.: hned za tim blitem je `JUMPOUT(0x5C202)`, tedy dalsi NO-OP skok
 z tridy "611 chybejicich return" (vlna 58) - overit take.
+
+### Vlna 68: CERNA OBRAZOVKA po ACCEPT - dalsi NO-OP `JUMPOUT`, tentokrat
+### v podobe, kterou skener neumel poznat
+
+Priznak (uzivatel): po ACCEPT uz to nepada, ale zustane cerna obrazovka.
+
+#### Postup (merenim, ne uvahou)
+
+Hlidac ukazoval zasobnik koncici v `sub_14852C` (RLE blitter), takze prvni
+podezreni bylo zacykleni blitteru - jako ve vlne 58. **Nebyla to pravda:**
+
+| co jsem zmeril | vysledek |
+|---|---|
+| hlavicka spritu (RACESEL.LBX zaznam 0) | 300 x 333, priznaky 0 - v poradku |
+| index snimku / offset dat (`base + tabulka[idx]`) | idx 0, offset 20 - v poradku |
+| degenerovany par v proudu (count == 0 && rc == 0) | NIKDY nenastal |
+| pocet ITERACI blitteru na jedno volani | vzdy < 200 000, smycka konci |
+| **pocet VOLANI blitu na tentyz sprite** | **1 133 132** |
+
+Blitter tedy bezel spravne - jen ho nekdo volal porad dokola. Hlidac ho chytal
+uvnitr proto, ze se tam travil skoro vsechen cas.
+
+#### Pricina
+
+Na konci vetve v `sub_5BD97`:
+
+```c
+v22 = sub_127C27((int)aRaceselLbx, 0, dword_193174);
+sub_12A478(48, 58, v22);
+JUMPOUT(0x5C202);        /* NO-OP -> propadne do zbytku tela */
+```
+
+`loc_5C202` je epilog funkce:
+
+    loc_5C202: lea esp, [ebp+82h] / pop ebp / jmp loc_5BD91
+    loc_5BD91: pop edi / pop esi / pop edx / pop ecx / pop ebx / retn
+
+Opraveno na `return;`. Obrazovka **SELECT RACE PICTURE se ted vykresli cela**
+(portret rasy + vsech 13 tlacitek).
+
+#### Oprava NASTROJE (dulezitejsi nez ta jedna chyba)
+
+`tools/jumpout_scan.py` tenhle cil klasifikoval jako "skutecny skok" ze dvou
+duvodu, a obe uz umi:
+
+1. epilog muze ZACINAT obnovou zasobniku `lea esp, [ebp+82h]` (ne jen
+   `pop`/`leave`);
+2. epilog muze KONCIT skokem na SDILENY epilog jine funkce
+   (`jmp loc_5BD91`) - skener ted takovy skok nasleduje.
+
+Prekvalifikovano:
+
+| trida | pred | po |
+|---|---|---|
+| **EPILOG (chybejici `return`)** | 609 | **677** |
+| skutecny skok | 512 | 441 |
+| pokracuje jinam | 2 | 5 |
+| cil nenalezen | 24 | 24 |
+
+**68 dalsich mist**, ktera vypadala jako skutecne skoky, jsou ve skutecnosti
+chybejici `return` - presne ta podoba, ktera zpusobila tuhle cernou obrazovku.
+Aktualizovany `tools/jumpout_report.txt`.
+
+#### Metodicka poznamka
+
+Dvakrat me pri teto vlne svedlo prostredi, ne kod:
+- hlavickovy radek v `git diff` (`@@ ... int sub_129FF9`) ukazuje NEJBLIZSI
+  predchozi radek vypadajici jako funkce, ne skutecnou funkci na tom miste -
+  kvuli tomu jsem chvili instrumentoval spatnou funkci;
+- pri davkove uprave skriptem se v heredocu POTRETI zpracovaly zpetne lomitka
+  driv, nez je videl python. **Backslash do skriptu davat pres `chr(92)`.**
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test: menu, NEW GAME, HALL OF FAME, MULTI PLAYER - bez padu;
+- ACCEPT -> obrazovka vyberu rasy se vykresli, hlidac nevystreli.

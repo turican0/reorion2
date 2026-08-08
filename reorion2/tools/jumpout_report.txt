@@ -1,6 +1,6 @@
-orion_data.c:13762	0x1675C0	skutecny skok
-orion_part_01.c:581	0x103DF	skutecny skok
-orion_part_01.c:1451	0x115FE	skutecny skok
+orion_data.c:13822	0x1675C0	skutecny skok
+orion_part_01.c:581	0x103DF	EPILOG
+orion_part_01.c:1451	0x115FE	EPILOG
 orion_part_01.c:1630	0x11605	EPILOG
 orion_part_01.c:1684	0x11E50	EPILOG
 orion_part_01.c:1797	0x11E46	skutecny skok
@@ -8,49 +8,49 @@ orion_part_01.c:1799	0x11E4D	skutecny skok
 orion_part_01.c:1859	0x11604	EPILOG
 orion_part_01.c:2419	0x123C7	EPILOG
 orion_part_01.c:2632	0x123C7	EPILOG
-orion_part_01.c:3396	0x13FB1	skutecny skok
-orion_part_01.c:3766	0x145E4	EPILOG
-orion_part_01.c:3910	0x14874	EPILOG
-orion_part_01.c:4468	0x156CE	EPILOG
-orion_part_01.c:4793	0x156CE	EPILOG
-orion_part_01.c:4891	0x156CD	cil nenalezen
-orion_part_01.c:5022	0x156CE	EPILOG
-orion_part_01.c:5481	0x16338	EPILOG
-orion_part_01.c:6132	0x17204	EPILOG
-orion_part_01.c:6553	0x17F39	cil nenalezen
-orion_part_01.c:6664	0x18575	skutecny skok
-orion_part_01.c:6924	0x18A89	skutecny skok
-orion_part_01.c:6932	0x18A89	skutecny skok
-orion_part_01.c:7531	0x1919A	cil nenalezen
-orion_part_01.c:8141	0x19D59	EPILOG
-orion_part_01.c:8417	0x17F39	cil nenalezen
-orion_part_01.c:8887	0x17F39	cil nenalezen
-orion_part_01.c:9027	0x19D59	EPILOG
-orion_part_01.c:9303	0x17205	EPILOG
-orion_part_01.c:9582	0x17F39	cil nenalezen
-orion_part_01.c:9624	0x17F39	cil nenalezen
-orion_part_01.c:9911	0x17F39	cil nenalezen
-orion_part_01.c:9960	0x19D59	EPILOG
-orion_part_01.c:10193	0x17F39	cil nenalezen
-orion_part_01.c:10336	0x17B44	skutecny skok
-orion_part_01.c:10449	0x1C7E0	skutecny skok
-orion_part_01.c:11406	0x17204	EPILOG
-orion_part_01.c:11545	0x17F39	cil nenalezen
-orion_part_01.c:11801	0x1857A	skutecny skok
-orion_part_01.c:12023	0x17205	EPILOG
-orion_part_01.c:12179	0x17F39	cil nenalezen
-orion_part_01.c:12274	0x17204	EPILOG
-orion_part_01.c:12326	0x17204	EPILOG
-orion_part_01.c:12376	0x17205	EPILOG
-orion_part_01.c:13509	0x23D99	EPILOG
-orion_part_01.c:14175	0x23D99	EPILOG
-orion_part_01.c:14693	0x23D99	EPILOG
-orion_part_01.c:14796	0x23D99	EPILOG
-orion_part_01.c:14845	0x23D9A	EPILOG
-orion_part_01.c:14878	0x231AD	skutecny skok
-orion_part_01.c:14901	0x231AD	skutecny skok
-orion_part_01.c:14923	0x231AD	skutecny skok
-orion_part_01.c:15155	0x23D99	EPILOG
+orion_part_01.c:3395	0x13FB1	skutecny skok
+orion_part_01.c:3765	0x145E4	EPILOG
+orion_part_01.c:3909	0x14874	EPILOG
+orion_part_01.c:4467	0x156CE	EPILOG
+orion_part_01.c:4792	0x156CE	EPILOG
+orion_part_01.c:4890	0x156CD	cil nenalezen
+orion_part_01.c:5021	0x156CE	EPILOG
+orion_part_01.c:5480	0x16338	EPILOG
+orion_part_01.c:6131	0x17204	EPILOG
+orion_part_01.c:6552	0x17F39	cil nenalezen
+orion_part_01.c:6663	0x18575	skutecny skok
+orion_part_01.c:6923	0x18A89	skutecny skok
+orion_part_01.c:6931	0x18A89	skutecny skok
+orion_part_01.c:7530	0x1919A	cil nenalezen
+orion_part_01.c:8140	0x19D59	EPILOG
+orion_part_01.c:8416	0x17F39	cil nenalezen
+orion_part_01.c:8886	0x17F39	cil nenalezen
+orion_part_01.c:9026	0x19D59	EPILOG
+orion_part_01.c:9302	0x17205	EPILOG
+orion_part_01.c:9581	0x17F39	cil nenalezen
+orion_part_01.c:9623	0x17F39	cil nenalezen
+orion_part_01.c:9910	0x17F39	cil nenalezen
+orion_part_01.c:9959	0x19D59	EPILOG
+orion_part_01.c:10192	0x17F39	cil nenalezen
+orion_part_01.c:10335	0x17B44	skutecny skok
+orion_part_01.c:10448	0x1C7E0	skutecny skok
+orion_part_01.c:11405	0x17204	EPILOG
+orion_part_01.c:11544	0x17F39	cil nenalezen
+orion_part_01.c:11800	0x1857A	skutecny skok
+orion_part_01.c:12022	0x17205	EPILOG
+orion_part_01.c:12178	0x17F39	cil nenalezen
+orion_part_01.c:12273	0x17204	EPILOG
+orion_part_01.c:12325	0x17204	EPILOG
+orion_part_01.c:12375	0x17205	EPILOG
+orion_part_01.c:13508	0x23D99	EPILOG
+orion_part_01.c:14174	0x23D99	EPILOG
+orion_part_01.c:14692	0x23D99	EPILOG
+orion_part_01.c:14795	0x23D99	EPILOG
+orion_part_01.c:14844	0x23D9A	EPILOG
+orion_part_01.c:14877	0x231AD	skutecny skok
+orion_part_01.c:14900	0x231AD	skutecny skok
+orion_part_01.c:14922	0x231AD	skutecny skok
+orion_part_01.c:15154	0x23D99	EPILOG
 orion_part_02.c:216	0x231AD	skutecny skok
 orion_part_02.c:243	0x2227B	skutecny skok
 orion_part_02.c:274	0x23D99	EPILOG
@@ -105,7 +105,7 @@ orion_part_02.c:8152	0x2EB79	skutecny skok
 orion_part_02.c:8180	0x2EB79	skutecny skok
 orion_part_02.c:8231	0x2EB79	skutecny skok
 orion_part_02.c:8353	0x33AFE	EPILOG
-orion_part_02.c:8662	0x2E2B2	skutecny skok
+orion_part_02.c:8662	0x2E2B2	EPILOG
 orion_part_02.c:9635	0x33AFF	EPILOG
 orion_part_02.c:9806	0x33AFE	EPILOG
 orion_part_02.c:10091	0x33AFE	EPILOG
@@ -113,7 +113,7 @@ orion_part_02.c:10248	0x33AFE	EPILOG
 orion_part_02.c:10665	0x33AFE	EPILOG
 orion_part_02.c:10937	0x33AFC	cil nenalezen
 orion_part_02.c:11410	0x33AFE	EPILOG
-orion_part_02.c:11615	0x2E981	skutecny skok
+orion_part_02.c:11615	0x2E981	EPILOG
 orion_part_02.c:11736	0x33AFE	EPILOG
 orion_part_02.c:11829	0x33AFE	EPILOG
 orion_part_02.c:11868	0x2F166	skutecny skok
@@ -206,12 +206,12 @@ orion_part_04.c:792	0x4EB00	EPILOG
 orion_part_04.c:980	0x4E9FD	EPILOG
 orion_part_04.c:1063	0x4DAAB	EPILOG
 orion_part_04.c:1559	0x4EB00	EPILOG
-orion_part_04.c:1855	0x56A34	skutecny skok
+orion_part_04.c:1855	0x56A34	EPILOG
 orion_part_04.c:2277	0x55B0C	EPILOG
 orion_part_04.c:2375	0x55351	skutecny skok
 orion_part_04.c:2517	0x55351	skutecny skok
 orion_part_04.c:2658	0x55351	skutecny skok
-orion_part_04.c:2815	0x56A34	skutecny skok
+orion_part_04.c:2815	0x56A34	EPILOG
 orion_part_04.c:2913	0x56580	EPILOG
 orion_part_04.c:3091	0x56807	EPILOG
 orion_part_04.c:3117	0x56D18	cil nenalezen
@@ -226,11 +226,11 @@ orion_part_04.c:3438	0x56D16	skutecny skok
 orion_part_04.c:3465	0x56D16	skutecny skok
 orion_part_04.c:3492	0x56995	cil nenalezen
 orion_part_04.c:3528	0x56D16	skutecny skok
-orion_part_04.c:3562	0x56A34	skutecny skok
-orion_part_04.c:3610	0x56A34	skutecny skok
-orion_part_04.c:3656	0x56A34	skutecny skok
-orion_part_04.c:3696	0x56A34	skutecny skok
-orion_part_04.c:3733	0x56A34	skutecny skok
+orion_part_04.c:3562	0x56A34	EPILOG
+orion_part_04.c:3610	0x56A34	EPILOG
+orion_part_04.c:3656	0x56A34	EPILOG
+orion_part_04.c:3696	0x56A34	EPILOG
+orion_part_04.c:3733	0x56A34	EPILOG
 orion_part_04.c:4228	0x56580	EPILOG
 orion_part_04.c:4352	0x55B09	skutecny skok
 orion_part_04.c:4377	0x55B0C	EPILOG
@@ -241,49 +241,49 @@ orion_part_04.c:4892	0x58746	EPILOG
 orion_part_04.c:4960	0x58801	skutecny skok
 orion_part_04.c:5483	0x5969F	EPILOG
 orion_part_04.c:5974	0x59689	skutecny skok
-orion_part_04.c:6538	0x59698	skutecny skok
-orion_part_04.c:7033	0x590FF	skutecny skok
-orion_part_04.c:7082	0x590FF	skutecny skok
-orion_part_04.c:7298	0x590FF	skutecny skok
-orion_part_04.c:7546	0x590FF	skutecny skok
+orion_part_04.c:6538	0x59698	EPILOG
+orion_part_04.c:7033	0x590FF	EPILOG
+orion_part_04.c:7082	0x590FF	EPILOG
+orion_part_04.c:7298	0x590FF	EPILOG
+orion_part_04.c:7546	0x590FF	EPILOG
 orion_part_04.c:7602	0x5AEEE	EPILOG
-orion_part_04.c:7925	0x59698	skutecny skok
-orion_part_04.c:8149	0x5C202	skutecny skok
-orion_part_04.c:8605	0x5BD91	EPILOG
-orion_part_04.c:9016	0x5BD90	EPILOG
-orion_part_04.c:9136	0x5BD90	EPILOG
-orion_part_04.c:9357	0x5D612	EPILOG
-orion_part_04.c:9479	0x5D615	EPILOG
-orion_part_04.c:9526	0x5D611	EPILOG
-orion_part_04.c:10556	0x5E3F8	EPILOG
-orion_part_04.c:10945	0x5EE11	skutecny skok
-orion_part_04.c:10947	0x5EE13	skutecny skok
-orion_part_04.c:11180	0x5F51E	EPILOG
-orion_part_04.c:11201	0x5F51E	EPILOG
-orion_part_04.c:11217	0x5F51E	EPILOG
-orion_part_04.c:11449	0x5FA7E	skutecny skok
-orion_part_04.c:12708	0x608A9	EPILOG
-orion_part_04.c:12721	0x608A7	skutecny skok
-orion_part_04.c:13481	0x627D6	EPILOG
-orion_part_04.c:13720	0x62C69	EPILOG
-orion_part_04.c:13792	0x62C69	EPILOG
-orion_part_04.c:13860	0x62C69	EPILOG
-orion_part_04.c:13908	0x62C69	EPILOG
-orion_part_04.c:14066	0x633CF	EPILOG
-orion_part_04.c:14222	0x62C69	EPILOG
-orion_part_04.c:14265	0x633CF	EPILOG
-orion_part_04.c:14396	0x62C69	EPILOG
-orion_part_04.c:14495	0x62C69	EPILOG
-orion_part_04.c:14616	0x63E00	skutecny skok
-orion_part_04.c:14684	0x63FC5	EPILOG
-orion_part_04.c:14709	0x63FBC	skutecny skok
+orion_part_04.c:7925	0x59698	EPILOG
+orion_part_04.c:8149	0x5C202	EPILOG
+orion_part_04.c:8611	0x5BD91	EPILOG
+orion_part_04.c:9022	0x5BD90	EPILOG
+orion_part_04.c:9142	0x5BD90	EPILOG
+orion_part_04.c:9363	0x5D612	EPILOG
+orion_part_04.c:9485	0x5D615	EPILOG
+orion_part_04.c:9532	0x5D611	EPILOG
+orion_part_04.c:10562	0x5E3F8	EPILOG
+orion_part_04.c:10951	0x5EE11	skutecny skok
+orion_part_04.c:10953	0x5EE13	skutecny skok
+orion_part_04.c:11186	0x5F51E	EPILOG
+orion_part_04.c:11207	0x5F51E	EPILOG
+orion_part_04.c:11223	0x5F51E	EPILOG
+orion_part_04.c:11455	0x5FA7E	skutecny skok
+orion_part_04.c:12714	0x608A9	EPILOG
+orion_part_04.c:12727	0x608A7	skutecny skok
+orion_part_04.c:13487	0x627D6	EPILOG
+orion_part_04.c:13726	0x62C69	EPILOG
+orion_part_04.c:13798	0x62C69	EPILOG
+orion_part_04.c:13866	0x62C69	EPILOG
+orion_part_04.c:13914	0x62C69	EPILOG
+orion_part_04.c:14072	0x633CF	EPILOG
+orion_part_04.c:14228	0x62C69	EPILOG
+orion_part_04.c:14271	0x633CF	EPILOG
+orion_part_04.c:14402	0x62C69	EPILOG
+orion_part_04.c:14501	0x62C69	EPILOG
+orion_part_04.c:14622	0x63E00	skutecny skok
+orion_part_04.c:14690	0x63FC5	EPILOG
+orion_part_04.c:14715	0x63FBC	skutecny skok
 orion_part_05.c:173	0x63FC5	EPILOG
 orion_part_05.c:354	0x63E00	skutecny skok
-orion_part_05.c:852	0x672E8	skutecny skok
+orion_part_05.c:852	0x672E8	EPILOG
 orion_part_05.c:1054	0x6557A	skutecny skok
-orion_part_05.c:1208	0x66268	skutecny skok
+orion_part_05.c:1208	0x66268	EPILOG
 orion_part_05.c:1243	0x6583A	skutecny skok
-orion_part_05.c:1304	0x66268	skutecny skok
+orion_part_05.c:1304	0x66268	EPILOG
 orion_part_05.c:1361	0x654D7	EPILOG
 orion_part_05.c:1399	0x654D7	EPILOG
 orion_part_05.c:1454	0x654D7	EPILOG
@@ -296,14 +296,14 @@ orion_part_05.c:2601	0x672A9	skutecny skok
 orion_part_05.c:2848	0x672B6	skutecny skok
 orion_part_05.c:2909	0x66263	skutecny skok
 orion_part_05.c:2985	0x68D36	EPILOG
-orion_part_05.c:3183	0x66268	skutecny skok
+orion_part_05.c:3183	0x66268	EPILOG
 orion_part_05.c:3280	0x68D37	EPILOG
-orion_part_05.c:3419	0x66268	skutecny skok
+orion_part_05.c:3419	0x66268	EPILOG
 orion_part_05.c:3464	0x654D7	EPILOG
 orion_part_05.c:3844	0x667F7	EPILOG
-orion_part_05.c:4013	0x66268	skutecny skok
-orion_part_05.c:4128	0x66268	skutecny skok
-orion_part_05.c:4358	0x68D30	skutecny skok
+orion_part_05.c:4013	0x66268	EPILOG
+orion_part_05.c:4128	0x66268	EPILOG
+orion_part_05.c:4358	0x68D30	EPILOG
 orion_part_05.c:5149	0x6A3DE	EPILOG
 orion_part_05.c:5406	0x6A3DE	EPILOG
 orion_part_05.c:5796	0x6AB15	EPILOG
@@ -315,7 +315,7 @@ orion_part_05.c:6880	0x6A3DE	EPILOG
 orion_part_05.c:7252	0x6A3DE	EPILOG
 orion_part_05.c:7337	0x6AB15	EPILOG
 orion_part_05.c:7417	0x6D18B	skutecny skok
-orion_part_05.c:7982	0x6C081	skutecny skok
+orion_part_05.c:7982	0x6C081	EPILOG
 orion_part_05.c:8127	0x6A3DF	EPILOG
 orion_part_05.c:8303	0x6A3DE	EPILOG
 orion_part_05.c:8494	0x6B8CC	EPILOG
@@ -344,7 +344,7 @@ orion_part_05.c:10580	0x7086F	EPILOG
 orion_part_05.c:10708	0x6FF02	EPILOG
 orion_part_05.c:10812	0x7086E	EPILOG
 orion_part_05.c:10923	0x7086F	EPILOG
-orion_part_05.c:11135	0x70EF6	skutecny skok
+orion_part_05.c:11135	0x70EF6	EPILOG
 orion_part_06.c:39	0x7086E	EPILOG
 orion_part_06.c:98	0x7086E	EPILOG
 orion_part_06.c:160	0x7086E	EPILOG
@@ -360,11 +360,11 @@ orion_part_06.c:2988	0x734A2	EPILOG
 orion_part_06.c:3008	0x74F0E	skutecny skok
 orion_part_06.c:3091	0x75B59	EPILOG
 orion_part_06.c:3125	0x75B59	EPILOG
-orion_part_06.c:3296	0x7593D	skutecny skok
+orion_part_06.c:3296	0x7593D	EPILOG
 orion_part_06.c:3613	0x75B58	EPILOG
-orion_part_06.c:3646	0x7593D	skutecny skok
+orion_part_06.c:3646	0x7593D	EPILOG
 orion_part_06.c:4002	0x75B59	EPILOG
-orion_part_06.c:4375	0x75B52	skutecny skok
+orion_part_06.c:4375	0x75B52	EPILOG
 orion_part_06.c:4830	0x77651	EPILOG
 orion_part_06.c:5006	0x77B35	skutecny skok
 orion_part_06.c:5979	0x785E6	EPILOG
@@ -383,19 +383,19 @@ orion_part_06.c:7448	0x79D7F	skutecny skok
 orion_part_07.c:459	0x7A43A	EPILOG
 orion_part_07.c:730	0x78F45	EPILOG
 orion_part_07.c:927	0x78F44	EPILOG
-orion_part_07.c:1027	0x7BF57	skutecny skok
-orion_part_07.c:1235	0x7BF57	skutecny skok
-orion_part_07.c:1316	0x7BF57	skutecny skok
-orion_part_07.c:1693	0x7BF57	skutecny skok
-orion_part_07.c:1832	0x7BF57	skutecny skok
+orion_part_07.c:1027	0x7BF57	EPILOG
+orion_part_07.c:1235	0x7BF57	EPILOG
+orion_part_07.c:1316	0x7BF57	EPILOG
+orion_part_07.c:1693	0x7BF57	EPILOG
+orion_part_07.c:1832	0x7BF57	EPILOG
 orion_part_07.c:2027	0x7BD81	EPILOG
-orion_part_07.c:2390	0x7BF57	skutecny skok
+orion_part_07.c:2390	0x7BF57	EPILOG
 orion_part_07.c:2538	0x7BD81	EPILOG
-orion_part_07.c:2606	0x7BF57	skutecny skok
+orion_part_07.c:2606	0x7BF57	EPILOG
 orion_part_07.c:2877	0x7BF55	skutecny skok
-orion_part_07.c:2989	0x7BD7A	skutecny skok
+orion_part_07.c:2989	0x7BD7A	EPILOG
 orion_part_07.c:3596	0x7DA0C	EPILOG
-orion_part_07.c:3752	0x7E50B	skutecny skok
+orion_part_07.c:3752	0x7E50B	EPILOG
 orion_part_07.c:3947	0x7DA0C	EPILOG
 orion_part_07.c:4051	0x7DA0D	EPILOG
 orion_part_07.c:4315	0x7D88C	EPILOG
@@ -403,7 +403,7 @@ orion_part_07.c:4395	0x7DA0C	EPILOG
 orion_part_07.c:4463	0x7D88C	EPILOG
 orion_part_07.c:5111	0x7DA0C	EPILOG
 orion_part_07.c:5255	0x7DA0C	EPILOG
-orion_part_07.c:5597	0x7E505	skutecny skok
+orion_part_07.c:5597	0x7E505	EPILOG
 orion_part_07.c:5746	0x7DA0C	EPILOG
 orion_part_07.c:5902	0x7DA0C	EPILOG
 orion_part_07.c:5923	0x7D88C	EPILOG
@@ -433,7 +433,7 @@ orion_part_07.c:10601	0x8373B	EPILOG
 orion_part_07.c:10897	0x83D00	EPILOG
 orion_part_07.c:11912	0x854B5	skutecny skok
 orion_part_07.c:11946	0x8373B	EPILOG
-orion_part_07.c:12410	0x87638	skutecny skok
+orion_part_07.c:12410	0x87638	EPILOG
 orion_part_07.c:12448	0x82ABB	EPILOG
 orion_part_08.c:116	0x83CF6	skutecny skok
 orion_part_08.c:713	0x82ABB	EPILOG
@@ -466,23 +466,22 @@ orion_part_08.c:6120	0x8EC6A	EPILOG
 orion_part_08.c:6334	0x8E987	EPILOG
 orion_part_08.c:6402	0x8E803	EPILOG
 orion_part_08.c:6436	0x8E987	EPILOG
-orion_part_08.c:6559	0x8F542	EPILOG
-orion_part_08.c:6654	0x8F4B4	EPILOG
-orion_part_08.c:6686	0x8F542	EPILOG
-orion_part_08.c:6719	0x8FD1B	EPILOG
-orion_part_08.c:6868	0x8F542	EPILOG
-orion_part_08.c:6938	0x9042A	EPILOG
-orion_part_08.c:7116	0x906EA	skutecny skok
-orion_part_08.c:7255	0x909A9	EPILOG
-orion_part_08.c:7516	0x9036B	EPILOG
-orion_part_08.c:7785	0x905FF	EPILOG
-orion_part_08.c:8148	0x905FF	EPILOG
-orion_part_08.c:8765	0x9240D	skutecny skok
-orion_part_08.c:8837	0x91F0D	EPILOG
-orion_part_08.c:9282	0x94801	EPILOG
-orion_part_08.c:9868	0x92E66	skutecny skok
-orion_part_08.c:9948	0x94800	EPILOG
-orion_part_08.c:9974	0x93B77	skutecny skok
+orion_part_08.c:6657	0x8F4B4	EPILOG
+orion_part_08.c:6689	0x8F542	EPILOG
+orion_part_08.c:6722	0x8FD1B	EPILOG
+orion_part_08.c:6871	0x8F542	EPILOG
+orion_part_08.c:6941	0x9042A	EPILOG
+orion_part_08.c:7119	0x906EA	skutecny skok
+orion_part_08.c:7258	0x909A9	EPILOG
+orion_part_08.c:7519	0x9036B	EPILOG
+orion_part_08.c:7788	0x905FF	EPILOG
+orion_part_08.c:8151	0x905FF	EPILOG
+orion_part_08.c:8768	0x9240D	skutecny skok
+orion_part_08.c:8840	0x91F0D	EPILOG
+orion_part_08.c:9285	0x94801	EPILOG
+orion_part_08.c:9871	0x92E66	EPILOG
+orion_part_08.c:9951	0x94800	EPILOG
+orion_part_08.c:9977	0x93B77	skutecny skok
 orion_part_09.c:49	0x92F4B	EPILOG
 orion_part_09.c:156	0x94800	EPILOG
 orion_part_09.c:181	0x92C1F	EPILOG
@@ -492,7 +491,7 @@ orion_part_09.c:501	0x94800	EPILOG
 orion_part_09.c:641	0x94694	skutecny skok
 orion_part_09.c:787	0x94800	EPILOG
 orion_part_09.c:1189	0x94800	EPILOG
-orion_part_09.c:1798	0x92E66	skutecny skok
+orion_part_09.c:1798	0x92E66	EPILOG
 orion_part_09.c:2291	0x94800	EPILOG
 orion_part_09.c:2515	0x92C1F	EPILOG
 orion_part_09.c:2635	0x94800	EPILOG
@@ -509,13 +508,13 @@ orion_part_09.c:3500	0x94800	EPILOG
 orion_part_09.c:3522	0x941B5	EPILOG
 orion_part_09.c:3552	0x92F4B	EPILOG
 orion_part_09.c:3640	0x947FE	skutecny skok
-orion_part_09.c:3872	0x92E6C	skutecny skok
+orion_part_09.c:3872	0x92E6C	EPILOG
 orion_part_09.c:4141	0x97152	EPILOG
-orion_part_09.c:4206	0x92E66	skutecny skok
+orion_part_09.c:4206	0x92E66	EPILOG
 orion_part_09.c:4329	0x94800	EPILOG
 orion_part_09.c:4393	0x94800	EPILOG
 orion_part_09.c:4706	0x97739	EPILOG
-orion_part_09.c:4995	0x92E6C	skutecny skok
+orion_part_09.c:4995	0x92E6C	EPILOG
 orion_part_09.c:5087	0x941B5	EPILOG
 orion_part_09.c:5129	0x947FE	skutecny skok
 orion_part_09.c:5390	0x99A69	EPILOG
@@ -531,8 +530,8 @@ orion_part_09.c:7191	0x9ABE6	EPILOG
 orion_part_09.c:7295	0x9ABE6	EPILOG
 orion_part_09.c:7452	0x99A68	EPILOG
 orion_part_09.c:7479	0x9AA7C	skutecny skok
-orion_part_09.c:7573	0x9B7DF	skutecny skok
-orion_part_09.c:7838	0x9B7E5	skutecny skok
+orion_part_09.c:7573	0x9B7DF	EPILOG
+orion_part_09.c:7838	0x9B7E5	EPILOG
 orion_part_09.c:8116	0x99A68	EPILOG
 orion_part_09.c:8342	0x99A68	EPILOG
 orion_part_09.c:8534	0x99A68	EPILOG
@@ -548,9 +547,8 @@ orion_part_09.c:9463	0x9D946	EPILOG
 orion_part_09.c:9477	0x9D946	EPILOG
 orion_part_09.c:9524	0x9E89C	skutecny skok
 orion_part_09.c:9982	0x9D945	EPILOG
-orion_part_09.c:10070	0x9D946	EPILOG
-orion_part_09.c:10170	0x9DB1B	EPILOG
-orion_part_10.c:231	0x9DEEB	skutecny skok
+orion_part_09.c:10174	0x9DB1B	EPILOG
+orion_part_10.c:231	0x9DEEB	EPILOG
 orion_part_10.c:344	0x9D945	EPILOG
 orion_part_10.c:558	0x9D945	EPILOG
 orion_part_10.c:716	0xA00EB	EPILOG
@@ -570,7 +568,7 @@ orion_part_10.c:4074	0xA20C6	EPILOG
 orion_part_10.c:4118	0xA301F	EPILOG
 orion_part_10.c:4191	0xA4494	EPILOG
 orion_part_10.c:4405	0xA20C7	EPILOG
-orion_part_10.c:4528	0xA2C08	skutecny skok
+orion_part_10.c:4528	0xA2C08	EPILOG
 orion_part_10.c:4598	0xA3BBE	EPILOG
 orion_part_10.c:4654	0xA4494	EPILOG
 orion_part_10.c:4717	0xA20C6	EPILOG
@@ -592,7 +590,7 @@ orion_part_10.c:7980	0xA9ABF	skutecny skok
 orion_part_10.c:8171	0xA93A4	EPILOG
 orion_part_10.c:8204	0xA9FBD	skutecny skok
 orion_part_10.c:8353	0xA9AA1	skutecny skok
-orion_part_10.c:9014	0xA902A	skutecny skok
+orion_part_10.c:9014	0xA902A	EPILOG
 orion_part_10.c:9399	0xABFED	EPILOG
 orion_part_10.c:9493	0xABFED	EPILOG
 orion_part_10.c:9690	0xABFED	EPILOG
@@ -688,56 +686,56 @@ orion_part_13.c:416	0xC66FF	skutecny skok
 orion_part_13.c:425	0xC66DA	skutecny skok
 orion_part_13.c:434	0xC66FD	skutecny skok
 orion_part_13.c:541	0xC6808	EPILOG
-orion_part_13.c:1679	0xC839B	skutecny skok
-orion_part_13.c:1805	0xC79D8	skutecny skok
-orion_part_13.c:1859	0xC97B9	EPILOG
-orion_part_13.c:1957	0xC7EFD	EPILOG
-orion_part_13.c:2098	0xC8304	skutecny skok
-orion_part_13.c:2140	0xC8373	skutecny skok
-orion_part_13.c:2210	0xC7EFE	EPILOG
-orion_part_13.c:2538	0xC97B9	EPILOG
-orion_part_13.c:2578	0xC8FA7	skutecny skok
-orion_part_13.c:2608	0xC9025	skutecny skok
-orion_part_13.c:2745	0xC97B9	EPILOG
-orion_part_13.c:2786	0xC8FA7	skutecny skok
-orion_part_13.c:3291	0xC7EFD	EPILOG
-orion_part_13.c:3444	0xC7EFD	EPILOG
-orion_part_13.c:3654	0xC97B9	EPILOG
-orion_part_13.c:3750	0xCA6F1	skutecny skok
-orion_part_13.c:4180	0xC97B9	EPILOG
-orion_part_13.c:4359	0xC7EFD	EPILOG
-orion_part_13.c:4737	0xC97B7	skutecny skok
-orion_part_13.c:5224	0xC97B7	skutecny skok
-orion_part_13.c:5526	0xCCC36	EPILOG
-orion_part_13.c:5722	0xCCC37	EPILOG
-orion_part_13.c:5935	0xCCC36	EPILOG
-orion_part_13.c:6061	0xCDB11	skutecny skok
-orion_part_13.c:6070	0xCDB11	skutecny skok
-orion_part_13.c:6079	0xCDB11	skutecny skok
-orion_part_13.c:6088	0xCDB11	skutecny skok
-orion_part_13.c:6097	0xCDB11	skutecny skok
-orion_part_13.c:6135	0xCDB11	skutecny skok
-orion_part_13.c:6144	0xCDB11	skutecny skok
-orion_part_13.c:6153	0xCDB11	skutecny skok
-orion_part_13.c:6162	0xCDB11	skutecny skok
-orion_part_13.c:6171	0xCDB11	skutecny skok
-orion_part_13.c:6180	0xCDB11	skutecny skok
-orion_part_13.c:7577	0xCFADE	EPILOG
-orion_part_13.c:8320	0xCFADE	EPILOG
-orion_part_13.c:8488	0xCFADE	EPILOG
-orion_part_13.c:8789	0xCFADF	EPILOG
-orion_part_13.c:10016	0xD2A02	EPILOG
-orion_part_13.c:10042	0xD2A02	EPILOG
-orion_part_13.c:10049	0xD29F9	skutecny skok
-orion_part_13.c:10106	0xD2AA2	EPILOG
-orion_part_13.c:10148	0xD2AA2	EPILOG
-orion_part_13.c:10364	0xD2AA2	EPILOG
-orion_part_13.c:10772	0xD2AA2	EPILOG
-orion_part_13.c:12050	0xD2AA3	EPILOG
-orion_part_13.c:12385	0xD5CE7	EPILOG
-orion_part_13.c:12479	0xD5CE7	EPILOG
-orion_part_13.c:12498	0xD578F	skutecny skok
-orion_part_13.c:12549	0xD5CE7	EPILOG
+orion_part_13.c:1687	0xC839B	skutecny skok
+orion_part_13.c:1813	0xC79D8	skutecny skok
+orion_part_13.c:1867	0xC97B9	EPILOG
+orion_part_13.c:1965	0xC7EFD	EPILOG
+orion_part_13.c:2106	0xC8304	skutecny skok
+orion_part_13.c:2148	0xC8373	skutecny skok
+orion_part_13.c:2218	0xC7EFE	EPILOG
+orion_part_13.c:2546	0xC97B9	EPILOG
+orion_part_13.c:2586	0xC8FA7	skutecny skok
+orion_part_13.c:2616	0xC9025	skutecny skok
+orion_part_13.c:2753	0xC97B9	EPILOG
+orion_part_13.c:2794	0xC8FA7	skutecny skok
+orion_part_13.c:3299	0xC7EFD	EPILOG
+orion_part_13.c:3452	0xC7EFD	EPILOG
+orion_part_13.c:3662	0xC97B9	EPILOG
+orion_part_13.c:3758	0xCA6F1	skutecny skok
+orion_part_13.c:4188	0xC97B9	EPILOG
+orion_part_13.c:4367	0xC7EFD	EPILOG
+orion_part_13.c:4745	0xC97B7	skutecny skok
+orion_part_13.c:5232	0xC97B7	skutecny skok
+orion_part_13.c:5534	0xCCC36	EPILOG
+orion_part_13.c:5730	0xCCC37	EPILOG
+orion_part_13.c:5943	0xCCC36	EPILOG
+orion_part_13.c:6069	0xCDB11	skutecny skok
+orion_part_13.c:6078	0xCDB11	skutecny skok
+orion_part_13.c:6087	0xCDB11	skutecny skok
+orion_part_13.c:6096	0xCDB11	skutecny skok
+orion_part_13.c:6105	0xCDB11	skutecny skok
+orion_part_13.c:6143	0xCDB11	skutecny skok
+orion_part_13.c:6152	0xCDB11	skutecny skok
+orion_part_13.c:6161	0xCDB11	skutecny skok
+orion_part_13.c:6170	0xCDB11	skutecny skok
+orion_part_13.c:6179	0xCDB11	skutecny skok
+orion_part_13.c:6188	0xCDB11	skutecny skok
+orion_part_13.c:7585	0xCFADE	EPILOG
+orion_part_13.c:8328	0xCFADE	EPILOG
+orion_part_13.c:8496	0xCFADE	EPILOG
+orion_part_13.c:8797	0xCFADF	EPILOG
+orion_part_13.c:10024	0xD2A02	EPILOG
+orion_part_13.c:10050	0xD2A02	EPILOG
+orion_part_13.c:10057	0xD29F9	skutecny skok
+orion_part_13.c:10114	0xD2AA2	EPILOG
+orion_part_13.c:10156	0xD2AA2	EPILOG
+orion_part_13.c:10372	0xD2AA2	EPILOG
+orion_part_13.c:10780	0xD2AA2	EPILOG
+orion_part_13.c:12058	0xD2AA3	EPILOG
+orion_part_13.c:12393	0xD5CE7	EPILOG
+orion_part_13.c:12487	0xD5CE7	EPILOG
+orion_part_13.c:12506	0xD578F	skutecny skok
+orion_part_13.c:12557	0xD5CE7	EPILOG
 orion_part_14.c:103	0xD5CE8	EPILOG
 orion_part_14.c:117	0xD61D2	skutecny skok
 orion_part_14.c:139	0xD61D6	EPILOG
@@ -753,17 +751,17 @@ orion_part_14.c:1190	0xD775E	EPILOG
 orion_part_14.c:1518	0xD775E	EPILOG
 orion_part_14.c:2069	0xD775E	EPILOG
 orion_part_14.c:2288	0xD775E	EPILOG
-orion_part_14.c:2765	0xD87B1	skutecny skok
-orion_part_14.c:3327	0xD87B1	skutecny skok
-orion_part_14.c:3774	0xDA478	skutecny skok
-orion_part_14.c:3984	0xDA478	skutecny skok
-orion_part_14.c:4413	0xDA478	skutecny skok
+orion_part_14.c:2765	0xD87B1	EPILOG
+orion_part_14.c:3327	0xD87B1	EPILOG
+orion_part_14.c:3774	0xDA478	EPILOG
+orion_part_14.c:3984	0xDA478	EPILOG
+orion_part_14.c:4413	0xDA478	EPILOG
 orion_part_14.c:4479	0xDA47F	EPILOG
-orion_part_14.c:4527	0xDB3DF	skutecny skok
+orion_part_14.c:4527	0xDB3DF	EPILOG
 orion_part_14.c:4614	0xD8D0B	EPILOG
 orion_part_14.c:4640	0xD775E	EPILOG
 orion_part_14.c:4745	0xD775E	EPILOG
-orion_part_14.c:4886	0xDA478	skutecny skok
+orion_part_14.c:4886	0xDA478	EPILOG
 orion_part_14.c:4989	0xD93CD	EPILOG
 orion_part_14.c:5054	0xD99B2	EPILOG
 orion_part_14.c:5113	0xD775E	EPILOG
@@ -801,7 +799,7 @@ orion_part_14.c:9072	0xDEB17	EPILOG
 orion_part_14.c:9103	0xDDF24	skutecny skok
 orion_part_14.c:9162	0xE1F97	EPILOG
 orion_part_14.c:9319	0xDEB17	EPILOG
-orion_part_14.c:9419	0xDF50C	skutecny skok
+orion_part_14.c:9419	0xDF50C	EPILOG
 orion_part_14.c:9592	0xE0B46	skutecny skok
 orion_part_14.c:9594	0xE0B48	skutecny skok
 orion_part_14.c:9827	0xDEB17	EPILOG
@@ -843,7 +841,7 @@ orion_part_15.c:3006	0xEA8C3	EPILOG
 orion_part_15.c:3226	0xEA8C4	EPILOG
 orion_part_15.c:3664	0xEA8C3	EPILOG
 orion_part_15.c:3895	0xEA8BE	skutecny skok
-orion_part_15.c:4770	0xEB9BB	skutecny skok
+orion_part_15.c:4770	0xEB9BB	EPILOG
 orion_part_15.c:4788	0xEBD7F	EPILOG
 orion_part_15.c:4884	0xEBA76	EPILOG
 orion_part_15.c:4929	0xEBFC5	EPILOG
@@ -859,20 +857,20 @@ orion_part_15.c:7962	0xEF800	skutecny skok
 orion_part_15.c:7970	0xEF800	skutecny skok
 orion_part_15.c:7978	0xEF800	skutecny skok
 orion_part_15.c:8090	0xEEBF2	EPILOG
-orion_part_15.c:8622	0xF0659	skutecny skok
-orion_part_15.c:8737	0xF2F43	skutecny skok
-orion_part_15.c:9294	0xF5204	EPILOG
-orion_part_15.c:9466	0xF1662	skutecny skok
-orion_part_15.c:9623	0xF1662	skutecny skok
-orion_part_15.c:10017	0xF1662	skutecny skok
-orion_part_15.c:10269	0xF2F44	skutecny skok
-orion_part_15.c:10394	0xF2F40	skutecny skok
-orion_part_15.c:11266	0xF419E	skutecny skok
-orion_part_15.c:11343	0xF41A1	skutecny skok
-orion_part_15.c:11530	0xF1662	skutecny skok
-orion_part_15.c:11577	0xF5204	EPILOG
-orion_part_15.c:11725	0xF5203	EPILOG
-orion_part_15.c:12022	0xF51FE	skutecny skok
+orion_part_15.c:8627	0xF0659	skutecny skok
+orion_part_15.c:8742	0xF2F43	skutecny skok
+orion_part_15.c:9299	0xF5204	EPILOG
+orion_part_15.c:9471	0xF1662	EPILOG
+orion_part_15.c:9628	0xF1662	EPILOG
+orion_part_15.c:10022	0xF1662	EPILOG
+orion_part_15.c:10274	0xF2F44	skutecny skok
+orion_part_15.c:10399	0xF2F40	skutecny skok
+orion_part_15.c:11271	0xF419E	skutecny skok
+orion_part_15.c:11348	0xF41A1	skutecny skok
+orion_part_15.c:11535	0xF1662	EPILOG
+orion_part_15.c:11582	0xF5204	EPILOG
+orion_part_15.c:11730	0xF5203	EPILOG
+orion_part_15.c:12027	0xF51FE	skutecny skok
 orion_part_16.c:38	0xF5204	EPILOG
 orion_part_16.c:74	0xF53D0	skutecny skok
 orion_part_16.c:99	0xF53D0	skutecny skok
@@ -932,74 +930,74 @@ orion_part_17.c:51	0x102804	skutecny skok
 orion_part_17.c:79	0x102868	skutecny skok
 orion_part_17.c:217	0x102421	EPILOG
 orion_part_17.c:500	0x102F14	skutecny skok
-orion_part_17.c:532	0x103169	skutecny skok
-orion_part_17.c:540	0x10318F	skutecny skok
-orion_part_17.c:557	0x103235	EPILOG
-orion_part_17.c:566	0x1031D3	skutecny skok
-orion_part_17.c:574	0x10320D	skutecny skok
-orion_part_17.c:702	0x103472	skutecny skok
-orion_part_17.c:703	0x1034BB	skutecny skok
-orion_part_17.c:720	0x103472	skutecny skok
-orion_part_17.c:721	0x1034BB	skutecny skok
-orion_part_17.c:798	0x102F0A	EPILOG
-orion_part_17.c:1015	0x10399D	skutecny skok
-orion_part_17.c:1023	0x10399D	skutecny skok
-orion_part_17.c:1039	0x10399D	skutecny skok
-orion_part_17.c:1047	0x10399D	skutecny skok
-orion_part_17.c:1055	0x10399D	skutecny skok
-orion_part_17.c:1063	0x10399D	skutecny skok
-orion_part_17.c:1072	0x1039E7	skutecny skok
-orion_part_17.c:1081	0x1039E7	skutecny skok
-orion_part_17.c:1090	0x1039E7	skutecny skok
-orion_part_17.c:1099	0x1039E7	skutecny skok
-orion_part_17.c:1108	0x1039E7	skutecny skok
-orion_part_17.c:1117	0x1039E7	skutecny skok
-orion_part_17.c:1126	0x1039E7	skutecny skok
-orion_part_17.c:1135	0x1039E7	skutecny skok
-orion_part_17.c:1601	0x104386	EPILOG
-orion_part_17.c:2085	0x10487C	EPILOG
-orion_part_17.c:2824	0x104385	cil nenalezen
-orion_part_17.c:3043	0x104385	cil nenalezen
-orion_part_17.c:3569	0x105DE8	skutecny skok
-orion_part_17.c:3728	0x104385	cil nenalezen
-orion_part_17.c:3959	0x104385	cil nenalezen
-orion_part_17.c:4274	0x104385	cil nenalezen
-orion_part_17.c:4457	0x107668	EPILOG
-orion_part_17.c:4862	0x107667	EPILOG
-orion_part_17.c:5001	0x107667	EPILOG
-orion_part_17.c:5256	0x107667	EPILOG
-orion_part_17.c:5681	0x108023	pokracuje jinam
-orion_part_17.c:5737	0x1075A1	skutecny skok
-orion_part_17.c:6378	0x108E55	skutecny skok
-orion_part_17.c:6403	0x108E57	skutecny skok
-orion_part_17.c:6441	0x108608	skutecny skok
-orion_part_17.c:6468	0x107FEE	skutecny skok
-orion_part_17.c:6478	0x108023	pokracuje jinam
-orion_part_17.c:6625	0x108E55	skutecny skok
-orion_part_17.c:6639	0x108E57	skutecny skok
-orion_part_17.c:6688	0x108608	skutecny skok
-orion_part_17.c:6747	0x108021	skutecny skok
-orion_part_17.c:6921	0x108E57	skutecny skok
-orion_part_17.c:6930	0x108E55	skutecny skok
-orion_part_17.c:6984	0x1085EA	skutecny skok
-orion_part_17.c:7105	0x109F9C	EPILOG
-orion_part_17.c:7277	0x10A181	EPILOG
-orion_part_17.c:7384	0x10A33F	EPILOG
-orion_part_17.c:7495	0x10A33F	EPILOG
-orion_part_17.c:7559	0x10A33F	EPILOG
-orion_part_17.c:8241	0x10BDE7	EPILOG
-orion_part_17.c:8641	0x10C887	EPILOG
-orion_part_17.c:8742	0x10BDE6	EPILOG
-orion_part_17.c:8907	0x10B49B	skutecny skok
-orion_part_17.c:9053	0x10C885	skutecny skok
-orion_part_17.c:9055	0x10C887	EPILOG
-orion_part_17.c:9212	0x10BDE6	EPILOG
+orion_part_17.c:615	0x103169	skutecny skok
+orion_part_17.c:623	0x10318F	skutecny skok
+orion_part_17.c:648	0x103235	EPILOG
+orion_part_17.c:657	0x1031D3	skutecny skok
+orion_part_17.c:665	0x10320D	skutecny skok
+orion_part_17.c:793	0x103472	skutecny skok
+orion_part_17.c:794	0x1034BB	skutecny skok
+orion_part_17.c:811	0x103472	skutecny skok
+orion_part_17.c:812	0x1034BB	skutecny skok
+orion_part_17.c:889	0x102F0A	EPILOG
+orion_part_17.c:1113	0x10399D	skutecny skok
+orion_part_17.c:1121	0x10399D	skutecny skok
+orion_part_17.c:1137	0x10399D	skutecny skok
+orion_part_17.c:1145	0x10399D	skutecny skok
+orion_part_17.c:1153	0x10399D	skutecny skok
+orion_part_17.c:1161	0x10399D	skutecny skok
+orion_part_17.c:1170	0x1039E7	skutecny skok
+orion_part_17.c:1179	0x1039E7	skutecny skok
+orion_part_17.c:1188	0x1039E7	skutecny skok
+orion_part_17.c:1197	0x1039E7	skutecny skok
+orion_part_17.c:1206	0x1039E7	skutecny skok
+orion_part_17.c:1215	0x1039E7	skutecny skok
+orion_part_17.c:1224	0x1039E7	skutecny skok
+orion_part_17.c:1233	0x1039E7	skutecny skok
+orion_part_17.c:1699	0x104386	EPILOG
+orion_part_17.c:2183	0x10487C	EPILOG
+orion_part_17.c:2922	0x104385	cil nenalezen
+orion_part_17.c:3141	0x104385	cil nenalezen
+orion_part_17.c:3667	0x105DE8	skutecny skok
+orion_part_17.c:3826	0x104385	cil nenalezen
+orion_part_17.c:4057	0x104385	cil nenalezen
+orion_part_17.c:4372	0x104385	cil nenalezen
+orion_part_17.c:4555	0x107668	EPILOG
+orion_part_17.c:4960	0x107667	EPILOG
+orion_part_17.c:5099	0x107667	EPILOG
+orion_part_17.c:5354	0x107667	EPILOG
+orion_part_17.c:5779	0x108023	pokracuje jinam
+orion_part_17.c:5835	0x1075A1	EPILOG
+orion_part_17.c:6476	0x108E55	skutecny skok
+orion_part_17.c:6501	0x108E57	pokracuje jinam
+orion_part_17.c:6539	0x108608	skutecny skok
+orion_part_17.c:6566	0x107FEE	skutecny skok
+orion_part_17.c:6576	0x108023	pokracuje jinam
+orion_part_17.c:6723	0x108E55	skutecny skok
+orion_part_17.c:6737	0x108E57	pokracuje jinam
+orion_part_17.c:6786	0x108608	skutecny skok
+orion_part_17.c:6845	0x108021	skutecny skok
+orion_part_17.c:7019	0x108E57	pokracuje jinam
+orion_part_17.c:7028	0x108E55	skutecny skok
+orion_part_17.c:7082	0x1085EA	skutecny skok
+orion_part_17.c:7203	0x109F9C	EPILOG
+orion_part_17.c:7375	0x10A181	EPILOG
+orion_part_17.c:7482	0x10A33F	EPILOG
+orion_part_17.c:7593	0x10A33F	EPILOG
+orion_part_17.c:7657	0x10A33F	EPILOG
+orion_part_17.c:8339	0x10BDE7	EPILOG
+orion_part_17.c:8739	0x10C887	EPILOG
+orion_part_17.c:8840	0x10BDE6	EPILOG
+orion_part_17.c:9005	0x10B49B	EPILOG
+orion_part_17.c:9151	0x10C885	skutecny skok
+orion_part_17.c:9153	0x10C887	EPILOG
+orion_part_17.c:9310	0x10BDE6	EPILOG
 orion_part_18.c:124	0x10BDE6	EPILOG
 orion_part_18.c:993	0x10E6C1	EPILOG
 orion_part_18.c:1558	0x10E551	skutecny skok
 orion_part_18.c:1644	0x10E6C0	EPILOG
 orion_part_18.c:1748	0x10E6C1	EPILOG
-orion_part_18.c:1911	0x10EC8A	skutecny skok
+orion_part_18.c:1911	0x10EC8A	EPILOG
 orion_part_18.c:1959	0x10EFA3	EPILOG
 orion_part_18.c:1995	0x10EFA3	EPILOG
 orion_part_18.c:2115	0x10EFA3	EPILOG
@@ -1146,4 +1144,4 @@ orion_part_26.c:1348	0x1675C0	skutecny skok
 orion_part_26.c:1348	0x1676C0	skutecny skok
 orion_part_26.c:1471	0x1675C0	skutecny skok
 orion_part_26.c:1473	0x1676C0	skutecny skok
-orion_part_26.c:3229	0x11E68A	skutecny skok
+orion_part_26.c:3242	0x11E68A	skutecny skok

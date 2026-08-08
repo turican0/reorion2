@@ -8146,7 +8146,13 @@ void sub_5BD97()
 LABEL_61:
     v22 = sub_127C27((int)aRaceselLbx, 0, dword_193174);
     sub_12A478(48, 58, v22);
-    JUMPOUT(0x5C202);
+    // PORT (vlna 68): `JUMPOUT(0x5C202)` je NO-OP, takze se po vykresleni
+    // pozadi nevratilo z funkce, ale propadlo do zbytku tela - obrazovka
+    // vyberu rasy se tim tocila dokola a nikdy se nedostala k Present().
+    // Zmereno: blit pozadi se zavolal 1 133 132x. `loc_5C202` je pritom
+    // epilog funkce (`lea esp, [ebp+82h] / pop ebp / jmp loc_5BD91`, kde
+    // loc_5BD91 = `pop edi/esi/edx/ecx/ebx / retn`), tedy proste navrat.
+    return;
   }
   v7 = 0;
   v8 = 1;

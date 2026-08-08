@@ -14,7 +14,13 @@ for i, ln in enumerate(lines):
     if m:
         label_at.setdefault(int(m.group(2), 16), i)
 
-EPI = re.compile(r"^\s+(pop|leave|popa|retn|retf|ret)\b")
+# Vlna 68: epilog muze zacinat obnovou zasobniku (`lea esp, [ebp+82h]`)
+# a koncit skokem na SDILENY epilog jine funkce (`jmp loc_XXXX`).
+# Priklad: loc_5C202 = `lea esp,[ebp+82h] / pop ebp / jmp loc_5BD91`,
+# kde loc_5BD91 uz je `pop ... / retn`. Driv se to klasifikovalo jako
+# "skutecny skok" - kvuli tomu zustala obrazovka vyberu rasy cerna.
+EPI = re.compile(r"^\s+(pop|leave|popa|retn|retf|ret|lea\s+esp)\b")
+JMPEPI = re.compile(r"^\s+jmp\s+(loc(?:ret)?_[0-9A-F]+)\s*$")
 OTHER = re.compile(r"^\s+[a-z]")
 
 def classify(addr):
@@ -37,6 +43,13 @@ def classify(addr):
             continue
         if re.match(r"^(sub_|\S+\s+proc)", ln):
             return "pokracuje jinam"
+        m2 = JMPEPI.match(ln)
+        if m2:
+            nxt = int(m2.group(1).split(chr(95))[1], 16)
+            i2 = label_at.get(nxt)
+            if i2 is None:
+                return "skutecny skok"
+            j = i2 + 1; steps += 1; continue
         if EPI.match(ln):
             if re.match(r"^\s+(retn|retf|ret)\b", ln):
                 return "EPILOG"
