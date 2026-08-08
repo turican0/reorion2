@@ -7512,3 +7512,41 @@ nema byt navrat.
 
 - regresni test videa **600/600 matched, 0 diverged**;
 - kliknuti na ACCEPT: bez padu a bez hlasky RangeChecks.
+
+#### Vlna 67, dodatek: cerna obrazovka po ACCEPT - zuzeno
+
+Uzivatel potvrdil, ze ACCEPT uz nepada, ale zobrazi se cerna obrazovka.
+Zmereno hlidacem: hra se NEZASEKAVA v logice, ale v BLITU pozadi obrazovky
+vyberu rasy:
+
+    sub_14852C  <- sub_12A478 <- sub_5BD97 (`sub_12A478(48, 58, v22)`)
+                <- sub_5C510 <- sub_CD435
+
+kde `v22 = sub_127C27(aRaceselLbx, 0, dword_193174)` = zaznam 0 z RACESEL.LBX.
+
+**Co uz je overene a netreba znovu merit:**
+
+- sprite je nacteny a jeho hlavicka je v poradku: **300 x 333, priznaky 0**
+  (tedy RLE typ 0 -> `sub_14852C`), ukazatel nenulovy;
+- `sub_14852C` se NEZACYKLUJE na degenerovanem paru (count == 0 && rc == 0) -
+  overeno docasnou zarazkou, ktera by to ohlasila; nikdy nevystrelila;
+- jiny velky sprite (480 vysoky, ramecek) ma proud v poradku a prochazi:
+  prvni dvojice (8, 75), tedy "preskoc 75, zkopiruj 8".
+
+**Kde hledat dal:** radky se v tomhle RLE posouvaji VYHRADNE na znacce
+`count == 0` (asm `cmp ecx, 0 / jz -> sub edx, ebx`). Pro sprite 300x333 tedy
+`v4` nikdy neklesne a smycka jede porad dokola - proud se cte od SPATNEHO
+MISTA. Ukazatel na data pocita `sub_129FF9` / `sub_12A478` vyrazem
+
+```c
+v8 = (int *)(dword_1BC2A8 + *(_DWORD *)(dword_1BC2A8 + 12 + 4 * (*(int *)(dword_1BC2A8 + 2) >> 16)));
+```
+
+tedy `base + tabulka_offsetu[index_snimku]`, kde index snimku je slovo na
+`base + 4`. Zmerit ten index a vysledny offset (POZOR: ten radek je
+v `sub_129FF9`, NE v `sub_12A478` - to me pri mereni jednou svedlo).
+Pokud je index nesmyslny, cte se offset mimo tabulku a vyjde ukazatel do
+prostredka dat, kde uz zadne radkove znacky nejsou.
+
+Pozn.: hned za tim blitem je `JUMPOUT(0x5C202)`, tedy dalsi NO-OP skok
+z tridy "611 chybejicich return" (vlna 58) - overit take.
