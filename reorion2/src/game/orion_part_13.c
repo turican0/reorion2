@@ -5557,16 +5557,16 @@ void sub_CCC3D(int a1)
 //----- (000CCD3C) --------------------------------------------------------
 char sub_CCD3C(int a1)
 {
-  sub_120CCB(4, (int)&byte_1A125C);
+  sub_120CCB(4, (int)byte_1A125C);
   sub_120DED(0, 64);
   sub_12A478(word_1831D4, word_1831D6, dword_1A12D4[0]);
-  sub_120BB5(2, (int)&byte_1A125C);
+  sub_120BB5(2, (int)byte_1A125C);
   sub_124D41();
   if ( byte_182ACA )
   {
     sub_128C32(0, 0, 639, 479, 0);
     sub_12A478(0, 0, dword_1A1354);
-    sub_120BB5(3, (int)&byte_1A125C);
+    sub_120BB5(3, (int)byte_1A125C);
     sub_124DEC();
     byte_182ACA = 0;
   }
@@ -5574,7 +5574,7 @@ char sub_CCD3C(int a1)
   sub_CCC3D(a1);
   if ( byte_199F3A == 2 )
     sub_12A478(word_1831D4 + 217, word_1831D6 + 377, dword_1A12D0);
-  sub_120BB5(3, (int)&byte_1A125C);
+  sub_120BB5(3, (int)byte_1A125C);
   return sub_120F55(154);
 }
 // 182ACA: using guessed type char byte_182ACA;
@@ -5623,7 +5623,7 @@ void sub_CCE2E()
   int16_t v30; // [esp-14h] [ebp-18h]
   int16_t v31; // [esp-14h] [ebp-18h]
 
-  sub_120BB5(3, (int)&byte_1A125C);
+  sub_120BB5(3, (int)byte_1A125C);
   v0 = (_BYTE *)sub_CDF5C(12);
   v27 = sub_11438B(word_1831D4 + 121, word_1831D6 + 119, word_1831D4 + 188, word_1831D6 + 184, v0, 0);
   v1 = (_BYTE *)sub_CDF5C(12);

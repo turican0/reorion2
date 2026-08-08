@@ -19964,16 +19964,19 @@ extern int16_t word_1A1240;
 extern int dword_1A1244;
 extern int dword_1A1248;
 extern int dword_1A124C[4];
-extern char byte_1A125C[];
-extern char byte_1A125D;
-extern char byte_1A125E;
-extern char byte_1A125F;
+// Souvisly blok 0x1A125C..0x1A1274 (vlna 66) - prvnich 8 B je barevna rampa
+// fontu, kterou cte sub_120BB5; zbytek je tabulka ukazatelu z vlny 58.
+extern char colorBlock_1A125C[24];
+#define byte_1A125C ((char *)(colorBlock_1A125C + 0))
+#define byte_1A125D (colorBlock_1A125C[1])
+#define byte_1A125E (colorBlock_1A125C[2])
+#define byte_1A125F (colorBlock_1A125C[3])
 // PORT (vlna 58): 0x1A1260..0x1A1274 je JEDNO pole 5 ukazatelu na sprite.
 // sub_CCA1C do nej PISE pres `dword_1A1260[1..4]` (asm: `mov dword_199260[edi],
 // eax`, edi = 4,8,12,16), sub_CCC3D z nej CTE pres `dword_1A1264[index]`.
 // V portu to byly dva ruzne ctyrbajtove objekty - zapis pretekl a cteni vracelo
 // nuly. Stejna trida i u 1A12D4, 1A12FC a 1A1310 nize.
-extern int dword_1A1260[5];
+#define dword_1A1260 ((int *)(colorBlock_1A125C + 4))
 #define dword_1A1264 (dword_1A1260 + 1)
 // Tabulka retezcu GALAXY AGE - 3 polozky (vlna 65). Sousedni globaly, do kterych sub_CCE2E indexuje `dword_1A1274[kurzor]`.
 extern int dword_1A1274[3];

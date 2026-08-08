@@ -9779,7 +9779,7 @@ void sub_31F25( int a1)
   sub_119861();
   if ( !v15 )
   {
-    sub_120BB5(4, (int)&byte_1A125C);
+    sub_120BB5(4, (int)byte_1A125C);
     sub_115BEA(262, 50, 103, 12, (int)v13, 15, 0, 0, 0, 0);
     sub_11438B(268, 50, 383, 64, &unk_178CA0, 0);
   }

@@ -17255,11 +17255,18 @@ int16_t word_1A1240; // weak
 int dword_1A1244; // weak
 int dword_1A1248; // weak
 int dword_1A124C[4]; // weak
-char byte_1A125C[]; // weak
-char byte_1A125D; // weak
-char byte_1A125E; // weak
-char byte_1A125F; // weak
-int dword_1A1260[5]; // weak - vlna 58: souvisly blok, dword_1A1264 je makro
+// PORT (vlna 66): 0x1A125C..0x1A1274 je JEDEN souvisly blok. Prvnich OSM
+// bajtu je BAREVNA RAMPA FONTU - `sub_120BB5(font, a2)` z nich plni
+// `byte_1B3E7C[0..7]` (barvy jednotlivych urovni glyfu) a volajici mu
+// predavaji prave `&byte_1A125C`. V portu byl `byte_1A125C` jednoprvkovy,
+// dalsi tri bajty samostatne globaly a bajty 4..7 patrily uz `dword_1A1260`,
+// takze se osmibajtove cteni skladalo ze smeti -> TEXT MEL SPATNOU BARVU
+// (popisky v NEW GAME vychazely ruzove, index palety 161, misto zelene 123).
+// Ze jde o souvislou tabulku, potvrzuje i sub_31F25 (orion_part_02.c), ktere
+// tech osm bajtu plni po sobe volanimi sub_133DE1.
+// Zbytek bloku (0x1A1260..0x1A1274) je tabulka ukazatelu z vlny 58.
+char colorBlock_1A125C[24]; // weak
+// dword_1A1260 je ted makro do colorBlock_1A125C (vlna 66).
 int dword_1A1274[3]; // weak - vlna 65: souvisla tabulka retezcu
 int dword_1A1280[3]; // weak - vlna 65: souvisla tabulka retezcu
 int dword_1A128C[7]; // weak - vlna 65: souvisla tabulka retezcu
