@@ -842,7 +842,7 @@ void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7
         HIBYTE(v9) = HIBYTE(a5) | 8;
       v10 = v9;
       v11 = 9;
-      v12 = &byte_10357B;
+      v12 = byte_10357B;   /* vlna 65: uz je to pole, ne jeden bajt */
       do
       {
         if ( !v11 )
@@ -901,16 +901,19 @@ void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7
 // Registrove argumenty podle vlastnich vstupnich kontrol funkce
 // (`cmp bx, 0Ah` / `cmp bx, 280h`, eax < 640, edx < 480, `!ecx`):
 //   result = x (eax), a2 = y (edx), a3 = retezec (ecx), a4 = sirka (ebx).
-// a34/a35/a36 jsou tri zasobnikove argumenty; telo je cte pres posunute
-// pohledy (`HIWORD(a34)`, `SBYTE2(a35)`, `*(int *)((char *)&a36 + 2)`) -
-// ponechano presne tak, jak to dala IDA, protoze presne rozlozeni tech slotu
-// se bez behove kontroly overit neda.
+// a34/a35/a36 jsou TRI ZASOBNIKOVE ARGUMENTY v poradi, v jakem je volajici
+// pushuji. Vlna 65: telo je puvodne cetlo pres posunute pohledy
+// (`HIWORD(a34)`, `SBYTE2(a35)`, `*(int *)((char *)&a36 + 2)`) - IDA je
+// pojmenovala podle POSUNUTEHO ramce (`sub ebp, 76h`), takze kazdy z nich
+// mirí o 2 bajty vedle. Podle asm volani sub_1035AF jsou to
+// `arg_76` (word), `arg_7A` (byte) a `arg_7E` (dword) = 1./2./3. argument
+// na zasobniku ([ebp+10h/14h/18h], protoze pred `enter` jsou push esi/edi).
 int sub_10370A(
         int result, unsigned int a2,
         int a3, int a4,
         int a34,
         int a35,
-        int64_t a36)
+        int a36)
 {
   int v36; // esi
   int v37; // eax
@@ -1009,7 +1012,7 @@ LABEL_25:
             ++v36;
           }
           v51[(int16_t)v37] = 0;
-    sub_1035AF(v49, v54, v47, (int)v51, HIWORD(a34), SBYTE2(a35), *(int *)((char *)&a36 + 2));
+    sub_1035AF(v49, v54, v47, (int)v51, (int16_t)a34, (uint8_t)a35, a36);
           LOWORD(v44) = word_1B3EA2;
           v54 += v44;
           v37 = 0;
@@ -1026,9 +1029,10 @@ LABEL_25:
   v51[(int16_t)v37] = 0;
   if ( (_WORD)v37 )
   {
-    if ( HIWORD(a34) == 3 )
-      HIWORD(a34) = 0;
-    sub_1035AF(v49, v54, v47, (int)v51, HIWORD(a34), SBYTE2(a35), *(int *)((char *)&a36 + 2));
+    // vlna 65: asm `cmp word ptr [ebp+arg_76], 3 / mov [ebp+arg_76], 0`
+    if ( (int16_t)a34 == 3 )
+      a34 = 0;
+    sub_1035AF(v49, v54, v47, (int)v51, (int16_t)a34, (uint8_t)a35, a36);
   }
   HIWORD(v45) = HIWORD(v54);
   LOWORD(v45) = word_1B3EA0 + v54;

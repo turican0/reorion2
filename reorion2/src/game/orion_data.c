@@ -268,7 +268,17 @@ _UNKNOWN loc_FFFF8; // weak
 _UNKNOWN loc_100000; // weak
 char byte_100A36[] = { '\0' }; // weak
 _UNKNOWN loc_103428; // weak
-char byte_10357B = '\x03';// weak
+// PORT (vlna 65): NENI to jeden bajt, ale TABULKA 9 kodu zarovnani, kterou
+// `sub_1035AF` prohledava (`v12 = byte_10357B; ... *(_WORD *)v12 == v10`) a
+// podle poradi nalezene polozky vybira kreslici rutinu (switch nad `v11`;
+// v asm je to jump table `jpt_103649` s 9 polozkami).
+// asm: `byte_10357B db 3 / dd 1080208h, 3080008h, 1000200h / db 3 dup(0)`,
+// tedy bajty 03 08 02 08 01 08 00 08 03 00 02 00 01 00 00 00, coz po dvojicich
+// da kody 0x0803, 0x0802, 0x0801, 0x0800, 0x0003, 0x0002, 0x0001, 0x0000.
+// S jednim bajtem se hledalo ve smeti, nikdy to nesedlo a switch skoncil na
+// `case 0` = NEKRESLI NIC. Proto zustavaly popisky v rameccich NEW GAME
+// prazdne - styl 0x0002 (vycentrovany text) je v tabulce az sesty.
+char byte_10357B[16] = { 3, 8, 2, 8, 1, 8, 0, 8, 3, 0, 2, 0, 1, 0, 0, 0 }; // weak
 // extern _UNKNOWN _GETDS; weak
 /* strstr: FLIRT rozpoznal jako staticky linkovanou CRT funkci, Hex-Rays ji ale nedekompiloval jako kod - pouziva se realna deklarace z <string.h> misto vlastni extern deklarace. */
  // weak
@@ -17250,19 +17260,9 @@ char byte_1A125D; // weak
 char byte_1A125E; // weak
 char byte_1A125F; // weak
 int dword_1A1260[5]; // weak - vlna 58: souvisly blok, dword_1A1264 je makro
-int dword_1A1274; // weak
-int dword_1A1278; // weak
-int dword_1A127C; // weak
-int dword_1A1280; // weak
-int dword_1A1284; // weak
-int dword_1A1288; // weak
-int dword_1A128C; // weak
-int dword_1A1290; // weak
-int dword_1A1294; // weak
-int dword_1A1298; // weak
-int dword_1A129C; // weak
-int dword_1A12A0; // weak
-int dword_1A12A4; // weak
+int dword_1A1274[3]; // weak - vlna 65: souvisla tabulka retezcu
+int dword_1A1280[3]; // weak - vlna 65: souvisla tabulka retezcu
+int dword_1A128C[7]; // weak - vlna 65: souvisla tabulka retezcu
 char unk_1A12A8[20]; // weak - viz orion_common.h (vlna 26 pokr. 57)
 int dword_1A12BC; // weak
 int dword_1A12C0; // weak
@@ -17271,11 +17271,7 @@ int dword_1A12C8; // weak
 int dword_1A12CC; // weak
 int dword_1A12D0; // weak
 int dword_1A12D4[6]; // weak - vlna 58: souvisly blok, dword_1A12D8 je makro
-int dword_1A12EC; // weak
-int dword_1A12F0; // weak
-int dword_1A12F4; // weak
-int dword_1A12F8; // weak
-int dword_1A12FC[5]; // weak - vlna 58: souvisly blok, dword_1A1300 je makro
+int dword_1A12EC[9]; // weak - vlna 65: 0x1A12EC..0x1A1310 vcetne 1A12FC/1300
 int dword_1A1310[11]; // weak - vlna 58: souvisly blok, 1A1314/132C/1330 jsou makra
 int16_t word_1A133C; // weak
 int16_t word_1A133E; // weak

@@ -5250,7 +5250,7 @@ int sub_CC81C()
   char *v4; // eax
   int result; // eax
 
-  dword_1A12EC = sub_CDF5C(545);
+  dword_1A12EC[0] = sub_CDF5C(545);
   dword_1A12F0 = sub_CDF5C(280);
   dword_1A12F4 = sub_CDF5C(190);
   dword_1A12F8 = sub_CDF5C(318);
@@ -5285,19 +5285,19 @@ LABEL_7:
 LABEL_8:
   dword_1A124C[SWORD2(v3)] = sub_CDF5C(360);
   dword_1A124C[(int16_t)(WORD2(v3) + 1)] = sub_CDF5C(323);
-  dword_1A1274 = sub_CDF5C(377);
+  dword_1A1274[0] = sub_CDF5C(377);
   dword_1A1278 = sub_CDF5C(190);
   dword_1A127C = sub_CDF5C(402);
   dword_1A1244 = sub_CDF5C(503);
   dword_1A1248 = sub_CDF5C(496);
-  dword_1A128C = sub_CDF5C(148);
+  dword_1A128C[0] = sub_CDF5C(148);
   dword_1A1290 = sub_CDF5C(150);
   dword_1A1294 = sub_CDF5C(152);
   dword_1A1298 = sub_CDF5C(154);
   dword_1A129C = sub_CDF5C(156);
   dword_1A12A0 = sub_CDF5C(157);
   dword_1A12A4 = sub_CDF5C(158);
-  dword_1A1280 = sub_CDF5C(429);
+  dword_1A1280[0] = sub_CDF5C(429);
   dword_1A1284 = sub_CDF5C(190);
   result = sub_CDF5C(169);
   dword_1A1288 = result;
@@ -5632,7 +5632,7 @@ void sub_CCE2E()
                   word_1831D6 + 204,
                   word_1831D4 + 205,
                   word_1831D6 + 224,
-                  (int)&dword_1A12EC,
+                  (int)dword_1A12EC,
                   5,
                   (int)&word_1A1362,
                   0,
@@ -5662,7 +5662,7 @@ void sub_CCE2E()
                   word_1831D6 + 204,
                   word_1831D4 + 517,
                   word_1831D6 + 224,
-                  (int)&dword_1A1274,
+                  (int)dword_1A1274,
                   3,
                   (int)&word_1A1358,
                   0,
@@ -5677,7 +5677,7 @@ void sub_CCE2E()
                   word_1831D6 + 349,
                   word_1831D4 + 205,
                   word_1831D6 + 369,
-                  (int)&dword_1A128C,
+                  (int)dword_1A128C,
                   7,
                   (int)&word_1A1366,
                   0,
@@ -5692,7 +5692,7 @@ void sub_CCE2E()
                   word_1831D6 + 349,
                   word_1831D4 + 361,
                   word_1831D6 + 369,
-                  (int)&dword_1A1280,
+                  (int)dword_1A1280,
                   3,
                   (int)&word_1A1360,
                   0,

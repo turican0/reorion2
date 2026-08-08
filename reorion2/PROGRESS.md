@@ -7318,3 +7318,81 @@ ted kresli "nicim".
 - regresni test videa **600/600 matched, 0 diverged**;
 - skriptovanym klikem: DIFFICULTY (jeden posun), TACTICAL COMBAT i
   RANDOM EVENTS (prepnou se a zustanou), CANCEL (navrat do menu).
+
+### Vlna 65: NEW GAME - popisky v rameccich SE VYKRESLUJI (bod 2 uzavren)
+
+Posledni z peti bodu, ktere uzivatel nahlasil na obrazovce NEW GAME. Chyby
+byly tri, kazda za tou predchozi.
+
+#### Chyba 1: tri zasobnikove argumenty `sub_10370A` byly o 2 bajty vedle
+
+Telo je cetlo pres posunute pohledy `HIWORD(a34)`, `SBYTE2(a35)` a
+`*(int *)((char *)&a36 + 2)`. Duvod: funkce dela `enter 0D8h, 0` a hned
+`sub ebp, 76h`, takze IDA pojmenovala argumenty podle POSUNUTEHO ramce.
+
+Podle asm volani `sub_1035AF` jsou to `arg_76` (word), `arg_7A` (byte) a
+`arg_7E` (dword). S `push esi / push edi` PRED `enter` je rozlozeni ramce
+`[ebp+0Ch] = navrat, [ebp+10h] = 1. argument, +14h = 2., +18h = 3.` - jsou to
+tedy proste tri zasobnikove argumenty v poradi, v jakem je volajici pushuji.
+Opraveno na `(int16_t)a34`, `(uint8_t)a35`, `a36` (a `a36` z `int64_t` na `int`).
+
+#### Chyba 2 (hlavni): `byte_10357B` byla TABULKA, ne jeden bajt
+
+`sub_1035AF` si podle stylu vybira kreslici rutinu tak, ze prohledava tabulku
+kodu zarovnani a podle POZICE nalezene polozky skoci do switche (v asm jump
+table `jpt_103649` s 9 polozkami):
+
+```c
+v10 = v9; v11 = 9; v12 = byte_10357B;
+do { if (!v11) break; v13 = *(_WORD *)v12 == v10; v12 += 2; --v11; } while (!v13);
+switch (v11) { ... }
+```
+
+asm: `byte_10357B db 3 / dd 1080208h, 3080008h, 1000200h / db 3 dup(0)`, tedy
+bajty `03 08 02 08 01 08 00 08 03 00 02 00 01 00 00 00` = po dvojicich kody
+**0x0803, 0x0802, 0x0801, 0x0800, 0x0003, 0x0002, 0x0001, 0x0000**.
+
+V portu to byl **jeden bajt** (`char byte_10357B = 3`), takze se hledalo ve
+smeti, nikdy to nesedlo, `v11` doslo na 0 a switch skoncil na `case 0:` =
+NEKRESLI NIC. Popisky proto zustavaly prazdne, i kdyz cely retez nad tim uz
+bezel spravne. Styl, ktery obrazovka NEW GAME pouziva, je 0x0002 (vycentrovany
+text) - v tabulce sesty, takze `case 3` -> `sub_1210FD(a1 + a3/2, a2, a4)`.
+
+#### Chyba 3: ctyri rozsekane tabulky retezcu
+
+Po opravach se vykreslily ctyri popisky z peti - GALAXY AGE zustal prazdny a
+PLAYERS/TECH LEVEL ukazovaly cizi hodnoty. Priciny: tabulky, do kterych
+`sub_CCE2E` indexuje `dword_X[kurzor]`, byly zase rozsekane na samostatne
+globaly (tataz trida jako 5x ve vlne 58). Pri kurzoru 0 to nahodou vyslo,
+jinak se cetlo smeti:
+
+| tabulka | polozek | obsah |
+|---|---|---|
+| `dword_1A1274` | 3 | GALAXY AGE |
+| `dword_1A1280` | 3 | TECH LEVEL |
+| `dword_1A128C` | 7 | PLAYERS (2..8) |
+| `dword_1A12EC` | 5 (blok 9) | DIFFICULTY |
+
+U posledni bylo potreba jeden SPOLECNY blok 0x1A12EC..0x1A1310 (9 intu),
+protoze na 0x1A12FC zacina druhy pohled `dword_1A12FC`, do ktereho pise
+`sub_CCA1C` (vlna 58) - dva samostatne bloky by se nekryly.
+
+#### VYSLEDEK
+
+Obrazovka NEW GAME je kompletni: **DIFFICULTY = Tutor, GALAXY SIZE = Medium,
+GALAXY AGE = Average, PLAYERS = 5 Players, TECH LEVEL = Average** (pocet hracu
+sedi s petkou na obrazku). Kliknuti posune hodnotu o JEDNU a prekresli i
+obrazek - overeno: Tutor -> Easy.
+
+Tim jsou uzavrene vsechny body, ktere uzivatel na teto obrazovce nahlasil
+(divoke prepinani, prazdne popisky, zaskrtavatka, CANCEL, posunuty hit-test).
+
+**NEOVERENO:** barva textu popisku. Uzivatel si neni jisty, jestli sedi;
+porovnat proti dosboxu (kreslic je `sub_1210FD`, barvu bere z fontoveho bloku
+`fontBlock_1B3E7C`, viz vlna 55 bod 5).
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test: hlavni menu, HALL OF FAME, MULTI PLAYER - bez padu;
+- skriptovany klik: jeden posun hodnoty, prekresleni obrazku i popisku.

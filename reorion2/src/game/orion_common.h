@@ -15822,7 +15822,7 @@ extern _UNKNOWN loc_FFFF8;
 extern _UNKNOWN loc_100000;
 extern char byte_100A36[];
 extern _UNKNOWN loc_103428;
-extern char byte_10357B;
+extern char byte_10357B[16]; // vlna 65: tabulka kodu zarovnani, viz orion_data.c
 extern _UNKNOWN loc_1310FD;
 extern _UNKNOWN loc_1381E8;
 extern _UNKNOWN loc_13829B;
@@ -19975,19 +19975,22 @@ extern char byte_1A125F;
 // nuly. Stejna trida i u 1A12D4, 1A12FC a 1A1310 nize.
 extern int dword_1A1260[5];
 #define dword_1A1264 (dword_1A1260 + 1)
-extern int dword_1A1274;
-extern int dword_1A1278;
-extern int dword_1A127C;
-extern int dword_1A1280;
-extern int dword_1A1284;
-extern int dword_1A1288;
-extern int dword_1A128C;
-extern int dword_1A1290;
-extern int dword_1A1294;
-extern int dword_1A1298;
-extern int dword_1A129C;
-extern int dword_1A12A0;
-extern int dword_1A12A4;
+// Tabulka retezcu GALAXY AGE - 3 polozky (vlna 65). Sousedni globaly, do kterych sub_CCE2E indexuje `dword_1A1274[kurzor]`.
+extern int dword_1A1274[3];
+#define dword_1A1278 (dword_1A1274[1])
+#define dword_1A127C (dword_1A1274[2])
+// Tabulka retezcu TECH LEVEL - 3 polozky (vlna 65). Sousedni globaly, do kterych sub_CCE2E indexuje `dword_1A1280[kurzor]`.
+extern int dword_1A1280[3];
+#define dword_1A1284 (dword_1A1280[1])
+#define dword_1A1288 (dword_1A1280[2])
+// Tabulka retezcu PLAYERS - 7 polozek (vlna 65). Sousedni globaly, do kterych sub_CCE2E indexuje `dword_1A128C[kurzor]`.
+extern int dword_1A128C[7];
+#define dword_1A1290 (dword_1A128C[1])
+#define dword_1A1294 (dword_1A128C[2])
+#define dword_1A1298 (dword_1A128C[3])
+#define dword_1A129C (dword_1A128C[4])
+#define dword_1A12A0 (dword_1A128C[5])
+#define dword_1A12A4 (dword_1A128C[6])
 // PORT (vlna 26 pokr. 57): 1bajtovy placeholder, do ktereho ale
 // `sub_CC81C` sprintf-uje retezce ("Piccola", "Media", "%sen").
 // Vzdalenost k dalsimu symbolu 0x1A12BC - 0x1A12A8 = 20 B.
@@ -20002,14 +20005,15 @@ extern int dword_1A12D0;
 // dword_1A12D8[index]) - viz komentar u dword_1A1260.
 extern int dword_1A12D4[6];
 #define dword_1A12D8 (dword_1A12D4 + 1)
-extern int dword_1A12EC;
-extern int dword_1A12F0;
-extern int dword_1A12F4;
-extern int dword_1A12F8;
-// 0x1A12FC..0x1A1310 (v asm nasleduje `align 10h`): zapis dword_1A12FC[0] a
-// [1..3], cteni dword_1A1300[index].
-extern int dword_1A12FC[5];
-#define dword_1A1300 (dword_1A12FC + 1)
+// Tabulka retezcu DIFFICULTY - 5 polozek (0x1A12EC..0x1A1300), vlna 65.
+// Blok pokracuje az k 0x1A1310, protoze na 0x1A12FC zacina druhy pohled
+// (`dword_1A12FC`), do ktereho pise sub_CCA1C - proto jeden spolecny blok.
+extern int dword_1A12EC[9];
+#define dword_1A12F0 (dword_1A12EC[1])
+#define dword_1A12F4 (dword_1A12EC[2])
+#define dword_1A12F8 (dword_1A12EC[3])
+#define dword_1A12FC (dword_1A12EC + 4) /* vlna 65: pohled do tehoz bloku */
+#define dword_1A1300 (dword_1A12EC + 5)
 // 0x1A1310..0x1A133C: dva prekryvajici se useky jednoho bloku. sub_CCA1C pise
 // dword_1A1310[1..7] (posledni zapis uz padne na 0x1A132C!) a dword_1A132C[1..3];
 // sub_CCC3D cte dword_1A1314[index] a dword_1A1330[index]. IDA orezala
