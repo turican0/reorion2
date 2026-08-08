@@ -7256,3 +7256,65 @@ Ze jde o obycejnou 32bitovou promennou, potvrzuje i zbytek pouziti:
 
 - regresni test videa **600/600 matched, 0 diverged**;
 - kliknuti na TACTICAL COMBAT i na DIFFICULTY: bez padu, jeden ucinek na klik.
+
+### Vlna 64: NEW GAME - posunuty hit-test (bod 5) a CANCEL (bod 4)
+
+#### Bod 5: tlacitka reagovala jinde, nez byl kurzor
+
+Uzivateluv popis "jako by souradnice byly o nekolik procent spatne spocitane"
+byl presna stopa. Hit-test v `sub_11CEF5` pricita k pozici kurzoru POCATEK
+OKNA:
+
+```c
+if ( (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v40 >= off_184480[...].left
+  && ... )
+```
+
+asm (`sub_11CEF5`): `mov eax, dword_1ABE10+2 / sar eax, 10h` - tedy
+znamenkove 16bitove slovo na adrese `dword_1B3E10 + 4`, coz je
+**`dword_1B3E14`**. V originale ty dva globaly lezi za sebou; v portu jsou
+samostatne `int`, takze se cetla SMETI za `dword_1B3E10` a k souradnicim se
+pricital nahodny posun. Kurzor se pritom kreslil na spravnem miste (jina
+cesta), proto ten rozpor "tlacitko reaguje jinde, nez klikam".
+
+Opraveno na `(int16_t)dword_1B3E14` - **10 mist** (`orion_part_18.c` 4x,
+`orion_part_19.c` 6x). Stejna trida jako 37 oprav ve vlne 55 a 19 ve vlne 59.
+
+**Overeno:** kliknuti na prostredni zaskrtavatko (410,317) prepne PRAVE
+RANDOM EVENTS a ostatni dve necha - tedy klik dopada presne tam, kam mysli.
+
+#### Bod 4: CANCEL
+
+Zmereno, ze uz po oprave `off_1844B2` (vlna 63) je vse v poradku:
+kliknuti na CANCEL vraci `sub_1171AB` id **14** a `word_1A1348` (CANCEL) je
+take **14**, takze vystupni podminka `sub_CD435` sedi.
+
+**Overeno snimkem:** po kliknuti na CANCEL (163,402) se hra vrati do hlavniho
+menu. Driv se prvek ohlasil 71x za jedno kliknuti a stavovy automat se z toho
+nedostal.
+
+#### Stav obrazovky NEW GAME
+
+| bod | stav |
+|---|---|
+| 1) divoke prepinani hodnot | **opraveno** (vlna 63) - 76 posunu -> 1 |
+| 2) vybrane hodnoty se nevykresluji | **otevrene** - viz nize |
+| 3) zaskrtavatka nic nedelala | **opraveno** (vlna 63) |
+| 4) CANCEL nic nedelal | **opraveno** (dusledek vlny 63, overeno) |
+| 5) tlacitka reagovala jinde | **opraveno** (tato vlna) |
+
+**Otevreny bod 2** je stale na tomtez miste jako po vlne 61: retez
+`sub_C68C4 -> sub_1031C6 -> sub_102FD8 -> sub_103952 -> sub_10370A` bezi a
+dostava spravna data (zmereno: "Tutor" na (120,214), "Medium" na (276,214),
+"Pre Warp" na (120,359)), dojde se az na `sub_1035AF` (vypis radku), ale text
+se nevykresli. Zbyvaji tri ZASOBNIKOVE argumenty `sub_10370A`, ktere telo cte
+pres posunute pohledy (`HIWORD(a34)`, `SBYTE2(a35)`,
+`*(int *)((char *)&a36 + 2)`) - je potreba je srovnat podle asm; `sub_1035AF`
+je z nich dostava jako 5./6./7. argument (nejspis barva a priznaky), takze se
+ted kresli "nicim".
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- skriptovanym klikem: DIFFICULTY (jeden posun), TACTICAL COMBAT i
+  RANDOM EVENTS (prepnou se a zustanou), CANCEL (navrat do menu).

@@ -551,10 +551,10 @@ LABEL_72:
     if ( a2 == 1 )
     {
       v4 = *(int16_t *)((char *)off_184480 + 55 * v9);
-      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 36) = (sub_123ABA() + (*(int *)((char *)&dword_1B3E10 + 2) >> 16) - v4)
+      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 36) = (sub_123ABA() + ((int16_t)dword_1B3E14) - v4)
                                                       / (*(int *)((char *)off_184480 + 55 * v9 + 26) >> 16);
       v5 = *(int *)((char *)off_184480 + 55 * v9) >> 16;
-      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 40) = ((*(int *)((char *)&dword_1B3E10 + 2) >> 16) + sub_123AE7() - v5)
+      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 40) = (((int16_t)dword_1B3E14) + sub_123AE7() - v5)
                                                       / (*(int *)((char *)off_184480 + 55 * v9 + 30) >> 16);
       if ( **(int16_t **)((char *)off_184480 + 55 * v9 + 36) > ((*(int *)((char *)off_184480 + 55 * v9 + 2) >> 16)
                                                               - *(int16_t *)((char *)off_184480 + 55 * v9))
@@ -1496,10 +1496,16 @@ LABEL_174:
     LOWORD(dword_1B3E14) = sub_123FFB();
     for ( ii = 1; (int16_t)ii < word_1B3E0E; ++ii )
     {
-      if ( (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v40 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii)
-        && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v40 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 4)
-        && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v43 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 2)
-        && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v43 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 6) )
+      // PORT (vlna 64): POCATEK OKNA pri hit-testu. asm dela
+      // `mov eax, dword_1ABE10+2 / sar eax, 10h`, tedy znamenkove 16bitove
+      // slovo na adrese dword_1B3E10+4 = `dword_1B3E14`. V originale ty dva
+      // globaly lezi za sebou, v portu jsou samostatne, takze se cetlo SMETI
+      // a hit-test byl posunuty proti vykreslenemu kurzoru - tlacitka
+      // reagovala jinde, nez uzivatel klikal. Opraveno na vsech 10 mistech.
+      if ( ((int16_t)dword_1B3E14) + v40 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii)
+        && ((int16_t)dword_1B3E14) + v40 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 4)
+        && ((int16_t)dword_1B3E14) + v43 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 2)
+        && ((int16_t)dword_1B3E14) + v43 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)ii + 6) )
       {
         if ( *(int *)((char *)off_184480 + 55 * (int16_t)ii + 6) >> 16 != 14 )
         {

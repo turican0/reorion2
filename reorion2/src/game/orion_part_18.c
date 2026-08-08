@@ -5227,10 +5227,10 @@ int sub_113FB9()
   LOWORD(dword_1B3E14) = sub_123FFB();
   for ( i = 1; (int16_t)i < word_1B3E0E; ++i )
   {
-    if ( (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v3 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i)
-      && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v3 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 4)
-      && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v4 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 2)
-      && (*(int *)((char *)&dword_1B3E10 + 2) >> 16) + v4 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 6) )
+    if ( ((int16_t)dword_1B3E14) + v3 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i)
+      && ((int16_t)dword_1B3E14) + v3 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 4)
+      && ((int16_t)dword_1B3E14) + v4 >= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 2)
+      && ((int16_t)dword_1B3E14) + v4 <= *(int16_t *)((char *)off_184480 + 55 * (int16_t)i + 6) )
     {
       if ( *(int *)((char *)off_184480 + 55 * (int16_t)i + 6) >> 16 != 14 )
         return i;
