@@ -16564,9 +16564,13 @@ int dword_19B7DC[13]; // weak
 int dword_19B810; // weak
 char byte_19B814[8]; // weak
 int dword_19B81C; // weak
-int16_t word_19B820[3]; // weak
-int16_t word_19B826; // weak
-_UNKNOWN unk_19B83A; // weak
+// PORT (vlna 67): pole ma 14 prvku, ne 3. sub_5C510 ho na dvou mistech nuluje
+// smyckou pres indexy 0..13 (asm: `mov word_193820[ebx*2], 0 / cmp ax, 0Eh`),
+// takze blok je 0x19B820..0x19B83C. IDA ho orezala na 3 prvky, protoze na
+// 0x19B826 nasla dalsi jmeno - to je ale prvek [3] tehoz pole; a `unk_19B83A`
+// je prvek [13] (kurzor, predava se jako `&unk_19B83A` do sub_11523B).
+// S tremi prvky zapis pretekl a chytil ho az RangeChecks pri ACCEPT v NEW GAME.
+int16_t word_19B820[14]; // weak
 int dword_19B840; // weak
 char byte_19B848[14]; // weak
 int16_t word_19B856; // weak

@@ -19269,9 +19269,10 @@ extern int dword_19B7DC[13];
 extern int dword_19B810;
 extern char byte_19B814[8];
 extern int dword_19B81C;
-extern int16_t word_19B820[3];
-extern int16_t word_19B826;
-extern _UNKNOWN unk_19B83A;
+// Souvisle pole 14 prvku (vlna 67) - viz orion_data.c.
+extern int16_t word_19B820[14];
+#define word_19B826 (word_19B820[3])
+#define unk_19B83A (word_19B820[13]) /* vlna 67: prvek tehoz pole */
 extern int dword_19B840;
 extern char byte_19B848[14];
 extern int16_t word_19B856;

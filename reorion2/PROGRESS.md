@@ -7396,3 +7396,119 @@ porovnat proti dosboxu (kreslic je `sub_1210FD`, barvu bere z fontoveho bloku
 - regresni test videa **600/600 matched, 0 diverged**;
 - kourovy test: hlavni menu, HALL OF FAME, MULTI PLAYER - bez padu;
 - skriptovany klik: jeden posun hodnoty, prekresleni obrazku i popisku.
+
+### Vlna 66: BARVA TEXTU popisku - `sub_120BB5` cetl barevnou rampu ze smeti
+
+Uzivatel po vlne 65 poznamenal, ze si neni jisty barvou textu. Overeno proti
+originalu v dosboxu (viz "Jak porovnat s originalem" nize):
+
+| | barva textu popisku |
+|---|---|
+| ORIGINAL | RGB(0,104,0) - **zelena** |
+| PORT pred opravou | RGB(142,85,125) = index palety **161 - ruzova** |
+| PORT po oprave | RGB(0,105,0) = index palety **123** |
+
+Glyfy byly pritom identicke (v obou pripadech presne 65 pixelu textu), lisila
+se jen barva.
+
+#### Pricina
+
+`sub_120BB5(font, a2)` nacte z adresy `a2` **OSM bajtu** do barevne rampy
+fontu (`byte_1B3E7C[0..7]`, `byte_1B3E88`, `byte_1B61D8`). Volajici mu
+predavaji `&byte_1A125C`. V portu byl ale `byte_1A125C` JEDNOPRVKOVE pole,
+dalsi tri bajty samostatne globaly (`byte_1A125D/5E/5F`) a bajty 4..7 uz
+patrily `dword_1A1260` - osmibajtove cteni se tedy skladalo ze ctyr ruznych
+objektu a barva vysla nahodne.
+
+Ze jde o souvislou tabulku, potvrzuje `sub_31F25` (orion_part_02.c), ktere
+tech osm bajtu plni po sobe jdoucimi volanimi `sub_133DE1`.
+
+Opraveno blokem `colorBlock_1A125C[24]` (0x1A125C..0x1A1274) + makra;
+`dword_1A1260` je ted pohled do nej (drive samostatne pole z vlny 58).
+Upraveno tez 6 mist, ktera brala `&byte_1A125C` - to uz je ted rovnou ukazatel.
+
+#### Jak porovnat s originalem (postup, ktery se vyplati zopakovat)
+
+1. Spustit dosbox-x s originalem (config s `mount c "...\x64\Debug"` a
+   `Orion2.exe`), uzivatel se proklika na sledovanou obrazovku.
+2. **Snimek okna dosboxu brat pres `PrintWindow` (flag 2), NE pres
+   `CopyFromScreen`.** Prvni pokus pres `SetForegroundWindow` +
+   `CopyFromScreen` zachytil CIZI OKNO (Windows nedovoli procesu na pozadi
+   vytahnout okno dopredu) - presne past, pred kterou varuje prirucka.
+3. Barvu porovnat CISELNE, ne okem: vyriznout stejny vyrez z obou obrazku a
+   vypsat prevladajici barvy; u portu jde navic precist primo INDEX PALETY
+   z raw dumpu (`REORION2_DUMP_FRAME_RANGE`), coz rovnou rekne, jestli je
+   spatne index nebo paleta.
+   (Prvni pohled na cely snimek me zmatl - ruzovou jsem povazoval za
+   oranzovou; az zvetseny vyrez ukazal rozdil jasne.)
+
+#### PLANY POPLACH: regresni brana 599/600
+
+Behem teto vlny jsem ohlasil, ze brana spadla na `600 compared, 1 matched,
+599 diverged`. **Neplati to** - po opakovanem mereni je znovu 600/600.
+Pricina falesneho vysledku: brana bezela ve chvili, kdy jeste BEZEL DOSBOX
+s originalni hrou. Dva emulatory naraz si konkuruji o CPU i zvukove zarizeni,
+port se zpomali a protoze se snimky dumpuji pri BLITU (a deduplikuji podle
+obsahu), zachyti se jina mnozina snimku nez v referenci.
+
+**Pravidlo: regresni branu nespoustet, kdyz bezi dosbox** (ani jina zatez,
+ktera meni casovani).
+
+### Vlna 67: ACCEPT v NEW GAME - pole `word_19B820` melo 3 prvky misto 14
+
+Priznak (uzivatel): po kliknuti na ACCEPT vyskoci
+`Nezpracovana vyjimka 0x...: Kod instrumentace RangeChecks zjistil pristup
+k poli mimo rozsah`, zasobnik
+`__report_rangecheckfailure <- sub_5C510 (radek 8540) <- sub_CD435`.
+
+Tohle je poprve, kdy chybu nasla instrumentace prekladace, ne pad - stoji za
+zapamatovani, ze `/RTCs` tuhle tridu (oriznute pole) umi chytit rovnou na
+miste zapisu.
+
+#### Pricina
+
+`sub_5C510` na dvou mistech nuluje pole smyckou
+
+```c
+do { v2 = (int16_t)v1++; word_19B820[v2] = 0; } while ( (int16_t)v1 < 14 );
+```
+
+tedy indexy 0..13 = **14 prvku**. asm to potvrzuje:
+`mov word_193820[ebx*2], 0 / cmp ax, 0Eh / jl`.
+
+V portu bylo `int16_t word_19B820[3]`, protoze IDA pole orizla na dalsim
+jmenu, ktere nasla (`word_19B826`). To je ale prvek **[3]** tehoz pole
+(0x19B826 - 0x19B820 = 6 = 3 slova) - hned za smyckou se do nej pise
+`word_19B826 = 1`. A `unk_19B83A` je prvek **[13]** (0x19B83A - 0x19B820 = 26),
+predava se jako `&unk_19B83A` do `sub_11523B`, tedy jako kurzor ovladaciho
+prvku - presne jako `&word_1A1364` na obrazovce NEW GAME.
+
+Opraveno na `int16_t word_19B820[14]` + makra `word_19B826` = `[3]`,
+`unk_19B83A` = `[13]`. Stejna trida jako uz mnohokrat (naposled 4 tabulky
+retezcu ve vlne 65).
+
+#### Stav
+
+**ACCEPT uz nevyhodi RangeChecks** a hra postoupi na vyber rasy
+(`sub_5C510` -> `sub_5BD97`).
+
+**NOVE OTEVRENE:** obrazovka vyberu rasy se zasekne. Hlidac
+(`REORION2_WATCHDOG=8`) ji nachytal v `sub_14852C+0x10e`
+(`orion_part_22.c:134`), tedy v RLE blitteru spritu - zacykleny na nulovem
+proudu (`v4 -= rc` s rc == 0), stejny projev jako ve vlne 58. Volajici retez:
+
+    sub_14852C <- sub_12A478 <- sub_5BD97 (orion_part_04.c:8148) <- sub_5C510
+
+Konkretne blit `sub_12A478(48, 58, v22)`, kde
+`v22 = sub_127C27(aRaceselLbx, 0, dword_193174)` - tedy zaznam 0 z
+RACESEL.LBX. **Dalsi krok:** zmerit, co `sub_127C27` vraci a jak vypada
+hlavicka toho spritu (sirka/vyska/priznaky) - stejny postup jako ve vlne 58,
+kde se ukazalo, ze problem nebyl v blitteru, ale v tom, co do nej prislo.
+Pozn.: hned za tim blitem je `JUMPOUT(0x5C202)`, tedy dalsi NO-OP skok
+(polozka "611 chybejicich return" z vlny 58) - je potreba overit, jestli tam
+nema byt navrat.
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kliknuti na ACCEPT: bez padu a bez hlasky RangeChecks.
