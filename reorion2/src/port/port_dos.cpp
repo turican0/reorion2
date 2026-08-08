@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <vector> /* REORION2_CLICK - skriptovana mys, vlna 62 */
 
 namespace Port::Dos {
 
@@ -202,6 +203,69 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
     Port::Mouse::Poll();
     const Port::Mouse::State& s = Port::Mouse::GetState();
     buttons = (s.leftButton ? 1 : 0) | (s.rightButton ? 2 : 0);
+
+    // SKRIPTOVANA MYS (vlna 62) - REORION2_CLICK="x,y@ms;x,y@ms;..."
+    // Souradnice se zadavaji v HERNICH pixelech (640x480), cas v ms od startu.
+    // V zadanem case se kurzor presune na (x,y) a na `hold` ms se stiskne leve
+    // tlacitko; mimo to je tlacitko pustene a kurzor zustava na posledni
+    // pozici. Delka stisku jde zmenit pres REORION2_CLICK_HOLD (vychozi 150).
+    //
+    // PROC TAKHLE: synteticky klik pres SetCursorPos/mouse_event se do hry
+    // NEDOSTANE (vlna 53) - SDL oknu bez fokusu vstup nedava. Tady se vstup
+    // vklada rovnou do stejneho mista, ze ktereho ho cte INT 33h, takze ho
+    // hra nerozezna od skutecneho kliknuti.
+    // POZOR: tlacitko se NESMI drzet trvale - `sub_124105` ("cekej, dokud
+    // neni zadne tlacitko stisknute") by se zatocila donekonecna (viz
+    // poznamka u REORION2_FAKE_CLICK nize).
+    {
+        struct ClickEv { int x, y; unsigned ms; };
+        static std::vector<ClickEv> s_evs;
+        static int s_have = -1;
+        static unsigned s_hold = 150;
+        if (s_have < 0) {
+            s_have = 0;
+            if (const char* env = SDL_getenv("REORION2_CLICK")) {
+                if (const char* h = SDL_getenv("REORION2_CLICK_HOLD"))
+                    s_hold = (unsigned)std::atoi(h);
+                const char* p = env;
+                while (*p) {
+                    int x = 0, y = 0; unsigned ms = 0; int used = 0;
+                    if (std::sscanf(p, "%d,%d@%u%n", &x, &y, &ms, &used) == 3) {
+                        s_evs.push_back(ClickEv{x, y, ms});
+                        p += used;
+                    } else {
+                        ++p; continue;
+                    }
+                    while (*p == ';' || *p == ' ') ++p;
+                }
+                s_have = s_evs.empty() ? 0 : 1;
+                if (s_have)
+                    SDL_Log("Port: REORION2_CLICK - %d kliknuti, hold %u ms",
+                            (int)s_evs.size(), s_hold);
+            }
+        }
+        if (s_have) {
+            const unsigned now = (unsigned)SDL_GetTicks();
+            const ClickEv* cur = nullptr;
+            bool down = false;
+            for (const ClickEv& ev : s_evs) {
+                if (now >= ev.ms) {
+                    cur = &ev;
+                    down = (now < ev.ms + s_hold);
+                }
+            }
+            if (cur) {
+                const int maxX = (g_mouseMaxX > 0 ? g_mouseMaxX : 1279);
+                const int maxY = (g_mouseMaxY > 0 ? g_mouseMaxY : 479);
+                vx = cur->x * (maxX + 1) / 640;
+                vy = cur->y * (maxY + 1) / 480;
+                if (vx > maxX) vx = maxX;
+                if (vy > maxY) vy = maxY;
+                buttons = down ? 1 : 0;
+                return;
+            }
+        }
+    }
 
     // TEST: vstrikovani falesne pozice a tlacitka, aby sla cesta mysi overit
     // i bez cloveka u klavesnice (REORION2_FAKE_MOUSE / REORION2_FAKE_CLICK).

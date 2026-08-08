@@ -13702,7 +13702,7 @@ int sub_10315D(int a1, int16_t a2);
 int sub_103183(int a1, int16_t a2, int a3);
 void sub_1031AA(int a1, int16_t a2);
 void sub_1031B8(int a1, int16_t a2, int a3);
-int sub_1031C6(int a1, int16_t a2);
+int sub_1031C6(int x, int y, int w, int h, int str, int a_word); // vlna 61
 void sub_103200(int a1, int16_t a2, int a3);
 void sub_10323B(int a1, int a2);
 void sub_10324A();

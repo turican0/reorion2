@@ -561,7 +561,15 @@ void sub_C68C4()
     v1 = *(int *)((char *)&dword_1A0A0A + 23 * i);        /* mov edx, dword_198A0A[esi] */
     v2 = PORT_PTR32(const int16_t *, (char *)&dword_1A0A10 + 23 * i);
     v4 = *(_DWORD *)(uintptr_t)(v1 + 4 * *v2);            /* push dword ptr [edx+eax*4] */
-    sub_1031C6(v4, 2);
+    // vlna 61: registrove argumenty sub_1031C6 (asm sub_C68C4 tesne pred
+    // volanim): eax = x1, edx = y1 + 2, ebx = x2 - x1, ecx = y2 - y1 - 2.
+    // Bez nich se popisek v ramecku nevykreslil.
+    sub_1031C6(
+      *(int16_t *)((char *)&word_1A09FE + 23 * i),
+      *(int16_t *)((char *)&word_1A0A00 + 23 * i) + 2,
+      *(int16_t *)((char *)&word_1A0A02 + 23 * i) - *(int16_t *)((char *)&word_1A09FE + 23 * i),
+      *(int16_t *)((char *)&word_1A0A04 + 23 * i) - *(int16_t *)((char *)&word_1A0A00 + 23 * i) - 2,
+      v4, 2);
     sub_12B65C();
   }
 }
@@ -1353,7 +1361,7 @@ LABEL_15:
         v0 = (char *)sub_CDF5C(2);
         sprintf(v11, v0, v4, v5, v6, &v9);
 LABEL_14:
-        sub_1031C6((int)v11, 2);
+        sub_1031C6(0, 0, 0, 0, (int)v11, 2); // vlna 61: registrove argumenty zatim nedohledane
         goto LABEL_15;
       case 1:
         v8 = (int16_t)sub_97A29(word_1831B0, word_1831C6);

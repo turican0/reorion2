@@ -3222,11 +3222,24 @@ int sub_16933A( int a1)
 
 
 //----- (0016937A) --------------------------------------------------------
+// PORT (vlna 61): zapnuti zaskrtavatka. Dekompilat sem dosadil dva vyrazy
+// tvaru "GetGameFlagsTable_F4B81() + obri konstanta". Ten getter vraci
+// `&unk_1784DD`, coz je v portu JEDEN BAJT, takze se cetlo 109455 resp.
+// 136183 bajtu za nim -> pad na adrese 0x0000000E pri kliknuti na
+// TACTICAL COMBAT. Adresni aritmetika je pritom jednoznacna a vede na
+// skutecne symboly:
+//     0x1784DD + 109455 = 0x19306C  -> dword_19306C
+//     0x1784DD + 136183 = 0x1998D4  -> word_1998D4
+// (druhy vyraz IDA navic zkomolila na `!= 136183`, coz da 0/1 - v originale
+// to je adresa, ne porovnani).
+// POZOR: tuhle funkci NELZE overit proti asm - Debug/diss/Orion2.exe.asm
+// i .lst konci u sub_1685E9, tenhle rozsah uz nepokryvaji. Logicka struktura
+// je proto ponechana presne tak, jak ji dala IDA; opraveny jsou jen ty dva
+// pristupy do pameti.
 void sub_16937A(char *a1)
 {
-  *(_WORD *)a1 = (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 2) == 0
-              || a1 - (char *)((_BYTE *)GetGameFlagsTable_F4B81() != 136183);
-  JUMPOUT(0x11E68A);
+  *(_WORD *)a1 = (dword_19306C[14] & 2) == 0 || a1 != (char *)&word_1998D4;
+  JUMPOUT(0x11E68A);   /* skok zpet do sub_11CEF5, ktery hned za volanim vraci */
 }
 // 1693A5: control flows out of bounds to 11E68A
 

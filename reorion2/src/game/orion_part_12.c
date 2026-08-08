@@ -4440,7 +4440,7 @@ void sub_C132A( int a1, int a2)
     v6 = 395;
   }
   v8 = sub_CDF5C(v6);
-  sub_1031C6(v8, 2);
+  sub_1031C6(0, 0, 0, 0, v8, 2); // vlna 61: registrove argumenty zatim nedohledane
 LABEL_8:
   JUMPOUT(0xC1875);
 }

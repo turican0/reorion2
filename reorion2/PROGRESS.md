@@ -7028,3 +7028,158 @@ potreba znovu premerit, jestli uz nezmizela.
 `REORION2_SENDKEY=<kod>[:<ms>[:<perioda_ms>]]`. Bez ni se klavesa vlozi
 jednou; s ni se opakuje, coz je potreba na obrazovkach, ktere po prvni
 klavese cekaji na dalsi.
+
+### Vlna 61: obrazovka NEW GAME - pad na TACTICAL COMBAT opraven, popisky
+### v rameccich rozpracovany (retez uz bezi, text jeste nekresli)
+
+Uzivatel nahlasil tri veci: (1) v rameccich chybi text vybrane polozky,
+(2) kliknuti prepne hodnotu o nekolik mist misto o jedno, (3) kliknuti na
+TACTICAL COMBAT pada.
+
+#### (3) PAD - opraveno, dve nezavisle chyby
+
+**a) `off_184480 + 55*i + 32` se cetlo jako OSMIBAJTOVY ukazatel.**
+asm `sub_11CEF5` dela `mov eax, [eax+20h]` - prosty 32bitovy load. Dekompilat
+z toho udelal `**(_WORD **)(...)`, takze se horni pulka ukazatele slepila ze
+sousedniho pole zaznamu okna. Opraveno **72 mist** v `orion_part_18.c` a
+`orion_part_19.c` (vsechny pointerove pohledy na tenhle 55bajtovy zaznam,
+offsety +24, +32, +36, +40) makrem `PORT_PTR32`.
+
+**b) `sub_16937A` sahala 109 kB za jednobajtovy global.**
+Dekompilat tam mel dva vyrazy `GetGameFlagsTable_F4B81() + obri konstanta`.
+Ten getter vraci `&unk_1784DD`, coz je v portu JEDEN BAJT. Adresni aritmetika
+je pritom jednoznacna a vede na skutecne symboly:
+
+    0x1784DD + 109455 = 0x19306C -> dword_19306C
+    0x1784DD + 136183 = 0x1998D4 -> word_1998D4
+
+(druhy vyraz IDA navic zkomolila na `!= 136183`, coz da 0/1 misto adresy).
+**POZOR:** `sub_16937A` NELZE overit proti asm - `Debug/diss/Orion2.exe.asm`
+i `.lst` konci u `sub_1685E9` a tenhle rozsah uz nepokryvaji. Logicka
+struktura je proto ponechana presne podle IDA, opraveny jsou jen ty dva
+pristupy do pameti.
+
+#### (1) POPISKY V RAMECCICH - retez zprovoznen, text se jeste nekresli
+
+Rekonstruovany DVA pahyly, ktere IDA vzdala ("call analysis failed"), oba
+podle asm (oba lezi v pokrytem rozsahu):
+
+- **`sub_103952`** (14 instrukci) - zmeri vysku textu tim, ze ho "nakresli
+  nasucho" pres `sub_10370A` s nulovymi souradnicemi a vrati `word_1ACEB8`;
+- **`sub_102FD8`** (111 instrukci) - vypis do obdelniku se zmensovanim:
+  dokud se text nevejde na vysku, zmensuje rozestup radku (`byte_1B3EC8`),
+  pak `word_1B3EA4` a nakonec sahne o font niz (`sub_120BB5`); pak vykresli
+  a vsechny zmenene globaly vrati zpet.
+
+Dale opraveno:
+
+- **`sub_1031C6` zahazovala registrove argumenty.** asm ji predava
+  `eax = x1, edx = y1+2, ebx = sirka, ecx = vyska-2` a ona z toho pocita
+  svisly stred obdelniku. Signatura rozsirena a `sub_C68C4` je ted predava
+  (ostatnich 6 volajicich dostava nuly - jejich registrove hodnoty zatim
+  nedohledane, chovaji se tedy jako dosud, tj. nekresli).
+- **`sub_10370A` mela 36 vymyslenych parametru.** Funkce dela
+  `enter 0D8h, 0` a hned `sub ebp, 76h`, takze si dekompilator vylozil
+  posunuty ramec jako dlouhou radu argumentu. Telo z nich pouziva jen
+  a1..a4 a a34..a36; signatura orezana na skutecnych 7.
+- **`sub_10370A` mela ctyri NEINICIALIZOVANE lokaly** (`v46`..`v49`), pres
+  ktere cetla text - odtud pad na adrese 0 hned po zapojeni retezu. Jsou to
+  SPILLNUTE registrove argumenty: `push eax/edx/ebx/ecx` se deje PRED
+  `sub ebp, 76h`, takze konci na `[ebp'-66h/-6Ah/-6Eh/-72h]`, presne tam, kam
+  je IDA umistila, jen uz nepoznala, ze se tam neco ulozilo. Doplneno:
+  `v46 = retezec, v47 = sirka, v48 = y, v49 = x`.
+
+**Stav: retez uz bezi cely a nepada.** Zmereno kontrolnimi body, ze do
+`sub_10370A` chodi SPRAVNE hodnoty - `"Tutor"` na (120, 214), `"Medium"` na
+(276, 214), `"Pre Warp"` na (120, 359) - a ze se dojde az na volani
+`sub_1035AF` (skutecny vypis radku). **Text se presto na obrazovce
+neobjevi.**
+
+**DALSI KROK (konkretne):** zbyvaji tri ZASOBNIKOVE argumenty `sub_10370A`.
+Telo je cte pres posunute pohledy `HIWORD(a34)`, `SBYTE2(a35)` a
+`*(int *)((char *)&a36 + 2)` - tedy o 2 bajty vedle. Volajici pritom pushuji
+(word, 1, arg_8). Je potreba z asm (`sub_10370A`, volani `sub_1035AF`)
+zjistit skutecne rozlozeni tech slotu a podle nej ty tri argumenty srovnat;
+`sub_1035AF` dostava jako 5./6./7. argument nejspis barvu a priznaky, takze
+se s nimi ted kresli "nicim".
+
+#### (2) PRESKAKOVANI HODNOT - zatim neprozkoumano
+
+Bez moznosti kliknout to nejde zmerit. Hlavni podezreni: `sub_CD435` vola
+v hlavni smycce `sub_C6AA4(v8)` po KAZDEM pruchodu, kde `v8` je vysledek
+`sub_1171AB`; kdyz `sub_1171AB` vraci stejne id po vice snimku (uroven misto
+hrany), kurzor se posune vickrat za jedno kliknuti. Zmerit poctem volani
+`sub_C6AA4` s nenulovym id na jedno kliknuti.
+
+#### Overeno po vsech zmenach
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test: hlavni menu, NEW GAME (13), HALL OF FAME (14),
+  MULTI PLAYER (15) - bez padu a bez chybove hlasky.
+
+### Vlna 62: SKRIPTOVANA MYS - port jde konecne testovat KLIKANIM
+
+Uzivatel: "Musis se naucit klikat, abys to mohl testovat a opravit."
+
+Do ted platila poznamka z vlny 53, ze synteticky klik pres `SetCursorPos` /
+`mouse_event` se do hry NEDOSTANE - SDL oknu bez vstupniho fokusu udalosti
+nedava. To ale resi uplne stejny trik jako u klaves (`REORION2_SENDKEY`,
+vlna 58): vstup se nevklada pres Windows, ale rovnou na to misto, ODKUD HO
+HRA CTE.
+
+#### `REORION2_CLICK="x,y@ms;x,y@ms;..."`
+
+Implementovano v `ComputeVirtualMouse` (`port_dos.cpp`) hned vedle
+existujiciho `REORION2_FAKE_MOUSE`. Souradnice se zadavaji v **hernich
+pixelech (640x480)** a prepocitavaji se na virtualni rozsah, ktery si hra
+nastavila funkcemi INT 33h 7/8. V zadanem case se kurzor presune na (x,y) a
+na `hold` ms se stiskne leve tlacitko; jinak je pustene a kurzor zustava na
+posledni pozici. Delka stisku: `REORION2_CLICK_HOLD` (vychozi 150 ms).
+
+**POZOR:** tlacitko se NESMI drzet trvale - `sub_124105` ("cekej, dokud neni
+zadne tlacitko stisknute") by se zatocila donekonecna (uz zdokumentovano
+u `REORION2_FAKE_CLICK`).
+
+Priklad - kliknuti na TACTICAL COMBAT na obrazovce NEW GAME:
+
+    REORION2_SKIPINTRO=1 REORION2_STATE=13 REORION2_CLICK="410,281@8000"
+
+#### Co to hned prineslo
+
+**1) Pad na TACTICAL COMBAT (vlna 61) je OVERENE opraveny.** Kliknutim
+zmereno: zadny pad a zaskrtavatko se skutecne prepne (na snimku po kliknuti
+ma TACTICAL COMBAT prazdne kolecko, ostatni dve modre). Do ted to bylo jen
+"melo by byt opravene".
+
+**2) Preskakovani hodnot (bod 2 uzivatele) ZMERENO:**
+jedno kliknuti na obrazek DIFFICULTY = **76 posunu kurzoru**. Hodnota pritom
+cykluje spravne 0-1-2-3-4-0, jen se to opakuje porad dokola po celou dobu,
+co je tlacitko dole (150 ms stisku = 76 iteraci, tj. zhruba kazde 2 ms).
+
+Priciny tedy NENI spatne pocitani kroku, ale to, ze `sub_1171AB` hlasi
+UROVEN misto HRANY. `sub_CD435` v hlavni smycce vola
+`sub_C6AA4(sub_1171AB(...))` po kazdem pruchodu.
+
+**Kde hledat dal:** `sub_1171AB` (`orion_part_18.c:6357`) ma na zacatku
+brzdu
+
+```c
+if ( SHIWORD(dword_1B3E10) <= 0 ) { ...vyhodnot... }
+else { --HIWORD(dword_1B3E10); return 0; }   /* preskoc N pruchodu */
+```
+
+`HIWORD(dword_1B3E10)` je citac prodlevy (auto-repeat) a nastavuje ho
+`sub_117174(a1)` - v portu ma 41 volani, takze existuje. Overeno v asm, ze
+`dword_1ABE10` je v originale SKUTECNY dword (dalsi symbol az na +4), takze
+`SHIWORD` je tady spravne a NEJDE o vzor "cteni pres hranici dvou globalu"
+(ten je na tomtez symbolu taky, ale u jinych 10 mist - tam se cte
+`dword_1B3E14` jako posun souradnic pri hit-testu).
+Zmerit tedy: hodnotu `HIWORD(dword_1B3E10)` v okamziku kliknuti a jestli ji
+po prvnim ohlaseni ovladaciho prvku neco nastavi; pripadne jestli original
+nekonci vyhodnoceni az na uvolneni tlacitka (v `sub_11CEF5`, kde uz vlna 53
+jednu chybu teto tridy opravovala).
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kliknuti na TACTICAL COMBAT: bez padu, zaskrtavatko se prepne.

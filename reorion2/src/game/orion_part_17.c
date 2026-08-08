@@ -504,24 +504,107 @@ void sub_102FA8()
 
 //----- (00102FD8) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */
-_DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4)
+// PORT (vlna 61): REKONSTRUOVANO Z ASM (IDA to vzdalo: "call analysis failed
+// (funcsize=111)"). Tohle je vypis textu do obdelniku se ZMENSOVANIM, dokud se
+// text nevejde na vysku - prave jim se kresli popisky v rameccich obrazovky
+// NEW GAME (DIFFICULTY / GALAXY SIZE / ...), ktere do ted zustavaly prazdne.
+//
+// Registrove argumenty (asm: `push eax` -> var_28, `mov edi, edx`,
+// `mov esi, ecx`, `mov ecx, [ebp+arg_0]`):
+//   eax = x, edx = svisly stred, ebx = sirka, ecx = max. vyska,
+//   arg_0 = retezec, arg_4 = word, arg_8, arg_C = jiny kreslic, arg_10 = centrovat
+//
+// Postup: zmeri vysku textu pres [var_24] (= sub_103CAF kdyz arg_C != 0, jinak
+// sub_103952) a dokud se nevejde, postupne zmensuje rozestup radku
+// (byte_1B3EC8), pak word_1B3EA4 a nakonec sahne po mensim fontu
+// (sub_120BB5). Nakonec vykresli a vsechny zmenene globaly vrati zpet.
+int sub_102FD8(int x, int centerY, int width, int maxHeight,
+               int str, int a_word, int a8, int useAlt, int centerVert)
 {
-  DECOMP_TODO("call analysis failed (funcsize=111)");
+  const char savedSpacing = byte_1B3EC8;      /* var_8  */
+  const int16_t savedEA6 = word_1B3EA6;       /* var_20 */
+  const int16_t savedEA4 = word_1B3EA4;       /* var_1C */
+  const int16_t savedFont = (int16_t)dword_1B61E8; /* var_14 */
+  const int16_t savedE86 = word_1B3E86;       /* var_18 */
+  int fontChanged = 0;                        /* var_C  */
+  int measured = 0;                           /* var_10 */
+  int y = centerY;                            /* edi    */
+  int fits;                                   /* var_4  */
+
+  do
+  {
+    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+    if ( (int16_t)measured <= (int16_t)maxHeight )
+      break;
+    fits = 1;
+    /* 1) zmensuj rozestup radku, dokud je vetsi nez minimum pro dany font */
+    while ( 1 )
+    {
+      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+      if ( (int16_t)measured <= (int16_t)maxHeight )
+        break;
+      if ( (uint8_t)byte_1B3EC8 <= (uint8_t)byte_183684[(int16_t)dword_1B61E8] )
+        break;
+      fits = 0;
+      --byte_1B3EC8;
+    }
+    /* 2) pak word_1B3EA4, ale nikdy pod 2 */
+    while ( 1 )
+    {
+      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+      if ( (int16_t)measured <= (int16_t)maxHeight || word_1B3EA4 <= 2 )
+        break;
+      fits = 0;
+      --word_1B3EA4;
+    }
+    /* 3) a nakonec o font niz */
+    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+    if ( (int16_t)measured > (int16_t)maxHeight && (int16_t)dword_1B61E8 > 0 )
+    {
+      fontChanged = 1;
+      fits = 0;
+      sub_120BB5((int16_t)dword_1B61E8 - 1, (int)byte_1B3E88);
+    }
+  }
+  while ( !fits );
+
+  if ( centerVert )
+    y = (int16_t)y - (int16_t)measured / 2;   /* asm: cdq / sub eax,edx / sar eax,1 */
+
+  if ( useAlt )
+    sub_103BE2((int16_t)x, (int16_t)y, str, (int16_t)width, (int16_t)a_word, a8);
+  else
+    sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)width, (int16_t)a_word, 1, a8);
+
+  byte_1B3EC8 = savedSpacing;
+  word_1B3EA6 = savedEA6;
+  word_1B3EA4 = savedEA4;
+  if ( fontChanged )
+  {
+    sub_120BB5(savedFont, (int)byte_1B3E7C);
+    word_1B3E86 = savedE86;
+  }
+  return measured;
 }
 
 
 //----- (0010315D) --------------------------------------------------------
+// PORT (vlna 61): asm predava jeste eax = x, edx = y, ebx = sirka, ecx = vyska.
+// Volajici tehle obalky je v portu nepredavaji (stejny deficit, jaky mela do
+// ted i sub_1031C6), takze sem jdou nuly - sub_10370A takovou sirku odmitne
+// a nevykresli nic, presne jako dosud. Doplnit az podle konkretni obrazovky.
 int sub_10315D(int a1, int a2)
 {
-  return sub_102FD8(a1, a2, 0, 0, 0);
+  return sub_102FD8(0, 0, 0, 0, a1, a2, 0, 0, 0);
 }
 // 102FD8: using guessed type _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char);
 
 
 //----- (00103183) --------------------------------------------------------
+// vlna 61: viz poznamka u sub_10315D.
 int sub_103183(int a1, int a2, int a3)
 {
-  return sub_102FD8(a1, a2, a3, 0, 0);
+  return sub_102FD8(0, 0, 0, 0, a1, a2, a3, 0, 0);
 }
 // 102FD8: using guessed type _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char);
 
@@ -543,17 +626,25 @@ void sub_1031B8(int a1, int a2, int a3)
 
 
 //----- (001031C6) --------------------------------------------------------
-int sub_1031C6(int a1, int a2)
+// PORT (vlna 61): doplneny REGISTROVE argumenty, ktere dekompilat zahodil.
+// asm: `mov edi, eax` (x), `mov esi, edx` (y), `movsx ebx, bx` (sirka),
+// `movsx ecx, cx` (vyska); pak `eax = ecx/2 + esi` = svisly stred obdelniku,
+// a teprve to jde do sub_102FD8 jako edx. Stack: arg_0 = retezec, arg_4 = word,
+// dal 0, 0, 1 (= centrovat svisle).
+// Bez tohohle se popisky v rameccich NEW GAME nekreslily vubec.
+int sub_1031C6(int x, int y, int w, int h, int str, int a_word)
 {
-  return sub_102FD8(a1, a2, 0, 0, 1);
+  return sub_102FD8((int16_t)x, (int16_t)((int16_t)y + (int16_t)h / 2),
+                    (int16_t)w, (int16_t)h, str, a_word, 0, 0, 1);
 }
 // 102FD8: using guessed type _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char);
 
 
 //----- (00103200) --------------------------------------------------------
+// vlna 61: viz poznamka u sub_10315D (tady navic svisle centrovani).
 void sub_103200(int a1, int a2, int a3)
 {
-  sub_102FD8(a1, a2, a3, 0, 1);
+  sub_102FD8(0, 0, 0, 0, a1, a2, a3, 0, 1);
   JUMPOUT(0x103235);
 }
 // 103230: control flows out of bounds to 103235
@@ -803,38 +894,20 @@ void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7
 
 
 //----- (0010370A) --------------------------------------------------------
+// PORT (vlna 61): signatura orezana na SKUTECNE argumenty. IDA jich vyrobila
+// 36 - funkce ma `enter 0D8h, 0` a hned za tim `sub ebp, 76h`, takze si
+// dekompilator vylozil posunuty ramec jako dlouhou radu parametru. Telo z nich
+// pouziva jen a1..a4 a a34..a36; a5..a33 se nikde necetly.
+// Registrove argumenty podle vlastnich vstupnich kontrol funkce
+// (`cmp bx, 0Ah` / `cmp bx, 280h`, eax < 640, edx < 480, `!ecx`):
+//   result = x (eax), a2 = y (edx), a3 = retezec (ecx), a4 = sirka (ebx).
+// a34/a35/a36 jsou tri zasobnikove argumenty; telo je cte pres posunute
+// pohledy (`HIWORD(a34)`, `SBYTE2(a35)`, `*(int *)((char *)&a36 + 2)`) -
+// ponechano presne tak, jak to dala IDA, protoze presne rozlozeni tech slotu
+// se bez behove kontroly overit neda.
 int sub_10370A(
         int result, unsigned int a2,
         int a3, int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int a26,
-        int a27,
-        int a28,
-        int a29,
-        int a30,
-        int a31,
-        int a32,
-        int a33,
         int a34,
         int a35,
         int64_t a36)
@@ -861,6 +934,17 @@ int sub_10370A(
 
   if ( a4 < 10 || a4 > 640 || (uint16_t)result >= 0x280u || a2 >= 0x1E0u || !a3 )
     return result;
+  // PORT (vlna 61): v46/v47/v48/v49 nechala IDA NEINICIALIZOVANE - jsou to
+  // pritom SPILLNUTE registrove argumenty. asm dela `enter 0D8h, 0`, pak
+  // `push eax / push edx / push ebx / push ecx` a teprve potom `sub ebp, 76h`,
+  // takze ty ctyri hodnoty lezi na [ebp'-66h/-6Ah/-6Eh/-72h] - presne tam, kam
+  // dekompilator umistil v49/v48/v47/v46, jen uz nepoznal, ze se tam neco
+  // ulozilo. Bez tohohle se cetl text z adresy 0 (pad hned pri vstupu do
+  // NEW GAME, jakmile se retez kresleni popisku poprve propojil).
+  v46 = a3;                 /* push ecx - retezec */
+  v47 = (int16_t)a4;        /* push ebx - sirka   */
+  v48 = a2;                 /* push edx - y       */
+  v49 = (int16_t)result;    /* push eax - x       */
   word_1ACEBA = 0;
   v36 = 0;
   v37 = 0;
@@ -925,7 +1009,7 @@ LABEL_25:
             ++v36;
           }
           v51[(int16_t)v37] = 0;
-          sub_1035AF(v49, v54, v47, (int)v51, HIWORD(a34), SBYTE2(a35), *(int *)((char *)&a36 + 2));
+    sub_1035AF(v49, v54, v47, (int)v51, HIWORD(a34), SBYTE2(a35), *(int *)((char *)&a36 + 2));
           LOWORD(v44) = word_1B3EA2;
           v54 += v44;
           v37 = 0;
@@ -984,9 +1068,19 @@ _DWORD sub_103933( int _p0, _DWORD _p1)
 
 //----- (00103952) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */
-int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2)
+// PORT (vlna 61): REKONSTRUOVANO Z ASM (IDA to vzdalo: "call analysis failed").
+// Zmeri, kolik radku zabere text `a2` pri sirce `a1` - kresli "na sucho"
+// pres sub_10370A s nulovymi souradnicemi a vrati citac radku.
+//   push 0 / push 0 / movsx ebx, ax / mov ecx, edx / push 0
+//   xor edx, edx / xor eax, eax / call sub_10370A / mov ax, word_1A4EB8
+// Registrove argumenty sub_10370A jsou (eax = x, edx = y, ecx = retezec,
+// ebx = sirka) - overeno jeho vlastnimi vstupnimi kontrolami
+// (`cmp bx, 0Ah` / `cmp bx, 280h` = sirka, eax < 640, edx < 480, !ecx).
+// Sesterska sub_103CAF ma tutez signaturu (a1 = sirka, a2 = retezec).
+int sub_103952(int a1, int a2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=14)");
+  sub_10370A(0, 0, a2, (int16_t)a1, 0, 0, 0);
+  return (int16_t)word_1ACEB8;
 }
 
 
@@ -7786,9 +7880,9 @@ LABEL_20:
     ServiceAudioTick_FE8BE(v28, 28, 76, (int16_t *)a3);
     sub_1297C3(71, 29, 74, 86, 1, (uint8_t)byte_1840BF[*(uint8_t *)(v27 + (uint8_t*)dword_197F98 + 38)]);
     sub_120BB5(3, (int)&unk_183F3A);
-    sub_1031C6(dword_192BD8 + 1, 2);
+    sub_1031C6(0, 0, 0, 0, dword_192BD8 + 1, 2); // vlna 61: registrove argumenty zatim nedohledane
     sub_120BB5(4, (int)&unk_183F3A);
-    sub_1031C6((int)v36, 2);
+    sub_1031C6(0, 0, 0, 0, (int)v36, 2); // vlna 61: registrove argumenty zatim nedohledane
     if ( (_WORD)v48 )
     {
       sub_10CFD7((int)v45);
@@ -8892,7 +8986,7 @@ LABEL_51:
     if ( !strlen(v15) )
       strcpy(v15, (char *)dword_199150[0]);
     sub_120BB5(2, (int)&unk_1840A7);
-    a1 = sub_1031C6((int)v15, 2);
+    a1 = sub_1031C6(0, 0, 0, 0, (int)v15, 2); // vlna 61: registrove argumenty zatim nedohledane
 LABEL_54:
     ++v20;
     v14 += 84;

@@ -5263,7 +5263,7 @@ char *sub_114177()
   v4 = sub_113FB9();
   if ( *(int *)((char *)off_184480 + 55 * (int16_t)v4 + 6) >> 16 == 9 )
   {
-    **(_WORD **)((char *)off_184480 + 55 * (int16_t)v4 + 32) = *(_WORD *)((char *)off_184480 + 55 * (int16_t)v4 + 28);
+    *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v4 + 32) = *(_WORD *)((char *)off_184480 + 55 * (int16_t)v4 + 28);
     v0 = (char *)off_184480 + 55 * (int16_t)v4;
     LOWORD(v0) = *((_WORD *)v0 + 12);
     return v0;
@@ -5275,10 +5275,10 @@ char *sub_114177()
       && (dword_18448E >> 16 == -1 || *(int *)((char *)off_184480 + 55 * (dword_18448E >> 16) + 6) >> 16 != 12) )
     {
       v1 = *(int16_t *)((char *)off_184480 + 55 * (int16_t)v4);
-      **(_WORD **)((char *)off_184480 + 55 * (int16_t)v4 + 36) = (sub_123ABA() - v1)
+      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v4 + 36) = (sub_123ABA() - v1)
                                                                / (*(int *)((char *)off_184480 + 55 * (int16_t)v4 + 26) >> 16);
       v2 = *(int *)((char *)off_184480 + 55 * (int16_t)v4) >> 16;
-      **(_WORD **)((char *)off_184480 + 55 * (int16_t)v4 + 40) = (sub_123AE7() - v2)
+      *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v4 + 40) = (sub_123AE7() - v2)
                                                                / (*(int *)((char *)off_184480 + 55 * (int16_t)v4 + 30) >> 16);
     }
     return (char *)v4;
@@ -5751,7 +5751,7 @@ int sub_1156E2( int a1)
     v11 = (int)v7;
   }
   result = v11;
-  **(_WORD **)((char *)off_184480 + 55 * a1 + 32) = v11;
+  *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * a1 + 32) = v11;
   return result;
 }
 // 184480: using guessed type _UNKNOWN *off_184480;
@@ -5791,7 +5791,7 @@ char *sub_115994( int a1)
     v6 = v2;
   }
   result = v6;
-  **(_WORD **)((char *)off_184480 + 55 * a1 + 32) = (_WORD)v6;
+  *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * a1 + 32) = (_WORD)v6;
   return result;
 }
 // 184480: using guessed type _UNKNOWN *off_184480;
@@ -5830,7 +5830,7 @@ char *sub_115AC0( int a1)
     v6 = v2;
   }
   result = v6;
-  **(_WORD **)((char *)off_184480 + 55 * a1 + 32) = (_WORD)v6;
+  *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * a1 + 32) = (_WORD)v6;
   return result;
 }
 // 184480: using guessed type _UNKNOWN *off_184480;
@@ -6559,11 +6559,11 @@ int sub_1174CB()
             *(_WORD *)((char *)off_184480 + 55 * v5),
             HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
             *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-          if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+          if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
             goto LABEL_46;
           goto LABEL_114;
         case 1:
-          if ( **(_WORD **)((char *)off_184480 + 55 * v5 + 32) )
+          if ( *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32) )
           {
             if ( *(_WORD *)((char *)off_184480 + 55 * v5 + 36) )
             {
@@ -6581,7 +6581,7 @@ int sub_1174CB()
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
               goto LABEL_53;
           }
           else
@@ -6591,12 +6591,12 @@ int sub_1174CB()
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
               goto LABEL_46;
           }
           goto LABEL_114;
         case 2:
-          if ( **(_WORD **)((char *)off_184480 + 55 * v5 + 32) )
+          if ( *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32) )
           {
             if ( *(_WORD *)((char *)off_184480 + 55 * v5 + 36) )
             {
@@ -6614,7 +6614,7 @@ int sub_1174CB()
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
               goto LABEL_53;
           }
           else
@@ -6624,12 +6624,12 @@ int sub_1174CB()
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
               goto LABEL_46;
           }
           goto LABEL_114;
         case 3:
-          if ( **(_WORD **)((char *)off_184480 + 55 * v5 + 32) == *(_WORD *)((char *)off_184480 + 55 * v5 + 28) )
+          if ( *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32) == *(_WORD *)((char *)off_184480 + 55 * v5 + 28) )
           {
             if ( *(_WORD *)((char *)off_184480 + 55 * v5 + 36) )
             {
@@ -6647,7 +6647,7 @@ int sub_1174CB()
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
             {
 LABEL_53:
               sub_120BB5(
@@ -6673,7 +6673,7 @@ LABEL_53:
               *(_WORD *)((char *)off_184480 + 55 * v5),
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44));
-            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && **(_BYTE **)((char *)off_184480 + 55 * v5 + 24) )
+            if ( *(_DWORD *)((char *)off_184480 + 55 * v5 + 24) && *PORT_PTR32(uint8_t *, (char *)off_184480 + 55 * v5 + 24) )
             {
 LABEL_46:
               sub_120BB5(
@@ -6716,12 +6716,12 @@ LABEL_46:
           }
           goto LABEL_114;
         case 6:
-          v13 = **(_WORD **)((char *)off_184480 + 55 * v5 + 32);
+          v13 = *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32);
           if ( v13 < *(int16_t *)((char *)off_184480 + 55 * v5 + 24) )
             v13 = *(_WORD *)((char *)off_184480 + 55 * v5 + 24);
           if ( v13 > *(int16_t *)((char *)off_184480 + 55 * v5 + 28) )
             v13 = *(_WORD *)((char *)off_184480 + 55 * v5 + 28);
-          **(_WORD **)((char *)off_184480 + 55 * v5 + 32) = v13;
+          *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32) = v13;
           goto LABEL_114;
         case 0xA:
           sub_120BB5(*(int *)((char *)off_184480 + 55 * v5 + 8) >> 16, *(_DWORD *)((char *)off_184480 + 55 * v5 + 12));
@@ -6729,7 +6729,7 @@ LABEL_46:
           if ( !(_WORD)v12 )
             LOWORD(v12) = 1;
           v1 = sub_122259();
-          if ( **(_WORD **)((char *)off_184480 + 55 * v5 + 32) == *(_WORD *)((char *)off_184480 + 55 * v5 + 28) )
+          if ( *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v5 + 32) == *(_WORD *)((char *)off_184480 + 55 * v5 + 28) )
           {
             sub_129B84(
               *(_WORD *)((char *)off_184480 + 55 * v5) - 1,
