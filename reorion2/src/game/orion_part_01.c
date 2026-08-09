@@ -4084,7 +4084,7 @@ int sub_14BFD()
   sub_120DED(0, 250);
   sub_120D79(4, (int)&unk_180170);
   sub_103952(550, dword_19A014, 550);
-  sub_103915(2);
+  SUB_103915_TODO(2);
   return sub_24677(120, -1, 1);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
@@ -4580,7 +4580,7 @@ void sub_15421()
   sub_120DED(0, 0);
   sub_120D79(4, (int)&unk_180CBC);
   sub_103952(550, dword_19A0C4, 550);
-  sub_103915(2);
+  SUB_103915_TODO(2);
   v13 = sub_24677(119, -1, 1);
   ServiceAudioTick_FE8BE(v13, -1, 1, v11);
 }
@@ -5522,7 +5522,7 @@ void sub_16AD2(int16_t *a1)
   sub_120DED(0, 0);
   sub_120D79(4, (int)&unk_180CBC);
   sub_103952(550, dword_19A0C4, 550);
-  sub_103915(2);
+  SUB_103915_TODO(2);
   v2 = sub_24677(119, -1, 1);
   ServiceAudioTick_FE8BE(v2, -1, 1, a1);
 }
@@ -9868,11 +9868,13 @@ void sub_1C8D9( int a1, int a2)
   {
     sub_120CCB(4, (int)&unk_180DDC);
     v13 = 1;
-    v10 = v11;
-    v4 = (char *)&v10 + 3;
-    do
+    /* vlna 73: puvodne `v10 = v11; v4 = (char *)&v10 + 3;` -
+       v asm lezi v10 tesne pred bufferem v11, takze &v10+4 je
+       v11[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+       8 B, takze &v10+3 miri DOVNITR ukazatele. */
+    v4 = (char *)v11;
+    while ( *v4 )
       ++v4;
-    while ( *v4 );
     strcpy(v4, (char *)dword_19A2A8);
   }
   sub_1212B3(10, 287, (int)v11);
@@ -9895,11 +9897,13 @@ void sub_1C8D9( int a1, int a2)
            (char *)dword_18F990[*(uint8_t *)(v7 + 8)]);
     if ( (uint8_t)byte_19AA5E[HIDWORD(v8)] == (_WORD)v14 )
     {
-      v10 = v11;
-      v9 = (char *)&v10 + 3;
-      do
+      /* vlna 73: puvodne `v10 = v11; v9 = (char *)&v10 + 3;` -
+         v asm lezi v10 tesne pred bufferem v11, takze &v10+4 je
+         v11[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v10+3 miri DOVNITR ukazatele. */
+      v9 = (char *)v11;
+      while ( *v9 )
         ++v9;
-      while ( *v9 );
       strcpy(v9, (char *)dword_19A29C);
     }
     ++v12;

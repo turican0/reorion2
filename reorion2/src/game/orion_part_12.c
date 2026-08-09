@@ -7218,7 +7218,7 @@ int sub_C49C9(int a1, int a2)
 LABEL_13:
     sub_BB04E(1u);
     sub_C4B98((int)v15, v4, 1);
-    sub_103915(0);
+    SUB_103915_TODO(0);
 LABEL_14:
     v11 = (int16_t *)sub_127C27((int)aColsysdiLbx, 65, dword_193174);
     v20 += 24;
@@ -8201,7 +8201,7 @@ int sub_C5E2D(int a1, int a2, int a3, int a4)
 int sub_C5ED3(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   sub_103952(a3, a5, a3);
-  return sub_103915(a6);
+  return SUB_103915_TODO(a6);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 103952: using guessed type int sub_103952(_DWORD, _DWORD, _DWORD);
@@ -8211,7 +8211,7 @@ int sub_C5ED3(int a1, int a2, int a3, int a4, int a5, int a6)
 int sub_C5F14(int a1, int a2, int a3, int a4, int a5)
 {
   sub_103952(a3, a5, a3);
-  return sub_103915(2);
+  return SUB_103915_TODO(2);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 103952: using guessed type int sub_103952(_DWORD, _DWORD, _DWORD);

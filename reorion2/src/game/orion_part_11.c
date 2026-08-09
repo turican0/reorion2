@@ -7227,7 +7227,7 @@ LABEL_7:
   v17 = (char *)sub_CDF5C(45);
   sprintf(v27, v17, v19, v23);
 LABEL_10:
-  sub_103915(0);
+  SUB_103915_TODO(0);
   v12 = 17 * a1;
   sub_E0B4F((int16_t *)(v12 + (uint8_t*)dword_1930D4), word_19999C);
   v24 = v13;
@@ -7246,7 +7246,7 @@ LABEL_10:
     v26 = dword_18F9B8[*(char *)(result + 15)];
     v16 = (char *)sub_CDF5C(70);
     sprintf(v27, v16, v26);
-    return sub_103915(0);
+    return SUB_103915_TODO(0);
   }
   return result;
 }

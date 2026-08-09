@@ -71,7 +71,7 @@ int byte_19ABA6;
 int byte_19ACF7;
 int byte_19B11B;
 int byte_19B544;
-int byte_19B688;
+/* vlna 73: byte_19B688 je ted 8bajtove pole v orion_data.c */
 int byte_19C120;
 int byte_19C148;
 int byte_19C31C;
@@ -172,8 +172,8 @@ int dword_190448;
 int dword_190498;
 int dword_1904C8;
 int dword_1906B0;
-int dword_192210;
-int dword_192228;
+/* vlna 73: dword_192210 a dword_192228 jsou ted souvisla pole v orion_data.c
+   (a puvodni skalary jsou makra do nich), duplicitni definice tu byly navic. */
 /* vlna 58: dword_192630/192644 jsou ted souvisly blok v orion_data.c
    (a dword_192644 makro do nej), duplicitni skalary tu byly navic. */
 int dword_19291C;
@@ -397,9 +397,7 @@ int unk_183B46;
 int unk_183B93;
 int unk_183CEB;
 int unk_199A12;
-int unk_19B772;
 int unk_19C048;
-int unk_19C348;
 /* vlna 58: unk_19C6F8 a unk_19C7C6 jsou druha jmena IDA pro byte_19C6F8
    resp. byte_19C7C6 - ted makra v orion_common.h; pahyly by z nich zase
    udelaly samostatne objekty a cetlo by se prazdno. */
@@ -478,9 +476,8 @@ int word_19A5B6;
 int word_19A5B8;
 int word_19A5BA;
 int word_19A5BC;
-int word_19B694;
-int word_19B6C8;
-int word_19B6DC;
+/* vlna 73: word_19B694 a word_19B6C8 jsou ted souvisla pole v orion_data.c
+   (word_19B6DC je makro do word_19B6C8), duplicitni skalary tu prekazely. */
 int word_19C0A0;
 int word_19C0A2;
 int word_19C0E0;

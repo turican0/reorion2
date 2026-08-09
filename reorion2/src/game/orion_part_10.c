@@ -4524,7 +4524,7 @@ LABEL_24:
   v23 = v21;
   sub_122259();
   sub_8F055(v32, v22, (int16_t)(v20 + 12), v23 + 5, 0x3Fu);
-  sub_103915(0);
+  SUB_103915_TODO(0);
   JUMPOUT(0xA2C08);
 }
 // A4C0A: control flows out of bounds to A2C08
@@ -12117,7 +12117,7 @@ int sub_AFA5C(int a1, int a2, int a3, int a4)
   sub_120E8C(1);
   sub_120E60(2);
   sub_AFAB9((int)byte_19DA6C, a4);
-  sub_103915(3);
+  SUB_103915_TODO(3);
   return sub_120CCB(3, (int)&unk_1827AD);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
@@ -12186,7 +12186,7 @@ int sub_AFB0D(
     dword_19DD94 = (int)sub_126BDD((int)&STACK[0xAFA], 0, dword_19DE8C, v28, 1u, 1403);
   }
   strcpy((char *)&a28 + 2, (char *)(dword_19DD94 + 103));
-  sub_103915(3);
+  SUB_103915_TODO(3);
   return sub_120CCB(3, (int)&unk_1827AD);
 }
 // AFB51: variable 'v28' is possibly undefined

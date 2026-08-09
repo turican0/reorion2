@@ -1260,7 +1260,10 @@ char aRaceselLbx[12] = "RACESEL.LBX"; // weak
 char aPatch13Lbx[12] = "patch13.lbx"; // weak
 int dword_178F71 = 3288881; // weak
 int16_t word_178F75 = 49; // weak
-_UNKNOWN unk_178F79; // weak
+/* PORT (vlna 73): v asm je to retezec ", " (db 2Ch, 20h, 0) - oddelovac,
+   ktery sub_5C20E vklada mezi polozky popisu rasy. Jako prazdny _UNKNOWN
+   se polozky slepovaly ("Ship Defense:0Artifacts Home World"). */
+_UNKNOWN unk_178F79[3] = { ',', ' ', 0 }; // weak
 char aRaceoptLbx[12] = "RACEOPT.LBX"; // weak
 char asc_178F88[2] = "\x1B"; // weak
 _UNKNOWN unk_178F8A; // weak
@@ -2561,11 +2564,17 @@ char byte_17D197[98] =
   '\0',
   '\0'
 }; // weak
-char byte_17D1F9[] = { '\0' }; // weak
-char byte_17D1FA[] = { '\0' }; // weak
-char byte_17D1FB[] = { '\0' }; // weak
-char byte_17D1FC[29] =
+// PORT (vlna 73): 17D1F9..17D218 je JEDNA souvisla 32bajtova tabulka - v asm
+// jdou byte_1751F9, byte_1751FA, byte_1751FB a byte_1751FC[29] tesne za sebou.
+// sub_5BD97 z ni cte jako byte_17D1F9[3*atribut + hodnota] cisla do popisu
+// rasy; dokud byl byte_17D1F9 jen jeden nulovy bajt, vypisovaly se same nuly
+// (zmereno: "Ship Defense:0" misto "Ship Defense:+50").
+// byte_17D1FA/FB/FC jsou ted makra na offsety do teto tabulky.
+char byte_17D1F9[32] =
 {
+  '\0',
+  '\0',
+  '\0',
   '\0',
   '\xCE',
   '2',
@@ -8214,7 +8223,7 @@ int16_t word_1844B0 = 0; // weak
 // Pouziti to potvrzuje: `LOWORD(off_1844B2) = 1/0` (priznak),
 // `HIWORD(off_1844B2) = result`, `SHIWORD(off_1844B2)` (hodnota).
 // Dusledek chyby: `(_WORD)off_1844B2` = dolni pulka ADRESY stubu, tedy skoro
-// vzdy nenulova -> `if ((_WORD)off_1844B2) break;` ukoncilo vlacecí smycku
+// vzdy nenulova -> `if ((_WORD)off_1844B2) break;` ukoncilo vlacecï¿½ smycku
 // `while (sub_124075())` v sub_11CEF5 HNED na prvni iteraci. Ovladaci prvek
 // se proto ohlasil znovu a znovu po celou dobu drzeni tlacitka (zmereno:
 // 71 ohlaseni a 76 posunu hodnoty na JEDNO kliknuti).
@@ -15340,22 +15349,17 @@ int16_t word_1906C4[]; // weak
 int16_t word_1906C6[]; // weak
 int16_t word_1906C8[]; // weak
 int16_t word_1906CA[3427]; // weak
-int dword_192190[31]; // weak
-int dword_19220C; // weak
-int dword_192210[]; // weak
-int dword_192214; // weak
-int dword_192218; // weak
-int dword_19221C; // weak
-int dword_192220; // weak
-int dword_192224; // weak
-int dword_192228[]; // weak
-int dword_19222C; // weak
-int dword_192230; // weak
-int dword_192234; // weak
-int dword_192238; // weak
-int dword_19223C; // weak
-int dword_192240; // weak
-int dword_192244; // weak
+// PORT (vlna 73): tri souvisle bloky, ktere IDA rozdelila na skalary.
+// Rozvrzeni z asm: 18A190 + 4*31 = 18A20C (dword_19220C je prvek 31),
+// 18A210..18A224 je sest dwordu a 18A228..18A244 osm dwordu (vsechny je
+// plni sub_CE0E5 za sebou retezci 623..628 a 636..643).
+// Plnici smycka pro dword_192190 v sub_1D6DE jde do 32, takze zapis
+// posledniho prvku koncil mimo pole; dword_192228 se indexuje typem
+// vlady rasy (0..7) a mel jen jeden prvek - to shodilo strcpy v
+// sub_5BD97 pri vypisu popisu rasy.
+int dword_192190[32]; // weak
+int dword_192210[6]; // weak
+int dword_192228[8]; // weak
 int16_t word_192248[500]; // weak
 // PORT (vlna 58): 0x192630..0x192680 je JEDNA souvisla tabulka 20
 // ukazatelu na retezce; sub_CE0E5 ji plni po sobe jdoucimi zapisy
@@ -16526,28 +16530,24 @@ int16_t word_19B582; // weak
 char byte_19B584; // weak
 char byte_19B587; // weak
 int dword_19B588[64]; // weak
-char byte_19B688[]; // weak
-char byte_19B689; // weak
-char byte_19B68A; // weak
+// PORT (vlna 73): 19B688..19B68F je osmibajtova barevna rampa pisma
+// (v asm byte_193688/89/8A a pak `align 10h` az k dword_193690).
+// sub_5A3BC ji plni smyckou az do indexu 7, takze jako jednobajtovy
+// symbol koncil zapis mimo a nadpisy na obrazovce vlastnosti rasy se
+// kreslily sedive misto zelene.
+char byte_19B688[8]; // weak
 int dword_19B690; // weak
-int16_t word_19B694[]; // weak
-int16_t word_19B696; // weak
-int16_t word_19B6A6; // weak
-int16_t word_19B6A8[16]; // weak
-int16_t word_19B6C8[]; // weak
-int16_t word_19B6CA[5]; // weak
-int dword_19B6D4; // weak
-int dword_19B6D8; // weak
-int16_t word_19B6DC[]; // weak
-int16_t word_19B6DE; // weak
-int16_t word_19B6E6; // weak
-int16_t word_19B6E8; // weak
-int16_t word_19B6EC; // weak
-int16_t word_19B6EE; // weak
-int16_t word_19B6F0; // weak
-int16_t word_19B6F2; // weak
-int16_t word_19B6F4; // weak
-int16_t word_19B6F6; // weak
+int16_t word_19B694[10]; // weak  /* vlna 73 - vcetne word_19B6A6 */
+// PORT (vlna 74): 19B6A8..19B707 je JEDNA oblast 48 wordu. `sub_5AAD4`
+// zapisuje do `word_19B6A8` 22 id prvku (vnejsi smycka `while (v15 < 64)`
+// probehne jen jednou, protoze pocet ve `v31` je 22 a `v15` uz zacina na
+// ~46), takze indexy 16..21 lezi az v oblasti, kterou IDA pojmenovala
+// `word_19B6C8`. Jako dve oddelena pole zapis pretekal do sousedniho
+// symbolu - zmereno: `word_19B694` melo po `sub_5AAD4` hodnoty
+// 52 53 54 55 56 57 (id prvku) misto vyberu vlastnosti 0 0 0 0 0 3.
+// Dusledek: v prvnich dvou sloupcich obrazovky vlastnosti rasy se
+// nekreslila zaskrtavatka.
+int16_t word_19B6A8[48]; // weak  /* vlna 73 - viz orion_common.h */
 int dword_19B70C; // weak
 int dword_19B710; // weak
 int16_t word_19B714[41]; // weak
@@ -16558,10 +16558,13 @@ int16_t word_19B76C; // weak
 int16_t word_19B76E; // weak
 int16_t word_19B770; // weak
 int16_t word_19B772[25]; // weak
-int dword_19B7A4[13]; // weak
-int dword_19B7D8; // weak
-int dword_19B7DC[13]; // weak
-int dword_19B810; // weak
+// PORT (vlna 73): obe pole maji 14 prvku, ne 13. IDA odstepila posledni prvek
+// jako samostatny symbol (dword_19B7D8 = dword_19B7A4[13], dword_19B810 =
+// dword_19B7DC[13]) - v asm je 1937A4 + 52 = 1937D8 a 1937DC + 52 = 193810.
+// Plnici smycka v sub_5BC74 jde do 14, takze zapis indexu 13 koncil mimo pole
+// a tlacitko CUSTOM nemelo obrazek (na obrazovce vyberu rasy chybelo).
+int dword_19B7A4[14]; // weak
+int dword_19B7DC[14]; // weak
 char byte_19B814[8]; // weak
 int dword_19B81C; // weak
 // PORT (vlna 67): pole ma 14 prvku, ne 3. sub_5C510 ho na dvou mistech nuluje
@@ -16576,7 +16579,13 @@ char byte_19B848[14]; // weak
 int16_t word_19B856; // weak
 int16_t word_19B858; // weak
 int16_t word_19B85A; // weak
-_UNKNOWN unk_19B85C; // weak
+// PORT (vlna 75): 19B85C..19B86B je 16bajtovy buffer (v asm `unk_19385C`
+// nasledovany 15 db az k dword_19386C) - jmeno naposledy ulozene vlastni
+// rasy. `sub_5BC74` do nej dela `fread(..., 15, 1, ...)`; jako jednobajtovy
+// _UNKNOWN to prepsalo sousedni promenne, mimo jine `word_19B85A` (index
+// zvyraznene rasy), a hra pak sahla na neexistujici polozku RACESEL.LBX.
+// Projevi se to az kdyz existuje LASTRACE.RAC.
+_UNKNOWN unk_19B85C[16]; // weak
 int dword_19B86C; // weak
 int dword_19B870; // weak
 int dword_19B874; // weak

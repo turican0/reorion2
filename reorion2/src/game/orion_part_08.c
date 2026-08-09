@@ -6287,17 +6287,21 @@ void sub_8F99A(char *a1, char *a2)
       v13 = 48;
       v14 = v3;
     }
-    v9 = v10;
-    v4 = (char *)&v9 + 3;
-    do
+    /* vlna 73: puvodne `v9 = v10; v4 = (char *)&v9 + 3;` -
+       v asm lezi v9 tesne pred bufferem v10, takze &v9+4 je
+       v10[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+       8 B, takze &v9+3 miri DOVNITR ukazatele. */
+    v4 = (char *)v10;
+    while ( *v4 )
       ++v4;
-    while ( *v4 );
     strcpy(v4, &v13);
-    v9 = v10;
-    v5 = (char *)&v9 + 3;
-    do
+    /* vlna 73: puvodne `v9 = v10; v5 = (char *)&v9 + 3;` -
+       v asm lezi v9 tesne pred bufferem v10, takze &v9+4 je
+       v10[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+       8 B, takze &v9+3 miri DOVNITR ukazatele. */
+    v5 = (char *)v10;
+    while ( *v5 )
       ++v5;
-    while ( *v5 );
     strcpy(v5, v12);
     v9 = v11;
     strcpy(v11, v10);
@@ -8333,7 +8337,7 @@ int sub_91BD4(int a1, int16_t *a2)
     sub_12A478(word_19C391, word_19C393, dword_19C334);
     qmemcpy(&byte_19C340, &unk_19C338, 8u);
   }
-  sub_8FDA1((int)&unk_19C348, (int)&unk_19C338, 4, 2, 0, v19 - 54, 1);
+  sub_8FDA1((int)byte_19C348, (int)&unk_19C338, 4, 2, 0, v19 - 54, 1);
   v6 = sub_8F64C();
   v18 = v6;
   v20 = sub_8F645();
@@ -8357,13 +8361,17 @@ int sub_91BD4(int a1, int16_t *a2)
   else
     sub_120BB5(v18, (int)&byte_19C340);
   sub_120E8C(v20);
-  v10 = v19 - (int16_t)sub_12066F((int)&unk_19C348);
+  v10 = v19 - (int16_t)sub_12066F((int)byte_19C348);
   v11 = word_19C384;
   v12 = word_19C391 + v10 / 2;
   v13 = (int16_t)(word_19C387 + (v11 - sub_122259()) / 2);
-  sub_1212B3(v12, v13, (int)&unk_19C348);
+  // PORT (vlna 73): `unk_19C348` je TATAZ adresa jako `byte_19C348` (v asm
+  // `mov ebx, offset byte_194348`), jen ji IDA v tomhle miste pojmenovala
+  // jinak. V portu to byl samostatny prazdny symbol, takze se nadpis
+  // dialogu (napr. "Enter Ruler Name") nikdy nevypsal.
+  sub_1212B3(v12, v13, (int)byte_19C348);
   v14 = sub_124DEC();
-  sub_1077D((int)v14, v13, (int)&unk_19C348, (int16_t *)&byte_19C340);
+  sub_1077D((int)v14, v13, (int)byte_19C348, (int16_t *)&byte_19C340);
   sub_124D41();
   byte_19C340 = 1;
   if ( byte_19C386 )

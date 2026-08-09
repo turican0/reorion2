@@ -1609,8 +1609,8 @@ extern int sub_59105();
 extern void sub_596A5();
 // plna signatura: int sub_59FA1();
 extern int sub_59FA1();
-// plna signatura: void sub_5A3BC(int a1, int a2, int a3, int a4);
-extern void sub_5A3BC();
+// plna signatura: int sub_5A3BC(int a1, int a2, int a3, int a4); // vlna 70
+extern int sub_5A3BC();
 // plna signatura: void sub_5AAD4();
 extern void sub_5AAD4();
 // plna signatura: void sub_5AD97(int a1);
@@ -1641,12 +1641,12 @@ extern void sub_5BD97();
 extern char sub_5C20E();
 // plna signatura: int sub_5C25B();
 extern int sub_5C25B();
-// plna signatura: void sub_5C510(int16_t *a1);
-extern void sub_5C510();
+// plna signatura: int sub_5C510(int base, int16_t *a1);   /* vlna 75 */ // vlna 69: EAX = zaznam hrace
+extern int sub_5C510();
 // plna signatura: void sub_5CF37();
 extern void sub_5CF37();
-// plna signatura: void sub_5D03C(int16_t *a1, int a2, int a3);
-extern void sub_5D03C();
+// plna signatura: int sub_5D03C(int16_t *a1, int a2, int a3);   /* vlna 75 */
+extern int sub_5D03C();
 // plna signatura: int sub_5D273();
 extern int sub_5D273();
 // plna signatura: int sub_5D2BB(char *a1, int a2, int16_t *a3);
@@ -6705,8 +6705,10 @@ extern void sub_103521();
 extern void sub_1035AF();
 // plna signatura: int sub_10370A( int result, unsigned int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int a29, int a30, int a31, int a32, int a33, int a34, int a35, int64_t a36);
 extern int sub_10370A();
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103929 */ _DWORD sub_103915( int _p0);
-extern /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103929 */ _DWORD sub_103915();
+// vlna 73: rekonstruovano z asm - viz orion_part_17.c
+extern int sub_103915(int a1, int x, int y, int str, int w);
+/* vlna 73: mista, kde registrove argumenty jeste nejsou dohledane */
+#define SUB_103915_TODO(a1) sub_103915((a1), 0, 0, 0, 0)
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103948 */ _DWORD sub_103933( int _p0, _DWORD _p1);
 extern /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103948 */ _DWORD sub_103933();
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */ int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2);
@@ -11146,7 +11148,7 @@ void sub_59053(int a1, int a2, int16_t a3);
 int sub_59105();
 void sub_596A5();
 int sub_59FA1();
-void sub_5A3BC(int a1, int a2, int16_t a3, int a4);
+int sub_5A3BC(int a1, int a2, int16_t a3, int a4); // vlna 70: vraci 0/1
 void sub_5AAD4();
 void sub_5AD97(int a1);
 int sub_5AE38(int a1);
@@ -11164,7 +11166,7 @@ char sub_5C20E(int16_t *a1, int16_t a2, int a3);
 int sub_5C25B();
 // void sub_5C510(int16_t *a1);
 void sub_5CF37();
-void sub_5D03C(int16_t *a1, int a2, int a3);
+int sub_5D03C(int16_t *a1, int a2, int a3);
 int sub_5D273();
 // int sub_5D2BB(char *a1, int a2, int16_t *a3);
 bool sub_5D393(int16_t a1, int16_t a2);
@@ -13715,7 +13717,7 @@ void sub_1034CB();
 void sub_103521();
 void sub_1035AF(int16_t a1, int16_t a2, int16_t a3, int a4, uint16_t a5, char a6, int a7);
 // int sub_10370A(int result, uint16_t a2, int a3, int16_t a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int a29, int a30, int a31, int a32, int a33, int a34, int a35, int64_t a36);
-_DWORD sub_103915(int16_t); // weak
+// 103915: vlna 73 - int sub_103915(int a1, int x, int y, int str, int w);
 _DWORD sub_103933(int16_t, _DWORD); // weak
 int sub_103952(_DWORD, _DWORD, _DWORD); // weak
 int sub_103971(_DWORD, _DWORD, _DWORD); // weak
@@ -16051,7 +16053,7 @@ extern char aRaceselLbx[12];
 extern char aPatch13Lbx[12];
 extern int dword_178F71;
 extern int16_t word_178F75;
-extern _UNKNOWN unk_178F79;
+extern _UNKNOWN unk_178F79[3];   /* vlna 73: ", " */
 extern char aRaceoptLbx[12];
 extern char asc_178F88[2];
 extern _UNKNOWN unk_178F8A;
@@ -16591,10 +16593,10 @@ extern int16_t word_17D17E;
 extern int16_t word_17D186;
 extern char byte_17D196[];
 extern char byte_17D197[98];
-extern char byte_17D1F9[];
-extern char byte_17D1FA[];
-extern char byte_17D1FB[];
-extern char byte_17D1FC[29];
+extern char byte_17D1F9[32];   /* vlna 73 - viz orion_data.c */
+#define byte_17D1FA (byte_17D1F9 + 1)
+#define byte_17D1FB (byte_17D1F9 + 2)
+#define byte_17D1FC (byte_17D1F9 + 3)
 extern int dword_17D219[];
 extern char byte_17D21D[];
 extern int16_t word_17D21E[];
@@ -18037,22 +18039,22 @@ extern int16_t word_1906C4[];
 extern int16_t word_1906C6[];
 extern int16_t word_1906C8[];
 extern int16_t word_1906CA[3427];
-extern int dword_192190[31];
-extern int dword_19220C;
-extern int dword_192210[];
-extern int dword_192214;
-extern int dword_192218;
-extern int dword_19221C;
-extern int dword_192220;
-extern int dword_192224;
-extern int dword_192228[];
-extern int dword_19222C;
-extern int dword_192230;
-extern int dword_192234;
-extern int dword_192238;
-extern int dword_19223C;
-extern int dword_192240;
-extern int dword_192244;
+extern int dword_192190[32];   /* vlna 73 */
+#define dword_19220C (dword_192190[31])
+extern int dword_192210[6];    /* vlna 73 */
+#define dword_192214 (dword_192210[1])
+#define dword_192218 (dword_192210[2])
+#define dword_19221C (dword_192210[3])
+#define dword_192220 (dword_192210[4])
+#define dword_192224 (dword_192210[5])
+extern int dword_192228[8];    /* vlna 73 */
+#define dword_19222C (dword_192228[1])
+#define dword_192230 (dword_192228[2])
+#define dword_192234 (dword_192228[3])
+#define dword_192238 (dword_192228[4])
+#define dword_19223C (dword_192228[5])
+#define dword_192240 (dword_192228[6])
+#define dword_192244 (dword_192228[7])
 extern int16_t word_192248[500];
 // Souvisla tabulka 20 ukazatelu na retezce (vlna 58) - viz orion_data.c.
 extern int dword_192630[20];
@@ -19231,28 +19233,38 @@ extern int16_t word_19B582;
 extern char byte_19B584;
 extern char byte_19B587;
 extern int dword_19B588[64];
-extern char byte_19B688[];
-extern char byte_19B689;
-extern char byte_19B68A;
+extern char byte_19B688[8];   /* vlna 73 */
+#define byte_19B689 (byte_19B688[1])
+#define byte_19B68A (byte_19B688[2])
 extern int dword_19B690;
-extern int16_t word_19B694[];
-extern int16_t word_19B696;
-extern int16_t word_19B6A6;
-extern int16_t word_19B6A8[16];
-extern int16_t word_19B6C8[];
-extern int16_t word_19B6CA[5];
-extern int dword_19B6D4;
-extern int dword_19B6D8;
-extern int16_t word_19B6DC[];
-extern int16_t word_19B6DE;
-extern int16_t word_19B6E6;
-extern int16_t word_19B6E8;
-extern int16_t word_19B6EC;
-extern int16_t word_19B6EE;
-extern int16_t word_19B6F0;
-extern int16_t word_19B6F2;
-extern int16_t word_19B6F4;
-extern int16_t word_19B6F6;
+/* PORT (vlna 73): 19B694..19B6A5 je jedno pole 9 wordu (asm: word_193694 +
+   word_193696 s 14 doplnujicimi bajty). sub_5AD97 do nej plni indexy 0..8. */
+extern int16_t word_19B694[10];
+#define word_19B696 (word_19B694[1])
+#define word_19B6A6 (word_19B694[9])
+extern int16_t word_19B6A8[48];   /* vlna 74 - viz orion_data.c */
+/* PORT (vlna 73): 19B6C8..19B707 je JEDNO pole 32 wordu. sub_5AD97 do nej
+   zapisuje `word_19B6C8[i + v2]` pro i = 10..30 (v asm
+   `mov word_1936C8[eax*2], di`, eax = esi + edx, edx = 10..30), tedy az na
+   index 31 = adresu 0x193706. IDA z nej odstepila skoro dve desitky
+   samostatnych symbolu; v portu to byly oddelene promenne, takze zapis uz od
+   indexu 10 sel mimo a na i == 15 to spadlo. Offsety odpovidaji rozvrzeni
+   v asm (word_1936CA = index 1, dword_1936D4 = 6, dword_1936D8 = 8,
+   word_1936DC = 10, word_1936DE = 11, word_1936E6 = 15, ...). */
+#define word_19B6C8 (word_19B6A8 + 16)   /* vlna 74 */
+#define word_19B6CA (word_19B6C8 + 1)
+#define dword_19B6D4 (*(int *)&word_19B6C8[6])
+#define dword_19B6D8 (*(int *)&word_19B6C8[8])
+#define word_19B6DC (word_19B6C8 + 10)
+#define word_19B6DE (word_19B6C8[11])
+#define word_19B6E6 (word_19B6C8[15])
+#define word_19B6E8 (word_19B6C8[16])
+#define word_19B6EC (word_19B6C8[18])
+#define word_19B6EE (word_19B6C8[19])
+#define word_19B6F0 (word_19B6C8[20])
+#define word_19B6F2 (word_19B6C8[21])
+#define word_19B6F4 (word_19B6C8[22])
+#define word_19B6F6 (word_19B6C8[23])
 extern int dword_19B70C;
 extern int dword_19B710;
 extern int16_t word_19B714[41];
@@ -19263,10 +19275,10 @@ extern int16_t word_19B76C;
 extern int16_t word_19B76E;
 extern int16_t word_19B770;
 extern int16_t word_19B772[25];
-extern int dword_19B7A4[13];
-extern int dword_19B7D8;
-extern int dword_19B7DC[13];
-extern int dword_19B810;
+extern int dword_19B7A4[14];   /* vlna 73 */
+#define dword_19B7D8 (dword_19B7A4[13])
+extern int dword_19B7DC[14];   /* vlna 73 */
+#define dword_19B810 (dword_19B7DC[13])
 extern char byte_19B814[8];
 extern int dword_19B81C;
 // Souvisle pole 14 prvku (vlna 67) - viz orion_data.c.
@@ -19278,7 +19290,7 @@ extern char byte_19B848[14];
 extern int16_t word_19B856;
 extern int16_t word_19B858;
 extern int16_t word_19B85A;
-extern _UNKNOWN unk_19B85C;
+extern _UNKNOWN unk_19B85C[16];   /* vlna 75 */
 extern int dword_19B86C;
 extern int dword_19B870;
 extern int dword_19B874;
@@ -21078,9 +21090,9 @@ extern _UNKNOWN unk_183B46;
 extern _UNKNOWN unk_183B93;
 extern _UNKNOWN unk_183CEB;
 extern _UNKNOWN unk_199A12;
-extern _UNKNOWN unk_19B772;
+/* vlna 73: unk_19B772 == word_19B772, samostatny symbol zrusen */
 extern _UNKNOWN unk_19C048;
-extern _UNKNOWN unk_19C348;
+/* vlna 73: unk_19C348 == byte_19C348, samostatny symbol zrusen */
 // vlna 58: TENTYZ objekt jako byte_19C6F8 (nazvy ras v zaznamu Hall of
 // Fame). sub_9FC27 z nej pri prestavbe zaznamu CTE (`&unk_19C6F8 + v8`),
 // zatimco sub_9F540 do nej PISE pres byte_19C6F8 - jako dva ruzne objekty

@@ -4605,11 +4605,13 @@ void sub_29790( int a1)
       *(_BYTE *)(v2 + dword_192864 + 176) = 0;
       sub_58F1E(76, v8, 80);
       v4 = (char *)(dword_192864 + v2);
-      v7 = v8;
-      v5 = (char *)&v7 + 3;
-      do
+      /* vlna 73: puvodne `v7 = v8; v5 = (char *)&v7 + 3;` -
+         v asm lezi v7 tesne pred bufferem v8, takze &v7+4 je
+         v8[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v7+3 miri DOVNITR ukazatele. */
+      v5 = (char *)v8;
+      while ( *v5 )
         ++v5;
-      while ( *v5 );
       strcpy(v5, v4);
       sub_131F7B();
       LOWORD(v6) = sub_77423((int)v8);
@@ -8999,11 +9001,13 @@ LABEL_28:
         v105[0] = 0;
       else
         strcpy(v105, "+");
-      v104 = v105;
-      v17 = (char *)&v104 + 3;
-      do
+      /* vlna 73: puvodne `v104 = v105; v17 = (char *)&v104 + 3;` -
+         v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+         v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v104+3 miri DOVNITR ukazatele. */
+      v17 = (char *)v105;
+      while ( *v17 )
         ++v17;
-      while ( *v17 );
       strcpy(v17, v109);
       sub_1210B7(v144 + 214, v154, (int)v105);
       v154 += 12;
@@ -9014,11 +9018,13 @@ LABEL_28:
         v105[0] = 0;
       else
         strcpy(v105, "+");
-      v104 = v105;
-      v18 = (char *)&v104 + 3;
-      do
+      /* vlna 73: puvodne `v104 = v105; v18 = (char *)&v104 + 3;` -
+         v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+         v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v104+3 miri DOVNITR ukazatele. */
+      v18 = (char *)v105;
+      while ( *v18 )
         ++v18;
-      while ( *v18 );
       strcpy(v18, v109);
       v19 = v154;
       v154 += 12;
@@ -9029,11 +9035,13 @@ LABEL_28:
       sub_1212B3(v144 + 111, v20, (int)v106);
       itoa(word_199A4A, v109, 10, v20);
       strcpy(v105, v109);
-      v104 = v105;
-      v21 = (char *)&v104 + 3;
-      do
+      /* vlna 73: puvodne `v104 = v105; v21 = (char *)&v104 + 3;` -
+         v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+         v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v104+3 miri DOVNITR ukazatele. */
+      v21 = (char *)v105;
+      while ( *v21 )
         ++v21;
-      while ( *v21 );
       strcpy(v21, "%");
       v154 += 18;
       sub_1210B7(v128, v20, (int)v105);
@@ -9089,30 +9097,38 @@ LABEL_28:
         sub_120CCB(1, (int)&v118);
         strcpy(v105, "(");
         itoa(word_199B12, v109, 10, 65);
-        v104 = v105;
-        v27 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v27 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v27 = (char *)v105;
+        while ( *v27 )
           ++v27;
-        while ( *v27 );
         strcpy(v27, v109);
-        v104 = v105;
-        v28 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v28 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v28 = (char *)v105;
+        while ( *v28 )
           ++v28;
-        while ( *v28 );
         strcpy(v28, "/");
         itoa(word_199ADC, v109, 10, 65);
-        v104 = v105;
-        v29 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v29 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v29 = (char *)v105;
+        while ( *v29 )
           ++v29;
-        while ( *v29 );
         strcpy(v29, v109);
-        v104 = v105;
-        v30 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v30 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v30 = (char *)v105;
+        while ( *v30 )
           ++v30;
-        while ( *v30 );
         strcpy(v30, asc_178C5E);
         sub_1210B7(v155 + 155, v139 + 3, (int)v105);
       }
@@ -9148,18 +9164,22 @@ LABEL_28:
       {
         itoa(word_17FE9C[23 * (uint8_t)byte_199A43], v109, 10, v36);
         strcpy(v105, "^ ");
-        v104 = v105;
-        v37 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v37 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v37 = (char *)v105;
+        while ( *v37 )
           ++v37;
-        while ( *v37 );
         strcpy(v37, v109);
         sub_58F1E(15, v106, 80);
-        v104 = v105;
-        v38 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v38 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v38 = (char *)v105;
+        while ( *v38 )
           ++v38;
-        while ( *v38 );
         strcpy(v38, v106);
         sub_1212B3(v155 + 3, v139, (int)v105);
       }
@@ -9169,24 +9189,30 @@ LABEL_28:
         sub_5685F(*(uint8_t *)(dword_192864 + 32));
         itoa((int16_t)(100 * (*(int16_t *)((char *)&word_17F642 + 15 * v41) + 100) / 100), v109, 10, v39);
         strcpy(v105, "^ ");
-        v104 = v105;
-        v42 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v42 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v42 = (char *)v105;
+        while ( *v42 )
           ++v42;
-        while ( *v42 );
         strcpy(v42, v109);
-        v104 = v105;
-        v43 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v43 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v43 = (char *)v105;
+        while ( *v43 )
           ++v43;
-        while ( *v43 );
         strcpy(v43, asc_178C52);
         sub_58F1E(16, v106, 80);
-        v104 = v105;
-        v44 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v44 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v44 = (char *)v105;
+        while ( *v44 )
           ++v44;
-        while ( *v44 );
         strcpy(v44, v106);
         v40 = v139;
       }
@@ -9202,18 +9228,22 @@ LABEL_28:
       v45 = v139;
       itoa(word_199A4D, v109, 10, (int16_t)v139);
       strcpy(v105, "^ ");
-      v104 = v105;
-      v46 = (char *)&v104 + 3;
-      do
+      /* vlna 73: puvodne `v104 = v105; v46 = (char *)&v104 + 3;` -
+         v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+         v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v104+3 miri DOVNITR ukazatele. */
+      v46 = (char *)v105;
+      while ( *v46 )
         ++v46;
-      while ( *v46 );
       strcpy(v46, v109);
       sub_58F1E(17, v106, 80);
-      v104 = v105;
-      v47 = (char *)&v104 + 3;
-      do
+      /* vlna 73: puvodne `v104 = v105; v47 = (char *)&v104 + 3;` -
+         v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+         v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v104+3 miri DOVNITR ukazatele. */
+      v47 = (char *)v105;
+      while ( *v47 )
         ++v47;
-      while ( *v47 );
       strcpy(v47, v106);
       sub_1212B3(v155 + 3, v45, (int)v105);
       if ( (uint8_t)byte_199A32 <= 9u )
@@ -9265,30 +9295,38 @@ LABEL_28:
         sub_120CCB(1, (int)&v118);
         strcpy(v105, "(");
         itoa(word_199B14, v109, 10, v53);
-        v104 = v105;
-        v54 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v54 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v54 = (char *)v105;
+        while ( *v54 )
           ++v54;
-        while ( *v54 );
         strcpy(v54, v109);
-        v104 = v105;
-        v55 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v55 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v55 = (char *)v105;
+        while ( *v55 )
           ++v55;
-        while ( *v55 );
         strcpy(v55, "/");
         itoa(word_199ADE, v109, 10, v53);
-        v104 = v105;
-        v56 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v56 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v56 = (char *)v105;
+        while ( *v56 )
           ++v56;
-        while ( *v56 );
         strcpy(v56, v109);
-        v104 = v105;
-        v57 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v57 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v57 = (char *)v105;
+        while ( *v57 )
           ++v57;
-        while ( *v57 );
         strcpy(v57, asc_178C5E);
         v127 = (int16_t)(v139 + 3);
         sub_1210B7(v155 + 155, v139 + 3, (int)v105);
@@ -9301,30 +9339,38 @@ LABEL_28:
             sub_120CCB(1, (int)&v118);
             strcpy(v105, "(");
             itoa(word_199B46, v109, 10, v53);
-            v104 = v105;
-            v58 = (char *)&v104 + 3;
-            do
+            /* vlna 73: puvodne `v104 = v105; v58 = (char *)&v104 + 3;` -
+               v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+               v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+               8 B, takze &v104+3 miri DOVNITR ukazatele. */
+            v58 = (char *)v105;
+            while ( *v58 )
               ++v58;
-            while ( *v58 );
             strcpy(v58, v109);
-            v104 = v105;
-            v59 = (char *)&v104 + 3;
-            do
+            /* vlna 73: puvodne `v104 = v105; v59 = (char *)&v104 + 3;` -
+               v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+               v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+               8 B, takze &v104+3 miri DOVNITR ukazatele. */
+            v59 = (char *)v105;
+            while ( *v59 )
               ++v59;
-            while ( *v59 );
             strcpy(v59, "/");
             itoa(word_199B10, v109, 10, v53);
-            v104 = v105;
-            v60 = (char *)&v104 + 3;
-            do
+            /* vlna 73: puvodne `v104 = v105; v60 = (char *)&v104 + 3;` -
+               v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+               v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+               8 B, takze &v104+3 miri DOVNITR ukazatele. */
+            v60 = (char *)v105;
+            while ( *v60 )
               ++v60;
-            while ( *v60 );
             strcpy(v60, v109);
-            v104 = v105;
-            v61 = (char *)&v104 + 3;
-            do
+            /* vlna 73: puvodne `v104 = v105; v61 = (char *)&v104 + 3;` -
+               v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+               v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+               8 B, takze &v104+3 miri DOVNITR ukazatele. */
+            v61 = (char *)v105;
+            while ( *v61 )
               ++v61;
-            while ( *v61 );
             strcpy(v61, asc_178C5E);
             sub_1210B7(v152 + 155, v127, (int)v105);
           }
@@ -9416,21 +9462,25 @@ LABEL_28:
         sub_120E8C(1);
         itoa((uint8_t)byte_199A66[v75], v109, 10, v75);
         strcpy(v105, v109);
-        v104 = v105;
-        v76 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v76 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v76 = (char *)v105;
+        while ( *v76 )
           ++v76;
-        while ( *v76 );
         strcpy(v76, asc_178C52);
         if ( byte_199A66[v75] == 1 )
           v77 = (char *)*(&off_17F803 + 7 * *(int16_t *)((char *)&word_199A64 + v75));
         else
           v77 = (char *)*(&off_17F807 + 7 * *(int16_t *)((char *)&word_199A64 + v75));
-        v104 = v105;
-        v78 = (char *)&v104 + 3;
-        do
+        /* vlna 73: puvodne `v104 = v105; v78 = (char *)&v104 + 3;` -
+           v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+           v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+           8 B, takze &v104+3 miri DOVNITR ukazatele. */
+        v78 = (char *)v105;
+        while ( *v78 )
           ++v78;
-        while ( *v78 );
         strcpy(v78, v77);
         strcpy(v109, " (");
         if ( (uint16_t)v151 < 4u )
@@ -9483,11 +9533,13 @@ LABEL_169:
         strcpy(v82, asc_178C5E);
         if ( (int16_t)v151 != 1 )
         {
-          v104 = v105;
-          v83 = (char *)&v104 + 3;
-          do
+          /* vlna 73: puvodne `v104 = v105; v83 = (char *)&v104 + 3;` -
+             v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+             v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+             8 B, takze &v104+3 miri DOVNITR ukazatele. */
+          v83 = (char *)v105;
+          while ( *v83 )
             ++v83;
-          while ( *v83 );
           strcpy(v83, v109);
         }
         v84 = v139;
@@ -9558,19 +9610,23 @@ LABEL_190:
             {
               if ( strlen(v105) )
               {
-                v104 = v105;
-                v93 = (char *)&v104 + 3;
-                do
+                /* vlna 73: puvodne `v104 = v105; v93 = (char *)&v104 + 3;` -
+                   v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+                   v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+                   8 B, takze &v104+3 miri DOVNITR ukazatele. */
+                v93 = (char *)v105;
+                while ( *v93 )
                   ++v93;
-                while ( *v93 );
                 strcpy(v93, ", ");
               }
               v94 = *(char **)((char *)&off_17FD0F + 15 * i);
-              v104 = v105;
-              v95 = (char *)&v104 + 3;
-              do
+              /* vlna 73: puvodne `v104 = v105; v95 = (char *)&v104 + 3;` -
+                 v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
+                 v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+                 8 B, takze &v104+3 miri DOVNITR ukazatele. */
+              v95 = (char *)v105;
+              while ( *v95 )
                 ++v95;
-              while ( *v95 );
               strcpy(v95, v94);
             }
             v88 = (int16_t)v88 >> 1;
@@ -11860,7 +11916,7 @@ void sub_34EC8()
   v0 = sub_127C27((int)aCombatLbx_3, 36, dword_193174);
   sub_12A478(150, 100, v0);
   v1 = dword_19B554;
-  sub_103915(2);
+  SUB_103915_TODO(2);
   sub_121199(182, 231, word_19B570, v1);
   sub_121199(296, 231, word_19B56E, v1);
   sub_121199(408, 231, word_19B56C, v1);

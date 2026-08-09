@@ -905,7 +905,7 @@ void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7
 // pushuji. Vlna 65: telo je puvodne cetlo pres posunute pohledy
 // (`HIWORD(a34)`, `SBYTE2(a35)`, `*(int *)((char *)&a36 + 2)`) - IDA je
 // pojmenovala podle POSUNUTEHO ramce (`sub ebp, 76h`), takze kazdy z nich
-// mirí o 2 bajty vedle. Podle asm volani sub_1035AF jsou to
+// mirï¿½ o 2 bajty vedle. Podle asm volani sub_1035AF jsou to
 // `arg_76` (word), `arg_7A` (byte) a `arg_7E` (dword) = 1./2./3. argument
 // na zasobniku ([ebp+10h/14h/18h], protoze pred `enter` jsou push esi/edi).
 int sub_10370A(
@@ -1055,11 +1055,25 @@ LABEL_25:
 
 
 //----- (00103915) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103929 */
-_DWORD sub_103915( int _p0)
+// PORT (vlna 73): REKONSTRUOVANO Z ASM (IDA to vzdalo: "call analysis failed").
+// Vykresli retezec pres sub_10370A. Watcom registrove argumenty IDA zahodila,
+// videla jen zasobnikovy `a1`; asm je:
+//   push 0 / movsx esi, [ebp+arg_0] / push 1 / movsx ebx, bx / push esi
+//   movsx edx, dx / cwde / call sub_10370A / retn 4
+// Registrove argumenty sub_10370A jsou (eax = x, edx = y, ecx = retezec,
+// ebx = sirka) - stejne jako u sesterske sub_103952 (vlna 61). Zasobnikove
+// argumenty jdou v poradi "posledni push = prvni argument", tedy (a1, 1, 0).
+// Sesterska sub_103933 se lisi jen tim, ze misto 0 posila svuj druhy parametr.
+int sub_103915(int a1, int x, int y, int str, int w)
 {
-  DECOMP_TODO("call analysis failed (funcsize=14)");
+  return sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)w, (int16_t)a1, 1, 0);
 }
+
+// Dokud nejsou u dalsich volajicich dohledane registrove argumenty, volaji
+// sub_103915 pres tohle makro: retezec = 0, takze sub_10370A hned vyskoci
+// (`... || !a3) return result;`) a chovani je presne stejne jako u puvodniho
+// DECOMP_TODO stubu - tedy nekresli se nic. Seznam mist a jejich asm kontext
+// je v PROGRESS.md (vlna 73).
 
 
 //----- (00103933) --------------------------------------------------------

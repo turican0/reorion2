@@ -5446,6 +5446,10 @@ void sub_59053(int a1, int a2, int a3)
   int16_t v10; // dx
   int16_t v11; // di
 
+  // PORT (vlna 73): `a3` NENI parametr - asm hned na zacatku dela `mov ebx, 0Ah`,
+  // takze pocitadlo zbyvajicich piku zacina na 10. IDA jen videla, ze se cte
+  // registr EBX (watcomovska pozice argumentu), a udelala z nej parametr.
+  a3 = 10;
   sub_F4D53();
   v3 = 0;
   v4 = 0;
@@ -5480,7 +5484,11 @@ void sub_59053(int a1, int a2, int a3)
         {
           word_19B76C = v3;
           word_19B766 = v9;
-          JUMPOUT(0x5969F);
+          // PORT (vlna 73): `JUMPOUT(0x5969F)` je NO-OP, takze se vnitrni
+          // `while (1)` nikdy neukoncil a obrazovka vlastnosti rasy zamrzla.
+          // `loc_5969F` je pritom spolecny epilog (`pop edi/esi/edx/ecx/ebx
+          // / retn`), tedy proste navrat.
+          return;
         }
       }
     }
@@ -5543,14 +5551,20 @@ int sub_59105()
   int16_t v43; // ax
   char *v45; // [esp-4h] [ebp-3Ah] BYREF
   char v46[80]; // [esp+0h] [ebp-36h] BYREF
-  int v47; // [esp+50h] [ebp+1Ah]
-  int16_t v48; // [esp+54h] [ebp+1Eh]
-  int16_t v49; // [esp+56h] [ebp+20h]
-  int16_t v50; // [esp+58h] [ebp+22h]
+  // PORT (vlna 73): v47..v50 je JEDNO pole peti wordu (ebp+1Ah..ebp+23h) -
+  // svisle souradnice peti radku (72, 147, 222, 297, 372). IDA prvni dva prvky
+  // slepila do `int v47 = 9633864` (= 0x930048, tedy 72 a 147) a zbytek
+  // odstepila jako v48/v49/v50. Kod se do nej pritom stejne indexuje pres
+  // `*((_WORD *)&v47 + v68)`, takze bez souvisleho pole se cetly nesmysly -
+  // radky obrazovky vlastnosti rasy se kreslily pres sebe.
+  _WORD v47[5]; // [esp+50h] [ebp+1Ah]
   char v51[12]; // [esp+5Ch] [ebp+26h] BYREF
   _BYTE v52[8]; // [esp+68h] [ebp+32h]
-  int16_t v53; // [esp+70h] [ebp+3Ah]
-  _WORD v54[3]; // [esp+72h] [ebp+3Ch]
+  // PORT (vlna 73): v53 a v54 je rovnez jedno pole - vodorovne souradnice
+  // ctyr sloupcu (80, 254, 442, 643). Videt je to na `v54[v69 - 1]`
+  // a `&v54[-1]`: prvni sloupec je prave v53.
+  _WORD v53[4]; // [esp+70h] [ebp+3Ah]
+#define v54 (v53 + 1)
   _BYTE v55[8]; // [esp+78h] [ebp+42h] BYREF
   int v56; // [esp+80h] [ebp+4Ah]
   int v57; // [esp+84h] [ebp+4Eh]
@@ -5567,14 +5581,15 @@ int sub_59105()
   int v68; // [esp+B0h] [ebp+7Ah]
   int v69; // [esp+B4h] [ebp+7Eh]
 
-  v53 = 80;
+  v53[0] = 80;
   v54[0] = 254;
   v54[1] = 442;
   v54[2] = 643;
-  v47 = 9633864;
-  v48 = 222;
-  v49 = 297;
-  v50 = 372;
+  v47[0] = 72;    /* vlna 73: bylo `v47 = 9633864` = 0x930048 */
+  v47[1] = 147;
+  v47[2] = 222;
+  v47[3] = 297;
+  v47[4] = 372;
   v58 = 22;
   v52[0] = -119;
   v55[0] = -111;
@@ -5620,11 +5635,13 @@ int sub_59105()
         v51,
         10,
         v4);
-      v45 = v46;
-      v8 = (char *)&v45 + 3;
-      do
+      /* vlna 73: puvodne `v45 = v46; v8 = (char *)&v45 + 3;` -
+         v asm lezi v45 tesne pred bufferem v46, takze &v45+4 je
+         v46[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v45+3 miri DOVNITR ukazatele. */
+      v8 = (char *)v46;
+      while ( *v8 )
         ++v8;
-      while ( *v8 );
       strcpy(v8, v51);
       v9 = v56;
       v10 = (int16_t)v69;
@@ -5709,9 +5726,9 @@ int sub_59105()
   v32 = dword_19B588[(int16_t)v22];
   v33 = v54[(int16_t)++v69 - 1] - 22;
   v63 = 0;
-  sub_1212B3(v33, v47 - 22, v32);
+  sub_1212B3(v33, v47[0] - 22, v32);
   v34 = v22 + 1;
-  v67 = v47;
+  v67 = v47[0];
   while ( (int16_t)v34 < 64 )
   {
     v64 = 0;
@@ -5751,6 +5768,7 @@ int sub_59105()
   }
   return sub_120CCB(4, (int)&byte_19B688);
 }
+#undef v54   /* vlna 73 */
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 178F21: using guessed type char byte_178F21;
 // 193174: using guessed type int dword_193174;
@@ -5817,13 +5835,13 @@ void sub_596A5()
   char *v50; // [esp-4h] [ebp-46h] BYREF
   char v51[80]; // [esp+0h] [ebp-42h] BYREF
   char v52[12]; // [esp+50h] [ebp+Eh] BYREF
-  int v53; // [esp+5Ch] [ebp+1Ah]
-  int16_t v54; // [esp+60h] [ebp+1Eh]
-  int16_t v55; // [esp+62h] [ebp+20h]
-  int16_t v56; // [esp+64h] [ebp+22h]
+  // PORT (vlna 73): stejne jako v sub_59105 - v53..v56 je jedno pole peti
+  // wordu se svislymi souradnicemi radku (72, 147, 222, 297, 372).
+  _WORD v53[5]; // [esp+5Ch] [ebp+1Ah]
   _BYTE v57[8]; // [esp+68h] [ebp+26h] BYREF
-  int16_t v58; // [esp+70h] [ebp+2Eh]
-  _WORD v59[3]; // [esp+72h] [ebp+30h]
+  // PORT (vlna 73): a v58 + v59 je pole ctyr vodorovnych souradnic sloupcu.
+  _WORD v58[4]; // [esp+70h] [ebp+2Eh]
+#define v59 (v58 + 1)
   _BYTE v60[8]; // [esp+78h] [ebp+36h]
   int v61; // [esp+80h] [ebp+3Eh]
   char *v62; // [esp+84h] [ebp+42h]
@@ -5843,14 +5861,15 @@ void sub_596A5()
   int v76; // [esp+BCh] [ebp+7Ah]
   int i; // [esp+C0h] [ebp+7Eh]
 
-  v58 = 80;
+  v58[0] = 80;
   v59[0] = 254;
   v59[1] = 442;
   v59[2] = 643;
-  v53 = 9633864;
-  v54 = 222;
-  v55 = 297;
-  v56 = 372;
+  v53[0] = 72;    /* vlna 73: bylo `v53 = 9633864` = 0x930048 */
+  v53[1] = 147;
+  v53[2] = 222;
+  v53[3] = 297;
+  v53[4] = 372;
   v76 = 22;
   v57[0] = -119;
   v60[0] = -111;
@@ -5967,11 +5986,19 @@ LABEL_54:
         v75 = 0;
         ++v73;
         v36 = v19 + 1;
-        v69 = v53;
+        v69 = v53[0];
         while ( 1 )
         {
           if ( (int16_t)v36 >= 64 )
-            JUMPOUT(0x59689);
+          {
+            // PORT (vlna 73): `JUMPOUT(0x59689)` je NO-OP, takze se prekreslovaci
+            // funkce obrazovky vlastnosti rasy nikdy neukoncila. `loc_59689` je
+            // `mov edx, offset byte_193688 / mov eax, 4 / call sub_120CCB` a hned
+            // za nim `loc_59698` = epilog (`lea esp, [ebp+82h] / pop ebp / pop
+            // edi/esi/edx/ecx/ebx / retn`), tedy zavolat a vratit se.
+            sub_120CCB(4, (int)&byte_19B688);
+            return;
+          }
           v65 = 0;
           while ( (int16_t)v65 < *((int16_t *)&v76 + (int16_t)v64) )
           {
@@ -6123,11 +6150,13 @@ LABEL_20:
         v52,
         10,
         v4);
-      v50 = v51;
-      v12 = (char *)&v50 + 3;
-      do
+      /* vlna 73: puvodne `v50 = v51; v12 = (char *)&v50 + 3;` -
+         v asm lezi v50 tesne pred bufferem v51, takze &v50+4 je
+         v51[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+         8 B, takze &v50+3 miri DOVNITR ukazatele. */
+      v12 = (char *)v51;
+      while ( *v12 )
         ++v12;
-      while ( *v12 );
       strcpy(v12, v52);
       v13 = v61;
       v14 = (int16_t)v73;
@@ -6161,6 +6190,7 @@ LABEL_20:
     }
   }
 }
+#undef v59   /* vlna 73 */
 // 59F9C: control flows out of bounds to 59689
 // 59DFE: variable 'v41' is possibly undefined
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
@@ -6422,7 +6452,12 @@ int sub_59FA1()
 
 
 //----- (0005A3BC) --------------------------------------------------------
-void sub_5A3BC(int a1, int a2, int a3, int a4)
+// PORT (vlna 70): funkce VRACI HODNOTU (v asm dva vystupy: `xor eax,eax` a
+// `mov eax, 1`, oba pak `jmp loc_59698` = sdileny epilog). Dekompilator ji
+// otypoval jako `void` a oba volajici pak testovali NEINICIALIZOVANY lokal
+// (`v29`), takze se po vyberu rasy nahodne bralo "uz je vybrana" misto
+// pokracovani na obrazovku custom race.
+int sub_5A3BC(int a1, int a2, int a3, int a4)
 {
   char *v4; // esi
   int v5; // eax
@@ -6469,6 +6504,7 @@ void sub_5A3BC(int a1, int a2, int a3, int a4)
   int16_t *v46; // [esp+0h] [ebp-Eh]
   char v47[98]; // [esp+4h] [ebp-Ah] BYREF
   _BYTE v48[6]; // [esp+66h] [ebp+58h]
+  int16_t *v48ptr;   /* vlna 75: puvodne *(int16_t **)&v48[2] */
   char *v49; // [esp+6Ch] [ebp+5Eh]
   int v50; // [esp+70h] [ebp+62h]
   int v51; // [esp+74h] [ebp+66h]
@@ -6479,6 +6515,13 @@ void sub_5A3BC(int a1, int a2, int a3, int a4)
   char *v56; // [esp+88h] [ebp+7Ah]
   int v57; // [esp+8Ch] [ebp+7Eh]
 
+  // PORT (vlna 73): `v45` je SPILLNUTY REGISTROVY ARGUMENT, ne neinicializovana
+  // lokalka. Asm dela `enter 8Ch,0 / push eax / sub ebp, 82h`, takze ulozeny
+  // EAX (= a1, ukazatel na zaznam rasy) lezi na [ebp'-0Eh] = var_90 - presne
+  // tam, kam IDA umistila v45, jen uz nepoznala, ze se tam neco ulozilo.
+  // Stejny vzorec jako u sub_5C510 ve vlne 69. Bez toho cetla obrazovka
+  // vlastnosti rasy z nahodne adresy a nikdy se nevykreslila.
+  v45 = a1;
   word_19B770 = 0;
   sub_59FA1();
   sub_11C2F0();
@@ -6520,13 +6563,24 @@ void sub_5A3BC(int a1, int a2, int a3, int a4)
   sub_124D41();
   sub_596A5();
   sub_1077D(v12, (int)v8, v9, word_19B772);
-  v54 = &unk_19C011;
-  v53 = (char *)&word_19B772[18] + 1;
-  v49 = (char *)&word_19B772[10] + 1;
-  *(_DWORD *)&v48[2] = &word_19B772[19];
-  v13 = (int16_t *)((char *)word_19B772 + 1);
+  // PORT (vlna 75): vsech pet ukazatelu ma za zaklad ZAZNAM RASY (a1), ne
+  // `word_19B772`. V asm je to petkrat `mov eax, [ebp+82h+var_90]` (spillnuty
+  // registrovy argument, viz vlna 73) + konstanta:
+  //   +89Fh = 2207 (sablona piku), +25h = 37 (index obrazku),
+  //   +15h  = 21   (jmeno vladce),  +26h = 38 (barva vlajky), +1 (jmeno rasy).
+  // IDA misto toho dosadila jako zaklad `word_19B772` (buffer se jmenem),
+  // takze offsety sedely, ale ukazovaly do uplne jineho mista.
+  // Navic `*(_DWORD *)&v48[2] = ...` ulozilo 64bitovy ukazatel do 4 bajtu
+  // a `*(int16_t **)&v48[2]` pak cetlo 8 bajtu ze 6bajtoveho pole - proto
+  // `sub_5D03C` (vyber barvy vlajky) dostal ukazatel s nesmyslnou horni
+  // polovinou a hra spadla pri cteni z 0xFFFFFFFFFFFFFFFF.
+  v54 = (void *)(intptr_t)(a1 + 2207);
+  v53 = (char *)(intptr_t)(a1 + 37);
+  v49 = (char *)(intptr_t)(a1 + 21);
+  v48ptr = (int16_t *)(intptr_t)(a1 + 38);
+  v13 = (int16_t *)(intptr_t)(a1 + 1);
   v57 = 0;
-  v56 = (char *)word_19B772 + 1;
+  v56 = (char *)(intptr_t)(a1 + 1);
   while ( 1 )
   {
     if ( (_WORD)v57 )
@@ -6535,7 +6589,8 @@ void sub_5A3BC(int a1, int a2, int a3, int a4)
       sub_119281();
       sub_1113CC(dword_192ED4, (int)v8);
 LABEL_81:
-      JUMPOUT(0x59698);
+      /* vlna 70: asm `mov eax, 1 / jmp loc_59698` (loc_59698 = epilog) */
+      return 1;
     }
     word_19994C = 0;
     v13 = (int16_t *)sub_1171AB((int)v13, (int)v8, v9, a4);
@@ -6748,7 +6803,8 @@ LABEL_19:
         sub_11C2F0();
         sub_119281();
         sub_1113CC(dword_192ED4, (int)v8);
-        goto LABEL_81;
+        /* vlna 70: tahle vetev dela v asm `xor eax, eax` - vraci NULU */
+        return 0;
       }
       if ( (_WORD)v14 == word_19B76E )
       {
@@ -6776,8 +6832,8 @@ LABEL_19:
             sub_1077D((int)v39, 430, v38, v14);
             if ( (_WORD)a4 == 1 )
             {
-              sub_5D03C(*(int16_t **)&v48[2], 430, v38);
-              v36 = v40 + 1;
+              // vlna 75: asm `mov eax, [var_28] / call sub_5D03C / add esi, eax`
+              v36 += sub_5D03C(v48ptr, 430, v38);
             }
           }
           while ( v36 == 1 );
@@ -6914,12 +6970,13 @@ void sub_5AAD4()
   int16_t v20; // ax
   int16_t v21; // dx
   int v22; // eax
-  int v23; // [esp+0h] [ebp-40h]
-  int16_t v24; // [esp+4h] [ebp-3Ch]
-  int16_t v25; // [esp+6h] [ebp-3Ah]
-  int16_t v26; // [esp+8h] [ebp-38h]
-  int16_t v27; // [esp+Ch] [ebp-34h]
-  _WORD v28[3]; // [esp+Eh] [ebp-32h]
+  // PORT (vlna 73): stejny vzorec jako v sub_59105 a sub_596A5 - v23..v26 je
+  // jedno pole peti svislych souradnic radku a v27 + v28 pole ctyr vodorovnych
+  // souradnic sloupcu. Tady se z nich pocitaji OBDELNIKY prvku (sub_11438B),
+  // takze rozbite hodnoty znamenaly spatne registrovana zaskrtavatka.
+  _WORD v23[5]; // [esp+0h] [ebp-40h]
+  _WORD v27[4]; // [esp+Ch] [ebp-34h]
+#define v28 (v27 + 1)
   int v29; // [esp+14h] [ebp-2Ch]
   int v30; // [esp+18h] [ebp-28h]
   int v31; // [esp+1Ch] [ebp-24h]
@@ -6932,20 +6989,25 @@ void sub_5AAD4()
   int v38; // [esp+38h] [ebp-8h]
   int v39; // [esp+3Ch] [ebp-4h]
 
-  v27 = 80;
+  v27[0] = 80;
   v28[0] = 254;
   v28[1] = 442;
   v28[2] = 643;
-  v23 = 9633864;
-  v24 = 222;
-  v25 = 297;
-  v26 = 372;
+  v23[0] = 72;    /* vlna 73: bylo `v23 = 9633864` = 0x930048 */
+  v23[1] = 147;
+  v23[2] = 222;
+  v23[3] = 297;
+  v23[4] = 372;
   v31 = 22;
   if ( word_19B770 <= 0 )
   {
     sub_11C2F0();
     sub_120BB5(4, (int)byte_19B688);
-    word_19B770 = (uint16_t)sub_115BEA(248, 15, 150, 14, (int)&unk_19B772, 15, 0, 0, 0, 0);
+    // PORT (vlna 73): `unk_19B772` je TATAZ adresa jako `word_19B772` (v asm
+    // `push offset word_193772`) - jen ji IDA v tomhle miste pojmenovala jinak.
+    // V portu to byl samostatny prazdny symbol, takze textove pole v zahlavi
+    // obrazovky vlastnosti rasy ukazovalo na nic a jmeno rasy se nevypsalo.
+    word_19B770 = (uint16_t)sub_115BEA(248, 15, 150, 14, (int)word_19B772, 15, 0, 0, 0, 0);
   }
   else
   {
@@ -7007,7 +7069,7 @@ void sub_5AAD4()
   v32 = 0;
   v14 = v0 + 1;
   v15 = v6 + 1;
-  v39 = v23;
+  v39 = v23[0];
   while ( v15 < 64 )
   {
     v35 = 0;
@@ -7032,6 +7094,7 @@ void sub_5AAD4()
   }
   JUMPOUT(0x590FF);
 }
+#undef v28   /* vlna 73 */
 // 5AD92: control flows out of bounds to 590FF
 // 178F21: using guessed type char byte_178F21;
 // 19B690: using guessed type int dword_19B690;
@@ -8027,7 +8090,7 @@ _DWORD *sub_5BC74(int a1, int a2)
     v7 = sub_5BC24(dword_19B810);
     ServiceAudioTick_FE8BE(v7, 31, 1, v3);
     fread(v13, 1, 1, v6);
-    v8 = fread(&unk_19B85C, 15, 1, v6);
+    v8 = fread(unk_19B85C, 15, 1, v6);
     ServiceAudioTick_FE8BE(v8, 15, 1, v3);
     fclose(v6);
   }
@@ -8118,7 +8181,11 @@ void sub_5BD97()
       sub_120CCB(4, (int)v26);
       sub_58F1E(72, v25, 100);
       HIBYTE(v3) = 0;
-      sub_103915(2);
+      // vlna 73: registrove argumenty z asm (sub_5BD97+9Bh):
+      //   push 2 / mov ebx, 118h / mov edx, 0AFh / mov eax, 3Ch
+      // a ecx = &v25 zustava z `lea ecx, [ebp+82h+var_80]` pred sub_58F1E
+      // (sub_120CCB i sub_120DED ecx ochranuji pres push/pop).
+      sub_103915(2, 60, 175, (int)v25, 280);
     }
     else
     {
@@ -8187,31 +8254,45 @@ LABEL_49:
         {
           sub_5C20E((int16_t *)&v29, v30, (int)v24);
           v18 = (char *)dword_192190[(int16_t)v9];
-          v23 = v24;
-          v19 = (char *)&v23 + 3;
-          do
+          /* vlna 73: puvodne `v23 = v24; v19 = (char *)&v23 + 3;` -
+             v asm lezi ukazatel v23 tesne pred bufferem v24, takze &v23+4
+             je v24[0] a smycka `do ++v19; while (*v19);` hleda konec
+             retezce v v24 (strcat). Na x64 ma ukazatel 8 B, takze &v23+3
+             ukazuje DOVNITR ukazatele - strcpy pak psal mimo buffer a padalo
+             to (zmereno: strcpy+0x2a v sub_5BD97+0x5ca). */
+          v19 = (char *)v24;
+          while ( *v19 )
             ++v19;
-          while ( *v19 );
           strcpy(v19, v18);
         }
         LOWORD(v9) = v9 + 1;
       }
       sub_5C20E((int16_t *)&v29, v30, (int)v24);
       v20 = (char *)dword_192228[*(char *)dword_19B7DC[word_19B85A]];
-      v23 = v24;
-      v21 = (char *)&v23 + 3;
-      do
+      /* vlna 73: puvodne `v23 = v24; v21 = (char *)&v23 + 3;` -
+         v asm lezi ukazatel v23 tesne pred bufferem v24, takze &v23+4
+         je v24[0] a smycka `do ++v21; while (*v21);` hleda konec
+         retezce v v24 (strcat). Na x64 ma ukazatel 8 B, takze &v23+3
+         ukazuje DOVNITR ukazatele - strcpy pak psal mimo buffer a padalo
+         to (zmereno: strcpy+0x2a v sub_5BD97+0x5ca). */
+      v21 = (char *)v24;
+      while ( *v21 )
         ++v21;
-      while ( *v21 );
       strcpy(v21, v20);
       sub_120CCB(2, (int)v26);
       sub_120DED(0, 0);
-      sub_103915(0);
+      // vlna 73: registrove argumenty z asm (sub_5BD97+3F1h):
+      //   lea ecx, [ebp+82h+var_148] (= v24, sestaveny popis rasy)
+      //   mov ebx, 127h / push 0 / mov edx, 187h / mov eax, 32h
+      // Tohle je ten radek pod portretem ("Ship Defense:+50, Artifacts Home
+      // World and Dictatorship") - dokud byla sub_103915 jen DECOMP_TODO stub,
+      // text se sice spravne sestavil, ale nikdy nevykreslil.
+      sub_103915(0, 50, 391, (int)v24, 295);
       if ( word_19B85A == 13 )
       {
         sub_120CCB(4, (int)v26);
         sub_120DED(0, 0);
-        sub_1210FD(197, 42, (int)&unk_19B85C);
+        sub_1210FD(197, 42, (int)(intptr_t)unk_19B85C);
       }
       goto LABEL_61;
     }
@@ -8219,11 +8300,15 @@ LABEL_49:
   sub_5C20E((int16_t *)&v29, v30, (int)v24);
   v11 = 3 * v28;
   v12 = (char *)dword_192190[v28];
-  v23 = v24;
-  v13 = (char *)&v23 + 3;
-  do
+  /* vlna 73: puvodne `v23 = v24; v13 = (char *)&v23 + 3;` -
+     v asm lezi ukazatel v23 tesne pred bufferem v24, takze &v23+4
+     je v24[0] a smycka `do ++v13; while (*v13);` hleda konec
+     retezce v v24 (strcat). Na x64 ma ukazatel 8 B, takze &v23+3
+     ukazuje DOVNITR ukazatele - strcpy pak psal mimo buffer a padalo
+     to (zmereno: strcpy+0x2a v sub_5BD97+0x5ca). */
+  v13 = (char *)v24;
+  while ( *v13 )
     ++v13;
-  while ( *v13 );
   strcpy(v13, v12);
   if ( (_WORD)v9 == 5 )
   {
@@ -8237,18 +8322,26 @@ LABEL_35:
 LABEL_42:
     if ( byte_17D1F9[3 * (int16_t)v9 + *(char *)((int16_t)v9 + dword_19B7DC[word_19B85A])] > 0 )
     {
-      v23 = v24;
-      v16 = (char *)&v23 + 3;
-      do
+      /* vlna 73: puvodne `v23 = v24; v16 = (char *)&v23 + 3;` -
+         v asm lezi ukazatel v23 tesne pred bufferem v24, takze &v23+4
+         je v24[0] a smycka `do ++v16; while (*v16);` hleda konec
+         retezce v v24 (strcat). Na x64 ma ukazatel 8 B, takze &v23+3
+         ukazuje DOVNITR ukazatele - strcpy pak psal mimo buffer a padalo
+         to (zmereno: strcpy+0x2a v sub_5BD97+0x5ca). */
+      v16 = (char *)v24;
+      while ( *v16 )
         ++v16;
-      while ( *v16 );
       strcpy(v16, "+");
     }
-    v23 = v24;
-    v17 = (char *)&v23 + 3;
-    do
+    /* vlna 73: puvodne `v23 = v24; v17 = (char *)&v23 + 3;` -
+       v asm lezi ukazatel v23 tesne pred bufferem v24, takze &v23+4
+       je v24[0] a smycka `do ++v17; while (*v17);` hleda konec
+       retezce v v24 (strcat). Na x64 ma ukazatel 8 B, takze &v23+3
+       ukazuje DOVNITR ukazatele - strcpy pak psal mimo buffer a padalo
+       to (zmereno: strcpy+0x2a v sub_5BD97+0x5ca). */
+    v17 = (char *)v24;
+    while ( *v17 )
       ++v17;
-    while ( *v17 );
     strcpy(v17, v27);
     goto LABEL_49;
   }
@@ -8470,7 +8563,19 @@ int sub_5C25B()
 
 
 //----- (0005C510) --------------------------------------------------------
-void sub_5C510(int16_t *a1)
+// PORT (vlna 69): doplnen REGISTROVY ARGUMENT (EAX) = ukazatel na zaznam
+// hrace. asm ma v prologu `enter 0C8h, 0 / push eax / sub ebp, 82h`, takze
+// spillnuty EAX skonci na [ebp'-4Ah] - a presne tam ho dekompilator vidi jako
+// lokal `v47`, jenze uz nepoznal, ze se do nej neco ulozilo (nikde se
+// nepriradi). Vsechny odvozene ukazatele (`v47 + 21`, `+ 37`, `+ 38`,
+// `+ 2207`) tedy vychazely ze smeti -> pad v qmemcpy pri zapisu na 0x1AE3
+// po vyberu rasy. Zaznam hrace ma 3753 bajtu (0xEA9), coz sedi s pouzitim
+// `3753 * index + dword_197F98` jinde v kodu.
+// PORT (vlna 75): funkce VRACI hodnotu (v EDX), IDA ji zahodila (`void`).
+// V asm konci vetev s vybranou rasou `mov edx, 1` a vetev ESC `xor edx, edx`,
+// spolecny konec je `loc_5CF30: mov eax, edx`. Volajici `sub_CD435` dela
+// `cmp ax, 1` a jen pri 1 pokracuje na generovani vesmiru.
+int sub_5C510(int base, int16_t *a1)
 {
   int v1; // eax
   int v2; // ebx
@@ -8518,9 +8623,18 @@ void sub_5C510(int16_t *a1)
   int v47; // [esp+0h] [ebp-4Ah]
   char v48[100]; // [esp+4h] [ebp-46h] BYREF
   _BYTE v49[32]; // [esp+68h] [ebp+1Eh] BYREF
-  _WORD v50[12]; // [esp+88h] [ebp+3Eh]
-  int16_t v51; // [esp+A0h] [ebp+56h]
-  int16_t v52; // [esp+A2h] [ebp+58h]
+  // PORT (vlna 73): pole ma 14 prvku, ne 12. Registracni smycka v prologu
+  // (`mov [edi+ebp+3Eh], ax`, `cmp ..., 0Eh; jl`) zapisuje indexy 0..13, tedy
+  // i na ebp+56h a ebp+58h - a prave ty IDA odstepila jako samostatne
+  // promenne `v51` (var_2C) a `v52` (var_2A). V C tim padem zustavaly nulove:
+  // zapis `*(_WORD *)((char *)v50 + 2*12)` sel mimo pole. Dusledek: test
+  // `if ( v61 == v52 )` byl pri necinnosti pravdivy (0 == 0) a hned v prvni
+  // otacce smycky nastavil `word_19B856 = 1`, cimz obrazovka vyberu rasy
+  // presla do rezimu "posledni rasa" a klik na rasu uz nikdy neotevrel
+  // obrazovku voleb (`sub_5D2BB`).
+  _WORD v50[14]; // [esp+88h] [ebp+3Eh]
+#define v51 v50[12]
+#define v52 v50[13]
   int16_t *v53; // [esp+A4h] [ebp+5Ah]
   _BYTE *v54; // [esp+A8h] [ebp+5Eh]
   char *v55; // [esp+ACh] [ebp+62h]
@@ -8593,6 +8707,7 @@ void sub_5C510(int16_t *a1)
   v11 = sub_131922(0, 255);
   sub_1077D(v11, 255, (int)&unk_178F8A, v5);
   sub_C5C44();
+  v47 = base;   /* vlna 69: spillnuty EAX, viz komentar u hlavicky */
   v57 = (char *)(v47 + 21);
   v54 = (_BYTE *)(v47 + 2207);
   v53 = (int16_t *)(v47 + 38);
@@ -8607,8 +8722,11 @@ void sub_5C510(int16_t *a1)
       sub_119281();
       sub_1113CC(dword_192ED4, 1);
       sub_C5BB9();
-LABEL_95:
-      JUMPOUT(0x5BD91);
+      /* vlna 75: navesti LABEL_95 uz nikdo nepouziva */
+      // vlna 70: `JUMPOUT(0x5BD91)` je NO-OP - obrazovka vyberu rasy se
+      // proto nikdy neukoncila a zustala viset na vyberu obrazku.
+      // loc_5BD91 = `pop edi/esi/edx/ecx/ebx / retn`, tedy navrat.
+      return 1;   /* vlna 75: asm `mov edx, 1` -> `mov eax, edx` */
     }
     v61 = sub_1171AB(v12, v10, v7, v6);
     word_19B85A = (uint16_t)sub_114177() - v50[0];
@@ -8644,7 +8762,7 @@ LABEL_58:
           v5 = (int16_t *)v46;
           sub_119281();
           sub_11C2F0();
-          sub_5A3BC(v47, v47, 31, v6);
+          v29 = sub_5A3BC(v47, v47, 31, v6);   /* vlna 70: `cmp ax, 1` v asm */
           if ( (_WORD)v29 == 1 )
           {
             v58 = v29;
@@ -8822,10 +8940,10 @@ LABEL_59:
         sub_11C2F0();
         sub_119281();
         sub_1113CC(dword_192ED4, v10);
-        goto LABEL_95;
+        return 0;   /* vlna 75: asm `xor edx, edx` */
       }
       word_19B856 = 0;
-      sub_119400(v51);
+      sub_119400((int16_t)v51);
       v7 = (int)&unk_178F8A;
       v10 = 378;
       v6 = dword_19B7D8;
@@ -8858,7 +8976,7 @@ LABEL_59:
             sub_11C2F0();
             word_19B858 = v62[0];
             fclose(v5);
-            sub_5A3BC(v47, 15, 1, (int)v5);
+            v29 = sub_5A3BC(v47, 15, 1, (int)v5);   /* vlna 70 */
             if ( v38 == 1 )
             {
               v12 = v62[0];
@@ -8925,7 +9043,7 @@ LABEL_59:
       else
       {
         word_19B856 = 1;
-        LOWORD(v12) = sub_119400(v51);
+        LOWORD(v12) = sub_119400((int16_t)v51);
         if ( v35 )
         {
           v10 = 378;
@@ -8965,6 +9083,8 @@ LABEL_59:
     }
   }
 }
+#undef v51   /* vlna 73 */
+#undef v52
 // 5C209: control flows out of bounds to 5BD91
 // 5C683: variable 'v47' is possibly undefined
 // 5C6B3: variable 'v12' is possibly undefined
@@ -9019,7 +9139,16 @@ void sub_5CF37()
         v2);
     }
     if ( ++v1 >= 8 )
-      JUMPOUT(0x5BD90);
+    {
+      // PORT (vlna 75): `JUMPOUT(0x5BD90)` je NO-OP, takze se `while (1)`
+      // nikdy neukoncil. `v1` rostlo dal, `byte_19B814[v1]` se cetlo mimo
+      // pole a index polozky LBX `8 * word_19B858 + v1 + 34` prerostl pocet
+      // zaznamu racesel.lbx - hra pak sama spadla pres svou fatalni chybu
+      // ("racesel.lbx [entry 0] exceeds number of LBX entries").
+      // `locret_5BD90` je pritom `leave / pop edi/esi/edx/ecx/ebx / retn`,
+      // tedy proste navrat.
+      return;
+    }
   }
 }
 // 5CFFA: control flows out of bounds to 5BD90
@@ -9028,7 +9157,13 @@ void sub_5CF37()
 
 
 //----- (0005D03C) --------------------------------------------------------
-void sub_5D03C(int16_t *a1, int a2, int a3)
+// PORT (vlna 75): funkce VRACI hodnotu, IDA ji zahodila (`void`). V asm
+// konci ESC vetev `xor eax, eax` a vetev s vybranou barvou `mov eax, 1`,
+// a volajici dela `add esi, eax` (= `v36 += sub_5D03C(...)`). Bez toho se
+// smycka `do { ... } while (v36 == 1)` v sub_5A3BC nikdy neukoncila a hra
+// se po vyberu barvy vlajky vratila na obrazovku vlastnosti rasy misto
+// toho, aby zacala generovat vesmir.
+int sub_5D03C(int16_t *a1, int a2, int a3)
 {
   int v4; // ebx
   int v5; // eax
@@ -9122,7 +9257,7 @@ void sub_5D03C(int16_t *a1, int a2, int a3)
       sub_11C2F0();
       sub_119281();
       word_1999AA = 0;
-      goto LABEL_26;
+      return 0;   /* vlna 75: asm `xor eax, eax` */
     }
     if ( !(_WORD)v23 )
     {
@@ -9138,8 +9273,7 @@ void sub_5D03C(int16_t *a1, int a2, int a3)
   sub_124D41();
   sub_5CF37();
   sub_1077D(v17, 1, v4, a1);
-LABEL_26:
-  JUMPOUT(0x5BD90);
+  return 1;   /* vlna 75: asm `mov eax, 1`, pak locret_5BD90 */
 }
 // 5D214: control flows out of bounds to 5BD90
 // 5D22E: variable 'v16' is possibly undefined
@@ -9360,7 +9494,7 @@ void sub_5D618()
     while ( v3 != -1 && v4 < 20 );
   }
   sub_6497C();
-  JUMPOUT(0x5D612);
+  return;   /* vlna 75: loc_5D612 = pop edi/esi/edx/ecx/ebx / retn */
 }
 // 5D687: control flows out of bounds to 5D612
 // 192248: using guessed type int16_t word_192248[500];
@@ -9529,7 +9663,13 @@ void sub_5D953()
   for ( i = 0; ; ++i )
   {
     if ( (int16_t)i >= word_199A02 )
-      JUMPOUT(0x5D611);
+    {
+      // PORT (vlna 75): `JUMPOUT(0x5D611)` je NO-OP, takze se `for (i = 0; ; ++i)`
+      // nikdy neukoncil - `word_192248[i]` se cetlo mimo pole a generovani
+      // vesmiru spadlo. `locret_5D611` je `leave / pop edi/esi/edx/ecx/ebx /
+      // retn`, tedy navrat.
+      return;
+    }
     v23 = *(int16_t *)((char *)&word_1975D4 + 5 * word_192248[(int16_t)i]);
     if ( *(char *)(dword_197F9C + 129 * v23 + 99) != word_19999C )
       break;
@@ -10251,11 +10391,13 @@ void sub_5E1E3(int a1, int a2, int a3, int16_t *a4)
         if ( v23 == -1 )
         {
           itoa((int16_t)v21, v29, 10, v21);
-          v28 = v29;
-          v25 = (char *)&v28 + 3;
-          do
+          /* vlna 73: puvodne `v28 = v29; v25 = (char *)&v28 + 3;` -
+             v asm lezi v28 tesne pred bufferem v29, takze &v28+4 je
+             v29[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
+             8 B, takze &v28+3 miri DOVNITR ukazatele. */
+          v25 = (char *)v29;
+          while ( *v25 )
             ++v25;
-          while ( *v25 );
           strcpy(v25, aTechHasTooMany);
           sub_126487(v29, (int)v29);
         }
@@ -13536,7 +13678,8 @@ LABEL_17:
     if ( (_WORD)v22 == (_WORD)v18 )
     {
       word_19999C = v21;
-      sub_5C510(a1);
+      /* vlna 69: asm sub_628E2 predava alokovany zaznam (0EA9h = 3753 B) */
+      sub_5C510((int)(intptr_t)v4, a1);
       v10 = v9;
       sub_6FB88();
       if ( v10 )

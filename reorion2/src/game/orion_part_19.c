@@ -1742,8 +1742,17 @@ LABEL_234:
       {
         if ( !*PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) )
         {
+          // PORT (vlna 72): tady se NESMI vracet. `sub_16937A` konci skokem
+          // `JUMPOUT(0x11E68A)` a `loc_11E68A` je jen `jmp short loc_11E69D`,
+          // coz je SPOLECNY KONEC teto funkce (`call sub_12386C` a dal az
+          // k `v49 = v47`). Dekompilator z toho skoku udelal `return v50;`,
+          // takze prvky TYPU 1 (prepinace) sice prepnuly svou promennou, ale
+          // funkce vratila `v50` misto id prvku - volajici se o kliknuti
+          // nikdy nedozvedel. Presne tak se chovala tlacitka na obrazovce
+          // vyberu rasy (typ 1), zatimco ACCEPT (typ 0) fungoval, protoze
+          // tudy vubec nechodi.
           sub_16937A(PORT_PTR32(char *, (char *)off_184480 + 55 * (int16_t)v47 + 32));
-          return v50;
+          goto LABEL_SPOLECNY_KONEC;
         }
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) = 0;
       }
@@ -1788,6 +1797,7 @@ LABEL_234:
       }
     }
   }
+LABEL_SPOLECNY_KONEC:   /* vlna 72: asm loc_11E69D */
   sub_12386C();
   HIWORD(dword_18448E) = -1;
   if ( !v46 )

@@ -7627,3 +7627,729 @@ Dvakrat me pri teto vlne svedlo prostredi, ne kod:
 - regresni test videa **600/600 matched, 0 diverged**;
 - kourovy test: menu, NEW GAME, HALL OF FAME, MULTI PLAYER - bez padu;
 - ACCEPT -> obrazovka vyberu rasy se vykresli, hlidac nevystreli.
+
+### Vlna 69: vyber rasy - `sub_5C510` mela zahozeny registrovy argument
+
+Priznak (uzivatel): po vyberu rasy pad v `qmemcpy` (`memcpy`), zapis na adresu
+`0x1AE3`. Zasobnik: `qmemcpy <- sub_12779E <- sub_5C510 <- sub_CD435`.
+
+#### Pricina
+
+`sub_12779E(v54, dword_19B7DC[rasa], 31)` kopiruje 31 bajtu do `v54`, kde
+`v54 = (_BYTE *)(v47 + 2207)`. **`v47` se ale nikde nepriradi** - dekompilator
+ho nechal jako neinicializovany lokal. Odtud vsechny odvozene ukazatele
+(`v47 + 21`, `+ 37`, `+ 38`, `+ 2207`) mirily do smeti.
+
+`v47` je pritom SPILLNUTY REGISTROVY ARGUMENT. Prolog:
+
+    push ebx/ecx/edx/esi/edi
+    enter 0C8h, 0
+    push eax          ; <- spill EAX
+    sub  ebp, 82h
+
+Po `enter` je ebp na vrcholu ramce, `push eax` ulozi hodnotu na [ebp-0CCh] a
+`sub ebp, 82h` posune bazi - vysledna adresa je [ebp'-4Ah], coz je presne
+misto, kam dekompilator umistil `v47` (`// [esp+0h] [ebp-4Ah]`). Stejna trida
+jako `sub_10370A` ve vlne 65.
+
+EAX je ukazatel na ZAZNAM HRACE (3753 = 0xEA9 bajtu). Overeno u VSECH ctyr
+volajicich:
+
+| volajici | co dava do EAX |
+|---|---|
+| `sub_CD435` | `dword_197F98` |
+| `sub_FAAD8` | `word_19999C * 3753 + dword_197F98` |
+| `sub_FB7E5` | totez |
+| `sub_628E2` | cerstva alokace 3753 B z poolu |
+
+Opraveno: `void sub_5C510(int base, int16_t *a1)` + `v47 = base;` a vsechna
+ctyri volani doplnena podle asm.
+
+#### Vysledek
+
+Po ACCEPT se objevi obrazovka **SELECT RACE PICTURE** a kliknuti na rasu
+funguje - tlacitko se zvyrazni a prepne se portret (overeno skriptovanym
+klikem na "Alkari").
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- ACCEPT -> vyber rasy -> kliknuti na rasu: bez padu a bez zamrznuti.
+
+### Vlna 70: CUSTOM RACE - dve chyby opravene, obrazovka s volbami
+### se jeste neobjevi (zuzeno)
+
+Zadani uzivatele: otestovat custom race - jestli se zobrazi spravne a jestli
+funguji ovladaci prvky.
+
+#### Co funguje
+
+Obrazovka **SELECT RACE PICTURE** se vykresli cela (portret + vsech 13
+tlacitek) a **ovladaci prvky reaguji**: kliknuti na rasu ji zvyrazni zlute
+a prepne portret (overeno skriptovanym klikem na "Alkari").
+
+#### Chyba 1: `sub_5A3BC` mela ZTRACENOU NAVRATOVOU HODNOTU
+
+V asm ma dva vystupy - `xor eax, eax` a `mov eax, 1`, oba pak
+`jmp loc_59698` (sdileny epilog) - a OBA volajici hned testuji `cmp ax, 1`.
+Dekompilator ji otypoval jako `void`, takze volajici testovali
+NEINICIALIZOVANY lokal `v29`. Opraveno: navratovy typ `int`, obe vetve vraci
+spravnou hodnotu (0 pres `sub_11C2F0`, 1 pres `sub_1196F7`) a obe volani si
+vysledek berou.
+
+#### Chyba 2: `sub_5C510` nemela navrat z hlavni smycky
+
+`LABEL_95: JUMPOUT(0x5BD91);` - dalsi NO-OP skok; `loc_5BD91` je pritom
+`pop edi/esi/edx/ecx/ebx / retn`. Muj vlastni `tools/jumpout_report.txt` ho
+uz mel jako EPILOG (`orion_part_04.c:8611`). Opraveno na `return;`.
+
+#### CO ZUSTAVA (zuzeno merenim)
+
+Po vyberu obrazku se NEOBJEVI obrazovka s volbami rasy (RACEOPT.LBX).
+Zmereno:
+
+- vetev, ktera RACEOPT.LBX nacita, se nikdy nespusti - kontrolni bod za
+  `sub_5A3BC` se nevypsal ANI JEDNOU;
+- duvod: `sub_1171AB` v hlavni smycce `sub_5C510` vraci **porad 0** - zadny
+  ovladaci prvek te obrazovky neni z pohledu teto smycky zaregistrovany
+  (kontrolni bod na nenulove id se nevypsal ani jednou);
+- pritom kliknuti VIDITELNE funguje (zvyrazneni + zmena portretu), takze ho
+  obsluhuje JINA smycka, ne `sub_5C510`.
+
+**Dalsi krok:** zjistit, kdo tu obrazovku ve skutecnosti obsluhuje.
+`sub_5C510` registruje 13 tlacitek smyckou `sub_11523B(...)` az ve vetvi PO
+vyberu rasy (`orion_part_04.c` ~8676) - to je kruhem, protoze bez tlacitek
+se vybrat neda. Bud registrace patri driv (pred hlavni smycku), nebo je
+aktivni obrazovkou `sub_FAAD8` / `sub_FB7E5` (dalsi dva volajici `sub_5C510`,
+oba predavaji `word_19999C * 3753 + dword_197F98`). Overit, ktera funkce ma
+v asm `sub_11523B` PRED svou vstupni smyckou.
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kourovy test: menu, NEW GAME, HALL OF FAME, MULTI PLAYER - bez padu;
+- ACCEPT -> vyber rasy -> klik na rasu: bez padu a bez zamrznuti hlidace.
+
+### Vlna 71: custom race - pokracovani, obrazovka voleb se stale neobjevuje
+
+Navazuje na vlnu 70. Postupne vyloucene priciny (vse merenim):
+
+| hypoteza | vysledek mereni |
+|---|---|
+| tlacitka nejsou zaregistrovana | **NE** - registracni smycka JE pred hlavni smyckou, presne jako v asm (`call sub_11523B` pred `call sub_5BD97` i pred `call sub_1171AB`), 14 prvku |
+| `word_1B3E0E` (pocet oken) <= 1, takze `sub_1171AB` konci hned | **NE** - je 15 (ustaleno), id prvku 2..15 |
+| pocet oken v case klesa (nekdo je rusi) | **NE** - 16 -> 15 jednou a pak stabilne 15 |
+| klik nedopada na tlacitko | **NE** - zvyrazneni tlacitka i prepnuti portretu funguje |
+
+**Dulezite zjisteni:** zvyrazneni NENI dukaz, ze klik prosel. Jde pres
+`word_19B85A = sub_114177() - v50[0]`, tedy pres prvek POD KURZOREM (hover),
+ne pres kliknuti. Klik se pozna az podle toho, ze `sub_1171AB` vrati nenulove
+id - a to se **nikdy nestane** (kontrolni bod na nenulove id se nevypsal ani
+jednou).
+
+#### Opraveno pri tom (samostatna chyba vstupni vrstvy)
+
+`ServiceMouseHandler` v `port_dos.cpp` si pamatoval stav tlacitek I TEHDY,
+kdyz udalost kvuli masce NEDORUCIL hre:
+
+```c
+g_lastButtons = buttons;
+if (!(events & g_mouseMask)) return;    /* hrana uz je spotrebovana */
+```
+
+Hra si masku stridave prepina mezi 0x0001 (jen pohyb) a 0x002B
+(pohyb + tlacitka) - overeno `REORION2_MOUSE_TRACE`. Kdyz stisk padne do okna
+s maskou 0x0001, `events` se spocitaji, callback se preskoci, ale hrana se
+ulozi jako "uz videna" a pri dalsim volani uz zadna zmena neni - **kliknuti se
+ztrati**. Opraveno: stav tlacitek se zapamatuje jen tehdy, kdyz se hrana
+skutecne dorucila; jinak zustane a doruci se, jakmile maska prepne zpet.
+
+**POZOR - poctivy zapis:** tahle oprava obrazovku vyberu rasy NEVYRESILA.
+Je logicky spravna a overil jsem, ze NIC NEROZBILA (kliknuti v NEW GAME dal
+funguje, regrese videa 600/600), ale jeji prinos je zatim NEPROKAZANY.
+Kdyby se pri dalsim ladeni ukazala jako prekazka, da se bez obav vratit.
+
+#### DALSI KROK
+
+Zbyva zjistit, proc `sub_11CEF5` na TETO obrazovce nikdy neohlasi klik,
+zatimco na NEW GAME ano. Doporucene mereni (stejny postup jako ve vlne 63,
+kde to rozhodlo za jeden beh):
+- kolikrat se na teto obrazovce zavola `sub_123D53` s nenulovym
+  `word_1B921A & 3` (zachyceni kliku do zapadky),
+- co vraci `sub_124075()` behem stisku,
+- a jestli se v `sub_11CEF5` vubec dojde do vetve `if (!sub_124075())`.
+Rozdil proti NEW GAME musi byt v jedne z techto tri hodnot.
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- kliknuti v NEW GAME (zaskrtavatko RANDOM EVENTS) dal funguje;
+- cesta ACCEPT -> vyber rasy: bez padu a bez zamrznuti.
+
+### Vlna 71 pokracovani: custom race - zuzeno na ROZPOR, ktery je potreba
+### rozhodnout jako prvni
+
+Dalsi kolo mereni. Vse na obrazovce vyberu rasy, srovnano proti NEW GAME
+(kde kliknuti funguje):
+
+| merene misto | NEW GAME | vyber rasy |
+|---|---|---|
+| `sub_123D53` se stisknutym tlacitkem (zapadka) | 1x | 2x |
+| `sub_124075` hlasi stisk | 9x | 15x |
+| brana `v18 = sub_123C48()` v `sub_11CEF5` | **0x** | **0x** |
+| vstup do vlacene smycky, `word_1844E4` | 1 | 1 |
+| prvek pod kurzorem `sub_113FB9()` | 2, 11 | 2, 15 |
+| za smyckou: `v47` / `v46` | **11 / 1** | **15 / 1** |
+| brzda `SHIWORD(dword_1B3E10)` v `sub_1171AB` | - | **0** |
+| pocet oken `word_1B3E0E` | - | 15 |
+| **`sub_1171AB` vrati nenulove id (videno v `sub_5C510`)** | ano | **NIKDY** |
+
+**Dulezite dilci zavery:**
+
+1. **Zvyrazneni tlacitka NENI dukaz funkcniho kliku.** Jde pres
+   `word_19B85A = sub_114177() - v50[0]`, tedy pres prvek POD KURZOREM.
+   Portret se prepina ze stejneho zdroje. Klik se pozna jedine podle
+   nenuloveho navratu `sub_1171AB`.
+2. **Brana `v18` je nulova i na NEW GAME**, kde klikani funguje - tedy cesta
+   "odber zatrzeneho kliku pri pusteni" NENI ta, kterou klik chodi. Chodi
+   vlacenou smyckou `while (sub_124075())` a rozhoduje `v46` (stav tlacitka
+   pri vstupu): 1 = leve -> `v49 = v47`.
+3. Registrace prvku, pocet oken i brzda jsou na obou obrazovkach v poradku.
+
+**ROZPOR K ROZHODNUTI:** `sub_11CEF5` na obrazovce vyberu rasy dojde az na
+`v49 = v47` s `v47 = 15` a `v46 = 1`, a konci `v50 = v49; return v50;` - tedy
+MELA BY vratit 15. `sub_1171AB` pritom svou brzdu projde (0) a ma 15 oken,
+takze `sub_11CEF5` vola a jeji vysledek vraci. Presto kontrolni bod primo za
+`v61 = sub_1171AB(...)` v `sub_5C510` **neohlasil ani jednou nenulove id**.
+
+Jedna z tech dvou informaci je spatne. Nez se bude pokracovat, je potreba to
+rozhodnout - v teto session me uz DVAKRAT svedlo, ze kontrolni bod nebyl tam,
+kde jsem myslel (viz metodicka poznamka u vlny 68). Doporuceny postup:
+do jednoho behu dat kontrolni body SOUCASNE na `return v50` v `sub_11CEF5`,
+na `return v6` v `sub_1171AB` a za `v61 = ...` v `sub_5C510`, kazdy s vlastnim
+poradovym cislem - z poradi se rovnou pozna, jestli jde o tentyz pruchod,
+nebo jestli klik vyrizuje JINY volajici `sub_11CEF5` (napr. jina obrazovka,
+ktera je jeste na zasobniku).
+
+#### Overeno na konci
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- vsechna docasna instrumentace odstranena (`orion_part_18.c` a
+  `orion_part_19.c` vraceny pres `git checkout`, opravy vln 64 a 70 v nich
+  overene, ze zustaly).
+
+### Vlna 72: NALEZENO A OPRAVENO - prvky TYPU 1 (prepinace) nikdy neohlasily
+### kliknuti, protoze dekompilator udelal ze SKOKU navrat
+
+Uzivatel: "porovnej to s dosboxem a asm a oprav to podle toho". Rozpor z vlny
+71 se rozhodl merenim se tremi kontrolnimi body naraz, a pak asm.
+
+#### Jak se rozpor rozpadl
+
+Kontrolni body na `return` v `sub_11CEF5`, na `return` v `sub_1171AB` a hned
+za volanim v `sub_5C510`, kazdy s poradim v logu:
+
+    radek 1092: sub_11CEF5 vraci 15
+    radek 1093: sub_1171AB vraci 15
+    radek 1130: sub_5C510 zacina svou smycku (prvni tep)
+
+Tedy **to id 15 byl klik na ACCEPT**, jeste NEZ obrazovka vyberu rasy vubec
+zacala. Klik na rasu potom neohlasil NIC. Predchozi zaver "sub_11CEF5 vraci
+15, ale sub_5C510 to nevidi" byl tim vysvetlen - slo o dve ruzne udalosti.
+
+#### Postupne zuzeni (vse merenim)
+
+| co | vysledek |
+|---|---|
+| `sub_5C510` smycka bezi pri kliku? | ANO (75 tepu, nikdy nekonci) |
+| brzda `SHIWORD(dword_1B3E10)` | 0 - neblokuje |
+| obdelnik tlacitka `Alkari` (id 2) | (351, 90) - (473, 134) |
+| pozice kurzoru pri kliku | (409, 113) - **uvnitr** |
+| posun hit-testu `dword_1B3E14` | 0 |
+| `sub_113FB9()` behem stisku | **najde id 2** (3x) |
+| **typ prvku** (`off_184480 + 55*id + 8`) | ACCEPT = **0**, tlacitko rasy = **1** |
+
+Tim se ukazalo, kde se cesty rozchazeji: typ 0 propada az na spolecny konec
+funkce, kde se nastavi `v49 = v47` a id se vrati. Typ 1 jde vlastni vetvi.
+
+#### Pricina
+
+```c
+if ( v23 == 1 )                                  /* prepinac */
+{
+  if ( !*PORT_PTR32(uint16_t *, ... + 32) )
+  {
+    sub_16937A(PORT_PTR32(char *, ... + 32));
+    return v50;                                  /* <- CHYBA */
+  }
+  ...
+```
+
+`sub_16937A` konci `JUMPOUT(0x11E68A)` a v asm je
+
+    loc_11E68A: jmp short loc_11E69D
+    loc_11E69D: call sub_12386C    ...
+
+tedy skok na **SPOLECNY KONEC** `sub_11CEF5` - ne navrat. Dekompilator z toho
+udelal `return v50;`, takze prepinac sice prepnul svou promennou, ale funkce
+vratila `v50` (na te ceste neprirazene) misto id prvku. Volajici se o kliknuti
+nikdy nedozvedel.
+
+Opraveno: misto `return v50;` skok na navesti umistene presne na
+`sub_12386C()` (= `loc_11E69D`).
+
+**Proc to na NEW GAME nevadilo:** ACCEPT i CANCEL jsou typ 0, ktery tudy vubec
+nechodi. Zaskrtavatka (TACTICAL COMBAT atd.) typ 1 SICE jsou, ale u nich staci,
+ze se prepne navazana promenna - jejich id volajici nepotrebuje. Proto
+"zaskrtavatka funguji, ale tlacitka rasy ne".
+
+#### Stav
+
+- kliknuti na tlacitko rasy uz se ohlasi (Present rate spadl z ~20000 na
+  ~5000 za 55 s, tedy hra prepnula do jineho rezimu prace);
+- **zaskrtavatka v NEW GAME dal funguji** (overeno snimkem - RANDOM EVENTS se
+  prepne a zustane);
+- obrazovka voleb custom race se jeste NEUSTALILA do finalni podoby - je
+  potreba dalsi kolo (dumpnute snimky zatim zachycuji prechod).
+
+#### Overeno
+
+- regresni test videa **600/600 matched, 0 diverged**;
+- vsechna docasna instrumentace odstranena (`orion_part_18.c` vracen pres
+  `git checkout`).
+
+### Vlna 73: CUSTOM RACE - obrazovka vlastnosti rasy zprovoznena
+
+Uzivatel: "Oprav custom race". Cesta NEW GAME -> ACCEPT -> SELECT RACE ->
+Custom -> vyber obrazku -> obrazovka vlastnosti rasy nesla projit vubec.
+Vsechno nize je zmerene proti dosboxu a asm, ne hadane.
+
+#### Jak se merilo v dosboxu
+
+Prvni kolo, kdy hru v dosboxu ridim SAM. `bin/x64/Release/dosbox-x.exe`
+s `[sdl] autolock=false` + `mouse_emulation=never` - pak dosbox hlasi hre
+PRESNE hostitelskou pozici kurzoru, takze staci `SetCursorPos` + `mouse_event`
+z PowerShellu. Dulezite detaily:
+
+- okno musi byt v popredi (`SetForegroundWindow`), jinak se pohyb nepreda;
+- pred kliknutim je potreba par mezikroku pohybu, jinak hra prvni pozici
+  nezaregistruje;
+- snimek delat `PrintWindow(hwnd, dc, 3)` (CLIENTONLY|RENDERFULLCONTENT) -
+  s priznakem 2 se do bitmapy dostane i titulkovy pruh.
+
+Skript je v `dbx.ps1` ve scratchpadu (Attach-Dbx / Move-Game / Click-Game /
+Shot). Souradnice se zadavaji v hernich pixelech 640x480.
+
+Do portu pribyla u `REORION2_CLICK` moznost `x,y@ms:hold` - `hold` v ms,
+`0` znamena POUZE presun kurzoru bez stisku. Bez toho nesel oddelene otestovat
+najezd mysi (hover) od kliknuti, protoze skriptovany klik dela oboji naraz.
+
+#### 1. Odstepene posledni prvky poli (v50/v51/v52 v sub_5C510)
+
+Registracni smycka v prologu zapisuje 14 id (`mov [edi+ebp+3Eh], ax`,
+`cmp ..., 0Eh`), jenze IDA udelala z poslednich dvou prvku samostatne
+promenne `v51` (var_2C) a `v52` (var_2A). V C tedy zustavaly NULOVE.
+
+Dusledek: test `if ( v61 == v52 )` byl pri necinnosti pravdivy (0 == 0), takze
+uz v prvni otacce smycky nastavil `word_19B856 = 1`. Tim obrazovka prepnula do
+rezimu "vyber obrazku" (nadpis SELECT RACE PICTURE misto SELECT RACE), zmizelo
+tlacitko CUSTOM a klik na rasu uz nikdy neotevrel obrazovku voleb.
+
+Zmereno: `R.v61=0 v52=0` hned na zacatku; po oprave `v52=15`.
+
+#### 2. Dalsi useknuta pole (stejna trida chyby)
+
+| symbol | bylo | ma byt | co to rozbijelo |
+|---|---|---|---|
+| `dword_19B7A4` | [13] + `dword_19B7D8` | [14] | chybel obrazek tlacitka CUSTOM |
+| `dword_19B7DC` | [13] + `dword_19B810` | [14] | popis rasy |
+| `dword_192190` | [31] + `dword_19220C` | [32] | nazvy vlastnosti |
+| `dword_192210` | [] | [6] | - |
+| `dword_192228` | [] (1 prvek!) | [8] | PAD ve `strcpy` pri vypisu vlady |
+| `byte_17D1F9` | 1 nulovy bajt | 32 bajtu z binarky | "Ship Defense:0" misto "+50" |
+| `byte_19B688` | 1 + 2 skalary | [8] | nadpisy sede misto zelenych |
+| `word_19B694` | [] + `word_19B696` | [10] (+ `word_19B6A6`) | vyber vlastnosti |
+| `word_19B6C8` | [] + 13 skalaru | [32] | PAD v `sub_5AD97` na i == 15 |
+
+U `dword_192210`/`dword_192228`/`word_19B694`/`word_19B6C8`/`byte_19B688` byly
+navic DUPLICITNI skalarni definice v `link_stubs.c` - dve tentativni definice
+se v C slily na spolecny symbol o velikosti 4 B.
+
+#### 3. Prazdne `_UNKNOWN`, ktere jsou ve skutecnosti neco jineho
+
+- `unk_178F79` je retezec `", "` (asm `db 2Ch, 20h, 0`) - oddelovac polozek
+  popisu rasy. Jako prazdny symbol se polozky slepovaly:
+  "Ship Defense:0Artifacts Home World".
+- `unk_19B772` je TATAZ adresa jako `word_19B772` (asm
+  `push offset word_193772`) - textove pole v zahlavi obrazovky vlastnosti
+  ukazovalo na nic, takze se nevypsalo jmeno rasy.
+- `unk_19C348` je tataz adresa jako `byte_19C348` (asm
+  `mov ebx, offset byte_194348`) - proto se nevypisoval nadpis dialogu
+  "Enter Ruler Name".
+
+#### 4. Rozstepene lokalni tabulky souradnic
+
+`sub_59105`, `sub_596A5` i `sub_5AAD4` maji dve male tabulky:
+
+- svisle souradnice peti radku - IDA prvni dva prvky slepila do
+  `int v47 = 9633864` (= 0x930048, tedy 72 a 147) a zbytek odstepila
+  jako tri `int16_t`;
+- vodorovne souradnice ctyr sloupcu (80, 254, 442, 643) - prvni prvek
+  odstepen, zbytek jako `_WORD v54[3]`. Ze jde o jedno pole je videt uz
+  ze zapisu `v54[v69 - 1]` a `&v54[-1]`.
+
+Kod se do nich stejne indexuje (`*((_WORD *)&v47 + v68)`), takze bez
+souvislosti se sloupce kreslily pres sebe a radky mimo.
+
+#### 5. `&ukazatel + 3` = ROZBITY strcat (chyba sirky ukazatele)
+
+Hex-Rays idiom
+
+```c
+v45 = v46;                    /* v46 = buffer */
+v8  = (char *)&v45 + 3;
+do ++v8; while ( *v8 );       /* najdi konec retezce */
+strcpy(v8, v51);
+```
+
+funguje jen na 32 bitech, kde ukazatel `v45` lezi TESNE PRED bufferem `v46`,
+takze `&v45 + 4` je `v46[0]`. Na x64 ma ukazatel 8 B a `&v45 + 3` miri
+DOVNITR nej - strcpy pak psal mimo buffer. V `sub_5BD97` to primo padalo
+(zmereno `strcpy+0x2a` v `sub_5BD97+0x5ca`), jinde jen tise mizel text.
+
+Prevedeno na `v8 = (char *)v46; while (*v8) ++v8;` na 40 mistech
+(orion_part_01/02/04/08 + 5 rucne v sub_5BD97). Zbyva 25 mist, kde
+prirazeni ukazatele neni na predchozim radku - dohledat samostatne.
+
+#### 6. Chybejici `return` (JUMPOUT stuby) a spillnuty argument
+
+- `sub_59053`: `JUMPOUT(0x5969F)` byl NO-OP -> vnitrni `while (1)` se nikdy
+  neukoncil. `loc_5969F` je pritom spolecny epilog (`pop edi/esi/edx/ecx/ebx
+  / retn`).
+- `sub_596A5`: `JUMPOUT(0x59689)` byl NO-OP -> prekreslovani nikdy neskoncilo.
+  `loc_59689` je `call sub_120CCB` a hned za nim epilog.
+- `sub_5A3BC`: `v45` NENI neinicializovana lokalka, ale SPILLNUTY registrovy
+  argument (`enter 8Ch,0 / push eax / sub ebp, 82h` -> ulozeny EAX lezi na
+  [ebp'-0Eh]). Stejny vzorec jako u `sub_5C510` ve vlne 69.
+- `sub_59053`: `a3` NENI parametr - asm hned dela `mov ebx, 0Ah`, takze
+  pocitadlo piku zacina na 10.
+
+#### 7. `sub_103915` - rekonstruovano z asm
+
+IDA to vzdala ("call analysis failed", funcsize=14), takze to byl
+`DECOMP_TODO` pahyl - a jde pritom o funkci, ktera KRESLI TEXT. Asm:
+
+```
+push 0 / movsx esi, [ebp+arg_0] / push 1 / movsx ebx, bx / push esi
+movsx edx, dx / cwde / call sub_10370A / retn 4
+```
+
+tedy `sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)w, (int16_t)a1, 1, 0)`
+s registrovymi argumenty eax = x, edx = y, ecx = retezec, ebx = sirka
+(stejne jako u sesterske `sub_103952` z vlny 61).
+
+Dopojena jsou zatim jen dve volani v `sub_5BD97` (popis rasy pod portretem,
+zmereno `mov eax, 32h / mov edx, 187h / mov ebx, 127h`, ecx = buffer z
+`lea ecx, [ebp+82h+var_148]`; `sub_120CCB` i `sub_120DED` ecx chrani pres
+push/pop). Zbylych 13 volajicich ma zatim makro `SUB_103915_TODO(a1)`,
+ktere posila retezec = 0 - `sub_10370A` na `!a3` hned vyskoci, takze chovani
+je presne stejne jako u puvodniho pahylu (nekresli se nic). Asm kontext vsech
+15 mist je `call sub_103915` na radcich 7056, 7988, 9854, 54804, 112505,
+112778, 231480, 248090, 248202, 263473, 263546, 281067, 283069, 283111,
+285350 v `Debug/diss/Orion2.exe.asm`.
+
+#### Stav
+
+- SELECT RACE se shoduje s dosboxem (nadpis, tlacitko CUSTOM, portret podle
+  najeti mysi, popisovy radek). Zmereno: mimo systematicky rozdil palety
+  +-1..3 (prevod 6bit VGA -> 8bit v zachytu dosboxu) je odlisnych 425 pixelu
+  a vsechny padnou na kurzor mysi, ktery dosbox pri `PrintWindow` kresli na
+  (0,0).
+- Dialog "Enter Ruler Name" se shoduje.
+- Obrazovka vlastnosti rasy se zobrazi, ma spravne rozlozeni, texty, cisla,
+  barvy i jmeno rasy v zahlavi.
+
+#### CO JESTE NENI HOTOVO
+
+- Na obrazovce vlastnosti rasy jsou v prvnich dvou sloupcich zaskrtavatka
+  DUTA, zatimco original je ma vyplnena (a text o odstin svetlejsi).
+  Rozhoduje o tom `if ( word_19B714[v4] > 0 )` v `sub_59105` - id prvku
+  z `sub_11438B`. Zbyva 2330 pixelu velkeho rozdilu proti dosboxu (bylo 7748).
+- Ovladaci prvky obrazovky vlastnosti (klikani na vlastnosti, CLEAR, ACCEPT)
+  zatim NEJSOU otestovane.
+- 25 zbylych `&ukazatel + 3` a 13 volajicich `sub_103915`.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po uplnem prekladu
+  `-t:Rebuild`, s vypnutym dosboxem);
+- NEW GAME se kresli beze zmeny;
+- vsechna docasna instrumentace odstranena.
+
+### Vlna 74: obrazovka vlastnosti rasy - zaskrtavatka a ovladani
+
+Navazuje na vlnu 73. Zbyvalo: v prvnich dvou sloupcich se nekreslila
+zaskrtavatka (2330 pixelu rozdilu proti dosboxu) a nebyly otestovane ovladaci
+prvky.
+
+#### 1. NALEZENO: `word_19B6A8` pretekalo do `word_19B694`
+
+Postup merenim, ne hadanim:
+
+| co | vysledek |
+|---|---|
+| `word_19B714` (id prvku) po `sub_5AAD4` | `-1000 5 6 7 -1000 8 9 10 ...` = spravne |
+| test `if ( word_19B714[v4] > 0 )` | tedy pravdivy, takze to nebylo tim |
+| dalsi podminka `word_19B694[v6] - 1 == v71` | `word_19B694[0]` = **52** misto 0 |
+| `word_19B694` hned po `sub_5AD97` | `0 0 0 0 0 3 0 0 0 1` = spravne |
+| `word_19B694` tesne pred `sub_59105` | `52 53 54 55 56 57 0 0 0 1` |
+
+Hodnoty 52..57 jsou po sobe jdouci **id ovladacich prvku**. Mezi temi dvema
+body je jen `sub_5AAD4`, ktera id registruje - a zapisuje je do
+`word_19B6A8`.
+
+Pricina: `word_19B6A8` bylo v portu pole 16 wordu, ale `sub_5AAD4` do nej
+zapisuje **22** id. Vnejsi smycka `while (v15 < 64)` totiz probehne jen
+jednou (pocet ve `v31` je 22 a `v15` uz zacina na ~46), takze indexy 16..21
+konci mimo pole - a v portu presne v `word_19B694`, kde lezi vyber
+vlastnosti rasy.
+
+V asm zadny pretek neni: `word_1936A8` a `word_1936C8` jsou ve skutecnosti
+JEDNA oblast. `0x1936A8 + 2*16 = 0x1936C8`, takze prvky 16..21 lezi presne
+tam, kde IDA zacala jmenovat `word_1936C8` (a `sub_5AD97` prvnich deset
+prvku toho pole stejne nikdy nepouzije - pise az od indexu 10).
+
+Opraveno: `int16_t word_19B6A8[48]` pokryva 0x19B6A8..0x19B707 a
+`word_19B6C8` je makro `(word_19B6A8 + 16)`. Vsechna makra z vlny 73
+(`word_19B6CA`, `dword_19B6D4`, `dword_19B6D8`, `word_19B6DC`, ...) jsou
+definovana relativne k `word_19B6C8`, takze zustavaji beze zmeny.
+
+Vysledek: rozdil proti dosboxu spadl z 2330 na **416 pixelu**, a vsech 416
+padne na kurzor mysi - stejny podpis jako u obrazovky SELECT RACE
+(dosbox pri `PrintWindow` kresli kurzor navic na (0,0)).
+
+#### 2. Ovladaci prvky OTESTOVANY
+
+Klik na "Ship Defense +50" (souradnice 240,100) v portu i v dosboxu:
+
+| | port | dosbox |
+|---|---|---|
+| PICKS | 0 -> 7 | 0 -> 7 |
+| SCORE | 100% -> 170% | 100% -> 170% |
+| zaskrtavatko "+50" | zhaslo | zhaslo |
+| sloupce 1 a 2 | prepocitany | prepocitany |
+
+Cislo piku, skore, prepnuti volby i prekresleni prvnich dvou sloupcu se
+shoduji.
+
+#### CO ZBYVA (jedina znama odchylka na teto obrazovce)
+
+Po zmene vyberu se **treti sloupec (Special Abilities) neprekresli**:
+polozky, ktere se nove staly dostupnymi (napr. "High-G World" za 6 piku pri
+7 volnych), zustanou tmave s dutym zaskrtavatkem, zatimco original je ukaze
+svetle s plnym.
+
+Co uz je k tomu zmereno:
+
+- `sub_596A5` se rozhoduje SPRAVNE - zmereno, ze pro "High-G World" po kliku
+  plati `word_19B6DC[i] = 0`, `word_19B76C + cena = 6` (>= -10),
+  `word_19B766 - cena = 1` (>= 0), `word_19B6A8[i] = 37` (>= 0), takze obe
+  vetve (znacka i text) se PRESKOCI. To odpovida asm: `jge loc_59F6E`, kde
+  `loc_59F6E` je jen inkrement smycky.
+- Preskoceni znamena "nech, co je v bufferu". Zakladni vrstvu kresli
+  `sub_59105` do sekundarni stranky (`sub_124D7A` prepne cil kresleni na
+  `dword_1BB8FC`), pak ji `sub_124E36` prekopiruje do primarni
+  (`dword_1BB90C`). Zmereno, ze obe stranky jsou ruzne buffery
+  (0x18611E1C a 0x185C6D9C) a ze smycka vlastnosti v `sub_59105` opravdu
+  probehne (22 polozek).
+- `sub_59105` se po kliku uz nikdy nezavola (zmereno citacem: jediny pruchod,
+  a to pri vstupu s `word_19B766 = 0`). Jedina cesta k prekresleni je
+  `if ( word_19994C )` v hlavni smycce `sub_5A3BC`; `word_19994C` ale zadna
+  funkce z teto obrazovky nenastavuje (v asm ho na 1 nastavuje 18 funkci,
+  zadna z nich neni `sub_5A3BC`/`sub_59053`/`sub_5AAD4`/`sub_5AF69`).
+
+Dalsi krok: dohledat, cim original obnovuje primarni stranku ze sekundarni
+mezi snimky. `sub_1077D` -> `sub_124ECB` dela jen `sub_138CEE` na obdelniku
+26x24 (oblast pod kurzorem), takze celoplosne obnoveni musi byt jinde -
+podezreli jsou `sub_11E718` a `sub_123A08` v `sub_124ECB`.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- SELECT RACE, dialog "Enter Ruler Name" i obrazovka vlastnosti rasy se
+  kresli dal spravne;
+- vsechna docasna instrumentace odstranena.
+
+### Vlna 75: dal za obrazovku vlastnosti rasy - SELECT BANNER COLOR
+
+Zadani: "V tom poslednim menu zkus pokracovat dal a odladit dalsi obrazovku."
+Prochazi se cesta ACCEPT (vlastnosti rasy) -> Enter Ruler Name -> SELECT
+BANNER COLOR -> generovani vesmiru. Vse nize je zmerene proti asm a dosboxu.
+
+#### 1. `sub_5CF37` - chybejici `return` (rozbehla se smycka)
+
+```c
+    if ( ++v1 >= 8 )
+      JUMPOUT(0x5BD90);      /* NO-OP */
+```
+
+`v1` proto rostlo dal, `byte_19B814[v1]` se cetlo mimo pole a index polozky
+LBX `8 * word_19B858 + v1 + 34` prerostl pocet zaznamu racesel.lbx - hra
+skoncila svou vlastni fatalni chybou ("racesel.lbx [entry 0] exceeds number
+of LBX entries"). `locret_5BD90` je pritom `leave / pop edi/esi/edx/ecx/ebx /
+retn`, tedy proste navrat. Stejne opraven i druhy vyskyt v `sub_5D03C`.
+
+#### 2. `sub_5A3BC` - pet ukazatelu se spatnym ZAKLADEM
+
+V asm je to petkrat `mov eax, [ebp+82h+var_90]` (spillnuty registrovy
+argument `a1`, viz vlna 73) plus konstanta:
+
+| offset | co to je | co mel port |
+|---|---|---|
+| +1 | jmeno rasy | `word_19B772 + 1` |
+| +15h = 21 | jmeno vladce | `&word_19B772[10] + 1` |
+| +25h = 37 | index obrazku | `&word_19B772[18] + 1` |
+| +26h = 38 | barva vlajky | `&word_19B772[19]` |
+| +89Fh = 2207 | sablona piku | `&unk_19C011` |
+
+IDA dosadila jako zaklad `word_19B772` (buffer se jmenem), takze offsety
+sedely, ale ukazovaly do uplne jineho mista.
+
+Navic ten ctvrty se ukladal pres `*(_DWORD *)&v48[2] = ...` (64bitovy
+ukazatel do 4 bajtu) a cetl pres `*(int16_t **)&v48[2]`, coz je 8 bajtu ze
+6bajtoveho pole - `sub_5D03C` (vyber barvy vlajky) tak dostal ukazatel
+s nesmyslnou horni polovinou a hra spadla pri cteni z 0xFFFFFFFFFFFFFFFF.
+Nahrazeno skutecnou ukazatelovou promennou.
+
+#### 3. Dve funkce, kterym IDA zahodila NAVRATOVOU HODNOTU
+
+**`sub_5D03C`** (vyber barvy vlajky) - v asm konci ESC vetev `xor eax, eax`
+a vetev s vybranou barvou `mov eax, 1`; volajici dela `add esi, eax`, tedy
+`v36 += sub_5D03C(...)`. Jako `void` se smycka `do { ... } while (v36 == 1)`
+nikdy neukoncila spravne a hra se po vyberu barvy vratila na obrazovku
+vlastnosti rasy.
+
+**`sub_5C510`** (cely vyber rasy) - vraci EDX: vetev s vybranou rasou
+`mov edx, 1`, ESC vetev `xor edx, edx`, spolecny konec `loc_5CF30: mov eax,
+edx`. Volajici `sub_CD435` dela `cmp ax, 1` a jen pri 1 pokracuje na
+generovani vesmiru; IDA hodnotu zahodila a nechala `v11` NEINICIALIZOVANE.
+
+#### 4. `sub_5D953` / `sub_5D618` - dalsi chybejici `return`
+
+`JUMPOUT(0x5D611)` a `JUMPOUT(0x5D612)` jsou NO-OP, takze se
+`for (i = 0; ; ++i)` v generovani vesmiru nikdy neukoncil a `word_192248[i]`
+se cetlo mimo pole. Oba cile jsou epilogy (`leave` + pops + `retn`).
+
+#### 5. `unk_19B85C` - 16bajtovy buffer, ne jeden bajt
+
+`sub_5BC74` dela `fread(unk_19B85C, 15, 1, ...)` - jmeno naposledy ulozene
+vlastni rasy z LASTRACE.RAC. V asm je `unk_19385C` nasledovan 15 dalsimi
+bajty az k `dword_19386C`, tedy 16 B. V portu to byl jednobajtovy `_UNKNOWN`,
+takze cteni prepsalo sousedni promenne - mimo jine `word_19B85A` (index
+zvyraznene rasy) na 24939 - a hra sahla na neexistujici polozku RACESEL.LBX.
+
+**Pozor:** projevi se to teprve ve chvili, kdy v adresari hry existuje
+`LASTRACE.RAC` (vznikne po prvnim ulozeni vlastni rasy). Do te doby je
+`sub_5BC74` ani neprovede. Proto to nevyskocilo drive.
+
+#### Stav
+
+Cela cesta projde bez padu az na obrazovku **SELECT BANNER COLOR**, ktera se
+proti dosboxu lisi jen o **233 pixelu** - a vsechny padnou na kurzor mysi.
+Vyber barvy funguje (zvolena vlajka zhasne, hra pokracuje dal).
+
+#### CO ZBYVA
+
+- Za vyberem vlajky uz je **generovani vesmiru**, kde to pada v `sub_9128C`
+  (zapis na 0x00B30000). To uz je jina oblast nez menu.
+- Nedodelek z vlny 74 trva: treti sloupec obrazovky vlastnosti rasy se po
+  zmene vyberu neprekresli.
+- Ctrnacte tlacitko na SELECT RACE se i s existujicim LASTRACE.RAC porad
+  jmenuje "Custom"; overit, jestli original nema v tomhle stavu jiny popisek
+  (registruje se s `dword_19B840` = PATCH13.LBX).
+
+#### Poznamka k testovani
+
+Skriptovany klik `REORION2_CLICK` dela presun i stisk v jednom okamziku,
+takze hra nestihne zaznamenat NAJETI mysi. U obrazovky vyberu obrazku rasy
+to znamena, ze `word_19B85A` zustane na predchozi polozce a hra pak pracuje
+se spatnym indexem. Pri testovani je proto potreba nejdriv presun s `hold`
+= 0 a teprve za par sekund klik: `410,113@21000:0;410,113@24000`.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- SELECT RACE se s existujicim LASTRACE.RAC kresli spravne a nepada;
+- vsechna docasna instrumentace odstranena.
+
+### Vlna 76: tri hlaseni uzivatele - zmereno, dve zbyvaji
+
+Uzivatel nahlasil: (1) pri najizdeni kurzorem po rasach se zeleny popis
+spatne prekresluje, (2) v custom race se po zaskrtnuti vlastnosti obarvi
+zaskrtavatko, ale text zustane v puvodni barve a srovna se az kdyz pres nej
+prejede kurzor, (3) po vyberu barvy a planety se to cykli zpet na vyber rasy,
+zobrazeni je poskozene a po nekolika pokusech vyskoci chyba.
+
+#### Body 1 a 2 maji SPOLECNOU pricinu - zmereno
+
+Reprodukovano skriptovanou mysi (tri najezdy bez kliknuti,
+`410,113@18000:0;410,160@22000:0;410,207@26000:0`): v portu se v pruhu pod
+portretem prekryvaji tri popisy pres sebe, v dosboxu je tam jeden cisty radek.
+
+Rozhodujici mereni: vypsany OBE stranky obrazovky v jednom okamziku
+(`dword_1BB8FC` = zakladni/offscreen, `dword_1BB90C` = pracovni):
+
+- **`8FC` je CISTA** - v pruhu je jen mrizka pozadi;
+- **`90C` obsahuje vsechny tri popisy pres sebe.**
+
+Tim je jasne, ze se kresli do `90C` a ta se mezi snimky neobnovuje. Zapada do
+toho i uzivatelovo pozorovani u bodu 2 ("srovna se, az kdyz pres to prejedu
+kurzorem") - `sub_124ECB` obnovuje pres `sub_138CEE` obdelnik 26x24 pod
+kurzorem, a to je prave z ciste stranky.
+
+Dalsi zmerene skutecnosti:
+
+- `sub_5BD97` ma PRESNE stejnou mnozinu volani jako asm (5x `sub_127C27`,
+  3x `sub_12A478`, 3x `sub_120CCB`, 3x `sub_5C20E`, 2x `sub_103915`,
+  2x `sub_120DED`, 1x `sub_12B79D`, `sub_58F1E`, `itoa`, `sub_1210FD`) -
+  neni tam tedy zadne zapomenute mazani;
+- poradi v asm je opravdu "nejdriv text (`sub_103915` na 50,391), az potom
+  `sub_12A478(48, 58, sprite 0)`", takze sprite 0 pruh s textem neprekryva;
+- `sub_10370A` (vykreslovac textu) ma take shodnou mnozinu volani, pozadi
+  tedy nevyplnuje;
+- v `sub_5C510` je jedina cesta k obnove pracovni stranky blok
+  `if ( word_19994C ) { sub_124D7A(); sub_128C32(0,0,639,479,0); ...
+  sub_124E36(); }` - zmereno, ze `word_19994C` zustane po celou dobu
+  najizdeni **0**, takze se nikdy neprovede.
+
+Co JESTE NENI dohledano: cim original obnovuje pracovni stranku. Podezreni
+padlo na `sub_11E718` (prekresleni vsech registrovanych prvku, bezi pri
+kazdem `sub_124ECB`) - jeho mnozina volani se od portu lisi (`sub_120BB5`
+15x/8x, `sub_122259` 12x/7x, `sub_1210FD` 7x/2x, `sub_1212B3` 8x/6x,
+`sub_120EB9` 5x/4x a jeden `strcat`), ale muze to byt jen tim, ze IDA slucuje
+spolecne konce vetvi. `sub_128C32` (vypln obdelniku) je 3x v obou. Tudy vede
+dalsi krok.
+
+#### Bod 3 - pravdepodobne uz opraveny ve vlne 75
+
+Uzivatel testoval build pred vlnou 75. Jeho screenshot ukazuje pad
+v `sub_155E62` pres `VCALL`, kam se to dostane z `sub_126487` - to je VLASTNI
+fatalni chyba hry, presne to, co zpusobovaly nalezy vlny 75:
+
+- `sub_5C510` a `sub_5D03C` mely zahozenou navratovou hodnotu, takze se po
+  vyberu barvy vlajky hra vracela na vyber rasy misto aby pokracovala;
+- `sub_5CF37` mela chybejici `return` (rozbehla se smycka a index polozky
+  racesel.lbx prerostl pocet zaznamu -> `sub_126487`);
+- `unk_19B85C` byl jednobajtovy misto 16 B, takze `fread(..., 15, ...)`
+  prepsal `word_19B85A`.
+
+V soucasnem buildu uz cesta z vyberu barvy nevede zpet na vyber rasy, ale
+pokracuje na generovani vesmiru. Je potreba, aby to uzivatel znovu vyzkousel.
+
+#### Stav
+
+- Regresni test videa 600/600 matched, 0 diverged.
+- Za vyberem vlajky to pada v `sub_9128C` (zapis na 0x00B30000) uz uvnitr
+  generovani vesmiru - jina oblast nez menu.

@@ -1171,7 +1171,7 @@ int sub_C7318( int a1, int a2, int a3, int a4, int a5)
   sub_12A478(a1 + 4, a2 + 4, a3);
   sub_120BB5(1, (int)v7);
   sub_1210FD(a1 + 222, a2 + 10, a4);
-  return sub_103915(2);
+  return SUB_103915_TODO(2);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 1A1114: using guessed type int dword_1A1114;
@@ -5876,7 +5876,11 @@ void sub_CD435(int16_t *a1)
       }
       else
       {
-        sub_5C510(a1);
+        /* vlna 69: asm sub_CD435: `mov eax, dword_18FF98` */
+        // vlna 75: asm `call sub_5C510 / mov ecx, eax / cmp ax, 1` - navratovou
+        // hodnotu IDA zahodila a `v11` nechala NEINICIALIZOVANE, takze se po
+        // vyberu rasy nepoznalo, ze ma zacit generovani vesmiru.
+        v11 = sub_5C510((int)(intptr_t)dword_197F98, a1);
         v5 = v11;
         if ( (_WORD)v11 == 1 )
         {

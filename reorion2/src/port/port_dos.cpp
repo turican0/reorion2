@@ -218,7 +218,10 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
     // neni zadne tlacitko stisknute") by se zatocila donekonecna (viz
     // poznamka u REORION2_FAKE_CLICK nize).
     {
-        struct ClickEv { int x, y; unsigned ms; };
+        // vlna 73: za casem smi byt jeste ":hold" (ms) - hold 0 znamena
+        // POUZE presun kurzoru bez stisku, coz je potreba na testovani
+        // najeti mysi (hover) oddelene od kliknuti.
+        struct ClickEv { int x, y; unsigned ms; unsigned hold; };
         static std::vector<ClickEv> s_evs;
         static int s_have = -1;
         static unsigned s_hold = 150;
@@ -229,10 +232,14 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
                     s_hold = (unsigned)std::atoi(h);
                 const char* p = env;
                 while (*p) {
-                    int x = 0, y = 0; unsigned ms = 0; int used = 0;
+                    int x = 0, y = 0; unsigned ms = 0, hold = 0; int used = 0, used2 = 0;
                     if (std::sscanf(p, "%d,%d@%u%n", &x, &y, &ms, &used) == 3) {
-                        s_evs.push_back(ClickEv{x, y, ms});
                         p += used;
+                        if (std::sscanf(p, ":%u%n", &hold, &used2) == 1)
+                            p += used2;
+                        else
+                            hold = s_hold;
+                        s_evs.push_back(ClickEv{x, y, ms, hold});
                     } else {
                         ++p; continue;
                     }
@@ -251,7 +258,7 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
             for (const ClickEv& ev : s_evs) {
                 if (now >= ev.ms) {
                     cur = &ev;
-                    down = (now < ev.ms + s_hold);
+                    down = (ev.hold != 0 && now < ev.ms + ev.hold);
                 }
             }
             if (cur) {
@@ -529,9 +536,24 @@ extern "C" void PortDos_ServiceMouse(void)
     const int dy = (g_lastVy < 0) ? 0 : vy - g_lastVy;
     g_lastVx = vx;
     g_lastVy = vy;
-    g_lastButtons = buttons;
 
-    if (!(events & g_mouseMask))
+    // PORT (vlna 71): stav TLACITEK si smime zapamatovat teprve tehdy,
+    // kdyz jsme jeho zmenu SKUTECNE DORUCILI hre. Hra si masku obsluhy
+    // stridave prepina mezi 0x0001 (jen pohyb) a 0x002B (pohyb+tlacitka)
+    // - viz vlna 53. Kdyz stisk padne do okna s maskou 0x0001, `events`
+    // se sice spocitaji, ale callback se preskoci; pokud si pritom
+    // ulozime `g_lastButtons = buttons`, HRANA SE ZTRATI a pri dalsim
+    // volani uz zadna zmena neni - hra o kliknuti nikdy nezvi.
+    // Presne tak se choval vyber rasy: kurzor po tlacitkach jezdil
+    // (zvyraznovalo se, protoze to jde pres sub_114177 = prvek pod
+    // kurzorem), ale kliknuti nikdy neprosla - `sub_1171AB` vracelo 0.
+    // Kdyz hranu nespotrebujeme, dorucí se hned, jak maska prepne zpet.
+    const int kButtonEdges = 0x02 | 0x04 | 0x08 | 0x10;
+    const int deliverable = events & g_mouseMask;
+    if (!(events & kButtonEdges) || (deliverable & kButtonEdges))
+        g_lastButtons = buttons;
+
+    if (!deliverable)
         return;
 
     {

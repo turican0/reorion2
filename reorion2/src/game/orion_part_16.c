@@ -4508,7 +4508,8 @@ char sub_FAAD8(int16_t *a1)
   int v7; // eax
   _BYTE v9[4]; // [esp+0h] [ebp-4h] BYREF
 
-  sub_5C510(a1);
+  /* vlna 69: asm: `movsx eax, word_19199C / imul eax, 0EA9h / add eax, dword_18FF98` */
+  sub_5C510(3753 * (int16_t)word_19999C + (int)(intptr_t)dword_197F98, a1);
   *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 40) = 100;
   sub_F53CB();
   sub_8F1C4((void (*)(int, int))sub_F19C7, v9, 11);
@@ -5392,7 +5393,8 @@ void sub_FB7E5(int16_t *a1)
             m -= 3753;
             --v20;
           }
-          sub_5C510(a1);
+          /* vlna 69: asm: `movsx eax, word_19199C / imul eax, 0EA9h / add eax, dword_18FF98` */
+  sub_5C510(3753 * (int16_t)word_19999C + (int)(intptr_t)dword_197F98, a1);
           v22 = word_19999C;
           byte_1AB08B[word_19999C] = 1;
           v22 *= 3753;
