@@ -8353,3 +8353,161 @@ pokracuje na generovani vesmiru. Je potreba, aby to uzivatel znovu vyzkousel.
 - Regresni test videa 600/600 matched, 0 diverged.
 - Za vyberem vlajky to pada v `sub_9128C` (zapis na 0x00B30000) uz uvnitr
   generovani vesmiru - jina oblast nez menu.
+
+### Vlna 77: druhy vyskyt zahozene navratove hodnoty sub_5D03C (NEOVERENO)
+
+Uzivatel po vlne 75 hlasil, ze bod 3 (cykleni zpet na vyber rasy + poskozene
+zobrazeni) trva. Mel pravdu - vlna 75 opravila jen JEDEN ze dvou volajicich.
+
+#### Nalez
+
+Ve vlne 75 byl opraven `sub_5D03C` v `sub_5A3BC` (cesta pres CUSTOM).
+Uplne stejna chyba je ale i v `sub_5C510` na ceste **primeho vyberu rasy**
+(kliknuti na rasu, bez Customu) - a tu jsem netestoval, protoze jsem porad
+chodil pres Custom.
+
+Asm (`sub_5C510`, pred `loc_5C7ED`):
+
+```
+mov  eax, [ebp+82h+var_28]
+call sub_5D03C
+add  ecx, eax            ; ecx = v6, tedy `v6 += sub_5D03C(...)`
+cmp  cx, 2
+jz   short loc_5C7ED
+call sub_5BC74
+```
+
+V C stalo:
+
+```c
+              sub_5D03C(v53, 0, v17);
+              v6 += v19;              /* v19 je NEINICIALIZOVANE */
+```
+
+`v6` se proto nikdy nedostalo na 2, smycka `while (v6 == 1)` skoncila
+else-vetvi, ktera vraci zpet na vyber rasy.
+
+#### Proc obrazovka pokazde ztmavla
+
+`sub_5D03C` pred odchodem stmiva paletu (`word_17CF82[0] = 7;
+sub_123E6C(...)`), zatimco else-vetev (navrat na vyber rasy) uz zadny fade-in
+nedela - v prologu `sub_5C510` je `sub_132C80(100)` + `sub_131922(0, 255)`,
+ale ten uz probehl jen jednou pri vstupu. Kazdy dalsi pruchod je proto tmavsi;
+presne to je videt na uzivatelovych screenech obrazovky vyberu rasy, dialogu
+se jmenem vladce i vyberu vlajky.
+
+#### Stav
+
+Oprava (`v6 += sub_5D03C(v53, 0, v17);`) je v `orion_part_04.c` a **prelozi
+se bez chyby, ale NENI OVERENA** - link selhal (`LNK1168`), protoze uzivatel
+mel hru spustenou. Nutne znovu prelozit, projit obe cesty (Custom i primy
+vyber rasy) a pustit regresni branu.
+
+### Vlna 78: vlna 77 OVERENA + nalezena spolecna pricina obou hlaseni z vlny 76
+
+Zadani: dokoncit vlnu 77 (prelozit, projit obe cesty, brana) a dohledat, cim
+original maze pruh popisu pod portretem.
+
+#### Testovaci postup se zkratil - intro se preskakuje
+
+Vsechny funkcni testy portu bezi s `REORION2_SKIPINTRO=1 REORION2_STATE=13`,
+takze hra nabehne rovnou na NEW GAME (bez ~18 s intra). Souradnice v hernich
+pixelech 640x480:
+
+| obrazovka | prvek | x,y |
+|---|---|---|
+| NEW GAME | ACCEPT | 484,402 |
+| SELECT RACE | rasy (sloupec 1) | 410, 113/160/207/255/302/350/398 |
+| SELECT RACE | sloupec 2 / Custom | 535, tytez y / 535,398 |
+| Enter Ruler Name | ACCEPT | 322,237 |
+| SELECT BANNER COLOR | prvni vlajka | 135,190 |
+| vlastnosti rasy | Ship Defense +50 | 240,100 |
+| vlastnosti rasy | ACCEPT | 538,458 |
+
+Snimky se berou `REORION2_BLIT_DUMP_DIR` a prevadeji skriptem `raw2png.py`
+ve scratchpadu (768 B palety + 640x480 indexu).
+
+#### 1. Vlna 77 OVERENA merenim
+
+Docasne `PortDebug_Checkpoint` v `sub_5C510`/`sub_CD435` na ceste PRIMEHO
+vyberu rasy: `5D2BB=1`, `po5D03C.v6=2`, `konec.v6=2`, `5C510 vraci 1`,
+`CD435 dostane 1`. Cykleni zpet na vyber rasy i postupne tmavnuti jsou pryc.
+Cesta pres Custom dava totez. Instrumentace odstranena.
+
+#### 2. TRETI vyskyt zahozene navratove hodnoty: `sub_CD435`
+
+Hned za tim se ale hra zasekla na NEW GAME. Asm `sub_1049B` (case 13):
+
+```
+call sub_CD435
+test ax, ax
+jz   short loc_105F6      ; -> word_191A08 = 10 (hlavni menu)
+...  call sub_12479       ; start hry
+```
+
+`sub_CD435` konci `loc_CD8DA: mov eax, ecx / jmp locret_CCC36`, tedy vraci
+`v5` - tu samou promennou, kterou o kus vyse testuje `cmp cx, 1`.
+IDA z ni udelala `void` + `JUMPOUT(0xCCC36)` (NO-OP) a volajici testoval
+NEINICIALIZOVANE `a1`. Opraveno (`int sub_CD435(...)` + `return v5;` +
+`a1 = sub_CD435(...)` v `orion_part_01.c`).
+
+**Zbyva:** `sub_12479` (funkce, ktera hru skutecne spousti) je porad
+`DECOMP_TODO` pahyl ("call analysis failed", funcsize=170) - proto se po
+vyberu rasy porad nic nestane a hra se toci na NEW GAME. Na ceste pres
+Custom to za tim pada (SEH 0xC0000005, zapis na 0xD05000). Rekonstrukce
+`sub_12479` z asm je dalsi krok.
+
+#### 3. SPOLECNA PRICINA obou hlaseni z vlny 76 - NALEZENA A OPRAVENA
+
+Nejdriv se v dosboxu potvrdilo, ze original pruh pod portretem OPRAVDU maze:
+najezd na Elerians (dvouradkovy popis) a pak na Gnolams, jehoz druhy radek je
+kratsi ("Dictatorship" misto "Home World, Uncreative and Unification") -
+z delsiho radku nezbyde nic. Port na stejne sekvenci vrsti texty pres sebe.
+
+Zmereni v dosboxu, `DUMPREGS cond=eip:0x0035CCEE` (= `sub_138CEE`, prenos
+obdelniku mezi strankami) s `repeat=always` behem najizdeni:
+
+| ret | co to je | obdelniky |
+|---|---|---|
+| 0x0034E5EC | `sub_12A478` (sprity) | tlacitka ras + portret (48,58,347,390) |
+| 0x0034580E | **konec `sub_1212EB`** | **(49,390,319,404)** a **(49,403,120,417)** |
+
+Tedy: `sub_1212EB` (vykresleni jednoho radku textu) na svem konci prenese
+obdelnik prave vykresleneho radku - a prave tim se predchozi text zahodi.
+
+V portu vychazely tyhle obdelniky **(49,390,319,-1)** a **(49,403,120,-1)**,
+takze `sub_138CEE` dostalo prazdny obdelnik a neudelalo nic.
+
+Pricina: `if ( v11 >= *(int *)((char *)&dword_184536 + 2) ) v11 = ... - 1;`
+je **presne ten samy vzor, ktery uz byl opraveny ve vlne 26 v `sub_128AB6`**.
+asm ma `cmp eax, dword ptr unk_17C538`, tedy adresu 0x184538 = VYSKA
+OBRAZOVKY (`screenHeight_184538`). `dword_184536` je v portu samostatny
+symbol z `link_stubs.c`, trvale 0 - podminka platila vzdy a dolni hrana se
+prepsala na `0 - 1`.
+
+Opraveno na CTYRECH dalsich mistech, kde ten vzor jeste zbyval
+(`orion_part_19.c`): `sub_1212EB`, `sub_125FFB`, `sub_126224`, `sub_128BE7`.
+Ve stejnem tahu i sesterske `HIWORD(dword_184532)` -> `(int16_t)HIDWORD(qword_184530)`
+(sirka obrazovky, adresa 0x184534).
+
+#### Overeno proti originalu
+
+- **hlaseni 1** (vrstveni zeleneho popisu): port po najezdu Elerians ->
+  Gnolams ukazuje `Tax:+1, Low Gravity, Expert Traders, Lucky and` /
+  `Dictatorship` - pixelove stejne jako dosbox, zadne zbytky;
+- **hlaseni 2** (barva textu vlastnosti): klik na "Ship Defense +50" a odjezd
+  kurzorem jinam - `+50` se prebarvi HNED, PICKS -7, SCORE 30%, treti sloupec
+  prepocitany; snimek se shoduje s dosboxem. Tim padá i nedodelek z vlny 74
+  (treti sloupec se po zmene vyberu neprekresloval);
+- 14. tlacitko: na SELECT RACE je "Custom", na SELECT RACE PICTURE "Last Race"
+  - a to i v ORIGINALE s existujicim `LASTRACE.RAC`. Port je spravne, polozka
+  z backlogu vlny 75 se zaviera;
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- vsechna docasna instrumentace odstranena.
+
+#### CO ZBYVA
+
+- `sub_12479` je porad `DECOMP_TODO` pahyl - bez ni hra po vyberu rasy
+  nezacne. Za tim na ceste Custom pad (zapis na 0xD05000).
+- 25 zbylych `&ukazatel + 3`; 13 volajicich `sub_103915` s `SUB_103915_TODO`.

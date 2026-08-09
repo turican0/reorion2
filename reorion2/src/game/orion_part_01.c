@@ -338,7 +338,11 @@ void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6)
         }
         else
         {
-          sub_CD435((int16_t *)a6);
+          // vlna 78: asm `call sub_CD435 / test ax, ax / jz loc_105F6` -
+          // navratovou hodnotu IDA zahodila a `a1` zustalo NEINICIALIZOVANE,
+          // takze se po vyberu rasy nepoznalo, jestli se ma zacit hra
+          // (sub_12479) nebo se ma jit zpet do hlavniho menu (word_199A08=10).
+          a1 = sub_CD435((int16_t *)a6);
           if ( (_WORD)a1 )
           {
             a3 = (uint8_t)byte_199CB1;

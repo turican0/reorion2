@@ -5765,7 +5765,14 @@ void sub_CCE2E()
 
 
 //----- (000CD435) --------------------------------------------------------
-void sub_CD435(int16_t *a1)
+// PORT (vlna 78): TRETI vyskyt zahozene navratove hodnoty na teto ceste
+// (po sub_5C510 ve vlne 75 a sub_5D03C ve vlnach 75/77). Asm konci
+// `loc_CD8DA: mov eax, ecx / jmp locret_CCC36`, tedy funkce VRACI `v5`
+// (registr ecx) - tu samou promennou, kterou o dva radky vyse testuje
+// `cmp cx, 1`. IDA z toho udelala `void` + `JUMPOUT(0xCCC36)` (= NO-OP),
+// takze volajici `sub_1049B` (case 13) testoval NEINICIALIZOVANE `a1`.
+// Zmereno: `locret_CCC36` je jen `leave / pop edi,esi,edx,ecx,ebx / retn`.
+int sub_CD435(int16_t *a1)
 {
   int v1; // eax
   int v2; // edx
@@ -5944,7 +5951,9 @@ void sub_CD435(int16_t *a1)
     v13[0] = &byte_199BF3;
     strcpy(&byte_199BF3, &byte_1AB082);
   }
-  JUMPOUT(0xCCC36);
+  // vlna 78: `JUMPOUT(0xCCC36)` byl NO-OP; loc_CCC36 je spolecny epilog a
+  // pred skokem stoji `mov eax, ecx`, takze navratova hodnota je `v5`.
+  return v5;
 }
 // CD8DC: control flows out of bounds to CCC36
 // CD640: variable 'v10' is possibly undefined

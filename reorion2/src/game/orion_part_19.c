@@ -2972,10 +2972,26 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
   if ( v8 >= HIDWORD(qword_184530) )
     v8 = HIDWORD(qword_184530) - 1;
   result = (dword_1B3E82 >> 16) + a2 + v7;
-  if ( v11 >= *(int *)((char *)&dword_184536 + 2) )
+  // PORT (vlna 78): tady byl `*(int *)((char *)&dword_184536 + 2)`, tedy
+  // stejna chyba sirky/rozdrobeneho bloku jako uz opravena v sub_128AB6
+  // (vlna 26). asm: `cmp eax, dword ptr unk_17C538` = adresa 0x184538, coz je
+  // VYSKA OBRAZOVKY (`screenHeight_184538`). V portu je `dword_184536`
+  // samostatny symbol z link_stubs.c, ktery je trvale 0, takze se cetla nula,
+  // podminka platila vzdy a `v11` (dolni hrana obdelniku) vyslo -1.
+  // Dusledek: zaverecne `sub_138CEE(v12, v10, v8, v11)` - prenos prave
+  // vykresleneho radku textu mezi strankami - dostalo prazdny obdelnik a
+  // NEUDELALO NIC. Prave tenhle prenos v originale MAZE predchozi text.
+  // Zmereno v dosboxu (DUMPREGS na sub_138CEE, ret=0x34580E = konec
+  // sub_1212EB): original vola pro popis rasy pod portretem obdelniky
+  // (49,390,319,404) a (49,403,120,417), port mel (49,390,319,-1) a
+  // (49,403,120,-1). Tim se vysvetluji obe hlaseni z vlny 76: vrstveni
+  // zeleneho popisu pri najizdeni po rasach i to, ze se text vlastnosti
+  // v custom race prebarvi az kdyz pres nej prejede kurzor (kurzor kresli
+  // sub_124ECB pres vlastni sub_138CEE, ktery obdelnik ma spravny).
+  if ( v11 >= screenHeight_184538 )
   {
-    result = *(int *)((char *)&dword_184536 + 2) - 1;
-    v11 = *(int *)((char *)&dword_184536 + 2) - 1;
+    result = screenHeight_184538 - 1;
+    v11 = screenHeight_184538 - 1;
   }
   if ( dword_1BBA28 >= 2 )
     return sub_138CEE(v12, v10, v8, v11);
@@ -5681,8 +5697,8 @@ int sub_125FFB(int a1, int a2, int a3)
     v9 = 0;
   if ( a3 >= HIDWORD(qword_184530) )
     v10 = HIDWORD(qword_184530) - 1;
-  if ( v9 >= *(int *)((char *)&dword_184536 + 2) )
-    v9 = *(int *)((char *)&dword_184536 + 2) - 1;
+  if ( v9 >= screenHeight_184538 )
+    v9 = screenHeight_184538 - 1;
   v8 = v7 >> 2;
   v11 = v10 >> 2;
   if ( dword_1BBA28 == 2 )
@@ -5781,9 +5797,9 @@ int sub_126224( int a1, int a2, int a3, int a4)
   if ( a2 < 0 )
     v15 = 0;
   if ( a3 >= HIDWORD(qword_184530) )
-    v16 = HIWORD(dword_184532) - 1;
-  if ( a4 >= *(int *)((char *)&dword_184536 + 2) )
-    v14 = HIWORD(dword_184536) - 1;
+    v16 = (int16_t)HIDWORD(qword_184530) - 1;
+  if ( a4 >= screenHeight_184538 )
+    v14 = (int16_t)screenHeight_184538 - 1;
   v19 = v18 >> 2;
   v17 = v16 >> 2;
   v7 = ((HIDWORD(qword_184530)
@@ -6986,14 +7002,17 @@ int sub_128AB6( int a1, int a2, int a3, int a4)
   //     mov   ax, word ptr unk_17C538     ; prepise jen AX
   //     dec   eax
   // Dekompilat misto symbolu na 0x184538 napsal
-  // `*(int *)((char *)&dword_184536 + 2)`, coz je sice tataz ADRESA, ale jen
+  // "*(int *)((char *)&dword_184536 + 2)", coz je sice tataz ADRESA, ale jen
   // v originale, kde ty globaly lezi za sebou. V portu je `dword_184536`
   // samostatny objekt, takze se cetlo smeti za nim - porovnani vyslo true a
   // dolni hrana se prepsala na `0 - 1`. Spravny symbol port uz ma:
   // `screenHeight_184538` (vytknut ve vlne 11).
-  // Stejny vzor je o dva radky vys u prave hrany (`HIWORD(dword_184532)`
+  // Stejny vzor je o dva radky vys u prave hrany ("HIWORD(dword_184532)"
   // misto dolniho slova `HIDWORD(qword_184530)`) - taky opraveno; neprojevilo
   // se to jen proto, ze se na nej sahne az kdyz a3 prekroci sirku obrazovky.
+  // VLNA 78: uplne stejny vzor byl jeste na CTYRECH dalsich mistech
+  // (sub_1212EB, sub_125FFB, sub_126224, sub_128BE7) - viz komentar
+  // u sub_1212EB.
   if ( (int16_t)a3 >= (int)HIDWORD(qword_184530) )
     v8 = (int16_t)((uint16_t)HIDWORD(qword_184530) - 1);
   v4 = (int16_t)a4;
@@ -7060,9 +7079,9 @@ int16_t sub_128BE7()
   int16_t result; // ax
 
   HIWORD(dword_1BBA4A) = 0;
-  dword_1BBA4E = (uint16_t)(HIWORD(dword_184532) - 1);
-  result = HIWORD(dword_184536) - 1;
-  LOWORD(dword_1BBA52) = HIWORD(dword_184536) - 1;
+  dword_1BBA4E = (uint16_t)((int16_t)HIDWORD(qword_184530) - 1);
+  result = (int16_t)screenHeight_184538 - 1;
+  LOWORD(dword_1BBA52) = (int16_t)screenHeight_184538 - 1;
   return result;
 }
 // 184532: using guessed type int dword_184532;

@@ -5261,8 +5261,8 @@ extern void sub_CCC3D();
 extern char sub_CCD3C();
 // plna signatura: void sub_CCE2E();
 extern void sub_CCE2E();
-// plna signatura: void sub_CD435(int16_t *a1);
-extern void sub_CD435();
+// plna signatura: int sub_CD435(int16_t *a1);   /* vlna 78: vraci ecx (v5) */
+extern int sub_CD435();
 // plna signatura: _DWORD *sub_CD8E5();
 extern _DWORD * sub_CD8E5();
 // plna signatura: void *sub_CD969();

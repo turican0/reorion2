@@ -8846,8 +8846,16 @@ LABEL_58:
             word_19B858 = v60;
             if ( v16 == 1 )
             {
-              sub_5D03C(v53, 0, v17);
-              v6 += v19;
+              // PORT (vlna 77): DRUHY vyskyt teze chyby jako v sub_5A3BC (vlna 75) -
+              // tady na ceste PRIMEHO vyberu rasy (bez Custom). Asm dela
+              // `mov eax, [ebp+82h+var_28] / call sub_5D03C / add ecx, eax`,
+              // tedy `v6 += sub_5D03C(...)`; IDA navratovou hodnotu zahodila a
+              // pricetla neinicializovane `v19`. Dusledek: `v6` se nikdy
+              // nedostalo na 2, smycka `while (v6 == 1)` skoncila else-vetvi,
+              // ktera vraci zpet na vyber rasy - a protoze `sub_5D03C` pred
+              // odchodem stmiva paletu (`sub_123E6C`) a tahle vetev uz zadny
+              // fade-in nedela, byla obrazovka pokazde tmavsi.
+              v6 += sub_5D03C(v53, 0, v17);
               if ( (_WORD)v6 != 2 )
                 sub_5BC74(v19, 0);
             }
