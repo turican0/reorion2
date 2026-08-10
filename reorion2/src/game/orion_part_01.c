@@ -198,7 +198,9 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
       // prikazove radky, default 0 -> preskoceno). Rekonstruovano best-effort.
       if ( sub_1202D() )
       {
-        sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB1);
+        sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB2,
+                     (uint8_t)byte_199CB3, (uint8_t)byte_199CB1,
+                     (uint8_t)byte_199CB4, (uint8_t)byte_199CB5);
         word_199A08 = 0x27;
       }
       else
@@ -348,7 +350,11 @@ void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6)
             a3 = (uint8_t)byte_199CB1;
             a4 = (uint8_t)byte_199CB3;
             a2 = (uint8_t)byte_199CB2;
-            a1 = sub_169410((uint8_t)byte_199CB4, (uint8_t)byte_199CB5);
+            // vlna 79: asm vola sub_12479 PRIMO (sub_169410 je artefakt IDA
+            // v orion_part_26) a navratovou hodnotu nepouziva.
+            sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB2,
+                     (uint8_t)byte_199CB3, (uint8_t)byte_199CB1,
+                     (uint8_t)byte_199CB4, (uint8_t)byte_199CB5);
           }
           else
           {
@@ -1452,7 +1458,7 @@ void sub_1160B(int a1, int a2, int a3, int a4)
     strcpy(v10, v9);
     sub_77423((int)v28);
   }
-  JUMPOUT(0x115FE);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x115FE je epilog funkce */
 }
 // 116E4: control flows out of bounds to 115FE
 // 11789: bad sp value at call
@@ -1631,7 +1637,7 @@ void sub_11C83()
       }
     }
     if ( (int16_t)++v14 >= 10 )
-      JUMPOUT(0x11605);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x11605 je epilog funkce */
   }
 }
 // 11DFF: control flows out of bounds to 11605
@@ -1685,7 +1691,7 @@ void sub_11E56(int a1)
       fread(&v2, 4, 1, v1);
     fclose(v1);
   }
-  JUMPOUT(0x11E50);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x11E50 je epilog funkce */
 }
 // 11EA3: control flows out of bounds to 11E50
 // 12685D: using guessed type int fopen(_DWORD, _DWORD);
@@ -1860,7 +1866,7 @@ void sub_12030()
   }
   if ( !v8 )
     sub_126487(aSettingsFileMo, v0);
-  JUMPOUT(0x11604);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x11604 je epilog funkce */
 }
 // 120F5: control flows out of bounds to 11604
 // FE8BD: using guessed type int nullsub_14(_DWORD);
@@ -2067,10 +2073,188 @@ int sub_1241A()
 
 
 //----- (00012479) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=170)) - nutno dohledat rucne v IDA @ 0x12520 */
-_DWORD sub_12479(_DWORD _p0, _DWORD _p1)
+// PORT (vlna 79): REKONSTRUOVANO Z ASM (0x12479..0x1279A). IDA to vzdala
+// ("call analysis failed", funcsize=170) a nechala DECOMP_TODO pahyl - a je
+// to pritom funkce, ktera HRU SPOUSTI (generovani vesmiru + prechod do stavu
+// 39). Dokud byla prazdna, po vyberu rasy a barvy vlajky se stav nezmenil,
+// `sub_1049B` se v case 13 zatocil zpatky na NEW GAME / vyber rasy a hra
+// nikdy nezacala.
+//
+// REGISTROVE ARGUMENTY: v prologu je `push eax / push edx / push ebx`
+// (spillnute registry, ktere pak telo cte jako var_8/var_C/var_10) a
+// `mov word_191998, cx`. Vsechna ctyri volani v asm (main__0+2B8,
+// sub_1049B+154, sub_628E2, sub_FB7E5) plni registry stejne:
+//   eax = byte_199CB0, edx = byte_199CB2, ebx = byte_199CB3,
+//   ecx = byte_199CB1, push byte_199CB5, push byte_199CB4.
+// Dva zasobnikove argumenty (`retn 8`) telo NEPOUZIVA.
+void sub_12479(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  DECOMP_TODO("call analysis failed (funcsize=170)");
+  int16_t v8;   /* var_8  = spillnute eax */
+  int16_t vC;   /* var_C  = spillnute edx */
+  int16_t v10;  /* var_10 = spillnute ebx */
+  int16_t v4;   /* var_4  - priznak ladiciho vypisu map */
+  int16_t si;   /* esi - poradi generovane mapy (ladici smycka) */
+  int di;       /* edi - navratova hodnota sub_7B8CD */
+
+  (void)a5;
+  (void)a6;
+  v8 = (int16_t)a1;
+  vC = (int16_t)a2;
+  v10 = (int16_t)a3;
+
+  dword_199CB6 = sub_12484C();
+  v4 = 0;
+  sub_107CA();
+  dword_192FD8 = 0x88B8;
+  word_199998 = (int16_t)a4;
+  sub_12268();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_1241A();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  si = 0;
+  // asm: `mov eax, offset word_191174 / xor edx, edx / mov ebx, 42h /
+  // call memset_`, tedy memset(word_199174, 0, 0x42). V originale je to
+  // JEDEN souvisly 66bajtovy blok 0x199174..0x1991B5 (dalsi symbol je az
+  // word_1991B6), IDA ho ale rozsekala na jedenact samostatnych promennych a
+  // v portu na sebe nenavazuji. Misto slucovani do pole (nic pres nej
+  // neindexuje, je to jen vynulovani) se nuluji jednotlive - efekt je stejny.
+  word_199174 = 0;
+  word_199176 = 0;
+  word_199178 = 0;
+  memset(word_19917A, 0, sizeof(word_19917A));
+  word_199182 = 0;
+  word_19918A[0] = 0;
+  memset(word_19918C, 0, sizeof(word_19918C));
+  memset(word_19919E, 0, sizeof(word_19919E));
+  byte_1991B0 = 0;
+  dword_1991B1 = 0;
+  byte_1991B5 = 0;
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  if ( byte_199F3A != 2 )
+    word_19999C = 0;
+  sub_1307F();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_12983(0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_103421();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_EEB3A();
+  sub_107CA();
+  dword_199CB6 = sub_12484C();
+  do
+  {
+    // asm: `movsx ebx, var_8 / movsx edx, var_10 / movsx eax, var_C`, tedy
+    // sub_8DAE8(eax = var_C, edx = var_10, ebx = var_8) - poradi je
+    // PROHOZENE proti tomu, jak sem hodnoty prisly.
+    // a4..a25 jsou v `sub_8DAE8` jen ZASOBNIKOVE SMETI (IDA z posunuteho
+    // ramce vyrobila 25 parametru, telo je pouziva jako lokalni odkladiste) -
+    // original jim taky nic nepredava.
+    sub_8DAE8(vC, v10, v8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0);
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);
+    di = sub_7B8CD();
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);
+    if ( (int16_t)di )
+    {
+      sub_124D41();
+      sub_128C32(0, 0, 639, 479, 0);
+      sub_124ECB();
+      sub_8BC39(250);
+      sub_8D65D();
+      sub_78E67();
+      if ( byte_199CB5 == 2 )
+      {
+        sub_62C70(0, 0);
+        sub_63848();
+      }
+    }
+    if ( si < (uint8_t)byte_199F2A )
+    {
+      // Ladici smycka "vygeneruj N map a skonci" - `byte_199F2A` nastavuje
+      // jen prepinac prikazove radky, ve hre je 0, takze se neprovede.
+      word_1931AC[0] = 0x21;
+      word_1931AE = 0x1D;
+      word_1931B0 = 0x19;
+      word_1931B2 = 0x17;
+      word_1931B4 = 0x15;
+      word_1931B6 = 0x11;
+      sub_79FDB();
+      sub_8A503();
+      sub_124D41();
+      sub_84E9D();
+      sub_1077D(0, 0, 0, 0);
+      _wcpp_1_unwind_leave(0, 0x17, "Map:  %d", si);
+      v4 = 1;
+      _wcpp_1_unwind_leave(0, 0x18, "Seed: %ld", dword_199CB6);
+      di = 0;
+      ++si;
+      sub_1101F0(0, 0, 0, 0);
+    }
+  }
+  while ( !(int16_t)di );
+  if ( v4 )
+    sub_126487("done", 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_7CDC5();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_122CC();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_8CC15();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  if ( byte_199CB5 == 2 )
+  {
+    sub_98489();
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  }
+  sub_8BB51();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_EB87D(45);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_EBA96();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  word_19998C = 0;
+  word_199990 = 0;
+  word_199A08 = 39;
+  word_19A0E0 = -1;
+  nullsub_3();
+  sub_792C3();
+  nullsub_10();
+  sub_10206E();
+  word_199A0E = 0;
+  nullsub_3();
+  sub_7962C();
+  sub_C5F52();
+  sub_102037();
+  sub_8A503();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_E64F4();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_E5832();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_10011B();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_E5408();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_101E77();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  if ( byte_199BE3 )
+    sub_123CE();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_FD81C();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_E4E54();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_1160B(9, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_11BE4();
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
+  sub_8DA07(0, 0, 0);
+  sub_1279F(0);
+  if ( !byte_199F3A )
+    nullsub_1();
+  sub_124820(dword_199CB6);
 }
 
 
@@ -2420,7 +2604,7 @@ void sub_12983(int16_t *a1)
   ServiceAudioTick_FE8BE(v40, v39, v38, v4);
   v41 = sub_4D78E(v2);
   ServiceAudioTick_FE8BE(v41, v39, v38, v4);
-  JUMPOUT(0x123C7);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x123C7 je epilog funkce */
 }
 // 12D70: control flows out of bounds to 123C7
 // 129E7: variable 'v7' is possibly undefined
@@ -2632,8 +2816,12 @@ void sub_1307F()
     ++v2;
     *(_WORD *)(v3 + dword_1930DC + 50) = v4;
     ServiceAudioTick_FE8BE(v5, v3, v4, v1);
+    // PORT (vlna 79): `JUMPOUT(0x123C7)` byl NO-OP, takze se `while (1)`
+    // nikdy neukoncil a nacitani tabulky technologii se zatocilo donekonecna
+    // (zmereno: hra po vyberu barvy vlajky zamrzla prave tady).
+    // `locret_123C7` je `leave / pop edi,esi,edx,ecx,ebx / retn`, tedy navrat.
     if ( v2 >= 67 )
-      JUMPOUT(0x123C7);
+      return;
   }
 }
 // 1316F: control flows out of bounds to 123C7
@@ -3766,7 +3954,7 @@ void sub_145EA( int a1, unsigned int a2, int a3)
               sub_B1E19(a1, i--);
           }
 LABEL_38:
-          JUMPOUT(0x145E4);
+          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x145E4 je epilog funkce */
         }
         if ( a2 > 0x18u )
           goto LABEL_38;
@@ -3910,7 +4098,7 @@ void sub_1487A( int a1)
       }
     }
   }
-  JUMPOUT(0x14874);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x14874 je epilog funkce */
 }
 // 14910: control flows out of bounds to 14874
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -4468,7 +4656,7 @@ void sub_153A0()
   }
   sub_11C2F0();
   sub_119281();
-  JUMPOUT(0x156CE);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x156CE je epilog funkce */
 }
 // 1541C: control flows out of bounds to 156CE
 // 15401: variable 'v2' is possibly undefined
@@ -4793,7 +4981,7 @@ void sub_156D4(int a1)
   LOBYTE(v26) = sub_1695A();
   ServiceAudioTick_FE8BE(v26, 1, 0, (int16_t *)v13);
   byte_19A0DA = -1;
-  JUMPOUT(0x156CE);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x156CE je epilog funkce */
 }
 // 15B8B: control flows out of bounds to 156CE
 // 15B7F: variable 'v26' is possibly undefined
@@ -5022,7 +5210,7 @@ void sub_15EBC()
     sub_161E4(v6, byte_19A0D9);
   }
   sub_1633C();
-  JUMPOUT(0x156CE);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x156CE je epilog funkce */
 }
 // 1601C: control flows out of bounds to 156CE
 // 19999C: using guessed type int16_t word_19999C;
@@ -5481,7 +5669,7 @@ void sub_16A3F( int a1, int a2, int16_t *a3)
       sub_12C2C6(2);
     }
   }
-  JUMPOUT(0x16338);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x16338 je epilog funkce */
 }
 // 16A7C: control flows out of bounds to 16338
 // 16AC1: variable 'v7' is possibly undefined
@@ -6132,7 +6320,7 @@ void sub_1758C(int16_t *a1)
   }
   sub_1191CA((int)sub_16F00, 2);
   sub_117174(1);
-  JUMPOUT(0x17204);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17204 je epilog funkce */
 }
 // 17842: control flows out of bounds to 17204
 // 1781B: variable 'v7' is possibly undefined
@@ -8141,7 +8329,7 @@ void sub_1A44D( int a1, int a2, unsigned int a3, _WORD *a4, int a5)
   for ( i = 0; ; ++i )
   {
     if ( i >= word_199998 )
-      JUMPOUT(0x19D59);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x19D59 je epilog funkce */
     if ( i != a2 && i != a1 )
     {
       v8 = 3753 * i + (uint8_t*)dword_197F98;
@@ -9027,7 +9215,7 @@ void sub_1B5B8( int a1, int a2, int a3, int a4,
       word_19A196 = 0;
     *a7 = word_19A196;
   }
-  JUMPOUT(0x19D59);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x19D59 je epilog funkce */
 }
 // 1B663: control flows out of bounds to 19D59
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -9303,7 +9491,7 @@ void sub_1B92E(int16_t *a1)
   word_19AA3C = *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a1 + 37) + 1;
   word_19AA44 = -1;
   word_19AA46 = sub_1247A0(3u) + 13;
-  JUMPOUT(0x17205);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17205 je epilog funkce */
 }
 // 1BD56: control flows out of bounds to 17205
 // 192ED4: using guessed type int dword_192ED4;
@@ -9964,7 +10152,7 @@ void sub_1CA7C(int a1, int a2, _WORD *a3, int16_t *a4, int a5)
       }
     }
   }
-  JUMPOUT(0x19D59);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x19D59 je epilog funkce */
 }
 // 1CB48: control flows out of bounds to 19D59
 // 1CA87: variable 'v8' is possibly undefined
@@ -11410,7 +11598,7 @@ LABEL_56:
       }
     }
   }
-  JUMPOUT(0x17204);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17204 je epilog funkce */
 }
 // 1E5BC: control flows out of bounds to 17204
 // 1E352: variable 'v14' is possibly undefined
@@ -12027,7 +12215,7 @@ void sub_1F37C(int a1, int a2, int a3, int16_t *a4)
   v55 = dword_19A4E8;
   LOBYTE(v56) = sub_249F9(aJimtext2Lbx, 11, (char *)dword_19A4E8, 20);
   ServiceAudioTick_FE8BE(v56, 11, v55, v58);
-  JUMPOUT(0x17205);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17205 je epilog funkce */
 }
 // 1FC0E: control flows out of bounds to 17205
 // 1F3D1: variable 'v5' is possibly undefined
@@ -12278,7 +12466,7 @@ void sub_1FD80()
       }
     }
   }
-  JUMPOUT(0x17204);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17204 je epilog funkce */
 }
 // 1FED8: control flows out of bounds to 17204
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -12330,7 +12518,7 @@ void sub_1FEF5()
       }
     }
   }
-  JUMPOUT(0x17204);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17204 je epilog funkce */
 }
 // 1FFE8: control flows out of bounds to 17204
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -12380,7 +12568,7 @@ void sub_1FFED()
       }
     }
   }
-  JUMPOUT(0x17205);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x17205 je epilog funkce */
 }
 // 200BE: control flows out of bounds to 17205
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -13513,7 +13701,7 @@ LABEL_97:
             sub_11C2F0();
           }
         }
-        JUMPOUT(0x23D99);
+        return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D99 je epilog funkce */
       }
       goto LABEL_63;
     case 0x18u:
@@ -14179,7 +14367,7 @@ LABEL_18:
   }
   if ( !v2 )
 LABEL_174:
-    JUMPOUT(0x23D99);
+    return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D99 je epilog funkce */
   v7 = -1;
   for ( i = 0; ; ++i )
   {
@@ -14697,7 +14885,7 @@ void sub_22D57( int a1)
     }
   }
   sub_586D4(v30, v12);
-  JUMPOUT(0x23D99);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D99 je epilog funkce */
 }
 // 22F43: control flows out of bounds to 23D99
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -14800,7 +14988,7 @@ LABEL_8:
     v20[v17] = v18;
   }
   sub_586D4(v20, v13);
-  JUMPOUT(0x23D99);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D99 je epilog funkce */
 }
 // 230B1: control flows out of bounds to 23D99
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -14849,7 +15037,7 @@ void sub_2310C( int a1)
         v2 = j;
     }
   }
-  JUMPOUT(0x23D9A);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D9A je epilog funkce */
 }
 // 231AF: control flows out of bounds to 23D9A
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -15159,7 +15347,7 @@ void sub_23563()
         byte_19ACB2 = v15;
       }
 LABEL_51:
-      JUMPOUT(0x23D99);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x23D99 je epilog funkce */
     }
     v4 = *(_BYTE *)(dword_19306C + 113 * i + 56);
     if ( v4 < 8u )

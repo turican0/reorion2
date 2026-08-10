@@ -710,7 +710,7 @@ void sub_896A7( int a1, int a2)
       v12 = 1;
     }
   }
-  JUMPOUT(0x82ABB);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x82ABB je epilog funkce */
 }
 // 897C7: control flows out of bounds to 82ABB
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -1094,7 +1094,7 @@ void sub_89DF9( int a1, int a2)
     word_19998C = v4;
     word_199990 = (int16_t)v6;
   }
-  JUMPOUT(0x82ABB);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x82ABB je epilog funkce */
 }
 // 89F62: control flows out of bounds to 82ABB
 // 89E0D: variable 'v3' is possibly undefined
@@ -1221,7 +1221,7 @@ void sub_8A0B7( int a1)
     }
     ++v3;
   }
-  JUMPOUT(0x83CFF);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x83CFF je epilog funkce */
 }
 // 8A154: control flows out of bounds to 83CFF
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -1496,7 +1496,7 @@ void sub_8A571()
     LOWORD(v6) = v6 + 1;
   }
   *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 3703) = 0;
-  JUMPOUT(0x83CFF);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x83CFF je epilog funkce */
 }
 // 8A6BD: control flows out of bounds to 83CFF
 // 8A667: variable 'v1' is possibly undefined
@@ -1880,7 +1880,7 @@ void sub_8AB6D()
   }
   sub_123E6C((int)unk_17CF00, 1);
   word_199A08 = 0;
-  JUMPOUT(0x8AB3C);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8AB3C je epilog funkce */
 }
 // 8AD7D: control flows out of bounds to 8AB3C
 // 8ACA2: variable 'v5' is possibly undefined
@@ -1951,7 +1951,7 @@ void sub_8AD82(int16_t *a1)
     sub_83411(&v12, 1, (int)v10);
   }
   byte_19C1A1 = 0;
-  JUMPOUT(0x8AB3C);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8AB3C je epilog funkce */
 }
 // 8AF49: control flows out of bounds to 8AB3C
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -2038,7 +2038,7 @@ void sub_8AF4E(int a1)
   word_19995E = (word_19995E + 1) % 8;
   sub_12B65C();
   sub_128BE7();
-  JUMPOUT(0x8AB3C);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8AB3C je epilog funkce */
 }
 // 8B176: control flows out of bounds to 8AB3C
 // 8B053: variable 'v2' is possibly undefined
@@ -2346,7 +2346,7 @@ void sub_8B519()
     word_193016 = 1;
   sub_11C2F0();
   sub_119281();
-  JUMPOUT(0x8AB3C);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8AB3C je epilog funkce */
 }
 // 8B7A0: control flows out of bounds to 8AB3C
 // 8B5F0: variable 'v2' is possibly undefined
@@ -2724,7 +2724,7 @@ void sub_8BC39(int a1)
       }
     }
   }
-  JUMPOUT(0x8BBFC);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
 }
 // 8BE48: control flows out of bounds to 8BBFC
 // 8BC5E: variable 'v10' is possibly undefined
@@ -2828,7 +2828,7 @@ LABEL_11:
           sub_FE8DA((int)v10, 10);
         }
       }
-      JUMPOUT(0x8BBFC);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
     }
   }
   v5 = v4;
@@ -3109,7 +3109,7 @@ LABEL_40:
         ServiceAudioTick_FE8BE((int)v19, v10, v13, (int16_t *)a2);
         sub_1113CC(dword_192ED4, v10);
         sub_8DA07(v10, v13, (int16_t *)a2);
-        JUMPOUT(0x8BBFD);
+        return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFD je epilog funkce */
       }
       ServiceAudioTick_FE8BE((int)v19, v10, v13, (int16_t *)a2);
       v13 = 20;
@@ -3225,7 +3225,7 @@ void sub_8C567( int a1)
     if ( *(int16_t *)(dword_19306C + 113 * a1 + 2 * (int16_t)sub_FE8DA((int)v9, 5) + 74) == -1 )
       v4 = 1;
     if ( v4 )
-      JUMPOUT(0x8BBFC);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
   }
 }
 // 8C5D2: control flows out of bounds to 8BBFC
@@ -3898,7 +3898,7 @@ LABEL_11:
       {
         if ( (int16_t)i >= word_19999A )
 LABEL_43:
-          JUMPOUT(0x8CB8D);
+          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8CB8D je epilog funkce */
         word_19C2EC = i;
         ServiceAudioTick_FE8BE(i, v6, v5, v7);
         if ( dword_19C2CC == 1 )
@@ -4158,7 +4158,7 @@ void sub_8D602(int a1)
       *(_WORD *)(a1 + 2 * v5) = v6;
     }
     if ( (int16_t)++v3 >= 829 )
-      JUMPOUT(0x8BBFD);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFD je epilog funkce */
   }
 }
 // 8D658: control flows out of bounds to 8BBFD
@@ -4197,7 +4197,7 @@ void sub_8D687()
     qmemcpy(v1, v0, 5u);
   }
   while ( (int16_t)v3 < 12 );
-  JUMPOUT(0x8BBFC);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
 }
 // 8D6D1: control flows out of bounds to 8BBFC
 // 8D6BF: variable 'v2' is possibly undefined
@@ -4384,7 +4384,7 @@ void sub_8D8A1( int a1)
     }
     ++v1;
   }
-  JUMPOUT(0x8BBFC);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
 }
 // 8DA02: control flows out of bounds to 8BBFC
 // 8BB48: using guessed type wchar_t asc_8BB48[3];
@@ -4445,7 +4445,7 @@ void sub_8DA07(int a1, int a2, int16_t *a3)
       while ( v5 < 4 );
     }
   }
-  JUMPOUT(0x8BBFC);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
 }
 // 8DAD3: control flows out of bounds to 8BBFC
 // 8DA36: variable 'v4' is possibly undefined
@@ -4781,7 +4781,7 @@ LABEL_13:
       {
         if ( byte_199F0D )
           sub_8D8A1(v72);
-        sub_EB87D();
+        sub_EB87D(45);   /* vlna 79: asm `mov eax, 2Dh` pred volanim */
         sub_EBD80();
         if ( (_BYTE)v43 )
         {
@@ -5437,7 +5437,7 @@ void sub_8EBBB( int a1)
   while ( (int16_t)v3 < 8 );
   sub_120BB5(a1, (int)v6);
   word_1B3E86 = v2;
-  JUMPOUT(0x8E803);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E803 je epilog funkce */
 }
 // 8EBF9: control flows out of bounds to 8E803
 // 1B3E86: using guessed type int16_t word_1B3E86;
@@ -5784,7 +5784,7 @@ void sub_8F328( int a1, int a2, int a3, int a4, int a5, _WORD *a6)
         *((_BYTE *)a6 + j + i * v10 + 16) = a5;
     }
   }
-  JUMPOUT(0x8F322);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8F322 je epilog funkce */
 }
 // 8F397: control flows out of bounds to 8F322
 
@@ -6012,7 +6012,7 @@ void sub_8F653(int a1, int a2, int a3, int a4, int a5, int a6)
     if ( v13 < v14[v12] )
       v13 = v14[v12];
     if ( ++v12 >= 4 )
-      JUMPOUT(0x8F322);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8F322 je epilog funkce */
   }
 }
 // 8F6DA: control flows out of bounds to 8F322
@@ -6061,7 +6061,7 @@ int16_t sub_8F72D(int a1, _WORD *a2, _WORD *a3, _WORD *a4, _WORD *a5, _WORD *a6,
 void sub_8F76D(int a1)
 {
   sub_111660(a1);
-  JUMPOUT(0x8E803);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E803 je epilog funkce */
 }
 // 8F7D2: control flows out of bounds to 8E803
 
@@ -6117,7 +6117,7 @@ void sub_8F7DF( int a1)
         byte_1B3E7C[v10] = v11;
       }
       while ( (int16_t)v9 < 8 );
-      JUMPOUT(0x8EC6A);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8EC6A je epilog funkce */
     }
   }
 }
@@ -6335,7 +6335,7 @@ LABEL_11:
   while ( *v8 );
   strcpy(v8, aDat);
   sub_132F5C((int)a1);
-  JUMPOUT(0x8E987);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E987 je epilog funkce */
 }
 // 8FACA: control flows out of bounds to 8E987
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
@@ -6403,7 +6403,7 @@ void sub_8FB79()
     if ( (int16_t)v0 >= 8 )
     {
       sub_6497C();
-      JUMPOUT(0x8E803);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E803 je epilog funkce */
     }
   }
 }
@@ -6437,7 +6437,7 @@ void sub_8FBEF(char *a1, char *a2)
     }
   }
   a1[v4] = 0;
-  JUMPOUT(0x8E987);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E987 je epilog funkce */
 }
 // 8FC7D: control flows out of bounds to 8E987
 
@@ -6658,7 +6658,7 @@ void sub_8FE88(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int16_t *
     }
     ++a2;
   }
-  JUMPOUT(0x8F4B4);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8F4B4 je epilog funkce */
 }
 // 8FF03: control flows out of bounds to 8F4B4
 // 8FEA2: variable 'v11' is possibly undefined
@@ -6690,7 +6690,7 @@ void sub_8FF08( int a1, int a2, int a3, int a4, int a5, int a6, int16_t *a7)
     }
     ++a2;
   }
-  JUMPOUT(0x8F542);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8F542 je epilog funkce */
 }
 // 8FF79: control flows out of bounds to 8F542
 
@@ -6723,7 +6723,7 @@ void sub_8FF7E( int a1, int a2, int a3, int a4, int a5, int a6, unsigned int a7,
         *v13 = a6 + v14;
     }
   }
-  JUMPOUT(0x8FD1B);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8FD1B je epilog funkce */
 }
 // 8FFF3: control flows out of bounds to 8FD1B
 
@@ -6872,7 +6872,7 @@ void sub_90184( int a1, int a2, int a3, int a4, unsigned int a5, unsigned int a6
     sub_134D2D(v10, i, v7, i, v9);
     ++v12;
   }
-  JUMPOUT(0x8F542);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8F542 je epilog funkce */
 }
 // 90236: control flows out of bounds to 8F542
 // 9021A: variable 'v10' is possibly undefined
@@ -6942,7 +6942,7 @@ void sub_90371( int a1, int a2, int a3, int a4, int a5, int a6,
       v11 = sub_11438B(v13, v14, v13 + 5, v14 + 5, &unk_179A78, 41);
     *(_WORD *)(a10 + 2 * i) = v11;
   }
-  JUMPOUT(0x9042A);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x9042A je epilog funkce */
 }
 // 90424: control flows out of bounds to 9042A
 // 19999A: using guessed type int16_t word_19999A;
@@ -7259,7 +7259,7 @@ void sub_90945( int a1, int a2)
       v9);
   }
   while ( (int16_t)v4 < 5 );
-  JUMPOUT(0x909A9);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x909A9 je epilog funkce */
 }
 // 909A7: control flows out of bounds to 909A9
 // FE8D5: using guessed type int _wcpp_1_unwind_leave(_DWORD, _DWORD, char *, ...);
@@ -7520,7 +7520,7 @@ void sub_90C4F(
         }
       }
 LABEL_61:
-      JUMPOUT(0x9036B);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x9036B je epilog funkce */
     }
     v21 = 113 * k + dword_19306C;
     v22 = v41 * *(int16_t *)(v21 + 15);
@@ -7789,7 +7789,7 @@ LABEL_6:
         word_1992E8[v11] = v12;
       }
       while ( (int16_t)v10 < 5 );
-      JUMPOUT(0x905FF);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x905FF je epilog funkce */
     }
   }
 }
@@ -8152,7 +8152,7 @@ void sub_919A4()
     ++v0;
     word_192FDE[v4] = word_1992C0[v5];
     if ( v0 >= 5 )
-      JUMPOUT(0x905FF);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x905FF je epilog funkce */
   }
 }
 // 91A3B: control flows out of bounds to 905FF
@@ -8845,7 +8845,7 @@ void sub_92457( int a1)
     }
     ++v3;
   }
-  JUMPOUT(0x91F0D);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x91F0D je epilog funkce */
 }
 // 9259D: control flows out of bounds to 91F0D
 // 9248F: variable 'v2' is possibly undefined
@@ -9290,7 +9290,7 @@ void sub_92D72( int a1)
   byte_19C543 = 0;
   sub_1191CA((int)sub_93550, 1);
   byte_199F11 = 1;
-  JUMPOUT(0x94801);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94801 je epilog funkce */
 }
 // 92E6D: control flows out of bounds to 94801
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -9876,7 +9876,7 @@ LABEL_36:
   if ( !((uint8_t)byte_19C546 % 5) )
     byte_19C548 += byte_19C547;
   word_19995E = (word_19995E + 1) % 8;
-  JUMPOUT(0x92E66);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x92E66 je epilog funkce */
 }
 // 93A19: control flows out of bounds to 92E66
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -9956,7 +9956,7 @@ void sub_93A1E()
   if ( word_19994C )
     word_19994C = 0;
   sub_124D41();
-  JUMPOUT(0x94800);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94800 je epilog funkce */
 }
 // 93B60: control flows out of bounds to 94800
 // 1930DC: using guessed type int dword_1930DC;

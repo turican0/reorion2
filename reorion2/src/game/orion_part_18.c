@@ -121,7 +121,7 @@ void sub_10CFD7(int a1)
     }
     while ( (int16_t)v3 < (int)*(uint16_t *)(a1 + 12) );
   }
-  JUMPOUT(0x10BDE6);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10BDE6 je epilog funkce */
 }
 // 10D03C: control flows out of bounds to 10BDE6
 
@@ -990,7 +990,7 @@ LABEL_63:
     }
     while ( (int16_t)v41 < 8 );
     sub_1196F7();
-    JUMPOUT(0x10E6C1);
+    return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10E6C1 je epilog funkce */
   }
   v31 = sub_113E65();
   v32 = 639;
@@ -1641,7 +1641,7 @@ void sub_10ED00(int a1)
     }
     while ( v3 < (int)*(uint8_t *)(a1 + 107) );
   }
-  JUMPOUT(0x10E6C0);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10E6C0 je epilog funkce */
 }
 // 10EE6A: control flows out of bounds to 10E6C0
 // 13C896: using guessed type int stricmp(_DWORD, _DWORD);
@@ -1745,7 +1745,7 @@ void sub_10EFC3(int16_t *a1)
     ++v1;
     a1 += 196;
     if ( v1 >= 8u )
-      JUMPOUT(0x10E6C1);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10E6C1 je epilog funkce */
   }
 }
 // 10F070: control flows out of bounds to 10E6C1
@@ -1908,7 +1908,7 @@ void sub_10F089()
     v27 += 392;
     v21 += 392;
     if ( (uint16_t)v29 >= 8u )
-      JUMPOUT(0x10EC8A);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10EC8A je epilog funkce */
   }
 }
 // 10F404: control flows out of bounds to 10EC8A
@@ -1956,7 +1956,7 @@ void sub_10F409(int a1, _WORD **a2)
     ++a2;
     v2 += 392;
     if ( v6 >= 8u )
-      JUMPOUT(0x10EFA3);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10EFA3 je epilog funkce */
   }
 }
 // 10F496: control flows out of bounds to 10EFA3
@@ -1992,7 +1992,7 @@ void sub_10F49B(int a1, unsigned int a2)
     if ( !v4 )
     {
       *(_BYTE *)(v10 + 21) = v13;
-      JUMPOUT(0x10EFA3);
+      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10EFA3 je epilog funkce */
     }
     v5 = *(_BYTE *)(v4 + dword_192BD8 + 196);
     *(_BYTE *)(v3 + 71) = v4;
@@ -2112,7 +2112,7 @@ void sub_10F62F(int a1, int a2)
   sub_1192A9();
   sub_119441();
   sub_1172FC();
-  JUMPOUT(0x10EFA3);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10EFA3 je epilog funkce */
 }
 // 10F76D: control flows out of bounds to 10EFA3
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -2314,7 +2314,7 @@ void sub_10F9E0( int a1, int a2)
       break;
     --a1;
   }
-  JUMPOUT(0x10F939);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10F939 je epilog funkce */
 }
 // 10F9F4: control flows out of bounds to 10F939
 

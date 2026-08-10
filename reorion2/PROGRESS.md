@@ -8511,3 +8511,102 @@ Ve stejnem tahu i sesterske `HIWORD(dword_184532)` -> `(int16_t)HIDWORD(qword_18
 - `sub_12479` je porad `DECOMP_TODO` pahyl - bez ni hra po vyberu rasy
   nezacne. Za tim na ceste Custom pad (zapis na 0xD05000).
 - 25 zbylych `&ukazatel + 3`; 13 volajicich `sub_103915` s `SUB_103915_TODO`.
+
+### Vlna 79: hra se po vyberu barvy vlajky uz SPUSTI (a dojde az k tabulce technologii)
+
+Uzivatel: "kdyz vyberu barvu hrace, tak to nepokracuje dal, ale vraci se to na
+vyber rasy". Priciny byly TRI, vsechny nezavisle.
+
+#### 1. `sub_12479` byla PRAZDNY PAHYL - rekonstruovana z asm
+
+To je funkce, ktera HRU SPOUSTI (generovani vesmiru + prechod do stavu 39).
+IDA to vzdala ("call analysis failed", funcsize=170) a nechala `DECOMP_TODO`.
+Dokud byla prazdna, stav se po vyberu barvy nezmenil, `sub_1049B` se v case 13
+zatocil zpatky na NEW GAME / vyber rasy - presne to, co uzivatel videl.
+
+Rekonstruovano z 0x12479..0x1279A (linearni retez ~70 volani + jedna smycka
+`do { sub_8DAE8(); di = sub_7B8CD(); ... } while (!di)`).
+
+**Registrove argumenty** (v prologu `push eax / push edx / push ebx`,
+pak `mov word_191998, cx`). Vsechna CTYRI volani v asm (main__0+2B8,
+sub_1049B+154, sub_628E2, sub_FB7E5) plni registry stejne:
+`eax=byte_199CB0, edx=byte_199CB2, ebx=byte_199CB3, ecx=byte_199CB1`
++ push `byte_199CB5`, push `byte_199CB4`. Vsechna ctyri volani v portu mela
+misto toho dvouargumentovou verzi se SPATNYMI hodnotami - opraveno.
+`sub_169410` (wrapper z neprelozene oblasti orion_part_26, adresa 0x169410 v
+asm dumpu vubec neni) uz se nepouziva.
+
+Pri tom vypadly dalsi dva stejne vzory:
+
+- **`sub_7B8CD` vraci 0/1**, ne `void` - asm ma `xor eax, eax / jmp
+  locret_7BF57` (vycerpane pokusy) a `mov eax, 1 / jmp locret_7BF57` (hotovo).
+  IDA obe slila do jednoho NO-OP `JUMPOUT`, takze `sub_12479` nemel podle ceho
+  poznat, jestli ma generovani opakovat.
+- **`sub_EB87D` ma registrovy argument v EAX** (asm `push eax` v prologu, telo
+  ho cte jako `[ebp+82h+var_B0]`); IDA z nej udelala neinicializovanou lokalku
+  `v8`. Oba volajici predavaji `mov eax, 2Dh` = 45.
+
+Dale: `memset(word_199174, 0, 0x42)` je v originale JEDEN souvisly 66bajtovy
+blok 0x199174..0x1991B5 (dalsi symbol je az `word_1991B6`), ktery IDA rozsekala
+na jedenact promennych. V portu se nuluji jednotlive - nic pres ten blok
+neindexuje, takze efekt je stejny a nebylo nutne ho slucovat do pole.
+
+#### 2. Retez chybejicich `return` - 652 mist naraz
+
+Po zprovozneni `sub_12479` hra zamrzla v `sub_1307F` a pak spadla v
+`sub_10011B` (zapis na 0x18155865, tesne pod sousedni alokaci). Oboje mela
+STEJNOU pricinu: `JUMPOUT(0xNNNN)` je v `decomp_compat.h` NO-OP, takze se
+`while (1)` nikdy neukoncil.
+
+Na to uz v repu byl nastroj z vlny 58 - `tools/jumpout_scan.py` porovna cil
+kazdeho `JUMPOUT` s asm a rekne, jestli je to epilog funkce, nebo skutecny
+skok. Cerstvy beh: **675 EPILOG**, 442 skutecny skok, 24 cil nenalezen,
+5 pokracuje jinam.
+
+Vsech **652 mist typu EPILOG ve `void` funkcich** nahrazeno za `return;`
+(zbyle 23 jsou v nevoid funkcich nebo `JUMPOUT` neni na samostatnem radku -
+ty se musi resit rucne, protoze potrebuji navratovou HODNOTU).
+
+**Regresni brana po teto davkove zmene: 600/600 matched, 0 diverged** a
+obrazovka SELECT RACE vcetne opravy z vlny 78 se kresli dal spravne.
+
+#### 3. Stav: hra se spousti, ale chybi DATA tabulky technologii
+
+Cesta ted dojde az sem:
+
+    sub_12479 -> sub_12983 -> sub_5E55F -> sub_1247A0(0)
+    SEH 0xC0000094 (deleni nulou)
+
+`sub_5E55F` pocita `v29` = kolik nenulovych polozek je v `word_17D90E`
+(tabulka 74 zaznamu po 23 B) a pak vola generator nahodnych cisel
+`sub_1247A0(v29)`. Zmereno: `v10=1, v29=0` a tabulka je cela nulova.
+
+Jedina funkce, ktera `word_17D90E` plni, je `sub_5E1E3`, a ta cte
+`*(int16_t *)((char *)&word_17E07F + 13 * i)` pro i = 0..211, tedy
+**13bajtove zaznamy stromu technologii** na 0x17E07F..0x17EB2A (2732 B).
+
+**V portu je ten blok deklarovany spravne velky, ale VYNULOVANY**
+(`int16_t word_17E07F[1366] = { 0 };`, `char byte_17E085[2730] = { 0 };`),
+zatimco v originale je to INICIALIZOVANA DATA - v asm dumpu je od 0x176085
+videt obsah (`dd offset unk_170A04 / db 1 / db 0 / db 31h / ...`).
+
+Tohle uz **neni chyba dekompilatoru, ale chybejici prenos statickych dat** a
+zaznamy obsahuji UKAZATELE (`dd offset ...`), takze je nelze prenest jako
+syrove bajty - potrebuji v portu strukturu s realnymi ukazateli. To je prace
+na samostatnou vlnu.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- SELECT RACE, popis pod portretem i obrazovka vlastnosti rasy se kresli dal
+  spravne (davkova zmena je nerozbila);
+- vsechna docasna instrumentace odstranena.
+
+#### CO ZBYVA
+
+- **Prenest data stromu technologii** 0x17E07F..0x17EB2A (212 zaznamu po 13 B
+  vcetne ukazatelu) - bez nich hra nedojde za `sub_12983`.
+- 23 zbylych `JUMPOUT` typu EPILOG v nevoid funkcich (potrebuji navratovou
+  hodnotu z asm).
+- 25 zbylych `&ukazatel + 3`; 13 volajicich `sub_103915` s `SUB_103915_TODO`.

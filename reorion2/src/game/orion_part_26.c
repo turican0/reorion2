@@ -3319,10 +3319,16 @@ int sub_1693B6()
 
 
 //----- (00169410) --------------------------------------------------------
+// PORT (vlna 79): jediny volajici (sub_1049B) v asm vola `sub_12479` PRIMO
+// se sesti argumenty - tenhle wrapper je artefakt IDA v neprelozene oblasti
+// orion_part_26 (adresa 0x169410 v asm dumpu vubec neni). Zustava jen jako
+// zaslepka, aby se nezmenil seznam symbolu; nikdo ho uz nevola.
 int sub_169410(int a1, int a2)
 {
+  (void)a1;
+  (void)a2;
   GetGameFlagsTable_F4B81();
-  return sub_12479(a1, a2);
+  return 0;
 }
 // 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD);
 

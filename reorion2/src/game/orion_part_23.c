@@ -5480,7 +5480,7 @@ void sub_15BA8A(int a1, int a2)
   LODWORD(v14) = v12;
   HIDWORD(v14) = v13 >> 31;
   sub_141227(*(_DWORD *)(a1 + 4 * a2 + 1172), v14 / v9);
-  JUMPOUT(0x15BA84);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x15BA84 je epilog funkce */
 }
 // 15BB8F: control flows out of bounds to 15BA84
 // 15B614: using guessed type int dword_15B614[];
@@ -6870,7 +6870,7 @@ void sub_15E37C(unsigned int a1, int a2, uint8_t *a3, int a4)
       break;
     hr_writegsbyte(a1++, *a3++);
   }
-  JUMPOUT(0x15E375);
+  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x15E375 je epilog funkce */
 }
 // 15E390: control flows out of bounds to 15E375
 
