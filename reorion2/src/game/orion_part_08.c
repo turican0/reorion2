@@ -4453,6 +4453,7 @@ void sub_8DA07(int a1, int a2, int16_t *a3)
   int v7; // [esp+4h] [ebp-Ch]
   int16_t i; // [esp+8h] [ebp-8h]
   char v9; // [esp+Ch] [ebp-4h]
+  void *pSpr = 0;   /* vlna 85: skutecny ukazatel na sprite hvezdy */
 
   v9 = 1;
   for ( i = 0; ; ++i )
@@ -4476,18 +4477,21 @@ void sub_8DA07(int a1, int a2, int16_t *a3)
         {
           v6 = 16 * i;
           a2 = dword_192EF0;
+          // vlna 85: bajtovy offset `16*i + 4*v5` = INDEX `4*i + v5`; tabulka
+          // je ted pole skutecnych ukazatelu (viz orion_data.c).
           if ( v9 )
           {
-            a1 = (int)sub_126AFD((int)aStarbgLbx_0, (int16_t)a3, dword_192EF0);
+            pSpr = sub_126AFD((int)aStarbgLbx_0, (int16_t)a3, dword_192EF0);
             v4 = v6 + 4 * v5;
             v9 = 0;
           }
           else
           {
-            a1 = (int)sub_126B42((int)aStarbgLbx_0, (int16_t)a3, dword_192EF0);
+            pSpr = sub_126B42((int)aStarbgLbx_0, (int16_t)a3, dword_192EF0);
             v4 = v6 + 4 * v5;
           }
-          *(int *)((char *)dword_190298 + v4) = a1;
+          a1 = (int)(intptr_t)pSpr;
+          dword_190298[4 * i + v5] = pSpr;
         }
         ++v7;
         ++v5;

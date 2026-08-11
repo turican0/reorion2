@@ -8998,3 +8998,66 @@ je - vypis zasobniku s cisly radku najde smycku okamzite. Vyplati se sahnout
 po nem driv nez po docasnych `PortDebug_Checkpoint`.
 
 Regresni brana se v teto vlne na pokyn uzivatele nespoustela.
+
+### Vlna 85: generovani cele probehne, hra dojde na obrazovku herni mapy
+
+Uzivatel poslal RangeChecks pad v `sub_792C3` a pozdeji "konci to cernou
+obrazovkou". Tri nalezy, vsechny stara znama trida "IDA rozsekala souvisly
+blok" + "duplicitni skalar v link_stubs.c".
+
+#### 1. `sub_792C3` - tri rozsekane bloky (RangeChecks)
+
+| symbol | bylo | ma byt | pristup |
+|---|---|---|---|
+| `word_192FDE` | `[]` (+ duplicitni `int` v link_stubs.c) | `[57]` = 5 zaznamu po 28 B | `word_192FDE[14*i]`, i<5 |
+| `word_192FE4` / `word_192FE6` | `[]` (+ duplicity) | makro `word_192FDE + 3` / `+ 4` | tyz krok |
+| `word_1992C0` | `[]` (+ duplicitni skalar) | `[5]`, ostatni ctyri jako makra | `word_1992C0[i]`, i<5 |
+| `word_199BCD` / `byte_199BCF` | skalar / `[4]` | blok 15 B = 5 zaznamu po 3 B | `&word_199BCD + 3*i`, `byte_199BCF[3*i]` |
+
+Zapis na index 56 do ctyrbajtoveho objektu spustil instrumentaci RangeChecks
+(`__report_rangecheckfailure` ze `sub_792C3`). Duplicitni definice v
+`link_stubs.c` jsou tataz chyba, kterou popisuje uz vlna 73.
+
+#### 2. `word_1906C8` byl v `link_stubs.c` deklarovany jako FUNKCE
+
+`int word_1906C8(void) { return 0; }` - pritom je to POLE pozic hvezd na mape
+(zaznam 12 B: `word_1906C8[6*i]` = x, `word_1906CA[6*i]` = y). Kolize jmena
+s polem v `orion_data.c`; navic `word_1906CA` uz mel spravnych 3427 prvku, ale
+`word_1906C8` zustal neurcity. Zmereno: zapis na 0x2149DF UVNITR modulu.
+Opraveno na `word_1906C8[3428]` + makro `word_1906CA = word_1906C8 + 1`.
+
+#### 3. `dword_190298` - tabulka spritu hvezd s 4bajtovymi ukazateli
+
+`sub_EB9C8` cetla `(int16_t *)dword_1902A4[4*v3]` a dostala NULL.
+`dword_188298` a `dword_1882A4` jsou v originale TYZ blok (12 B od sebe),
+12 hvezd po 4 polozkach. V portu byl rozdeleny, `dword_190298` mel neurcitou
+velikost a jeste duplicitni skalar v `link_stubs.c`.
+
+Navic jde o UKAZATELE ulozene ve 4bajtovych slotech (zapis
+`*(int *)((char *)dword_190298 + v4) = (int)sub_126B42(...)`), coz se na x64
+orezava. Vsechna tri pristupova mista indexuji po prvcich
+(`4*hvezda + varianta`), takze z toho je rovnou **pole ukazatelu**
+`void *dword_190298[48]` a `dword_1902A4` je makro `+ 3`. Bajtovy offset
+`16*i + 4*v5` v zapisu prepsan na index `4*i + v5`.
+
+#### Stav
+
+`sub_12479` (generovani vesmiru) ted probehne **cela** a hra prejde do stavu
+39, tedy na `sub_8B956` - obrazovku herni mapy. Ta se ale jeste nevykresli:
+zustane prazdny herni ramecek a beh spadne dal v retezu kresleni. Posledni
+zmerene misto:
+
+    sub_1049B -> sub_86188 -> sub_84555 -> sub_120BB5
+    SEH 0xC0000005, cteni z NULL
+
+`sub_120BB5` je nastaveni barevne rampy textu - dostava NULL ukazatel, takze
+dalsi krok je stejna trida jako `unk_19C338` ve vlne 81 (rampa, kterou nekdo
+neinicializoval, nebo dalsi rozsekany blok).
+
+#### Poznamka k metode
+
+Cerna obrazovka = hra uz je na spravne obrazovce, jen jeji kresleni pada.
+`REORION2_WATCHDOG` na to nestaci (pad neni smycka) - tady pomaha SEH vypis
+se zasobnikem, ktery port dela sam.
+
+Regresni brana se v teto vlne na pokyn uzivatele nespoustela.

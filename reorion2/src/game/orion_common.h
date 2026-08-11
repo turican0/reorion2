@@ -18020,8 +18020,8 @@ extern int dword_18FEF8[32];
 extern int16_t word_18FF78;
 extern int16_t word_190178[72];
 extern int16_t word_190208[72];
-extern int dword_190298[];
-extern int dword_1902A4[45];
+extern void *dword_190298[48];   /* vlna 85 */
+#define dword_1902A4  (dword_190298 + 3)   /* vlna 85 */
 extern int dword_190358[54];
 extern int dword_190430[];
 extern int dword_190434;
@@ -18062,8 +18062,8 @@ extern int16_t word_1906C0[];
 extern int16_t word_1906C2[];
 extern int16_t word_1906C4[];
 extern int16_t word_1906C6[];
-extern int16_t word_1906C8[];
-extern int16_t word_1906CA[3427];
+extern int16_t word_1906C8[3428];   /* vlna 85 */
+#define word_1906CA  (word_1906C8 + 1)   /* vlna 85 */
 extern int dword_192190[32];   /* vlna 73 */
 #define dword_19220C (dword_192190[31])
 extern int dword_192210[6];    /* vlna 73 */
@@ -18410,11 +18410,11 @@ extern int dword_192F08;
 extern int dword_192F10;
 extern int dword_192FD8;
 extern int16_t word_192FDC[];
-extern int16_t word_192FDE[];
+extern int16_t word_192FDE[57];   /* vlna 85: 5 zaznamu po 28 B */
 extern int16_t word_192FE0[];
 extern int16_t word_192FE2[];
-extern int16_t word_192FE4[];
-extern int16_t word_192FE6[];
+#define word_192FE4  (word_192FDE + 3)   /* vlna 85: +6 v zaznamu */
+#define word_192FE6  (word_192FDE + 4)   /* vlna 85: +8 v zaznamu */
 extern int16_t word_192FE8[];
 extern int16_t word_192FEA[];
 extern int16_t word_192FEC[];
@@ -18617,11 +18617,11 @@ extern int16_t word_1992B8;
 extern int16_t word_1992BA;
 extern int16_t word_1992BC;
 extern int16_t word_1992BE;
-extern int16_t word_1992C0[];
-extern int16_t word_1992C2;
-extern int16_t word_1992C4;
-extern int16_t word_1992C6;
-extern int16_t word_1992C8;
+extern int16_t word_1992C0[5];   /* vlna 85 */
+#define word_1992C2  (word_1992C0[1])   /* vlna 85 */
+#define word_1992C4  (word_1992C0[2])   /* vlna 85 */
+#define word_1992C6  (word_1992C0[3])   /* vlna 85 */
+#define word_1992C8  (word_1992C0[4])   /* vlna 85 */
 extern int16_t word_1992D4[10];
 extern int16_t word_1992E8[5];
 extern char byte_1992F2[10];
@@ -18901,10 +18901,12 @@ extern char byte_199BC9;
 extern char byte_199BCA;
 extern char byte_199BCB;
 extern char byte_199BCC;
-extern int16_t word_199BCD;
-extern char byte_199BCF[4];
-extern int16_t word_199BD3;
-extern char byte_199BD5;
+// vlna 85: pet zaznamu po 3 B (int16 + byte) - viz orion_data.c
+extern uint8_t blk_199BCD[15];
+#define word_199BCD  (*(int16_t *)(blk_199BCD + 0))
+#define byte_199BCF  ((char *)(blk_199BCD + 2))
+#define word_199BD3  (*(int16_t *)(blk_199BCD + 6))
+#define byte_199BD5  (*(char *)(blk_199BCD + 8))
 extern char byte_199E05[63];
 extern char byte_199E44[126];
 extern char byte_199EC2[];

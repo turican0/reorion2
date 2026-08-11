@@ -15505,8 +15505,16 @@ int dword_18FEF8[32]; // weak
 int16_t word_18FF78; // weak
 int16_t word_190178[72]; // weak
 int16_t word_190208[72]; // weak
-int dword_190298[]; // weak
-int dword_1902A4[45]; // weak
+// PORT (vlna 85): TABULKA SPRITU HVEZD - 12 hvezd po 4 polozkach.
+// V originale jsou to 4bajtove sloty s ukazateli (`dword_188298` a
+// `dword_1882A4` = tyz blok, jen o 12 B dal). V portu byl blok rozdeleny na
+// dva symboly, `dword_190298` mel neurcitou velikost a `link_stubs.c` k nemu
+// mel jeste duplicitni skalar - `sub_EB9C8` pak cetla NULL a padala.
+// Na x64 se 8bajtovy ukazatel do 4bajtoveho slotu nevejde, takze je z toho
+// rovnou pole UKAZATELU; vsechna tri pristupova mista indexuji po prvcich
+// (`4*hvezda + varianta`), takze zmena kroku nicemu nevadi.
+void *dword_190298[48]; // weak
+/* vlna 85: makro do dword_190298 (+3 prvky) */
 int dword_190358[54]; // weak
 int dword_190430[]; // weak
 int dword_190434; // weak
@@ -15547,8 +15555,13 @@ int16_t word_1906C0[]; // weak
 int16_t word_1906C2[]; // weak
 int16_t word_1906C4[]; // weak
 int16_t word_1906C6[]; // weak
-int16_t word_1906C8[]; // weak
-int16_t word_1906CA[3427]; // weak
+// PORT (vlna 85): SOUVISLY BLOK pozic hvezd na mape, zaznam 12 B
+// (`word_1906C8[6*i]` = x, `word_1906CA[6*i]` = y). IDA ho rozdelila na dva
+// symboly 2 B od sebe; `word_1906CA` uz mel spravnych 3427 prvku, ale
+// `word_1906C8` zustal neurcity (1 prvek) a v `link_stubs.c` byl navic
+// jako FUNKCE. Zapis `word_1906C8[6*i]` proto letel mimo.
+int16_t word_1906C8[3428]; // weak - 6856 B
+/* vlna 85: makro do word_1906C8 (+2 B) - viz orion_common.h */
 // PORT (vlna 73): tri souvisle bloky, ktere IDA rozdelila na skalary.
 // Rozvrzeni z asm: 18A190 + 4*31 = 18A20C (dword_19220C je prvek 31),
 // 18A210..18A224 je sest dwordu a 18A228..18A244 osm dwordu (vsechny je
@@ -15877,11 +15890,17 @@ int dword_192F08; // weak
 int dword_192F10; // weak
 int dword_192FD8; // weak
 int16_t word_192FDC[]; // weak
-int16_t word_192FDE[]; // weak
+// PORT (vlna 85): SOUVISLY BLOK 5 ZAZNAMU PO 28 B (0x192FDE..0x19304F).
+// `sub_792C3` i `sub_797DD` do nej pisou pres krok 14 int16
+// (`word_192FDE[14*i]`, `word_192FE4[14*i]`, `word_192FE6[14*i]` pro i<5).
+// IDA blok rozsekala na ~44 samostatnych promennych a `link_stubs.c` mel
+// navic duplicitni skalary, takze pole melo 4 B a zapis na index 56 spustil
+// RangeChecks (zmereno: __report_rangecheckfailure z sub_792C3).
+int16_t word_192FDE[57]; // weak - 114 B
 int16_t word_192FE0[]; // weak
 int16_t word_192FE2[]; // weak
-int16_t word_192FE4[]; // weak
-int16_t word_192FE6[]; // weak
+/* vlna 85: pole +6 tehoz zaznamu - makro do word_192FDE (viz orion_common.h) */
+/* vlna 85: pole +8 tehoz zaznamu - makro do word_192FDE */
 int16_t word_192FE8[]; // weak
 int16_t word_192FEA[]; // weak
 int16_t word_192FEC[]; // weak
@@ -16084,11 +16103,14 @@ int16_t word_1992B8; // weak
 int16_t word_1992BA; // weak
 int16_t word_1992BC; // weak
 int16_t word_1992BE; // weak
-int16_t word_1992C0[]; // weak
-int16_t word_1992C2; // weak
-int16_t word_1992C4; // weak
-int16_t word_1992C6; // weak
-int16_t word_1992C8; // weak
+// PORT (vlna 85): pet po sobe jdoucich int16 (0x1992C0..0x1992C9), ktere
+// `sub_792C3` cte jako `word_1992C0[i]` pro i<5. IDA je rozsekala na pet
+// skalaru a link_stubs.c mel jeste duplicitni definici.
+int16_t word_1992C0[5]; // weak
+/* vlna 85: makro do word_1992C0 */
+/* vlna 85: makro do word_1992C0 */
+/* vlna 85: makro do word_1992C0 */
+/* vlna 85: makro do word_1992C0 */
 int16_t word_1992D4[10]; // weak
 int16_t word_1992E8[5]; // weak
 char byte_1992F2[10]; // weak
@@ -16368,10 +16390,13 @@ char byte_199BC9; // weak
 char byte_199BCA; // weak
 char byte_199BCB; // weak
 char byte_199BCC; // weak
-int16_t word_199BCD; // weak
-char byte_199BCF[4]; // weak
-int16_t word_199BD3; // weak
-char byte_199BD5; // weak
+// PORT (vlna 85): PET ZAZNAMU PO 3 B (0x199BCD..0x199BDB): int16 + byte.
+// `sub_792C3` do nich pise pres `(char *)&word_199BCD + 3*i` a
+// `byte_199BCF[3*i]` pro i<5.
+uint8_t blk_199BCD[15]; // weak
+/* vlna 85: makro do blk_199BCD */
+/* vlna 85: makro do blk_199BCD */
+/* vlna 85: makro do blk_199BCD */
 
 // State/settings block 0x199BDC..0x199E05 (553 B) - see TypeStateBlock_199BDC
 // in orion_common.h (wave 18). Replaces ~52 individual IDA globals.

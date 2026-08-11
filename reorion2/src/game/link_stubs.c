@@ -166,7 +166,7 @@ int dword_18F4B0;
 int dword_18F4C0;
 int dword_18F990;
 int dword_18F9B8;
-int dword_190298;
+/* vlna 85: duplicitni skalar - skutecne pole je v orion_data.c */
 int dword_190430;
 int dword_190448;
 int dword_190498;
@@ -438,7 +438,9 @@ int word_1906C0;
 int word_1906C2;
 int word_1906C4;
 int word_1906C6;
-int word_1906C8(void) { return 0; }
+/* vlna 85: `word_1906C8` NENI funkce, ale POLE pozic hvezd na mape -
+   zaslepka se stejnym jmenem kolidovala s definici v orion_data.c a odkaz
+   mohl skoncit v kodu (zmereno: zapis na 0x2149DF uvnitr modulu). */
 int word_19296C;
 int word_192B10;
 int word_192C80;
@@ -447,11 +449,11 @@ int word_192C84;
 int word_192C86;
 int word_192C88;
 int word_192FDC;
-int word_192FDE;
+/* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FDE */
 int word_192FE0;
 int word_192FE2;
-int word_192FE4;
-int word_192FE6;
+/* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FE4 */
+/* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FE6 */
 int word_192FE8;
 int word_192FEA;
 int word_192FEC;
@@ -467,7 +469,7 @@ int word_1931C0;
 int word_1931C2;
 int word_19918A;
 int word_1991B6;
-int word_1992C0;
+/* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_1992C0 */
 int word_19A020;
 int word_19A022;
 int word_19A0C8;
