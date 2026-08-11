@@ -9586,6 +9586,14 @@ int sub_100010(int a1, void *a2, int a3, int a4)
   char v11; // [esp+0h] [ebp-10h]
   int16_t i; // [esp+8h] [ebp-8h]
 
+  // PORT (vlna 87): `v11` ([ebp-10h]) je SPILLNUTE EAX, tedy `a1` - VLASTNIK
+  // lodi. asm: `enter 0Ch, 0 / push eax`. IDA z nej udelala neinicializovanou
+  // lokalku, takze se do zaznamu lodi na +99 (vlastnik) a +93 zapisovalo smeti
+  // a hra pak skoncila vlastni kontrolou `sub_77FF5`:
+  // "Memory Corruption! val == 3, ship_id == 63, owner == -37".
+  // Zmereno kontrolou vsech 500 zaznamu po kazde fazi `sub_12479`: pole bylo
+  // v poradku az do `sub_122CC`, ktera lodi vytvari.
+  v11 = (char)a1;
   for ( i = 0; i < 500; ++i )
   {
     v4 = 129 * i + dword_197F9C;

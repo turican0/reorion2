@@ -15889,14 +15889,15 @@ int dword_192F00; // weak
 int dword_192F08; // weak
 int dword_192F10; // weak
 int dword_192FD8; // weak
-int16_t word_192FDC[]; // weak
-// PORT (vlna 85): SOUVISLY BLOK 5 ZAZNAMU PO 28 B (0x192FDE..0x19304F).
-// `sub_792C3` i `sub_797DD` do nej pisou pres krok 14 int16
-// (`word_192FDE[14*i]`, `word_192FE4[14*i]`, `word_192FE6[14*i]` pro i<5).
-// IDA blok rozsekala na ~44 samostatnych promennych a `link_stubs.c` mel
-// navic duplicitni skalary, takze pole melo 4 B a zapis na index 56 spustil
-// RangeChecks (zmereno: __report_rangecheckfailure z sub_792C3).
-int16_t word_192FDE[57]; // weak - 114 B
+// PORT (vlna 88): blok zacina uz TADY, ne az u `word_192FDE` (vlna 85 ho
+// zacinala o 2 B pozdeji). Je to 5 ZAZNAMU PO 28 B = 140 B
+// (0x192FDC..0x193067) - `sub_797DD` dela `memset(word_192FDC, 0, 140)` a
+// ulozena hra `fread(word_192FDC, 28, 5, ...)`. Jako jednoprvkove pole to
+// pretekalo a v portu pritom prepsalo horni pulku `dword_192FD8`
+// (hvezdne datum), takze se na mape zobrazovalo -3053.-6 misto 3500.0
+// (0x88B8 = 35000, po prepsani 0xFFFF88B8 = -30536).
+int16_t word_192FDC[70]; // weak - 140 B
+/* vlna 88: makro do word_192FDC (+2 B) - viz vyse */
 int16_t word_192FE0[]; // weak
 int16_t word_192FE2[]; // weak
 /* vlna 85: pole +6 tehoz zaznamu - makro do word_192FDE (viz orion_common.h) */
@@ -16042,9 +16043,14 @@ int dword_1975C4; // weak
 int dword_1975C8; // weak
 int dword_1975CC; // weak
 int dword_1975D0; // weak
-int16_t word_1975D4; // weak
-int16_t word_1975D6; // weak
-char byte_1975D8[2496]; // weak
+// PORT (vlna 86): SEZNAM LODI - 500 zaznamu po 5 B (0x1975D4..0x197F97,
+// dalsi symbol je dword_197F98). Zaznam: int16 id planety, int16 dalsi
+// v seznamu, byte priznak. Kod indexuje pres `(char *)&word_1975D4 + 5*i`
+// a `byte_1975D8[5*i]`. V portu byly prvni dva symboly SKALARY, takze cteni
+// pro i > 0 slo mimo a hra hlasila vlastni kontrolou
+// "Memory Corruption! val == ..., ship_id == ..." (sub_77FF5, ktera prave
+// overuje rozsah 0..499).
+uint8_t blk_1975D4[2500]; // weak
 uint8_t* dword_197F98; // weak
 uint8_t* dword_197F9C; // weak
 int dword_197FA0[]; // weak

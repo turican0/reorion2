@@ -9061,3 +9061,70 @@ Cerna obrazovka = hra uz je na spravne obrazovce, jen jeji kresleni pada.
 se zasobnikem, ktery port dela sam.
 
 Regresni brana se v teto vlne na pokyn uzivatele nespoustela.
+
+### Vlna 86: HERNI MAPA SE VYKRESLUJE
+
+Dva nalezy, po kterych se hra poprve dostane na plne vykreslenou mapu galaxie.
+
+#### 1. `sub_84555` - barevna rampa z kodoveho segmentu + ztraceny argument
+
+Pad `sub_120BB5` na cteni z NULL. asm:
+
+```
+lea  edi, [ebp+var_8]
+mov  esi, offset dword_81C78
+movsd
+movsd                      ; OSM BAJTU -> lokalka var_8 = barevna rampa
+...
+mov  eax, 1
+call sub_120BB5            ; sub_120BB5(eax=1, edx=&var_8)
+```
+
+Dve chyby naraz:
+
+- `dword_81C78` je adresa v KODOVEM segmentu, ne datovy symbol. IDA z prvniho
+  dwordu udelala konstantu (0x0E0C0A00 - ta byla spravne), druhy nechala jako
+  cteni z navesti. Skutecne bajty z `Orion2.exe.lst`:
+  `dd 0E0C0A00h, 16141210h`, tedy rampa 00 0A 0C 0E 10 12 14 16.
+- Druhy argument volani IDA ztratila a napsala tam `SHIDWORD(v3)`, tedy horni
+  pulku navratove hodnoty `sprintf`. Ma to byt `&v14` - ukazatel na tu rampu.
+
+#### 2. `word_1975D4` - SEZNAM LODI byl skalar misto 500 zaznamu
+
+Uzivateluv pad koncil ve `sub_126487` (vlastni fatalni ukonceni hry) volanem
+ze `sub_77FF5`, jehoz hlaska je
+`"Memory Corruption! val == %d, ship_id == %d, owner == %d stardate = %ld"`.
+Ta funkce prave overuje, ze id lodi je v rozsahu 0..499.
+
+Blok 0x1975D4..0x197F97 je **500 zaznamu po 5 B** (int16 planeta, int16 dalsi
+v seznamu, byte priznak) - dalsi symbol je az `dword_197F98`, takze
+2500 B / 5 = 500 presne odpovida kontrole v `sub_77FF5`. Kod indexuje pres
+`(char *)&word_1975D4 + 5*i` a `byte_1975D8[5*i]`.
+
+V portu byly `word_1975D4` a `word_1975D6` SKALARY (jen `byte_1975D8` uz mel
+2496 B z drivejska), takze cteni pro i > 0 slo mimo a vracelo nesmyslna id.
+Slouceno do `blk_1975D4[2500]` s makry na +0/+2/+4.
+
+#### Stav - HRA SE ROZBEHLA
+
+Cesta NEW GAME -> rasa -> jmeno vladce -> barva vlajky ted dobehne az na
+**vykreslenou mapu galaxie**: hvezdy, mlhovina, bocni panel se surovinami
+a spodni lista (COLONIES / PLANETS / FLEETS / ZOOM / LEADERS / RACES / INFO /
+TURN). Beh se nezastavi ani po minute.
+
+Zbyvajici viditelne odchylky na mape (na dalsi vlnu):
+
+- vlevo nahore v panelu je `-3053.-6` misto hvezdneho data;
+- u horniho okraje je rozsypany svisly text;
+- hodnoty surovin vychazeji divne (`-0 BC`, `-7 (8)`, `+0 (0)`, `none`);
+- nezobrazuji se jmena hvezd.
+
+#### Poznamka k metode
+
+Kdyz hra skonci pres `sub_126487`, je v jeji hlasce **presne receno, co
+neproslo** - staci ji vytahnout z logu (`KONEC (sub_126487): ...`) nebo najit
+`sprintf` pred tim volanim v dekompilatu. Nasledny pad v uklidovem retezu
+(`sub_113DBD` -> `sub_155E62`) tu hlasku v debuggeru prekryje, takze se
+vyplati divat do stderr, ne na zasobnik.
+
+Regresni brana se v teto vlne na pokyn uzivatele nespoustela.

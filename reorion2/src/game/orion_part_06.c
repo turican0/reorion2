@@ -7154,7 +7154,13 @@ int sub_799F7(int a1, int a2, _WORD *a3, int a4)
   int result; // eax
   char v9; // cl
   int16_t v10; // [esp+0h] [ebp-Ch]
+  uint8_t *pRec = 0;   /* vlna 88: skutecny ukazatel misto orezaneho int */
 
+  // PORT (vlna 88): `v10` ([ebp-0Ch]) je SPILLNUTE EAX, tedy `a1` - index
+  // hvezdy. asm: `enter 8, 0 / push eax`. IDA z nej udelala neinicializovanou
+  // lokalku, takze `113 * v10` ukazovalo mimo pole hvezd a mapa se nevykreslila
+  // (zmereno: SEH pri cteni v sub_799F7 <- sub_7A1A8 <- sub_8A503 <- sub_8B956).
+  v10 = (int16_t)a1;
   *a3 = 0;
   v5 = 0;
   do
@@ -7171,10 +7177,12 @@ int sub_799F7(int a1, int a2, _WORD *a3, int a4)
       result = *(int16_t *)((uint8_t*)dword_1930D4 + 17 * result);
       if ( result > -1 )
       {
-        result = 361 * result + (uint8_t*)dword_192B18;
-        if ( *(char *)result > -1 )
+        // vlna 88: `int result` dostaval UKAZATEL (`dword_192B18` je
+        // `uint8_t *`), takze se na x64 orezal.
+        pRec = 361 * result + (uint8_t*)dword_192B18;
+        if ( *(char *)pRec > -1 )
         {
-          LOWORD(result) = *(char *)result;
+          LOWORD(result) = *(char *)pRec;
           if ( a4 && (_WORD)result != word_19999C )
           {
             if ( (result & 0x8000u) == 0 && (int16_t)result < word_199998 )

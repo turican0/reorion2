@@ -9400,12 +9400,21 @@ void sub_84555(_DWORD *a1)
     {
       v12 = dword_192FD8 % 10;
       v11 = dword_192FD8 / 10;
-      v14 = 235670016;
-      v15 = dword_81C78[1];
+      // PORT (vlna 86): asm kopiruje `movsd movsd` OSM BAJTU z `dword_81C78`
+      // do lokalky `var_8` (= v14/v15) - je to BAREVNA RAMPA textu - a pak
+      // vola `sub_120BB5(eax=1, edx=&var_8)`. `dword_81C78` je ale adresa
+      // v KODOVEM segmentu, ne symbol, ktery by port mel; IDA z prvniho
+      // dwordu udelala konstantu (0x0E0C0A00) a druhy nechala jako cteni
+      // z navesti. Navic ztratila druhy argument volani a napsala tam
+      // `SHIDWORD(v3)` (horni pulku navratove hodnoty sprintf), takze
+      // `sub_120BB5` dostavala NULL a padala (zmereno: cteni z 0x0).
+      // Bajty z Orion2.exe.lst: dd 0E0C0A00h, 16141210h.
+      v14 = 0x0E0C0A00;
+      v15 = 0x16141210;
       a1 = savedregs;
       v2 = sub_7A990(0xDAu);
       v3 = sprintf(v13, v2, v11, v12);
-      sub_120BB5(1, SHIDWORD(v3));
+      sub_120BB5(1, (int)(intptr_t)&v14);
       v1 = 0;
       sub_1210B7(639, 0, (int)v13);
     }

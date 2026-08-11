@@ -448,7 +448,7 @@ int word_192C82;
 int word_192C84;
 int word_192C86;
 int word_192C88;
-int word_192FDC;
+/* vlna 88: duplicitni skalar - skutecne pole je v orion_data.c */
 /* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FDE */
 int word_192FE0;
 int word_192FE2;

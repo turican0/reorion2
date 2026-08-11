@@ -1900,22 +1900,22 @@ int sub_A16BF( int a1, int a2, unsigned int a3)
   switch ( a1 )
   {
     case 9:
-      sub_57F2C((int)v10);
+      sub_57F2C(v10);
       goto LABEL_8;
     case 10:
-      sub_57C0B((int)v10, a3);
+      sub_57C0B(v10, a3);
       goto LABEL_8;
     case 11:
-      sub_57E1B((int)v10, a3);
+      sub_57E1B(v10, a3);
       goto LABEL_8;
     case 12:
-      sub_57A02((int)v10, a3);
+      sub_57A02(v10, a3);
       goto LABEL_8;
     case 13:
-      sub_57D14((int)v10, a3);
+      sub_57D14(v10, a3);
       goto LABEL_8;
     case 14:
-      sub_57B1C((int)v10, a3);
+      sub_57B1C(v10, a3);
 LABEL_8:
       v5 = a1;
       v6 = a2;

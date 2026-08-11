@@ -8822,7 +8822,15 @@ char sub_922C2( int a1, int a2, int a3, int a4, char *a5)
   sub_120BB5(3, (int)v27);
   v5 = sub_12066F(113 * a3 + dword_19306C);
   v6 = sub_12066F((int)aWwwwwww);
+  // PORT (vlna 88): asm `call sub_92457 / mov edx, eax` - `v7` je navratova
+  // hodnota `sub_92457` (sirka popisku hvezdy), kterou IDA zahodila a nechala
+  // promennou NEINICIALIZOVANOU. `sub_92457` je v portu `void` a jeji navrat
+  // (asm `loc_92582: ... jge locret_91F0D` / `mov eax, var_20 / add eax, 5`)
+  // je jeste potreba rekonstruovat - do te doby 0, cimz `v8` vyjde rovnou
+  // sirka jmena hvezdy (`v5`), coz je bezpecne a deterministicke.
+  // TODO: dodelat navratovou hodnotu sub_92457.
   sub_92457(a3);
+  v7 = 0;
   v8 = v7;
   if ( v7 < v5 )
     v8 = v5;
@@ -8849,14 +8857,13 @@ char sub_922C2( int a1, int a2, int a3, int a4, char *a5)
     v10 = (char *)(v9 + dword_19306C);
   }
   v18 = v10;
-  v14 = (char *)GetGameFlagsTable_F4B81();
-  *(v14 - 1) = *(_BYTE *)(*(_DWORD *)(v14 + 109455) + 14);
+  // PORT (vlna 88): kolem `sub_91F14` byly dva bloky pracujici s
+  // `GetGameFlagsTable_F4B81()` a offsetem 109455 - v asm NIC TAKOVEHO NENI
+  // (`call sub_91F14 / mov dl, al` a hned strcpy). Je to artefakt IDA
+  // z neprelozene oblasti orion_part_26, stejny jako `sub_169245` ve vlne 84.
+  // Cetlo se pritom pres CTYRBAJTOVY slot, ktery je nulovy, takze to sahalo
+  // na adresu 0x0E (zmereno: SEH v sub_922C2+0x19d).
   v22 = sub_91F14(v18, 15, v8, v11, v19, v20, v21);
-  v15 = (char *)GetGameFlagsTable_F4B81();
-  v16 = *(v15 - 1);
-  v17 = *(_DWORD *)(v15 + 109455);
-  *(_BYTE *)(v17 + 14) = v16;
-  *(_BYTE *)(v17 + 13) = 0;
   v12 = (char *)(dword_19306C + 113 * a3);
   if ( !*v12 )
     strcpy(v12, v26);

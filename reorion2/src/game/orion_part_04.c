@@ -3995,7 +3995,13 @@ void sub_5794B( int a1)
 
 
 //----- (00057A02) --------------------------------------------------------
-int sub_57A02(int a1, int a2)
+int sub_57A02(uint8_t *a1, int a2)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   int result; // eax
   char v5; // dl
@@ -4057,7 +4063,13 @@ int sub_57A02(int a1, int a2)
 
 
 //----- (00057B1C) --------------------------------------------------------
-int sub_57B1C(int a1, int a2)
+int sub_57B1C(uint8_t *a1, int a2)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   int v4; // esi
   int v5; // eax
@@ -4113,7 +4125,13 @@ int sub_57B1C(int a1, int a2)
 
 
 //----- (00057C0B) --------------------------------------------------------
-int sub_57C0B(int a1, int a2)
+int sub_57C0B(uint8_t *a1, int a2)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   int v4; // esi
   int v5; // eax
@@ -4175,7 +4193,13 @@ int sub_57C0B(int a1, int a2)
 
 
 //----- (00057D14) --------------------------------------------------------
-void sub_57D14(int a1, int a2)
+void sub_57D14(uint8_t *a1, int a2)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   char v3; // al
   int v4; // esi
@@ -4232,7 +4256,13 @@ void sub_57D14(int a1, int a2)
 
 
 //----- (00057E1B) --------------------------------------------------------
-char sub_57E1B(int a1, int a2)
+char sub_57E1B(uint8_t *a1, int a2)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   int v4; // esi
   int v5; // eax
@@ -4296,7 +4326,13 @@ char sub_57E1B(int a1, int a2)
 
 
 //----- (00057F2C) --------------------------------------------------------
-void sub_57F2C(int a1)
+void sub_57F2C(uint8_t *a1)
+// PORT (vlna 87): a1 je UKAZATEL na 100bajtovou sablonu lodi na ZASOBNIKU
+// (asm `mov ebx, eax` a pak zapisy pres nej). Volajici `sub_A16BF` ho
+// predaval jako `(int)v10`, coz na x64 orezalo adresu zasobniku - zapisy
+// pak trefovaly HERNI ARENU a prepisovaly zaznamy lodi (zmereno: po
+// `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
+// neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
   sub_127776((_BYTE *)a1, 0x63u);
   strcpy((char *)a1, (char *)dword_192668);

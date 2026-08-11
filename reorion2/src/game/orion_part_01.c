@@ -2072,6 +2072,7 @@ int sub_1241A()
 // 199996: using guessed type int16_t word_199996;
 
 
+
 //----- (00012479) --------------------------------------------------------
 // PORT (vlna 79): REKONSTRUOVANO Z ASM (0x12479..0x1279A). IDA to vzdala
 // ("call analysis failed", funcsize=170) a nechala DECOMP_TODO pahyl - a je

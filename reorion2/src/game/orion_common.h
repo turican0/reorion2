@@ -1546,17 +1546,17 @@ extern void sub_57675();
 extern int16_t sub_57871();
 // plna signatura: void sub_5794B( int a1);
 extern void sub_5794B();
-// plna signatura: int sub_57A02(int a1, int a2);
+// plna signatura: int sub_57A02(uint8_t *a1, int a2);
 extern int sub_57A02();
-// plna signatura: int sub_57B1C(int a1, int a2);
+// plna signatura: int sub_57B1C(uint8_t *a1, int a2);
 extern int sub_57B1C();
-// plna signatura: int sub_57C0B(int a1, int a2);
+// plna signatura: int sub_57C0B(uint8_t *a1, int a2);
 extern int sub_57C0B();
-// plna signatura: void sub_57D14(int a1, int a2);
+// plna signatura: void sub_57D14(uint8_t *a1, int a2);
 extern void sub_57D14();
-// plna signatura: char sub_57E1B(int a1, int a2);
+// plna signatura: char sub_57E1B(uint8_t *a1, int a2);
 extern char sub_57E1B();
-// plna signatura: void sub_57F2C(int a1);
+// plna signatura: void sub_57F2C(uint8_t *a1);
 extern void sub_57F2C();
 // plna signatura: void sub_58088( int a1);
 extern void sub_58088();
@@ -11121,7 +11121,7 @@ int sub_57B1C(int a1, int16_t a2);
 int sub_57C0B(int a1, int16_t a2);
 void sub_57D14(int a1, int16_t a2);
 char sub_57E1B(int a1, int16_t a2);
-void sub_57F2C(int a1);
+void sub_57F2C(uint8_t *a1);
 void sub_58088(int16_t a1);
 void sub_580F5();
 int sub_581F3(int16_t a1);
@@ -18409,12 +18409,12 @@ extern int dword_192F00;
 extern int dword_192F08;
 extern int dword_192F10;
 extern int dword_192FD8;
-extern int16_t word_192FDC[];
-extern int16_t word_192FDE[57];   /* vlna 85: 5 zaznamu po 28 B */
+extern int16_t word_192FDC[70];   /* vlna 88: 5 zaznamu po 28 B */
+#define word_192FDE  (word_192FDC + 1)   /* vlna 88: blok zacina u word_192FDC */
 extern int16_t word_192FE0[];
 extern int16_t word_192FE2[];
-#define word_192FE4  (word_192FDE + 3)   /* vlna 85: +6 v zaznamu */
-#define word_192FE6  (word_192FDE + 4)   /* vlna 85: +8 v zaznamu */
+#define word_192FE4  (word_192FDC + 4)   /* vlna 88 */
+#define word_192FE6  (word_192FDC + 5)   /* vlna 88 */
 extern int16_t word_192FE8[];
 extern int16_t word_192FEA[];
 extern int16_t word_192FEC[];
@@ -18556,9 +18556,11 @@ extern int dword_1975C4;
 extern int dword_1975C8;
 extern int dword_1975CC;
 extern int dword_1975D0;
-extern int16_t word_1975D4;
-extern int16_t word_1975D6;
-extern char byte_1975D8[2496];
+// vlna 86: 500 zaznamu po 5 B - viz orion_data.c
+extern uint8_t blk_1975D4[2500];
+#define word_1975D4  (*(int16_t *)(blk_1975D4 + 0))
+#define word_1975D6  (*(int16_t *)(blk_1975D4 + 2))
+#define byte_1975D8  ((char *)(blk_1975D4 + 4))
 extern uint8_t* dword_197F98;
 extern uint8_t* dword_197F9C;
 extern int dword_197FA0[];
