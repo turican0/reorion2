@@ -2885,9 +2885,9 @@ int16_t sub_A26E3(int a1, int a2, int a3, int a4, int a5, int16_t *a6, int16_t *
       if ( (int16_t)v51[v25] > 0 )
       {
         if ( v51[v25] == 1 )
-          v27 = (char *)*(&off_18003A + 9 * v25);
+          v27 = shipSizeNameA_18003A[v25];   /* vlna 81 */
         else
-          v27 = (char *)*(&off_18003E + 9 * v25);
+          v27 = shipSizeNameB_18003E[v25];   /* vlna 81 */
         v28 = sprintf(v49, "%2d %s", (int16_t)v51[v25], v27);
         LOWORD(v28) = v65;
         v62 += v28;
@@ -12456,7 +12456,7 @@ int sub_AFEFC(int a1, int a2, int a3)
     ++a3;
   }
   while ( a3 < 49 );
-  return qsort(&unk_1827D2, word_18283A - 2, 2);
+  return qsort(&unk_1827D2, word_18283A - 2, 2, sub_AFEE0);   /* vlna 84: komparator z asm */
 }
 // AFF38: variable 'v3' is possibly undefined
 // 1827CE: using guessed type int16_t word_1827CE[];

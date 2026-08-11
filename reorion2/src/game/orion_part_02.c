@@ -2723,8 +2723,8 @@ void sub_26D19( int a1, int a2, int16_t *a3, int a4, int a5)
   while ( v27 < 212 );
   if ( v8 && v24 )
   {
-    qsort(&dword_19ACF8, v8, 5);
-    qsort(&dword_19B11C, v24, 5);
+    qsort(&dword_19ACF8, v8, 5, sub_26D0D);   /* vlna 84: komparator z asm */
+    qsort(&dword_19B11C, v24, 5, sub_26D12);   /* vlna 84: komparator z asm */
     v28 = 0;
     v22 = *(int *)((char *)&dword_19ACF8 + 5 * (v8 / 2));
     *a3 = 0;
@@ -2822,7 +2822,7 @@ _DWORD *sub_27094( int a1, int a2,
     }
   }
   if ( a8 == 1 && *a7 )
-    qsort(&dword_19ACF8, *a7, 5);
+    qsort(&dword_19ACF8, *a7, 5, sub_26D12);   /* vlna 84: komparator z asm */
   result = a6;
   v14 = 0;
   v15 = 0;
@@ -2901,7 +2901,7 @@ char *sub_2720F( int a1, int a2)
     while ( v6 < 204 );
     if ( v5 > 0 )
     {
-      qsort(&dword_19ACF8, v5, 5);
+      qsort(&dword_19ACF8, v5, 5, sub_26D12);   /* vlna 84: komparator z asm */
       v9 = 5 * (sub_1247A0((v5 + 1) / 2) - 1);
       v10 = (uint8_t)byte_19ACFC[v9];
       v11 = v21 * *(int *)((char *)&dword_19ACF8 + v9);
@@ -13224,7 +13224,7 @@ int sub_36810( int a1, _WORD *a2, _WORD *a3, int a4, int a5, int a6, int a7)
       else
         v17 = *(_WORD *)(v14 + 308);
       v22[18] = v17;
-      result = sub_FE92D((int)v22, 19);
+      result = sub_FE92D((const uint16_t *)v22, 19);
       v18 = result;
       if ( (_WORD)result )
       {
@@ -14574,7 +14574,7 @@ int sub_384A8( int a1, _WORD *a2, _WORD *a3)
     ++v12;
   }
   while ( v12 < 19 );
-  result = sub_FE92D((int)v17, 19);
+  result = sub_FE92D((const uint16_t *)v17, 19);
   v14 = result;
   if ( (_WORD)result )
   {

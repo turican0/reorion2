@@ -4101,7 +4101,7 @@ int sub_1067C4()
   int result; // eax
 
   if ( word_1838F7 > 1 )
-    return qsort(word_1838F9, word_1838F7, 2);
+    return qsort(word_1838F9, word_1838F7, 2, sub_1067BB);   /* vlna 84: komparator z asm */
   return result;
 }
 // 1838F7: using guessed type int16_t word_1838F7;

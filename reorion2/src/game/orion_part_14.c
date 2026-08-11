@@ -55,7 +55,7 @@ void sub_D61E7(uint8_t *a1)
   v2 = 361 * *a1 + (uint8_t*)dword_192B18;
   sub_D5FE1(a1);
   dword_1AA224 = v2;
-  qsort(v2 + 12 + 4 * a1[3], *(uint8_t *)(v2 + 10) - a1[3], 4);
+  qsort(v2 + 12 + 4 * a1[3], *(uint8_t *)(v2 + 10) - a1[3], 4, sub_D614D);   /* vlna 84: komparator z asm */
   if ( *(_BYTE *)(v2 + 221) )
   {
     while ( 1 )
@@ -197,7 +197,7 @@ void sub_D652C(uint8_t *a1)
   v5 = (*(uint8_t *)(v2 + 10) + 4) / 5;
   sub_D5FE1(a1);
   dword_1AA224 = v2;
-  qsort(v2 + 12 + 4 * a1[3], *(uint8_t *)(v2 + 10) - a1[3], 4);
+  qsort(v2 + 12 + 4 * a1[3], *(uint8_t *)(v2 + 10) - a1[3], 4, sub_D63A6);   /* vlna 84: komparator z asm */
   if ( sub_23DFE(*a1) )
     v5 = 0;
   v3 = (char *)v2;
@@ -223,7 +223,7 @@ void sub_D652C(uint8_t *a1)
   a1[5] = a1[6];
   a1[7] = *(_BYTE *)(v2 + 8);
   dword_1AA224 = v2;
-  qsort(4 * a1[3] + v2 + 12, a1[5] - a1[4], 4);
+  qsort(4 * a1[3] + v2 + 12, a1[5] - a1[4], 4, sub_D6315);   /* vlna 84: komparator z asm */
   sub_D648A(a1);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE7 je epilog funkce */
 }
@@ -453,7 +453,7 @@ void sub_D6A00(uint8_t *a1)
     v4 = a1[4];
     v5 = a1[5] - v4;
     dword_1AA228 = (int)a1;
-    qsort(dword_1AA224 + 12 + 4 * v4, v5, 4);
+    qsort(dword_1AA224 + 12 + 4 * v4, v5, 4, sub_D68CB);   /* vlna 84: komparator z asm */
   }
   if ( a1[1] >= *(_BYTE *)(v2 + 224) || a1[4] >= *(_BYTE *)(v2 + 10) )
     *((_WORD *)a1 + 4) = -32767;
@@ -516,7 +516,7 @@ void sub_D6AD4()
         v17 = v3 - v4;
         v18 = v2 + 12;
         dword_1AA228 = (int)v1;
-        qsort(v2 + 12 + 4 * v4, v3 - v4, 4);
+        qsort(v2 + 12 + 4 * v4, v3 - v4, 4, sub_D68CB);   /* vlna 84: komparator z asm */
         *((_WORD *)v1 + 4) = sub_D682A(v1, (_DWORD *)(4 * v1[4] + v18));
         v5 = v19;
         ++v0;
@@ -2219,7 +2219,7 @@ LABEL_37:
     {
       sub_FE9B5(v23, v13);
       --v28;
-      v6 = qsort(v23, v13, 1);
+      v6 = qsort(v23, v13, 1, sub_D8847);   /* vlna 84: komparator z asm */
       v17 = v13;
       while ( v17 > 0 )
       {
@@ -2267,7 +2267,7 @@ int sub_D8C79( int a1)
   dword_1AA248 = 3753 * a1 + (uint8_t*)dword_197F98;
   dword_1AA244 = (int)v3;
   sub_D76B8((int)v3, &word_1AA24E);
-  qsort(dword_1AA244, word_1AA24E, 6);
+  qsort(dword_1AA244, word_1AA24E, 6, sub_D7662);   /* vlna 84: komparator z asm */
   v1 = -1;
   sub_D7764(dword_1AA244, &word_1AA24E);
   if ( word_1AA24E > 0 )
@@ -2750,7 +2750,7 @@ void sub_D94B3(
                 *(_WORD *)&v42[2 * v33] = 0;
             }
             while ( v33 > 0 );
-            v34 = sub_FE92D((int)v42, 250);
+            v34 = sub_FE92D((const uint16_t *)v42, 250);
             v35 = v42[v34 + 500];
             v36 = *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)(361 * v34 + (uint8_t*)dword_192B18 + 2) + 2);
             *(_WORD *)(dword_1AA1C8 + 146 * word_1AA24C + 2 * v40) = -1;
@@ -4559,7 +4559,7 @@ void sub_DB47E(int a1, int a2, int16_t *a3)
   dword_1AA248 = 3753 * v3 + (uint8_t*)dword_197F98;
   dword_1AA244 = (int)v15;
   sub_D76B8((int)v15, &word_1AA24E);
-  qsort(dword_1AA244, word_1AA24E, 6);
+  qsort(dword_1AA244, word_1AA24E, 6, sub_D7662);   /* vlna 84: komparator z asm */
   dword_1AA240 = (int)v16;
   memset(v16, 0, sizeof(v16));
   v4 = 72;
@@ -4729,7 +4729,7 @@ void sub_DB6D2(int a1, int a2)
       }
     }
   }
-  qsort(v22, word_19999A, 12);
+  qsort(v22, word_19999A, 12, sub_DB659);   /* vlna 84: komparator z asm */
   for ( i = 0; i < word_19999A; ++i )
     ;
   v18 = 0;
@@ -10546,14 +10546,14 @@ void sub_E2000(int a1, int a2)
       {
         v43 = v20 + 1;
         if ( v36[v21] == 1 )
-          v23 = sprintf(a2, (char *)dword_1AA284, v20 + 1, *(_UNKNOWN **)((char *)&off_18003A + v22));
+          v23 = sprintf(a2, (char *)dword_1AA284, v20 + 1, shipSizeNameA_18003A[v22 / 36]);   /* vlna 81 */
         else
           v23 = sprintf(
                   a2,
                   (char *)dword_1AA254,
                   v43 * v36[v21],
                   v36[v21],
-                  *(_UNKNOWN **)((char *)&off_18003E + v22));
+                  shipSizeNameB_18003E[v22 / 36]);   /* vlna 81 */
         a2 += v23;
       }
       ++v21;

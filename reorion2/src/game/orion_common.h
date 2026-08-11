@@ -2756,8 +2756,8 @@ extern int16_t sub_7C94E();
 extern char sub_7C9EE();
 // plna signatura: char sub_7CB7C(int a1, int a2);
 extern char sub_7CB7C();
-// plna signatura: void sub_7CCB5( int a1);
-extern void sub_7CCB5();
+// plna signatura: int16_t sub_7CCB5( int a1);   /* vlna 84: vraci orbitu */
+extern int16_t sub_7CCB5();
 // plna signatura: int sub_7CDA3(_WORD *a1, _WORD *a2);
 extern int sub_7CDA3();
 // plna signatura: int sub_7CDC0(_DWORD *a1, _DWORD *a2);
@@ -3120,8 +3120,8 @@ extern void sub_8C099();
 extern char sub_8C4D3();
 // plna signatura: char sub_8C527( int a1);
 extern char sub_8C527();
-// plna signatura: void sub_8C567( int a1);
-extern void sub_8C567();
+// plna signatura: char sub_8C567( int a1);   /* vlna 83: vraci slot */
+extern char sub_8C567();
 // plna signatura: int sub_8C5D7( int a1);
 extern int sub_8C5D7();
 // plna signatura: int sub_8C6C0( int a1, int a2);
@@ -3148,8 +3148,8 @@ extern int16_t sub_8CDA9();
 extern int sub_8CE12();
 // plna signatura: int sub_8CEAC( int a1);
 extern int sub_8CEAC();
-// plna signatura: void sub_8CFFF( int a1, int a2, int a3, int a4, int a5);
-extern void sub_8CFFF();
+// plna signatura: char sub_8CFFF( int a1, int a2, int a3, int a4, int a5);  /* vlna 83 */
+extern char sub_8CFFF();
 // plna signatura: char sub_8D43D( int a1, int a2, int a3, int a4);
 extern char sub_8D43D();
 // plna signatura: void sub_8D602(int a1);
@@ -6462,9 +6462,9 @@ extern char sub_FE86B();
 extern int ServiceAudioTick_FE8BE();
 // plna signatura: int sub_FE8C8(int a1, int a2);
 extern int sub_FE8C8();
-// plna signatura: int sub_FE8DA(int a1, int a2);
+// plna signatura: int sub_FE8DA(const uint8_t *a1, int a2);
 extern int sub_FE8DA();
-// plna signatura: int sub_FE92D(int a1, int a2);
+// plna signatura: int sub_FE92D(const uint16_t *a1, int a2);  /* vlna 82 */
 extern int sub_FE92D();
 // plna signatura: int sub_FE96F(int a1, int a2);
 extern int sub_FE96F();
@@ -11726,7 +11726,7 @@ _BOOL1 sub_7C8E6(int16_t a1);
 int16_t sub_7C94E(int16_t a1);
 char sub_7C9EE(uint8_t *a1, int16_t a2);
 char sub_7CB7C(uint8_t* a1, int16_t a2);
-void sub_7CCB5(int16_t a1);
+int16_t sub_7CCB5(int16_t a1);
 int sub_7CDA3(_WORD *a1, _WORD *a2);
 int sub_7CDC0(_DWORD *a1, _DWORD *a2);
 void sub_7CDC5();
@@ -11909,7 +11909,7 @@ char sub_8C05B(int16_t a1);
 // void sub_8C099(int a1, unsigned int a2);
 char sub_8C4D3(int16_t a1);
 char sub_8C527(int16_t a1);
-void sub_8C567(int16_t a1);
+char sub_8C567(int16_t a1);
 int sub_8C5D7(int16_t a1);
 int sub_8C6C0(int16_t a1, int16_t a2);
 int16_t sub_8C6FE(int16_t a1, uint8_t a2);
@@ -11924,7 +11924,7 @@ int16_t sub_8CDA9(int16_t a1);
 int sub_8CE12(int16_t a1);
 int sub_8CEAC(int16_t a1);
 int64_t sub_8CF09(_DWORD, _DWORD); // weak
-void sub_8CFFF(int16_t a1, int16_t a2, int a3, char a4, char a5);
+char sub_8CFFF(int16_t a1, int16_t a2, int a3, char a4, char a5);
 char sub_8D43D(int16_t a1, int16_t a2, int16_t a3, int16_t a4);
 void sub_8D602(int a1);
 void sub_8D65D();
@@ -13596,8 +13596,8 @@ int nullsub_14(_DWORD); // weak
 int sub_FE8C8(int a1, int a2);
 int nullsub_15(_DWORD, _DWORD); // weak
 // int _wcpp_1_unwind_leave(_DWORD, _DWORD, char *, ...); weak
-int sub_FE8DA(int a1, int16_t a2);
-int sub_FE92D(int a1, int16_t a2);
+int sub_FE8DA(const uint8_t *a1, int a2);
+int sub_FE92D(const uint16_t *a1, int a2);
 int sub_FE96F(int a1, int16_t a2);
 _BYTE *sub_FE9B5(_BYTE *result, int16_t a2);
 void sub_FE9F5(int a1, int16_t a2);
@@ -16705,13 +16705,33 @@ extern int16_t word_17D90E[943]; // vlna 59: 23bajtove zaznamy, viz orion_data.c
 extern int dword_17D916;
 extern char byte_17D91A[];
 extern int16_t word_17D998[];
-extern int dword_17E06C[691]; // vlna 59: pole nazvu, viz orion_data.c
+// PORT (vlna 80): STROM TECHNOLOGII. V originale je 0x17E06C..0x17EB3C JEDEN
+// souvisly blok: 13 B hlavicka a za ni 212 zaznamu po 13 B. IDA z nej udelala
+// sedm nezavislych promennych, a co je horsi, jejich OBSAH se do portu nikdy
+// neprenesl - vsechny byly vynulovane. Bez nich `sub_5E1E3` nemel co zapsat do
+// `word_17D90E`, `sub_5E55F` pak volal `sub_1247A0(0)` a hra padla na deleni
+// nulou hned po vyberu barvy vlajky.
+// Rozlozeni jednoho zaznamu (13 B), zmereno z Debug/diss/Orion2.exe.lst:
+//   +0  dword  ukazatel na nazev (staticky jen placeholder 0x00170A04,
+//              za behu ho prepisuje sub_5DF0A) - v portu se NEPOUZIVA,
+//              nazvy drzi dal samostatne `off_17E079` & spol.
+//   +4  int16  poradove cislo technologie (0..211, overeno: rovna se indexu)
+//   +6  int16  slot ve stromu (0..74, jednou -1) - tohle cte sub_5E1E3
+//   +8..+10   dalsi priznaky (+9 = cena vyzkumu)
+//   +11 byte   dostupnost
+//   +12 byte   priznak, ktery sub_5E1E3 prepisuje
+extern uint8_t techBlk_17E06C[2769];
+#define dword_17E06C  (*(int *)(techBlk_17E06C + 0x000))
+#define word_17E07D   (*(int16_t *)(techBlk_17E06C + 0x011))
+#define word_17E07F   (*(int16_t *)(techBlk_17E06C + 0x013))
+#define byte_17E082   ((char *)(techBlk_17E06C + 0x016))
+#define byte_17E084   ((char *)(techBlk_17E06C + 0x018))
+#define byte_17E085   ((char *)(techBlk_17E06C + 0x019))
+// Ukazatel na nazev (+0) zustava mimo blok: v originale ma 4 B, na x64 ma 8 B
+// a do 13bajtoveho zaznamu se nevejde. Cteni `*(char **)((char *)&off_17E079
+// + 13 * i)` je proto porad rozbite STEJNE jako pred touhle vlnou - vyresi se
+// az prevodem na samostatne pole nazvu (viz PROGRESS.md, vlna 80).
 extern _UNKNOWN *off_17E079;
-extern int16_t word_17E07D;
-extern int16_t word_17E07F[1366]; // vlna 59: 13bajtove zaznamy, viz orion_data.c
-extern char byte_17E082[];
-extern char byte_17E084[];
-extern char byte_17E085[];
 extern _UNKNOWN *off_17E0EE;
 extern _UNKNOWN *off_17E7F0;
 extern _UNKNOWN *off_17EA60;
@@ -16884,6 +16904,10 @@ extern int16_t word_180036[];
 extern int16_t word_180038[];
 extern _UNKNOWN *off_18003A;
 extern _UNKNOWN *off_18003E;
+// vlna 81: nazvy velikosti lodi mimo blob (na x64 se 4bajtovy ukazatel
+// do 36bajtoveho zaznamu nevejde) - viz orion_data.c
+extern char *shipSizeNameA_18003A[9];
+extern char *shipSizeNameB_18003E[9];
 extern _UNKNOWN *off_1800EE;
 extern int16_t word_1800F8;
 extern int16_t word_1800FC;
@@ -19523,8 +19547,8 @@ extern char byte_19C323;
 extern char byte_19C324;
 extern int dword_19C330;
 extern int dword_19C334;
-extern _UNKNOWN unk_19C338;
-extern char byte_19C340;
+extern char unk_19C338[8];   /* vlna 81: 8bajtova rampa, ne skalar */
+extern char byte_19C340[8];   /* vlna 81: 8bajtova rampa, ne skalar */
 extern char byte_19C348[59];
 extern char byte_19C383;
 extern int16_t word_19C384;

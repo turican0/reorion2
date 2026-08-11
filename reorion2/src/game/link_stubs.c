@@ -384,7 +384,7 @@ int sub_702E5(void) { return 0; }
 int sub_772BF(void) { return 0; }
 int sub_77433(void) { return 0; }
 int sub_8139F(void) { return 0; }
-int sub_8CF09(void) { return 0; }
+/* vlna 81: sub_8CF09 uz neni pahyl - rekonstruovano v orion_part_08.c */
 int sub_A162D(void) { return 0; }
 int sub_A5EBC(void) { return 0; }
 int sub_B3E75(void) { return 0; }

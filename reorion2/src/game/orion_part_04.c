@@ -3929,7 +3929,7 @@ int16_t sub_57871( int a1, int a2, int a3)
   int16_t result; // ax
   int v7; // [esp+8h] [ebp-4h] BYREF
 
-  strcpy((char *)a3, (char *)*(&off_18003A + 9 * a2));
+  strcpy((char *)a3, shipSizeNameA_18003A[a2]);   /* vlna 81 */
   *(_BYTE *)(a3 + 16) = a2;
   *(_BYTE *)(a3 + 19) = sub_56726(a1);
   *(_BYTE *)(a3 + 18) = sub_5679E(a1);
@@ -10228,7 +10228,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     i3 += 7;
   }
   ServiceAudioTick_FE8BE((int)v33, v6, (int)v5, a3);
-  for ( i4 = 0; i4 != 324; *(_UNKNOWN **)((char *)&off_180014 + i4 + 2) = v35 )
+  // vlna 81: puvodne 8bajtovy zapis do 36bajtoveho zaznamu - viz orion_data.c
+  for ( i4 = 0; i4 != 324; shipSizeNameA_18003A[i4 / 36 - 1] = v35 )
   {
     while ( 1 )
     {
@@ -10245,7 +10246,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     i4 += 36;
   }
   ServiceAudioTick_FE8BE(324, v6, (int)v5, a3);
-  for ( result = 0; result != 81; dword_18001A[result] = (int)v37 )
+  // vlna 81: totez pro druhy ukazatel zaznamu (+4)
+  for ( result = 0; result != 81; shipSizeNameB_18003E[result / 9 - 1] = v37 )
   {
     while ( 1 )
     {
@@ -14062,6 +14064,9 @@ void sub_63156()
       *(_WORD *)(v4 + 657) = v8;
     }
     v5 = dword_19B888 + 4256 * i + 656;
+    // vlna 84: komparator je v asm navesti `loc_62BE1` UVNITR jine funkce
+    // (IDA ho nepojmenovala jako proc), takze v portu zatim neexistuje -
+    // toto volani zustava bez komparatoru a musi se dodelat rucne.
     qsort(v5, 360, 10);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x62C69 je epilog funkce */
@@ -14593,7 +14598,7 @@ char sub_63B8F( int a1, int a2)
   char v8; // [esp+4h] [ebp-Ch]
   char v9; // [esp+8h] [ebp-8h]
 
-  v3 = sub_FE8DA(a2, 3);
+  v3 = sub_FE8DA((const uint8_t *)(intptr_t)a2, 3);   /* vlna 83 */
   if ( (int16_t)v3 == -1 )
     return 1;
   if ( v3 )

@@ -4872,7 +4872,7 @@ void sub_C1B68()
       sub_1210B7(
         457,
         v6,
-        (int)*(&off_18003A + 9 * *(uint8_t *)(99 * v1 + (uint8_t*)dword_197F98 + 3753 * word_19999C + 822)));
+        (int)shipSizeNameA_18003A[*(uint8_t *)(99 * v1 + (uint8_t*)dword_197F98 + 3753 * word_19999C + 822)]);
       sub_1210FD(320, v6, (int)asc_179DFD);
     }
     ++v1;

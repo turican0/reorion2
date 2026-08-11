@@ -8320,7 +8320,7 @@ void sub_D0B08(char *a1)
       v11 = (uint8_t)a1[10];
       if ( 3 * v11 <= v10 )
         v15[0] = sub_134C92(3 * (v10 - v11));
-      v12 = sub_FE92D((int)v14, 51);
+      v12 = sub_FE92D((const uint16_t *)v14, 51);
       v13 = v12;
       if ( v12 >= 49 )
       {
@@ -8500,7 +8500,7 @@ void sub_D0D2F(int16_t *a1)
         }
       }
     }
-    v15 = sub_FE92D((int)v17, word_199996);
+    v15 = sub_FE92D((const uint16_t *)v17, word_199996);
     v16 = (int16_t)v15;
     if ( (int16_t)v15 != -1 )
       v16 = sub_E109D(v15);
@@ -8973,7 +8973,7 @@ LABEL_50:
         v48 = (int)sub_D0C7F;
         v49 = 1;
         v50 = v139;
-        qsort(v120, v139, 1);
+        qsort(v120, v139, 1, sub_D0C7F);   /* vlna 84: komparator z asm */
         v51 = v142;
         if ( *(_BYTE *)(v142 + 319) == 3 )
         {
@@ -9326,7 +9326,7 @@ LABEL_116:
               }
               if ( dword_1A7454[3 * (int16_t)v119] && sub_1247A0(5u) == 1 )
                 v128 = 0;
-              v75 = sub_FE92D((int)&v128, 9);
+              v75 = sub_FE92D((const uint16_t *)&v128, 9);
               v62 = v139 - 1;
               v166 = v139 - 1;
               if ( v75 < 5 )
@@ -11749,12 +11749,12 @@ LABEL_136:
     v95 = (int16_t *)(3002 * v94 + dword_1AA1C4);
     v88 = 6;
     v86 = *v95;
-    v87 = qsort(v95 + 1, v86, 6);
+    v87 = qsort(v95 + 1, v86, 6, sub_D356F);   /* vlna 84: komparator z asm */
   }
   ServiceAudioTick_FE8BE(v87, v86, v88, (int16_t *)v44);
   memset(dword_1AA1C8, -1, 1168);
   v96 = word_1AA218;
-  v97 = qsort(dword_1AA1D4, word_1AA218, 2);
+  v97 = qsort(dword_1AA1D4, word_1AA218, 2, sub_D3318);   /* vlna 84: komparator z asm */
   for ( m = 0; ; ++m )
   {
     if ( (int16_t)m >= word_1AA218 )
@@ -12189,7 +12189,7 @@ int sub_D5795()
       ++word_1AA238;
     }
   }
-  qsort(dword_1AA22C, word_1AA238, 13);
+  qsort(dword_1AA22C, word_1AA238, 13, sub_D5761);   /* vlna 84: komparator z asm */
   dword_1AA220 = dword_1AA22C;
   result = 13 * word_1AA23A + dword_1AA22C;
   dword_1AA230 = result;
@@ -12348,7 +12348,7 @@ LABEL_89:
       }
     }
 LABEL_94:
-    LOWORD(v1) = sub_FE8DA((int)v9, 50);
+    LOWORD(v1) = sub_FE8DA((const uint8_t *)v9, 50);
     v7 = v1;
     if ( (int16_t)v1 < 49 )
     {
@@ -12562,7 +12562,7 @@ void sub_D5FE1(uint8_t *a1)
       }
       v11 = (uint8_t)v2[10];
       dword_1AA224 = (int)v2;
-      qsort(v13, v11, 4);
+      qsort(v13, v11, 4, sub_D5FA9);   /* vlna 84: komparator z asm */
       a1[4] = a1[3];
       v12 = v2[10];
       a1[5] = v12;

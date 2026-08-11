@@ -8610,3 +8610,391 @@ na samostatnou vlnu.
 - 23 zbylych `JUMPOUT` typu EPILOG v nevoid funkcich (potrebuji navratovou
   hodnotu z asm).
 - 25 zbylych `&ukazatel + 3`; 13 volajicich `sub_103915` s `SUB_103915_TODO`.
+
+### Vlna 80: prenesena data stromu technologii - hra dobehne az k nazvum lodi
+
+Navazuje na vlnu 79, kde hra po vyberu barvy vlajky padala na deleni nulou
+v `sub_1247A0(0)` (volano z `sub_5E55F`), protoze tabulka `word_17D90E` byla
+prazdna.
+
+#### Co to bylo
+
+`sub_5E1E3` plni `word_17D90E` ze 13bajtovych zaznamu stromu technologii na
+0x17E06C..0x17EB3C. V portu byl ten blok rozsekany na sedm promennych
+(`dword_17E06C`, `off_17E079`, `word_17E07D`, `word_17E07F`, `byte_17E082`,
+`byte_17E084`, `byte_17E085`) a hlavne **CELY VYNULOVANY** - obsah se do portu
+nikdy neprenesl. Neslo tedy o chybu dekompilatoru, ale o chybejici DATA.
+
+#### Jak se to zmerilo a vytahlo
+
+Parsovani `Orion2.exe.asm` nestacilo: IDA nekde misto cisla vypise
+`dd offset jpt_D01BF+0A8h` nebo `dd offset aStats` (kdyz dvojice id+slot
+nahodou vypada jako adresa). Pouzit proto **`Debug/diss/Orion2.exe.lst`**,
+ktery ma u KAZDEHO radku adresu - z nej se postavila mapa navesti
+(44 879 polozek) a kazdy `offset X` se prelozil na cislo. Priklady:
+`jpt_D01BF` = 0x000CFF62, `aStats` = 0x00010027, `aDbc` = 0x00170024.
+
+Cteni z `Debug/diss/Orion2.exe` neslo - EXE je LE (DOS/4GW) a data jsou v nem
+zabalena, pattern se v souboru nenajde.
+
+**Kontrola spravnosti** (bez ni by se to nemelo pouzit): pole +4 vyslo u
+vsech 212 zaznamu presne rovno jejich poradi 0..211 a pole +6 (slot) je
+v rozsahu 0..74 s jedinou -1 - presne to, co `sub_5E1E3` ceka
+(`!= -1 && != 74`).
+
+#### Rozlozeni zaznamu (13 B), zmereno
+
+| offset | co to je |
+|---|---|
+| +0 (dword) | ukazatel na nazev - staticky jen placeholder 0x00170A04, za behu ho prepisuje `sub_5DF0A` |
+| +4 (int16) | poradove cislo technologie (0..211) |
+| +6 (int16) | slot ve stromu (0..74, jednou -1) - **tohle cte `sub_5E1E3`** |
+| +8..+10 | priznaky (+9 = cena vyzkumu) |
+| +11 (byte) | dostupnost |
+| +12 (byte) | priznak, ktery `sub_5E1E3` prepisuje |
+
+V portu je ted `uint8_t techBlk_17E06C[2769]` a puvodni symboly jsou makra
+s pevnymi offsety do nej (`word_17E07F` = +0x13, `byte_17E085` = +0x19, ...).
+Makra jsou lvalue, takze `&word_17E07F + 13 * i` i `byte_17E085[13 * i]`
+funguji dal beze zmeny na vsech ~100 mistech.
+
+#### Stav: hra se spousti a dobehne o kus dal
+
+Deleni nulou je pryc, generovani vesmiru bezi (1439 vykreslenych snimku misto
+17). Nova zarazka:
+
+    sub_12479 -> sub_12983 -> sub_54FBF -> sub_57871 -> strcpy
+    SEH 0xC0000005, cteni z adresy 0xC8
+
+`sub_57871` dela `strcpy(cil, off_17803A[9 * velikost])` - asm
+`imul eax, edx, 24h / mov esi, off_17803A[eax]`, tedy tabulka nazvu velikosti
+lodi s **krokem 36 B a 4bajtovymi ukazateli**.
+
+#### DALSI KROK - systemovy problem, ne jednotlivost
+
+Je to **tataz trida** jako u nazvu technologii: 4bajtove ukazatele na retezce
+ulozene UVNITR blobu s pevnym krokem (13 B u technologii, 36 B u lodi),
+ktere za behu plni `sub_5DF0A` z retezcoveho blobu. Na x64 ma ukazatel 8 B a
+do toho kroku se nevejde - port je proto drzi jako samostatne promenne
+(`off_17E079`, `off_18003A`, ...) a cteni `*(char **)((char *)&off_X + krok*i)`
+saha mimo ne.
+
+Navrhovane reseni (na samostatnou vlnu): **32bitovy handle**. Do slotu se
+ulozi index do postranni tabulky skutecnych ukazatelu
+(`PortPtr32_Store(void*) -> uint32_t` / `PortPtr32_Load(uint32_t) -> void*`),
+cimz zustane zachovany krok blobu i vsechny existujici indexovaci vyrazy.
+Prepsat je potreba jen zapisove smycky v `sub_5DF0A` (a sesterske) a cteci
+mista.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- SELECT RACE, popis pod portretem i obrazovka vlastnosti rasy (klik na
+  "Ship Defense +50" -> PICKS -7, SCORE 30 %) se kresli shodne s dosboxem;
+- vsechna docasna instrumentace odstranena.
+
+### Vlna 81: barva textu v dialogu opravena, generovani vesmiru o ctyri kroky dal
+
+Uzivatel: "stale se nezobrazi herni mapa, pada to tady" (snimek z debuggeru:
+`sub_57871`, radek se `strcpy`) a pozdeji "zase spatna barva textu
+v obrazovce Enter Ruler Name".
+
+#### 1. BARVA TEXTU - dve osmibajtove rampy byly jednobajtove
+
+Zmereno porovnanim snimku portu a dosboxu ve STEJNEM bode (pole se jmenem
+vladce, obdelnik x 218..290, y 178..200):
+
+| | pozadi | text |
+|---|---|---|
+| original | (16,24,24) | **(172,172,172)**, 134 pixelu |
+| port | (16,24,24) | **index 0 = cerna**, 221 pixelu |
+
+Pricina: `unk_19C338` a `byte_19C340` jsou v asm dve **osmibajtove barevne
+rampy** lezici za sebou (0x194338..0x19433F a 0x194340..0x194347, pak
+`align 8` pred `byte_194348`). V portu to byly dva JEDNOTLIVE bajty, takze
+`qmemcpy(..., 8u)` psalo mimo a `sub_120BB5(3, &unk_19C338)` cetlo sedm bajtu
+smeti - text vysel cerny. Po oprave port kresli index 174 = (174,174,174),
+tedy shodne s originalem (rozdil +-2 je znamy prevod 6bit VGA -> 8bit
+v zachytu dosboxu).
+
+Kontrola: barva se od vlny 78 nezmenila, takze neslo o regresi z vln 79/80 -
+byla to stara chyba, ktera se projevila az ted.
+
+#### 2. Pad ve `strcpy` (sub_57871) - nazvy velikosti lodi
+
+`sub_57871` dela `strcpy(cil, off_17803A[9 * velikost])`, asm
+`imul eax, edx, 24h / mov esi, off_17803A[eax]` - tabulka nazvu s krokem
+**36 B a 4bajtovymi ukazateli**, plnena za behu z retezcoveho blobu.
+Na x64 ma ukazatel 8 B, takze zapis `*(_UNKNOWN **)((char *)&off_180014 +
+i4 + 2) = v35` prepisoval sousedni bajty a cteni `*(&off_18003A + 9 * i)` se
+posouvalo po 8 B misto po 36 B - `strcpy` pak cetl z adresy 0xC8.
+
+Opraveno postrannimi poli `shipSizeNameA_18003A[9]` / `shipSizeNameB_18003E[9]`
+(ukazatele mimo blob, krok 36 B tim odpada). Prepsany obe zapisove smycky
+v `sub_5DF0A` a vsech 15 ctecich mist v sedmi souborech.
+
+#### 3. "Galaxy size 15012 is undefined" - spillnute argumenty `sub_8DAE8`
+
+Vlastni fatalni hlaska hry. `sub_8DAE8` ma v prologu `push eax / push edx /
+push ebx` a telo je cte na [ebp'-52h]/[ebp'-56h]/[ebp'-5Ah] - coz jsou
+PRESNE tytez adresy jako v70/v69/v68, ktere IDA korektne priradila z a1/a2/a3.
+Jenze telo pouziva DRUHOU sadu promennych (v73/v72/v71), kterou IDA nechala
+neinicializovanou. Doplneno `v73 = a1; v72 = a2; v71 = a3;`.
+
+#### 4. `loc_1D4BC` - konstanta jako navesti
+
+`sub_8C099` alokovalo `(int)&loc_1D4BC + 4`, tedy ADRESU zaslepky. V asm je to
+`mov edx, (offset loc_1D4BC+4)` = prosté **0x1D4C0 = 120000** (velikost bufferu
+hvezdne mapy). Alokace proto selhala a hra spadla v uklidovem retezu
+(`sub_110D3C -> sub_110F3A -> sub_113DBD`). Trida chyby je v prirucce jako
+"Konstanta jako navesti". Opravena tri mista.
+
+#### 5. `sub_8CF09` byl prazdny pahyl - meritko galaxie
+
+`int sub_8CF09(void) { return 0; }` v `link_stubs.c`. Pritom je to funkce,
+ktera nastavuje meritko galaxie: `call sub_798D2 / cmp ax, 3 / jmp
+jpt_8CF1B[eax*4]` a ctyri vetve, kazda plni sestici globalu
+(`word_199A0C`, `word_199A0A`, `word_199992`, `word_1999A0`, `word_19997C`,
+`word_19999E`). Bez ni zustalo `word_199992` = 0 a `sub_7926C`
+(`10 * a / word_199992`) padl na deleni nulou pri rozmistovani hvezd.
+Rekonstruovano z asm (0x8CF09..0x8CFFE), argumenty volajiciho se nepouzivaji.
+
+#### Stav
+
+Generovani vesmiru postoupilo o ctyri zarazky dal. Aktualni:
+
+    sub_12479 -> sub_8DAE8 -> sub_8CFFF+0x28c
+    SEH 0xC0000094 (deleni nulou)
+
+`sub_8CFFF` deli mrizku galaxie (`word_199A0C / a1`, `(int16_t)i % v34`) -
+dalsi krok je zmerit, ktera z techto hodnot je nulova.
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem);
+- dialog "Enter Ruler Name" se ted kresli shodne s dosboxem (jmeno "Reid"
+  svetle sede);
+- SELECT RACE i obrazovka vlastnosti rasy beze zmeny;
+- vsechna docasna instrumentace odstranena.
+
+#### Poznamka k testovani
+
+Vsechny funkcni testy bezi s `REORION2_SKIPINTRO=1 REORION2_STATE=13`, takze
+hra nabehne rovnou na NEW GAME. Intro se prehrava uz jen pri samotne regresni
+brane - ta se bez nej porovnat neda.
+
+### Vlna 82: rozmistovani hvezd projde, generovani dobehne k satelitum
+
+Uzivatel poslal snimek z debuggeru: `sub_8CFFF`, radek 3921,
+`v44 = (int16_t)i % v34 * (int16_t)v48;` - deleni nulou. Ctyri navazujici
+nalezy, vsechny ze stejne rodiny ("spillnuty registrovy argument" a
+"sirka ukazatele").
+
+#### 1. `sub_8CFFF` - `v34` je SPILLNUTE EAX
+
+asm: `enter 6Ch, 0 / push eax` -> ulozeny eax lezi presne na [ebp-70h], coz je
+IDA promenna `var_70` = `v34`. Telo ji pak pouziva pri delenich
+(`i % v34`, `i * v49 / v34`). IDA z ni udelala neinicializovanou lokalku,
+takze `v34` bylo 0. Doplneno `v34 = (int16_t)a1;` (tyz argument, ktery se o
+dva radky nize pouziva jako delitel u `word_199A0C / a1`).
+
+#### 2. `sub_FE92D` - ukazatel jako `int` + chybejici `return`
+
+Dve chyby naraz:
+
+- prvni argument je UKAZATEL (asm `mov ecx, eax` a pak
+  `movzx ebx, word ptr [ecx+ebx*2]`), ne `int`. Vsech 18 volajicich
+  predavalo `(int)ukazatel`, coz na x64 orezalo horni pulku;
+- `JUMPOUT(0xFE929)` byl NO-OP. `loc_FE929` je `pop esi/ecx/ebx / retn`
+  a v EAX je v tu chvili index `j`, takze funkce ma vratit `j`; bez toho
+  vracela vzdy -1.
+
+Volajici `sub_8C099` s tim indexoval mimo buffer - zmereno SEH 0xC0000005,
+zapis na **0x2_1906F39A** (horni pulka 2 = klasicky podpis "sirka ukazatele").
+Signatura zmenena na `int sub_FE92D(const uint16_t *a1, int a2)`, prepsano
+18 volani.
+
+#### 3. `sub_8DAE8` - ukazatele na zaznamy hvezd orezane na 32 bitu
+
+Tri mista, kde se do 32bitoveho mista ukladal 64bitovy ukazatel:
+
+| bylo | ma byt |
+|---|---|
+| `*(_DWORD *)((char *)&a21 + 10) = v50 + dword_19306C;` a pozdeji `memset(*(_DWORD *)(...) + 66, -1, 8)` | docasny ukazatel (`starRec`) |
+| `int v51 = v50 + dword_19306C + 2 * v49;` -> `*(_WORD *)(v51 + 84) = -1` | ukazatel (`starFld`) |
+| `LODWORD(v43) = 113*i; HIDWORD(v43) = dword_19306C;` -> `*(_BYTE *)(dword_19306C + v43 + 41)` | asm ma prosté `mov [edx+eax+41], -1` |
+
+`dword_19306C` je v portu `uint8_t *`, takze soucet je ukazatel a ulozeni do
+`int`/`_DWORD` ho orezalo. Zmereno: SEH 0xC0000005, cteni z
+0xFFFFFFFFFFFFFFFF v `sub_8DAE8+0xcfe`.
+
+#### Stav
+
+Generovani vesmiru ted projde alokaci, rozmisteni hvezd (`sub_8C099`)
+i mrizku galaxie (`sub_8CFFF`) a dobehne az k rozmistovani planet, kde se
+zastavi na VLASTNI diagnostice hry:
+
+    KONEC (sub_126487): Found no satellites after 3_MIN enforcement: Star: 6
+
+To uz neni pad, ale nesplnene herni pravidlo - generator nenasel satelity
+u sedme hvezdy. Dalsi krok je najit, ktera vstupni hodnota do rozmistovani
+planet je jeste nulova nebo orezana (stejna rodina chyb).
+
+#### Overeno
+
+- regresni test videa 600/600 matched, 0 diverged (po `-t:Rebuild`,
+  s vypnutym dosboxem) - vcetne zmeny signatury `sub_FE92D` na 18 mistech;
+- vsechna docasna instrumentace odstranena.
+
+### Vlna 83: GENEROVANI VESMIRU DOBEHNE
+
+Navazuje na vlnu 82 (hra koncila vlastni hlaskou "Found no satellites after
+3_MIN enforcement"). Pet nalezu, po kterych generovani poprve probehne cele.
+
+#### 1. `sub_7B22B` - ukazatel na zaznam hvezdy v `int`
+
+`v7 = dword_19306C + v22 + 2 * i;` do `int v7`, pak `*(_WORD *)(v7 + 74)`.
+`dword_19306C` je v portu `uint8_t *`, takze se adresa orezala a pole
+satelitu se cetlo ze smeti - vzdy vyslo zaporne, `v23` zustalo 0 a hra
+zahlasila "Found no satellites". Prepsano na skutecny ukazatel; do `v25`
+dekompilat michal ukazatel s hodnotou, ale vsichni ctenari berou jen dolni
+slovo, takze staci hodnota pole.
+
+#### 2. `sub_FE8DA` - ukazatel jako `int` (jako `sub_FE92D` ve vlne 82)
+
+asm `mov ecx, eax` a pak `[ecx+ebx]`; volajici predavali `(int)pole`, coz na
+x64 orezalo adresu ZASOBNIKU. Signatura zmenena na
+`int sub_FE8DA(const uint8_t *a1, int a2)`, prepsano 9 volani.
+
+#### 3. `sub_8C567` - zahozena navratova hodnota (index satelitu)
+
+asm konci `mov al, cl / jmp locret_8BBFC`, kde `cl` je vysledek `sub_FE8DA` -
+tedy vybrany slot. IDA funkci prohlasila za `void` a index zahodila; volajici
+`sub_8E280` pak zapisoval planetu na NEINICIALIZOVANY index
+(`sub_8C567(a1); v4 = v3;` s neinicializovanym `v3`). Opraveno
+(`char sub_8C567`, `v3 = sub_8C567(a1)`).
+
+#### 4. `byte_17D680` - TABULKA POCTU PLANET nebyla prenesena
+
+`char byte_17D680[] = { '\0' };` - jeden nulovy bajt misto **60bajtove
+tabulky 10 radku (hod kostkou) x 6 typu hvezdy**. `sub_8C527` z ni vraci
+pocet planet, takze vracela skoro vzdy 0 a zadne satelity nevznikly.
+Bajty vytazene z `Debug/diss/Orion2.exe.lst` (0x17D680..0x17D6BB, dalsi
+symbol `byte_17D6BC`), hodnoty 0..5 rostouci s hodem - viz orion_data.c.
+
+#### 5. `sub_8CFFF` - zahozeny priznak "zkus znovu"
+
+asm ma dva vystupy: `xor al, al` na konci smycky pres hvezdy (mapa hotova)
+a `mov al, 1` po vycerpani 150 pokusu (nepovedlo se). IDA obe slila do
+jednoho `JUMPOUT` a funkci prohlasila za `void`. Volajici `sub_8DAE8` dela
+`test al, al / jz ...`, takze bez navratove hodnoty testoval smeti a
+generovani se **tocilo donekonecna** na obrazovce "Generating Universe ...".
+
+Zmereno docasnymi kontrolnimi body: `sub_7B8CD` (konec generovani) se
+nikdy nezavolala a `word_199A08 = 39` se nikdy nenastavilo, zatimco
+`sub_5D2BB` (dialog jmena vladce) probehla presne jednou - tedy se necyklil
+vyber rasy, ale samo generovani.
+
+#### Stav
+
+Cesta NEW GAME -> ACCEPT -> rasa -> jmeno vladce -> barva vlajky ted projde
+**celym generovanim vesmiru**: objevi se "Generating Universe ...", generovani
+DOBEHNE, `sub_12479` nastavi stav 39 a hra prejde na `sub_8B956` (herni mapa).
+
+Dalsi krok: `sub_8B956` zatim nic nevykresli - zustane prazdny herni ramecek.
+Funkce NENI pahyl, takze jde o dalsi ladeni uvnitr ni.
+
+#### Poznamka
+
+Regresni brana se v teto vlne na pokyn uzivatele nespoustela.
+
+### Vlna 84: pet zaseknutych smycek - generovani i navazny retez uz probehne
+
+Uzivatel: "uz to nepada, ale ani to nevykresluje, zasekne se to v nejake
+smycce". Klic k teto vlne byl **vestaveny hlidac** `REORION2_WATCHDOG=6` -
+kdyz se dele nez N sekund nezavola Present, pozastavi hlavni vlakno a vypise
+jeho zasobnik VCETNE CISEL RADKU. Kazda zarazka se tim nasla behem minuty,
+bez jedineho docasneho vypisu.
+
+#### 1. `sub_8C567` - tabulka vah orbit byla NAVESTI, ne data
+
+asm kopiruje 15 bajtu z `byte_8BB39` (`mov esi, offset byte_8BB39 /
+movsd movsd movsd movsw movsb`) - vahy pro 5 orbit, tri hodnoty podle stari
+galaxie. IDA z prvnich osmi bajtu udelala dve konstanty, ale zbylych sedm
+nahradila vyrazy nad `dword_8BB3C`, coz je NAVESTI. V portu z toho vyslo
+smeti (casto nuly), `sub_FE8DA` pak vracela -1 a `while (1)`, ktery hleda
+volny slot, se tocil donekonecna.
+
+Bajty z `Orion2.exe.lst` (0x8BB39..0x8BB47): 25,20,10 / 18,20,22 / 17,20,30 /
+15,20,33 / 25,20,5.
+
+#### 2. `sub_7B11A` - IDA pseudo-priznaky misto podminky
+
+Dekompilat mel `char v2; // sf` a `char v3; // of` a testoval `v2 != v3` -
+to nejsou promenne, ale **priznaky SF/OF**, tedy jen zapis podminky `<`.
+asm dela:
+
+```
+call sub_79B2D / cbw / mov [ebp+var_8], eax / cmp ax, 3 / jge return
+...
+loc_7B1F6: cmp var_4, (3 - var_8) / jl loop
+```
+
+Smycka tedy bezi PEVNE `3 - pocet` krat a `sub_79B2D` znovu NEVOLA. Port ji
+mel jako `while` nad neinicializovanymi priznaky -> nekonecna.
+Pri tom opraveno i `v4` (navratova hodnota `sub_7CCB5`, kterou IDA zahodila)
+a dva ukazatele orezane na `int` (`dword_19306C`, `dword_1930D4`).
+
+#### 3. `sub_7CCB5` - zahozena navratova hodnota
+
+asm konci `jmp loc_7BF55`, kde je `mov eax, edx` - vraci vybranou orbitu
+(`v1`), pripadne `sub_1247A0(5) - 1`, kdyz zadnou nenajde. IDA `void`.
+
+#### 4. `qsort` bez porovnavaci funkce - 30 mist naraz
+
+Pad `av_execute` na adrese 0x141 uvnitr `qsort` (volani ukazatele na smeti).
+V repu uz byl z drivejska nastroj `tools/qsort_scan.py`, ktery ke kazdemu
+trojargumentovemu `qsort` dohleda komparator z asm. Cerstvy beh: **33 volani,
+31 dohledanych**. Doplneno 30 z nich; jedno (`sub_63156`) ma komparator jako
+navesti `loc_62BE1` UVNITR jine funkce, takze v portu zatim neexistuje a
+zustava nedodelane, stejne jako dve nedohledana.
+
+`qsort` nema v dekompilatu prototyp (neni tam `<stdlib.h>`), takze
+trojargumentova volani prochazela prekladem a ctvrty argument brala ze smeti.
+
+#### 5. `sub_7B8CD` volalo artefakt IDA misto `sub_7BBBC`
+
+Zapis na adresu 0x0E. Asm ma na konci `sub_7B8CD` prosté `call sub_7BBBC`;
+port sem volal `sub_169245` z neprelozene oblasti orion_part_26 - **adresa
+0x169245 v asm dumpu vubec neni**. Ta funkce navic psala pres `sub_16945B`,
+ktera vracela 0.
+
+#### 6. `sub_8BC39` - dalsi spillnuty argument
+
+`v10` ([ebp-54h]) je spillnute EAX = maximalni pocet planet (volajici predava
+`mov eax, 0FAh` = 250). Neinicializovane -> `while (word_1999A2 - v13 >= v10)`
+se tocil donekonecna. Pozor: `LOWORD(a1) = word_1999A2` prepisuje `a1`, takze
+se musi ulozit hned na zacatku (v asm je `push eax` prvni instrukce po
+`enter`).
+
+#### Stav
+
+Cesta NEW GAME -> rasa -> jmeno -> vlajka ted projde **celym generovanim
+vesmiru i navaznym retezem** (`sub_8DAE8`, `sub_7B8CD`, `sub_8BC39`,
+`sub_8D65D`, `sub_78E67`, `sub_7CDC5`, `sub_122CC`, `sub_8CC15`, `sub_8BB51`,
+`sub_EB87D`) a zastavi se az na:
+
+    sub_12479 -> sub_EBA96 -> sub_EBA7C -> sub_EBA3A -> sub_EB9C8
+    SEH 0xC0000005, cteni z NULL
+
+Dalsi krok je tedy uz jen dalsi clanek stejneho retezu.
+
+#### Poznamka k metode
+
+`REORION2_WATCHDOG` je na zaseknute smycky NEJRYCHLEJSI nastroj, ktery tady
+je - vypis zasobniku s cisly radku najde smycku okamzite. Vyplati se sahnout
+po nem driv nez po docasnych `PortDebug_Checkpoint`.
+
+Regresni brana se v teto vlne na pokyn uzivatele nespoustela.

@@ -2664,6 +2664,14 @@ void sub_8BC39(int a1)
   int v12; // [esp+4Ch] [ebp-8h]
   int v13; // [esp+50h] [ebp-4h]
 
+  // PORT (vlna 84): `v10` ([ebp-54h]) je SPILLNUTE EAX, tedy `a1` - maximalni
+  // pocet planet. asm: `enter 50h, 0 / push eax`, cteni pres
+  // `movsx eax, [ebp+var_54]`. IDA z nej udelala neinicializovanou lokalku,
+  // takze podminka `word_1999A2 - v13 >= v10` byla nesmyslna a `while` se
+  // tocil donekonecna (zmereno hlidacem: sub_8BC39 <- sub_12479).
+  // POZOR: `LOWORD(a1) = word_1999A2` prepisuje `a1`, takze se musi ulozit
+  // DRIV - v asm je `push eax` uplne prvni instrukce po `enter`.
+  v10 = (int16_t)a1;
   LOWORD(a1) = word_1999A2;
   v12 = a1;
   v13 = sub_8BE4D();
@@ -2820,12 +2828,12 @@ LABEL_11:
       {
         if ( byte_19C31A )
         {
-          while ( !byte_17D81C[(char)sub_FE8DA((int)v10, 10)] )
+          while ( !byte_17D81C[(char)sub_FE8DA((const uint8_t *)v10, 10)] )
             ;
         }
         else
         {
-          sub_FE8DA((int)v10, 10);
+          sub_FE8DA((const uint8_t *)v10, 10);
         }
       }
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
@@ -2962,9 +2970,16 @@ void sub_8C099(int a1, unsigned int a2)
 
   v45 = 20;
   v41 = 0;
-  sub_1112EC(dword_192ED4, (int)&loc_1D4BC + 4);
+  // PORT (vlna 81): `loc_1D4BC` NENI navesti, ale KONSTANTA - asm ma
+  // `mov edx, (offset loc_1D4BC+4)`, tedy prosté 0x1D4C0 = 120000 (velikost
+  // bufferu hvezdne mapy). V portu se misto toho pouzila ADRESA zaslepky,
+  // takze `sub_110D3C` dostal nesmyslnou velikost, alokace selhala a hra
+  // spadla v uklidovem retezu (zmereno: sub_8C099 -> sub_110D3C ->
+  // sub_110F3A -> sub_113DBD). Trida chyby je v prirucce jako
+  // "Konstanta jako navesti".
+  sub_1112EC(dword_192ED4, 120000);
   v43 = 0;
-  v39 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_1D4BC + 4);
+  v39 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 120000);
   v2 = 6;
   v36 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 40000);
   v3 = 0;
@@ -3019,7 +3034,7 @@ void sub_8C099(int a1, unsigned int a2)
       break;
     memset(v32, 0, sizeof(v32));
     memset(v34, -1, sizeof(v34));
-    memset(v39, 0, (char *)&loc_1D4BC + 4);
+    memset(v39, 0, 120000);
     memset(v36, 0, 40000);
     v15 = memset(v35, 0, 20000);
     ServiceAudioTick_FE8BE(v15, 0, 20000, (int16_t *)a2);
@@ -3095,7 +3110,7 @@ void sub_8C099(int a1, unsigned int a2)
           if ( k >= (uint8_t)byte_199F0D )
             break;
           v13 = 5 * k;
-          a2 = (int16_t)sub_FE92D((int)v35, v46);
+          a2 = (int16_t)sub_FE92D((const uint16_t *)v35, v46);
           *(_BYTE *)(dword_193068 + v13 + 4) = v33[k];
           sub_7927F();
           *(_WORD *)(v13 + dword_193068) = v28;
@@ -3195,7 +3210,13 @@ char sub_8C527( int a1)
 
 
 //----- (0008C567) --------------------------------------------------------
-void sub_8C567( int a1)
+// PORT (vlna 83): funkce VRACI vybrany slot satelitu - asm konci
+// `mov al, cl / jmp locret_8BBFC`, kde `cl` je vysledek `sub_FE8DA`.
+// IDA ji prohlasila za `void` a index zahodila, takze volajici `sub_8E280`
+// zapisoval planetu na neinicializovany index a pole satelitu zustalo
+// prazdne -> hra skoncila hlaskou "Found no satellites after 3_MIN
+// enforcement".
+char sub_8C567( int a1)
 {
   int v1; // eax
   int v2; // edx
@@ -3206,26 +3227,43 @@ void sub_8C567( int a1)
   char v8; // [esp+12h] [ebp-Ah]
   _BYTE v9[8]; // [esp+14h] [ebp-8h] BYREF
 
+  // PORT (vlna 84): asm kopiruje 15 BAJTU z tabulky `byte_8BB39` v kodovem
+  // segmentu (`mov esi, offset byte_8BB39 / movsd movsd movsd movsw movsb`).
+  // Jsou to vahy orbit: pro kazdy z 5 slotu tri hodnoty podle stari galaxie
+  // (`byte_199CB3`), index `3 * slot + stari`.
+  // IDA z prvnich osmi bajtu udelala dve konstanty (0x120A1419, 0x14111614),
+  // ale zbylych sedm nahradila vyrazy nad `dword_8BB3C` - a to je NAVESTI,
+  // ne data. V portu z toho vyslo smeti, casto same nuly; `sub_FE8DA` pak
+  // vracela -1, `*(int16_t *)(... 2*(-1) + 74)` cetlo jine pole nez -1,
+  // priznak `v4` zustal 0 a `while (1)` se tocil DONEKONECNA.
+  // Zmereno hlidacem (REORION2_WATCHDOG): zasobnik
+  // sub_8C567 -> sub_8E280 -> sub_8DAE8 -> sub_12479.
+  // Bajty vytazene z Debug/diss/Orion2.exe.lst (0x8BB39..0x8BB47).
+  static const uint8_t orbitW[15] = {
+    0x19, 0x14, 0x0A,
+    0x12, 0x14, 0x16,
+    0x11, 0x14, 0x1E,
+    0x0F, 0x14, 0x21,
+    0x19, 0x14, 0x05
+  };
   v1 = 0;
-  v6[0] = 302650393;
-  v6[1] = 336664084;
-  v6[2] = *(int *)((char *)&dword_8BB3C[1] + 1);
-  v7 = *(_WORD *)((char *)&dword_8BB3C[2] + 1);
-  v8 = HIBYTE(dword_8BB3C[2]);
   do
   {
     v2 = (int16_t)v1;
     v3 = 3 * (int16_t)v1++ + (uint8_t)byte_199CB3;
-    v9[v2] = *((_BYTE *)v6 + v3);
+    v9[v2] = orbitW[v3];
   }
   while ( (int16_t)v1 < 5 );
   v4 = 0;
   while ( 1 )
   {
-    if ( *(int16_t *)(dword_19306C + 113 * a1 + 2 * (int16_t)sub_FE8DA((int)v9, 5) + 74) == -1 )
+    // vlna 83: index ze `sub_FE8DA` se v asm drzi v ECX a na konci se vraci
+    // (`mov al, cl`); dekompilat ho zahazoval.
+    char slot = (char)sub_FE8DA((const uint8_t *)v9, 5);
+    if ( *(int16_t *)(dword_19306C + 113 * a1 + 2 * (int16_t)slot + 74) == -1 )
       v4 = 1;
     if ( v4 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
+      return slot;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog */
   }
 }
 // 8C5D2: control flows out of bounds to 8BBFC
@@ -3375,7 +3413,7 @@ int sub_8C807( int a1)
     v6[v3] = v4;
   }
   while ( (int16_t)v2 < 7 );
-  return sub_FE8DA((int)v6, 7);
+  return sub_FE8DA((const uint8_t *)v6, 7);
 }
 
 
@@ -3501,7 +3539,7 @@ LABEL_44:
           }
           goto LABEL_56;
         }
-        LOWORD(v14) = sub_FE92D((int)v26, 5);
+        LOWORD(v14) = sub_FE92D((const uint16_t *)v26, 5);
         v15 = (int16_t)v14;
         if ( (int16_t)v14 > -1 )
         {
@@ -3521,7 +3559,7 @@ LABEL_56:
     {
       if ( (uint8_t)v14 <= 7u )
       {
-        LOWORD(v14) = sub_FE92D((int)v25, 5);
+        LOWORD(v14) = sub_FE92D((const uint16_t *)v25, 5);
         v19 = (int16_t)v14;
         if ( (int16_t)v14 <= -1 )
           goto LABEL_57;
@@ -3547,7 +3585,7 @@ LABEL_49:
         goto LABEL_44;
       if ( (_BYTE)v14 == 10 )
       {
-        LOWORD(v14) = sub_FE92D((int)v24, 5);
+        LOWORD(v14) = sub_FE92D((const uint16_t *)v24, 5);
         v20 = (int16_t)v14;
         if ( (int16_t)v14 > -1 )
         {
@@ -3823,7 +3861,14 @@ int sub_8CEAC( int a1)
 
 
 //----- (0008CFFF) --------------------------------------------------------
-void sub_8CFFF( int a1, int a2, int a3, int a4, int a5)
+// PORT (vlna 83): funkce VRACI priznak (0 = mapa hotova, 1 = nepovedlo se,
+// zkus znovu). asm ma dva vystupy: `xor al, al / jmp locret_8CB8D` na konci
+// smycky pres hvezdy a `mov al, 1 / jmp locret_8CB8D` po vycerpani 150
+// pokusu. IDA obe slila do jednoho `JUMPOUT` a funkci prohlasila za `void`.
+// Volajici `sub_8DAE8` dela `test al, al / jz ...` - bez navratove hodnoty
+// testoval smeti a generovani vesmiru se tocilo donekonecna na obrazovce
+// "Generating Universe ..." (zmereno: sub_7B8CD se nikdy nezavolala).
+char sub_8CFFF( int a1, int a2, int a3, int a4, int a5)
 {
   int v5; // ebx
   int v6; // edx
@@ -3875,6 +3920,13 @@ void sub_8CFFF( int a1, int a2, int a3, int a4, int a5)
   char v52; // [esp+68h] [ebp-8h]
   uint8_t v53; // [esp+6Ch] [ebp-4h]
 
+  // PORT (vlna 82): `v34` ([ebp-70h]) je SPILLNUTE EAX, tedy tyz `a1`.
+  // asm: `enter 6Ch, 0 / push eax` -> ulozeny eax lezi presne na [ebp-70h],
+  // a telo ho pak cte pri delenich `i % v34`, `i * v49 / v34`. IDA z nej
+  // udelala neinicializovanou lokalku, takze `v34` bylo 0 a rozmistovani
+  // hvezd padlo na deleni nulou (zmereno: SEH 0xC0000094 v sub_8CFFF+0x28c).
+  // Stejny vzor jako u `sub_8DAE8` ve vlne 81.
+  v34 = (int16_t)a1;
   v52 = a4;
   v48 = word_199A0C / a1;
   v49 = word_199A0A / a2;
@@ -3897,8 +3949,7 @@ LABEL_11:
       for ( i = 0; ; ++i )
       {
         if ( (int16_t)i >= word_19999A )
-LABEL_43:
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8CB8D je epilog funkce */
+          return 0;   /* vlna 83: asm `xor al, al` - mapa hotova */
         word_19C2EC = i;
         ServiceAudioTick_FE8BE(i, v6, v5, v7);
         if ( dword_19C2CC == 1 )
@@ -4007,7 +4058,7 @@ LABEL_25:
               if ( (_BYTE)v28 )
               {
                 if ( (int16_t)++v20 > 150 )
-                  goto LABEL_43;
+                  return 1;   /* vlna 83: asm `mov al, 1` - vycerpane pokusy */
               }
               else
               {
@@ -4457,6 +4508,59 @@ void sub_8DA07(int a1, int a2, int16_t *a3)
 
 //----- (0008DAE8) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
+//----- (0008CF09) --------------------------------------------------------
+// PORT (vlna 81): REKONSTRUOVANO Z ASM (0x8CF09..0x8CFFE). V portu to byl
+// prazdny pahyl `int sub_8CF09(void) { return 0; }` v link_stubs.c, takze se
+// nikdy nenastavilo MERITKO GALAXIE. Dusledek: `word_199992` zustalo 0 a
+// `sub_7926C` (= `10 * a / word_199992`) spadl na deleni nulou hned pri
+// rozmistovani hvezd (zmereno: SEH 0xC0000094 v sub_7926C, volano
+// z sub_8C099+0x257).
+// Asm: `call sub_798D2 / cmp ax, 3 / ja default / jmp jpt_8CF1B[eax*4]` a
+// ctyri vetve, kazda nastavi stejnou sestici globalu. Argumenty, ktere
+// volajici predava, se NEPOUZIVAJI - velikost si funkce zjisti sama.
+int sub_8CF09()
+{
+  switch ( (uint16_t)sub_798D2() )
+  {
+    case 0:
+      word_199A0C = 0x1FA;
+      word_199A0A = 0x190;
+      word_199992 = 10;
+      word_1999A0 = 10;
+      word_19997C = 0;
+      word_19999E = 0;
+      break;
+    case 1:
+      word_199A0C = 0x2F7;
+      word_199A0A = 0x258;
+      word_199992 = 15;
+      word_1999A0 = 15;
+      word_19997C = 1;
+      word_19999E = 1;
+      break;
+    case 2:
+      word_199A0C = 0x3F4;
+      word_199A0A = 0x320;
+      word_199992 = 20;
+      word_1999A0 = 20;
+      word_19999E = 2;
+      word_19997C = 2;
+      break;
+    case 3:
+      word_199A0C = 0x5EE;
+      word_199A0A = 0x4B0;
+      word_199992 = 30;
+      word_1999A0 = 30;
+      word_19997C = 3;
+      word_19999E = 3;
+      break;
+    default:
+      break;
+  }
+  return 0;
+}
+
+
 int sub_8DAE8(
         int a1,
         int a2,
@@ -4535,10 +4639,25 @@ int sub_8DAE8(
   int16_t v73; // [esp+7Eh] [ebp-52h]
   char var4E[80]; // [esp+82h] [ebp-4Eh] BYREF
   _BYTE vars2[14]; // [esp+D2h] [ebp+2h] BYREF
+  uint8_t *starRec = 0;   /* vlna 82: docasny ukazatel misto 4bajtoveho slotu */
+  uint8_t *starFld = 0;   /* vlna 82: dtto pro adresy poli zaznamu hvezdy */
 
   v70 = a1;
   v69 = a2;
   v68 = a3;
+  // PORT (vlna 81): SPILLNUTE REGISTROVE ARGUMENTY. asm ma v prologu
+  // `enter 0D0h,0 / push eax / push edx / push ebx / sub ebp, 82h`, takze
+  // eax lezi na [ebp'-52h], edx na [ebp'-56h] a ebx na [ebp'-5Ah] - a to jsou
+  // PRESNE tytez adresy jako v70/v69/v68 ([ebp-0D4h]/[ebp-0D8h]/[ebp-0DCh]).
+  // IDA z nich ale udelala DRUHOU sadu promennych (v73/v72/v71) a nechala je
+  // NEINICIALIZOVANE, takze telo pracovalo se smetim: `switch (v73)` spadl do
+  // default vetve a hra skoncila vlastni fatalni chybou
+  // "Galaxy size 15012 is undefined" (zmereno) hned po vyberu barvy vlajky.
+  // Volajici `sub_12479` posila eax = byte_199CB2 (velikost galaxie),
+  // edx = byte_199CB3, ebx = byte_199CB0.
+  v73 = (int16_t)a1;
+  v72 = (int16_t)a2;
+  v71 = (int16_t)a3;
   qmemcpy((char *)&a19 + 2, sub_8E5C5(4u, 119, 121), 8u);
   v25 = sub_8E5C5(4u, 119, 124);
   BYTE6(a23) = 0;
@@ -4670,7 +4789,7 @@ LABEL_13:
       memset(vars2, 0, 72);
       v44 = v72;
       HIDWORD(v43) = SWORD1(a23);
-      sub_8CFFF(SWORD1(a22), SWORD1(a23), v72, 1, 1);
+      LOBYTE(v43) = sub_8CFFF(SWORD1(a22), SWORD1(a23), v72, 1, 1);   /* vlna 83: asm `test al, al` */
       if ( (_BYTE)v43 )
       {
         sub_120BB5(4, (int)&a19 + 2);
@@ -4700,12 +4819,22 @@ LABEL_13:
         do
         {
           v50 = 113 * i;
-          *(_DWORD *)((char *)&a21 + 10) = v50 + dword_19306C;
-          v51 = v50 + dword_19306C + 2 * (int16_t)v49++;
-          *(_WORD *)(v51 + 84) = -1;
+          // PORT (vlna 82): puvodne `*(_DWORD *)((char *)&a21 + 10)` - do
+          // CTYRBAJTOVEHO slotu se ukladal ukazatel `v50 + dword_19306C`
+          // a o par radek nize se z nej zase cetl. Na x64 se tim ukazatel
+          // orezal a `memset(... + 66, -1, 8)` psal na neplatnou adresu
+          // (zmereno: SEH 0xC0000005, cteni z 0xFFFFFFFFFFFFFFFF v
+          // sub_8DAE8+0xcfe). V originale je to jen docasna promenna, takze
+          // staci skutecny ukazatel.
+          starRec = v50 + dword_19306C;
+          // vlna 82: `v51` je v dekompilatu `int`, ale scita se do nej
+          // UKAZATEL `dword_19306C` - na x64 se orezal a zapis sel na
+          // neplatnou adresu. Tady staci pocitat rovnou v ukazateli.
+          starFld = v50 + dword_19306C + 2 * (int16_t)v49++;
+          *(_WORD *)(starFld + 84) = -1;
         }
         while ( (int16_t)v49 < 8 );
-        memset(*(_DWORD *)((char *)&a21 + 10) + 66, -1, 8);
+        memset(starRec + 66, -1, 8);
         *(_BYTE *)(v50 + dword_19306C + 41) = -1;
         if ( dword_19C2CC == 1 && (int16_t)v26 < 1 )
         {
@@ -4744,8 +4873,8 @@ LABEL_13:
         v57 = 0;
         do
         {
-          v58 = 113 * i + dword_19306C + 2 * (int16_t)v57++;
-          *(_WORD *)(v58 + 74) = -1;
+          starFld = 113 * i + dword_19306C + 2 * (int16_t)v57++;   /* vlna 82 */
+          *(_WORD *)(starFld + 74) = -1;
         }
         while ( (int16_t)v57 < 5 );
         word_19C2F2 = 0;
@@ -4771,9 +4900,12 @@ LABEL_13:
           sub_8CB93(i, (_WORD *)&a22 + 3, (int)&unk_19C2D4);
         }
         LODWORD(v43) = 113 * i;
-        HIDWORD(v43) = dword_19306C;
+        // vlna 82: `HIDWORD(v43) = dword_19306C` cpalo UKAZATEL do horni
+        // pulky int64 a `dword_19306C + v43` z toho pak delalo nesmysl.
+        // asm ma prosté `mov [edx+eax+41], -1` (edx = dword_19306C,
+        // eax = 113*i).
         ++dword_19C2E0;
-        *(_BYTE *)(dword_19306C + v43 + 41) = -1;
+        *(_BYTE *)(dword_19306C + 113 * i + 41) = -1;
       }
       BYTE2(a24) = 1;
       BYTE2(a25) = 0;
@@ -4888,7 +5020,7 @@ int16_t sub_8E280( int a1)
   int v8; // eax
   int v9; // ebx
 
-  sub_8C567(a1);
+  v3 = sub_8C567(a1);   /* vlna 83: asm `call sub_8C567 / movsx cx, al` */
   v4 = v3;
   result = sub_8C6FE(a1, v3);
   v6 = result;
@@ -8373,7 +8505,7 @@ int sub_91BD4(int a1, int16_t *a2)
   v14 = sub_124DEC();
   sub_1077D((int)v14, v13, (int)byte_19C348, (int16_t *)&byte_19C340);
   sub_124D41();
-  byte_19C340 = 1;
+  byte_19C340[0] = 1;   /* vlna 81: asm `mov byte_194340, 1` */
   if ( byte_19C386 )
     sub_120940(3, (int)&unk_19C338);
   else

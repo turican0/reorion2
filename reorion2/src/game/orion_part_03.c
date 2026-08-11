@@ -6943,7 +6943,7 @@ char sub_40D40(char *a1, _DWORD *a2, int a3, int a4, int a5)
       do
         ++v38;
       while ( *v38 );
-      strcpy(v38, (char *)*(&off_18003E + 9 * (int16_t)v29));
+      strcpy(v38, shipSizeNameB_18003E[(int16_t)v29]);   /* vlna 81 */
       v39 = (char *)v100 - 1;
       do
         ++v39;
@@ -7005,7 +7005,7 @@ char sub_40D40(char *a1, _DWORD *a2, int a3, int a4, int a5)
     do
       ++v48;
     while ( *v48 );
-    strcpy(v48, (char *)*(&off_18003A + 9 * v46));
+    strcpy(v48, shipSizeNameA_18003A[v46]);   /* vlna 81 */
     v49 = (char *)v102 - 1;
     do
       ++v49;
@@ -8193,7 +8193,7 @@ _DWORD *sub_42781(int16_t *a1, int a2, int a3)
   sub_127776((_BYTE *)dword_192B14, 0x1E78u);
   word_1998AC = *(char *)(dword_197F9C + 129 * *a1 + 99);
   word_19988E = *(char *)((uint8_t*)dword_192B18 + 361 * word_199878);
-  qsort(a1, a2, 2);
+  qsort(a1, a2, 2, sub_42744);   /* vlna 84: komparator z asm */
   for ( i = 0; i < a2; ++i )
   {
     if ( !*(_BYTE *)(dword_197F9C + 129 * a1[i] + 17) )
@@ -11918,7 +11918,7 @@ int sub_47939(
              && sub_EBA3A(
                   *(_WORD *)(113 * SHIWORD(a29) + dword_19306C + 15),
                   *(_WORD *)(113 * SHIWORD(a29) + dword_19306C + 17));
-  qsort(v159, v158, 2);
+  qsort(v159, v158, 2, sub_478FC);   /* vlna 84: komparator z asm */
   for ( i = 0; i < v158; ++i )
   {
     v37 = v159[i];
@@ -12183,7 +12183,7 @@ LABEL_36:
   }
   v64 = sub_478FC;
   v176 = 0;
-  qsort(v157, v156, 2);
+  qsort(v157, v156, 2, sub_478FC);   /* vlna 84: komparator z asm */
   v74 = 0;
 LABEL_105:
   if ( v74 < v156 )

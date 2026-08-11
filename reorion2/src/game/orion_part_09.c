@@ -1772,9 +1772,9 @@ LABEL_8:
       if ( (int16_t)v30[i] > 0 )
       {
         if ( v30[i] == 1 )
-          v22 = (char *)*(&off_18003A + 9 * i);
+          v22 = shipSizeNameA_18003A[i];   /* vlna 81 */
         else
-          v22 = (char *)*(&off_18003E + 9 * i);
+          v22 = shipSizeNameB_18003E[i];   /* vlna 81 */
         sprintf(v29, "%d %s, ", (int16_t)v30[i], v22);
         v26 = (int)v27;
         v23 = (char *)&v26 + 3;
@@ -7360,7 +7360,7 @@ int16_t sub_9BBED()
   if ( !word_182306 )
   {
     v1 = dword_1975C4;
-    return qsort(dword_19C5A0, *(int16_t *)(v1 + 8), 28);
+    return qsort(dword_19C5A0, *(int16_t *)(v1 + 8), 28, sub_9CD0C);   /* vlna 84: komparator z asm */
   }
   if ( (uint16_t)word_182306 <= 1u )
   {
@@ -8767,7 +8767,7 @@ int sub_9D816( int a1)
   *(_WORD *)(dword_19C7C0 + 138) = v4;
   while ( v5 < *(int16_t *)(dword_19C7C0 + 138) )
   {
-    v6 = sub_FE92D((int)v8, 8);
+    v6 = sub_FE92D((const uint16_t *)v8, 8);
     if ( v6 > -1 && v6 < word_199998 && v6 != a1 )
     {
       ++v2;
@@ -8775,7 +8775,7 @@ int sub_9D816( int a1)
     }
     ++v5;
   }
-  qsort(dword_19C7C0 + 142, 16, 1);
+  qsort(dword_19C7C0 + 142, 16, 1, sub_9FFEC);   /* vlna 84: komparator z asm */
   *(_WORD *)(dword_19C7C0 + 138) = v2;
   return sub_124820(v9);
 }

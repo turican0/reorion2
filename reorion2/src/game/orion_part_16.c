@@ -3849,7 +3849,7 @@ void sub_FA1A3(int a1)
       if ( v3 > v8[--v6] )
         v8[v6] = 0;
     }
-    sub_FE8DA((int)v8, word_199998);
+    sub_FE8DA((const uint8_t *)v8, word_199998);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFA388 je epilog funkce */
 }
@@ -8183,7 +8183,10 @@ int sub_FE8C8(int a1, int a2)
 
 
 //----- (000FE8DA) --------------------------------------------------------
-int sub_FE8DA(int a1, int a2)
+// PORT (vlna 83): a1 je UKAZATEL (asm `mov ecx, eax` a pak `[ecx+ebx]`),
+// ne `int` - volajici predavali `(int)pole`, coz na x64 orezalo adresu
+// zasobniku a funkce cetla smeti. Stejna trida jako `sub_FE92D` ve vlne 82.
+int sub_FE8DA(const uint8_t *a1, int a2)
 {
   unsigned int v4; // eax
   int16_t i; // dx
@@ -8195,7 +8198,7 @@ int sub_FE8DA(int a1, int a2)
   v4 = 0;
   for ( i = 0; i < a2; ++i )
   {
-    v6 = *(uint8_t *)(a1 + i);
+    v6 = a1[i];
     v4 += v6;
   }
   if ( !v4 )
@@ -8203,7 +8206,7 @@ int sub_FE8DA(int a1, int a2)
   v8 = sub_1247A0(v4);
   for ( j = 0; ; ++j )
   {
-    v10 = (uint8_t *)(a1 + (int16_t)j);
+    v10 = (uint8_t *)&a1[(int16_t)j];
     if ( *v10 >= (int)v8 )
       break;
     v8 -= *v10;
@@ -8213,7 +8216,14 @@ int sub_FE8DA(int a1, int a2)
 
 
 //----- (000FE92D) --------------------------------------------------------
-int sub_FE92D(int a1, int a2)
+// PORT (vlna 82): a1 je UKAZATEL (asm `mov ecx, eax` a pak
+// `movzx ebx, word ptr [ecx+ebx*2]`), ne `int` - na x64 se 64bitovy ukazatel
+// orezaval na 32 bitu a funkce cetla z nesmyslne adresy. Navic
+// `JUMPOUT(0xFE929)` byl NO-OP: `loc_FE929` je `pop esi/ecx/ebx / retn`
+// a v EAX je v tu chvili index `j`, takze funkce ma vratit `j`. Bez toho
+// vracela vzdy -1 a volajici (`sub_8C099`) s tim indexoval mimo buffer
+// (zmereno: SEH 0xC0000005, zapis na 0x2_1906F39A).
+int sub_FE92D(const uint16_t *a1, int a2)
 {
   unsigned int v4; // eax
   int16_t i; // dx
@@ -8225,7 +8235,7 @@ int sub_FE92D(int a1, int a2)
   v4 = 0;
   for ( i = 0; i < a2; ++i )
   {
-    v6 = *(uint16_t *)(a1 + 2 * i);
+    v6 = a1[i];
     v4 += v6;
   }
   if ( v4 )
@@ -8233,12 +8243,12 @@ int sub_FE92D(int a1, int a2)
     v8 = sub_1247A0(v4);
     for ( j = 0; ; ++j )
     {
-      v10 = *(uint16_t *)(a1 + 2 * j);
+      v10 = a1[j];
       if ( v10 >= v8 )
         break;
       v8 -= v10;
     }
-    JUMPOUT(0xFE929);
+    return j;   /* vlna 82: asm `jnb loc_FE929` s indexem v EAX */
   }
   return -1;
 }

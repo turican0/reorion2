@@ -1279,24 +1279,33 @@ void sub_7B11A( int a1)
   int16_t v8; // cx
   int v9; // eax
   int i; // [esp+8h] [ebp-4h]
+  int16_t pocet;        /* vlna 84: var_8 - pocet planet typu 3 */
+  uint8_t *pStar = 0;   /* vlna 84: skutecne ukazatele misto orezanych intu */
+  uint8_t *pPlanet = 0;
 
-  sub_79B2D(a1);
-  sub_F4D0E();
-  if ( v2 != v3 )
+  // PORT (vlna 84): `v2`/`v3` nejsou promenne, ale IDA pseudo-priznaky SF/OF -
+  // `v2 != v3` je jen jeji zapis podminky `< `. asm dela:
+  //     call sub_79B2D / cbw / mov [ebp+var_8], eax / cmp ax, 3 / jge return
+  // a smycka na konci porovnava `cmp var_4, 3 - var_8`, tedy bezi PEVNE
+  // (3 - pocet) krat; NEVOLA `sub_79B2D` znovu. Dekompilat z toho udelal
+  // `while` nad neinicializovanymi priznaky, takze se tocil donekonecna
+  // (zmereno hlidacem: sub_79B2D <- sub_7B11A <- sub_7C4AF <- sub_7B8CD).
+  // Tez `v4` je navratova hodnota `sub_7CCB5` (asm `call sub_7CCB5 / movsx
+  // ebx, ax`), kterou IDA zahodila.
+  pocet = (int8_t)sub_79B2D(a1);
+  if ( pocet < 3 )
   {
     while ( !sub_792A9(a1) )
       *(_BYTE *)(dword_19306C + 113 * a1 + 22) = sub_8C807((uint8_t)byte_199CB3);
-    for ( i = 0; ; ++i )
+    for ( i = 0; i < 3 - pocet; ++i )
     {
-      sub_79B2D(a1);
-      sub_F4D0E();
-      if ( v2 == v3 )
-        break;
-      sub_7CCB5(a1);
+      v4 = sub_7CCB5(a1);
       v5 = v4;
       v6 = v4;
-      v7 = dword_19306C + 113 * a1 + 2 * v4;
-      if ( *(int16_t *)(v7 + 74) == -1 )
+      // vlna 84: `int v7`/`int v9` dostavaly UKAZATEL (dword_19306C /
+      // dword_1930D4 jsou `uint8_t *`), takze se na x64 orezaval.
+      pStar = dword_19306C + 113 * a1 + 2 * v4;
+      if ( *(int16_t *)(pStar + 74) == -1 )
       {
         sub_7C3C4(a1, word_1999A2, v5, 0);
         ++word_1999A2;
@@ -1304,10 +1313,10 @@ void sub_7B11A( int a1)
       else
       {
         v8 = word_1999A2;
-        word_1999A2 = *(_WORD *)(v7 + 74);
-        v9 = (uint8_t*)dword_1930D4 + 17 * word_1999A2;
-        *(_BYTE *)(v9 + 4) = 3;
-        *(_BYTE *)(v9 + 3) = v6;
+        word_1999A2 = *(_WORD *)(pStar + 74);
+        pPlanet = (uint8_t*)dword_1930D4 + 17 * word_1999A2;
+        *(_BYTE *)(pPlanet + 4) = 3;
+        *(_BYTE *)(pPlanet + 3) = v6;
         sub_8C5D7(a1);
         word_1999A2 = v8;
       }
@@ -1353,6 +1362,7 @@ int16_t sub_7B22B( int a1, int a2, int16_t *a3, int a4)
   int v29; // [esp+8Ch] [ebp+76h]
   int m; // [esp+90h] [ebp+7Ah]
   char v31; // [esp+94h] [ebp+7Eh]
+  uint8_t *satFld = 0;   /* vlna 83: skutecny ukazatel misto orezaneho int */
 
   v27 = a2;
   v26 = 0;
@@ -1361,10 +1371,16 @@ int16_t sub_7B22B( int a1, int a2, int16_t *a3, int a4)
   for ( i = 0; i < 5 && !(_WORD)v26; ++i )
   {
     v22 = 113 * a1;
-    v7 = dword_19306C + v22 + 2 * i;
-    LOWORD(v7) = *(_WORD *)(v7 + 74);
+    // PORT (vlna 83): `int v7` dostavalo UKAZATEL `dword_19306C + ...`, ktery
+    // se na x64 orezal, a nasledne `*(_WORD *)(v7 + 74)` cetlo z neplatne
+    // adresy. Vysledek: pole satelitu vychazelo vzdy zaporne, `v23` zustalo 0
+    // a hra skoncila vlastni hlaskou "Found no satellites after 3_MIN
+    // enforcement". Do `v25` se v dekompilatu michal ukazatel s hodnotou, ale
+    // vsichni ctenari (`v9`, `v19[...]`) berou jen dolni slovo, takze staci
+    // hodnota pole.
+    satFld = dword_19306C + v22 + 2 * i;
+    v7 = *(int16_t *)(satFld + 74);
     v25 = v7;
-    v7 = (int16_t)v7;
     v21 = v7;
     if ( (int16_t)v7 > -1 )
     {
@@ -1833,7 +1849,12 @@ int sub_7B8CD()
   v21 = (int16_t)dword_19BFD8;
   v22 = sub_8EFE1(4u, &word_19C2F0, dword_19BFD8, v27, (int)v28, (640 - v20) / 2, 215, byte_19C2F4, v25, 1);
   sub_1077D(v22, (int)&word_19C2F0, v21, (int16_t *)v1);
-  sub_169245();
+  // PORT (vlna 84): asm ma na konci `sub_7B8CD` prosté `call sub_7BBBC`.
+  // Port sem volal `sub_169245` - artefakt IDA z neprelozene oblasti
+  // orion_part_26 (adresa 0x169245 v asm dumpu vubec neni). Ta funkce
+  // navic zapisovala pres `sub_16945B`, ktera vracela 0, takze to psalo
+  // na adresu 0x0E (zmereno: SEH 0xC0000005, zapis na 0xE).
+  sub_7BBBC();
   return 1;   /* vlna 79: asm `mov eax, 1 / jmp locret_7BF57` */
 }
 // 7BAFB: control flows out of bounds to 7BF57
@@ -2005,7 +2026,7 @@ void sub_7BD87()
     }
     ++v13;
   }
-  qsort(v10, word_19999A, 6);
+  qsort(v10, word_19999A, 6, sub_7CDC0);   /* vlna 84: komparator z asm */
   v5 = 0;
   v6 = 0;
   while ( v5 < word_19999A )
@@ -2171,7 +2192,7 @@ void sub_7C107( int a1, int a2, int a3)
   }
   if ( !v31 )
   {
-    qsort(dword_19BFE4, word_19999A, 4);
+    qsort(dword_19BFE4, word_19999A, 4, sub_7CDA3);   /* vlna 84: komparator z asm */
     v9 = 0;
     v10 = 0;
     do
@@ -2655,7 +2676,7 @@ int16_t sub_7C94E( int a1)
     if ( v3 != -1 && *(_BYTE *)(17 * v3 + (uint8_t*)dword_1930D4 + 4) && *(uint8_t *)(17 * v3 + (uint8_t*)dword_1930D4 + 4) < 4u )
       v5[i] = 1;
   }
-  return *(_WORD *)(113 * a1 + dword_19306C + 2 * (uint16_t)sub_FE92D((int)v5, 5) + 74);
+  return *(_WORD *)(113 * a1 + dword_19306C + 2 * (uint16_t)sub_FE92D((const uint16_t *)v5, 5) + 74);
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
@@ -2742,15 +2763,15 @@ LABEL_3:
       break;
   }
   a1[4] = 3;
-  v8 = sub_FE92D((int)v13, 5);
+  v8 = sub_FE92D((const uint16_t *)v13, 5);
   if ( v8 > (int)a1[5] )
     a1[5] = v8;
-  v9 = sub_FE92D((int)v17, 5);
+  v9 = sub_FE92D((const uint16_t *)v17, 5);
   if ( v9 > (int)a1[10] )
     a1[10] = v9;
   if ( v20 )
   {
-    v10 = sub_FE92D((int)v12, 10);
+    v10 = sub_FE92D((const uint16_t *)v12, 10);
     if ( v10 > (int)a1[8] )
       a1[8] = v10;
   }
@@ -2840,7 +2861,11 @@ char sub_7CB7C(uint8_t* a1, int a2)
 
 
 //----- (0007CCB5) --------------------------------------------------------
-void sub_7CCB5( int a1)
+// PORT (vlna 84): funkce VRACI vybranou orbitu - asm konci
+// `jmp loc_7BF55`, kde je `mov eax, edx` (v `edx` je `v1`). IDA ji
+// prohlasila za `void` a hodnotu zahodila; volajici `sub_7B11A` pak
+// pracoval s neinicializovanym `v4`.
+int16_t sub_7CCB5( int a1)
 {
   int16_t v1; // dx
   int v2; // esi
@@ -2878,8 +2903,8 @@ void sub_7CCB5( int a1)
     }
   }
   if ( v1 == -1 )
-    sub_1247A0(5u);
-  JUMPOUT(0x7BF55);
+    v1 = sub_1247A0(5u) - 1;   /* vlna 84: asm `mov edx, eax / dec edx` */
+  return v1;                   /* vlna 84: asm `loc_7BF55: mov eax, edx` */
 }
 // 7CD9E: control flows out of bounds to 7BF55
 // 19306C: using guessed type int dword_19306C;
@@ -3004,7 +3029,7 @@ LABEL_48:
   {
     v11 = 1;
     v12 = 0;
-    v26 = sub_FE92D((int)v19, word_19999A);
+    v26 = sub_FE92D((const uint16_t *)v19, word_19999A);
     while ( v12 < v3 && v11 )
     {
       v13 = v18[v12];

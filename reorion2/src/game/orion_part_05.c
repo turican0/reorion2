@@ -4316,7 +4316,7 @@ void sub_69583()
   sub_6921B(word_19999C);
   v48 = 1;
   if ( *(int16_t *)(dword_1975C4 + 8) > 1 )
-    qsort(dword_192694, *(int16_t *)(dword_1975C4 + 8), 6);
+    qsort(dword_192694, *(int16_t *)(dword_1975C4 + 8), 6, sub_69E59);   /* vlna 84: komparator z asm */
   sub_6828D();
   v3 = (_WORD *)dword_1975C4;
   *(_WORD *)(dword_1975C4 + 10) = 10;
@@ -4573,7 +4573,7 @@ LABEL_81:
         v6 = (int)sub_69E59;
         v8 = 6;
         HIDWORD(v9) = *(int16_t *)(dword_1975C4 + 8);
-        qsort(dword_192694, HIDWORD(v9), 6);
+        qsort(dword_192694, HIDWORD(v9), 6, sub_69E59);   /* vlna 84: komparator z asm */
         if ( *(int16_t *)(dword_1975C4 + 8) >= 10 )
         {
           HIDWORD(v9) = *(int16_t *)(dword_1975C4 + 12) + 10;
@@ -8066,7 +8066,7 @@ int16_t sub_6E091( int a1)
     sub_8F6DF(v1, v8);
     if ( v3 == 1 )
     {
-      sprintf(v9, v8, v10, *(&off_18003A + 9 * *(int16_t *)(dword_1927A8 + 229)));
+      sprintf(v9, v8, v10, shipSizeNameA_18003A[*(int16_t *)(dword_1927A8 + 229)]);   /* vlna 81 */
       v7 = v9;
     }
     else
@@ -10912,7 +10912,7 @@ void sub_713CE(char *a1)
     {
       if ( v3 <= 8 && sub_78182(v2) )
       {
-        sprintf(a1, "%s", (char *)*(&off_18003A + 9 * v5));
+        sprintf(a1, "%s", shipSizeNameA_18003A[v5]);   /* vlna 81 */
         goto LABEL_8;
       }
       v4 = 129 * v2 + dword_197F9C;

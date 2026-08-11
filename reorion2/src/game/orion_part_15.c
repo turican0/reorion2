@@ -124,7 +124,7 @@ int sub_E5BE3( int a1, int a2,
       }
       while ( *(int *)((char *)&a28 + 6) > 0 );
     }
-    qsort(v42, v29, 2);
+    qsort(v42, v29, 2, sub_E5BD8);   /* vlna 84: komparator z asm */
     v36 = (v29 + 1) / 2;
     if ( v39 )
       v37 = v29 - sub_1247A0(v36);
@@ -2879,7 +2879,7 @@ void sub_E9927(_BYTE *a1)
     }
     if ( v2 > 0 )
     {
-      v4 = sub_FE8DA((int)v25, word_199998);
+      v4 = sub_FE8DA((const uint8_t *)v25, word_199998);
       v32 = v4;
       v5 = a1[40];
       if ( v5 < 7u )
@@ -5881,7 +5881,7 @@ int16_t sub_ECF41(char *a1, int a2, int a3, int a4)
         v16 = v32 / (v36 + 1);
         if ( (int)sub_1247A0(0x3E8u) <= v16 )
         {
-          v17 = sub_FE92D((int)v22, 204);
+          v17 = sub_FE92D((const uint16_t *)v22, 204);
           if ( v17 == -1 )
           {
             v11 = 0;
@@ -5963,7 +5963,7 @@ void sub_ED260(int a1)
     if ( v2 > 0 )
     {
       v5 = 10 * v2;
-      v18 = (int16_t)sub_FE8DA((int)v15, word_199998);
+      v18 = (int16_t)sub_FE8DA((const uint8_t *)v15, word_199998);
       if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * *v7 + 40) == 100 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v18 + 40) != 100 )
         v5 += 4 * (uint8_t)byte_199CB0 - 8;
       if ( v7[311] )
@@ -7498,7 +7498,7 @@ char sub_EEC98(int64_t a1)
       v2 = sprintf(
              v29,
              (char *)dword_1AAC24,
-             *(&off_18003A + 9 * *(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 4) + 16)),
+             shipSizeNameA_18003A[*(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 4) + 16)],
              dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 4),
              *(int16_t *)(129 * *(int16_t *)(HIDWORD(a1) + 4) + dword_197F9C + 94),
              113 * *(int16_t *)(HIDWORD(a1) + 2) + dword_19306C);
@@ -7514,14 +7514,14 @@ char sub_EEC98(int64_t a1)
         LOBYTE(a1) = sprintf(
                        v29,
                        (char *)dword_1AAC40,
-                       *(&off_18003A + 9 * *(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 16)),
+                       shipSizeNameA_18003A[*(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 16)],
                        dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6),
                        *(int16_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 94));
       else
         LOBYTE(a1) = sprintf(
                        v29,
                        (char *)dword_1AABF8,
-                       *(&off_18003A + 9 * *(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 16)),
+                       shipSizeNameA_18003A[*(uint8_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 16)],
                        dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6),
                        *(int16_t *)(dword_197F9C + 129 * *(int16_t *)(HIDWORD(a1) + 6) + 94),
                        dword_19306C + 113 * *(int16_t *)(HIDWORD(a1) + 2),
@@ -11644,7 +11644,7 @@ char sub_F4D24(int a1, int a2)
 {
   char result; // al
 
-  result = sub_FE92D(a1, a2);
+  result = sub_FE92D((const uint16_t *)(intptr_t)a1, a2);   /* vlna 82 */
   if ( byte_178461 == -1 && result == 7 )
     return 4;
   return result;
