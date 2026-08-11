@@ -5001,11 +5001,19 @@ int16_t *sub_77B28( int a1)
 
 
 //----- (00077B42) --------------------------------------------------------
-void sub_77B42()
+/* vlna 89: byl to prazdny pahyl s NO-OP JUMPOUT. asm:
+     push ebx / push edx / mov edx, offset word_187F78 / cwde / xor ebx, ebx
+     jmp short loc_77B35   ; = telo sub_77B28, tedy call sub_77E1F
+                           ;   a mov eax, offset word_187F78
+   Je to tedy TATAZ funkce jako sub_77B28, jen s ebx = 0 misto 1.
+   Ma REGISTROVY ARGUMENT v EAX (cwde = int16_t) a VRACI ukazatel na
+   vysledny retezec - obojí IDA zahodila, takze vsech 10 volajicich
+   pouzivalo neinicializovanou lokalku (viz pad ve strcpy v sub_C34F3). */
+char *sub_77B42(int16_t a1)
 {
-  JUMPOUT(0x77B35);
+  sub_77E1F(a1, (char *)&word_18FF78, 0);
+  return (char *)&word_18FF78;
 }
-// 77B4C: control flows out of bounds to 77B35
 
 
 //----- (00077B4E) --------------------------------------------------------
@@ -7111,7 +7119,10 @@ int sub_79917()
 
 
 //----- (00079979) --------------------------------------------------------
-void sub_79979( int a1)
+/* vlna 89: funkce VRACI pocet ruznych typu planet - asm konci
+   `mov eax, ecx / jmp locret_78F44`. Davkova zmena z vlny 79 ji povazovala
+   za void, takze volajici sub_85C8A testoval smeti. */
+int sub_79979( int a1)
 {
   int v2; // ecx
   int16_t v3; // dx
@@ -7135,7 +7146,7 @@ void sub_79979( int a1)
       }
     }
     if ( ++v3 >= 5 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x78F44 je epilog funkce */
+      return v2;   /* vlna 89: epilog vraci ECX (= v2) */
   }
 }
 // 799F2: control flows out of bounds to 78F44

@@ -17396,7 +17396,7 @@ int16_t word_1A06A8; // weak
 int16_t word_1A06AA; // weak
 _UNKNOWN unk_1A06AC; // weak
 _WORD word_1A08A4[6]; // weak
-int dword_1A08B0; // weak
+uint8_t *dword_1A08B0; // weak  /* vlna 89: skutecny ukazatel, viz orion_common.h */
 int16_t word_1A08B4[6]; // weak
 int16_t word_1A08C0[12]; // weak
 _WORD word_1A08D8[6]; // weak

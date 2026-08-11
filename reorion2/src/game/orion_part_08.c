@@ -902,7 +902,8 @@ int sub_899AB( int a1, int a2, int a3, int16_t *a4, int16_t *a5, int16_t *a6, _W
         v8 = -1;
         if ( *(_BYTE *)(17 * *(int16_t *)(v21 + dword_193184) + (uint8_t*)dword_1930D4 + 4) != 2 )
         {
-          sub_A453F();
+          /* vlna 89: asm ma v EAX jeste `mov ax, [dword_18B184 + var_5C] / cwde` */
+          sub_A453F(*(int16_t *)(v21 + dword_193184));
           word_19994C = 1;
         }
         return v8;

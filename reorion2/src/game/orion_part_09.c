@@ -6731,9 +6731,16 @@ LABEL_11:
     }
     else
     {
-      if ( a2 == v11[46] || a2 == v11[54] )
+      /* vlna 89: asm ma DVE vetve s ruznym EDX (loc_9B113 -> 1, loc_9B134 -> 4)
+         a EAX = ebx = id z [ebx+eax+0Ah]; IDA je slila a argumenty zahodila */
+      if ( a2 == v11[46] )
       {
-        sub_9CD24();
+        sub_9CD24((int16_t)v9, 1);
+        goto LABEL_11;
+      }
+      if ( a2 == v11[54] )
+      {
+        sub_9CD24((int16_t)v9, 4);
         goto LABEL_11;
       }
       if ( a1 == v11[38] && *(int16_t *)(dword_1975C4 + 8) > v25 )
@@ -7649,7 +7656,9 @@ LABEL_27:
     sub_120BB5(2, (int)v53);
     v62 = (50 - 2 * sub_122259()) / 2 - 4;
     v54 = (int16_t)v66;
-    sub_77B42();
+    /* vlna 89: asm `movsx eax, word ptr [var_14] / mov [var_44], eax /
+       call sub_77B42` - tyz index, ktery se uklada do v54 */
+    v16 = sub_77B42((int16_t)v66);
     strcpy(v51, v16);
     sub_8FDA1((int)v51, (int)v53, 2, 2, 0, 86, 1);
     v17 = v57;
@@ -8140,7 +8149,9 @@ int sub_9CD0C(int16_t *a1, int16_t *a2)
 
 
 //----- (0009CD24) --------------------------------------------------------
-int16_t sub_9CD24()
+/* vlna 89: `enter 1C0h,0 / push eax / push edx` - var_1C4 (=v20) a var_1C8 (=v19)
+   jsou SPILLNUTE registrove argumenty, ktere IDA nechala neinicializovane. */
+int16_t sub_9CD24( int16_t a1, int16_t a2)
 {
   int16_t v0; // cx
   char v1; // bl
@@ -8168,6 +8179,8 @@ int16_t sub_9CD24()
   int v24; // [esp+1C0h] [ebp+7Ah] BYREF
   int v25; // [esp+1C4h] [ebp+7Eh]
 
+  v20 = a1;   /* vlna 89: var_1C4 = spillnute EAX */
+  v19 = a2;   /* vlna 89: var_1C8 = spillnute EDX */
   v0 = -1;
   v1 = 0;
   WORD2(v2) = 0;
@@ -8188,7 +8201,8 @@ int16_t sub_9CD24()
         else
           v4 = 330;
         strcpy(v22, sub_7A990(v4));
-        sub_77B42();
+        /* vlna 89: asm `movsx eax, [var_1C4] / call sub_77B42 / push eax` */
+        v5 = sub_77B42(v20);
         v2 = sprintf(v21, v22, v5);
         sub_77433(v21);
       }
@@ -8251,7 +8265,8 @@ LABEL_20:
         v10 = dword_19306C;
       }
       v16 = v10 + v11;
-      sub_77B42();
+      /* vlna 89: asm `movsx eax, [var_1C4] / call sub_77B42 / push eax` */
+      v13 = sub_77B42(v20);
       sprintf(v21, v22, v13, v16, v18);
       sub_77658((int)v21);
       if ( v14 )

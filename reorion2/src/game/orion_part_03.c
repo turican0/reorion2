@@ -14193,7 +14193,10 @@ void sub_4AA36( int a1, int a2)
   int16_t v57; // [esp+18h] [ebp-4h]
 
   v2 = 361 * a1;
-  sub_77B42();
+  /* vlna 89: asm `movsx edx, ax / imul edx, 169h / mov eax, dword_18AB18 /
+     movsx eax, word ptr [edx+eax+2] / call sub_77B42` - argument i navratovou
+     hodnotu IDA zahodila, v3 bylo neinicializovane */
+  v3 = sub_77B42(*(int16_t *)((uint8_t*)dword_192B18 + v2 + 2));
   strcpy((char *)dword_192864, v3);
   v4 = (char *)((uint8_t*)dword_192B18 + v2);
   v51 = *v4;

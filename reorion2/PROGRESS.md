@@ -9128,3 +9128,85 @@ neproslo** - staci ji vytahnout z logu (`KONEC (sub_126487): ...`) nebo najit
 vyplati divat do stderr, ne na zasobnik.
 
 Regresni brana se v teto vlne na pokyn uzivatele nespoustela.
+
+### Vlny 87-88: hra bezi, mapa se kresli, hvezdne datum sedi
+
+#### Vlna 87: "Memory Corruption!" - vlastnik lodi
+
+Uzivateluv pad koncil ve `sub_126487` s hlaskou
+`Memory Corruption! val == 3, ship_id == 63, owner == -37`. `val == 3` znamena,
+ze bajt vlastnika (+99 v 129bajtovem zaznamu lodi) byl ZAPORNY.
+
+**Jak se to naslo:** do `sub_12479` se docasne pridala kontrola, ktera po
+KAZDE fazi projde vsech 500 zaznamu lodi a nahlasi prvni s neplatnym
+vlastnikem. Vysledek byl jednoznacny:
+
+    po sub_8DAE8  -1   (v poradku)
+    po sub_7B8CD  -1
+    po sub_8BC39  -1
+    po sub_7CDC5  -1
+    po sub_122CC  0x10020   <- lod c. 1 ma vlastnika 0x20
+
+Odtud uz vedla primka: `sub_122CC` -> `sub_A16BF` -> `sub_A1762` ->
+`sub_100010`, kde je
+
+```
+enter 0Ch, 0
+push  eax          ; -> [ebp-10h] = var_10
+```
+
+tedy `v11` je SPILLNUTE EAX = **vlastnik**. IDA z nej udelala
+neinicializovanou lokalku a zapisovala ji do `+99` a `+93`. Opraveno
+`v11 = (char)a1;`. Peti behy za sebou uz vsech 500 zaznamu proslo.
+
+Pri tom opraveno i sest funkci, ktere stavi 100bajtovou sablonu lodi
+(`sub_57F2C`, `sub_57C0B`, `sub_57E1B`, `sub_57A02`, `sub_57D14`,
+`sub_57B1C`) - dostavaly ukazatel na ZASOBNIK jako `(int)v10`.
+
+#### Vlna 88: kresleni hvezdne mapy
+
+1. **`word_192FDC` - blok zacina o 2 B driv, nez rikala vlna 85.**
+   `sub_797DD` dela `memset(word_192FDC, 0, 140)` a ulozena hra
+   `fread(word_192FDC, 28, 5, ...)`, takze blok je 5 zaznamu po 28 B od
+   0x192FDC (ne az od 0x192FDE). Jako jednoprvkove pole to pretekalo a
+   v portu prepsalo HORNI PULKU `dword_192FD8` - hvezdneho data. Proto se na
+   mape zobrazovalo `-3053.-6`: 0x88B8 = 35000 spravne, ale 0xFFFF88B8 =
+   -30536. Po oprave **3500.0**, presne jako v originale.
+
+2. **`sub_799F7`** - `v10` ([ebp-0Ch]) je spillnute EAX (index hvezdy), IDA ho
+   nechala neinicializovany, takze `113 * v10` ukazovalo mimo pole hvezd a
+   mapa se nevykreslila. Ve stejne funkci `int result` dostaval ukazatel
+   `dword_192B18` - opraveno na skutecny ukazatel.
+
+3. **`sub_922C2`** - kolem `sub_91F14` byly dva bloky pracujici s
+   `GetGameFlagsTable_F4B81()` a offsetem 109455. **V asm nic takoveho neni**
+   (`call sub_91F14 / mov dl, al` a hned strcpy) - je to artefakt IDA
+   z neprelozene oblasti orion_part_26, stejny jako `sub_169245` ve vlne 84.
+   Cetlo se pres ctyrbajtovy nulovy slot, tedy z adresy 0x0E.
+
+#### Stav
+
+Cesta NEW GAME -> rasa -> jmeno vladce -> barva vlajky dobehne na **hraci
+obrazovku s vykreslenou mapou galaxie**: hvezdy, mlhovina, bocni panel,
+spodni lista a spravne hvezdne datum 3500.0. Hra pokracuje dal a nabizi
+dialog **"Enter Home Star Name"** ("Sol") - tedy uz bezny herni tok.
+
+Zbyva na dalsi vlnu:
+
+- u horniho okraje je porad rozsypany svisly text;
+- hodnoty surovin v bocnim panelu vychazeji divne (`-0 BC`, `-7 (8)`,
+  `+0 (0)`, `none`);
+- `sub_92457` (sirka popisku hvezdy) je v portu `void` a jeji navratova
+  hodnota se jeste musi rekonstruovat - do te doby se pouziva 0, cimz vyjde
+  sirka jmena hvezdy (bezpecne a deterministicke), viz `TODO` v kodu;
+- uzivatel jednou videl pad na obrazovce "Enter Ruler Name"; 14 ras x 6 behu
+  ho nereprodukovalo, takze zustava k doreseni, az se projevi znovu.
+
+#### Poznamka k metode
+
+Kdyz je poskozena DATOVA struktura, nejrychlejsi je **kontrola invariantu po
+fazich**: napsat si na par minut funkci, ktera overi celou strukturu tou
+SAMOU podminkou, jakou testuje hra, a zavolat ji po kazdem kroku. Rozdil
+"po X v poradku, po Y uz ne" najde viníka bez jedineho kroku v debuggeru.
+
+Regresni brana se v techto vlnach na pokyn uzivatele nespoustela.

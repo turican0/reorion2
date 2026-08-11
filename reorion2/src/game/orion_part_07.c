@@ -10459,8 +10459,16 @@ void sub_85C8A(int a1, int a2, _BYTE *a3, char *a4, int16_t **a5)
   _BOOL1 v24; // [esp+20h] [ebp-8h]
   char v25; // [esp+24h] [ebp-4h]
 
+  /* vlna 89: asm `enter 24h, 0 / push eax` - ulozene EAX lezi presne na
+     [ebp-28h], coz je var_28 = v17 (`variable 'v17' is possibly undefined`).
+     Je to SPILLNUTY registrovy argument = cislo hvezdy; telo funkce pouziva
+     misto parametru a1 vyhradne jeho. Bez toho slo `113 * v17` mimo pole
+     hvezd a padalo to uvnitr sub_7A133 (cteni z 0x17B0B8A1). */
+  v17 = (int16_t)a1;
   v25 = a2;
   v19 = a4;
+  v20 = a3;   /* vlna 89: asm `mov [ebp+var_18], ebx` - chybelo, takze
+                 `*v20 = v12` nize zapisovalo pres neinicializovany ukazatel */
   v5 = sub_79E06(word_19999C);
   *a4 = 0;
   v6 = v5;
@@ -10516,7 +10524,9 @@ void sub_85C8A(int a1, int a2, _BYTE *a3, char *a4, int16_t **a5)
       sub_8EBFE(1);
       sub_132FCD((int)v19);
     }
-    sub_79979(v17);
+    /* vlna 89: asm `call sub_79979 / cmp ax, 1 / jle return` - navratovou
+       hodnotu IDA zahodila (`variable 'v11' is possibly undefined`) */
+    v11 = sub_79979(v17);
     if ( v11 > 1 )
     {
       v12 = sub_88B5B(v17, v19, a5);

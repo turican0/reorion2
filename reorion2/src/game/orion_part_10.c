@@ -2558,16 +2558,24 @@ LABEL_12:
   else
     v33 = *(_BYTE *)(361 * v26 + (uint8_t*)dword_192B18 + 226);
   BYTE6(a15) = v33;
-  sub_77B42();
-  if ( (int)((uint64_t)sprintf(vars2, "%s ", v34) >> 32) > -1 )
+  /* vlna 89: asm `movsx eax, [arg_6A] / call sub_77B42 / push eax` - arg_6A je
+     tyz index jako o dva radky vyse (SHIWORD(a23)); IDA argument i navratovou
+     hodnotu zahodila, v34 bylo neinicializovane */
+  v34 = sub_77B42((int16_t)SHIWORD(a23));
+  sprintf(vars2, "%s ", v34);
+  /* vlna 89: asm ma pred sprintf `movsx edx, cx` a po nem `cmp edx, -1 / jle ...`
+     a dal `imul edx, 169h` - tedy podminka nad v26, ne nad navratovou hodnotou
+     sprintf. IDA z toho udelala HIDWORD(v35) = smeti indexujici dword_192B18. */
+  if ( v26 > -1 )
   {
-    v35 = sprintf(var4E, "(%s", (char *)((uint8_t*)dword_197F98 + 3753 * v27 + 21));
+    v35 = 361 * v26;
+    sprintf(var4E, "(%s", (char *)((uint8_t*)dword_197F98 + 3753 * v27 + 21));
     v36 = &_B9;
     do
       ++v36;
     while ( *v36 );
     strcpy(v36, var4E);
-    if ( *(_BYTE *)(HIDWORD(v35) + (uint8_t*)dword_192B18 + 6) )
+    if ( *(_BYTE *)(v35 + (uint8_t*)dword_192B18 + 6) )
       v37 = sub_7A990(0x161u);
     else
       v37 = asc_179C33;
@@ -3260,7 +3268,7 @@ void sub_A31DA(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, i
   int16_t v25; // dx
   int v26; // eax
   int16_t v27; // di
-  int v28; // eax
+  char *v28; // eax
   int16_t v29; // si
   int16_t v30; // bx
   int16_t *v31; // eax
@@ -4219,7 +4227,10 @@ _BOOL1 sub_A44FC( int a1, int a2)
 
 
 //----- (000A453F) --------------------------------------------------------
-void sub_A453F()
+/* vlna 89: `enter 5CCh, 0 / push eax` - var_5D0 (=v32) je SPILLNUTY registrovy
+   argument, ktery IDA nechala neinicializovany (`variable 'v32' is possibly
+   undefined`). Index rasy/vladce. */
+void sub_A453F( int16_t a1)
 {
   int v0; // ecx
   char *v1; // eax
@@ -4272,6 +4283,7 @@ void sub_A453F()
   char v48[12]; // [esp+5B8h] [ebp+86h] BYREF
   char v49[12]; // [esp+5C4h] [ebp+92h] BYREF
 
+  v32 = a1;   /* vlna 89: spillnute EAX */
   v0 = 17 * v32;
   strcpy(v40, sub_7A990(0x16Eu));
   strcpy(v41, sub_7A990(0x16Fu));
@@ -4399,7 +4411,8 @@ void sub_A453F()
   while ( *v27 );
   strcpy(v27, v38);
   strcpy(v36, sub_7A990(0x178u));
-  sub_77B42();
+  /* vlna 89: asm `movsx eax, [var_5D0] / call sub_77B42 / push eax` */
+  v28 = sub_77B42(v32);
   sprintf(v39, v36, v28);
   sub_A5EB2((int)v39, (int)v34);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA20C7 je epilog funkce */

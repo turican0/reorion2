@@ -5865,19 +5865,23 @@ void sub_C2E4D()
 
 
 //----- (000C3111) --------------------------------------------------------
-void sub_C3111( int a1)
+/* vlna 89: parametr se puvodne jmenoval `a1` a STINIL retezcovy global
+   `char a1[3]` = ESC + "1" (IDA takhle pojmenovala retezcove literaly).
+   Vsechna mista, kde asm dela `push offset a1`, tak dostavala misto retezce
+   cislo hvezdy. Parametr je proto prejmenovan na a1_idx. */
+void sub_C3111( int a1_idx)
 {
   int16_t v3; // di
   int v4; // eax
   int16_t v5; // cx
   char *v6; // eax
-  int v7; // eax
+  char *v7; // eax   /* vlna 89: navratova hodnota sub_77B42 (retezec) */
   char *v8; // eax
   char *v9; // eax
   int16_t v10; // ax
   char *v11; // eax
   char *v12; // eax
-  int v13; // eax
+  char *v13; // eax  /* vlna 89: navratova hodnota sub_77B42 (retezec) */
   char *v14; // eax
   int16_t v15; // bx
   int v16; // eax
@@ -5888,8 +5892,8 @@ void sub_C3111( int a1)
   char *v21; // eax
   char *v22; // eax
   char *v23; // eax
-  int v24; // [esp-Ch] [ebp-376h]
-  int v25; // [esp-8h] [ebp-372h]
+  char *v24; // [esp-Ch] [ebp-376h]
+  char *v25; // [esp-8h] [ebp-372h]
   _BYTE *v26; // [esp-8h] [ebp-372h]
   _BYTE *v27; // [esp-8h] [ebp-372h]
   char *v28; // [esp-4h] [ebp-36Eh]
@@ -5902,13 +5906,13 @@ void sub_C3111( int a1)
   _BYTE v35[500]; // [esp+3E8h] [ebp+7Eh] BYREF
   int v36; // [esp+5DCh] [ebp+272h]
 
-  v3 = word_1A0534[a1];
+  v3 = word_1A0534[a1_idx];
   v4 = 361 * v3;
   LOWORD(v4) = *(_WORD *)((uint8_t*)dword_192B18 + v4 + 2);
   v36 = v4;
   sub_120DED(80, 80);
   if ( v3 == word_182AB7 )
-    sub_C28A8(a1);
+    sub_C28A8(a1_idx);
   v5 = sub_23E60(v3);
   sub_BAF84(2u, v3 == word_182AB7);
   if ( v5 == -1 )
@@ -5933,21 +5937,25 @@ void sub_C3111( int a1)
     }
     v12 = (char *)sub_CDF5C(v10);
     sprintf(v33, v12);
-    sub_77B42();
+    /* vlna 89: asm `movsx eax, word ptr [var_4] / call sub_77B42 / push eax` */
+    v13 = sub_77B42((int16_t)v36);
     v25 = v13;
     v14 = (char *)sub_CDF5C(81);
-    sprintf(v35, v14, v34, v25, v33);
+    /* vlna 89: poradi argumentu podle asm - push var_5E0(v33), push 77B42, 
+       push var_3EC(v34), push fmt, push var_1F8(v35) */
+    sprintf(v35, v14, v25, v34, v33);
   }
   else
   {
     if ( byte_183160[v5] )
-      v28 = a1;
+      v28 = a1;   /* vlna 89: asm `push offset a1` = retezec ESC+"1", ne index */
     else
       v28 = a2;
     v6 = (char *)sub_CDF5C(70);
     sprintf(v34, v6, v28);
     v29 = dword_19FA2C[v5];
-    sub_77B42();
+    /* vlna 89: asm `movsx eax, word ptr [var_4] / call sub_77B42 / push eax` */
+    v7 = sub_77B42((int16_t)v36);
     v24 = v7;
     v8 = (char *)sub_CDF5C(85);
     sprintf(v35, v8, v24, v34, v29);
@@ -5956,7 +5964,7 @@ void sub_C3111( int a1)
   if ( byte_182ACA )
   {
     sub_120CCB(0, (int)&unk_182C2E);
-    sub_C28A8(a1);
+    sub_C28A8(a1_idx);
     v15 = sub_BDC93(v3);
     sub_BB04E(1u);
     v16 = (uint8_t*)dword_192B18 + 361 * v3;
@@ -6033,21 +6041,24 @@ int sub_C34DD( int a1, int a2)
 
 
 //----- (000C34F3) --------------------------------------------------------
-int sub_C34F3()
+/* vlna 89: komparator jmen hvezd. IDA ztratila OBA registrove argumenty
+   (asm `cwde` na EAX = a1, `movsx eax, dx` = a2) i argument volani
+   sub_77B42, takze v0/v1 byly neinicializovane -> pad ve strcpy
+   (cteni z 0x0000000200000002).  asm 0xC34F3:
+     cwde / imul eax, 169h / mov edi, dword_18AB18
+     movsx eax, word ptr [edi+eax+2] / call sub_77B42   ; -> var_34
+     movsx eax, dx / imul edx, eax, 169h / mov eax, dword_18AB18
+     movsx eax, word ptr [edx+eax+2] / call sub_77B42   ; -> var_68
+     lea eax, [ebp+var_34] / call stricmp_              ; stricmp(var_34, var_68) */
+int sub_C34F3( int16_t a1, int16_t a2)
 {
-  char *v0; // eax
-  char *v1; // eax
   char v3[52]; // [esp+0h] [ebp-68h] BYREF
   char v4[52]; // [esp+34h] [ebp-34h] BYREF
 
-  sub_77B42();
-  strcpy(v4, v0);
-  sub_77B42();
-  strcpy(v3, v1);
+  strcpy(v4, sub_77B42(*(int16_t *)((uint8_t*)dword_192B18 + 361 * a1 + 2)));
+  strcpy(v3, sub_77B42(*(int16_t *)((uint8_t*)dword_192B18 + 361 * a2 + 2)));
   return stricmp(v4, v3);
 }
-// C351C: variable 'v0' is possibly undefined
-// C3546: variable 'v1' is possibly undefined
 // 13C896: using guessed type int stricmp(_DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 
@@ -6230,7 +6241,8 @@ int sub_C386B( int a1, int a2)
     switch ( word_183104 )
     {
       case 0:
-        return sub_C34F3();
+        /* vlna 89: asm `mov eax, ebx / call sub_C34F3` - oba indexy v EAX/EDX */
+        return sub_C34F3((int16_t)a1, (int16_t)a2);
       case 1:
         v5 = *(uint8_t *)(v3 + (uint8_t*)dword_192B18 + 10);
         v6 = *(uint8_t *)((uint8_t*)dword_192B18 + v2 + 10);
@@ -6295,7 +6307,7 @@ _WORD *sub_C3947()
   while ( (int16_t)v0 < 250 );
   return result;
 }
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C3996) --------------------------------------------------------
@@ -6322,7 +6334,7 @@ void sub_C3996()
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1A0494: using guessed type int16_t word_1A0494[10];
 // 1A0534: using guessed type int16_t word_1A0534[9];
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C3A07) --------------------------------------------------------
@@ -6911,7 +6923,7 @@ char sub_C4343(int16_t *a1, int16_t *a2, int a3)
 // 199A10: using guessed type int16_t word_199A10;
 // 1A0534: using guessed type int16_t word_1A0534[9];
 // 1A05AC: using guessed type int16_t word_1A05AC;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C4562) --------------------------------------------------------
@@ -6930,7 +6942,7 @@ void sub_C4562(int a1, int16_t *a2, int a3)
 
   v12 = 0;
   v11 = 0;
-  dword_1A08B0 = (int)&v9;
+  dword_1A08B0 = (uint8_t *)&v9;   /* vlna 89: byl (int) - orez adresy zasobniku */
   byte_18315F = 0;
   if ( word_199A08 != word_199A10 && !byte_1827BD && word_199A10 != 25 )
     word_1A05AC = word_199A10;
@@ -7037,7 +7049,7 @@ LABEL_18:
 // 1A0534: using guessed type int16_t word_1A0534[9];
 // 1A0546: using guessed type int16_t word_1A0546;
 // 1A05AC: using guessed type int16_t word_1A05AC;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C47C1) --------------------------------------------------------
@@ -7060,7 +7072,7 @@ void sub_C47C1(_WORD *a1, _WORD *a2)
     {
       for ( j = 0; j < word_199996; ++j )
       {
-        v4 = dword_1A08B0;
+        v4 = (int)(intptr_t)dword_1A08B0;   /* jen zbytkovy EDX, hodnota se nepouziva */
         v7 = *(int16_t *)(dword_1A08B0 + 2 * j);
         if ( v7 != -1 )
         {
@@ -7101,7 +7113,7 @@ void sub_C47C1(_WORD *a1, _WORD *a2)
 // 199996: using guessed type int16_t word_199996;
 // 19999A: using guessed type int16_t word_19999A;
 // 19999C: using guessed type int16_t word_19999C;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C48EF) --------------------------------------------------------
@@ -7768,7 +7780,7 @@ void sub_C5800()
 // 18315C: using guessed type int16_t word_18315C;
 // 183188: using guessed type int dword_183188;
 // 193174: using guessed type int dword_193174;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 // 1A08C0: using guessed type int16_t word_1A08C0[12];
 // 1A08F0: using guessed type int (*dword_1A08F0)(void);
 
@@ -7803,7 +7815,7 @@ int sub_C58D1()
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 199996: using guessed type int16_t word_199996;
 // 19999C: using guessed type int16_t word_19999C;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 
 
 //----- (000C5934) --------------------------------------------------------
@@ -7819,7 +7831,7 @@ void sub_C5934(int a1, int a2, int a3)
   _DWORD savedregs[6]; // [esp+1F4h] [ebp+0h] BYREF
 
   byte_182ACA = 1;
-  dword_1A08B0 = (int)v9;
+  dword_1A08B0 = (uint8_t *)v9;   /* vlna 89: byl (int) - orez adresy zasobniku */
   qmemcpy(v9, &word_C5102, sizeof(v9));
   v3 = 0;
   sub_C58D1();
@@ -7842,7 +7854,7 @@ void sub_C5934(int a1, int a2, int a3)
     {
       sub_C42B4(6);
     }
-    else if ( (_WORD)v7 != word_1A06AA || (a3 = dword_1A08B0, *(int16_t *)(dword_1A08B0 + 2 * word_18315A + 12) == -1) )
+    else if ( (_WORD)v7 != word_1A06AA || (a3 = (int)(intptr_t)dword_1A08B0, *(int16_t *)(dword_1A08B0 + 2 * word_18315A + 12) == -1) )
     {
       a3 = 0;
       do
@@ -7888,7 +7900,7 @@ void sub_C5934(int a1, int a2, int a3)
 // 1A06A6: using guessed type int16_t word_1A06A6;
 // 1A06A8: using guessed type int16_t word_1A06A8;
 // 1A06AA: using guessed type int16_t word_1A06AA;
-// 1A08B0: using guessed type int dword_1A08B0;
+// 1A08B0: vlna 89: uint8_t *dword_1A08B0 (byl int - orez adresy)
 // 1A08C0: using guessed type int16_t word_1A08C0[12];
 // 1A08E4: using guessed type int16_t word_1A08E4[];
 // 1A08F0: using guessed type int (*dword_1A08F0)(void);
