@@ -10063,7 +10063,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     i += 13;
   }
   ServiceAudioTick_FE8BE((int)v9, v6, (int)v5, a3);
-  for ( j = 0; j != 931; *(int *)((char *)&dword_17EB2A + j) = (int)v11 )
+  /* vlna 89d: ukazatel do postranniho pole, viz TECHNAME_AT v orion_common.h */
+  for ( j = 0; j != 931; techName_17EB2A[j / 19] = v11 )
   {
     while ( 1 )
     {

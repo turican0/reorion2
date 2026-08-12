@@ -1390,7 +1390,7 @@ int sub_BD707()
 {
   if ( word_182AC0 == -1 )
     JUMPOUT(0xBD433);
-  return sub_BD727(*(_UNKNOWN **)((char *)&off_17EB3D + 19 * word_182AC0));
+  return sub_BD727(TECHNAME_AT(19 * word_182AC0));
 }
 // BD711: control flows out of bounds to BD433
 // BD727: using guessed type int sub_BD727(_DWORD);
@@ -1947,7 +1947,7 @@ int16_t sub_BE09C(int16_t *a1, _WORD *a2)
     {
       v10 = 19 * word_19F99C[i];
       sub_AFBCB(v15, *(int16_t *)((char *)&word_17EB43 + v10));
-      sub_A5EB2(*(int *)((char *)&off_17EB3D + v10), (int)v15);
+      sub_A5EB2(TECHNAME_AT(v10), (int)v15);
     }
     v11 = 2 * i;
     if ( *(int16_t *)((char *)word_19F984 + v11) == *a2 )
@@ -6577,11 +6577,21 @@ void sub_C3D34( int a1)
       v5 = sub_123AE7();
       v6 = sub_123ABA();
       sub_B9B49(v6, v5);
-      JUMPOUT(0xC2679);
+      /* vlna 89d: `JUMPOUT(0xC2679)` je v portu NO-OP, takze `while (1)` se
+         NIKDY neukoncil a bezel dal s v3 = 10, 11, ... - `word_1A0534` ma
+         pritom jen 9 prvku (dalsi symbol v asm je word_198546 = word_1A0546).
+         ZMERENO: sub_C3111 dostavala a1_idx = 16 a z toho v3 = -1000, cimz
+         cetla zaznam kolonie uplne mimo pole; v17 vyslo 20560 ("PP"),
+         sub_B2FFA na to vratila -1 a hra padla ve `sprintf` na `%s`.
+         loc_C2679 NENI holy epilog - nejdriv vola sub_12B65C a az pak se
+         vraci (locret_C267E: leave / loc_C267F: pop.../retn), takze `return;`
+         samo o sobe by nestacilo. Tohle je jeden z peti pripadu, ktere davkova
+         zmena z vlny 79 oznacila jako "pokracuje jinam". */
+      sub_12B65C();
+      return;
     }
   }
 }
-// C3F2B: control flows out of bounds to C2679
 // 182974: using guessed type int16_t word_182974;
 // 182AB7: using guessed type int16_t word_182AB7;
 // 182ACA: using guessed type char byte_182ACA;

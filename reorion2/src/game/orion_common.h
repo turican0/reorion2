@@ -4570,10 +4570,10 @@ extern int sub_BB2CB();
 extern void sub_BB382();
 // plna signatura: int16_t sub_BB39F( int a1);
 extern int16_t sub_BB39F();
-// plna signatura: int sub_BB3DB( int a1);
-extern int sub_BB3DB();
-// plna signatura: int sub_BB40D( int a1);
-extern int sub_BB40D();
+// plna signatura: char *sub_BB3DB( int a1);   /* vlna 89d */
+extern char *sub_BB3DB();
+// plna signatura: char *sub_BB40D( int a1);   /* vlna 89d */
+extern char *sub_BB40D();
 // plna signatura: char sub_BB418( int a1);
 extern char sub_BB418();
 // plna signatura: int64_t sub_BB469( int a1, int a2, int a3);
@@ -12640,8 +12640,8 @@ void sub_BB1FA();
 // int sub_BB2CB(int a1);
 void sub_BB382();
 int16_t sub_BB39F(int16_t a1);
-int sub_BB3DB(int16_t a1);
-int sub_BB40D(int16_t a1);
+char *sub_BB3DB(int16_t a1);
+char *sub_BB40D(int16_t a1);
 char sub_BB418(int16_t a1);
 int64_t sub_BB469(int16_t a1, int16_t a2, int16_t a3);
 int sub_BB4A9(int16_t a1, int16_t a2);
@@ -16738,6 +16738,11 @@ extern _UNKNOWN *off_17E0EE;
 extern _UNKNOWN *off_17E7F0;
 extern _UNKNOWN *off_17EA60;
 extern int dword_17EB2A[240];
+// VLNA 89d: ukazatele na nazvy technologii mimo 19bajtovy blok, viz orion_data.c.
+// TECHNAME_AT(off) bere BAJTOVY offset od &off_17EB3D (tedy tak, jak ho psal
+// dekompilat) a prevadi ho na index do postranniho pole.
+extern char *techName_17EB2A[64];
+#define TECHNAME_AT(off) (techName_17EB2A[((off) / 19) + 1])
 extern _UNKNOWN *off_17EB3D;
 extern int16_t word_17EB43[]; // wave 23: sized array in orion_data.c, see comment there
 extern int dword_17EB45;

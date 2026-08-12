@@ -7423,7 +7423,7 @@ char sub_DE664(int a1, char *a2)
                     v5,
                     "\t%+d\t%s\r",
                     *(int16_t *)&v36[v11 + 424] / 2,
-                    *(char **)((char *)&off_17EB3D + v12));
+                    TECHNAME_AT(v12));
         }
         while ( v11 );
         if ( v38 )
@@ -7929,7 +7929,7 @@ char sub_DEE1B(char *a1, char *a2)
           v21 -= 2;
           v22 -= 19;
           if ( *(_WORD *)&v45[v21 + 424] )
-            v16 += sprintf(v16, "\t%+d\t%s\r", *(int16_t *)&v45[v21 + 424], *(char **)((char *)&off_17EB3D + v22));
+            v16 += sprintf(v16, "\t%+d\t%s\r", *(int16_t *)&v45[v21 + 424], TECHNAME_AT(v22));
         }
         while ( v21 );
         if ( v46 )
@@ -8765,7 +8765,7 @@ void sub_DFF74(int a1, char *a2)
                              v11,
                              "\t%+d\t%s\r",
                              *(int16_t *)&v36[v16 + 424],
-                             *(char **)((char *)&off_17EB3D + v17));
+                             TECHNAME_AT(v17));
                   if ( !v16 )
                   {
                     if ( v39 )

@@ -5311,12 +5311,12 @@ void sub_A58CE( int a1, int a2, int16_t *a3, int16_t *a4, _WORD *a5, int a6, int
       *a3 += a6;
       if ( a7 )
       {
-        sub_1212B3(a2, *a3, *(int *)((char *)&off_17EB3D + 19 * v8));
+        sub_1212B3(a2, *a3, TECHNAME_AT(19 * v8));
       }
       else
       {
         *a5 += a6;
-        v9 = sub_12066F(*(int *)((char *)&off_17EB3D + 19 * v8));
+        v9 = sub_12066F(TECHNAME_AT(19 * v8));
         if ( v9 > *a4 )
           *a4 = v9;
       }
@@ -12438,8 +12438,8 @@ int sub_AFE6E( int a1)
 //----- (000AFEE0) --------------------------------------------------------
 int sub_AFEE0(int16_t *a1, int16_t *a2)
 {
-  int v3; // edx
-  int v4; // eax
+  char *v3; // edx   /* vlna 89d: retezce, ne inty */
+  char *v4; // eax
 
   v3 = sub_BB40D(*a2);
   v4 = sub_BB40D(*a1);

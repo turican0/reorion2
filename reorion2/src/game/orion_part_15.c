@@ -7289,7 +7289,7 @@ char sub_EEC98(int64_t a1)
           LOBYTE(a1) = sprintf(
                          v29,
                          (char *)dword_1AAC44,
-                         *(_UNKNOWN **)((char *)&off_17EB3D + 19 * *(int16_t *)(HIDWORD(a1) + 4)),
+                         TECHNAME_AT(19 * *(int16_t *)(HIDWORD(a1) + 4)),
                          (_DWORD)a1,
                          *(int16_t *)(HIDWORD(a1) + 6));
           return a1;
@@ -7337,7 +7337,7 @@ char sub_EEC98(int64_t a1)
           }
           else
           {
-            sprintf(v29, (char *)dword_1AAC3C, (_DWORD)a1, *(_UNKNOWN **)((char *)&off_17EB3D + 19 * SWORD2(a1)));
+            sprintf(v29, (char *)dword_1AAC3C, (_DWORD)a1, TECHNAME_AT(19 * SWORD2(a1)));
           }
           LODWORD(a1) = *(int16_t *)(v1 + 6);
           if ( (_DWORD)a1 != -1 )

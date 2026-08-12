@@ -6976,7 +6976,7 @@ char sub_FD69F(int64_t a1)
                          v1,
                          (char *)dword_1AB130,
                          (uint8_t*)dword_197F98 + 3753 * *(int16_t *)(HIDWORD(a1) + 4) + 21,
-                         *(_UNKNOWN **)((char *)&off_17EB3D + 19 * *(uint8_t *)(HIDWORD(a1) + 7)),
+                         TECHNAME_AT(19 * *(uint8_t *)(HIDWORD(a1) + 7)),
                          (_DWORD)a1);
         }
       }
@@ -7010,7 +7010,7 @@ LABEL_10:
            v1,
            (char *)dword_1AB144,
            (uint8_t*)dword_197F98 + 3753 * (unsigned int)*(uint8_t *)(HIDWORD(a1) + 5) + 21,
-           *(_UNKNOWN **)((char *)&off_17EB3D + 19 * *(uint8_t *)(HIDWORD(a1) + 7)),
+           TECHNAME_AT(19 * *(uint8_t *)(HIDWORD(a1) + 7)),
            (_DWORD)a1);
     goto LABEL_10;
   }

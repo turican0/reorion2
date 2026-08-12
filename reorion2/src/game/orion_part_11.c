@@ -2131,7 +2131,7 @@ _BYTE *sub_B2FFA( int a1)
   _BYTE *v4; // [esp-8h] [ebp-8h]
 
   if ( a1 > 0 && a1 < 49 )
-    return (_BYTE *)sub_BB40D(a1);
+    return (_BYTE *)sub_BB40D(a1);   /* vlna 89d: uz je to skutecny ukazatel */
   if ( a1 > -100 )
     return (_BYTE *)sub_AFC6D(a1);
   result = (_BYTE *)(dword_197F9C - 129 * (a1 + 100));
@@ -3515,11 +3515,11 @@ int16_t sub_B494B()
     {
       if ( byte_199CAE == 4 )
       {
-        v13 = sprintf(v2, "Edificio distrutto: %s", *(_UNKNOWN **)((char *)&off_17EB3D + 19 * i));
+        v13 = sprintf(v2, "Edificio distrutto: %s", TECHNAME_AT(19 * i));
       }
       else
       {
-        v25 = *(int *)((char *)&off_17EB3D + 19 * i);
+        v25 = TECHNAME_AT(19 * i);
         v19 = (char *)sub_CDF5C(55);
         v13 = sprintf(v2, v19, v25);
       }
@@ -3613,7 +3613,7 @@ void sub_B4B51()
   {
     if ( *(_BYTE *)(v7 + dword_19DEB4 + 14) )
     {
-      v17 = *(int *)((char *)&off_17EB3D + 19 * v7);
+      v17 = TECHNAME_AT(19 * v7);
       v9 = (char *)sub_CDF5C(54);
       ++v4;
       v10 = sprintf(v18, v9, v17);
@@ -8687,20 +8687,23 @@ int16_t sub_BB39F( int a1)
 
 
 //----- (000BB3DB) --------------------------------------------------------
-int sub_BB3DB( int a1)
+/* vlna 89d: taky vraci retezec, ne int */
+char *sub_BB3DB( int a1)
 {
   if ( a1 == 3 || a1 == 14 || a1 == 40 || a1 == 41 )
-    return sub_CDF5C(322);
+    return (char *)sub_CDF5C(322);
   if ( a1 == 8 )
-    return sub_CDF5C(452);
+    return (char *)sub_CDF5C(452);
   return sub_BB40D(a1);
 }
 
 
 //----- (000BB40D) --------------------------------------------------------
-int sub_BB40D( int a1)
+/* vlna 89d: vraci UKAZATEL na nazev technologie (asm `mov eax, off_176B3D[eax]`
+   po `imul eax, 13h`). Jako `int` se na x64 orezaval. */
+char *sub_BB40D( int a1)
 {
-  return *(int *)((char *)&off_17EB3D + 19 * a1);
+  return TECHNAME_AT(19 * a1);
 }
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;
 
@@ -8722,7 +8725,7 @@ char sub_BB418( int a1)
     do
     {
       sub_BB469(i, v3, (int16_t)v1);
-      v4 = *(int *)((char *)&off_17EB3D + 19 * (_DWORD)v1);
+      v4 = TECHNAME_AT(19 * (_DWORD)v1);
       ++v3;
       v5 = sub_1210FD(320, 240, v4);
       sub_1077D(v5, 240, v4, v1);

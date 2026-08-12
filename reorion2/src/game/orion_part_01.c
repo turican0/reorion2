@@ -10885,7 +10885,7 @@ LABEL_64:
       case 0x8D:
         a24[SLOWORD(STACK[0x29A4])] = 0;
         v36 = a24;
-        v37 = *(char **)((char *)&off_17EB3D + 19 * *(int16_t *)(3753 * a25 + (uint8_t*)dword_197F98 + 2 * a26 + 1647));
+        v37 = TECHNAME_AT(19 * *(int16_t *)(3753 * a25 + (uint8_t*)dword_197F98 + 2 * a26 + 1647));
         goto LABEL_90;
       case 0x8E:
         a24[SLOWORD(STACK[0x29A4])] = 0;

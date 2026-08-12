@@ -9377,7 +9377,7 @@ LABEL_28:
         }
         else
         {
-          sub_1212B3(v152, v53, *(int *)((char *)&off_17EB3D + 19 * (uint8_t)byte_199A38));
+          sub_1212B3(v152, v53, TECHNAME_AT(19 * (uint8_t)byte_199A38));
         }
         v62 = v159;
         v63 = v139;

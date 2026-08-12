@@ -3455,6 +3455,17 @@ _UNKNOWN *off_17E0EE = &unk_178A04; // weak
 _UNKNOWN *off_17E7F0 = &unk_178A04; // weak
 _UNKNOWN *off_17EA60 = &unk_178A04; // weak
 int dword_17EB2A[240] = { 2686976 }; // weak - vlna 59: zapis az na +931
+// VLNA 89d: 0x17EB2A je zacatek tabulky 19bajtovych zaznamu technologii;
+// na +0 kazdeho zaznamu je CTYRBAJTOVY ukazatel na nazev, ktery za behu plni
+// sub_5DF0A (orion_part_04.c) smyckou `for (j = 0; j != 931; ...) j += 19`,
+// tedy 49 zaznamu od dword_17EB2A. Ctenari ale indexuji od off_17EB3D, coz je
+// 0x17EB2A + 19, tedy zaznam c. 1. V originale je to jeden souvisly blok,
+// v portu to byly DVA ruzne objekty - ctenari dostavali smeti (zmereno: do
+// %s v sub_C3111 sel ukazatel -1 a hra padla uvnitr sprintf).
+// Na x64 se 8bajtovy ukazatel do 19bajtoveho kroku nevejde, takze stejne jako
+// u nazvu technologii (vlna 80) a velikosti lodi (vlna 81) drzime ukazatele
+// v POSTRANNIM poli. Index = bajtovy offset od &off_17EB3D deleny 19, plus 1.
+char *techName_17EB2A[64]; // weak
 _UNKNOWN *off_17EB3D = &unk_178A04; // weak
 // PORT (wave 23): Hex-Rays declared word_17EB43/17EEE6/17F63E/17F6A7/17F80D/
 // 17FDF2/17FE76/17FFE8 as single int16 scalars, but sub_5E1E3 (and several
