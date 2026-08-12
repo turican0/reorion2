@@ -3727,8 +3727,27 @@ int sub_B4EF6( int a1,
   v26 = *(_QWORD *)((char *)&dword_B4D48[1] + 3);
   v27 = *(int *)((char *)&dword_B4D48[3] + 3);
   v11 = 0;
-  if ( a3 != 2 )
-    ((int (*)())(void*)sub_B4EF6)(a5, a6, a7, a8, a9, a10, a11);
+  /* vlna 89: rekurzivni volani melo v portu jen ZASOBNIKOVE argumenty a chybely
+     mu vsechny CTYRI registrove (a1=eax, a2=edx, a3=ebx, a4=ecx). Klicove je
+     `mov ebx, 2` tesne pred `call sub_B4EF6` - bez nej se podminka `a3 != 2`
+     nikdy neprestala plnit a rekurze pretekla zasobnik (zapis na 0x1030000,
+     tedy strazni stranku). asm 0xB4F1E..0xB4F44:
+       push arg_18/arg_14/arg_10/arg_C, movzx eax,[arg_8], push eax,
+       movsx eax, word [arg_4] / push eax, movsx eax, word [arg_0] / push eax,
+       movsx edx, dx / movsx ecx, cx / mov ebx, 2 / movsx eax, [var_44] */
+  if ( (int16_t)a3 != 2 )
+    sub_B4EF6(
+      (int16_t)a1,
+      (int16_t)a2,
+      2,
+      (int16_t)a4,
+      (int16_t)a5,
+      (int16_t)a6,
+      (uint8_t)a7,
+      a8,
+      a9,
+      a10,
+      a11);
   if ( (int16_t)a2 == -1 )
   {
     v37 = 0;

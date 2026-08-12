@@ -110,9 +110,26 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
                 sym->SizeOfStruct = sizeof(SYMBOL_INFO);
                 sym->MaxNameLen = 256;
                 DWORD64 displacement = 0;
+                // PORT (vlna 89): doplneno CISLO RADKU. SYMOPT_LOAD_LINES uz je
+                // nastaveno vys, ale vypis ho nepouzival, takze se z padu dal
+                // vycist jen offset typu "sub_11B05A+0xb11" a radek se musel
+                // dohledavat rucne (nebo cekat, az uzivatel posle screenshot
+                // z debuggeru). Hlidac (REORION2_WATCHDOG) to umi uz od vlny 84,
+                // tady to chybelo.
+                IMAGEHLP_LINE64 line = {};
+                line.SizeOfStruct = sizeof(line);
+                DWORD lineDisp = 0;
                 if (SymFromAddr(process, frame.AddrPC.Offset, &displacement, sym))
-                    std::fprintf(stderr, "  #%d %p %s+0x%llx\n", i, (void*)frame.AddrPC.Offset,
-                                 sym->Name, (unsigned long long)displacement);
+                {
+                    if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &lineDisp, &line))
+                        std::fprintf(stderr, "  #%d %p %s+0x%llx  (%s:%lu)\n", i,
+                                     (void*)frame.AddrPC.Offset, sym->Name,
+                                     (unsigned long long)displacement,
+                                     line.FileName, (unsigned long)line.LineNumber);
+                    else
+                        std::fprintf(stderr, "  #%d %p %s+0x%llx\n", i, (void*)frame.AddrPC.Offset,
+                                     sym->Name, (unsigned long long)displacement);
+                }
                 else
                     std::fprintf(stderr, "  #%d %p ?\n", i, (void*)frame.AddrPC.Offset);
             }

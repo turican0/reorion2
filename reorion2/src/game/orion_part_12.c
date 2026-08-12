@@ -1,3 +1,4 @@
+#include <stdarg.h>   /* vlna 89: sub_C5AC8 je variadicka */
 #include "orion_common.h"
 
 /* Adresni rozsah: 0xBBC8B - 0xC5F52  (200 funkci) */
@@ -5332,22 +5333,29 @@ int sub_C26F4()
   int v3; // eax
   int v4; // eax
   int v5; // eax
+  int16_t v6;             /* vlna 89: hodnota z +0B2h, predava se dvakrat */
+  uint8_t *base;          /* vlna 89: zaznam rasy v dword_197F98 */
   char v7[200]; // [esp+0h] [ebp+7Eh] BYREF
 
+  /* vlna 89: promenna cast argumentu obnovena z asm (poradi push = obracene
+     poradi argumentu). Kazde volani predava unk_179E03, unk_179E00 a hodnotu
+     z tabulky ras; druhe navic i vysledek sub_C603D. Drive tu bylo
+     `(char)&unk_179E03`, tedy adresa oriznuta na jeden bajt. */
+  base = 3753 * word_19999C + (uint8_t*)dword_197F98;
   sub_BB04E(2u);
   v0 = sub_CDF5C(118);
-  sub_C5AC8(v7, 0, v0, (char)&unk_179E03);
-  sub_C603D(*(_WORD *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 178));
+  sub_C5AC8(v7, 0, (const char *)v0, unk_179E03, unk_179E00, *(_DWORD *)(base + 0x32));
+  v6 = *(int16_t *)(base + 0xB2);
   v1 = sub_CDF5C(106);
-  sub_C5AC8(v7, 1, v1, (char)&unk_179E03);
+  sub_C5AC8(v7, 1, (const char *)v1, unk_179E03, unk_179E00, sub_C603D(v6), v6);
   v2 = sub_CDF5C(114);
-  sub_C5AC8(v7, 2, v2, (char)&unk_179E03);
+  sub_C5AC8(v7, 2, (const char *)v2, unk_179E03, unk_179E00, *(int16_t *)(base + 0xA6));
   v3 = sub_CDF5C(103);
-  sub_C5AC8(v7, 3, v3, (char)&unk_179E03);
+  sub_C5AC8(v7, 3, (const char *)v3, unk_179E03, unk_179E00, *(int16_t *)(base + 0x38));
   v4 = sub_CDF5C(102);
-  sub_C5AC8(v7, 4, v4, (char)&unk_179E03);
+  sub_C5AC8(v7, 4, (const char *)v4, unk_179E03, unk_179E00, *(int16_t *)(base + 0xB0));
   v5 = sub_CDF5C(117);
-  sub_C5AC8(v7, 5, v5, (char)&unk_179E03);
+  sub_C5AC8(v7, 5, (const char *)v5, unk_179E03, unk_179E00, *(int16_t *)(base + 0xAC));
   sub_103BC4(0x208u, 0x162u, 104, (int)v7, 3);
   return sub_BAEFE();
 }
@@ -7935,38 +7943,46 @@ int sub_C5AA7( int a1, int a2, unsigned int a3)
 
 
 //----- (000C5AC8) --------------------------------------------------------
-char sub_C5AC8(char *a1, int a2, int a3, int a4)
+/* vlna 89: v asm je to VARIADICKA cdecl funkce - volajici uklizi 6 az 7
+   argumentu (`add esp, 18h` / `add esp, 1Ch`) a promenna cast se predava
+   `vsprintf`. IDA z cele promenne casti udelala JEDEN parametr `int a4`,
+   takze volajici v sub_C26F4 mely `(char)&unk_179E03` - adresu retezce
+   ORIZNUTOU NA JEDEN BAJT - a `vsprintf` pak cetl `%s` ze smeti (pad uvnitr
+   ucrtbased). Prepsano na skutecne `...` + va_start/va_end. */
+char sub_C5AC8(char *a1, int a2, const char *a3, ...)
 {
-  char *v4; // eax
+  char v4;
   char *v5; // eax
   char *v6; // eax
   char v8[1000]; // [esp+0h] [ebp-3ECh] BYREF
-  char *v9; // [esp+3E8h] [ebp-4h] BYREF
+  va_list ap;
 
-  v4 = &a4;
-  v9 = &a4;
+  v4 = 0;
   if ( a2 >= 0 )
   {
-    if ( (unsigned int)vsprintf(v8, a3, &v9) > 0x3E8 )
+    va_start(ap, a3);
+    if ( (unsigned int)vsprintf(v8, a3, ap) > 0x3E8 )
     {
+      va_end(ap);
       v5 = (char *)sub_CDF5C(408);
-      sub_126487(v5, a3);
+      sub_126487(v5, (int)a3);
+    }
+    else
+    {
+      va_end(ap);
     }
     if ( a2 )
     {
       v6 = (char *)sub_CDF5C(71);
-      LOBYTE(v4) = sprintf(a1, v6, a1, 13, v8);
+      v4 = (char)sprintf(a1, v6, a1, 13, v8);
     }
     else
     {
       strcpy(a1, v8);
     }
   }
-  return (char)v4;
+  return v4;
 }
-// C5B4B: variable 'v4' is possibly undefined
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 13C8F0: using guessed type int vsprintf(_DWORD, _DWORD, _DWORD);
 
 
 //----- (000C5B64) --------------------------------------------------------

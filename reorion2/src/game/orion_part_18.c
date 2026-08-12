@@ -5769,8 +5769,10 @@ char *sub_115994( int a1)
   int16_t v7; // [esp+10h] [ebp-4h]
 
   v7 = *(_WORD *)((char *)off_184480 + 55 * a1 + 40) - *(_WORD *)((char *)off_184480 + 55 * a1 + 36);
+  /* vlna 89: bylo `**(int16_t **)(...)`; asm ma `mov eax, [eax+20h] /
+     mov ax, [eax]`, tedy ctyrbajtovy ukazatel a JEDNA dereference. */
   v4 = 100
-     * (**(int16_t **)((char *)off_184480 + 55 * a1 + 32) - (*(int *)((char *)off_184480 + 55 * a1 + 34) >> 16))
+     * (*PORT_PTR32(int16_t *, (char *)off_184480 + 55 * a1 + 32) - (*(int *)((char *)off_184480 + 55 * a1 + 34) >> 16))
      / v7
      + 5;
   v1 = (char *)off_184480 + 55 * a1;
@@ -5809,7 +5811,7 @@ char *sub_115AC0( int a1)
 
   v7 = *(_WORD *)((char *)off_184480 + 55 * a1 + 40) - *(_WORD *)((char *)off_184480 + 55 * a1 + 36);
   v4 = 100
-     * (**(int16_t **)((char *)off_184480 + 55 * a1 + 32) - (*(int *)((char *)off_184480 + 55 * a1 + 34) >> 16))
+     * (*PORT_PTR32(int16_t *, (char *)off_184480 + 55 * a1 + 32) - (*(int *)((char *)off_184480 + 55 * a1 + 34) >> 16))
      / v7
      - 5;
   v1 = (char *)off_184480 + 55 * a1;

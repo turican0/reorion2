@@ -118,8 +118,10 @@ int byte_1B3E90;
 int byte_1B3E98;
 int byte_1B61D8;
 int byte_1BA318;
-int byte_1BA319;
-int byte_1BA31A;
+/* byte_1BA319/byte_1BA31A odstraneny (vlna 89) - jsou soucasti prekryvoveho
+   bloku byte_1BA318[64] v orion_data.c/orion_common.h a od vlny 89 jsou to
+   makra. Tady to byly DUPLICITNI skalary (link_stubs.c nezahrnuje
+   orion_common.h, takze se makro neuplatnilo) - tataz past jako ve vlne 73. */
 int byte_1BB354;
 int byte_1BB355;
 int byte_1BB356;
@@ -225,7 +227,10 @@ int dword_1AAB70;
 int dword_1ACEBC;
 int dword_1ACFC0;
 int dword_1AD6C4;
-int dword_1BB910;
+/* dword_1BB910 odstraneno (vlna 89) - je soucasti prekryvoveho bloku
+   screenPtrs_1BB910 v orion_data.c/orion_common.h. Tady to byl DUPLICITNI
+   skalar (link_stubs.c nezahrnuje orion_common.h, takze makro se neuplatnilo);
+   tataz past, kterou popisuje vlna 73. Nikdo ho nereferencoval. */
 /* dword_1BBA74 odstraneno (vlna 12) - je soucasti prekryvoveho bloku
    lbxHeader_1BBA6A, viz orion_data.c/orion_common.h. */
 int dword_1BD352;

@@ -9210,3 +9210,259 @@ SAMOU podminkou, jakou testuje hra, a zavolat ji po kazdem kroku. Rozdil
 "po X v poradku, po Y uz ne" najde viníka bez jedineho kroku v debuggeru.
 
 Regresni brana se v techto vlnach na pokyn uzivatele nespoustela.
+
+### Vlna 89: tri pady za sebou - ztraceny registrovy argument jako spolecna pricina
+
+Uzivatel poslal behem jedne vlny TRI pady z debuggeru. Vsechny tri mely stejnou
+rodinu priciny (IDA zahodila registrovy argument nebo navratovou hodnotu),
+takze se resily spolecne.
+
+#### Pad 1: `strcpy` v `sub_C34F3` (cteni z 0x0000000200000002)
+
+Zasobnik `sub_C4562` -> `sub_C3947` -> `sub_C386B` -> `sub_C34F3`, radek
+`strcpy(v4, v0)` s neinicializovanym `v0`. Klic byl o funkci vys:
+
+**`sub_77B42` byl PRAZDNY PAHYL s NO-OP `JUMPOUT(0x77B35)`.** V asm je to tataz
+funkce jako `sub_77B28` (skace primo do jejiho tela), jen s `ebx = 0` misto 1:
+
+```
+sub_77B42: push ebx / push edx / mov edx, offset word_187F78 / cwde
+           xor ebx, ebx / jmp short loc_77B35
+```
+
+Ma tedy REGISTROVY ARGUMENT v EAX (`cwde` = `int16_t`) a VRACI ukazatel na
+retezec (`mov eax, offset word_187F78`). IDA zahodila oboji, takze **vsech
+DESET volajicich** pouzivalo neinicializovanou lokalku jako ukazatel na retezec.
+Opraveno vsech deset mist; pri tom vypadly dalsi nalezy:
+
+| misto | co jeste bylo spatne |
+|---|---|
+| `sub_C34F3` | ztratila OBA sve registrove argumenty (`cwde` = a1, `movsx eax, dx` = a2) |
+| `sub_9CD24` | `enter 1C0h,0 / push eax / push edx` - var_1C4 (v20) a var_1C8 (v19) jsou SPILLNUTE argumenty; funkce byla bez parametru |
+| `sub_9B04D` (volajici) | asm ma DVE vetve s ruznym EDX (`loc_9B113` -> 1, `loc_9B134` -> 4), IDA je slila do jedne |
+| `sub_A453F` | `enter 5CCh,0 / push eax` - var_5D0 (v32) je spillnuty argument; funkce byla bez parametru, volajici nic neposilal |
+| `sub_A2123` | pred `sprintf` je `movsx edx, cx` a po nem `cmp edx, -1` / `imul edx, 169h` - podminka i index jsou nad `v26`, ne nad navratovou hodnotou `sprintf`. IDA z toho udelala `HIDWORD(v35)` = smeti indexujici `dword_192B18` |
+
+Dale ve stejnem retezu:
+
+- **`dword_1A08B0` drzel ukazatel na zasobnikovy buffer v `int`u**
+  (`dword_1A08B0 = (int)&v9` v `sub_C4562`) - na x64 se adresa orezala a
+  `sub_C386B` pak dostaval jako indexy hvezd smeti. Prepsano na `uint8_t *`.
+- **`sub_C3111` mel parametr pojmenovany `a1`, coz STINILO retezcovy global
+  `char a1[3]`** (= ESC + "1"; IDA takhle pojmenovava retezcove literaly).
+  Vsechna ctyri mista, kde asm dela `push offset a1`, tak dostavala misto
+  retezce cislo hvezdy. Parametr prejmenovan na `a1_idx`. U jednoho `sprintf`
+  bylo navic obracene poradi argumentu proti poradi `push` v asm.
+
+#### Pad 2: `sub_7A133` (cteni z 0x17B0B8A1) - a s nim jmena hvezd
+
+Zasobnik `sub_8B956` -> `sub_8A6C2` -> `sub_84E9D` -> `sub_84A95` ->
+`sub_88CB7` -> `sub_85C8A` -> `sub_7A133`. `sub_7A133` sama je v poradku, dostala
+jen nesmyslne cislo hvezdy. `sub_85C8A` ma `enter 24h, 0 / push eax`, tedy
+**`v17` ([ebp-28h]) je spillnute EAX = cislo hvezdy** a telo funkce pouziva
+misto parametru `a1` vyhradne jeho (`variable 'v17' is possibly undefined`).
+
+Po te oprave se pad posunul do `sub_85C8A` samotne (zapis) - dalsi dve chyby
+ve stejne funkci:
+
+- **`v20 = a3` chybelo** (asm `mov [ebp+var_18], ebx`), takze `*v20 = v12`
+  zapisovalo pres neinicializovany ukazatel;
+- **`v11 = sub_79979(v17)`** - asm `call sub_79979 / cmp ax, 1 / jle return`.
+  `sub_79979` vraci pocet ruznych typu planet (`mov eax, ecx / jmp
+  locret_78F44`), ale davkova zmena z vlny 79 ji povazovala za `void` -
+  je to jedna z "23 zbylych JUMPOUT typu EPILOG v nevoid funkcich".
+
+**Vedlejsi efekt: na mape se ZACALA vykreslovat jmena hvezd** (Nazin, Ficrac,
+Kholdan, Gnol...) - `sub_88CB7` je prave smycka pres vsechny hvezdy, ktera
+popisky kresli. Tim se zaviera polozka z backlogu vlny 88.
+
+#### Pad 3: po kliknuti na COLONIES - PRETECENI ZASOBNIKU
+
+Zapis na 0x1030000 (strazni stranka) a v zasobniku desitky ramcu `sub_B4EF6`
+na temz radku. Prava rekurze:
+
+```
+cmp bx, 2
+jz  short loc_B4F44        ; a3 == 2 -> nerekurzovat
+push arg_18/arg_14/arg_10/arg_C, movzx eax,[arg_8], push eax,
+movsx eax, word [arg_4] / push eax, movsx eax, word [arg_0] / push eax
+movsx edx, dx / movsx ecx, cx / mov ebx, 2 / movsx eax, [var_44]
+call sub_B4EF6
+```
+
+Port mel `((int (*)())(void*)sub_B4EF6)(a5, a6, a7, a8, a9, a10, a11)` - tedy
+JEN zasobnikove argumenty a **zadny z ctyr registrovych**. Chybelo hlavne
+`mov ebx, 2`, takze podminka `a3 != 2` se nikdy neprestala plnit. Pozor na ten
+zapis pretypovanim na `(int (*)())` - **umlci kontrolu poctu argumentu**, takze
+prekladac nic nenahlasil.
+
+Po oprave se beh dostal az do `sub_C4562` (stav 20 = COLONIES) a spadl na
+`sub_133237` -> `sub_1338C9` (cteni z NULL). Dva rozsekane bloky:
+
+| symbol | bylo | ma byt |
+|---|---|---|
+| `byte_1BB758` | `[]` (1 B) + `byte_1BB759[254]` + `unk_1BB857` | jeden blok 296 B (0x1BB758..0x1BB87F, dalsi symbol `dword_1BB880`); `byte_1BB759` = +1, `unk_1BB857` = +255 (koncova zaslepka) |
+| `screenPtrs_1BB910` | `[65]` + samostatny `dword_1BBA14` | `[66]`; `dword_1BBA14` je prvek 65, ktery `sub_1338C9` cte jako `dword_1BB914[64]` |
+
+Druhy z nich je podstatny: `sub_1338C9` ma `if (v8 >= 53) v8 = 64;`, takze
+`dword_1BB914[64]` cte pri kazdem prubehu - a jako samostatny global to bylo
+cteni mimo pole. Pri tom odstranen i **duplicitni skalar `dword_1BB910`
+v `link_stubs.c`** (ten soubor nezahrnuje `orion_common.h`, takze se makro
+neuplatnilo a vznikl druhy symbol - tataz past jako ve vlne 73).
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- cesta NEW GAME -> rasa -> jmeno vladce -> barva vlajky -> mapa galaxie ->
+  "Enter Home Star Name" -> ACCEPT -> COLONIES bezi bez padu dele nez 70 s;
+- na mape se vykresluji jmena hvezd;
+- **regresni brana 600/600 matched, 0 diverged** (po `-t:Rebuild`, s vypnutym
+  dosboxem) - vcetne zmeny signatur `sub_77B42`, `sub_9CD24`, `sub_A453F`,
+  `sub_79979`, `sub_C34F3` a prepisu bloku `byte_1BB758`/`screenPtrs_1BB910`;
+- zadna docasna instrumentace nepridavana (stacil SEH vypis, ktery port dela sam).
+
+#### Poznamka k metode - hledej `(int (*)())(void*)sub_`
+
+Pretypovani volani na `(int (*)())` je v dekompilatu **priznak, ze IDA nesouhlasi
+s poctem argumentu** - a zaroven to prekladaci zabrani, aby to nahlasil. Zbyva
+jich pet a kazdy je kandidat na tutez chybu jako `sub_B4EF6`:
+
+    orion_part_03.c:16800  sub_4E3B5
+    orion_part_10.c:7150   sub_A8197
+    orion_part_11.c:4576   sub_B6352
+    orion_part_17.c:3343   sub_103D53
+    orion_part_18.c:4703   sub_1131F0
+
+(Volani pres `dword_1B9208` a podobne jsou naopak legitimni neprime skoky.)
+
+#### CO ZBYVA
+
+- u horniho okraje mapy je porad rozsypany svisly text;
+- hodnoty surovin v bocnim panelu vychazeji divne (`-0 BC`, `-27 (8)`,
+  `+0 (0)`, `none`);
+- `sub_92457` (sirka popisku hvezdy) je v portu `void`, misto ni se pouziva 0;
+- pad na obrazovce "Enter Ruler Name" se znovu neprojevil;
+- pet volani pretypovanych na `(int (*)())` (viz vyse);
+- 25 zbylych `&ukazatel + 3`; 13 volajicich `sub_103915` s `SUB_103915_TODO`;
+  22 `JUMPOUT` typu EPILOG v nevoid funkcich; 3 volani `qsort` bez komparatoru;
+- v `screenPtrs_1BB910` se porad ukladaji UKAZATELE do `int` slotu (vcetne
+  ukazatele na framebuffer v prvku 0). Funguje to jen proto, ze ty adresy
+  zatim vychazeji pod 4 GB - je to krehke.
+
+### Vlna 89b: COLONIES - ctyri pady v rade, mereni misto hadani
+
+Navazuje na vlnu 89. Uzivatel: "colonie spadly zde" (pad v `sub_1338C9`).
+Cesta na obrazovku COLONIES odkryla ctyri NEZAVISLE chyby za sebou.
+
+#### 0. NEJDRIV NASTROJ: SEH vypis umi cisla radku
+
+Pul vlny se ztratilo hledanim, ktery radek je `sub_11B05A+0xb11`. Vypis SEH
+v `src/reorion2.cpp` uz mel `SYMOPT_LOAD_LINES`, ale `SymGetLineFromAddr64`
+nevolal - doplneno. **Od teto vlny kazdy pad rovnou rekne soubor a radek**,
+stejne jako to od vlny 84 umi hlidac. Tohle udelej driv nez cokoliv jineho.
+
+Druha past: `fprintf(stderr, ...)` primo v dekompilovanem `.c` NEFUNGUJE -
+`decomp_compat.h` presmerovava `fflush` (a spol.) na `PortFile_*`. Na docasne
+mereni se musi pouzit `PortDebug_Checkpoint` / `PortDebug_CheckpointPtr`
+(zapina `REORION2_TRACE=1`). Dve mereni se kvuli tomu vyhodnotila jako
+"nic se nedeje", coz bylo zavadejici.
+
+Treti past, uz popsana v prirucce, ale znovu me dostala: **inkrementalni
+`-t:Build` nerelinkuje**. Dve mereni bezela na stare binarce.
+
+#### 1. Cteni slotu okna: `**(int16_t **)` misto jedne dereference
+
+`sub_11B05A+0xb11` = `orion_part_19.c:559`. Sloty +32/+36/+40 v 55bajtovem
+zaznamu okna (`off_184480`) drzi CTYRBAJTOVY ukazatel. asm:
+
+```
+mov eax, [eax+24h]        ; nacti ukazatel ze slotu
+movsx eax, word ptr [eax] ; JEDNA dereference
+```
+
+Zapisy uz v portu spravne pouzivaly `*PORT_PTR32(uint16_t *, ...)`, ale cteni
+byla `**(int16_t **)(...)`, tedy 8 B ze slotu a DVOJI dereference - cteni si
+se zapisem odporovalo. Pad na cteni z 0xFFFFFFFFFFFFFFFF. Opraveno na peti
+mistech (`orion_part_18.c` 2x slot +32, `orion_part_19.c` 3x sloty +36/+40).
+**Tenhle pad byl deterministicky 4/4 behu** - az po nem sla cesta dal.
+
+#### 2. `byte_1BA318` - dalsi rozsekany blok (ZMERENO)
+
+Pad v `sub_1338C9` na `dword_1BB914[v11]`. Misto hadani doslo na mereni pres
+`PortDebug_Checkpoint`: `a1=139, v11=129, v8=64, lo=FFFFFFFFE5523BE9`.
+Index 129 je daleko za 65prvkovou tabulkou kosu - a1 ma byt <= 63 (6bitovy
+kanal barvy).
+
+Pricina: 0x1BA318..0x1BA357 je JEDEN blok 64 B = 16 zaznamu po 4 B
+(asm `cmp byte_1B2318[eax], 0` s eax = 4*j, j < 16). IDA z nej udelala
+`byte_1BA318[1]` + `byte_1BA319[1]` + `byte_1BA31A[1]` + `byte_1BA31B[61]`,
+takze `byte_1BA318[4*j]` pro j>0 cetlo mimo objekt a do `sub_1338C9` sly
+nesmyslne barvy. Slouceno do `byte_1BA318[64]` + makra +1/+2/+3.
+
+Ve stejnem tahu: **`byte_1BA358` mel 4092 B misto 4096** - indexuje se
+`byte_1BA358[256 * j + i]` pro j < 16, i < 256, tedy az prvek 4095; poslednich
+pet zapisu pretekalo do sousedni palety. A z `link_stubs.c` odstraneny
+duplicitni skalary `byte_1BA319`/`byte_1BA31A` (tataz past jako ve vlne 73).
+
+#### 3. `sub_C5AC8` je VARIADICKA - IDA z promenne casti udelala `int a4`
+
+Dalsi pad: `vsprintf` uvnitr ucrtbased. asm ukazuje cdecl volani, kde volajici
+uklizi 6 az 7 argumentu (`add esp, 18h` / `add esp, 1Ch`):
+
+```
+push dword ptr [ecx+eax+32h]   ; hodnota
+push offset unk_171E00         ; retezec
+push offset unk_171E03         ; retezec
+mov eax, 76h / call sub_CDF5C / push eax   ; format
+push 0 / lea eax, [var_C8] / push eax
+call sub_C5AC8
+```
+
+IDA celou promennou cast slila do jednoho `int a4`, takze vsech sest volani
+v `sub_C26F4` melo **`(char)&unk_179E03`** - adresu retezce ORIZNUTOU NA JEDEN
+BAJT. Prepsano na skutecne `...` + `va_start`/`va_end` a sest volani obnoveno
+z asm (poradi push = obracene poradi argumentu).
+
+A jeste: **`unk_179E00` v portu VUBEC NEEXISTOVAL a `unk_179E03` byl prazdny
+`_UNKNOWN`**. Jsou to dva tribajtove retezce s ridicim kodem 1Ah (prepnuti
+barvy): `1A '1' 00` a `1A '0' 00`. Doplneno z asm.
+
+#### Stav COLONIES
+
+Puvodni retez z uzivateluva screenshotu
+(`sub_C4562` -> `sub_133237` -> `sub_1338C9`) uz **neprochazi padem** a
+obrazovka se kresli o podstatny kus dal. Zbyvaji dva NOVE, nezavisle pady,
+oba reprodukovane a s presnym mistem:
+
+1. `orion_part_12.c:6011` v `sub_C3111` - `sprintf(v35, v18, a1, a0_0, v26, v15)`
+   dostane do `%s` ukazatel -1. Format i oba retezce jsou v poradku (overeno),
+   podezrely je `v26 = sub_B2FFA(v17)`. asm `sub_B2FFA` konci
+   `sprintf(&byte_195A6C, CDF5C(2Dh), sub_AFC6D(-8), starRec)`.
+2. Vlastni fatalni konec hry: `KONEC (sub_126487): ERROR: Bad Rect in
+   Add_Hidden_Field` - neplatny obdelnik pole v okenim systemu (tataz rodina
+   jako bod 1 teto vlny). Nasledny pad v uklidovem retezu
+   (`sub_113DBD` -> `sub_155E62`) tu hlasku v debuggeru prekryje.
+
+#### OVERENY NEGATIVNI VYSLEDEK - nehon se za tim znovu
+
+Meril jsem podezreni, ze `dword_1A6578[i] = (int)a3` (tabulka 812 ukazatelu na
+retezce) orezava HALDOVY ukazatel nad 4 GB, protoze `sub_CDF5C` vraci `int`.
+**Neni to tak:** zmereno `CDF65.pool = 0x00D1C760` a `slot445 = 0x00D1E5FA`,
+tedy hluboko pod 2 GB a platne. Alokator portu (`std::malloc`, rozpocet 32 MiB)
+dava adresy nizko, takze `(int)ukazatel` se tu zatim vejde. Zustava to jako
+krehkost (816 volani `sub_CDF5C`, 437 z nich do `int`), ne jako aktualni pricina.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb, vsechna docasna instrumentace odstranena;
+- pad `sub_11B05A` (byl 4/4 behu) je pryc, pad `sub_1338C9` na ceste COLONIES
+  je pryc (kontrolni mereni uz nehlasi zadny index mimo tabulku);
+- **regresni brana se v teto vlne na pokyn uzivatele nespoustela.**
+
+#### CO ZBYVA (nad ramec vlny 89)
+
+- dva pady vyse na obrazovce COLONIES;
+- 16 volani `sub_C5AC8` v `orion_part_11.c` porad predava jen jeden argument
+  promenne casti - u kazdeho se musi z asm dohledat, co se doopravdy pushuje;
+- pet volani pretypovanych na `(int (*)())(void*)sub_...` (viz vlna 89);
+- `sub_CDF5C` vraci `int` misto `char *` (viz negativni vysledek vyse).

@@ -4982,8 +4982,8 @@ extern void sub_C5934();
 extern char sub_C5A84();
 // plna signatura: int sub_C5AA7( int a1, int a2, unsigned int a3);
 extern int sub_C5AA7();
-// plna signatura: char sub_C5AC8(char *a1, int a2, int a3, int a4);
-extern char sub_C5AC8();
+// plna signatura: char sub_C5AC8(char *a1, int a2, const char *a3, ...);  /* vlna 89: VARIADICKA */
+extern char sub_C5AC8(char *a1, int a2, const char *a3, ...);
 // plna signatura: void sub_C5B64( unsigned int a1);
 extern void sub_C5B64();
 // plna signatura: char sub_C5B85( int result);
@@ -12849,7 +12849,7 @@ int sub_C58D1();
 void sub_C5934(int a1, int a2, int a3);
 char sub_C5A84(int16_t a1, int a2, uint16_t a3);
 int sub_C5AA7(int16_t a1, int a2, uint16_t a3);
-char sub_C5AC8(char *a1, int16_t a2, int a3, char a4);
+char sub_C5AC8(char *a1, int a2, const char *a3, ...);   /* vlna 89: VARIADICKA, viz orion_part_12.c */
 int16_t sub_C5B5F(int);
 void sub_C5B64(uint16_t a1);
 char sub_C5B85(char result);
@@ -16296,7 +16296,9 @@ extern char aBuffer0Lbx_5[12];
 extern char aWho[4];
 extern char aRefitpupLbx[13];
 extern char asc_179DFD[2];
-extern _UNKNOWN unk_179E03;
+// VLNA 89: dva tribajtove retezce s ridicim kodem 1Ah, viz orion_data.c
+extern char unk_179E00[3];
+extern char unk_179E03[3];
 extern _BYTE byte_179E06[2];
 extern wchar_t aFs[3];
 extern char a1[3];
@@ -20705,11 +20707,13 @@ extern char byte_1B922A;
 extern int dword_1B9E34;
 extern _UNKNOWN unk_1B9E38;
 extern _UNKNOWN unk_1BA0A8;
-extern char byte_1BA318[];
-extern char byte_1BA319[];
-extern char byte_1BA31A[];
-extern char byte_1BA31B[61];
-extern char byte_1BA358[4092];
+// VLNA 89: 0x1BA318..0x1BA357 je jeden souvisly blok 16 zaznamu po 4 B.
+// Makra jsou lvalue, takze `byte_1BA319[4 * j]` funguje dal beze zmeny.
+extern char byte_1BA318[64];
+#define byte_1BA319 (byte_1BA318 + 1)
+#define byte_1BA31A (byte_1BA318 + 2)
+#define byte_1BA31B (byte_1BA318 + 3)
+extern char byte_1BA358[4096];
 extern char byte_1BB354[];
 extern char byte_1BB355[];
 extern char byte_1BB356[];
@@ -20733,9 +20737,12 @@ extern char byte_1BB659[];
 extern char byte_1BB65A[];
 extern char byte_1BB65B[190];
 extern char byte_1BB719[63];
-extern char byte_1BB758[];
-extern char byte_1BB759[254];
-extern _UNKNOWN unk_1BB857;
+// VLNA 89: 0x1BB758..0x1BB87F je jeden souvisly 296bajtovy blok (setridena
+// tabulka indexu palety). byte_1BB759 je +1, unk_1BB857 je +255 (koncova
+// zaslepka). Makra jsou lvalue, takze existujici indexovani funguje dal.
+extern char byte_1BB758[296];
+#define byte_1BB759 (byte_1BB758 + 1)
+#define unk_1BB857  (byte_1BB758[255])
 extern int dword_1BB880;
 extern int dword_1BB884;
 extern int (*dword_1BB888)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD);
@@ -20772,10 +20779,12 @@ extern int dword_1BB90C;
 // adjacency (it is really table[k+1] = table[k] propagation). Splitting them
 // into separate globals made dword_1BB910[k>0] read/write out of bounds and
 // corrupt neighbours (observed: the framebuffer pointer in [0] getting zeroed).
-extern int screenPtrs_1BB910[65];
+// VLNA 89: [66] misto [65] - polozka 65 (0x1BBA14) je dword_1BBA14, koncova
+// zaslepka tabulky kosu, kterou sub_1338C9 cte jako dword_1BB914[64].
+extern int screenPtrs_1BB910[66];
 #define dword_1BB910 screenPtrs_1BB910
 #define dword_1BB914 (screenPtrs_1BB910 + 1)
-extern int dword_1BBA14;
+#define dword_1BBA14 (screenPtrs_1BB910[65])
 extern int dword_1BBA18;
 extern int16_t word_1BBA1C[6];
 extern int dword_1BBA28;

@@ -1505,7 +1505,12 @@ char aBuffer0Lbx_5[12] = "BUFFER0.LBX"; // weak
 char aWho[4] = "Who"; // weak
 char aRefitpupLbx[13] = "refitpup.LBX"; // weak
 char asc_179DFD[2] = ":"; // weak
-_UNKNOWN unk_179E03; // weak
+// VLNA 89: 0x179E00 a 0x179E03 jsou DVA TRIBAJTOVE RETEZCE s ridicim kodem
+// 1Ah (prepnuti barvy textu): 1A '1' 00 a 1A '0' 00. V portu unk_179E00 uplne
+// chybel a unk_179E03 byl prazdny _UNKNOWN, takze sub_C26F4 predaval do
+// sprintf %s ukazatel na neinicializovany bajt. Bajty z Orion2.exe.asm.
+char unk_179E00[3] = { 0x1A, '1', 0 }; // weak
+char unk_179E03[3] = { 0x1A, '0', 0 }; // weak
 _BYTE byte_179E06[2] = { 112, 0 }; // weak
 wchar_t aFs[3] = L"fs "; // weak
 char a1[3] = "\x1B""1"; // weak
@@ -18225,11 +18230,16 @@ char byte_1B922A; // weak
 int dword_1B9E34; // weak
 _UNKNOWN unk_1B9E38; // weak
 _UNKNOWN unk_1BA0A8; // weak
-char byte_1BA318[]; // weak
-char byte_1BA319[]; // weak
-char byte_1BA31A[]; // weak
-char byte_1BA31B[61]; // weak
-char byte_1BA358[4092]; // weak
+// VLNA 89: 0x1BA318..0x1BA357 je JEDEN souvisly blok 64 B = 16 zaznamu po 4 B
+// (pruhlednost/barva prekryvu). asm: `cmp byte_1B2318[eax], 0` s eax = 4*j,
+// j < 16. IDA z nej udelala byte_1BA318[1] + byte_1BA319[1] + byte_1BA31A[1]
+// + byte_1BA31B[61], takze `byte_1BA318[4*j]` pro j>0 cetlo mimo objekt.
+// ZMERENO: sub_133237 pak volalo sub_1338C9 s a1 = 139 misto <= 63, coz
+// v sub_1338C9 dalo `dword_1BB914[129]` = daleko za 65prvkovou tabulkou kosu.
+char byte_1BA318[64]; // weak
+// VLNA 89: 4096, ne 4092 - indexuje se `byte_1BA358[256 * j + i]` pro j < 16
+// a i < 256, tedy az na prvek 4095. Blok konci az na 0x1BB358 (paleta).
+char byte_1BA358[4096]; // weak
 char byte_1BB354[]; // weak
 char byte_1BB355[]; // weak
 char byte_1BB356[]; // weak
@@ -18269,9 +18279,13 @@ char byte_1BB659[]; // weak
 char byte_1BB65A[]; // weak
 char byte_1BB65B[190]; // weak
 char byte_1BB719[63]; // weak
-char byte_1BB758[]; // weak
-char byte_1BB759[254]; // weak
-_UNKNOWN unk_1BB857; // weak
+// VLNA 89: 0x1BB758..0x1BB87F je JEDEN souvisly blok (dalsi symbol je az
+// dword_1BB880), tedy 296 B - setridena tabulka indexu palety, kterou plni
+// sub_13372A. IDA z nej udelala byte_1BB758[1] + byte_1BB759[254] +
+// unk_1BB857, takze `byte_1BB758[i]` pro i>0 a `byte_1BB759[j] = byte_1BB758[j]`
+// sahaly mimo objekt a tabulka vysla jako smeti. unk_1BB857 lezi na +255 a je
+// to KONCOVA zaslepka (dword_1BBA14 = &unk_1BB857 = polozka 64 tabulky kosu).
+char byte_1BB758[296]; // weak
 int dword_1BB880; // weak
 int dword_1BB884; // weak
 int (*dword_1BB888)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD); // weak
@@ -18301,11 +18315,14 @@ int dword_1BB900; // weak
 int dword_1BB904; // weak
 int dword_1BB908; // weak
 int dword_1BB90C; // weak
-// Overlay: dword_1BB910 + dword_1BB914 are one contiguous 65-int array in the
-// original (0x1BB910..0x1BBA13). See orion_common.h for why they must not be
-// split. dword_1BB910/dword_1BB914 are now macros onto this backing array.
-int screenPtrs_1BB910[65]; // weak
-int dword_1BBA14; // weak
+// Overlay: dword_1BB910 + dword_1BB914 are one contiguous array in the
+// original. See orion_common.h for why they must not be split.
+// dword_1BB910/dword_1BB914 are now macros onto this backing array.
+// VLNA 89: rozsireno z [65] na [66] - `dword_1BB914[64]` (= 0x1BBA14) je
+// dword_1BBA14, koncova zaslepka tabulky kosu. sub_1338C9 ji cte pokazde,
+// kdyz mu horni mez vyjde 64 (`if (v8 >= 53) v8 = 64;`), takze jako
+// samostatny global se cetlo mimo pole.
+int screenPtrs_1BB910[66]; // weak
 int dword_1BBA18; // weak
 int16_t word_1BBA1C[6]; // weak
 int dword_1BBA28; // weak

@@ -556,19 +556,24 @@ LABEL_72:
       v5 = *(int *)((char *)off_184480 + 55 * v9) >> 16;
       *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 40) = (((int16_t)dword_1B3E14) + sub_123AE7() - v5)
                                                       / (*(int *)((char *)off_184480 + 55 * v9 + 30) >> 16);
-      if ( **(int16_t **)((char *)off_184480 + 55 * v9 + 36) > ((*(int *)((char *)off_184480 + 55 * v9 + 2) >> 16)
+      /* vlna 89: tato ctyri cteni slotu +36/+40 byla `**(int16_t **)(...)`,
+         tedy 8 B ze slotu a DVOJI dereference. asm ma `mov eax, [eax+24h] /
+         movsx eax, word ptr [eax]` - ctyrbajtovy ukazatel a JEDNA dereference.
+         Zapisy na tychz slotech uz PORT_PTR32 pouzivaly, takze si cteni se
+         zapisem odporovalo -> pad na cteni z 0xFFFFFFFFFFFFFFFF. */
+      if ( *PORT_PTR32(int16_t *, (char *)off_184480 + 55 * v9 + 36) > ((*(int *)((char *)off_184480 + 55 * v9 + 2) >> 16)
                                                               - *(int16_t *)((char *)off_184480 + 55 * v9))
                                                              / (*(int *)((char *)off_184480 + 55 * v9 + 26) >> 16) )
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 36) = ((*(int *)((char *)off_184480 + 55 * v9 + 2) >> 16)
                                                          - *(int16_t *)((char *)off_184480 + 55 * v9))
                                                         / (*(int *)((char *)off_184480 + 55 * v9 + 26) >> 16);
-      if ( **(int16_t **)((char *)off_184480 + 55 * v9 + 40) > ((*(int *)((char *)off_184480 + 55 * v9 + 4) >> 16)
+      if ( *PORT_PTR32(int16_t *, (char *)off_184480 + 55 * v9 + 40) > ((*(int *)((char *)off_184480 + 55 * v9 + 4) >> 16)
                                                               - (*(int *)((char *)off_184480 + 55 * v9) >> 16))
                                                              / (*(int *)((char *)off_184480 + 55 * v9 + 30) >> 16) )
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 40) = ((*(int *)((char *)off_184480 + 55 * v9 + 4) >> 16)
                                                          - (*(int *)((char *)off_184480 + 55 * v9) >> 16))
                                                         / (*(int *)((char *)off_184480 + 55 * v9 + 30) >> 16);
-      if ( **(int16_t **)((char *)off_184480 + 55 * v9 + 36) < 0 )
+      if ( *PORT_PTR32(int16_t *, (char *)off_184480 + 55 * v9 + 36) < 0 )
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * v9 + 36) = 0;
       a1 = PORT_PTR32(char *, (char *)off_184480 + 55 * v9 + 40);
       if ( *(int16_t *)a1 < 0 )
