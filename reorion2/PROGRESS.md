@@ -9466,3 +9466,97 @@ krehkost (816 volani `sub_CDF5C`, 437 z nich do `int`), ne jako aktualni pricina
   promenne casti - u kazdeho se musi z asm dohledat, co se doopravdy pushuje;
 - pet volani pretypovanych na `(int (*)())(void*)sub_...` (viz vlna 89);
 - `sub_CDF5C` vraci `int` misto `char *` (viz negativni vysledek vyse).
+
+### Vlna 89c: data v KODOVEM segmentu - novy skener + dve opravy
+
+Uzivatel: "zkus opravit spravne vypisy nazvu galaxii, take hodnoty penez atd.
+jsou mimo". Tato vlna resi vykreslovani, ne pady.
+
+#### Co se doopravdy zobrazuje (zmereno vyrezem snimku)
+
+"Rozsypany svisly text u horniho okraje" z backlogu vln 86-88 je po zvetseni
+citelny: je to **"Stardate: 3500.0"** kreslene na (639, 0), tedy vpravo nahore
+u samotneho okraje, kde je videt jen cast glyfu.
+
+`sub_84555` to dela takhle (asm 0x845D8):
+
+```
+mov ecx, 1A5h / mov edx, 16h / mov ebx, 20Fh / mov eax, edx
+call sub_128AB6            ; OREZOVY OBDELNIK (22, 22, 527, 421)
+call sub_12B634
+cmp byte_191BDD, 0 / jz short loc_84650
+...
+mov eax, 27Fh / xor edx, edx / call sub_1210B7   ; text na (639, 0)
+```
+
+Bod (639, 0) **lezi MIMO orezovy obdelnik**, ktery se nastavuje o par instrukci
+vys - v originale se tedy ten text vubec nevykresli. V portu se objevi, takze
+**kreslic textu (`sub_1212EB` -> `sub_121814`/`sub_122309`) orezovy obdelnik
+nerespektuje**. To je dalsi krok, uz s konkretnim mistem; nesahal jsem na to,
+protoze zasah do kreslice textu chce vlastni mereni proti dosboxu.
+
+#### 1. NOVY NASTROJ `tools/csdata_scan.py`
+
+Dve chyby v rade (`dword_81C78` ve vlne 86, `asc_81C68` ted) mely stejnou
+pricinu: **tabulka ulozena UVNITR kodoveho segmentu**, kterou si funkce
+kopiruje pres `movsd`. IDA tam nema datovy symbol, takze z ni udela retezec,
+konstantu nebo cteni z navesti - a v portu vznikne objekt SPATNE VELIKOSTI.
+
+Skener najde vsechna mista `mov esi, offset X` + `movs*`, spocita, kolik bajtu
+se doopravdy kopiruje, dohleda deklaraci v portu a porovna velikosti:
+
+    python tools/csdata_scan.py            # 88 mist v kodovem segmentu
+    python tools/csdata_scan.py --bytes    # + skutecne bajty z .lst
+    python tools/csdata_scan.py --all      # vcetne beznych retezcu (296 mist)
+
+**Vysledek: 48 podezrelych.** Cist se musi z `Orion2.exe.lst` (ma u kazdeho
+radku adresu), ne z `.asm`.
+
+Pozor na plane poplachy: `dword_81C80` skener hlasi jako "v portu neni", ale
+IDA ho v `sub_85320` spravne vlozila jako literal `qmemcpy(v2, "noppnopp", 8)`
+- to je v poradku.
+
+#### 2. `asc_81C68` - tabulka velikosti spritu, ne retezec
+
+`sub_83BF9` (kresleni hvezd na mape) si kopiruje `movsd movsd` = OSM bajtu
+z 0x81C68 do lokalky a pak z ni cte `*((int16_t *)v7 + sub_79917())`, tedy
+**ctyri int16_t indexovane urovni priblizeni**. Skutecne bajty z `.lst`:
+
+```
+asc_81C68:  text "UTF-16LE", 27h,'!!'   ; 27 00 21 00 21 00
+            dw 18h                      ; 18 00
+```
+
+tedy `{ 39, 33, 33, 24 }`. V portu to byl `wchar_t asc_81C68[3]` = jen SEST
+bajtu, takze ctvrta polozka (nejvetsi priblizeni) cetla mimo pole a hvezdy se
+na te urovni centrovaly podle smeti. Prepsano na `int16_t asc_81C68[4]`;
+oba cteci vyrazy v `sub_83BF9` zustaly beze zmeny.
+
+#### 3. Ztracene EDX jako souradnice Y - potvrzeny vzor
+
+`orion_part_05.c:7746` melo `sub_1210B7(618, SWORD2(v20), v65)`, tedy horni
+pulku navratove hodnoty `sprintf` jako souradnici Y. asm ma `mov edx, 89h`
+(=137) **pred** volanim `sprintf_` a EDX prezije az k `mov eax, 26Ah /
+call sub_1210B7`. Opraveno na `sub_1210B7(618, 137, v65)`.
+
+Je to tataz trida jako oprava v `sub_A2123` ve vlne 89. **Zbyva jich 19** -
+seznam se ziska:
+
+    grep -rnE "sub_121(0B7|2B3|0FD|1F0)\([^)]*(SWORD2|SHIWORD|HIWORD)\(" src/game/*.c
+
+Recept na kazde z nich: v asm najit `mov edx, NNh` (pripadne `mov ecx/ebx`)
+tesne PRED volanim `sprintf_` - ta konstanta je hledana souradnice.
+
+#### Stav bocniho panelu - NEDORESENO
+
+Hodnoty v pravem panelu jsou porad mimo (`-0 BC` / `0 BC`, `-17 (8)`, `0`,
+`+0 (0)`, `none`). Zmereno, ze se mezi behy MENI podle vygenerovane galaxie,
+takze to nejsou konstantni smeti, ale spatne secteny stav rise. Kreslici
+funkci panelu jsem v teto vlne nenasel - `sub_85593`/`sub_85320`/`sub_A080D`
+z retezu `sub_84555` to nejsou (kresli hvezdy, cary cervotoci a lode).
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- mapa galaxie se kresli, jmena hvezd sedi (Mentar, Ursa, Sol, Meklon);
+- regresni brana se v teto vlne na pokyn uzivatele nespoustela.

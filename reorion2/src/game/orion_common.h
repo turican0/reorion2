@@ -15737,7 +15737,7 @@ extern int dword_80AD4[2];
 extern int dword_80ADC[2];
 extern wchar_t asc_81BFC[3];
 extern int dword_81C04[15];
-extern wchar_t asc_81C68[3];
+extern int16_t asc_81C68[4];   // VLNA 89c: tabulka velikosti spritu, ne retezec
 extern int dword_81C78[2];
 extern int dword_81C88[4];
 extern int dword_81C98[3];

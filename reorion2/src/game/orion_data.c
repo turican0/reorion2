@@ -57,7 +57,15 @@ int dword_80AD4[2] = { -589636395, -589505316 }; // weak
 int dword_80ADC[2] = { -640165420, -640034343 }; // weak
 wchar_t asc_81BFC[3] = L"'!!"; // weak
 int dword_81C04[15] = { 12, 10, 8, 2162727, 1572897, 1701736270, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // weak
-wchar_t asc_81C68[3] = L"'!!"; // weak
+// VLNA 89c: NENI to retezec, ale tabulka CTYR int16_t (velikost hvezdneho
+// spritu podle urovne priblizeni, index = sub_79917()). asm 0x81C68:
+//   text "UTF-16LE", 27h,'!!'   -> 27 00 21 00 21 00
+//   dw 18h                      -> 18 00
+// tedy 8 B = { 0x27, 0x21, 0x21, 0x18 } = { 39, 33, 33, 24 }, ktere
+// sub_83BF9 kopiruje pres `movsd movsd` do lokalky. Jako wchar_t[3] mel port
+// jen SEST bajtu, takze ctvrta polozka (nejvetsi priblizeni) cetla mimo pole
+// a hvezdy se na te urovni centrovaly podle smeti.
+int16_t asc_81C68[4] = { 0x27, 0x21, 0x21, 0x18 }; // weak
 int dword_81C78[2] = { 235670016, 370414096 }; // weak
 int dword_81C88[4] = { 746093440, 2122555270, 235670016, 370414096 }; // weak
 int dword_81C98[3] = { 12, 10, 8 }; // weak

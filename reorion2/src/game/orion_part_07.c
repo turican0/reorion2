@@ -8887,6 +8887,9 @@ void sub_83BF9()
   int16_t v11; // [esp+14h] [ebp-8h] BYREF
   int v12; // [esp+18h] [ebp-4h]
 
+  /* vlna 89c: asm `mov esi, offset asc_81C68 / movsd / movsd` = OSM bajtu.
+     asc_81C68 byl v portu wchar_t[3], tedy jen sest - druhy dword se cetl
+     zpola mimo pole. Ted je to int16_t[4], vyrazy zustavaji stejne. */
   v7[0] = *(_DWORD *)asc_81C68;
   v7[1] = *(_DWORD *)&asc_81C68[2];
   v12 = sub_79917();
@@ -8922,7 +8925,7 @@ void sub_83BF9()
   }
   sub_8FD56(v11);
 }
-// 81C68: using guessed type wchar_t asc_81C68[3];
+// 81C68: vlna 89c: int16_t asc_81C68[4] = velikosti spritu podle priblizeni
 // 19306C: using guessed type int dword_19306C;
 // 19999A: using guessed type int16_t word_19999A;
 

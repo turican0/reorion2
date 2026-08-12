@@ -7743,7 +7743,12 @@ void sub_6D29C()
   v19 = sub_7A990(0x5Du);
   sub_1212B3(437, 137, (int)v19);
   v20 = sprintf(v65, "%d%%", v80);
-  sub_1210B7(618, SWORD2(v20), (int)v65);
+  /* vlna 89c: souradnice Y byla `SWORD2(v20)`, tedy horni pulka navratove
+     hodnoty sprintf. asm ma `mov edx, 89h` (=137) PRED volanim sprintf_ a EDX
+     prezije az k `mov eax, 26Ah / call sub_1210B7`, takze jde o y = 137 -
+     tentyz radek jako popisek `sub_1212B3(437, 137, ...)` o kus vyse.
+     Tataz trida jako oprava v sub_A2123 (vlna 89). */
+  sub_1210B7(618, 137, (int)v65);
   sub_120E8C(2);
   sub_128AB6(16, 155, 626, 284);
   sub_12B634();
