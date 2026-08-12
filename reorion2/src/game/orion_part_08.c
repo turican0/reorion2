@@ -5300,7 +5300,12 @@ LABEL_21:
 
 
 //----- (0008E6DE) --------------------------------------------------------
-int16_t *sub_8E6DE()
+/* vlna 89e: `enter 4Ch, 0 / push eax` - ulozene EAX lezi na [ebp-50h] = var_50
+   = v8, tedy SPILLNUTY registrovy argument: CISLO, ktere se ma naformatovat
+   s oddelovaci tisicu. IDA ho nechala neinicializovane, takze VSECHNY hodnoty
+   v pravem panelu herni mapy (penize, potraviny, vyroba, vyzkum) vychazely ze
+   smeti - proto "0 BC" i kdyz hra zacina s urcitym obnosem. */
+int16_t *sub_8E6DE(int a1)
 {
   unsigned int v0; // kr04_4
   int v1; // eax
@@ -5316,6 +5321,7 @@ int16_t *sub_8E6DE()
   unsigned int v12; // [esp+48h] [ebp-8h]
   char v13; // [esp+4Ch] [ebp-4h]
 
+  v8 = a1;   /* vlna 89e: spillnute EAX */
   v11 = 0;
   v13 = 44;
   if ( byte_199CAE == 1 )
@@ -8829,9 +8835,8 @@ char sub_922C2( int a1, int a2, int a3, int a4, char *a5)
   // (asm `loc_92582: ... jge locret_91F0D` / `mov eax, var_20 / add eax, 5`)
   // je jeste potreba rekonstruovat - do te doby 0, cimz `v8` vyjde rovnou
   // sirka jmena hvezdy (`v5`), coz je bezpecne a deterministicke.
-  // TODO: dodelat navratovou hodnotu sub_92457.
-  sub_92457(a3);
-  v7 = 0;
+  // VLNA 89e: navratova hodnota sub_92457 je rekonstruovana, uz se pouziva.
+  v7 = sub_92457(a3);
   v8 = v7;
   if ( v7 < v5 )
     v8 = v5;
@@ -8925,7 +8930,14 @@ void sub_9241D()
 
 
 //----- (00092457) --------------------------------------------------------
-void sub_92457( int a1)
+/* vlna 89e: VRACI sirku popisku hvezdy (do te doby se misto ni pouzivala 0,
+   viz TODO u sub_922C2). Dve chyby naraz:
+   - `enter 2Ch, 0 / push eax` - ulozene EAX lezi na [ebp-30h] = var_30 = v5,
+     tedy SPILLNUTY registrovy argument (cislo hvezdy), ktery IDA nechala
+     neinicializovany (`variable 'v5' is possibly undefined`);
+   - cely zaverecny vypocet (asm loc_9255C..loc_92582) IDA zahodila a davkova
+     zmena z vlny 79 z `JUMPOUT(0x91F0D)` udelala holy `return;`. */
+int sub_92457( int a1)
 {
   int16_t v1; // di
   int v2; // eax
@@ -8944,11 +8956,15 @@ void sub_92457( int a1)
   int16_t v15; // [esp+28h] [ebp-8h] BYREF
   unsigned int v16; // [esp+2Ch] [ebp-4h]
 
+  v5 = (int16_t)a1;   /* vlna 89e: spillnute EAX */
   v1 = 999;
   v14 = -1;
   v13 = -1;
   sub_8A3E7(a1, &v11, &v15, (int16_t *)&v9);
-  LOWORD(v2) = sub_122259();
+  /* vlna 89e: asm `call sub_122259 / inc eax / inc eax / mov [var_1C], eax`
+     pouziva CELE EAX; IDA psala jen `LOWORD(v2)` a horni pulku nechala
+     neinicializovanou (`variable 'v2' is possibly undefined`). */
+  v2 = sub_122259();
   v3 = 0;
   v16 = 999;
   v10 = v2 + 2;
@@ -8989,11 +9005,29 @@ void sub_92457( int a1)
     }
     ++v3;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x91F0D je epilog funkce */
+  /* vlna 89e: asm loc_9255C..loc_92582 (vsechna porovnani jsou 16bitova):
+       cmp di, [var_20] / jge .. / mov edi, [var_20]     ; v1 = max(v1, v9)
+       mov eax, [var_4] / sub edi, [var_20] / sub eax, [var_14]
+       cmp ax, di / jle .. / mov eax, edi                ; eax = min(eax, v1)
+       cwde / movsx edx, [var_20] / add eax, eax / add eax, edx
+       cmp ax, [var_20] / jge locret                     ; -> eax
+       mov eax, [var_20] / add eax, 5                    ; -> v9 + 5          */
+  {
+    int edi_ = (int16_t)v1;
+    int eax_;
+    if ( (int16_t)edi_ < (int16_t)v9 )
+      edi_ = v9;
+    eax_ = (int)v16;
+    edi_ -= v9;
+    eax_ -= v12;
+    if ( (int16_t)eax_ > (int16_t)edi_ )
+      eax_ = edi_;
+    eax_ = 2 * (int16_t)eax_ + (int16_t)v9;
+    if ( (int16_t)eax_ >= (int16_t)v9 )
+      return eax_;
+    return v9 + 5;
+  }
 }
-// 9259D: control flows out of bounds to 91F0D
-// 9248F: variable 'v2' is possibly undefined
-// 9249B: variable 'v5' is possibly undefined
 // 19999A: using guessed type int16_t word_19999A;
 
 

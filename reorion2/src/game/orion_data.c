@@ -17407,8 +17407,13 @@ int16_t word_1A0494[10]; // weak
 _UNKNOWN unk_1A04A8; // weak
 int16_t word_1A04E4[10]; // weak
 int16_t word_1A04F8[30]; // weak
-int16_t word_1A0534[9]; // weak
-int16_t word_1A0546; // weak
+// VLNA 89e: seznam zobrazenych kolonii ma DESET prvku, ne devet. Smycky
+// v sub_C3D34 pracuji s indexy 0..9 (`do { word_1A0534[v2] = -1; } while (v1
+// < 10)` i `if (word_1A0534[v3] != -1) ... while (++v3 < 10)`), a prvek 9 lezi
+// presne na 0x1A0546, coz je `word_1A0546` (asm: word_198534 + 2*9 =
+// word_198546). Jako [9] + samostatny skalar zapisovala clear-smycka mimo pole
+// a `word_1A0546` nikdy nedostalo -1, ktere na nej sub_C4562 testuje.
+int16_t word_1A0534[10]; // weak
 int16_t word_1A0548[10]; // weak
 _UNKNOWN unk_1A055C; // weak
 int16_t word_1A0598[10]; // weak

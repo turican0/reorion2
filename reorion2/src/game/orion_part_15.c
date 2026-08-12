@@ -10862,8 +10862,9 @@ int sub_F3A27( int a1, int a2, int a3, int a4)
   v11 = a4 + 106;
   v5 = *(_WORD *)(dword_192680 + 245);
   strcpy(v10, sub_7A990(0xFCu));
-  sub_9ED88(a1);
-  v6 = sub_8E6DE();
+  /* vlna 89e: asm `call sub_9ED88 / cwde / call sub_8E6DE` - vysledek
+     sub_9ED88 je argument sub_8E6DE, IDA ho zahodila */
+  v6 = sub_8E6DE((int16_t)sub_9ED88(a1));
   v7 = 36 * a2 + 64 + v5 + 8;
   sprintf(v9, v10, 3753 * a1 + (uint8_t*)dword_197F98 + 1, 3753 * a1 + (uint8_t*)dword_197F98 + 21, v6);
   return sub_1212B3(v11 + 10, v7, (int)v9);

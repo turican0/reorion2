@@ -12166,7 +12166,7 @@ void sub_87BAE()
   }
   sub_122259();
   sub_7ABA6((int)v84);
-  v63 = sub_8E6DE();
+  v63 = sub_8E6DE(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 178));   /* vlna 89e: asm +0B2h */
   if ( *(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 178) < 0 )
     v7 = (char *)&unk_179716;
   else
@@ -12182,7 +12182,7 @@ void sub_87BAE()
   sub_8F6F8(v10, 75, 77, (char *)&v79);
   sub_8F6F8(v86, 14, v112, v81);
   v92 = v105;
-  v11 = sub_8E6DE();
+  v11 = sub_8E6DE(*(int *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 50));   /* vlna 89e: asm +32h, cely dword */
   sprintf(v76, "%s %s", (char *)v11, v84);
   v95 = v105 - 1;
   if ( *(int *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 50) >= 0 )
@@ -12201,7 +12201,7 @@ void sub_87BAE()
   }
   sub_120DED(v13, v12);
   sub_1210FD(v99 + (int16_t)v100 / 2, v95, (int)v76);
-  v64 = sub_8E6DE();
+  v64 = sub_8E6DE(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 178));   /* vlna 89e: asm +0B2h */
   if ( *(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 178) < 0 )
     v14 = (char *)&unk_179716;
   else
@@ -12276,7 +12276,7 @@ void sub_87BAE()
   v109 = v27;
   if ( *(int16_t *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 176) >= 0 )
   {
-    v71 = sub_8E6DE();
+    v71 = sub_8E6DE(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 176));   /* vlna 89e: asm +0B0h */
     if ( *(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 176) < 0 )
       v29 = (char *)&unk_179716;
     else
@@ -12288,7 +12288,7 @@ void sub_87BAE()
   }
   else
   {
-    v70 = sub_8E6DE();
+    v70 = sub_8E6DE(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 176));   /* vlna 89e: asm +0B0h */
     if ( *(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 176) < 0 )
       v28 = (char *)&unk_179716;
     else
@@ -12448,7 +12448,7 @@ void sub_87BAE()
         v59 = sub_12066F((int)asc_1797AD);
         sub_1212B3(v56 + v59, v54, (int)v76);
         v60 = sub_122259() + v54;
-        v61 = sub_8E6DE();
+        v61 = sub_8E6DE(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 172));   /* vlna 89e: asm +0ACh */
         sprintf(v76, "%s %s", (char *)v61, v83);
         sub_8FDA1((int)v76, (int)v81, v101, v103, 4, v102, 1);
         sub_88B0A(14, v112);
