@@ -10006,15 +10006,30 @@ EAX z tabulky funkci `funcs_DDFF0`, `v5` jeho dolni slovo), volajici
 Radka jidla v panelu je z cerveneho `-8` na bily **`+2`**, tedy kladny prebytek.
 Nakladni lode `+5 (8)`, hvezdne datum 3500.0, hra bezi bez padu.
 
-#### CO ZBYVA v panelu
+#### Panel je tim OPRAVENY - a pozor na jednu moji chybu v cteni snimku
 
-Prvni radka penez ukazuje `-50 BC`, druha `+16 BC`. Podle formatovacich retezcu
-(`"%s%s %s"` se znamenkem vs. `"%s %s"` bez nej) je **spodni** radka ta se
-znamenkem, tedy PRIJEM (+16, uz kladny), a **horni** je POKLADNA. Ta tedy
-vychazi -50, zatimco originál ma v `SAVE10.GAM` `+50`.
+Nejdriv jsem z vyrezu snimku usoudil, ze horni radka penez ukazuje `-50 BC`,
+a chtel jsem hledat obracene znamenko u pocatecni dotace. **Bylo to spatne
+prectene.** Zmereno primo v dobe kresleni panelu:
 
-Dalsi krok: zmerit `*(_DWORD *)(dword_197F98 + 3753 * word_19999C + 50)` v dobe
-kresleni panelu a najit, kde se pocatecnich 50 BC odecte misto pricte
-(kandidati: `orion_part_07.c:7800` `+= 1000`, `orion_part_12.c:4139` `+= 100`,
-`orion_part_01.c:13074` `= 0`, a odecty v `orion_part_01.c:9741` /
-`orion_part_14.c:1023` / `orion_part_16.c:7732`).
+    f50 (pokladna) = 50      f178 (prijem) = 16
+    f174 = 16                f180 (vydaje) = 0      f176 (jidlo) = 2
+
+a po zvetseni vyrezu na 12x je videt, ze tam zadne minus neni - to, co jsem
+mel za znamenko, je tmavy okraj sprite mince za textem. Radka je `50 BC`.
+
+**Ponauceni:** u tmaveho textu na obrazku nedelat zavery z 3x zvetseni;
+zvetsit na 10x a vic, nebo rovnou zmerit hodnotu v kodu.
+
+#### Stav panelu (vse sedi se vzorem originalu)
+
+| | port | originál (SAVE10.GAM) |
+|---|---|---|
+| pokladna | **50 BC** | 50 |
+| prijem | **+16 BC** | +8 |
+| nakladni lode | **+5 (8)** | 3 z 6 |
+| jidlo | **+2** | 0 |
+| hvezdne datum | 3500.0 | 3500.0 |
+
+(prijem a jidlo se lisi cislem, protoze galaxie je jina - podstatne je, ze uz
+nejsou zaporne a rad odpovida.)
