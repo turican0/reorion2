@@ -6633,11 +6633,18 @@ int sub_7926C( int a1)
 
 
 //----- (0007927F) --------------------------------------------------------
-void sub_7927F()
+/* vlna 89k: byl to prazdny pahyl s NO-OP JUMPOUT. asm:
+     movsx edx, word_191992 / cwde / imul eax, edx / mov ebx, 0Ah
+     jmp short loc_79279        ; loc_79279: cdq / idiv ebx / retn
+   Ma tedy REGISTROVY ARGUMENT v EAX (cwde = int16_t) a VRACI hodnotu -
+   je to OPACNY prevod k `sub_7926C` (ten dela 10 * a1 / word_199992).
+   Dusledek pahylu: `sub_8C099` (rozmistovani zvlastnich objektu na mape)
+   ukladalo do zaznamu NEINICIALIZOVANE lokalky, takze objekty mely
+   souradnice 0 a kreslily se do leveho horniho rohu mapy na (21,22). */
+int sub_7927F( int a1)
 {
-  JUMPOUT(0x79279);
+  return (int16_t)a1 * word_199992 / 10;
 }
-// 79291: control flows out of bounds to 79279
 // 199992: using guessed type int16_t word_199992;
 
 

@@ -3057,10 +3057,13 @@ void sub_8C099(int a1, unsigned int a2)
     a2 = sub_1247A0((int16_t)(400 - v30[0]));
     v16 = (int16_t)v40;
     *(_BYTE *)(dword_193068 + 4) = v33[0];
-    sub_7927F();
+    /* vlna 89k: asm `mov eax, esi / call sub_7927F / mov edx, eax /
+       mov [dword_18B068], dx` a pak totez pro `di` do +2 - navratove hodnoty
+       IDA zahodila a nechala v17/v18 neinicializovane */
+    v17 = sub_7927F(v16);
     *(_WORD *)dword_193068 = v17;
     v10 = (int16_t)a2;
-    sub_7927F();
+    v18 = sub_7927F(v10);
     v13 = v18;
     v19 = (_WORD *)dword_193068;
     *(_WORD *)(dword_193068 + 2) = v13;
@@ -3127,9 +3130,12 @@ void sub_8C099(int a1, unsigned int a2)
           v13 = 5 * k;
           a2 = (int16_t)sub_FE92D((const uint16_t *)v35, v46);
           *(_BYTE *)(dword_193068 + v13 + 4) = v33[k];
-          sub_7927F();
+          /* vlna 89k: asm `mov edx, edi / shl edx, 2 / add edx, [var_44] /
+             movsx eax, word ptr [edx] / call sub_7927F` - souradnice se berou
+             z vybraneho kandidata (v36) a navratova hodnota jde do zaznamu */
+          v28 = sub_7927F(*(int16_t *)((char *)v36 + 4 * (int16_t)a2));
           *(_WORD *)(v13 + dword_193068) = v28;
-          sub_7927F();
+          v29 = sub_7927F(*(int16_t *)((char *)v36 + 4 * (int16_t)a2 + 2));
           v10 = dword_193068;
           *(_WORD *)(dword_193068 + v13 + 2) = v29;
           v19 = (_WORD *)v35 + a2;

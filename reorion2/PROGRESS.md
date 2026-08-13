@@ -10033,3 +10033,68 @@ zvetsit na 10x a vic, nebo rovnou zmerit hodnotu v kodu.
 
 (prijem a jidlo se lisi cislem, protoze galaxie je jina - podstatne je, ze uz
 nejsou zaporne a rad odpovida.)
+
+### Vlna 89k: artefakt v levem hornim rohu mapy - `sub_7927F` byl PRAZDNY PAHYL
+
+Barevny shluk pixelu na (22,22), tedy presne v rohu mapoveho vyrezu, ktery
+zustaval z backlogu vln 86-89.
+
+#### Jak se to naslo (a jedna past v mem vlastnim mereni)
+
+Postupne se vyloucil spritovy blit, text i cary cervotoci. **Prvni mereni
+blitu bylo ale ZAVADEJICI**: sonda mela rozpocet `rep < 25` sdileny pro vsechny
+blity, a ten spotreboval opakovany blit ramu na (15,5) jeste pred tim, nez se
+zacala kreslit mapa. Po zuzeni podminky na okno kolem rohu
+(`bx >= 16 && bx <= 40 && by >= 16 && by <= 45`) sonda okamzite ukazala
+blit na **(21,22)** a `PortDebug_Symbolize` rovnou pojmenoval volajiciho:
+`sub_84F8F`.
+
+**Ponauceni:** u sondy s omezenym poctem vypisu filtrovat co nejuzeji, jinak
+rozpocet spotrebuje neco uplne jineho a vysledek vypada jako "nic se nedeje".
+
+#### Pricina
+
+`sub_84F8F` kresli zvlastni objekty mapy ze 20bajtoveho bloku `dword_193068`
+(4 zaznamy po 5 B: x, y, typ), pocet je v `byte_199F0D`. Zmereno: pocet = 2,
+ale souradnice obou zaznamu byly nulove - `sub_85B93`-styl prevod
+`sub_7926C(0 - 0) + 21` da (21,21), tedy roh.
+
+Zaznamy plni `sub_8C099` a dela to takhle:
+
+```
+movsx esi, word ptr [var_34]
+mov   eax, esi
+call  sub_7927F
+mov   edx, eax
+mov   [dword_18B068], dx      ; zaznam.x = navratova hodnota
+```
+
+**`sub_7927F` byl v portu prazdny pahyl s NO-OP `JUMPOUT(0x79279)`** - tataz
+trida jako `sub_77B42` ve vlne 89. asm:
+
+```
+movsx edx, word_191992 / cwde / imul eax, edx / mov ebx, 0Ah
+jmp short loc_79279            ; loc_79279: cdq / idiv ebx / retn
+```
+
+Ma tedy registrovy argument v EAX a vraci hodnotu; je to OPACNY prevod
+k `sub_7926C` (`10 * a1 / word_199992`). Opraveno na
+
+    int sub_7927F(int a1) { return (int16_t)a1 * word_199992 / 10; }
+
+a doplneny ctyri volani v `sub_8C099` (prvni zaznam + smycka pres dalsi).
+
+#### Vysledek
+
+Roh mapy je cisty a oba zvlastni objekty se kresli na skutecnych pozicich
+(oranzovy krouzek, ktery byl taky v backlogu, je jeden z nich - nebyl to
+artefakt, jen spatne umisteny objekt).
+
+#### CO ZBYVA
+
+`sub_7927F` ma **jeste 24 dalsich volani bez argumentu** (14x orion_part_07.c,
+8x orion_part_08.c, 2x orion_part_10.c), ktera vsechna zahazuji navratovou
+hodnotu a nasledne pouzivaji neinicializovanou lokalku - stejne jako to delalo
+`sub_8C099`. Kazde chce dohledat argument z asm (hledat `mov eax, <neco>` tesne
+pred `call sub_7927F` a `mov <reg>, eax` hned za nim). Je to tataz davkova
+prace jako u `sub_77B42` ve vlne 89.
