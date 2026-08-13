@@ -9893,3 +9893,68 @@ generator plni spatne. Blok planet je v save na offsetu 90857.
 
 Cely rozbor probehl proti ulozene hre originálu (viz tabulka offsetu ve
 vlne 89g). Je to o rad levnejsi nez emulator a data jsou presna.
+
+### Vlna 89i: ZAZNAMY PLANET UZ SEDI S ORIGINALEM (vsech 17 poli)
+
+Navazuje na 89h, kde se ukazalo, ze chyba je uz v generovani planet.
+
+#### Metoda: porovnat ROZSAHY poli, ne konkretni hodnoty
+
+Galaxie je nahodna, takze se konkretni planeta porovnat neda. Co ale porovnat
+lze, jsou min/max kazdeho ze 17 bajtu zaznamu pres vsech 360 planet - a to
+staci: v originale (`SAVE10.GAM`) i v portu se spocita tataz statistika.
+
+Vysledek prvniho behu byl velmi uzky: **z 17 poli sedelo 15**, spatne byly jen
+`+8` (max 222 misto 9) a `+11` (max 64 misto 3).
+
+#### 1. `sub_8BEAB` - zahozena navratova hodnota (typ planety)
+
+`sub_8C5D7` (generator jedne planety) dela v asm:
+
+```
+call sub_8BEAB
+mov  dl, al
+mov  [ecx+eax+8], dl        ; planeta[+8] = navratova hodnota
+```
+
+IDA z `sub_8BEAB` udelala `void` a do `planeta[+8]` zapsala NEINICIALIZOVANOU
+lokalku (sama si u toho poznamenala `variable 'v5' is possibly undefined`).
+Uvnitr `sub_8BEAB` navic zahodila i vysledek `sub_FE8DA`, ze ktereho se `dl`
+plni - obe vetve (`loc_8BF61` bez opakovani, `loc_8BF7B` s opakovanim, dokud
+`byte_17581C[dl]` neni nenulove) ho jen zavolaly a vysledek zahodily.
+
+Opraveno: `char sub_8BEAB(...)`, obe vetve plni `v2`, epilog vraci `v2`,
+volajici `v5 = sub_8BEAB(v9)`. Po teto oprave ma **+8 rozsah 0..9, presne
+jako originál**.
+
+#### 2. `byte_17D81C` - tabulka ma DESET polozek, ne osm
+
+`sub_8BFA3` pocita `planeta[+11] = byte_17D81C[planeta[+8]]`, tedy index 0..9.
+Port mel ale `char byte_17D81C[8]`, takze indexy 8 a 9 cetly mimo pole a
+trefily `byte_17D826` = 0x40 = 64.
+
+V `.lst` na 0x17581C je `db 0,0,0,1,1,2,2,1` a hned za tim `byte_175824 = 2`
+a `byte_175825 = 3` - fyzicky jedno desetiprvkove pole, ktere IDA oriznula na
+osm a posledni dve polozky pojmenovala zvlast (maji vlastni xrefy z `sub_13FD9`,
+`sub_DE0C6`, `sub_E5430`). Slouceno do `byte_17D81C[10] = {0,0,0,1,1,2,2,1,2,3}`
+s makry `byte_17D824` = prvek 8 a `byte_17D825` = prvek 9.
+
+#### Vysledek: vsech 17 poli zaznamu planety ma stejny rozsah jako originál
+
+| pole | +0 | +1 | +2 | +3 | +4 | +5 | +6 | +7 | +8 | +9 | +10 | +11 | +12 | +13 | +14 | +15 | +16 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| max | 255 | 255 | 35 | 4 | 3 | 4 | 2 | 3 | **9** | 2 | 4 | **3** | 0 | 10 | 0 | 11 | 0 |
+
+(pred vlnou: +8 = 222, +11 = 64; vse ostatni uz sedelo)
+
+#### CO ZBYVA
+
+Jidlo v panelu je porad `-8` a prijem zaporny. Zaznamy planet uz jsou v poradku,
+takze dalsi clanek je mezi nimi a `+231` kolonie:
+
+    kolonie[+221] farmari = sub_DE03E = 2 * planeta[+11]
+    kolonie[+231] jidlo   = sub_DE664 = sub_DE280(...) + priplatky (+331, +353)
+
+Dalsi krok: zmerit pro STARTOVNI kolonii `planeta[+11]` (v originale 2) a
+`+221` (v originale 4); podle toho se pozna, jestli je spatne vyber domovske
+planety, nebo az `sub_DE280`.

@@ -3104,8 +3104,8 @@ extern void sub_8BC03();
 extern void sub_8BC39();
 // plna signatura: int sub_8BE4D();
 extern int sub_8BE4D();
-// plna signatura: void sub_8BEAB( int a1);
-extern void sub_8BEAB();
+// plna signatura: char sub_8BEAB( int a1);   /* vlna 89i */
+extern char sub_8BEAB();
 // plna signatura: char sub_8BFA3( int a1, int a2);
 extern char sub_8BFA3();
 // plna signatura: char sub_8BFE0( int a1);
@@ -11901,7 +11901,7 @@ void sub_8BB51();
 void sub_8BC03();
 void sub_8BC39(int a1);
 int sub_8BE4D();
-void sub_8BEAB(int16_t a1);
+char sub_8BEAB(int16_t a1);
 char sub_8BFA3(int16_t a1, int16_t a2);
 char sub_8BFE0(int16_t a1);
 char sub_8C01E(int16_t a1, int16_t a2);
@@ -16687,9 +16687,10 @@ extern char byte_17D7F7[5];
 extern char byte_17D7FC[10];
 extern char byte_17D806[17];
 extern char byte_17D817[5];
-extern char byte_17D81C[8];
-extern char byte_17D824;
-extern char byte_17D825;
+// VLNA 89i: deset polozek; byte_17D824/825 jsou prvky 8 a 9 tehoz pole
+extern char byte_17D81C[10];
+#define byte_17D824 (byte_17D81C[8])
+#define byte_17D825 (byte_17D81C[9])
 extern char byte_17D826;
 extern char byte_17D832[12];
 extern char byte_17D83E[21];

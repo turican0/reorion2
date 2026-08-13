@@ -3181,9 +3181,14 @@ char byte_17D806[17] =
   '\x05'
 }; // weak
 char byte_17D817[5] = { '\0', '\0', '\0', '\xF6', '\xEC' }; // weak
-char byte_17D81C[8] = { '\0', '\0', '\0', '\x01', '\x01', '\x02', '\x02', '\x01' }; // weak
-char byte_17D824 = '\x02'; // weak
-char byte_17D825 = '\x03'; // weak
+// VLNA 89i: tabulka ma DESET polozek, ne osm. `sub_8BFA3` ji indexuje typem
+// planety (`byte_17D81C[planeta[+8]]`), a ten je 0..9 - viz SAVE10.GAM, kde
+// pole +8 zaznamu planety ma rozsah 0..9. V .lst na 0x17581C nasleduje
+// `db 0,0,0,1,1,2,2,1` a hned za tim byte_175824 = 2 a byte_175825 = 3, tedy
+// fyzicky jedno desetiprvkove pole; IDA ho oriznula na osm a posledni dve
+// polozky pojmenovala zvlast. Cteni indexu 8/9 pak v portu spadlo na
+// byte_17D826 (0x40), takze planeta[+11] vychazela az 64 misto 0..3.
+char byte_17D81C[10] = { 0, 0, 0, 1, 1, 2, 2, 1, 2, 3 }; // weak
 char byte_17D826 = '@'; // weak
 char byte_17D832[12] =
 {

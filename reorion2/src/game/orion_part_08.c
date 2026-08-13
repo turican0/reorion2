@@ -2771,7 +2771,17 @@ int sub_8BE4D()
 
 
 //----- (0008BEAB) --------------------------------------------------------
-void sub_8BEAB( int a1)
+/* vlna 89i: VRACI vybrany typ planety - asm konci `mov al, dl / jmp
+   locret_8BBFC` a volajici `sub_8C5D7` dela `call sub_8BEAB / mov dl, al /
+   mov [ecx+eax+8], dl`. IDA navratovou hodnotu zahodila (funkce byla `void`)
+   a v obou vetvich nize zahodila i vysledek `sub_FE8DA`, ze ktereho se `dl`
+   plni. Dusledkem bylo, ze planeta[+8] dostavala NEINICIALIZOVANOU lokalku
+   (`variable 'v5' is possibly undefined` v sub_8C5D7).
+   ZMERENO proti SAVE10.GAM: z 17 poli zaznamu planety sedelo 15, spatne byla
+   prave +8 (max 222 misto 9) a od nej odvozene +11 (max 64 misto 3, pocita se
+   jako `byte_17D81C[planeta[+8]]` v sub_8BFA3). Odtud slo cele rozbite
+   hospodarstvi: farmaru 128 misto 4 a nulove jidlo kolonie. */
+char sub_8BEAB( int a1)
 {
   char v2; // dl
   int v3; // edi
@@ -2827,17 +2837,21 @@ LABEL_11:
       }
       if ( v2 == -1 )
       {
+        /* vlna 89i: asm loc_8BF61/loc_8BF7B - obe vetve plni `dl` (= v2)
+           z navratove hodnoty sub_FE8DA; varianta s byte_19C31A opakuje,
+           dokud `byte_17D81C[v2]` neni nenulove. */
         if ( byte_19C31A )
         {
-          while ( !byte_17D81C[(char)sub_FE8DA((const uint8_t *)v10, 10)] )
-            ;
+          do
+            v2 = (char)sub_FE8DA((const uint8_t *)v10, 10);
+          while ( !byte_17D81C[v2] );
         }
         else
         {
-          sub_FE8DA((const uint8_t *)v10, 10);
+          v2 = (char)sub_FE8DA((const uint8_t *)v10, 10);
         }
       }
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
+      return v2;   /* vlna 89i: epilog vraci DL */
     }
   }
   v5 = v4;
@@ -3297,7 +3311,7 @@ int sub_8C5D7( int a1)
   *(_BYTE *)(17 * word_1999A2 + (uint8_t*)dword_1930D4 + 6) = v1;
   v9 = sub_8CD55(v4);
   *(_BYTE *)(17 * word_1999A2 + (uint8_t*)dword_1930D4 + 7) = v9;
-  sub_8BEAB(v9);
+  v5 = sub_8BEAB(v9);   /* vlna 89i: asm `call sub_8BEAB / mov dl, al` */
   *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * word_1999A2 + 8) = v5;
   v6 = sub_1247A0(3u);
   v7 = word_1999A2;
