@@ -1,5 +1,6 @@
 #include "orion_common.h"
 
+
 /* Adresni rozsah: 0xD614D - 0xE5B17  (200 funkci) */
 
 //----- (000D614D) --------------------------------------------------------
@@ -7022,18 +7023,28 @@ LABEL_26:
 
 
 //----- (000DE22C) --------------------------------------------------------
-void sub_DE22C(char *a1, _WORD *a2, int a3, int a4)
+/* vlna 89j: VRACI vyrobu jedne pracovni jednotky kolonie. asm konec:
+     cmp ax, word ptr [var_4]
+     jge locret_DEE17      ; -> vrat EAX tak, jak ho dala funcs_DDFF0
+     jmp loc_DEE14         ; loc_DEE14: mov eax, [var_4] -> vrat v6
+   IDA z funkce udelala `void` (oba vystupy slila do NO-OP `JUMPOUT`), takze
+   volajici `sub_DE280` bral misto vysledku NEINICIALIZOVANOU lokalku
+   (`variable 'v13' is possibly undefined`) - akumulator jidla zustal nulovy
+   a kolonii vychazela nulova vyroba potravin. */
+int sub_DE22C(char *a1, _WORD *a2, int a3, int a4)
 {
+  int v5r;    // cele EAX z funcs_DDFF0
   int16_t v5; // ax
   int16_t v6; // [esp+4h] [ebp-4h]
 
   v6 = 0;
-  v5 = ((int (*)(char *, int16_t, int16_t, int))funcs_DDFF0[a3])(a1, *a1, *a2 & 0xF, a4);
+  v5r = ((int (*)(char *, int16_t, int16_t, int))funcs_DDFF0[a3])(a1, *a1, *a2 & 0xF, a4);
+  v5 = (int16_t)v5r;
   if ( v5 <= 0 && (a3 || a1[221]) )
     v6 = 1;
   if ( v5 < v6 )
-    JUMPOUT(0xDEE14);
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEE17 je epilog funkce */
+    return v6;
+  return v5r;
 }
 // DE27B: control flows out of bounds to DEE14
 // DE275: control flows out of bounds to DEE17
@@ -7152,8 +7163,8 @@ LABEL_17:
         v12 = v23;
       else
         v12 = 0;
-      sub_DE22C(a1, v11, v42, (int)v12);
-      v14 = v13;
+      /* vlna 89j: asm `call sub_DE22C / mov edx, eax` */
+      v14 = sub_DE22C(a1, v11, v42, (int)v12);
       if ( v37 )
       {
         v36[0] += *(_DWORD *)v23;

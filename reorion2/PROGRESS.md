@@ -9958,3 +9958,63 @@ takze dalsi clanek je mezi nimi a `+231` kolonie:
 Dalsi krok: zmerit pro STARTOVNI kolonii `planeta[+11]` (v originale 2) a
 `+221` (v originale 4); podle toho se pozna, jestli je spatne vyber domovske
 planety, nebo az `sub_DE280`.
+
+### Vlna 89j: JIDLO SE POCITA - `sub_DE22C` mela zahozenou navratovou hodnotu
+
+Navazuje na 89i (zaznamy planet uz sedi). Mereni pro STARTOVNI kolonii ukazalo,
+ze vstupy uz jsou spravne, ale vysledek porad ne:
+
+| velicina | originál | port |
+|---|---|---|
+| planeta +11 | 2 | **2** |
+| kolonie +221 (farmari) | 4 | **4** |
+| kolonie +239 (spotreba) | 8 | **8** |
+| kolonie +231 (JIDLO) | 8 | **0** |
+
+Jidlo pocita `sub_DE280` jako `(akumulator + 20) / 40`. Zmereno: akumulator = 0,
+tedy hlavni smycka pres pracovni jednotky kolonie nic neprictala.
+
+#### Pricina
+
+Ve smycce je
+
+```c
+sub_DE22C(a1, v11, v42, (int)v12);
+v14 = v13;                       // v13 NEINICIALIZOVANE
+...
+v26 = 20 * v14;
+*(_DWORD *)((char *)&v36[139] + 2) += v26;
+```
+
+asm ma `call sub_DE22C / mov edx, eax`, tedy `v14` JE navratova hodnota.
+IDA si u toho sama poznamenala `DE3FF: variable 'v13' is possibly undefined`.
+
+`sub_DE22C` konci dvema vystupy, ktere IDA slila do jednoho NO-OP `JUMPOUT`:
+
+```
+cmp ax, word ptr [var_4]
+jge locret_DEE17     ; -> vrat EAX tak, jak ho dala funcs_DDFF0
+jmp loc_DEE14        ; loc_DEE14: mov eax, [var_4] -> vrat v6
+```
+
+Opraveno: `int sub_DE22C(...)` vraci `v5 < v6 ? v6 : v5r` (kde `v5r` je cele
+EAX z tabulky funkci `funcs_DDFF0`, `v5` jeho dolni slovo), volajici
+`v14 = sub_DE22C(...)`.
+
+#### Vysledek
+
+Radka jidla v panelu je z cerveneho `-8` na bily **`+2`**, tedy kladny prebytek.
+Nakladni lode `+5 (8)`, hvezdne datum 3500.0, hra bezi bez padu.
+
+#### CO ZBYVA v panelu
+
+Prvni radka penez ukazuje `-50 BC`, druha `+16 BC`. Podle formatovacich retezcu
+(`"%s%s %s"` se znamenkem vs. `"%s %s"` bez nej) je **spodni** radka ta se
+znamenkem, tedy PRIJEM (+16, uz kladny), a **horni** je POKLADNA. Ta tedy
+vychazi -50, zatimco originál ma v `SAVE10.GAM` `+50`.
+
+Dalsi krok: zmerit `*(_DWORD *)(dword_197F98 + 3753 * word_19999C + 50)` v dobe
+kresleni panelu a najit, kde se pocatecnich 50 BC odecte misto pricte
+(kandidati: `orion_part_07.c:7800` `+= 1000`, `orion_part_12.c:4139` `+= 100`,
+`orion_part_01.c:13074` `= 0`, a odecty v `orion_part_01.c:9741` /
+`orion_part_14.c:1023` / `orion_part_16.c:7732`).
