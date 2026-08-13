@@ -12046,6 +12046,17 @@ int sub_AF7B4(int a1, int a2, int a3)
   int v20; // [esp+1F8h] [ebp-8h]
   int v21; // [esp+1FCh] [ebp-4h]
 
+  /* vlna 89g: `enter 1FCh, 0 / push eax` - ulozene EAX lezi na [ebp-200h],
+     coz je var_200 = v18, tedy SPILLNUTY registrovy argument: VLASTNIK lodi.
+     IDA ho nechala neinicializovany, takze hledani volneho slotu porovnavalo
+     `ship[99] == v18` se smetim ze zasobniku, naslo slot daleko vzadu a
+     `word_199994 = v21 + 1` vyskocilo na nesmyslne cislo.
+     ZMERENO: po generovani bylo 61 lodi misto 15 (5 hracu po 3), vlastnici
+     rozhozeni 15/3/13/13/13 misto 3/3/3/3/3, a hrac 0 tak platil 70 BC za
+     nakladni lode -> prijem -206 misto +8. Reference z SAVE10.GAM (originalni
+     ulozena hra, tez hvezdne datum 3500.0): 17 lodi, kazdy hrac 3, dve
+     prisery s vlastnikem 9 a 10. */
+  v18 = (int16_t)a1;
   v3 = 17 * *(int16_t *)(361 * a3 + (uint8_t*)dword_192B18 + 2);
   v21 = 0;
   v4 = *(uint8_t *)((uint8_t*)dword_1930D4 + v3 + 2);

@@ -9560,3 +9560,336 @@ z retezu `sub_84555` to nejsou (kresli hvezdy, cary cervotoci a lode).
 - `-t:Rebuild` bez chyb;
 - mapa galaxie se kresli, jmena hvezd sedi (Mentar, Ursa, Sol, Meklon);
 - regresni brana se v teto vlne na pokyn uzivatele nespoustela.
+
+### Vlny 89d-89e: COLONIES se zobrazi + hodnoty v panelu herni mapy
+
+#### 1. `sub_C3D34` - nekonecna smycka, ktera rozbijela COLONIES
+
+Pad ve `sprintf` v `sub_C3111` (orion_part_12.c:6011) se nedal vysvetlit
+statickym ctenim, tak doslo na mereni pres `PortDebug_Checkpoint`:
+
+    C3111.a1_idx 16      <- pritom word_1A0534 ma 9 (resp. 10) prvku
+    C3111.v3     -1000
+    C3111.v17    20560   ("PP")
+    C3111.v26    FFFFFFFFFFFFFFFF
+
+Vinik byl o funkci vys. `sub_C3D34` ma smycku
+
+```c
+v3 = 0;
+while (1) {
+  if (word_1A0534[v3] != -1) sub_C3111(v3);
+  if (++v3 >= 10) { ...; JUMPOUT(0xC2679); }
+}
+```
+
+a `JUMPOUT` je v portu NO-OP, takze se `while (1)` NIKDY neukoncil a bezel dal
+s v3 = 10, 11, ... **Pozor: `loc_C2679` NENI holy epilog** - nejdriv vola
+`sub_12B65C` a az pak jde na `locret_C267E: leave` / `loc_C267F: pop.../retn`.
+Proto tady nestaci `return;`, ktery davkova zmena z vlny 79 pouzila jinde -
+tohle je jeden z peti pripadu tehdy oznacenych jako "pokracuje jinam".
+Opraveno na `sub_12B65C(); return;`.
+
+Po teto oprave **se tabulka COLONIES poprve zobrazi**.
+
+#### 2. `word_1A0534` ma DESET prvku, ne devet
+
+Tataz funkce pracuje s indexy 0..9 (`do { word_1A0534[v2] = -1; } while (v1
+< 10)`). Prvek 9 lezi presne na 0x1A0546 = `word_1A0546` (asm: word_198534 +
+2*9 = word_198546). Jako `[9]` + samostatny skalar zapisovala mazaci smycka
+mimo pole a `word_1A0546` nikdy nedostalo -1, ktere na nej `sub_C4562` testuje.
+Slouceno do `[10]` + makro.
+
+#### 3. Nazvy technologii - blok 19 B rozdeleny na dva objekty
+
+`sub_BB40D` dela `*(int *)((char *)&off_17EB3D + 19 * a1)`, tedy tabulku
+s krokem 19 B a ctyrbajtovymi ukazateli na nazev. Zapisovac (`sub_5DF0A`,
+orion_part_04.c) ale plni `*(int *)((char *)&dword_17EB2A + j)` pro
+j = 0, 19, ... < 931, tedy od 0x17EB2A - a 0x17EB3D je 0x17EB2A + 19.
+V originale jeden souvisly blok, v portu DVA ruzne objekty, takze ctenari
+dostavali smeti.
+
+Stejne jako u nazvu technologii (vlna 80) a velikosti lodi (vlna 81) se na x64
+ukazatele nevejdou do kroku bloku, takze jsou v POSTRANNIM poli
+`techName_17EB2A[64]` a pristup jde pres makro:
+
+    #define TECHNAME_AT(off) (techName_17EB2A[((off) / 19) + 1])
+
+`off` je BAJTOVY offset od `&off_17EB3D`, tedy presne to, co psal dekompilat -
+prepsano vsech 18 ctecich mist v osmi souborech jednim regexem. Pri tom
+`sub_BB40D` a `sub_BB3DB` prepsany na navrat `char *` (vracely `int`).
+
+#### 4. `sub_92457` - sirka popisku hvezdy (TODO z vlny 88 zavreno)
+
+Dve chyby naraz:
+
+- `enter 2Ch, 0 / push eax` - ulozene EAX lezi na [ebp-30h] = var_30 = `v5`,
+  tedy SPILLNUTY registrovy argument (cislo hvezdy), ktery IDA nechala
+  neinicializovany;
+- cely zaverecny vypocet IDA zahodila a davkova zmena z vlny 79 z
+  `JUMPOUT(0x91F0D)` udelala holy `return;`. Rekonstruovano z asm
+  (loc_9255C..loc_92582, vsechna porovnani jsou 16bitova):
+
+```
+cmp di, [var_20] / jge / mov edi, [var_20]      ; v1 = max(v1, v9)
+mov eax, [var_4] / sub edi, [var_20] / sub eax, [var_14]
+cmp ax, di / jle / mov eax, edi                 ; eax = min(eax, v1)
+cwde / add eax, eax / add eax, [var_20]
+cmp ax, [var_20] / jge -> vrat eax ; jinak vrat v9 + 5
+```
+
+Pri tom opraveno i `LOWORD(v2) = sub_122259()` -> `v2 = sub_122259()` (asm
+pouziva CELE EAX). Volajici `sub_922C2` uz nepouziva natvrdo 0.
+
+#### 5. `sub_8E6DE` - PROC BYLY VSECHNY HODNOTY V PRAVEM PANELU NESMYSLNE
+
+`enter 4Ch, 0 / push eax` a hned `mov eax, [ebp+var_50]` - var_50 je SPILLNUTY
+registrovy argument: **cislo, ktere se ma naformatovat s oddelovaci tisicu**.
+IDA z funkce udelala `sub_8E6DE()` BEZ ARGUMENTU a `v8` nechala
+neinicializovane, takze `sprintf(v9, "%ld", abs32(v8))` formatoval smeti.
+Proto panel ukazoval `-0 BC`, `+0 (0)` a spol.
+
+Doplnen argument a obnoveno vsech SEDM volani z asm (base = zaznam hrace
+`dword_197F98 + 3753 * word_19999C`):
+
+| volani | asm | argument |
+|---|---|---|
+| sub_87BAE (1.) | `movsx eax, word ptr [edx+eax+0B2h]` | `*(int16_t *)(base + 178)` |
+| sub_87BAE (2.) | `mov eax, [edx+eax+32h]` | `*(int *)(base + 50)` - CELY dword |
+| sub_87BAE (3.) | `movsx eax, word ptr [edx+eax+0B2h]` | `*(int16_t *)(base + 178)` |
+| sub_87BAE (4.,5.) | `movsx eax, word ptr [eax+0B0h]` | `*(int16_t *)(base + 176)` |
+| sub_87BAE (6.) | `movsx eax, word ptr [edx+eax+0ACh]` | `*(int16_t *)(base + 172)` |
+| sub_F3A27 | `call sub_9ED88 / cwde` | `(int16_t)sub_9ED88(a1)` |
+
+Panel ted misto samych nul ukazuje skutecna cisla (`-50 BC`, `-106 BC`,
+`-12 (8)`, `-8`). **Ze ta cisla vychazeji zaporne uz NENI chyba vykreslovani** -
+formatovaci cesta cte spravna pole; spatne je samo ekonomicke skore rise, coz
+je jina (hlubsi) vec.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb, zadna docasna instrumentace nezustala;
+- COLONIES se otevre a vykresli tabulku (uzivatel potvrdil prvni radek);
+- mapa galaxie: hvezdy, mlhovina, jmena hvezd, spravne hvezdne datum;
+- regresni brana se na pokyn uzivatele nespoustela.
+
+#### Zbyva na mape (zmereno vyrezem snimku)
+
+- v levem hornim rohu mapy (~22,22) je maly shluk barevnych pixelu - sprite
+  kresleny na pozici (0,0) mapoveho vyrezu;
+- maly cerveno-oranzovy KROUZEK misto spritu (~111,88);
+- "Stardate: 3500.0" vpravo nahore: overeno, ze ho kresli tataz cesta jako
+  original (`byte_199BDD` je 1 i v originale, rampa `dword_81C78` je tmava
+  0x00..0x16), takze to NEMUSI byt chyba - je to tmavy HUD napis u okraje.
+
+### Vlna 89f: ekonomika rise - trasa az k puvodu spatnych cisel
+
+Uzivatel: "je nesmysl, abys mel 50 penez a kazde kolo ztracel 106", "-8 jidla
+je nesmysl". Vlna 89e opravila ZOBRAZENI (`sub_8E6DE` melo spillnuty argument);
+tady jde o to, ze samotna cisla jsou spatne. **Neopraveno**, ale vystopovano
+az na konkretni misto - kdo bude pokracovat, nemusi zacinat od nuly.
+
+#### Nastroj: pozor na soubezne preklady
+
+Pri praci se nastrilelo vic zaseklych `cl.exe` / `MSBuild.exe` / `mspdbsrv.exe`
+a preklad pak hlasil `C1041: Nejde otevrit databazi programu vc143.pdb`.
+**To NENI chyba ve zdrojich.** Reseni: ukoncit procesy `MSBuild`, `cl`,
+`mspdbsrv`, `Tracker` a prelozit znovu. Prevence: **neprekladat s `-m`**
+(paralelni build bez `/FS` si o tuhle kolizi rika); `-t:Rebuild` bez `-m` staci.
+
+#### Trasa (vse zmereno pres PortDebug_Checkpoint)
+
+Panel bere cisla ze zaznamu hrace `dword_197F98 + 3753 * word_19999C`:
+
+| pole | vyznam | namereno |
+|---|---|---|
+| +50 (dword) | pokladna | **+50 - SPRAVNE**, hra opravdu zacina s 50 BC |
+| +178 | prijem za kolo | -206 / -56 (podle behu) |
+| +176 | jidlo | -8 |
+| +172 | | 272 |
+
+Prijem pocita `sub_E2710` (orion_part_14.c) uplne na konci:
+
+    *(_WORD *)(a1 + 178) = v17 - *(_WORD *)(a1 + 180);
+
+Zmereno v jednom behu: **v17 (produkce) = 14, vydaje (+180) = 70**.
+Vydaje jsou soucet SESTI slozek na +184..+194 (plni je `sub_E2000`) a
+**celych 70 je v jedine slozce - indexu 2, tedy +188**.
+
+Slozka +188 jsou naklady na NAKLADNI LODE:
+
+    v27 = *(_WORD *)(a1 + 60);              // potreba (soucet pres lode)
+    if (v27 > *(int16_t *)(a1 + 58)) {      // volna kapacita z kolonii
+      v28 = v27 - *(int16_t *)(a1 + 58);
+      v29 = (*(_BYTE *)(a1 + 40) == 100) ? 10 : 12 - byte_199CB0;
+      *(_WORD *)(a1 + 188) = v28 * v29;     // 7 * 10 = 70
+    }
+
+**Tohle misto proti asm SEDI** (asm loc_E2559: `movsx edx, ax / movsx eax,
+word ptr [ecx+3Ah] / sub edx, eax / ... / imul ebx, edx / mov [ecx+0BCh], bx`),
+stejne jako zaverecna sumace v `sub_E2000`
+(`mov dword ptr [ecx+0B4h], 0` + smycka `add [ecx+0B4h], edx` pres sest slozek).
+
+#### KDE HLEDAT DAL
+
+Chyba je tedy o uroven nize - ve VSTUPECH slozky +188:
+
+- **+60 (potreba nakladnich lodi)** se plni smyckou pres zaznamy lodi
+  (129 B, `dword_197F9C`) v `sub_E2000`:
+  `*(_WORD *)(a1 + 60) += (uint8_t)v19[16] + 1;` pod podminkou
+  `*(char *)(v18 + dword_197F9C + 99) == (_WORD)v49 && (char)v19[100] <= 2
+  && !v19[128]`. Pole +99 je VLASTNIK lodi - to samé, ktere opravovala vlna 87
+  (spillnute EAX v `sub_100010`). Podezreni: zapocitavaji se cizi nebo neplatne
+  lode.
+- **+58 (volna kapacita)** se pocita vys v teze funkci
+  (`v12 = v41 + v40 + 2 * v39 + v9 + 5 + 3 * v10 + v44`), tedy z poctu kolonii
+  a budov.
+
+Stejna rodina je i jidlo (+176 = `v24 - v27` v `sub_E2710`).
+
+Doporuceny dalsi krok: vypsat pri behu obe pole (+58, +60) a k tomu pocet lodi,
+ktere ta podminka pusti, a porovnat s tim, co ma hrac na zacatku hry mit.
+
+### Vlna 89g: SAVE10.GAM jako referencni data + koren spatne ekonomiky
+
+Uzivatel povolil porovnat s dosboxem. Ukazalo se, ze **dosbox ani nebylo
+potreba** - v `x64/Debug` lezi `SAVE10.GAM`, ulozena hra ORIGINALU z hvezdneho
+data 3500.0 (tedy prvni tah). Ta obsahuje kompletni herni stav, takze se z ni
+daji referencni hodnoty precist primo, bez spousteni emulatoru.
+
+#### JAK CIST SAVE10.GAM (pouzij to znovu, je to nejlevnejsi reference)
+
+Rozvrzeni ze `sub_10011B` (orion_part_01.c, retez `fread`). Prvnich 41 B je
+hlavicka (4 B magic + 37 B `TypeSaveSlotInfo_199699`), pak jdou data v poradi:
+
+| offset | obsah | delka |
+|---|---|---|
+| 41 | dword_192FD8 (hvezdne datum) | 4 |
+| 45 | byte_199F3A | 1 |
+| 46 | blok 553 B | 553 |
+| 599 | dword | 4 |
+| 603 | word_199996 | 2 |
+| 605 | dword_192B18 (kolonie, 250 x 361) | 90250 |
+| 90855 | word_1999A2 | 2 |
+| 90857 | dword_1930D4 (17 B zaznamy) | 6120 |
+| 96977 | word_19999A (pocet hvezd) | 2 |
+| 96979 | dword_19306C (hvezdy, 72 x 113) | 8136 |
+| 105115 | dword_1930DC (59 B zaznamy) | 3953 |
+| 109068 | word_199998 | 2 |
+| **109070** | **dword_197F98 (hraci, 8 x 3753)** | 30024 |
+| 139094 | word_199994 (pocet lodi) | 2 |
+| 139096 | dword_197F9C (lode, 129 B) | ... |
+
+Kontrola spravnosti offsetu: na 109071 je jmeno vladce ("Tavua Preet") a na
+109091 rasa ("Alkari"). Hvezdne datum na 41 je 0x88B8 = 35000.
+
+#### Referencni hodnoty ORIGINALU vs. co mel port
+
+| pole | originál | port PRED opravou |
+|---|---|---|
+| +50 pokladna | 50 | 50 (spravne uz drive) |
+| +58 kapacita / +60 potreba nakl. lodi | 6 / 3 | 8 / **30** |
+| +180 vydaje | **3** (cele ve slozce 0) | **70** (cele ve slozce 2) |
+| +178 prijem | **+8** | -206 |
+| +176 jidlo | **0** | -8 |
+| pocet lodi | **17** | **61** |
+| vlastnici lodi | 3/3/3/3/3 + priser 9,10 | 15/3/13/13/13 |
+
+#### Koren: `sub_AF7B4` - spillnuty argument = VLASTNIK lodi
+
+Metodou "vypis stav po kazde fazi" (stejne jako vlna 87) se ukazalo, ze lodi je
+61 uz PRED `sub_8BC39`, a to vsech naraz z jedineho volani `sub_7B8CD`.
+Alokator slotu lodi `sub_AF7B4` ma:
+
+```
+enter 1FCh, 0
+push  eax          ; -> [ebp-200h] = var_200 = v18
+...
+movsx dx, byte ptr [eax+63h]
+cmp   dx, [ebp+var_200]     ; hleda slot, jehoz VLASTNIK == v18
+```
+
+`v18` je tedy SPILLNUTY registrovy argument (vlastnik lodi) a IDA ho nechala
+neinicializovany. Hledani volneho slotu porovnavalo se smetim ze zasobniku,
+naslo slot daleko vzadu a `word_199994 = v21 + 1` vyskocilo na 61. Lode navic
+dostavaly nahodne vlastniky (`*(_BYTE *)(v7 + 99) = v18`).
+
+Oprava: `v18 = (int16_t)a1;`.
+
+#### Vysledek
+
+Radka nakladnich lodi v panelu je z cerveneho `-12 (8)` na bily `+5 (8)`,
+tedy 5 z 8 kapacity a zadny preplatek - presne vzor, ktery ma originál
+(3 z 6). Pokladna a hvezdne datum sedi.
+
+**Zbyva:** prijem je porad zaporny (-50) a jidlo -8, zatimco originál ma +8
+a 0. Slozka 2 (nakladni lode) uz je nulova, takze zbytek vydaju je jinde -
+dalsi krok je stejne mereni pro slozky +184..+194 a pro jidlo (`v24 - v27`
+v `sub_E2710`).
+
+#### Poznamka k metode - dve pasti, ktere me dnes stály cas
+
+1. **Neprekladat s `-m`.** Nekolik zabitych paralelnich buildu nechalo viset
+   `cl.exe`/`MSBuild.exe`/`mspdbsrv.exe` a preklad pak hlasil
+   `C1041: Nejde otevrit vc143.pdb` - vypada to jako chyba ve zdrojich, ale
+   staci ty procesy ukoncit.
+2. **Docasnou instrumentaci mazat presnym shodnym retezcem**, ne hledanim
+   zaviraci zavorky - dvakrat mi to rozbilo soubor (`orion_part_19.c`,
+   `orion_part_14.c`) a musel jsem ho vracet pres `git checkout`.
+
+### Vlna 89h: retez ekonomiky dotazen az k GENEROVANI PLANET
+
+Navazuje na 89g (oprava `sub_AF7B4`). Po ni sedi pocet lodi (17, presne jako
+originál) i nakladni lode, ale prijem a jidlo porad ne. Cely retez se zmerem
+prosel az na konec; kazdy clanek se porovnaval s `SAVE10.GAM`.
+
+#### Vysledek mereni (nas port vs. SAVE10.GAM)
+
+| velicina | originál | port po 89g |
+|---|---|---|
+| pocet lodi | 17 | **17** (opraveno) |
+| +58 / +60 nakl. lode | 6 / 3 | **8 / 3** (opraveno) |
+| +180 vydaje | 3 | **0** |
+| +166 populace | 8 | **8** |
+| +168 (soucet +231) | 8 | **0** |
+| +170 (soucet +233) | 6 | **0** |
+| +172 | 10 | 272 / 34 (kolisa) |
+| +176 jidlo | 0 | -8 |
+
+#### Retez, ktery se overil clanek po clanku (VSE SEDI S ASM)
+
+    panel -> sub_87BAE -> pole hrace +178/+50
+    +178  =  sub_E2710:  v17 - *(a1+180)
+    +180  =  sub_E2000:  soucet SESTI slozek +184..+194
+    +168/+170/+176 = sub_E2710: soucty pres kolonie (+231, +233, +239)
+    +231  =  sub_DE664:  0, kdyz sub_2341E() != 0; jinak sub_DE280 + priplatky
+    +221  =  sub_DE03E:  2 * planeta[+11]
+
+**Zadny z techto clanku uz neni chybne prelozeny** - vsechny jsem porovnal
+s asm (vcetne polarity vetvi, 16bitovych porovnani a spillnutych argumentu).
+
+#### KDE CHYBA DOOPRAVDY JE: zaznamy planet
+
+Zmereno pro startovni kolonii (populace 8 v obou pripadech):
+
+| | originál | port |
+|---|---|---|
+| index planety | 92 | 87 |
+| **planeta +11** | **2** | **64** |
+| +221 farmari (= 2 * planeta+11) | 4 | **128** |
+| +231 jidlo kolonie | 8 | **0** |
+
+Planetovy zaznam ma 17 B; originál planety 92 je celý
+`03 00 17 04 03 02 01 02 08 02 02 02 00 05 00 0A 00`. Nase `+11 = 64` je mimo
+jakykoliv rozumny rozsah, takze **generovani planet plni 17bajtove zaznamy
+spatnymi hodnotami**. Odtud plyne vsechno ostatní: farmaru 128 misto 4,
+a i tak +231 = 0 (takze i `sub_DE280` dostava nesmyslne vstupy).
+
+**Dalsi krok:** porovnat CELE 17bajtove zaznamy planet
+(`dword_1930D4`, 360 zaznamu) mezi portem a `SAVE10.GAM` a najit, ktere pole
+generator plni spatne. Blok planet je v save na offsetu 90857.
+
+#### Nastroj: SAVE10.GAM se osvedcil, dosbox nebyl potreba ani jednou
+
+Cely rozbor probehl proti ulozene hre originálu (viz tabulka offsetu ve
+vlne 89g). Je to o rad levnejsi nez emulator a data jsou presna.
