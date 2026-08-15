@@ -10098,3 +10098,232 @@ hodnotu a nasledne pouzivaji neinicializovanou lokalku - stejne jako to delalo
 `sub_8C099`. Kazde chce dohledat argument z asm (hledat `mov eax, <neco>` tesne
 pred `call sub_7927F` a `mov <reg>, eax` hned za nim). Je to tataz davkova
 prace jako u `sub_77B42` ve vlne 89.
+
+### Vlna 90: OREZAVANI TEXTU se v portu NIKDY nezaplo - a s nim i duplicitni
+### "Stardate: 3500.0" u horniho okraje mapy
+
+Ukol z minule vlny znel "rozhodnout v dosboxu, jestli original ten text kresli
+taky". Odpoved je **kresli, ale neni ho videt** - a duvod je chyba portu,
+ktera se tyka VSECH textu ve hre, ne jen tehle jedne hlasky.
+
+#### Novy (a levny) zpusob, jak dostat ORIGINAL na herni mapu
+
+Bez klikani, cele skriptem - hodi se pro kazde dalsi mereni na mape:
+
+    SENDKEY cond=cycle_ge:40000000  key=esc          # preskoceni intra
+    SENDKEY cond=cycle_ge:90000000  key=esc
+    SENDKEY cond=eip:0x002A56F2     key=c            # 'C' = CONTINUE
+
+`sub_816F2` (hlavni menu) = IDA 0x816F2 -> runtime 0x2A56F2; `SENDKEY` umi
+`cond=eip:`, takze se stisk sam nacasuje. CONTINUE nacte `SAVE10.GAM`
+(hvezdne datum 3500.0, dialog "Enter Home Star Name", hvezda "Trilar") a hra
+je na mape kolem cyklu 106M. Snimky pak berou
+
+    DUMPFRAME cond=eip:0x00349814 framebuf=0x452044 width=640 height=480 dir=...
+
+(`framebuf=0x452044` je hodnota `dword_1BB904`, overeno `DUMPMEM` na
+0x003D1900 primo ve chvili kresleni mapy - je to tentyz buffer, do ktereho
+sype pismena `sub_121DEB`).
+
+#### Mereni: original ten text opravdu kresli, ale nezapise ani pixel
+
+| co | vysledek |
+|---|---|
+| `DUMPREGS cond=eip:0x002A864B` (`call sub_1210B7` v `sub_84555`) | padne, `eax=0x27F`=639, `edx=0`, `ret=72617453` = ASCII "Star" |
+| `DUMPMEM addr=0x00452044 size=6400` PRED vetvi (eip 0x2A85F3) a HNED PO (eip 0x2A8650) | **0 zmenenych pixelu z 6400** |
+| snimek mapy z originalu | vpravo nahore neni nic, jen ram s napisem "GAME" |
+
+Takze vetev probehne, ale kreslic nic nezapise.
+
+#### Pricina: `word_1845D8` (priznak orezavani) se cetl pres sousedni symbol
+
+asm ma na sedmi mistech (a v `sub_12BC0B` na osmem) tohle:
+
+```
+mov  eax, off_17C5D4+2    ; IDA to komentuje jako "Resource deadlock would occur"
+sar  eax, 10h
+cmp  eax, 1
+jnz  short <neorezavaci vetev>
+```
+
+`off_17C5D4` je 4bajtovy ukazatel na 0x17C5D4 a HNED ZA NIM na 0x17C5D8 lezi
+`word_17C5D8` (C `word_1845D8`). `off+2` + `sar 16` je tedy jen krkolomny
+zapis pro **`word_1845D8`** - priznak "orezavat", ktery nastavuje `sub_12B634`
+na 1 a `sub_12B65C` na 0. Ze je to opravdu orezavani, potvrzuje `sub_12BC0B`:
+kdyz je priznak 1, hlasi fatalni `"Draw Gray Scale Does Not Clip"`.
+
+V portu je ale `off_1845D4` SAMOSTATNY objekt, na x64 navic osmibajtovy,
+takze `*(int *)((char *)&off_1845D4 + 2) >> 16` cetl jeho horni pulku = 0.
+Podminka nikdy neplatila a **port po celou dobu kreslil texty NEOREZANE**
+(`sub_121814` misto `sub_122309`).
+
+Presne to je ta duplicitni hvezdna data: `sub_84555` si tesne pred nimi
+nastavi orez `sub_128AB6(22, 22, 527, 421)` (overeno v dosboxu: slova na
+0x3D1A4C..0x3D1A52 jsou 22 / 527 / 22 / 421) a `sub_122309` text na
+`y = 0` zahodi uz na vstupni podmince
+`dword_1BBA52 >= a2 && a2 + vyska_fontu >= HIWORD(dword_1BBA4E)`
+(0 + ~10 neni >= 22).
+
+Tataz trida chyby jako `sub_128AB6` (vlna 26) a `sub_1212EB` (vlna 78) -
+"rozsekany souvisly blok" - jen se schovala za jine jmeno symbolu.
+
+#### Oprava
+
+Osm mist v portu: `*(int *)((char *)&off_1845D4 + 2) >> 16` -> `word_1845D8`
+(`orion_part_19.c`: `sub_11C3C5` + 6x `sub_1212EB`, `orion_part_20.c`:
+`sub_12B7E1`). `sub_12BC0B` tu podminku v dekompilatu vubec nema (IDA zahodila
+tu fatalni hlasku), doplneno nebylo - je to jen kontrolni vypis.
+
+#### Overeni
+
+- `-t:Rebuild` bez chyb;
+- port dojde pres NEW GAME az na mapu a **radky 0-21 (cely horni ram vcetne
+  napisu "GAME") jsou PIXEL PO PIXELU shodne s originalem** - 0 rozdilnych
+  pixelu ze 14080, porovnano proti dosbox snimku ze `SAVE10.GAM`. Duplicitni
+  "Stardate: 3500.0" je pryc;
+- texty na obrazovkach NEW GAME / SELECT RACE / Enter Ruler Name / SELECT
+  BANNER COLOR / mapa se kresli dal spravne (orezavaci vetev `sub_122309` se
+  timhle zapla poprve v historii portu, takze to bylo hlavni riziko);
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged** (po `-t:Rebuild`,
+  s vypnutym dosboxem).
+
+#### Poznamka k metode - PROC to minula vlna prohlasila za neorezavane
+
+Hledaly se **prime** odkazy na `word_17C5D8` v telech kreslicich funkci a
+zadne tam nejsou. Jenze asm k te promenne chodi pres SOUSEDNI symbol
+(`off_17C5D4+2`), takze grep na jmeno nic nenasel. **Kdyz hledas, kdo cte
+promennou X, hledej i `<predchozi_symbol>+offset`** - IDA takova cteni
+pojmenovava podle zacatku bloku, ne podle ctene promenne. V portu se to pozna
+podle vzoru `*(int *)((char *)&neco + 2) >> 16` nebo `((char *)&neco + 3)`.
+
+#### Vedlejsi pozorovani (neoverovano do hloubky)
+
+- **CONTINUE v portu nefunguje**: ani `REORION2_SENDKEY=0x2E43` (klavesa 'C'),
+  ani klik na tlacitko hru nikam neposunou, menu zustane. V originale tataz
+  cesta `SAVE10.GAM` nacte. Vlna 60 popisuje, ze `sub_10E2F` pri neuspesnem
+  `fopen` skonci v "stiskni klavesu" - vypada to na tentyz problem, ale
+  nemeril jsem to.
+- Pri dumpu snimku z portu pozor na **blikajici kurzor v textovych polich**
+  ("Enter Ruler Name"): kazde bliknuti je novy ruzny snimek, takze rozpocet
+  `REORION2_BLIT_DUMP_COUNT=300` se vycerpa jeste pred mapou. Na cestu az na
+  mapu je potreba ~1500.
+
+### Vlna 91: pad na obrazovce kolonie - TABULKY UKAZATELU NA RETEZCE byly
+### rozsekane na samostatne skalary
+
+Uzivateluv pad: po kliknuti na COLONIES a navratu spadne `sprintf`
+(`ucrtbased.dll`, cteni z 0x00007FF800EED2E3). Zasobnik:
+`sub_11C5F5` -> `sub_1193A0` -> `sub_1192D1` -> `sub_C3D34` -> `sub_C3B3C`
+-> `sprintf`.
+
+#### Co se merilo
+
+`sub_C3B3C` sklada popis kolonie:
+
+```c
+v15 = dword_192BF4[v8[10]];   // bohatost nerostu
+v14 = dword_192C74[v8[6]];    // gravitace
+v13 = dword_18F990[v22];      // klima
+v12 = dword_192BE0[v8[5]];    // typ planety
+v10 = (char *)sub_CDF5C(74);
+sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, v0, a0_0);
+```
+
+Formatovaci retezec c. 74 se da vytahnout primo z dat (`ESTRINGS.LBX`,
+zaznam 0, retezce oddelene nulou, prvni 4 bajty jsou hlavicka zaznamu):
+
+    '%s%s %s \n%sravity\nMineral %s\nPopulation (%d/%d)\n%s%+dk %s'
+
+Takze `v12`..`v15` jsou **`%s`, tedy ukazatele na retezce** - ne cisla.
+(Sikovny trik, ktery se vyplati pamatovat: `sub_CDF5C(n)` = `dword_1A6578[n]`
+a ten pool se nacita ze `ESTRINGS.LBX`; index formatu tedy staci vypsat
+skriptem misto hadani, co ta hlaska dela.)
+
+#### Pricina
+
+V originale jsou to SOUVISLA POLE - IDA je tak i anotuje:
+
+```
+; int dword_18ABE0[]
+dword_18ABE0    dd ?      ; sub_1C8D9+133 r ...
+dword_18ABE4    dd ?      ; sub_CE0E5+451 w
+dword_18ABE8    dd ?      ; sub_CE0E5+460 w
+dword_18ABEC    dd ?      ; sub_CE0E5+46F w
+dword_18ABF0    dd ?      ; sub_CE0E5+47E w
+; int dword_18ABF4[]
+```
+
+Cteni je `push dword_18ABE0[eax*4]`, zapis dela `sub_CE0E5` po jednom prvku.
+V portu ale byly prvky 1..N-1 **samostatne objekty** (`extern int
+dword_192BE4;` ...), takze `dword_192BE0[i]` pro i > 0 cetlo cizi pamet -
+a vysledek sel do `%s`. Adresa v hlasce (`0x00007FF8...`) je typicka: ve
+varargs se preda jen dolni polovina slotu a horni zustane po predchozim
+zapisu, takze z ni vznikne "skoro platny" ukazatel.
+
+Navrch mel kazdy zaklad pole **jeste duplicitni skalar v `link_stubs.c`**
+(ten soubor nezahrnuje `orion_common.h`) - tataz past jako ve vlnach 58, 73,
+85 a 89.
+
+#### Oprava
+
+Deset bloku slouceno do skutecnych poli (`orion_common.h`: `extern int
+BASE[N];` + `#define CLEN BASE[k]`, `orion_data.c` definice, duplicitni
+skalary z `link_stubs.c` pryc):
+
+| pole | prvku | pole | prvku |
+|---|---|---|---|
+| `dword_18F990` | 10 | `dword_192BF4` | 5 |
+| `dword_18F9B8` | 16 | `dword_192C08` | 27 |
+| `dword_190430` | 6 | `dword_192C74` | 3 |
+| `dword_190448` | 6 | `dword_197FA0` | 7 |
+| `dword_192BE0` | 5 | `dword_199150` | 7 |
+
+Velikost = souvisly beh stejne sirokych pojmenovanych symbolu v asm dumpu.
+**Pozor u `dword_199150`**: IDA anotuje `; int dword_191150[]`, ale prvek 7
+(`dword_19116C`) uz je neco jineho - pise ho `main__0` a port ho ma jako
+`PoolMemHeader *`. Pole je tedy jen 7 prvku. Kontrola, ktera to odhali:
+u kazdeho clena musi byt v asm XREF `sub_CE0E5+...w`.
+
+Pri tom opraveno i **`sub_E0B4F`** - byla `void`, ale vraci hodnotu
+(max. populace planety) a `sub_C3B3C` ji dava do `%d`; misto ni tam sla
+neinicializovana lokalka (`variable 'v7' is possibly undefined`). asm:
+
+```
+call sub_E0A93 / movsx ecx, ax
+imul eax, esi, 0EA9h / cmp byte [dword_18FF98+eax+11Ah], 3
+jnz loc_E0C16 / add ecx, 5        ; loc_E0C16: mov eax, ecx / retn
+```
+
+(tedy i pripocteni 5 pro hrace s priznakem 3, ktere v portu chybelo).
+
+#### Novy nastroj: `tools/idaarray_scan.py`
+
+Hleda presne tuhle tridu: pole s neurcenou velikosti z IDA anotaci, ktera
+jsou v portu rozsekana na skalary, plus duplicitni skalary v `link_stubs.c`.
+Prvni beh nasel **199 podezrelych bloku** - deset z nich je opravenych touhle
+vlnou, zbytek je backlog. Skener zamerne hlasi jen bloky, ktere port nekde
+indexuje necim jinym nez konstantou 0.
+
+#### Overeno
+
+- Retezce v opravenych tabulkach sedi na semantiku formatu (vytazeno primo
+  ze `ESTRINGS.LBX` podle indexu, ktere zapisuje `sub_CE0E5`):
+
+  | pole | obsah |
+  |---|---|
+  | `dword_192BE0[5]` | Tiny / Small / Medium / Large / Huge |
+  | `dword_192BF4[5]` | Ultra Poor / Poor / Abundant / Rich / Ultra Rich |
+  | `dword_192C74[3]` | Low G / Normal G / Heavy G |
+  | `dword_18F990[10]` | Toxic / Radiated / Barren / Desert / Tundra / Ocean / Swamp / Arid / Terran / Gaia |
+
+  Format ma `%sravity`, takze z "Low G" vznikne "Low Gravity" - tri prvky
+  presne podle asm. Do teto vlny mohl port vratit spravne jen prvek [0];
+  kazdy jiny index cetl cizi objekt. Proto to padalo prave na kolonii,
+  jejiz planeta nebyla Tiny / Ultra Poor / Low G / Toxic.
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged.**
+
+Poznamka: samotnou uzivatelovu cestu (mapa -> COLONIES -> zpet) se mi
+skriptovanym klikanim zopakovat nepodarilo - klikani je casove citlive a
+tentokrat nepreslo uz ACCEPT v dialogu "Enter Home Star Name". Oprava se tedy
+opira o data (viz tabulka vyse) a o asm, ne o zopakovany pad.

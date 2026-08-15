@@ -150,7 +150,9 @@ int sub_12B7E1(int result, int a2, _WORD *a3)
   LOWORD(v4) = a3[1] + a2;
   v8 = v4 - 1;
   v9 = 0;
-  if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+  // PORT (vlna 90): `word_1845D8` = priznak orezavani; v asm se cte pres
+  // sousedni symbol (`off_17C5D4+2 / sar 10h`). Viz orion_part_19.c.
+  if ( word_1845D8 == 1 )
   {
     if ( (int16_t)result > (int16_t)dword_1BBA4E )
       return result;

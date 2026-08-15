@@ -6450,8 +6450,10 @@ void sub_C3B3C()
     else
       v6 = (char *)&unk_179E17;
     v18 = v6;
-    sub_E0B4F((int16_t *)(17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_182AB7 + 2) + (uint8_t*)dword_1930D4), word_19999C);
-    v17 = v7;
+    // PORT (vlna 91): asm `call sub_E0B4F / cwde / push eax` - navratova hodnota
+    // jde primo jako argument do sprintf. IDA ji zahodila a nechala tu
+    // NEINICIALIZOVANOU lokalku v7 (`variable 'v7' is possibly undefined`).
+    v17 = (int16_t)sub_E0B4F((int16_t *)(17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_182AB7 + 2) + (uint8_t*)dword_1930D4), word_19999C);
     v16 = *(uint8_t *)(361 * word_182AB7 + (uint8_t*)dword_192B18 + 10);
     v8 = (uint8_t *)((uint8_t*)dword_1930D4 + 17 * (int16_t)v20);
     v15 = dword_192BF4[v8[10]];

@@ -15504,32 +15504,8 @@ int dword_18F980; // weak
 int dword_18F984; // weak
 int dword_18F988; // weak
 int dword_18F98C; // weak
-int dword_18F990[]; // weak
-int dword_18F994; // weak
-int dword_18F998; // weak
-int dword_18F99C; // weak
-int dword_18F9A0; // weak
-int dword_18F9A4; // weak
-int dword_18F9A8; // weak
-int dword_18F9AC; // weak
-int dword_18F9B0; // weak
-int dword_18F9B4; // weak
-int dword_18F9B8[]; // weak
-int dword_18F9BC; // weak
-int dword_18F9C0; // weak
-int dword_18F9C4; // weak
-int dword_18F9C8; // weak
-int dword_18F9CC; // weak
-int dword_18F9D0; // weak
-int dword_18F9D4; // weak
-int dword_18F9D8; // weak
-int dword_18F9DC; // weak
-int dword_18F9E0; // weak
-int dword_18F9E4; // weak
-int dword_18F9E8; // weak
-int dword_18F9EC; // weak
-int dword_18F9F0; // weak
-int dword_18F9F4; // weak
+int dword_18F990[10]; // weak (vlna 91: souvisly blok, viz orion_common.h)
+int dword_18F9B8[16]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 int dword_18FEF8[32]; // weak
 int16_t word_18FF78; // weak
 int16_t word_190178[72]; // weak
@@ -15545,18 +15521,8 @@ int16_t word_190208[72]; // weak
 void *dword_190298[48]; // weak
 /* vlna 85: makro do dword_190298 (+3 prvky) */
 int dword_190358[54]; // weak
-int dword_190430[]; // weak
-int dword_190434; // weak
-int dword_190438; // weak
-int dword_19043C; // weak
-int dword_190440; // weak
-int dword_190444; // weak
-int dword_190448[]; // weak
-int dword_19044C; // weak
-int dword_190450; // weak
-int dword_190454; // weak
-int dword_190458; // weak
-int dword_19045C; // weak
+int dword_190430[6]; // weak (vlna 91: souvisly blok, viz orion_common.h)
+int dword_190448[6]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 int16_t word_190460; // weak
 int16_t word_190462; // weak
 int dword_190464; // weak
@@ -15726,46 +15692,10 @@ int dword_192B70[7]; // weak
 int dword_192B8C[15]; // weak
 int dword_192BC8; // weak
 int dword_192BD8; // weak
-int dword_192BE0[]; // weak
-int dword_192BE4; // weak
-int dword_192BE8; // weak
-int dword_192BEC; // weak
-int dword_192BF0; // weak
-int dword_192BF4[]; // weak
-int dword_192BF8; // weak
-int dword_192BFC; // weak
-int dword_192C00; // weak
-int dword_192C04; // weak
-int dword_192C08[]; // weak
-int dword_192C0C; // weak
-int dword_192C10; // weak
-int dword_192C14; // weak
-int dword_192C18; // weak
-int dword_192C1C; // weak
-int dword_192C20; // weak
-int dword_192C24; // weak
-int dword_192C28; // weak
-int dword_192C2C; // weak
-int dword_192C30; // weak
-int dword_192C34; // weak
-int dword_192C38; // weak
-int dword_192C3C; // weak
-int dword_192C40; // weak
-int dword_192C44; // weak
-int dword_192C48; // weak
-int dword_192C4C; // weak
-int dword_192C50; // weak
-int dword_192C54; // weak
-int dword_192C58; // weak
-int dword_192C5C; // weak
-int dword_192C60; // weak
-int dword_192C64; // weak
-int dword_192C68; // weak
-int dword_192C6C; // weak
-int dword_192C70; // weak
-int dword_192C74[]; // weak
-int dword_192C78; // weak
-int dword_192C7C; // weak
+int dword_192BE0[5]; // weak (vlna 91: souvisly blok, viz orion_common.h)
+int dword_192BF4[5]; // weak (vlna 91: souvisly blok, viz orion_common.h)
+int dword_192C08[27]; // weak (vlna 91: souvisly blok, viz orion_common.h)
+int dword_192C74[3]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 int16_t word_192C80[]; // weak
 int16_t word_192C82[]; // weak
 int16_t word_192C84[]; // weak
@@ -16082,25 +16012,13 @@ int dword_1975D0; // weak
 uint8_t blk_1975D4[2500]; // weak
 uint8_t* dword_197F98; // weak
 uint8_t* dword_197F9C; // weak
-int dword_197FA0[]; // weak
-int dword_197FA4; // weak
-int dword_197FA8; // weak
-int dword_197FAC; // weak
-int dword_197FB0; // weak
-int dword_197FB4; // weak
-int dword_197FB8; // weak
+int dword_197FA0[7]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 _UNKNOWN unk_197FBC; // weak
 int16_t word_197FBD; // weak
 int16_t word_197FBF; // weak
 int16_t word_197FC1; // weak
 int16_t word_197FC3; // weak
-int dword_199150[]; // weak
-int dword_199154; // weak
-int dword_199158; // weak
-int dword_19915C; // weak
-int dword_199160; // weak
-int dword_199164; // weak
-int dword_199168; // weak
+int dword_199150[7]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 PoolMemHeader* dword_19916C; // weak
 int dword_199170; // weak
 int16_t word_199174; // weak

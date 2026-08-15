@@ -9275,7 +9275,7 @@ LABEL_16:
 
 
 //----- (000E0B4F) --------------------------------------------------------
-void sub_E0B4F(int16_t *a1, int a2)
+int sub_E0B4F(int16_t *a1, int a2)
 {
   int v3; // edx
   int v4; // edx
@@ -9288,11 +9288,21 @@ void sub_E0B4F(int16_t *a1, int a2)
   int v11; // ecx
   int16_t v12; // ax
   _BYTE v13[12]; // [esp+0h] [ebp-Ch] BYREF
+  int result = 0; // ecx  (vlna 91)
 
   v3 = *a1;
   if ( v3 == -1 || (v4 = 361 * v3, v5 = v4 + (uint8_t*)dword_192B18, *(_BYTE *)(v4 + (uint8_t*)dword_192B18 + 6)) )
   {
-    sub_E0A93(*((uint8_t *)a1 + 5), *((uint8_t *)a1 + 8), a2);
+    // PORT (vlna 91): funkce VRACI hodnotu (sirku/max. populaci), IDA ji
+    // zahodila a udelala z funkce `void`. asm (loc_E0B75):
+    //   call sub_E0A93 / movsx ecx, ax
+    //   imul eax, esi, 0EA9h / cmp byte [dword_18FF98+eax+11Ah], 3
+    //   jnz loc_E0C16 / add ecx, 5      ; loc_E0C16: mov eax, ecx / retn
+    // Volajici `sub_C3B3C` z ni bere `%d` do hlasky o kolonii - do vlny 91
+    // tam sla neinicializovana lokalka (`variable 'v7' is possibly undefined`).
+    result = (int16_t)sub_E0A93(*((uint8_t *)a1 + 5), *((uint8_t *)a1 + 8), a2);
+    if ( *((uint8_t*)dword_197F98 + 3753 * a2 + 282) == 3 )
+      result += 5;
   }
   else
   {
@@ -9321,13 +9331,15 @@ void sub_E0B4F(int16_t *a1, int a2)
         }
       }
       while ( v11 > 0 );
+      result = v8;   /* vlna 91: asm `mov ecx, esi` pred loc_E0C16 */
     }
     else
     {
-      sub_E0C1D((char *)v5, a2);
+      result = (int16_t)sub_E0C1D((char *)v5, a2);   /* vlna 91: asm `movsx ecx, ax` */
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
+  return result;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce;
+                      vlna 91: v EAX se vraci ECX */
 }
 // E0C18: control flows out of bounds to DEB17
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);

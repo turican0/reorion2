@@ -5664,8 +5664,8 @@ extern int sub_E0A18();
 extern int sub_E0A49();
 // plna signatura: int sub_E0A93(int a1, unsigned int a2, int a3);
 extern int sub_E0A93();
-// plna signatura: void sub_E0B4F(int16_t *a1, int a2);
-extern void sub_E0B4F();
+// plna signatura: int sub_E0B4F(int16_t *a1, int a2);   /* vlna 91: vraci ECX */
+extern int sub_E0B4F();
 // plna signatura: int sub_E0C1D(char *a1, int a2);
 extern int sub_E0C1D();
 // plna signatura: int sub_E0C6E(int a1, int a2);
@@ -13193,7 +13193,7 @@ int sub_E0A14(int a1);
 int sub_E0A18(int a1, int a2, uint8_t a3);
 int sub_E0A49(int a1, unsigned int a2);
 int sub_E0A93(int a1, unsigned int a2, int16_t a3);
-void sub_E0B4F(int16_t *a1, int16_t a2);
+int sub_E0B4F(int16_t *a1, int16_t a2);   /* vlna 91: vraci ECX */
 int sub_E0C1D(char *a1, int16_t a2);
 int sub_E0C6E(int a1, int a2);
 void sub_E0C9B(int a1, int a2);
@@ -17998,32 +17998,38 @@ extern int dword_18F980;
 extern int dword_18F984;
 extern int dword_18F988;
 extern int dword_18F98C;
-extern int dword_18F990[];
-extern int dword_18F994;
-extern int dword_18F998;
-extern int dword_18F99C;
-extern int dword_18F9A0;
-extern int dword_18F9A4;
-extern int dword_18F9A8;
-extern int dword_18F9AC;
-extern int dword_18F9B0;
-extern int dword_18F9B4;
-extern int dword_18F9B8[];
-extern int dword_18F9BC;
-extern int dword_18F9C0;
-extern int dword_18F9C4;
-extern int dword_18F9C8;
-extern int dword_18F9CC;
-extern int dword_18F9D0;
-extern int dword_18F9D4;
-extern int dword_18F9D8;
-extern int dword_18F9DC;
-extern int dword_18F9E0;
-extern int dword_18F9E4;
-extern int dword_18F9E8;
-extern int dword_18F9EC;
-extern int dword_18F9F0;
-extern int dword_18F9F4;
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_8F990[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_18F990[i]` slo mimo. */
+extern int dword_18F990[10];
+#define dword_18F994 dword_18F990[1]
+#define dword_18F998 dword_18F990[2]
+#define dword_18F99C dword_18F990[3]
+#define dword_18F9A0 dword_18F990[4]
+#define dword_18F9A4 dword_18F990[5]
+#define dword_18F9A8 dword_18F990[6]
+#define dword_18F9AC dword_18F990[7]
+#define dword_18F9B0 dword_18F990[8]
+#define dword_18F9B4 dword_18F990[9]
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_8F9B8[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_18F9B8[i]` slo mimo. */
+extern int dword_18F9B8[16];
+#define dword_18F9BC dword_18F9B8[1]
+#define dword_18F9C0 dword_18F9B8[2]
+#define dword_18F9C4 dword_18F9B8[3]
+#define dword_18F9C8 dword_18F9B8[4]
+#define dword_18F9CC dword_18F9B8[5]
+#define dword_18F9D0 dword_18F9B8[6]
+#define dword_18F9D4 dword_18F9B8[7]
+#define dword_18F9D8 dword_18F9B8[8]
+#define dword_18F9DC dword_18F9B8[9]
+#define dword_18F9E0 dword_18F9B8[10]
+#define dword_18F9E4 dword_18F9B8[11]
+#define dword_18F9E8 dword_18F9B8[12]
+#define dword_18F9EC dword_18F9B8[13]
+#define dword_18F9F0 dword_18F9B8[14]
+#define dword_18F9F4 dword_18F9B8[15]
 extern int dword_18FEF8[32];
 extern int16_t word_18FF78;
 extern int16_t word_190178[72];
@@ -18031,18 +18037,24 @@ extern int16_t word_190208[72];
 extern void *dword_190298[48];   /* vlna 85 */
 #define dword_1902A4  (dword_190298 + 3)   /* vlna 85 */
 extern int dword_190358[54];
-extern int dword_190430[];
-extern int dword_190434;
-extern int dword_190438;
-extern int dword_19043C;
-extern int dword_190440;
-extern int dword_190444;
-extern int dword_190448[];
-extern int dword_19044C;
-extern int dword_190450;
-extern int dword_190454;
-extern int dword_190458;
-extern int dword_19045C;
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_90430[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_190430[i]` slo mimo. */
+extern int dword_190430[6];
+#define dword_190434 dword_190430[1]
+#define dword_190438 dword_190430[2]
+#define dword_19043C dword_190430[3]
+#define dword_190440 dword_190430[4]
+#define dword_190444 dword_190430[5]
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_90448[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_190448[i]` slo mimo. */
+extern int dword_190448[6];
+#define dword_19044C dword_190448[1]
+#define dword_190450 dword_190448[2]
+#define dword_190454 dword_190448[3]
+#define dword_190458 dword_190448[4]
+#define dword_19045C dword_190448[5]
 extern int16_t word_190460;
 extern int16_t word_190462;
 extern int dword_190464;
@@ -18225,46 +18237,58 @@ extern int dword_192B70[7];
 extern int dword_192B8C[15];
 extern int dword_192BC8;
 extern int dword_192BD8;
-extern int dword_192BE0[];
-extern int dword_192BE4;
-extern int dword_192BE8;
-extern int dword_192BEC;
-extern int dword_192BF0;
-extern int dword_192BF4[];
-extern int dword_192BF8;
-extern int dword_192BFC;
-extern int dword_192C00;
-extern int dword_192C04;
-extern int dword_192C08[];
-extern int dword_192C0C;
-extern int dword_192C10;
-extern int dword_192C14;
-extern int dword_192C18;
-extern int dword_192C1C;
-extern int dword_192C20;
-extern int dword_192C24;
-extern int dword_192C28;
-extern int dword_192C2C;
-extern int dword_192C30;
-extern int dword_192C34;
-extern int dword_192C38;
-extern int dword_192C3C;
-extern int dword_192C40;
-extern int dword_192C44;
-extern int dword_192C48;
-extern int dword_192C4C;
-extern int dword_192C50;
-extern int dword_192C54;
-extern int dword_192C58;
-extern int dword_192C5C;
-extern int dword_192C60;
-extern int dword_192C64;
-extern int dword_192C68;
-extern int dword_192C6C;
-extern int dword_192C70;
-extern int dword_192C74[];
-extern int dword_192C78;
-extern int dword_192C7C;
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_92BE0[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_192BE0[i]` slo mimo. */
+extern int dword_192BE0[5];
+#define dword_192BE4 dword_192BE0[1]
+#define dword_192BE8 dword_192BE0[2]
+#define dword_192BEC dword_192BE0[3]
+#define dword_192BF0 dword_192BE0[4]
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_92BF4[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_192BF4[i]` slo mimo. */
+extern int dword_192BF4[5];
+#define dword_192BF8 dword_192BF4[1]
+#define dword_192BFC dword_192BF4[2]
+#define dword_192C00 dword_192BF4[3]
+#define dword_192C04 dword_192BF4[4]
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_92C08[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_192C08[i]` slo mimo. */
+extern int dword_192C08[27];
+#define dword_192C0C dword_192C08[1]
+#define dword_192C10 dword_192C08[2]
+#define dword_192C14 dword_192C08[3]
+#define dword_192C18 dword_192C08[4]
+#define dword_192C1C dword_192C08[5]
+#define dword_192C20 dword_192C08[6]
+#define dword_192C24 dword_192C08[7]
+#define dword_192C28 dword_192C08[8]
+#define dword_192C2C dword_192C08[9]
+#define dword_192C30 dword_192C08[10]
+#define dword_192C34 dword_192C08[11]
+#define dword_192C38 dword_192C08[12]
+#define dword_192C3C dword_192C08[13]
+#define dword_192C40 dword_192C08[14]
+#define dword_192C44 dword_192C08[15]
+#define dword_192C48 dword_192C08[16]
+#define dword_192C4C dword_192C08[17]
+#define dword_192C50 dword_192C08[18]
+#define dword_192C54 dword_192C08[19]
+#define dword_192C58 dword_192C08[20]
+#define dword_192C5C dword_192C08[21]
+#define dword_192C60 dword_192C08[22]
+#define dword_192C64 dword_192C08[23]
+#define dword_192C68 dword_192C08[24]
+#define dword_192C6C dword_192C08[25]
+#define dword_192C70 dword_192C08[26]
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_92C74[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_192C74[i]` slo mimo. */
+extern int dword_192C74[3];
+#define dword_192C78 dword_192C74[1]
+#define dword_192C7C dword_192C74[2]
 extern int16_t word_192C80[];
 extern int16_t word_192C82[];
 extern int16_t word_192C84[];
@@ -18571,25 +18595,31 @@ extern uint8_t blk_1975D4[2500];
 #define byte_1975D8  ((char *)(blk_1975D4 + 4))
 extern uint8_t* dword_197F98;
 extern uint8_t* dword_197F9C;
-extern int dword_197FA0[];
-extern int dword_197FA4;
-extern int dword_197FA8;
-extern int dword_197FAC;
-extern int dword_197FB0;
-extern int dword_197FB4;
-extern int dword_197FB8;
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_97FA0[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_197FA0[i]` slo mimo. */
+extern int dword_197FA0[7];
+#define dword_197FA4 dword_197FA0[1]
+#define dword_197FA8 dword_197FA0[2]
+#define dword_197FAC dword_197FA0[3]
+#define dword_197FB0 dword_197FA0[4]
+#define dword_197FB4 dword_197FA0[5]
+#define dword_197FB8 dword_197FA0[6]
 extern _UNKNOWN unk_197FBC;
 extern int16_t word_197FBD;
 extern int16_t word_197FBF;
 extern int16_t word_197FC1;
 extern int16_t word_197FC3;
-extern int dword_199150[];
-extern int dword_199154;
-extern int dword_199158;
-extern int dword_19915C;
-extern int dword_199160;
-extern int dword_199164;
-extern int dword_199168;
+/* PORT (vlna 91): souvisly blok ukazatelu na retezce, ktery plni sub_CE0E5.
+   V IDA dumpu je anotovany jako `; int dword_99150[]`, ale prvky 1..N-1 mely v portu
+   vlastni symboly, takze indexovane cteni `dword_199150[i]` slo mimo. */
+extern int dword_199150[7];
+#define dword_199154 dword_199150[1]
+#define dword_199158 dword_199150[2]
+#define dword_19915C dword_199150[3]
+#define dword_199160 dword_199150[4]
+#define dword_199164 dword_199150[5]
+#define dword_199168 dword_199150[6]
 extern PoolMemHeader* dword_19916C;
 extern int dword_199170;
 extern int16_t word_199174;

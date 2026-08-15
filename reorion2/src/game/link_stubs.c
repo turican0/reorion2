@@ -166,11 +166,7 @@ int dword_184532;
 int dword_184536;
 int dword_18F4B0;
 int dword_18F4C0;
-int dword_18F990;
-int dword_18F9B8;
 /* vlna 85: duplicitni skalar - skutecne pole je v orion_data.c */
-int dword_190430;
-int dword_190448;
 int dword_190498;
 int dword_1904C8;
 int dword_1906B0;
@@ -179,13 +175,7 @@ int dword_1906B0;
 /* vlna 58: dword_192630/192644 jsou ted souvisly blok v orion_data.c
    (a dword_192644 makro do nej), duplicitni skalary tu byly navic. */
 int dword_19291C;
-int dword_192BE0;
-int dword_192BF4;
-int dword_192C08;
-int dword_192C74;
 int dword_1933F8;
-int dword_197FA0;
-int dword_199150;
 int dword_19A058;
 int dword_19A060;
 int dword_19A080;

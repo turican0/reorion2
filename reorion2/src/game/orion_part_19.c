@@ -701,7 +701,20 @@ int sub_11C3C5( int a1, int a2, int a3, int16_t *a4, _BYTE *a5, int a6)
   int16_t v8; // [esp+10h] [ebp-Ch]
 
   v8 = a2;
-  if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+  // PORT (vlna 90): TADY SE ZTRACELO OREZAVANI TEXTU (a s nim i duplicitni
+  // "Stardate: 3500.0" u horniho okraje herni mapy). asm dela
+  //     mov eax, off_17C5D4+2 / sar eax, 10h / cmp eax, 1
+  // coz je cteni HORNI pulky dwordu na 0x1845D6, tedy `word_1845D8` -
+  // priznak "orezavat" (sub_12B634 ho nastavi na 1, sub_12B65C na 0).
+  // Tataz past jako v sub_128AB6 (vlna 26) a sub_1212EB (vlna 78): v
+  // originale lezi `off_1845D4` (4 B) a `word_1845D8` v pameti za sebou, v
+  // portu je `off_1845D4` samostatny OSMIbajtovy ukazatel, takze se cetla
+  // jeho horni pulka (= 0) a orezavaci vetev se NIKDY nepouzila.
+  // Zmereno v dosboxu (SAVE10.GAM pres CONTINUE, DUMPMEM 0x452044 pred a po
+  // volani sub_1210B7(639, 0, "Stardate: 3500.0") v sub_84555): original ten
+  // text opravdu kresli, ale do framebufferu nezapise ANI JEDEN pixel -
+  // sub_122309 ho zahodi uz na vstupni podmince (y=0 lezi nad orezem 22..421).
+  if ( word_1845D8 == 1 )
   {
     if ( a1 < SHIWORD(dword_1BBA4A) )
       return -1000;
@@ -2886,7 +2899,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
       v7 = 1;
     if ( v9 != 2 )
     {
-      if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+      if ( word_1845D8 == 1 )
       {
         sub_122309(a1 + 1, a2 + 1, a3, 0, a4);
         sub_122309(a1, a2 + 1, a3, 0, a4);
@@ -2901,7 +2914,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     }
     if ( v9 != 1 && v9 != 3 )
     {
-      if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+      if ( word_1845D8 == 1 )
       {
         sub_122309(a1 - 1, a2, a3, 0, a4);
         sub_122309(a1 - 1, a2 - 1, a3, 0, a4);
@@ -2916,7 +2929,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     }
     if ( v9 == 3 || v9 == 5 )
     {
-      if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+      if ( word_1845D8 == 1 )
       {
         sub_122309(a1 + 2, a2 + 2, a3, 0, a4);
         sub_122309(a1 + 1, a2 + 2, a3, 0, a4);
@@ -2931,7 +2944,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     }
     if ( v9 > 3 )
     {
-      if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+      if ( word_1845D8 == 1 )
       {
         sub_122309(a1 + 1, a2 - 1, a3, 0, a4);
         sub_122309(a1 - 1, a2 + 1, a3, 0, a4);
@@ -2944,7 +2957,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     }
     if ( v9 == 5 )
     {
-      if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+      if ( word_1845D8 == 1 )
       {
         sub_122309(a1 + 2, a2, a3, 0, a4);
         sub_122309(a1, a2 + 2, a3, 0, a4);
@@ -2959,7 +2972,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
       byte_1B3E7C[j] = byte_1B3E88[j];
   }
   LOWORD(dword_184510) = 0;
-  if ( *(int *)((char *)&off_1845D4 + 2) >> 16 == 1 )
+  if ( word_1845D8 == 1 )
     sub_122309(a1, a2, a3, 1, a4);
   else
     sub_121814(a1, a2, a3, 1, a4);
