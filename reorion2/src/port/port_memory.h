@@ -47,6 +47,8 @@ T* AllocArray(std::size_t count, const char* debugTag = nullptr)
 
 // Kolik bajtu je aktualne alokovano touto vrstvou - uzitecne pro ladeni.
 std::size_t GetLiveBytes();
+/* vlna 99: kontrola straznich bajtu (jen s REORION2_MEM_GUARD=1) */
+int CheckGuards(const char* where);
 std::size_t GetLiveAllocationCount();
 
 // ---------------------------------------------------------------------

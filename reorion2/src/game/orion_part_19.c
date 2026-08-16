@@ -8470,7 +8470,7 @@ int sub_12AFCC(int a1)
     {
       v5 += v7;
       v6 = v8 + v4;
-      while ( v4 < v6 && v5 < (int)&loc_12C00 )
+      while ( v4 < v6 && v5 < 0x12C00 )
         *(_DWORD *)(v9 + 4 * v5++) = *(_DWORD *)(a1 + 4 * v4++);
       v7 = *(_DWORD *)(a1 + 4 * v4);
       v8 = *(_DWORD *)(a1 + 4 * v4 + 4);

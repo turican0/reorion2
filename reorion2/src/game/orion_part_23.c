@@ -3577,7 +3577,7 @@ LABEL_41:
                 }
                 else
                 {
-                  v32 = **(_BYTE **)(dword_1C9604 + 20) & 0xF0;
+                  v32 = *(_BYTE *)(intptr_t)*(uint32_t *)(dword_1C9604 + 20) & 0xF0;
                   if ( v32 < 0xB0 )
                   {
                     if ( v32 < 0x90 )

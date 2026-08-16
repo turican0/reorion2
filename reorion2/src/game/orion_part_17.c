@@ -1904,7 +1904,7 @@ char sub_1043B0( unsigned int a1, int a2, int a3, int a4)
         return a2;
       case 0x1Fu:
 LABEL_53:
-        v19 = *(char **)(dword_1ACF14 + 2);
+        v19 = (char *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
         v20 = *v19;
         *(_DWORD *)(dword_1ACF14 + 2) = v19 + 1;
         if ( v20 == 76 )
@@ -1953,7 +1953,7 @@ LABEL_53:
         return a2;
       }
       sub_105533();
-      if ( **(_BYTE **)(dword_1ACF14 + 2) )
+      if ( *(_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2) )
         return a2;
     }
 LABEL_29:
@@ -1976,14 +1976,14 @@ LABEL_16:
         v4 = dword_1ACF14;
         if ( !*(_WORD *)(dword_1ACF14 + 41) )
           goto LABEL_20;
-        v5 = *(_BYTE **)(dword_1ACF14 + 43);
+        v5 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 43);
         *(_WORD *)(dword_1ACF14 + 41) = 0;
         while ( 1 )
         {
           *(_DWORD *)(v4 + 2) = v5;
 LABEL_20:
           v4 = dword_1ACF14;
-          v6 = *(_BYTE **)(dword_1ACF14 + 2);
+          v6 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
           v7 = *v6 == 0;
           if ( !*v6 )
             break;
@@ -2002,14 +2002,14 @@ LABEL_20:
         v4 = dword_1ACF14;
         if ( !*(_WORD *)(dword_1ACF14 + 41) )
           goto LABEL_41;
-        v13 = *(_BYTE **)(dword_1ACF14 + 43);
+        v13 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 43);
         *(_WORD *)(dword_1ACF14 + 41) = 0;
         while ( 1 )
         {
           *(_DWORD *)(v4 + 2) = v13;
 LABEL_41:
           v4 = dword_1ACF14;
-          v6 = *(_BYTE **)(dword_1ACF14 + 2);
+          v6 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
           v7 = *v6 == 0;
           if ( !*v6 )
             break;
@@ -2062,7 +2062,7 @@ char sub_10465A()
   _BYTE *v5; // edx
 
   v0 = dword_1ACF14;
-  v1 = *(char **)(dword_1ACF14 + 2);
+  v1 = (char *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
   v2 = *v1;
   *(_DWORD *)(dword_1ACF14 + 2) = v1 + 1;
   if ( v2 == 76 )
@@ -2086,7 +2086,7 @@ char sub_10465A()
     *(_DWORD *)(v0 + 2) = v4;
 LABEL_9:
     v0 = dword_1ACF14;
-    v5 = *(_BYTE **)(dword_1ACF14 + 2);
+    v5 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
     if ( !*v5 )
       break;
     v4 = v5 + 1;
@@ -2108,14 +2108,14 @@ int sub_1046CE()
   result = dword_1ACF14;
   if ( !*(_WORD *)(dword_1ACF14 + 41) )
     goto LABEL_4;
-  v1 = *(_BYTE **)(dword_1ACF14 + 43);
+  v1 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 43);
   *(_WORD *)(dword_1ACF14 + 41) = 0;
   while ( 1 )
   {
     *(_DWORD *)(result + 2) = v1;
 LABEL_4:
     result = dword_1ACF14;
-    v2 = *(_BYTE **)(dword_1ACF14 + 2);
+    v2 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
     if ( !*v2 )
       break;
     v1 = v2 + 1;
@@ -2178,7 +2178,7 @@ void sub_10478C()
 
   sub_1047D5();
   if ( *(_BYTE *)(dword_1ACF14 + 39) == 3
-    && ((v0 = *(_BYTE **)(dword_1ACF14 + 2), *v0 == 13)
+    && ((v0 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2), *v0 == 13)
      || *v0 == 10
      || *v0 == 12
      || !*(_WORD *)(dword_1ACF14 + 41) && !*v0) )
@@ -3174,7 +3174,7 @@ void sub_105533()
   char v23[4]; // [esp+4h] [ebp-8h] BYREF
   char v24; // [esp+8h] [ebp-4h]
 
-  v0 = *(_BYTE **)(dword_1ACF14 + 2);
+  v0 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
   if ( *v0 == 7 )
     *(_DWORD *)(dword_1ACF14 + 2) = v0 + 1;
   v1 = (_BYTE *)(uint16_t)(480 - *(_WORD *)(dword_1ACF00 + 5));
@@ -3197,7 +3197,7 @@ LABEL_8:
   {
     while ( 1 )
     {
-      v6 = *(_BYTE **)(dword_1ACF14 + 2);
+      v6 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
       if ( *v6 == 7 || *v6 == 46 || !*v6 )
         break;
       *(_DWORD *)(dword_1ACF14 + 2) = v6 + 1;
@@ -3383,7 +3383,7 @@ LABEL_93:
       v4 = v10;
     }
 LABEL_94:
-    v20 = *(_BYTE **)(dword_1ACF14 + 2);
+    v20 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
     v1 = v20;
     while ( *v20 == 32 )
       ++v20;
@@ -3423,7 +3423,7 @@ char sub_10599E(int *a1, _BYTE *a2)
   char *v6; // esi
   char v7; // al
 
-  v3 = *(_BYTE **)(dword_1ACF14 + 2);
+  v3 = (_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2);
   v4 = 1;
   v5 = v3;
   while ( *v3 == 32 )
@@ -3432,14 +3432,14 @@ char sub_10599E(int *a1, _BYTE *a2)
     v5 = v3;
   *(_DWORD *)(dword_1ACF14 + 2) = v5;
   *a2 = *v5 == 43 || *v5 == 45;
-  *a1 = sub_12760B(*(char **)(dword_1ACF14 + 2));
+  *a1 = sub_12760B((char *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2));
   while ( 1 )
   {
     v6 = a1234567890;
     while ( 1 )
     {
       v7 = *v6;
-      if ( *v6 == **(_BYTE **)(dword_1ACF14 + 2) )
+      if ( *v6 == *(_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2) )
         break;
       ++v6;
       if ( !v7 )
@@ -3450,7 +3450,7 @@ char sub_10599E(int *a1, _BYTE *a2)
     }
     if ( !v6 )
       return v4;
-    if ( **(_BYTE **)(dword_1ACF14 + 2) != 32 )
+    if ( *(_BYTE *)(intptr_t)*(uint32_t *)(dword_1ACF14 + 2) != 32 )
       v4 = 0;
     ++*(_DWORD *)(dword_1ACF14 + 2);
   }

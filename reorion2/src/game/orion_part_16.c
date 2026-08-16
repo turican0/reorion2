@@ -450,8 +450,8 @@ void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
         qmemcpy(&word_1AAF70, a5, sizeof(word_1AAF70));
         word_1AAF6E = 0;
         dword_1AAF6A = 0;
-        sub_1112EC(dword_192ED4, (int)&loc_E1000);
-        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
+        sub_1112EC(dword_192ED4, 0xE1000);
+        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0xE1000);
         word_1AB09C = v50;
         sub_FC6A5();
         return;
@@ -802,8 +802,8 @@ LABEL_25:
 LABEL_51:
         word_1AAF6E = 0;
         dword_1AAF6A = 0;
-        sub_1112EC(dword_192ED4, (int)&loc_E1000);
-        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
+        sub_1112EC(dword_192ED4, 0xE1000);
+        dword_1AAF72 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0xE1000);
         return;
       case 52:
         byte_1AB094[v51] = 1;
@@ -1774,8 +1774,8 @@ void sub_F74CD( int a1, int a2, int a3)
   char v31; // [esp+1Ch] [ebp-4h]
 
   v31 = a1;
-  sub_1112EC(dword_192ED4, (int)&loc_E1000);
-  v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_E1000);
+  sub_1112EC(dword_192ED4, 0xE1000);
+  v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0xE1000);
   v25 = v28;
   qmemcpy(v28, &word_1AAF68, sizeof(int16_t));
   qmemcpy(v28 + 1, &dword_192FD8, 4u);
@@ -1787,7 +1787,7 @@ void sub_F74CD( int a1, int a2, int a3)
   qmemcpy((char *)v28 + 11, &byte_199CB4, sizeof(char));
   qmemcpy(v28 + 6, &byte_199CB5, 1u);
   qmemcpy((char *)v28 + 13, &byte_199CAF, sizeof(char));
-  ServiceAudioTick_FE8BE((int)(v28 + 1), (int)&loc_E1000, a3, (int16_t *)((char *)v28 + 13));
+  ServiceAudioTick_FE8BE((int)(v28 + 1), 0xE1000, a3, (int16_t *)((char *)v28 + 13));
   v29 = (char *)(v28 + 7);
   v24 = sub_12484C();
   qmemcpy(v28 + 7, &v24, 4u);
@@ -1813,7 +1813,7 @@ void sub_F74CD( int a1, int a2, int a3)
   v29 += 2;
   v23 = (int16_t *)v29;
   qmemcpy(v29, (void *)dword_197F9C, 0xFBF4u);
-  ServiceAudioTick_FE8BE(v3, (int)&loc_E1000, a3, v23);
+  ServiceAudioTick_FE8BE(v3, 0xE1000, a3, v23);
   v29 += 64500;
   qmemcpy(v29, (void *)dword_1930DC, 0xF71u);
   v29 += 3953;
@@ -1849,7 +1849,7 @@ void sub_F74CD( int a1, int a2, int a3)
   v29 += 12;
   qmemcpy(v5, &word_17D634, 0xCu);
   v6 = v29;
-  ServiceAudioTick_FE8BE(v4, (int)&loc_E1000, (int)v29, v5);
+  ServiceAudioTick_FE8BE(v4, 0xE1000, (int)v29, v5);
   v7 = (int16_t *)(v6 - (char *)v28);
   if ( v31 )
   {

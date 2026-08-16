@@ -7889,7 +7889,7 @@ int sub_911D5( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8,
     v13 = 4;
   v14 = v13 / 2;
   *a9 = 10 * v11 / v16 + a2 + a6 - v14;
-  result = a7 + a3 + 10 * v12 / ((int)&loc_61A80 / a5 + 1) - v14;
+  result = a7 + a3 + 10 * v12 / (0x61A80 / a5 + 1) - v14;
   *a10 = result;
   return result;
 }

@@ -2554,7 +2554,7 @@ void sub_968D1(int a1, int16_t *a2)
   ServiceAudioTick_FE8BE(v2, (uint8_t*)dword_1930D4, a1, a2);
   sub_82348();
   sub_72A65();
-  dword_193118 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_14C05 + 3);
+  dword_193118 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0x14C05 + 3);
   dword_19C458 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 48);
   memset(dword_19C458, 0, 48);
   v3 = 0;
@@ -5237,7 +5237,7 @@ unsigned int sub_9953F(_WORD *a1, int a2)
   unsigned int result; // eax
 
   result = sub_11438B(
-             102 - **(_WORD **)(dword_19C598 + 52) - 2,
+             102 - *(_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 52) - 2,
              55 * a2 + 84 - *(_WORD *)(*(_DWORD *)(dword_19C598 + 52) + 2) - 2,
              100,
              55 * a2 + 82,
@@ -5257,7 +5257,7 @@ unsigned int sub_9958B(_WORD *a1, int a2)
   result = sub_11438B(
              102,
              55 * a2 + 84 - *(_WORD *)(*(_DWORD *)(dword_19C598 + 52) + 2),
-             **(_WORD **)(dword_19C598 + 52) + 102,
+             *(_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 52) + 102,
              55 * a2 + 84,
              &unk_179B78,
              0);
@@ -5304,26 +5304,32 @@ void sub_995D1()
   int v31; // eax
   int v32; // esi
 
-  v0 = sub_115383(441, 200, (int)&unk_179B78, *(_WORD **)(dword_19C598 + 4), (int)&word_182306, 0, &unk_179B78, 41);
-  v1 = *(_WORD **)(dword_19C598 + 8);
+  /* PORT (vlna 98): pole struktury `dword_19C598` drzi UKAZATELE ve
+     CTYRBAJTOVYCH slotech (plni je `sub_9D252`: `*(_DWORD *)(dword_19C598 + 4) = v3`),
+     takze cteni pres `**` by na x64 vzalo osm bajtu a horni pulku by melo ze
+     sousedniho pole - presne tim padal PLANETS (`a4 = 0xFFFFFFFFFFFFFFFF` v
+     sub_114FBA:5523). Vlna 97 opravila tvary se jmenem globalu, tady byly
+     jeste dva pres MEZILOKALKU (`v7 = dword_19C598;`). */
+  v0 = sub_115383(441, 200, (int)&unk_179B78, (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 4), (int)&word_182306, 0, &unk_179B78, 41);
+  v1 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 8);
   *(_WORD *)(dword_19C598 + 56) = v0;
   v2 = sub_115383(501, 200, (int)&unk_179B78, v1, (int)&word_182306, 1, &unk_179B78, 41);
-  v3 = *(_WORD **)(dword_19C598 + 12);
+  v3 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 12);
   *(_WORD *)(dword_19C598 + 58) = v2;
   v4 = sub_115383(567, 200, (int)&unk_179B78, v3, (int)&word_182306, 2, &unk_179B78, 41);
-  v5 = *(_WORD **)(dword_19C598 + 16);
+  v5 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 16);
   *(_WORD *)(dword_19C598 + 60) = v4;
   v6 = sub_11523B(441, 266, (int)&unk_179B78, v5, (int)&off_18230E, a1_2, 41);
   v7 = dword_19C598;
   *(_WORD *)(dword_19C598 + 62) = v6;
-  v8 = sub_11523B(441, 289, (int)&unk_179B78, *(_WORD **)(v7 + 20), (int)&word_182308, a2_2, 41);
-  v9 = *(_WORD **)(dword_19C598 + 24);
+  v8 = sub_11523B(441, 289, (int)&unk_179B78, (_WORD *)(intptr_t)*(uint32_t *)(v7 + 20), (int)&word_182308, a2_2, 41);
+  v9 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 24);
   *(_WORD *)(dword_19C598 + 64) = v8;
   v10 = sub_11523B(441, 312, (int)&unk_179B78, v9, (int)&word_18230A, a3, 41);
-  v11 = *(_WORD **)(dword_19C598 + 28);
+  v11 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 28);
   *(_WORD *)(dword_19C598 + 66) = v10;
   v12 = sub_11523B(441, 335, (int)&unk_179B78, v11, (int)&word_18230C, a4, 41);
-  v13 = *(_WORD **)(dword_19C598 + 32);
+  v13 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 32);
   *(_WORD *)(dword_19C598 + 68) = v12;
   v14 = sub_11523B(441, 358, (int)&unk_179B78, v13, (int)&off_18230E + 2, a5, 41);
   v15 = dword_19C598;
@@ -5367,8 +5373,8 @@ void sub_995D1()
         v25 = dword_19C598;
         *(_WORD *)(dword_19C598 + 2 * v23 + 76) = v24;
       }
-      v26 = (uint16_t)sub_1151B0(422, 16, (int)&unk_179B78, *(_WORD **)(v25 + 36), asc_179B87, 40);
-      v27 = *(_WORD **)(dword_19C598 + 40);
+      v26 = (uint16_t)sub_1151B0(422, 16, (int)&unk_179B78, (_WORD *)(intptr_t)*(uint32_t *)(v25 + 36), asc_179B87, 40);
+      v27 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 40);
       *(_WORD *)(dword_19C598 + 124) = v26;
       v28 = (uint16_t)sub_1151B0(421, 448, (int)&unk_179B78, v27, &off_179B89, 40);
       v29 = dword_19C598 + 130;
@@ -5379,7 +5385,7 @@ void sub_995D1()
                                 454,
                                 440,
                                 (int)&unk_179B78,
-                                *(_WORD **)(dword_19C598 + 44),
+                                (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 44),
                                 (_BYTE *)&off_179B89 + 2,
                                 40);
       v31 = dword_19C598;
@@ -5817,7 +5823,9 @@ void sub_9A125()
     v3 = *(int16_t *)(dword_19C5A0 + 28 * (i + v5) + 10);
     if ( v3 != -1 )
     {
-      v4 = *(int16_t **)(dword_19C594
+      /* vlna 98: tabulka `dword_19C594` drzi ukazatele ve CTYRBAJTOVYCH slotech
+         (nasobi se 4), cteni pres `**` by vzalo osm bajtu - viz vlna 97. */
+      v4 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C594
                        + 4
                        * (int16_t)(*(uint8_t *)(17 * v3 + (uint8_t*)dword_1930D4 + 5)
                                  + 5 * *(uint8_t *)(17 * v3 + (uint8_t*)dword_1930D4 + 8)));
@@ -7740,7 +7748,7 @@ LABEL_33:
         sub_1210FD(v43, v63, (int)v49);
         if ( *(char *)(v36 + dword_19C5A0 + 26) >= 0 )
           sub_12A478(
-            102 - **(_WORD **)(dword_19C598 + 52),
+            102 - *(_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 52),
             word_1822B8[(int16_t)v69] + 84 - *(_WORD *)(*(_DWORD *)(dword_19C598 + 52) + 2),
             *(_DWORD *)(dword_19C598 + 52));
         if ( *(char *)(dword_19C5A0 + 28 * (int16_t)v65 + 27) >= 0 )
@@ -8022,7 +8030,7 @@ int sub_9C9F2( int a1)
 int sub_9CA34(int a1, int a2)
 {
   return sub_12A478(
-           102 - **(_WORD **)(dword_19C598 + 52),
+           102 - *(_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 52),
            word_1822B8[a2] + 84 - *(_WORD *)(*(_DWORD *)(dword_19C598 + 52) + 2),
            *(_DWORD *)(dword_19C598 + 52));
 }

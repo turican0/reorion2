@@ -139,8 +139,8 @@ int sub_10D041( int a1)
   int v9; // [esp+68h] [ebp+E2h]
   int v10; // [esp+6Ch] [ebp+E6h]
 
-  sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  v1 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
+  sub_1112EC(dword_192ED4, 0x7C830);
+  v1 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7((int)v1);
   sub_249F9(aBilltextLbx_2, 2, (char *)v5, 256);
   sub_24E73(256);
@@ -194,8 +194,8 @@ int sub_10D0DA(int64_t a1, int a2)
   int v10; // [esp+100h] [ebp-4h]
 
   v10 = a2;
-  sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  LODWORD(a1) = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
+  sub_1112EC(dword_192ED4, 0x7C830);
+  LODWORD(a1) = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7(a1);
   sub_249F9(aBilltextLbx_2, 3, (char *)v4, 256);
   sub_24E27();
@@ -250,8 +250,8 @@ int sub_10D167( int a1, int a2, int a3)
   int v13; // [esp+100h] [ebp-4h] BYREF
 
   v13 = a2;
-  sub_1112EC(dword_192ED4, (int)&loc_7C830);
-  v4 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
+  sub_1112EC(dword_192ED4, 0x7C830);
+  v4 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7((int)v4);
   sub_249F9(aBilltextLbx_2, 0, (char *)v7, 256);
   sub_24D83();
@@ -757,7 +757,7 @@ int sub_10DB69(int a1, int16_t *a2)
   _DWORD *v2; // eax
 
   sub_131970();
-  v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, (int)&loc_7C830);
+  v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7((int)v2);
   sub_10D1FC(word_19999C);
   sub_10DC12(0, 255, a1, a2);

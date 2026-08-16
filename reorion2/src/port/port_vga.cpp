@@ -1,4 +1,5 @@
 #include "port_vga.h"
+#include "port_memory.h"
 
 extern "C" void PortWatchdog_Ping(void);
 // Emulace preruseni od myshi - viz komentar v Present() a port_dos.cpp.
@@ -715,6 +716,10 @@ void PortVga_BlitBackBuffer(const void* backBuffer)
 
 void PortVga_CaptureBlit(const void* backBuffer)
 {
+    // PORT (vlna 99): s REORION2_MEM_GUARD=1 se po kazdem blitu overi strazni
+    // bajty vsech zivych hernich alokaci. Prestrel se tim chyti u toho bloku,
+    // ktery ho zpusobil, misto aby vyplaval az za dlouho v ntdll pri cizim free().
+    Port::Memory::CheckGuards("blit");
     static bool s_checked = false;
     static std::string s_dir;
     static int s_written = 0;

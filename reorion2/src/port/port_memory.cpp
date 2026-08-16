@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+extern "C" void PortDebug_CrashLog(const char* fmt, ...);
 #include <cstring>
 #include <unordered_map>
 #include <mutex>
@@ -42,6 +43,34 @@ bool FitsBudgetLocked(std::size_t size)
 
 } // namespace
 
+// PORT (vlna 99): STRAZNI BAJTY kolem hernich alokaci.
+// Herni pamet jde pres std::malloc, tedy pres SKUTECNOU haldu procesu - kdyz
+// dekompilovany kod prestreli buffer, poskodi metadata haldy a Windows to
+// nahlasi az pri nejakem pozdejsim free() UPLNE JINDE (typicky
+// ntdll!RtlpFreeHeap na cizim vlakne - presne tak to vypadalo u FLEETS).
+// S REORION2_MEM_GUARD=1 se kolem kazdeho bloku alokuje 32 B vzoru 0xAB a
+// pri uvolneni (nebo na vyzadani) se rekne, KTERY blok prestrelil - i s tagem.
+static std::size_t g_guard = 0;   // 0 = vypnuto
+static const unsigned char kGuardByte = 0xAB;
+
+static void FillGuards(unsigned char* raw, std::size_t size)
+{
+    if (!g_guard) return;
+    std::memset(raw, kGuardByte, g_guard);
+    std::memset(raw + g_guard + size, kGuardByte, g_guard);
+}
+
+// 0 = v poradku, -1 = poskozena predni straz, +1 = zadni
+static int TestGuards(const unsigned char* raw, std::size_t size)
+{
+    if (!g_guard) return 0;
+    for (std::size_t i = 0; i < g_guard; ++i)
+        if (raw[i] != kGuardByte) return -1;
+    for (std::size_t i = 0; i < g_guard; ++i)
+        if (raw[g_guard + size + i] != kGuardByte) return 1;
+    return 0;
+}
+
 void Init()
 {
     std::lock_guard<std::mutex> lock(g_mutex);
@@ -51,6 +80,9 @@ void Init()
 
     // Volitelny prepis rozpoctu (v bajtech) - pro ladeni shody s DOSBox
     // referenci nebo simulaci mensiho stroje.
+    if (std::getenv("REORION2_MEM_GUARD"))
+        g_guard = 32;   // vlna 99: strazni bajty kolem kazde alokace
+
     if (const char* env = std::getenv("REORION2_MEM_BUDGET")) {
         const unsigned long long v = std::strtoull(env, nullptr, 0);
         if (v > 0)
@@ -90,9 +122,11 @@ void* Alloc(std::size_t size, const char* debugTag)
             return nullptr;
     }
 
-    void* ptr = std::malloc(size);
-    if (!ptr)
+    unsigned char* raw = static_cast<unsigned char*>(std::malloc(size + 2 * g_guard));
+    if (!raw)
         return nullptr;
+    FillGuards(raw, size);
+    void* ptr = raw + g_guard;
 
     std::lock_guard<std::mutex> lock(g_mutex);
     if (g_trackingEnabled) {
@@ -111,11 +145,20 @@ void Free(void* ptr)
     if (g_trackingEnabled) {
         auto it = g_liveAllocations.find(ptr);
         if (it != g_liveAllocations.end()) {
+            if (g_guard) {
+                unsigned char* raw = static_cast<unsigned char*>(ptr) - g_guard;
+                int bad = TestGuards(raw, it->second.size);
+                if (bad)
+                    std::fprintf(stderr, "Port::Memory: PRESTRELENY BLOK %p (%zu B, tag=%s) - %s straz\n",
+                                 ptr, it->second.size,
+                                 it->second.debugTag ? it->second.debugTag : "?",
+                                 bad < 0 ? "predni" : "zadni");
+            }
             g_liveBytes -= it->second.size;
             g_liveAllocations.erase(it);
         }
     }
-    std::free(ptr);
+    std::free(g_guard ? static_cast<unsigned char*>(ptr) - g_guard : ptr);
 }
 
 void* Realloc(void* ptr, std::size_t newSize, const char* debugTag)
@@ -138,6 +181,15 @@ void* Realloc(void* ptr, std::size_t newSize, const char* debugTag)
             return nullptr;
     }
 
+    if (g_guard) {
+        // pod strazemi nejde volat realloc primo - blok ma jiny zacatek
+        void* fresh = Alloc(newSize, debugTag);
+        if (!fresh)
+            return nullptr;
+        std::memcpy(fresh, ptr, oldSize < newSize ? oldSize : newSize);
+        Free(ptr);
+        return fresh;
+    }
     void* newPtr = std::realloc(ptr, newSize);
     if (!newPtr)
         return nullptr; // puvodni ptr dle realloc kontraktu zustava platny
@@ -152,6 +204,36 @@ void* Realloc(void* ptr, std::size_t newSize, const char* debugTag)
         g_liveBytes += newSize;
     }
     return newPtr;
+}
+
+// PORT (vlna 99): projde VSECHNY zive bloky a nahlasi prvni, ktery ma
+// poskozenou straz. Volat po podezrelem useku (napr. po vykresleni
+// obrazovky) - rekne jmeno a velikost bloku, ktery se prestrelil, misto aby
+// se chyba projevila az za dlouho v ntdll pri cizim free().
+// Bez REORION2_MEM_GUARD=1 nedela nic a vraci 0.
+int CheckGuards(const char* where)
+{
+    if (!g_guard)
+        return 0;
+    std::lock_guard<std::mutex> lock(g_mutex);
+    int damaged = 0;
+    for (const auto& [ptr, info] : g_liveAllocations) {
+        const unsigned char* raw = static_cast<const unsigned char*>(ptr) - g_guard;
+        int bad = TestGuards(raw, info.size);
+        if (!bad)
+            continue;
+        ++damaged;
+        if (damaged == 1) {
+            std::fprintf(stderr, "Port::Memory[%s]: PRESTRELENY BLOK %p (%zu B, tag=%s) - %s straz\n",
+                         where ? where : "?", ptr, info.size,
+                         info.debugTag ? info.debugTag : "?", bad < 0 ? "predni" : "zadni");
+            std::fflush(stderr);
+            PortDebug_CrashLog("MEM[%s]: prestreleny blok %p (%zu B, tag=%s) - %s straz",
+                               where ? where : "?", ptr, info.size,
+                               info.debugTag ? info.debugTag : "?", bad < 0 ? "predni" : "zadni");
+        }
+    }
+    return damaged;
 }
 
 std::size_t GetLiveBytes()

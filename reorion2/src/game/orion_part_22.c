@@ -2865,7 +2865,7 @@ _DWORD *sub_14BC40(unsigned int a1, int a2, _DWORD *a3)
       v13 = -v12;
     v3[256] = v13;
     if ( v13 )
-      v14 = 100000 / v3[256]; // FIX: was (unsigned int)&loc_186A0 -- decompiler
+      v14 = 100000 / v3[256]; // FIX: was 0x186A0 -- decompiler
                               // emitted address-of-label for the immediate 0x186A0
                               // (100000); in the 64-bit rebuild that's a real
                               // (unrelated) code address, not the constant.
@@ -3278,7 +3278,7 @@ char sub_14C4C0(_DWORD *a1, unsigned int a2)
   memset32((void *)a1[a2 + 257], v12, 0x1Du);
   *(_DWORD *)(a1[a2 + 257] + 28) = (unsigned int)(a1[256] << 7)
                                  * (uint64_t)(unsigned int)v20
-                                 / 100000u; // FIX: was (unsigned int)&loc_186A0
+                                 / 100000u; // FIX: was 0x186A0
                                             // -- same decompiler artifact, this
                                             // is an audio track duration/buffer
                                             // calc (units of 100000 = 1e5).

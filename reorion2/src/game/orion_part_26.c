@@ -1861,10 +1861,10 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   {
     if ( (dword_18A6AC & 1) != 0 )
     {
-      dword_18A650 = (int)&loc_164A90;
-      dword_18A654 = (int)&loc_164DF0;
-      dword_18A658 = (int)&loc_167084;
-      dword_18A65C = (int)&loc_165600;
+      dword_18A650 = 0x164A90;
+      dword_18A654 = 0x164DF0;
+      dword_18A658 = 0x167084;
+      dword_18A65C = 0x165600;
     }
     else
     {
@@ -1879,10 +1879,10 @@ _BYTE *sub_167320(unsigned int *a1, int a2, int a3)
   {
     if ( (dword_18A6AC & 1) != 0 )
     {
-      dword_18A650 = (int)&loc_166540;
-      dword_18A654 = (int)&loc_166880;
-      dword_18A658 = (int)&loc_167084;
-      dword_18A65C = (int)&loc_1671E0;
+      dword_18A650 = 0x166540;
+      dword_18A654 = 0x166880;
+      dword_18A658 = 0x167084;
+      dword_18A65C = 0x1671E0;
     }
     else
     {

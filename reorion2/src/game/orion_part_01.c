@@ -4373,7 +4373,7 @@ void sub_14DF7(int a1, int a2, int a3)
   sub_132646(a1, byte_199BEF, a2);
   word_19A01E = (640 - sub_1327A3()) / 2;
   v5 = 480 - sub_132762();
-  if ( (0x100000 & a2) != 0 ) // FIX: was ((unsigned int)&loc_100000 & a2) -- same
+  if ( (0x100000 & a2) != 0 ) // FIX: was (0x100000 & a2) -- same
                               // decompiler address-of-label artifact as in
                               // sub_14BC40; this checks flag bit 0x100000 in a2,
                               // not a real pointer.
@@ -9486,9 +9486,9 @@ void sub_1B92E(int16_t *a1)
   dword_19A2B8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 40);
   dword_19A2D8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 20);
   dword_19A4E8 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 20);
-  v34 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, (int)&loc_7C830);
+  v34 = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0x7C830);
   v35 = sub_12D7B7((int)v34);
-  sub_1F37C(v35, (int)&loc_7C830, v4, a1);
+  sub_1F37C(v35, 0x7C830, v4, a1);
   word_19AA3C = *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a1 + 37) + 1;
   word_19AA44 = -1;
   word_19AA46 = sub_1247A0(3u) + 13;

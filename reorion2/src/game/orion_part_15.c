@@ -8617,7 +8617,7 @@ void sub_F03F2(int a1)
                               *(_WORD **)(v1 + 115),
                               (_BYTE *)&off_17A06B + 2,
                               40);
-    v12 = *(_WORD **)(dword_192680 + 111);
+    v12 = (_WORD *)(intptr_t)*(uint32_t *)(dword_192680 + 111);
     *(_WORD *)(dword_192680 + 223) = v11;
     *(_WORD *)(dword_192680 + 225) = (uint16_t)sub_1151B0(
                                                          v2 + 255,
@@ -8713,7 +8713,7 @@ int sub_F0801()
                            *(_WORD *)(dword_192680 + 243) + 158,
                            *(_WORD *)(dword_192680 + 245) + 106,
                            (int)&unk_17A061,
-                           *(_WORD **)(dword_192680 + 143),
+                           (_WORD *)(intptr_t)*(uint32_t *)(dword_192680 + 143),
                            aS_21,
                            40);
   result = dword_192680;
@@ -8821,10 +8821,10 @@ int sub_F0943(int a1)
     v12 = a1 + 81;
     v13 = a1 + 124;
     v14 = sub_11438B(v3 + 289, v12, v3 + 367, v11, &unk_17A061, 41);
-    v15 = *(_WORD **)(dword_192680 + 115);
+    v15 = (_WORD *)(intptr_t)*(uint32_t *)(dword_192680 + 115);
     *(_WORD *)(dword_192680 + 169) = v14;
     v16 = (uint16_t)sub_1151B0(v3 + 59, v13, (int)&unk_17A061, v15, (_BYTE *)&off_17A06B + 2, 40);
-    v17 = *(_WORD **)(dword_192680 + 111);
+    v17 = (_WORD *)(intptr_t)*(uint32_t *)(dword_192680 + 111);
     *(_WORD *)(dword_192680 + 223) = v16;
     *(_WORD *)(dword_192680 + 225) = (uint16_t)sub_1151B0(
                                                          v3 + 253,

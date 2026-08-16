@@ -10689,3 +10689,117 @@ potvrzeni patri uzivateli. Pozor: ozivenim `sub_1031AA` (vlna 95) se rozbehl
 cely retezec `sub_103D53` -> `sub_103F5D` -> `sub_104292` -> ..., ktery v portu
 nikdy nebezel, takze tam muze byt dalsich chyb vic za sebou. Kazdy dalsi pad uz
 ale ma citelny zasobnik nebo aspon radek v `reorion2_crash.log`.
+
+### Vlna 97: PLANETS - osmibajtove cteni ctyrbajtoveho slotu ve strukture
+
+Uzivateluv pad v menu PLANETS, zasobnik citelny:
+
+    sub_114FBA (radek 5523)   <- `*a4`, kde a4 = 0xFFFFFFFFFFFFFFFF
+    sub_115383 (5620) / sub_995D1 (5307) / sub_9D252 (8501) / sub_1049B (422)
+
+`sub_995D1` predava ctvrty argument takhle:
+
+```c
+sub_115383(441, 200, (int)&unk_179B78, *(_WORD **)(dword_19C598 + 4), ...)
+```
+
+Struktura `dword_19C598` (277 B z herniho poolu) se ale PLNI po ctyrech
+bajtech - `*(_DWORD *)(dword_19C598 + 4) = v3;` (`sub_9D252`, radek 6186).
+Cteni pres `**` si na x64 vezme OSM bajtu, takze horni pulku vezme ze
+sousedniho pole; kdyz jsou obe -1, vyjde presne 0xFFFFFFFFFFFFFFFF.
+
+To je katalogova chyba "sirka ukazatele", jen v podobe, ktera se hleda hur -
+zapis i cteni jsou od sebe dva soubory daleko.
+
+#### Oprava (davkove, `tools/ptrwidth_fix.py`)
+
+    *(_WORD **)(dword_19C598 + 4)
+    -> (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 4)
+
+Skript resi ZAMERNE jen tvar `*(T **)(dword_XXXXXX [+ N])`, tedy globalni
+ukazatel na herni strukturu. Tvary jako `*(T **)((char *)&retaddr + 2)` jsou
+neco jineho (predavani argumentu pres zasobnik) a nechava je byt.
+
+Opraveno **59 mist** v sesti souborech:
+
+| soubor | mist |
+|---|---|
+| orion_part_07.c | 19 |
+| orion_part_09.c | 13 |
+| orion_part_13.c | 4 |
+| orion_part_15.c | 4 |
+| orion_part_17.c | 18 |
+| orion_part_23.c | 1 |
+
+Osmnact mist v `orion_part_17.c` jsou cteni z bloku `dword_1ACF14`, ktery
+prave vlna 96 prevedla na skutecny 91bajtovy blok - tam by osmibajtove cteni
+bralo bajty 2..9 misto 2..5, takze i tahle oprava je nutna pro to, aby vlna 96
+fungovala.
+
+Ze je pretypovani 32bitove hodnoty zpet na ukazatel bezpecne, plyne z mereni
+vlny 95 (zasobnik 0x4FFBF0, kod 0x753014 - vse pod 2 GB).
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**.
+
+#### Poznamka k pracovnimu postupu (pokyn uzivatele)
+
+Ladici behy portu poustet vzdy s `REORION2_SKIPINTRO=1` - intro trva pres
+minutu a zdrzuje kazdou iteraci. Regresni brana intro potrebuje (porovnava
+prave jeho snimky), takze ta se poustí uz jen pred zaverem prace, ne po kazdem
+prekladu.
+
+### Vlna 98: PLANETS a COLONIES otestovany primo v portu (2 dalsi mista "sirky ukazatele")
+
+#### Nejdriv: skriptovane klikani konecne funguje spolehlive
+
+Cela sekce "Testovani" v prirucce mela problem, ze klikani "obcas nevyjde" -
+zvlast ACCEPT v dialogu "Enter Home Star Name" neprosel skoro nikdy. Pricina
+je proste **prilis kratky stisk**: vychozich 150 ms hra v dialozich nestihne
+zaznamenat.
+
+    REORION2_CLICK_HOLD=500
+
+S touhle jednou promennou projde cela cesta NEW GAME -> rasa -> jmeno vladce ->
+vlajka -> mapa -> COLONIES / PLANETS na prvni pokus. Doporucuji ji davat do
+kazdeho skriptovaneho behu.
+
+#### Dva dalsi vyskyty chyby z vlny 97
+
+Vlna 97 opravila tvar `*(T **)(dword_XXXXXX + N)`. Skutecny beh ukazal dva
+tvary, ktere ten filtr minul:
+
+1. **baze pres mezilokalku** - `v7 = dword_19C598;` a pak
+   `*(_WORD **)(v7 + 20)` (`orion_part_09.c`, dve mista). Presne tohle drzelo
+   pad v `sub_114FBA:5523` (`a4 = 0xFFFFFFFFFFFFFFFF`) i po vlne 97.
+2. **offset je vyraz, ne konstanta** -
+   `*(int16_t **)(dword_19C594 + 4 * (...))` - tabulka obrazku planet, kde uz
+   to `4 *` samo rika, ze prvek ma ctyri bajty.
+
+Obojí opraveno stejne: `(T *)(intptr_t)*(uint32_t *)(...)`.
+
+#### Vysledek - obe obrazovky funguji
+
+* **COLONIES** se otevre, vykresli tabulku i s panackama farmaru/delniku a
+  RETURN vrati na mapu - bez padu.
+* **PLANETS** se vykresli kompletni: `Sol / Barren / Heavy G -50% prod /
+  Ultra Rich 246 prod/worker / Medium 45 max pop`, k tomu SORT PRIORITY,
+  DISPLAY RESTRICTIONS a tlacitka. Vsechny ty retezce jdou prave z tabulek
+  slucovanych ve vlne 91 - je to jejich prvni viditelne potvrzeni.
+
+#### Co zbyva
+
+* **~82 dalsich mist** tvaru `*(T **)(<lokalka> + N)`. Davkove to jde az
+  s parovanim zavorek (rozpracovano v `tools/ptrwidth_fix.py`); pozor, ze u
+  lokalky muze jit i o legitimni ukazatel, kde `+ N` je krok pole - proto to
+  chce projit oci, ne slepe nahradit.
+* Kosmetika: ve sloupci CLIMATE na obrazovce PLANETS se text kresli dvakrat
+  mirne pres sebe.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- COLONIES i PLANETS proklikane primo v portu, `reorion2_crash.log` nevznikl.
