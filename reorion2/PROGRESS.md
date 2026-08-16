@@ -10899,3 +10899,100 @@ tataz pricina.
 - `-t:Rebuild` bez chyb;
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - COLONIES i PLANETS dal funguji (proklikane po techto zmenach).
+
+### Vlna 101: FLEETS - rekonstrukce konvence `sub_77048` a ctyri dalsi nalezy
+
+Cil: rozchodit obrazovku FLEETS. Kazda oprava odkryla dalsi chybu (je to kod,
+ktery v portu nikdy nebezel), takze tahle vlna je retez peti nalezu.
+
+#### 0. Nejdriv nastroj: vypis zasobniku byl od vlny 92 UMLCENY
+
+`DebugVectoredHandler` mel rozvinuti zasobniku pod podminkou
+`if (SymInitialize(process, nullptr, TRUE))`. Jenze `SymInitialize` vraci FALSE,
+kdyz uz je pro proces inicializovano - a od vlny 92 je, protoze o par radku vys
+se vola `PortDebug_Symbolize`. Cely vypis se tim ztratil prave u padu v CRT
+(`memcpy`), kde je nejpotrebnejsi. Opraveno; ted pad vypada takhle:
+
+    SYMBOL SEH.rip = sub_77FF5+0xca  (orion_part_06.c:5312)
+      #0 sub_77FF5+0xca   (orion_part_06.c:5312)
+      #1 sub_734F1+0x284  (orion_part_06.c:1283)
+      #2 sub_72F92+0x137  (orion_part_06.c:1000)
+      ...
+
+#### 1. `sub_77048` - IDA vymyslela 27 argumentu, funkce ma CTYRI
+
+Prolog:
+
+```
+enter 14Ch, 0 / push eax / push edx / push ebx / push ecx / sub ebp, 82h
+```
+
+Po tom posunu baze vypadaji ZAPORNE offsety uvnitr ramce jako kladne
+`arg_46`..`arg_6E`, takze je IDA prohlasila za argumenty - a volajicim dopsala
+neinicializovana pole (`v33[25]`, `v5[...]`). Overeno na vsech ctyrech
+volanich (0x73A78, 0x7412F, 0x75DC7, 0x94D63): **pred `call` se nepushne ani
+jeden dword**, nastavi se jen ctyri registry.
+
+* signatura zmenena na `sub_77048(int a1, int a2, int a3, int a4)`,
+* z pseudo-argumentu se pouzivaly jen `a26`/`a27` a to jako BYREF vystupy -
+  jsou to lokalky, tak jsou i deklarovane,
+* volani doplnena skutecnymi hodnotami: 3x `(15, 52, 305, 182)` v
+  `orion_part_06.c`, 1x `(306, 235, 318, 169)` v `orion_part_09.c` (FLEETS).
+
+Ke spillnutym registrum uvnitr funkce (v43/v42/v41/v40) viz vlna 100.
+
+#### 2. `sub_734F1` - cely `int` misto znamenkove rozsirene pulky
+
+```
+call sub_78889 / movsx edx, ax / mov [ebp+var_20], eax / mov eax, edx / call sub_77FF5
+```
+
+Port predaval `sub_77FF5(v3)`, kde `v3` mel horni pulku neinicializovanou
+(`LOWORD(v3) = sub_78889(i);`). S tou smetim vyslo `129 * a1` mimo tabulku lodi
+a kontrola spadla na cteni. Opraveno na `sub_77FF5(v4)` (= `(int16_t)v3`).
+
+#### 3. `sub_5869B` - zahozeny ukazatel na sprite lodi
+
+asm konci `call sub_127C27 / pop ebx` a **propadne do jednobajtove funkce
+`nullsub_3` (pouhe `retn`)**, takze se vraci EAX ze `sub_127C27` - ukazatel na
+sprite. IDA z toho udelala `return nullsub_3(v3)`, cimz se ukazatel zahodil a
+volajici `sub_732D6` dereferencoval NULL. Opraveno na `return v3;`.
+
+#### 4. `sub_5685F` - REKONSTRUOVANA z asm (IDA to vzdala)
+
+IDA nechala `void` funkci s prazdnou smyckou a poznamkou "conditional
+instruction was optimized away". Ve skutecnosti je to vyhledavani, ktere vraci
+index v EAX (asm 0x5685F: smycka `edx = 2..6` nad tabulkou `word_17F63E` s
+krokem 15 bajtu, plus dve zvlastni vetve pro `a1 >= 8`). Napsana znovu podle
+asm.
+
+Bez ni `sub_5F2F6` (ktera navic zahazovala obe navratove hodnoty `sub_5685F` do
+neinicializovanych lokalek `v6`/`v7`) vracela 0 a `sub_702EA` delila nulou.
+
+#### 5. Zachranne brzdy (nejsou opravy)
+
+* `sub_911D5`: pri nulovem deliteli jednou nahlasi a vrati se (vlna 100),
+* `sub_14852C`: RLE blit overi, ze cil lezi ve framebufferu; jinak jednou
+  nahlasi `x`, `y`, ukazatel na sprite a volajiciho a nekresli.
+
+Druha z nich hlasi `x=-9, y=20307` - tedy nekdo do kreslení lodi porad posila
+nesmyslne Y.
+
+#### Kam se to posunulo
+
+FLEETS uz **nepada v CRT ani na deleni nulou**. Beh dojde tam, kde se ozve
+VLASTNI kontrola hry:
+
+    KONEC (sub_126487): ERROR: Bad Rect in Add_Hidden_Field
+
+To je stejny druh hlaseni jako "Memory Corruption!" ve vlne 86 - hra sama rika,
+ze dostala neplatny obdelnik, a je to tataz pricina jako to `y=20307` z brzdy.
+Dalsi krok je najit, odkud ta souradnice leze (okoli `sub_732D6` /
+`sub_72F92`).
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- COLONIES i PLANETS dal funguji, mapa se kresli;
+- FLEETS jeste ne - konci na `ERROR: Bad Rect in Add_Hidden_Field`.

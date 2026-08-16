@@ -3079,19 +3079,47 @@ int sub_5680D( int a1)
 
 
 //----- (0005685F) --------------------------------------------------------
-void sub_5685F( int a1)
-{
-  int16_t i; // dx
+/* PORT (vlna 101): IDA to vzdala ("conditional instruction was optimized away")
+   a nechala tu prazdnou smycku ve `void` funkci. Rekonstruovano z asm 0x5685F:
 
-  if ( a1 < 8 )
+     ebx = 1
+     cmp ax, 8 / jge loc_568AF
+       edx = 2
+     loc_56877:
+       ecx = 0EA9h * ax                 ; 3753 * hrac
+       esi = dword_18FF98 + ecx
+       ecx = 0Fh * dx
+       esi = word_17763E[ecx] + esi     ; bajtovy offset, krok 15
+       cmp byte [esi+117h], 3 / jnz / mov ebx, edx
+       inc edx / cmp dx, 7 / jl loc_56877
+     loc_568AF:
+       jb konec / cmp ax, 9 / jbe -> ebx = 6
+                  cmp ax, 0Eh / jbe -> ebx = 0
+     konec: mov eax, ebx
+
+   Vraci tedy index (v EAX). Ze byla `void`, se projevilo az na obrazovce FLEETS:
+   volajici `sub_5F2F6` z ni dela delitele a s neinicializovanou lokalkou vyslo 0
+   -> deleni nulou v `sub_702EA`. */
+int16_t sub_5685F(int a1)
+{
+  int16_t result = 1;
+  int16_t i;
+
+  if ( (int16_t)a1 < 8 )
   {
     for ( i = 2; i < 7; ++i )
-      ;
+    {
+      if ( *((uint8_t*)dword_197F98 + 3753 * (int16_t)a1
+             + *(int16_t *)((char *)word_17F63E + 15 * i) + 279) == 3 )
+        result = i;
+    }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x56807 je epilog funkce */
+  else if ( (uint16_t)a1 <= 9 )
+    result = 6;
+  else if ( (uint16_t)a1 <= 0xE )
+    result = 0;
+  return result;
 }
-// 568CA: control flows out of bounds to 56807
-// 568AF: conditional instruction was optimized away because ax.2>=8
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
@@ -4844,7 +4872,13 @@ int sub_5869B( int a1, int a2)
   else
     v2 = 8;
   v3 = sub_127C27((int)aShipsLbx, 50 * v2 + a2, dword_193174);
-  return nullsub_3(v3);
+  /* PORT (vlna 101): `nullsub_3` je JEDNOBAJTOVA funkce (`retn`) HNED ZA
+     `sub_5869B` - asm konci `call sub_127C27 / pop ebx` a propadne do ni,
+     takze se vraci EAX ze `sub_127C27`, tedy UKAZATEL NA SPRITE LODI.
+     IDA z toho udelala `return nullsub_3(v3)`, cimz se ukazatel zahodil a
+     volajici (`sub_732D6`) dereferencoval NULL - zmereno na obrazovce FLEETS
+     (SEH sub_732D6+0xf8, cteni z 0x0). */
+  return v3;
 }
 // 586D3: using guessed type int nullsub_3(_DWORD);
 // 193174: using guessed type int dword_193174;
@@ -11238,10 +11272,14 @@ int sub_5F2F6( int a1, int a2, int a3, int a4)
     v4 = 129 * a1;
     v5 = 36 * *(uint8_t *)(v4 + dword_197F9C + 16);
     LOWORD(v5) = *(int16_t *)((char *)word_180038 + v5);
-    sub_5685F(*(char *)(v4 + dword_197F9C + 99));
+    /* PORT (vlna 101): asm dela `call sub_5685F / test ax, ax` a o kus dal
+       `call sub_5685F / ... 15 * ax`. IDA obe navratove hodnoty ZAHODILA a
+       nechala neinicializovane `v6`/`v7`; s nimi vychazelo `v20 = 0` a
+       volajici `sub_702EA` pak delil nulou (obrazovka FLEETS). */
+    v6 = sub_5685F(*(char *)(v4 + dword_197F9C + 99));
     if ( v6 > 0 )
     {
-      sub_5685F(*(char *)(v4 + dword_197F9C + 99));
+      v7 = sub_5685F(*(char *)(v4 + dword_197F9C + 99));
       return (int16_t)v5 + (int16_t)v5 * *(int16_t *)((char *)&word_17F642 + 15 * v7) / 100;
     }
   }

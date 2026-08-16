@@ -1486,8 +1486,8 @@ extern int sub_56726();
 extern int sub_5679E();
 // plna signatura: int sub_5680D( int a1);
 extern int sub_5680D();
-// plna signatura: void sub_5685F( int a1);
-extern void sub_5685F();
+// plna signatura: int16_t sub_5685F(int a1);   /* vlna 101 */
+extern int16_t sub_5685F();
 // plna signatura: void sub_568EB( int a1);
 extern void sub_568EB();
 // plna signatura: void sub_5699C( int a1);
@@ -2369,7 +2369,7 @@ extern void sub_7670E();
 // plna signatura: int sub_76F22( int a1, int a2, int16_t *a3, int16_t *a4);
 extern int sub_76F22();
 // plna signatura: int sub_77048( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int64_t a26, int a27);
-extern int sub_77048();
+extern int sub_77048();   /* vlna 101: ctyri registrove argumenty */
 // plna signatura: int16_t sub_772C4( int a1);
 extern int16_t sub_772C4();
 // plna signatura: int sub_77393();
@@ -11086,7 +11086,7 @@ int sub_5663E(int16_t a1, int a2);
 int sub_56726(int16_t a1);
 int sub_5679E(int16_t a1);
 int sub_5680D(int16_t a1);
-void sub_5685F(int16_t a1);
+int16_t sub_5685F(int16_t a1);   /* vlna 101: vraci index v EAX */
 void sub_568EB(int16_t a1);
 void sub_5699C(int16_t a1);
 int sub_56A3A(int16_t a1, int16_t a2);
@@ -11529,7 +11529,7 @@ char sub_76127(int16_t a1);
 void sub_761A5();
 void sub_7670E(int16_t a1);
 int sub_76F22(int16_t a1, int16_t a2, int16_t *a3, int16_t *a4);
-int sub_77048(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int64_t a26, int a27);
+int sub_77048(int a1, int a2, int a3, int a4);   /* vlna 101 */
 int sub_772BF(_DWORD, _DWORD, _DWORD, _DWORD); // weak
 int16_t sub_772C4(char a1);
 int sub_77393();

@@ -1276,11 +1276,18 @@ void sub_734F1( int a1)
   {
     if ( (int16_t)i >= word_1999F8 )
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x734A2 je epilog funkce */
-    LOWORD(v3) = sub_78889(i);
+    /* PORT (vlna 101): asm dela
+         call sub_78889 / movsx edx, ax / mov [ebp+var_20], eax
+         mov eax, edx / call sub_77FF5
+       tedy do `sub_77FF5` jde ZNAMENKOVE ROZSIRENA dolni pulka (`v4`),
+       ne cely `v3` s neinicializovanou horni pulkou. S tou smetim vychazelo
+       `129 * a1` mimo tabulku lodi a kontrola `sub_77FF5` spadla na cteni
+       (zmereno: SEH sub_77FF5+0xca <- sub_734F1+0x284). */
+    v3 = (uint16_t)sub_78889(i);
     v4 = (int16_t)v3;
     v15 = v3;
     v5 = 0;
-    v6 = sub_77FF5(v3);
+    v6 = sub_77FF5(v4);
     if ( v6 != word_19999C
       || (v7 = 129 * v4, (uint16_t)sub_78E07(*(int16_t *)(v7 + dword_197F9C + 101)) == word_19999A)
       || *(int16_t *)(v7 + dword_197F9C + 101) < 500
@@ -1555,34 +1562,8 @@ void sub_73980(int a1, int16_t *a2, char *a3)
   word_19991C = -1;
   byte_199F29 = 0;
   word_19BECE = sub_79B73(word_19999C);
-  v3 = sub_77048(
-         v41,
-         v42,
-         v43,
-         v44,
-         v45,
-         v46,
-         v47,
-         v48,
-         v49,
-         v50,
-         v51,
-         v52,
-         v53,
-         v54,
-         v55,
-         v56,
-         v57,
-         v58,
-         v59,
-         v60,
-         v61,
-         v62,
-         v63,
-         v64,
-         v65,
-         v66,
-         v67);
+  /* vlna 101: eax=0Fh, edx=34h, ebx=131h, ecx=0B6h (asm 0x73A78) */
+  v3 = sub_77048(15, 52, 305, 182);
   sub_772BF(v3, 52, 305, 182);
   word_1999BE = -1;
   byte_199F09 = 0;
@@ -1858,34 +1839,7 @@ LABEL_53:
         v25 = 305;
         v24 = 52;
         sub_A0305();
-        sub_77048(
-          v41,
-          v42,
-          v43,
-          v44,
-          v45,
-          v46,
-          v47,
-          v48,
-          v49,
-          v50,
-          v51,
-          v52,
-          v53,
-          v54,
-          v55,
-          v56,
-          v57,
-          v58,
-          v59,
-          v60,
-          v61,
-          v62,
-          v63,
-          v64,
-          v65,
-          v66,
-          v67);
+        sub_77048(15, 52, 305, 182);
         sub_772C4(0);
       }
       word_19991C = -1;
@@ -3549,34 +3503,7 @@ void sub_75D48( int a1)
     {
       sub_FFD08((int16_t *)dword_192B6C, a1, &byte_1992A8);
       sub_A0305();
-      sub_77048(
-        v5[0],
-        v5[1],
-        v5[2],
-        v5[3],
-        v5[4],
-        v5[5],
-        v5[6],
-        v5[7],
-        v5[8],
-        v5[9],
-        v5[10],
-        v5[11],
-        v5[12],
-        v5[13],
-        v5[14],
-        v5[15],
-        v5[16],
-        v5[17],
-        v5[18],
-        v5[19],
-        v5[20],
-        v5[21],
-        v5[22],
-        v5[23],
-        v5[24],
-        v6,
-        v7);
+      sub_77048(15, 52, 305, 182);
       word_1999BE = -1;
       byte_199EFE = 1;
       sub_74E04(0);
@@ -4452,34 +4379,22 @@ int sub_76F22( int a1, int a2, int16_t *a3, int16_t *a4)
 
 
 //----- (00077048) --------------------------------------------------------
-int sub_77048(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int64_t a26,
-        int a27)
+/* PORT (vlna 101): REKONSTRUOVANA KONVENCE. `sub_77048` ma v asm JEN CTYRI
+   REGISTROVE argumenty (eax, edx, ebx, ecx) - zadny volajici pred `call`
+   nepushne ani jeden dword (overeno na vsech ctyrech mistech: 0x73A78,
+   0x7412F, 0x75DC7, 0x94D63).
+
+   Co IDA vydavala za `a5`..`a27`, jsou ve skutecnosti LOKALKY. Prolog dela
+       enter 14Ch, 0 / push eax / push edx / push ebx / push ecx / sub ebp, 82h
+   a po tom posunu baze vypadaji zaporne offsety uvnitr ramce jako kladne
+   `arg_46`..`arg_6E` - IDA je proto povazovala za argumenty a volajicim
+   dopsala neinicializovane pole (`v33[25]`, `v5[...]`). Tim se do funkce
+   dostavaly smeti a `sub_911D5` pak delila nulou (obrazovka FLEETS).
+
+   Z tech pseudo-argumentu se v tele pouzivaji jen `a26` a `a27` - obe jako
+   BYREF vystupy (`&a26 + 1`, `&a27 + 1`), takze jsou to proste lokalni
+   promenne. Zadne pouziti nesaha z jedne do druhe, takze nemusi byt souvisle. */
+int sub_77048(int a1, int a2, int a3, int a4)
 {
   int16_t v27; // si
   int16_t v28; // ax
@@ -4494,6 +4409,8 @@ int sub_77048(
   int16_t v37; // dx
   int v38; // ecx
   int v39; // ecx
+  int64_t a26 = 0;   /* vlna 101: byval pseudo-argument, ve skutecnosti lokalka */
+  int a27 = 0;       /* dtto */
   int16_t v40; // [esp+72h] [ebp-DAh]
   int16_t v41; // [esp+76h] [ebp-D6h]
   int16_t v42; // [esp+7Ah] [ebp-D2h]

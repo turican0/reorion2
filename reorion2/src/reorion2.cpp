@@ -112,7 +112,11 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
         // this, "module=vcruntime140d.dll" alone gives no way to find the bug.
         SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
         HANDLE process = GetCurrentProcess();
-        if (SymInitialize(process, nullptr, TRUE))
+        // PORT (vlna 101): SymInitialize VRACI FALSE, kdyz uz je pro proces
+        // inicializovano - a to od vlny 92 je, protoze PortDebug_Symbolize se
+        // vola o par radku vys. Podminka tim cely vypis zasobniku umlcela,
+        // takze u padu v CRT (memcpy) nebylo videt, kdo ho zavolal.
+        SymInitialize(process, nullptr, TRUE);
         {
             STACKFRAME64 frame = {};
             DWORD machine = IMAGE_FILE_MACHINE_AMD64;

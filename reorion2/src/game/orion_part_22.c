@@ -119,6 +119,26 @@ void sub_14852C(int x, int y, int a2)
               + ((y + *(uint16_t *)(a2 + 2)) << 9)
               + dword_1BB904);
   v3 = a2 + 4;
+  /* PORT (vlna 101): ZACHRANNA BRZDA + sonda. Tenhle RLE blit pise po bajtech
+     primo do framebufferu; kdyz dostane nesmyslny sprite nebo souradnice, zapisuje
+     mimo nej a shodi proces uvnitr memmove (zmereno na FLEETS: zapis na
+     0x18C09404). Framebuffer ma 640*480 B - staci overit, ze zacatek lezi uvnitr,
+     jinak jednou nahlasit a nekreslit. */
+  {
+    const char *fb = (const char *)(intptr_t)dword_1BB904;
+    if ( fb && (v2 < fb || v2 >= fb + 640 * 480) )
+    {
+      static int reported = 0;
+      if ( !reported )
+      {
+        reported = 1;
+        PortDebug_CrashLog("sub_14852C: cil mimo framebuffer (x=%d y=%d sprite=%p odsazeni=%td)",
+                           x, y, (void *)(intptr_t)a2, (ptrdiff_t)(v2 - fb));
+        PortDebug_Symbolize("sub_14852C.volajici", _ReturnAddress());
+      }
+      return;
+    }
+  }
   v4 = *(uint16_t *)(dword_1BC2A8 + 2) - *(uint16_t *)(a2 + 2);
   v5 = v2;
   rc = 0;
