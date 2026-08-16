@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <cstring>
 
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -595,6 +596,23 @@ void PortDebug_Checkpoint(const char* name, int value)
     std::fflush(stderr);
 }
 
+// PORT (vlna 94): pripise radek do `reorion2_crash.log` v aktualnim adresari
+// (a na stderr). Soubor prezije i to, kdyz beh skonci pod debuggerem, kde
+// se konzolovy vypis ztraci - viz vlny 92/93, kde bylo potreba tri kola
+// s uzivatelem jen kvuli tomu, ze hlaska nikam nedosla.
+extern "C" void PortDebug_CrashLog(const char* fmt, ...)
+{
+    va_list ap;
+    FILE* f = std::fopen("reorion2_crash.log", "a");
+    if (f) {
+        va_start(ap, fmt);
+        std::vfprintf(f, fmt, ap);
+        va_end(ap);
+        std::fputc('\n', f);
+        std::fclose(f);
+    }
+}
+
 void PortDebug_Message(const char* text)
 {
     // Vlna 58: hlaska z sub_126487 (JEDINY konec programu) se ztracela.
@@ -604,6 +622,12 @@ void PortDebug_Message(const char* text)
     // jen pad bez duvodu. Tady jde vypis primo na stderr a hned se flushne.
     std::fprintf(stderr, "KONEC (sub_126487): %s\n", text ? text : "(null)");
     std::fflush(stderr);
+    // PORT (vlna 94): tataz hlaska JESTE DO SOUBORU `reorion2_crash.log`.
+    // Pod Visual Studiem uzivatel stderr nevidi, a pritom je hlaska ze
+    // `sub_126487` to JEDINE, co u "Memory Corruption!" rekne, co se rozbilo -
+    // nasledny pad v uklidovem retezu (sub_113DBD -> sub_155E62) ji v
+    // debuggeru prekryje (viz vlny 86 a 92).
+    PortDebug_CrashLog("KONEC (sub_126487): %s", text ? text : "(null)");
 }
 
 int PortDebug_EnvInt(const char* name, int fallback)

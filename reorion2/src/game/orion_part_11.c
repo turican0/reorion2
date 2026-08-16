@@ -495,19 +495,19 @@ char sub_B0CF6(uint8_t* a1, int a2, int a3)
   v75 += v12;
   v54 = *(int *)((char *)&off_17F6A1 + 59 * *(uint8_t *)(a1 + 18));
   v13 = (char *)sub_CDF5C(119);
-  v14 = sprintf(v75, v13, &unk_179D8D, &unk_179D90, v54);
+  v14 = sprintf(v75, v13, &unk_179D8D, &unk_179D90, (char *)(intptr_t)v54);
   v75 += v14;
   v55 = *(int *)((char *)&off_17FDEC + 22 * *(uint8_t *)(a1 + 21));
   v15 = (char *)sub_CDF5C(98);
-  v16 = sprintf(v75, v15, &unk_179D8D, &unk_179D90, v55);
+  v16 = sprintf(v75, v15, &unk_179D8D, &unk_179D90, (char *)(intptr_t)v55);
   v75 += v16;
   v56 = *(int *)((char *)&off_17F638 + 15 * *(uint8_t *)(a1 + 22));
   v17 = (char *)sub_CDF5C(91);
-  v18 = sprintf(v75, v17, &unk_179D8D, &unk_179D90, v56);
+  v18 = sprintf(v75, v17, &unk_179D8D, &unk_179D90, (char *)(intptr_t)v56);
   v75 += v18;
   v57 = *(int *)((char *)&off_17FE70 + 46 * *(uint8_t *)(a1 + 19));
   v19 = (char *)sub_CDF5C(104);
-  v20 = sprintf(v75, v19, &unk_179D8D, &unk_179D90, v57);
+  v20 = sprintf(v75, v19, &unk_179D8D, &unk_179D90, (char *)(intptr_t)v57);
   v75 += v20;
   v21 = (char *)sub_CDF5C(130);
   v22 = sprintf(v75, v21, &unk_179D8D);
@@ -660,7 +660,8 @@ void sub_B124A(int a1)
   sub_120E8C(1);
   sub_120E60(2);
   sub_B0CF6(a1, (int)v2, 0);
-  sub_1031AA((int)v2, 0);
+  /* vlna 95: asm 0xB12A2 - eax=0D4h, edx=072h, ebx=0F8h, ecx=0BAh */
+  sub_1031AA(212, 114, 248, 186, (int)v2, 0);
 }
 
 
@@ -2142,7 +2143,7 @@ _BYTE *sub_B2FFA( int a1)
     word_1828BA = -1;
     v3 = sub_AFC6D(-8);
     v2 = (char *)sub_CDF5C(45);
-    sprintf(&unk_19DA6C, v2, v3, v4);
+    sprintf(&unk_19DA6C, v2, (char *)(intptr_t)v3, v4);
     return &unk_19DA6C;
   }
   return result;
@@ -2500,7 +2501,7 @@ LABEL_17:
       v40 = sub_CDF5C(490);
       v38 = sub_CDF5C(243);
       v11 = (char *)sub_CDF5C(84);
-      sprintf(&v42, v11, v38, v40);
+      sprintf(&v42, v11, (char *)(intptr_t)v38, (char *)(intptr_t)v40);
       v12 = 13 * v70++ + 21;
       sub_1212B3(306, v12, (int)&v42);
       v13 = sub_B2FFA(v0);
@@ -2519,7 +2520,7 @@ LABEL_17:
       v41 = sub_CDF5C(490);
       v39 = sub_CDF5C(243);
       v23 = (char *)sub_CDF5C(84);
-      sprintf(&v42, v23, v39, v41);
+      sprintf(&v42, v23, (char *)(intptr_t)v39, (char *)(intptr_t)v41);
       v24 = 13 * v70++ + 21;
       sub_1212B3(306, v24, (int)&v42);
       sub_120CCB(5, (int)&unk_1827AD);
@@ -3521,7 +3522,7 @@ int16_t sub_B494B()
       {
         v25 = TECHNAME_AT(19 * i);
         v19 = (char *)sub_CDF5C(55);
-        v13 = sprintf(v2, v19, v25);
+        v13 = sprintf(v2, v19, (char *)(intptr_t)v25);
       }
       v2 = v13 + HIDWORD(v13);
       ++v3;
@@ -3584,7 +3585,7 @@ void sub_B4B51()
   v12 = 3753 * *(char *)dword_19DEB4 + (uint8_t*)dword_197F98 + 21;
   v11 = sub_77B28(*(_WORD *)((uint8_t*)dword_192B18 + 361 * *(uint8_t *)(dword_19DEB4 + 1) + 2));
   v0 = (char *)sub_CDF5C(50);
-  sprintf(v18, v0, v11, v12);
+  sprintf(v18, v0, v11, (char *)(intptr_t)v12);
   sub_1212B3(20, 40, (int)v18);
   v13 = *(int16_t *)(dword_19DEB4 + 12);
   v1 = (char *)sub_CDF5C(28);
@@ -3616,7 +3617,7 @@ void sub_B4B51()
       v17 = TECHNAME_AT(19 * v7);
       v9 = (char *)sub_CDF5C(54);
       ++v4;
-      v10 = sprintf(v18, v9, v17);
+      v10 = sprintf(v18, v9, (char *)(intptr_t)v17);
       v8 += 20;
       sub_1212B3(20, SWORD2(v10), (int)v18);
     }
@@ -5170,7 +5171,7 @@ char sub_B7289()
     v7 = (uint8_t*)dword_197F98 + 3753 * *(int16_t *)dword_19F378 + 21;
     v6 = sub_77B28(*(_WORD *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18 + 2));
     v3 = (char *)sub_CDF5C(47);
-    sprintf(v8, v3, v6, v7);
+    sprintf(v8, v3, v6, (char *)(intptr_t)v7);
     sub_1210FD(319, 10, (int)v8);
   }
   else
@@ -6556,7 +6557,7 @@ int sub_B896D(int a1, int a2, int16_t *a3)
         v22 = sub_BB695(v27, i);
         v18 = a3[v26 + 5];
         v16 = (char *)sub_CDF5C(14);
-        sprintf(v25, v16, v18, v22);
+        sprintf(v25, v16, v18, (char *)(intptr_t)v22);
       }
       v27 = (int16_t)(185 - 9 * (v33 + 1));
       v13 = (v4 + 1) * (261 / ((int16_t)v32 + 1));
@@ -7182,11 +7183,13 @@ int sub_B953E( int a1)
   char *v16; // eax
   char *v17; // [esp-Ch] [ebp+72h]
   int16_t *v18; // [esp-8h] [ebp+76h]
-  int v19; // [esp-8h] [ebp+76h]
+  // PORT (vlna 93): v19/v22/v23 jdou do sprintf jako `%s` - musi to byt
+  // UKAZATELE, ne `int` (na x64 se do varargs slotu ulozi jen dolni pulka).
+  char *v19; // [esp-8h] [ebp+76h]
   int16_t *v20; // [esp-4h] [ebp+7Ah]
   int v21; // [esp-4h] [ebp+7Ah]
-  int v22; // [esp-4h] [ebp+7Ah]
-  int v23; // [esp-4h] [ebp+7Ah]
+  char *v22; // [esp-4h] [ebp+7Ah]
+  char *v23; // [esp-4h] [ebp+7Ah]
   int v24; // [esp-4h] [ebp+7Ah]
   int v25; // [esp-4h] [ebp+7Ah]
   int v26; // [esp-4h] [ebp+7Ah]
@@ -7206,7 +7209,7 @@ int sub_B953E( int a1)
     v21 = (uint8_t*)dword_197F98 + 3753 * *(char *)((uint8_t*)dword_192B18 + 361 * v2) + 21;
     v18 = sub_77B28(a1);
     v4 = (char *)sub_CDF5C(40);
-    sprintf(v27, v4, v18, v21);
+    sprintf(v27, v4, v18, (char *)(intptr_t)v21);
   }
   sub_1212B3(20, 40, (int)v27);
   v5 = (_BYTE *)((uint8_t*)dword_1930D4 + 17 * a1);
@@ -7234,15 +7237,15 @@ int sub_B953E( int a1)
     if ( byte_199CAE == 4 )
     {
       v8 = (uint8_t)v5[5];
-      v22 = dword_18F990[*(uint8_t *)(v7 + (uint8_t*)dword_192B18 + 226)];
+      v22 = (char *)(intptr_t)dword_18F990[*(uint8_t *)(v7 + (uint8_t*)dword_192B18 + 226)];
 LABEL_7:
-      sprintf(v27, "%s, %s", dword_192BE0[v8], v22);
+      sprintf(v27, "%s, %s", (char *)(intptr_t)dword_192BE0[v8], v22);
       goto LABEL_10;
     }
     v9 = (uint8_t)v5[5];
-    v23 = dword_18F990[*(uint8_t *)(v7 + (uint8_t*)dword_192B18 + 226)];
+    v23 = (char *)(intptr_t)dword_18F990[*(uint8_t *)(v7 + (uint8_t*)dword_192B18 + 226)];
   }
-  v19 = dword_192BE0[v9];
+  v19 = (char *)(intptr_t)dword_192BE0[v9];
   v17 = (char *)sub_CDF5C(45);
   sprintf(v27, v17, v19, v23);
 LABEL_10:
@@ -7256,7 +7259,7 @@ LABEL_10:
   sub_1212B3(20, 80, (int)v27);
   v25 = dword_192BF4[*(uint8_t *)(v12 + (uint8_t*)dword_1930D4 + 10)];
   v15 = (char *)sub_CDF5C(374);
-  sprintf(v27, v15, v25);
+  sprintf(v27, v15, (char *)(intptr_t)v25);
   sub_1212B3(20, 20 * v28, (int)v27);
   sub_1212B3(20, 120, dword_192C74[*(uint8_t *)(v12 + (uint8_t*)dword_1930D4 + 6)]);
   result = v12 + (uint8_t*)dword_1930D4;
@@ -7264,7 +7267,7 @@ LABEL_10:
   {
     v26 = dword_18F9B8[*(char *)(result + 15)];
     v16 = (char *)sub_CDF5C(70);
-    sprintf(v27, v16, v26);
+    sprintf(v27, v16, (char *)(intptr_t)v26);
     return SUB_103915_TODO(0);
   }
   return result;
@@ -7613,7 +7616,7 @@ int64_t sub_B9DA2( int a1, int a2, int a3)
   }
   v10 = v6;
   v8 = (char *)sub_CDF5C(76);
-  return sprintf(a3, v8, v10, v11);
+  return sprintf(a3, v8, (char *)(intptr_t)v10, (char *)(intptr_t)v11);
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;

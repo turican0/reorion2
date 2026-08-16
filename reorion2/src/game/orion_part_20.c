@@ -56,7 +56,15 @@ int sub_12B501(int result)
 //----- (0012B634) --------------------------------------------------------
 void sub_12B634()
 {
-  word_1845D8 = 1;
+  // PORT (vlna 92): prepinac pro A/B test vlny 90. `word_1845D8` je
+  // priznak orezavani; do vlny 90 se v portu nikdy necetl spravne, takze
+  // se VSECHNY orezavaci vetve (sub_122309, sub_12B7E1, sub_12BC0B)
+  // poprve rozbehly az ted. REORION2_NOCLIP=1 vrati stare chovani, aby
+  // slo jednim behem rozhodnout, jestli novy pad pochazi odsud.
+  static int noclip = -1;
+  if ( noclip < 0 )
+    noclip = PortDebug_EnvInt("REORION2_NOCLIP", 0);
+  word_1845D8 = noclip ? 0 : 1;
 }
 // 1845D8: using guessed type int16_t word_1845D8;
 

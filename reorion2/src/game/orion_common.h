@@ -6676,8 +6676,8 @@ extern /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111))
 extern int sub_10315D();
 // plna signatura: int sub_103183(int a1, int a2, int a3);
 extern int sub_103183();
-// plna signatura: void sub_1031AA(int a1, int a2);
-extern void sub_1031AA();
+// plna signatura: int sub_1031AA(int x, int y, int w, int h, int str, int a_word);  /* vlna 95 */
+extern int sub_1031AA();
 // plna signatura: void sub_1031B8(int a1, int a2, int a3);
 extern void sub_1031B8();
 // plna signatura: int sub_1031C6(int a1, int a2);
@@ -13703,7 +13703,7 @@ void sub_102FA8();
 _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char); // weak
 int sub_10315D(int a1, int16_t a2);
 int sub_103183(int a1, int16_t a2, int a3);
-void sub_1031AA(int a1, int16_t a2);
+int sub_1031AA(int x, int y, int w, int h, int str, int a_word);   /* vlna 95: doplneny registrove argumenty */
 void sub_1031B8(int a1, int16_t a2, int a3);
 int sub_1031C6(int x, int y, int w, int h, int str, int a_word); // vlna 61
 void sub_103200(int a1, int16_t a2, int a3);
@@ -20903,10 +20903,18 @@ extern _UNKNOWN unk_1BC390;
 extern int dword_1BC790;
 extern int dword_1BC794;
 extern int dword_1BC798;
-extern char byte_1BC79C[];
-extern char byte_1BC79E;
-extern char byte_1BC79F;
-extern char byte_1BC7A0;
+/* PORT (vlna 92): 256bajtova PREVODNI TABULKA BAREV ("gray scale"), kterou
+   `sub_133D16` plni smyckou `for (i=0;i<256;++i) byte[i]=i;` a cte ji kazdy
+   sprite blit (`byte_1BC79C[pixel]`). V portu to byl JEDNOBAJTOVY objekt
+   (+ duplicitni `int byte_1BC79C;` v link_stubs.c), takze to plneni prepsalo
+   ~252 bajtu sousednich globalu - podle toho, co tam linker zrovna dal.
+   Odtud "Memory Corruption!" ze `sub_77FF5` (kontrola seznamu lodi).
+   V asm dumpu je blok 0x1B479C..0x1B489B (dalsi symbol je byte_1B489B),
+   uvnitr nej ma IDA jeste tri jednotlive bajty - ty jsou ted makra do pole. */
+extern char byte_1BC79C[256];
+#define byte_1BC79E byte_1BC79C[2]
+#define byte_1BC79F byte_1BC79C[3]
+#define byte_1BC7A0 byte_1BC79C[4]
 extern char byte_1BC89B[];
 extern char byte_1BC89C[];
 extern char byte_1BC89D[2047];

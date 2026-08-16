@@ -12091,13 +12091,13 @@ int sub_AF7B4(int a1, int a2, int a3)
     v16 = *(int16_t *)(2 * *(uint8_t *)(v7 + 16) + v20 + (uint8_t*)dword_197F98 + 1400);
     v14 = v7;
     v10 = (char *)sub_CDF5C(42);
-    sprintf(v19, v10, v14, v16);
+    sprintf(v19, v10, (char *)(intptr_t)v14, v16);
     if ( strlen(v19) >= 0xF )
     {
       v17 = *(int16_t *)(v20 + (uint8_t*)dword_197F98 + 2 * *(uint8_t *)(v6 + dword_197F9C + 16) + 1400);
       v15 = v6 + dword_197F9C;
       v11 = (char *)sub_CDF5C(72);
-      sprintf(v19, v11, v15, v17);
+      sprintf(v19, v11, (char *)(intptr_t)v15, v17);
       if ( strlen(v19) >= 0xF )
         strcpy(v19, (char *)(dword_197F9C + v6));
     }
@@ -12345,7 +12345,7 @@ void sub_AFD42()
       v4 = *(int *)((char *)&off_17E079 + 13 * SWORD2(v1));
       v3 = *(uint8_t *)(v1 + 279);
       v2 = (char *)sub_CDF5C(15);
-      v1 = sprintf(v8, v2, v3, v4, v6);
+      v1 = sprintf(v8, v2, v3, (char *)(intptr_t)v4, v6);
       v5 = (int16_t)v0++;
       _wcpp_1_unwind_leave(0, v5, v8);
     }

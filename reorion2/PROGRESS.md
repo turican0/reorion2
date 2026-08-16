@@ -10327,3 +10327,365 @@ Poznamka: samotnou uzivatelovu cestu (mapa -> COLONIES -> zpet) se mi
 skriptovanym klikanim zopakovat nepodarilo - klikani je casove citlive a
 tentokrat nepreslo uz ACCEPT v dialogu "Enter Home Star Name". Oprava se tedy
 opira o data (viz tabulka vyse) a o asm, ne o zopakovany pad.
+
+### Vlna 92: novy pad na obrazovce kolonie - nastroje nejdriv, zavery az potom
+
+Uzivatel po vlne 91 hlasi dalsi pad: Visual Studio ukazuje "vykonani na
+0xFFFFFFFFFFFFFFFF" a zasobnik plny `ffffffffffffffff()`. Takovy vypis nedava
+zadnou stopu, takze prvni krok byl OPRAVIT NASTROJ, ne hadat.
+
+#### 1. SEH vypis se zacyklil sam na sobe
+
+Vectored handler v `src/reorion2.cpp` bezi na KAZDOU vyjimku - i na tu,
+kterou zpusobi sam, kdyz nad rozbitym zasobnikem rozvine ramce. Zachyceny
+beh portu to ukazal presne:
+
+    SEH code=0xC0000005 addr=0000000001D6202B av_write(info0=1)=0x0000000000B05000
+    SEH code=0xC0000005 addr=00007FFF6F075600 av_read(info0=0)=0xFFFFFFFFFFFFFFFF   (x 150)
+
+Prvni radek je ten zajimavy, zbytek je handler pozirajici sam sebe - a prave
+tenhle druhotny pad vidi uzivatel ve Visual Studiu jako "skok na
+0xFFFFFFFFFFFFFFFF" s nesmyslnym zasobnikem.
+
+Opraveno:
+
+* **zavora proti reentranci** (`InterlockedCompareExchange`) - druhy soubezny
+  vstup do handleru se rovnou vrati;
+* **`module=... base=... rva=...` a `SYMBOL SEH.rip = funkce+0x..  (soubor.c:radek)`
+  se tisknou HNED** za prvni radkou, jeste pred rozvinutim zasobniku. Pri
+  zapnutem ASLR je absolutni adresa sama o sobe k nicemu; RVA a jmeno funkce
+  uz ne.
+
+#### 2. Co uz je o padu zmereno
+
+* Skutecna prvni chyba je **ZAPIS na 0x00B05000**, tedy na hranici stranky -
+  klasicky prustrel za konec bufferu, ne skok pres rozbity ukazatel.
+* Pad se skriptovanym klikanim chyta zhruba v jednom behu ze ctyr (cesta
+  NEW GAME -> ... -> mapa -> COLONIES je casove citliva), takze dalsi mereni
+  je rychlejsi u uzivatele nez tady.
+
+#### 3. Hypoteza, kterou je potreba rozhodnout jako prvni
+
+Vlna 90 **poprve v historii portu zapnula orezavani** (`word_1845D8`). Tim se
+rozbehly kreslici vetve, ktere do te doby byly mrtve: `sub_122309` (orezany
+text), orezove vetve `sub_12B7E1` a `sub_12BC0B` (orezany sprite). Zadna z
+nich nikdy nebezela, takze pripadna chyba dekompilatoru v nich se projevi az
+ted - a `sub_12BC0B` je prave ta, ktera pise po bajtech do framebufferu
+(`*(_BYTE *)(v8 + dword_1BB904) = ...`), tedy presne typ pristupu, ktery
+skoncil na hranici stranky.
+
+Zajimavy detail: original ma v tehle oblasti kontrolu
+`if (word_1845D8 == 1) sub_126487("Draw Gray Scale Does Not Clip")` - IDA ji
+z dekompilatu vypustila. To znamena, ze original tuhle kombinaci povazuje za
+NEPRIPUSTNOU; kdyz na ni port narazi, je bud spatne stav priznaku, nebo se
+tam port dostal cestou, kterou original nechodi.
+
+**Prepinac pro rozhodnuti: `REORION2_NOCLIP=1`** (`sub_12B634`) vrati chovani
+pred vlnou 90 (orezavani vypnute). Jeden beh s nim a jeden bez nej rekne,
+jestli novy pad pochazi z vlny 90, nebo je nezavisly.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged** (vychozi stav,
+  tedy s orezavanim zapnutym).
+
+#### 4. NALEZENO: `byte_1BC79C` je 256bajtova tabulka, v portu byla JEDNOBAJTOVA
+
+Uzivatel poslal treti pad a ten uz mel citelny zasobnik:
+
+    sub_155E62 (radek 402)  <- cteni z 0x31
+    sub_14090C / sub_15607C / sub_13F7BC / sub_11215B / sub_113DBD
+    sub_126487              <- FATALNI UKONCENI HRY
+    sub_77FF5 / sub_77FE9   <- "Memory Corruption!" (kontrola seznamu lodi)
+
+Tedy presne to, pred cim varuje vlna 86: **pad v uklidovem retezu
+`sub_113DBD` -> `sub_155E62` prekryje skutecnou hlasku** z `sub_126487`.
+Skutecna chyba je "Memory Corruption!" ze `sub_77FF5` - nekdo prepsal
+zaznamy lodi.
+
+Vinik se nasel v `sub_133D16`:
+
+```c
+sub_133D16(dword_1BC2A4 + 4, (int)byte_1BC79C);   // volajici
+...
+for ( i = 0; i < 256; ++i )      // v sub_133D16
+  *(_BYTE *)(i + a2) = i;        // 256 BAJTU do byte_1BC79C
+```
+
+V asm je `byte_1B479C` blok **0x1B479C..0x1B489B, tedy presne 256 bajtu**
+(dalsi symbol je `byte_1B489B`); uvnitr ma IDA jeste tri jednotlive bajty
+(`byte_1B479E/9F/A0`), protoze je jina funkce cte samostatne. V portu z toho
+bylo `char byte_1BC79C[]` (jeden bajt) **plus duplicitni `int byte_1BC79C;`
+v `link_stubs.c`** - takze kazde nastaveni prevodni tabulky barev prepsalo
+~252 bajtu sousednich globalu vzestupnou radou 0,1,2,...
+
+To vysvetluje OBA priznaky najednou:
+
+* **zapis na 0x00B05000** (hranice stranky) - kdyz tabulka lezi na konci
+  .bss, prustrel vyleze rovnou ze sekce;
+* **"Memory Corruption!"** - jindy trefi zaznamy lodi;
+* a hlavne to, proc se priznak po vlne 91 POSUNUL. Slouceni bloku zmenilo
+  rozlozeni .bss, takze tyz dlouholety prustrel zacal trefovat neco jineho.
+  Chyba nebyla zavlecena vlnou 91, jen se prestehovala obet.
+
+Opraveno stejne jako `byte_1BB358` ve vlne 15: `char byte_1BC79C[256]`,
+`byte_1BC79E/9F/A0` jsou makra na offsety +2/+3/+4 a duplicitni skalar
+z `link_stubs.c` je pryc.
+
+**Ponauceni do prirucky:** kdyz nejaka funkce plni tabulku smyckou
+`for (i = 0; i < N; ++i) *(_BYTE *)(i + aX) = ...`, over VELIKOST ciloveho
+globalu v portu. `tools/idaarray_scan.py` z vlny 91 tuhle tridu hlasi -
+`byte_1BC79C` v jeho vypisu je (jako "4 prvku, 10 indexu, ROZSEKANE +
+DUPLICITNI SKALAR").
+
+#### Overeno (po nalezu 4)
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- pad sam NEBYL po oprave znovu zkousen: skriptovane klikani se na obrazovku
+  kolonie dostane jen obcas (zhruba jeden beh ze ctyr), takze potvrzeni musi
+  prijit od uzivatele. Dukaz opravy je zatim jen staticky (asm rika 256 bajtu,
+  port mel jeden) - ale ten je jednoznacny.
+
+### Vlna 93: `%s` dostane `int` - na x64 se do varargs slotu ulozi jen pulka
+
+Uzivatel po vlne 92: "navrat z Colonies stale pada". Pad je zase v `sprintf`
+volanem ze `sub_C3B3C`, tentokrat **cteni z 0x00007FFF008611FF**.
+
+#### Proc to vlna 91 neopravila
+
+Vlna 91 opravila, JAKE hodnoty ty tabulky drzi (rozsekana pole). Tohle je ale
+o tom, JAK se predavaji:
+
+```c
+int v12; ...
+v12 = dword_192BE0[v8[5]];        // ukazatel na retezec ulozeny v `int` slotu
+sprintf(v19, v10, v11, v12, ...); // ...a format ma na tehle pozici `%s`
+```
+
+Na x64 se do varargs slotu (8 B) ulozi z `int`u jen **dolni polovina** a horni
+zustane po tom, co v tom registru/slotu bylo predtim. `%s` si pak precte
+celych 8 bajtu, takze dostane "skoro platny" ukazatel.
+
+**Tvar adresy je poznavaci znameni teto chyby:** horni pulka `0x00007FF*`
+(zbytek po ukazateli do systemove DLL) a dolni pulka rozumne mala adresa
+(`0x008611FF`). Kdyz pad hlasi neco takoveho, hledej `%s`, ktere dostava
+`int`.
+
+#### Oprava
+
+`v12`..`v15` v `sub_C3B3C` prepsany na `char *` a plni se
+`(char *)(intptr_t)dword_XXX[...]`. Stejny vzor jeste na dvou mistech:
+`sub_B953E` (`orion_part_11.c`, `v19`/`v22`/`v23`) a `orion_part_15.c:1766`.
+
+#### Souvislost s backlogem
+
+Poznamka z vlny 89 rikala, ze `sub_CDF5C` vraci `int` misto `char *` a ze to
+"zatim nevadi, protoze retezcovy pool lezi pod 2 GB". To plati pro
+DEREFEROVANI, ale **ne pro predani do varargs** - tam je sirka typu podstatna
+bez ohledu na to, kde pool lezi. Zbylych ~437 volani `sub_CDF5C` ulozenych do
+`int`u je proto potreba projit se stejnou otazkou: nekonci ta hodnota v `%s`?
+
+#### Poznamka k metode
+
+Format se da vytahnout z dat a spocitat si, kolik `%s` ma pred prvnim `%d`
+(vlna 91, `ESTRINGS.LBX`). Pak uz staci porovnat s typy argumentu v portu -
+je to mechanicka kontrola, ktera nepotrebuje ani debugger, ani dosbox.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- pad sam znovu zkousen nebyl (skriptovane klikani se na obrazovku kolonie
+  dostane jen obcas) - dukaz je staticky: format ma na tech pozicich `%s`
+  a port tam posilal `int`.
+
+### Vlna 94: nastroj, aby dalsi kolo nestalo dalsi vlnu - `reorion2_crash.log`
+
+Uzivatel po vlne 93 hlasi tentyz obrazek jako ve vlne 92: "vykonani na
+0xFFFFFFFFFFFFFFFF", zasobnik plny `ffffffffffffffff()` a druhy ramec
+`ffffffff000001df`. Tenhle vypis uz umime precist: **je to druhotny pad**
+(bud uklidovy retez po `sub_126487`, nebo handler sam), takze skutecna
+informace je v textu na stderr - a ten uzivatel pod Visual Studiem nevidi.
+
+Proto tahle vlna nepridava zadnou opravu hry, jen zaridi, aby se ta informace
+neztratila:
+
+* nova funkce `PortDebug_CrashLog(fmt, ...)` (`port_dos.cpp`) pripisuje radek
+  do **`reorion2_crash.log`** v aktualnim adresari;
+* `PortDebug_Message` (hlaska ze `sub_126487`, tedy jedine misto, kde hra sama
+  rekne "Memory Corruption! val == %d, ship_id == %d, ...") pise nove i tam;
+* SEH filtr tamtez zapisuje `SEH code= addr= rva= modul=`.
+
+Uzivateli tedy staci poslat `x64\Debug\reorion2_crash.log` a je v nem bud
+konkretni herni hlaska, nebo RVA padu.
+
+#### Mimochodem nalezeno (NEOPRAVENO, na dalsi vlnu)
+
+`sub_1031AA` je **prazdny pahyl s NO-OP `JUMPOUT(0x103169)`** - tataz trida
+jako `sub_77B42` (vlna 89) a `sub_7927F` (vlna 89k). asm:
+
+```
+sub_1031AA: push esi / push ebp / mov ebp, esp
+            push 0 / movsx esi, [ebp+arg_4] / push 1
+            jmp short loc_103169     ; sdilene telo sub_10315D:
+                                     ;   ... push [ebp+arg_0] / call sub_102FD8
+```
+
+Lisi se od `sub_10315D` jen tim, ze pushuje 1 misto 0. V portu tedy
+**nedela nic** - a vola se hned za tim `sprintf` v `sub_C3B3C`, takze popis
+kolonie se pravdepodobne vubec nevykresluje. Pozor pri oprave: volajici
+predava zasobnikovy buffer jako `(int)v19`, coz na x64 ORIZNE adresu; s
+funkcnim `sub_1031AA` by to spadlo. Stejny pahyl je i `sub_1031B8`
+(`JUMPOUT(0x10318F)`).
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- pri normalnim behu (bez padu) soubor `reorion2_crash.log` nevznikne, takze
+  nic nezasvinuje.
+
+### Vlna 95: pahyl `sub_1031AA` opraven + davkova oprava `%s` vs `int` (46 mist)
+
+#### 1. Nejdriv zmereno, kde port vlastne bezi
+
+Jednorazova sonda v `main()` (uz odstranena, cislo je v komentari):
+
+    zasobnik = 0x00000000004FFBF0     kod = 0x0000000000753014
+
+Obe hluboko pod 2 GB - `ImageBase` je 0x400000 a `HIGH_ENTROPY_VA` je VYPNUTE,
+takze ASLR stehuje obraz jen v ramci nizkych 4 GB. **Tohle je duvod, proc port
+vubec bezi**, kdyz dekompilat prohani ukazatele `int`em. A zaroven to rika, ze
+chyby "int misto ukazatele" boli az ve VARARGS (vlna 93) - tam nejde o velikost
+adresy, ale o sirku slotu.
+
+#### 2. `sub_1031AA` - prazdny pahyl (opraveno)
+
+Tataz trida jako `sub_77B42` (vlna 89) a `sub_7927F` (vlna 89k): v asm to neni
+cizi kod, ale skok do tela `sub_10315D`, jen s `push 1` misto `push 0`
+(= `useAlt`, mereni pres `sub_103CAF` misto `sub_103952`):
+
+```
+sub_1031AA: push esi / push ebp / mov ebp, esp
+            push 0 / movsx esi, [ebp+arg_4] / push 1
+            jmp short loc_103169     ; sdilene telo sub_10315D
+```
+
+Ma tedy ctyri registrove argumenty (eax=x, edx=y, ebx=sirka, ecx=vyska), ktere
+IDA zahodila - stejny deficit, jaky mela `sub_1031C6` pred vlnou 61. Do ted
+funkce v portu NEDELALA NIC.
+
+Doplneno + u peti ze sedmi volajicich dohledany souradnice primo z asm:
+
+| misto | asm | eax/edx/ebx/ecx |
+|---|---|---|
+| `orion_part_11.c:664` | 0xB12A2 | 212 / 114 / 248 / 186 |
+| `orion_part_12.c:4473` | 0xC148F | 168 / 248 / 283 / 169 |
+| `orion_part_12.c:4947` | 0xC1E26 | 168 / 248 / 305 / 169 |
+| `orion_part_12.c:5994` a `:6028` | 0xC34BD | 512 / **si** / 85 / 22 |
+| `orion_part_12.c:6487` | 0xC3CF1 | 13 / 354 / 80 / 88 (popis kolonie) |
+
+U `orion_part_12.c:4209` (asm 0xC0ECA) a u `y` na 0xC34BD pocita original
+souradnice z registru, ktere dekompilat ztratil - tam zustavaji nuly a
+komentar `TODO`, tedy chovani jako dosud (nevykresli se nic). Zbytek uz kreslit
+bude.
+
+#### 3. Novy nastroj: `tools/fmtcheck.py` + `tools/fmtfix.py`
+
+Vlna 93 nasla, ze `%s` dostavalo `int`. Tenhle par to hleda strojove:
+
+* `fmtcheck.py` nacte formatovaci retezce **primo z `ESTRINGS.LBX`** (stejne,
+  jako je za behu bere `sub_CDF5C(n) = dword_1A6578[n]`), rozpozna, na kterych
+  pozicich je `%s`, a porovna to s typy argumentu v portu;
+* `fmtfix.py` tem argumentum doplni `(char *)(intptr_t)`.
+
+Prvni beh nasel **61 podezrelych argumentu na 46 radcich** (orion_part_10/11/
+12/13) - vsechny opraveny davkove. Kdyz nejaky `int` ve skutecnosti retezec
+nedrzi, je to chyba uz ted a pretypovani ji nezhorsi; kdyz drzi, pretypovani ji
+opravuje.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged** (i po tom, co
+  se `sub_1031AA` poprve rozbehla - byla to hlavni obava, protoze ten kod v
+  portu nikdy nebezel);
+- beh pres NEW GAME az na mapu: bez padu, `reorion2_crash.log` nevznikl.
+
+#### Co zbyva na uzivateli
+
+Obrazovku kolonie skriptovane klikani spolehlive nedosahne, takze poslednim
+padem (ten necitelny, "vykonani na 0xFFFFFFFFFFFFFFFF") si nejsem jisty. Ted
+uz ale staci poslat `x64\Debugeorion2_crash.log`.
+
+### Vlna 96: rozsekany souvisly blok NA ZASOBNIKU - `sub_103D53`
+
+Po vlne 95 uzivatel poslal pad pri otevirani kolonii - a poprve se zasobnikem,
+ktery se da cely precist:
+
+    sub_103F5D (radek 1570)   <- cteni z 0xFFFFFFFFF2400000
+    sub_103D53 (1516) / sub_103CAF (1388) / sub_102FD8 (536)
+    sub_1031AA (632)          <- funkce ozivena vlnou 95
+    sub_C3B3C (6487) / sub_C3D34 (6574) / sub_C4562 (7025)
+
+Tedy presne to riziko, ktere vlna 95 pojmenovala: **ozivenim pahylu se poprve
+rozbehl cely retezec sazeni textu**, ktery v portu nikdy nebezel.
+
+#### Pricina
+
+`sub_103F5D` dela:
+
+```c
+v3 = *(_DWORD *)(dword_1ACF14 + 2);
+LOBYTE(v3) = *(_BYTE *)v3;      // <- pad
+```
+
+`dword_1ACF14` ukazuje na lokalku `v19` v `sub_103D53`. V ORIGINALE je ale
+`v19` jen zacatek **souvisleho 91bajtoveho bloku na zasobniku** (ebp-5Ch az
+ebp-5h) a desitky funkci do nej sahaji pres bajtove offsety:
+
+| offset | co tam je |
+|---|---|
+| +0 | `v19` (aktualni radek) |
+| **+2** | **`v20` = UKAZATEL NA RETEZEC** (`v20 = a4`) |
+| +6, +10 | `v21`, `v23` |
+| +21, +25, +43 | pole, ktera IDA vubec nepojmenovala |
+| +29 | `v28` |
+
+V portu to byly samostatne lokalky s rozlozenim podle prekladace, takze
+`*(_DWORD *)(dword_1ACF14 + 2)` necetlo `v20`, ale cokoliv leze 2 bajty za
+`v19` - odtud ten "ukazatel" 0xFFFFFFFFF2400000. Zapisy na +25 a +29 navic
+prepisovaly sousedni lokalky.
+
+Je to **tataz trida jako `byte_1BB758` (vlna 89) nebo `dword_192BE0` (vlna 91),
+jen poprve na ZASOBNIKU misto v globalech.** Poznavaci znameni: globalni
+ukazatel se nastavi na `&lokalka` a jinde se z nej cte pres `*(T *)(global + N)`.
+
+#### Oprava
+
+`v19`..`v38` nahrazeny jednim `_BYTE ctx103D53[91]` a makry na offsety podle
+IDA komentaru `[ebp-XXh]`. Makra jsou definovana tesne pred funkci a hned za ni
+`#undef`nuta - `v19`..`v38` jsou jinde v tomtez souboru uplne jine lokalky.
+
+Pri kontrole sourozencu (`dword_1ACEFC`, `1ACF00`, `1ACF04`, `1ACF08`,
+`1ACF0C`, vsechny nastavovane na `&lokalka` uz od vlny 23b) vypadl jeste jeden:
+
+* `dword_1ACF0C = &v17`, kde `v17` byl **jeden bajt**, ale jine funkce z nej
+  ctou az offset 21. Dalsi symbol (`v18`) je o 35 B dal, takze je to
+  35bajtovy blok - opraveno.
+* `dword_1ACF00` (v16[13], offsety do 12), `dword_1ACF08` (v15[26], do 25) a
+  `dword_1ACEFC`/`1ACF04` (v18[1202], do 8) uz v poradku byly.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- beh na mapu bez padu, `reorion2_crash.log` nevznikl.
+
+Samotnou obrazovku kolonie skriptovane klikani spolehlive nedosahne, takze
+potvrzeni patri uzivateli. Pozor: ozivenim `sub_1031AA` (vlna 95) se rozbehl
+cely retezec `sub_103D53` -> `sub_103F5D` -> `sub_104292` -> ..., ktery v portu
+nikdy nebezel, takze tam muze byt dalsich chyb vic za sebou. Kazdy dalsi pad uz
+ale ma citelny zasobnik nebo aspon radek v `reorion2_crash.log`.

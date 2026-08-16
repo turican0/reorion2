@@ -1763,7 +1763,9 @@ void sub_E7B79(int a1, int a2)
     if ( v7 && v7 <= 3u )
     {
       v6 = 1;
-      v8 = sprintf(v5, (char *)&off_17A034, dword_199150[(char)v7]);
+      // PORT (vlna 93): tabulka drzi UKAZATEL na retezec v `int` slotu; do
+      // varargs se musi predat jako ukazatel, jinak ma horni pulka slotu smeti.
+      v8 = sprintf(v5, (char *)&off_17A034, (char *)(intptr_t)dword_199150[(char)v7]);
       v5 = v8 + HIDWORD(v8);
     }
     if ( *(_BYTE *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1583) )

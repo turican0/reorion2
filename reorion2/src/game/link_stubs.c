@@ -136,7 +136,6 @@ int byte_1BB658;
 int byte_1BB659;
 int byte_1BB65A;
 int byte_1BB758;
-int byte_1BC79C;
 int byte_1BC89B;
 int byte_1BC89C;
 int byte_1BD0A0;

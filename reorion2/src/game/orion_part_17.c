@@ -610,9 +610,25 @@ int sub_103183(int a1, int a2, int a3)
 
 
 //----- (001031AA) --------------------------------------------------------
-void sub_1031AA(int a1, int a2)
+// PORT (vlna 95): PRAZDNY PAHYL s NO-OP `JUMPOUT(0x103169)` - tataz trida
+// jako `sub_77B42` (vlna 89) a `sub_7927F` (vlna 89k). V asm to neni cizi
+// kod, ale SKOK DO TELA `sub_10315D`; lisi se jen tim, ze pushuje 1 misto 0
+// (= `useAlt`, tedy mereni pres sub_103CAF misto sub_103952):
+//
+//   sub_1031AA: push esi / push ebp / mov ebp, esp
+//               push 0 / movsx esi, [ebp+arg_4] / push 1
+//               jmp short loc_103169   ; sdilene telo sub_10315D:
+//                 movsx ecx,cx / push 0 / movsx ebx,bx / push esi
+//                 movsx edx,dx / push [ebp+arg_0] / cwde / call sub_102FD8
+//
+// Ma tedy CTYRI REGISTROVE argumenty (eax=x, edx=y, ebx=sirka, ecx=vyska),
+// ktere IDA zahodila - stejny deficit, jaky mela sub_1031C6 pred vlnou 61.
+// Do vlny 95 tahle funkce v portu NEDELALA VUBEC NIC, takze se nekreslil
+// popis kolonie ani dalsi texty v okenkach.
+int sub_1031AA(int x, int y, int w, int h, int str, int a_word)
 {
-  JUMPOUT(0x103169);
+  return sub_102FD8((int16_t)x, (int16_t)y, (int16_t)w, (int16_t)h,
+                    str, a_word, 0, 1, 0);
 }
 // 1031B6: control flows out of bounds to 103169
 
@@ -1399,6 +1415,38 @@ int16_t sub_103D0C()
 // 1ACF1C: using guessed type int16_t word_1ACF1C;
 
 
+/* PORT (vlna 96): v19..v38 tvori v ORIGINALE SOUVISLY BLOK na zasobniku
+   (ebp-5Ch az ebp-5h, 91 bajtu), na ktery ukazuje `dword_1ACF14` a ze ktereho
+   pak desitky funkci ctou A PISOU pres bajtove offsety - vcetne offsetu 21, 25
+   a 43, ktere IDA vubec nepojmenovala. Nejdulezitejsi je offset +2: tam lezi
+   UKAZATEL NA RETEZEC (`v20 = a4`), ktery `sub_103F5D` dereferencuje.
+   V portu to byly samostatne lokalky s rozlozenim podle prekladace, takze
+   `*(_DWORD *)(dword_1ACF14 + 2)` cetlo smeti - zmereno padem na cteni z
+   0xFFFFFFFFF2400000 v `sub_103F5D` (zasobnik sub_C3B3C -> sub_1031AA ->
+   sub_102FD8 -> sub_103CAF -> sub_103D53 -> sub_103F5D). Zapisy na offsety
+   25 a 29 navic prepisovaly sousedni lokalky.
+   Offsety odpovidaji IDA komentarum `[ebp-XXh]` u puvodnich deklaraci. */
+#define CTX103D53_SIZE 91
+#define v19 (*(uint16_t *)(ctx103D53 +  0))
+#define v20 (*(uint32_t *)(ctx103D53 +  2))   /* ukazatel na retezec */
+#define v21 (*(uint16_t *)(ctx103D53 +  6))
+#define v22 (*(int16_t  *)(ctx103D53 +  8))
+#define v23 (*(uint16_t *)(ctx103D53 + 10))
+#define v24 (*(int16_t  *)(ctx103D53 + 12))
+#define v25 (*(int16_t  *)(ctx103D53 + 14))
+#define v26 (*(int32_t  *)(ctx103D53 + 16))
+#define v27 (*(char     *)(ctx103D53 + 20))
+#define v28 (*(int16_t  *)(ctx103D53 + 29))
+#define v29 (*(int16_t  *)(ctx103D53 + 31))
+#define v30 (*(int16_t  *)(ctx103D53 + 33))
+#define v31 (*(int16_t  *)(ctx103D53 + 35))
+#define v32 (*(int16_t  *)(ctx103D53 + 37))
+#define v33 (*(char     *)(ctx103D53 + 39))
+#define v34 (*(char     *)(ctx103D53 + 40))
+#define v35 (*(int16_t  *)(ctx103D53 + 41))
+#define v36 (*(uint32_t *)(ctx103D53 + 79))
+#define v37 (*(uint32_t *)(ctx103D53 + 83))
+#define v38 (*(uint32_t *)(ctx103D53 + 87))
 //----- (00103D53) --------------------------------------------------------
 int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6, int a7)
 {
@@ -1412,28 +1460,12 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   _BYTE v14[9052]; // [esp+0h] [ebp-28B4h] BYREF
   _BYTE v15[26]; // [esp+235Ch] [ebp-558h] BYREF
   _BYTE v16[13]; // [esp+2376h] [ebp-53Eh] BYREF
-  char v17; // [esp+2383h] [ebp-531h] BYREF
+  /* vlna 96: `dword_1ACF0C` ukazuje sem a jine funkce ctou az offset 21;
+     v IDA je to jednobajtova lokalka, ale dalsi symbol (v18) je az o 35 B
+     dal (ebp-531h -> ebp-50Eh), takze je to 35bajtovy blok. */
+  _BYTE v17[35]; // [esp+2383h] [ebp-531h] BYREF
   _BYTE v18[1202]; // [esp+23A6h] [ebp-50Eh] BYREF
-  uint16_t v19; // [esp+2858h] [ebp-5Ch] BYREF
-  int v20; // [esp+285Ah] [ebp-5Ah]
-  uint16_t v21; // [esp+285Eh] [ebp-56h]
-  int16_t v22; // [esp+2860h] [ebp-54h]
-  uint16_t v23; // [esp+2862h] [ebp-52h]
-  int16_t v24; // [esp+2864h] [ebp-50h]
-  int16_t v25; // [esp+2866h] [ebp-4Eh]
-  int v26; // [esp+2868h] [ebp-4Ch]
-  char v27; // [esp+286Ch] [ebp-48h]
-  int16_t v28; // [esp+2875h] [ebp-3Fh]
-  int16_t v29; // [esp+2877h] [ebp-3Dh]
-  int16_t v30; // [esp+2879h] [ebp-3Bh]
-  int16_t v31; // [esp+287Bh] [ebp-39h]
-  int16_t v32; // [esp+287Dh] [ebp-37h]
-  char v33; // [esp+287Fh] [ebp-35h]
-  char v34; // [esp+2880h] [ebp-34h]
-  int16_t v35; // [esp+2881h] [ebp-33h]
-  _BYTE *v36; // [esp+28A7h] [ebp-Dh]
-  int16_t *v37; // [esp+28ABh] [ebp-9h]
-  int16_t *v38; // [esp+28AFh] [ebp-5h]
+  _BYTE ctx103D53[CTX103D53_SIZE]; // vlna 96: v19..v38 jako souvisly blok
 
   if ( a3 < 10 || a3 > 640 || a1 >= 0x280u || a2 >= 0x1E0u || !a4 )
     return a4;
@@ -1443,15 +1475,15 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   v32 = 0;
   v34 = 1;
   v35 = 0;
-  v37 = &word_1838F7;
-  v38 = &word_1ACF18;
+  v37 = (uint32_t)(uintptr_t)&word_1838F7;
+  v38 = (uint32_t)(uintptr_t)&word_1ACF18;
   v16[1] = 0;
   v19 = a2;
   v20 = a4;
   v21 = a1;
   v23 = a2;
   v25 = a3;
-  dword_1ACF14 = (intptr_t)&v19;
+  dword_1ACF14 = (intptr_t)ctx103D53;
   dword_1ACF08 = (intptr_t)v15;
   v22 = a3 + a1 - 1;
   dword_1ACF00 = (intptr_t)v16;
@@ -1460,9 +1492,9 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   dword_1ACEFC = (intptr_t)v18;
   v33 = a5;
   dword_1ACF04 = (intptr_t)v18;
-  v36 = v15;
+  v36 = (uint32_t)(uintptr_t)v15;
   v16[0] = BYTE2(dword_1B61E4);
-  dword_1ACF0C = (intptr_t)&v17;
+  dword_1ACF0C = (intptr_t)v17;
   v16[2] = word_1B3E86;
   v8 = sub_1067F0();
   v9 = (uint8_t *)dword_1ACF00;
@@ -1520,6 +1552,29 @@ LABEL_12:
 // 1B43B8: using guessed type int16_t word_1B43B8[];
 // 1B43C8: using guessed type int16_t word_1B43C8[8];
 // 1B61E4: using guessed type int dword_1B61E4;
+/* vlna 96: makra plati jen pro sub_103D53 - jinde v souboru jsou v19..v38
+   uplne jine lokalky. */
+#undef CTX103D53_SIZE
+#undef v19
+#undef v20
+#undef v21
+#undef v22
+#undef v23
+#undef v24
+#undef v25
+#undef v26
+#undef v27
+#undef v28
+#undef v29
+#undef v30
+#undef v31
+#undef v32
+#undef v33
+#undef v34
+#undef v35
+#undef v36
+#undef v37
+#undef v38
 
 
 //----- (00103F5D) --------------------------------------------------------

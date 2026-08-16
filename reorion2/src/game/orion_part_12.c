@@ -950,7 +950,7 @@ int sub_BCD70(int a1)
     }
     v6 = v5;
     v2 = (char *)sub_CDF5C(76);
-    sprintf(a1 - 500, v2, v6, v7, v8, v9);
+    sprintf(a1 - 500, v2, (char *)(intptr_t)v6, (char *)(intptr_t)v7, (char *)(intptr_t)v8, (char *)(intptr_t)v9);
     sub_120DED(80, 80);
     sub_BB04E(3u);
     return sub_BD727(a1 - 500);
@@ -1302,7 +1302,7 @@ int sub_BD434()
     v17 = sub_77B28(dword_19F7BC);
     v16 = sub_BC8DF(dword_19F7A8);
     v2 = (char *)sub_CDF5C(97);
-    v3 = sprintf(v19, v2, v16, v17);
+    v3 = sprintf(v19, v2, (char *)(intptr_t)v16, v17);
     sub_120DED(SWORD2(v3), SHIDWORD(v3));
     sub_120CCB(4, (int)&unk_182C2E);
     sub_120EB9((int)&unk_182C26);
@@ -1427,7 +1427,7 @@ int sub_BD790()
     v3 = (int)*(&off_17FFB2 + 3 * word_182ABE + 3);
     v2 = *(int16_t *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 2 * word_182ABE + 304);
     v1 = (char *)sub_CDF5C(14);
-    sprintf(v4, v1, v2, v3);
+    sprintf(v4, v1, v2, (char *)(intptr_t)v3);
     return sub_BD727((int)v4);
   }
   return result;
@@ -1926,7 +1926,7 @@ int16_t sub_BE09C(int16_t *a1, _WORD *a2)
         v16 = (int16_t)v17;
         v13 = sub_BB40D(v6);
         v7 = (char *)sub_CDF5C(263);
-        sprintf(v15, v7, v13, v14);
+        sprintf(v15, v7, (char *)(intptr_t)v13, v14);
         sub_77658((int)v15);
         if ( v8 )
         {
@@ -2168,7 +2168,7 @@ char sub_BE530(int16_t *a1, _WORD *a2)
             {
               v17 = sub_BB3DB(v6);
               v9 = (char *)sub_CDF5C(263);
-              sprintf(v19, v9, v17, (int16_t)v7);
+              sprintf(v19, v9, (char *)(intptr_t)v17, (int16_t)v7);
               sub_77658((int)v19);
               if ( v10 )
               {
@@ -4203,7 +4203,10 @@ void sub_C0E1D( int a1, int a2, int a3)
   v5 = sub_BBA8E(14);
   sub_12A478(a1, a2, v5);
   sub_CA16D(a3, (int)v6);
-  sub_1031AA((int)v6, 0);
+  /* vlna 95: asm 0xC0ECA pocita x/y/sirku z registru, ktere dekompilat ztratil
+     (esi/edi); ecx=08Ch je vyska. Do doplneni zbytku se to chova jako dosud,
+     tedy nevykresli nic - TODO dohledat esi/edi v sub_C0E1D. */
+  sub_1031AA(0, 0, 0, 140, (int)v6, 0);
 }
 // C0E78: variable 'v4' is possibly undefined
 
@@ -4466,7 +4469,8 @@ void sub_C143E( int a1)
   v2 = dword_197F9C;
   sub_BB04E(1u);
   sub_B0CF6(v1 + v2, (int)v3, 1);
-  sub_1031AA((int)v3, 0);
+  /* vlna 95: asm 0xC148F - eax=0A8h, edx=0F8h, ebx=11Bh, ecx=0A9h */
+  sub_1031AA(168, 248, 283, 169, (int)v3, 0);
 }
 // 197F9C: using guessed type int dword_197F9C;
 
@@ -4892,7 +4896,7 @@ void sub_C1B68()
         v9);
       v12 = dword_197F9C + 129 * word_19FA26;
       v10 = (char *)sub_CDF5C(801);
-      v11 = sprintf(v13, v10, v12);
+      v11 = sprintf(v13, v10, (char *)(intptr_t)v12);
       sub_BAFC9(4u, SBYTE4(v11));
       sub_1210FD(320, 20, (int)v13);
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC12A4 je epilog funkce */
@@ -4939,7 +4943,8 @@ void sub_C1D6B()
     v0 = 3753 * word_19999C + (uint8_t*)dword_197F98 + 806 + 99 * word_1830E4;
     sub_BB04E(1u);
     sub_B0CF6(v0, (int)v2, 0);
-    sub_1031AA((int)v2, 0);
+    /* vlna 95: asm 0xC1E26 - eax=0A8h, edx=0F8h, ebx=131h, ecx=0A9h */
+    sub_1031AA(168, 248, 305, 169, (int)v2, 0);
   }
   if ( word_19FA12 == word_1830E6 )
   {
@@ -5008,7 +5013,7 @@ void sub_C1E74(int16_t *a1, _WORD *a2)
       v15 = 99 * i + (uint8_t*)dword_197F98 + 3753 * word_19999C + 806;
       v14 = dword_197F9C + 129 * word_19FA26;
       v6 = (char *)sub_CDF5C(804);
-      sprintf(v16, v6, v14, v15);
+      sprintf(v16, v6, (char *)(intptr_t)v14, (char *)(intptr_t)v15);
       v7 = sub_CDF5C(805);
       sub_A5EB2(v7, (int)v16);
     }
@@ -5966,7 +5971,7 @@ void sub_C3111( int a1_idx)
     v7 = sub_77B42((int16_t)v36);
     v24 = v7;
     v8 = (char *)sub_CDF5C(85);
-    sprintf(v35, v8, v24, v34, v29);
+    sprintf(v35, v8, v24, v34, (char *)(intptr_t)v29);
   }
   sub_10323B((int)v35, 0);
   if ( byte_182ACA )
@@ -5984,7 +5989,9 @@ void sub_C3111( int a1_idx)
       v32 = sub_B2FFA(*(_WORD *)(v16 + 277));
       v23 = (char *)sub_CDF5C(93);
       sprintf(v35, v23, a1, a0_0, v32);
-      sub_1031AA((int)v35, 0);
+      /* vlna 95: asm 0xC34BD - eax=200h, ebx=055h, ecx=016h; edx (y) je
+         `movsx edx, si` a esi dekompilat ztratil - TODO. */
+      sub_1031AA(512, 0, 85, 22, (int)v35, 0);
     }
     else
     {
@@ -6017,7 +6024,8 @@ void sub_C3111( int a1_idx)
         sprintf(v35, v19, v27, v15);
       }
       sub_BAF84(2u, 0);
-      sub_1031AA((int)v35, 0);
+      /* vlna 95: tentyz asm call 0xC34BD (dve vetve se tam sbihaji). */
+      sub_1031AA(512, 0, 85, 22, (int)v35, 0);
     }
     sub_120CCB(1, (int)&unk_182C2E);
   }
@@ -6406,10 +6414,17 @@ void sub_C3B3C()
   char *v9; // eax
   char *v10; // eax
   char *v11; // [esp-28h] [ebp-41Ch]
-  int v12; // [esp-24h] [ebp-418h]
-  int v13; // [esp-20h] [ebp-414h]
-  int v14; // [esp-1Ch] [ebp-410h]
-  int v15; // [esp-18h] [ebp-40Ch]
+  // PORT (vlna 93): v12..v15 jdou do sprintf jako %s (format c. 74 ze
+  // ESTRINGS.LBX obsahuje petkrat %s a az pak %d), takze to MUSI byt
+  // UKAZATELE. IDA je otypovala jako `int` - na x64 se do varargs slotu
+  // ulozi jen dolni polovina a horni zustane po predchozim zapisu, takze
+  // `%s` dostal skoro platny ukazatel typu 0x00007FFF008611FF a padal.
+  // Tabulky drzi ukazatele v `int` slotech (sub_CDF5C vraci int) - dokud
+  // retezcovy pool lezi pod 2 GB, staci pretypovat pri predani.
+  char *v12; // [esp-24h] [ebp-418h]
+  char *v13; // [esp-20h] [ebp-414h]
+  char *v14; // [esp-1Ch] [ebp-410h]
+  char *v15; // [esp-18h] [ebp-40Ch]
   int v16; // [esp-14h] [ebp-408h]
   int v17; // [esp-10h] [ebp-404h]
   char *v18; // [esp-Ch] [ebp-400h]
@@ -6456,10 +6471,10 @@ void sub_C3B3C()
     v17 = (int16_t)sub_E0B4F((int16_t *)(17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_182AB7 + 2) + (uint8_t*)dword_1930D4), word_19999C);
     v16 = *(uint8_t *)(361 * word_182AB7 + (uint8_t*)dword_192B18 + 10);
     v8 = (uint8_t *)((uint8_t*)dword_1930D4 + 17 * (int16_t)v20);
-    v15 = dword_192BF4[v8[10]];
-    v14 = dword_192C74[v8[6]];
-    v13 = dword_18F990[v22];
-    v12 = dword_192BE0[v8[5]];
+    v15 = (char *)(intptr_t)dword_192BF4[v8[10]];
+    v14 = (char *)(intptr_t)dword_192C74[v8[6]];
+    v13 = (char *)(intptr_t)dword_18F990[v22];
+    v12 = (char *)(intptr_t)dword_192BE0[v8[5]];
     if ( v0 < 0 )
       v9 = a2;
     else
@@ -6467,7 +6482,9 @@ void sub_C3B3C()
     v11 = v9;
     v10 = (char *)sub_CDF5C(74);
     sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, v0, a0_0);
-    sub_1031AA((int)v19, 0);
+    /* vlna 95: asm 0xC3CF1 - eax=00Dh, edx=162h, ebx=050h, ecx=058h.
+       Tohle je popis kolonie pod portretem planety. */
+    sub_1031AA(13, 354, 80, 88, (int)v19, 0);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC267E je epilog funkce */
 }
@@ -7367,13 +7384,13 @@ int sub_C4B98(int a1, int a2, int a3)
       v21 = dword_18F990[v34];
       v19 = v29[v13[5]];
       v16 = (char *)sub_CDF5C(44);
-      return sprintf(v26, v16, v19, v21, v22, v24, v27);
+      return sprintf(v26, v16, (char *)(intptr_t)v19, (char *)(intptr_t)v21, (char *)(intptr_t)v22, (char *)(intptr_t)v24, v27);
     }
     else
     {
       v20 = 3753 * *(char *)((uint8_t*)dword_192B18 + 361 * v5) + (uint8_t*)dword_197F98 + 21;
       v14 = (char *)sub_CDF5C(41);
-      return sprintf(v26, v14, v20, v22, v24, v27);
+      return sprintf(v26, v14, (char *)(intptr_t)v20, (char *)(intptr_t)v22, (char *)(intptr_t)v24, v27);
     }
   }
   else
@@ -7381,13 +7398,13 @@ int sub_C4B98(int a1, int a2, int a3)
     if ( *(_BYTE *)(v8 + 4) == 2 )
     {
       v17 = (char *)sub_CDF5C(70);
-      sprintf(v26, v17, v6);
+      sprintf(v26, v17, (char *)(intptr_t)v6);
     }
     result = (uint8_t*)dword_1930D4;
     if ( *(_BYTE *)(17 * a2 + (uint8_t*)dword_1930D4 + 4) == 1 )
     {
       v18 = (char *)sub_CDF5C(70);
-      return sprintf(v26, v18, v32);
+      return sprintf(v26, v18, (char *)(intptr_t)v32);
     }
   }
   return result;

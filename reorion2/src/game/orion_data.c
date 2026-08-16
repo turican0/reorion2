@@ -18358,10 +18358,7 @@ _UNKNOWN unk_1BC390; // weak
 int dword_1BC790; // weak
 int dword_1BC794; // weak
 int dword_1BC798; // weak
-char byte_1BC79C[]; // weak
-char byte_1BC79E; // weak
-char byte_1BC79F; // weak
-char byte_1BC7A0; // weak
+char byte_1BC79C[256]; // weak (vlna 92: 256B prevodni tabulka, viz orion_common.h)
 char byte_1BC89B[]; // weak
 char byte_1BC89C[]; // weak
 char byte_1BC89D[2047]; // weak
