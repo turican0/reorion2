@@ -4502,6 +4502,19 @@ int sub_77048(
   int v45; // [esp+1A6h] [ebp+5Ah]
   int16_t v46; // [esp+1BEh] [ebp+72h]
 
+  /* PORT (vlna 100): SPILLNUTE REGISTROVE ARGUMENTY. asm prologu:
+       enter 14Ch, 0 / push eax / push edx / push ebx / push ecx / sub ebp, 82h
+     Ctyri registrove argumenty se ulozi na zasobnik a `sub ebp, 82h` posune
+     bazi, takze skonci presne na var_CE/var_D2/var_D6/var_DA - z nich IDA
+     udelala NEINICIALIZOVANE lokalky v43/v42/v41/v40. Ty pak sly jako
+     souradnice a rozmery do `sub_911D5`, kde `400000 / v40` delilo NULOU
+     (zmereno: pad 0xC0000094 v sub_911D5 pri otevreni FLEETS; sonda ukazala
+     volajiciho sub_77048+0xfd a a5=0).
+     Tataz trida jako sub_100010 (vlna 87) nebo sub_85C8A (vlna 89). */
+  v43 = (int16_t)a1;   /* eax -> [ebp-0CEh] */
+  v42 = (int16_t)a2;   /* edx -> [ebp-0D2h] */
+  v41 = (int16_t)a3;   /* ebx -> [ebp-0D6h] */
+  v40 = (int16_t)a4;   /* ecx -> [ebp-0DAh] */
   v46 = sub_79917();
   v27 = 0;
   word_199992 = word_1999A0;

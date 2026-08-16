@@ -7879,6 +7879,25 @@ int sub_911D5( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8,
   int result; // eax
   int v16; // [esp+0h] [ebp-Ch]
 
+  /* PORT (vlna 100): ZACHRANNA BRZDA, ne oprava. `506000 / a4` a
+     `400000 / a5` v originale nikdy nedeli nulou, protoze `sub_77048` dostava
+     ctyri REGISTROVE argumenty (asm 0x94D63: eax=132h, edx=0EBh, ebx=13Eh,
+     ecx=0A9h) - jenze `sub_77048` si zbytek argumentu cte z RAMCE VOLAJICIHO
+     (offsety arg_46..arg_6E, tedy nad navratovou adresou), coz dekompilat
+     prevedl na neinicializovane pole `v33[25]`. Dokud se ta konvence
+     nezrekonstruuje, obrazovka FLEETS by padala na deleni nulou; radeji
+     nevykreslime nic a jednou to nahlasime. Viz PROGRESS.md vlna 100. */
+  if ( !a4 || !a5 )
+  {
+    static int reported = 0;
+    if ( !reported )
+    {
+      reported = 1;
+      PortDebug_CrashLog("sub_911D5: nulovy delitel (a4=%d, a5=%d) - viz vlna 100", a4, a5);
+      PortDebug_Symbolize("sub_911D5.volajici", _ReturnAddress());
+    }
+    return 0;
+  }
   v16 = 506000 / a4 + 1;
   v10 = 113 * a1 + dword_19306C;
   v11 = 1000 * *(int16_t *)(v10 + 15) / word_1999A0;

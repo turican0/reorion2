@@ -10803,3 +10803,99 @@ Obojí opraveno stejne: `(T *)(intptr_t)*(uint32_t *)(...)`.
 - `-t:Rebuild` bez chyb;
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - COLONIES i PLANETS proklikane primo v portu, `reorion2_crash.log` nevznikl.
+
+### Vlny 99-100: FLEETS - nova sonda na haldu, dve opravy a JEDNA VETSI PREKAZKA
+
+Uzivatel pri zkouseni FLEETS poslal pad **uvnitr `ntdll!RtlpFreeHeap`** na cizim
+vlakne (`TppWorkerThread`) - tedy hlaseni poskozene HALDY, ne pad v herni funkci.
+
+#### 1. Novy nastroj: strazni bajty kolem hernich alokaci (vlna 99)
+
+Herni pamet jde v portu pres `std::malloc`, tedy pres skutecnou haldu procesu.
+Kdyz dekompilovany kod prestreli buffer, poskodi metadata haldy a Windows to
+nahlasi az pri nejakem POZDEJSIM `free()` uplne jinde - typicky na cizim vlakne,
+kde uz neni videt vinik.
+
+`REORION2_MEM_GUARD=1` (`port_memory.cpp`) proto obalí kazdou alokaci 32 bajty
+vzoru 0xAB a:
+
+* pri uvolneni bloku overi obe straze,
+* `Port::Memory::CheckGuards(kde)` projde VSECHNY zive bloky - vola se po kazdem
+  blitu, takze prestrel se ohlasi hned u toho bloku, ktery ho zpusobil:
+  `Port::Memory[blit]: PRESTRELENY BLOK 0x... (N B, tag=...) - zadni straz`.
+
+Hlaseni jde i do `reorion2_crash.log`. Bez te promenne je to nulovy naklad.
+
+(V mych FLEETS behech se zadna straz neporusila - pad uzivatele s ntdll se mi
+tedy nepodarilo zopakovat, ale nastroj uz na nej je pripraveny.)
+
+#### 2. `(int)&loc_61A80` - konstanta jako navesti (37 mist)
+
+Prvni skutecny pad na FLEETS byl **deleni nulou** (`0xC0000094`) v
+`sub_911D5:7892`:
+
+```c
+result = a7 + a3 + 10 * v12 / ((int)&loc_61A80 / a5 + 1) - v14;
+```
+
+asm ma `mov eax, offset loc_61A80` a hned nad tim `mov eax, 7B890h` - jsou to
+proste **konstanty 0x61A80 (400000) a 0x7B890 (506000)**, jen z prvni z nich
+udelala IDA odkaz na navesti. S adresou navesti misto konstanty vychazel
+`(adresa / a5) + 1` klidne 0.
+
+Opraveno davkove: `(int)&loc_HHHHH` -> `0xHHHHH` na **37 mistech** (7 souboru).
+Katalogova chyba "konstanta jako navesti" - vlny 06 a 63 uz nekolik takovych
+resily jednotlive, tohle je zbytek.
+
+#### 3. `sub_77048` - ctyri spillnute registrove argumenty
+
+Po te oprave se pad posunul na `506000 / a4` se `a4 == 0`. Sonda
+(`PortDebug_Symbolize` nad `_ReturnAddress()`) ukazala volajiciho `sub_77048`.
+Jeho prolog je ucebnicovy priklad z katalogu:
+
+```
+enter 14Ch, 0
+push eax / push edx / push ebx / push ecx    ; ctyri registrove argumenty
+sub  ebp, 82h                                ; a jeste posun baze
+```
+
+Ty ctyri hodnoty skonci presne na `var_CE`/`var_D2`/`var_D6`/`var_DA`, ze
+kterych IDA udelala NEINICIALIZOVANE lokalky `v43`/`v42`/`v41`/`v40` - a prave
+ty jdou do `sub_911D5` jako souradnice a rozmery. Doplneno
+`v43 = (int16_t)a1;` ... `v40 = (int16_t)a4;`.
+
+#### 4. PREKAZKA: `sub_77048` si cte argumenty z RAMCE VOLAJICIHO
+
+Tim to ale neskonci. `sub_77048` ma v asm argumenty na offsetech
+`arg_46 = 56h` az `arg_6E = 7Eh`, tedy **hluboko nad navratovou adresou - to uz
+jsou lokalky/argumenty VOLAJICIHO**. A volajici (`sub_94C1D`, asm 0x94D63) pred
+volanim **nepushne vubec nic**, jen nastavi ctyri registry:
+
+    mov ecx, 0A9h / mov ebx, 13Eh / mov edx, 0EBh / mov eax, 132h / call sub_77048
+
+Je to tedy rucne psana konvence, kde si callee sahá do ramce volajiciho.
+Dekompilat z toho udelal `int v33[25]` - neinicializovane pole, ktere se predava
+jako 25 argumentu. **Dokud se tahle konvence nezrekonstruuje, FLEETS nemuze
+fungovat.** Je to prace na samostatnou vlnu: projit, co presne `sub_94C1D` na
+tech offsetech ma, a predat to explicitne.
+
+Do te doby je v `sub_911D5` **zachranna brzda** (ne oprava): pri nulovem deliteli
+se jednou nahlasi `sub_911D5: nulovy delitel ... - viz vlna 100` a funkce se
+vrati, takze FLEETS nepada na deleni nulou. Dalsi pad na te obrazovce uz je
+`sub_77FF5:5402`, tedy kontrola seznamu lodi, ktera dostava nesmyslne id -
+tataz pricina.
+
+#### Stav obrazovek
+
+| obrazovka | stav |
+|---|---|
+| mapa galaxie | funguje |
+| COLONIES | funguje (vcetne RETURN na mapu) |
+| PLANETS | funguje, kompletni tabulka |
+| FLEETS | NEFUNGUJE - viz bod 4 |
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- COLONIES i PLANETS dal funguji (proklikane po techto zmenach).
