@@ -5283,7 +5283,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   sub_B7289();
   sub_132C80(100);
   v7 = sub_131922(0, 255);
-  sub_1077D(v7);
+  sub_1077D(v7, 0, 0, 0);
   sub_C5C44();
   sub_123E6C((int)unk_17CF00, 1);
   sub_124C08();
@@ -5299,7 +5299,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
     sub_11C2F0();
     sub_B6D05();
     LOBYTE(v8) = sub_B7289();
-    v9 = sub_1077D(v8);
+    v9 = sub_1077D(v8, 0, 0, 0);
     v10 = sub_1171AB(v9, -1, 1, 479);
     sub_114177();
     if ( v10 )

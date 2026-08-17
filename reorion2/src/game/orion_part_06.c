@@ -4666,7 +4666,7 @@ int16_t sub_7743A(int a1)
   sub_77A74(0xD0u, 232, 226, a1, 0);
   sub_124DEC();
   v3 = sub_138CEE(0, 0, 639, 479);
-  sub_1077D(v3);
+  sub_1077D(v3, 0, 0, 0);
   v4 = 434;
   v5 = (int16_t)(word_19BF06 + 157);
   sub_12E148(208, (int16_t)(word_19BF06 + 37), 434, v5, dword_19BED4);
@@ -4682,7 +4682,7 @@ int16_t sub_7743A(int a1)
     v4 = 589;
     v6 = 20;
     v9 = sub_138CEE(5, 20, 589, 459);
-    sub_1077D(v9);
+    sub_1077D(v9, 0, 0, 0);
   }
   return sub_779FC(v8, v6);
 }
@@ -4751,7 +4751,7 @@ void sub_77658(int a1)
       sub_124DEC();
       v5 = 479;
       v6 = sub_138CEE(0, 0, 639, 479);
-      sub_1077D(v6);
+      sub_1077D(v6, 0, 0, 0);
       sub_1191CA((int)sub_778E4, 2);
       while ( 1 )
       {
@@ -4759,7 +4759,7 @@ void sub_77658(int a1)
         v8 = sub_1171AB(v7, 2, 639, v5);
         v5 = v8;
         if ( !(_WORD)v8 )
-          sub_1077D(v8);
+          sub_1077D(v8, 0, 0, 0);
         v9 = sub_12C2C6(2);
         if ( (_WORD)v5 == word_19BF02 || (_WORD)v5 == (_WORD)v13 )
         {

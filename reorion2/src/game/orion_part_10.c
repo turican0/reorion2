@@ -2225,6 +2225,19 @@ unsigned int sub_A1C74(
   int v40; // [esp+18h] [ebp-8h] BYREF
   int v41; // [esp+1Ch] [ebp-4h]
 
+  /* DOCASNA SONDA (vlna 105): pad je v teto funkci (SEH rip = sub_A1C74+0xfc)
+     s ctenim z 0xFFFFFFFFFFFFFFFF. Vypis prvnich par volani i s ukazateli. */
+  {
+    static int rep = 0;
+    if ( rep < 6 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_A1C74: r=%d a2=%d a3=%d a4=%d a5=%d a6=%d a7=%d a8=%p a9=%p a10=%p",
+                         (int)(int16_t)result, a2, a3, a4, a5, a6, a7,
+                         (void *)a8, (void *)a9, (void *)a10);
+      PortDebug_Backtrace("sub_A1C74", 4);
+    }
+  }
   v37 = result;
   result = (int16_t)result;
   if ( (int16_t)result > -1 && (int16_t)result < word_19999A && !byte_19D32F )
@@ -4069,7 +4082,7 @@ void sub_A404E( int a1)
           sub_1172D4();
           v21 = sub_124D41();
           v22 = sub_84E9D(v21);
-          sub_1077D(v22);
+          sub_1077D(v22, 0, 0, 0);
           sub_1172FC();
         }
       }
@@ -5768,7 +5781,7 @@ int sub_A62E0(int a1)
 //----- (000A63DD) --------------------------------------------------------
 int16_t sub_A63DD(int a1, int a2)
 {
-  sub_1077D();
+  sub_1077D(0, 0, 0, 0);
   --word_182433;
   sub_10FEC1((int)&unk_19D330);
   sub_1172FC();
@@ -5812,14 +5825,14 @@ int16_t sub_A644D( int a1, int a2, int a3, int a4)
     while ( sub_124075() )
     {
       sub_12C2A0();
-      sub_1077D();
+      sub_1077D(0, 0, 0, 0);
       sub_12C2C6(1);
     }
     sub_119441();
     do
     {
       sub_12C2A0();
-      sub_1077D();
+      sub_1077D(0, 0, 0, 0);
       v4 = sub_12C2C6(1);
       result = sub_1171AB(v4, a2, a3, a4);
     }
@@ -7380,7 +7393,7 @@ LABEL_113:
       }
       sub_A9223();
       v79 = sub_12C2C6(1);
-      sub_1077D(v79);
+      sub_1077D(v79, 0, 0, 0);
       sub_12B65C();
       sub_128BE7();
     }
@@ -7675,7 +7688,7 @@ _BOOL1 sub_A94A1()
     sub_12B634();
     sub_A9223();
     v1 = sub_12C2C6(1);
-    sub_1077D(v1);
+    sub_1077D(v1, 0, 0, 0);
     sub_12B65C();
     sub_128BE7();
     result = word_18248E == 0;
@@ -9746,7 +9759,7 @@ LABEL_12:
       sub_12A478(v18 + v14, v12 + v13, dword_19283C);
       sub_12B65C();
       LOWORD(v9) = sub_128BE7();
-      sub_1077D(v9);
+      sub_1077D(v9, 0, 0, 0);
       sub_12C2C6(1);
       v16 += v15;
     }
@@ -10024,7 +10037,7 @@ int sub_ACF83( int a1, int a2, int a3)
       sub_12B65C();
       v13 = (v12 + 1) % (int16_t)v37;
       LOWORD(v14) = sub_128BE7();
-      sub_1077D(v14);
+      sub_1077D(v14, 0, 0, 0);
       v46 = v13;
       sub_1344B0((int16_t *)&v40, (int16_t *)&v43, v44, v36, v39, v34, v41);
     }
@@ -10100,7 +10113,7 @@ LABEL_33:
       sub_1320E9((_BYTE *)dword_192950);
       sub_12B65C();
       LOWORD(v21) = sub_128BE7();
-      sub_1077D(v21);
+      sub_1077D(v21, 0, 0, 0);
       v42 += v38;
     }
     v20 = 36;
@@ -10200,7 +10213,7 @@ void sub_AD3CA( int a1, int a2)
       sub_12B65C();
       v11 = sub_1320E9((_BYTE *)dword_192950);
       v12 = sub_2F4EE(v11);
-      sub_1077D(v12);
+      sub_1077D(v12, 0, 0, 0);
       ++v9;
       sub_12C2C6(1);
     }
@@ -10469,7 +10482,7 @@ _BOOL1 sub_AD98A( int a1, int a2, int a3)
       }
       sub_128BE7();
       sub_12B65C();
-      sub_1077D(v14);
+      sub_1077D(v14, 0, 0, 0);
       sub_12C2C6(2);
       v10 += v31;
     }
@@ -11036,7 +11049,7 @@ LABEL_90:
       }
       sub_12B65C();
       LOWORD(v37) = sub_128BE7();
-      sub_1077D(v37);
+      sub_1077D(v37, 0, 0, 0);
       sub_12C2C6(1);
     }
     v33 = 52;
@@ -11547,13 +11560,13 @@ LABEL_87:
       sub_12A478(SWORD4(v61),(int)LODWORD(v61), dword_19283C);
       sub_12B65C();
       LOWORD(v48) = sub_128BE7();
-      sub_1077D(v48);
+      sub_1077D(v48, 0, 0, 0);
       sub_12C2C6(1);
       LOWORD(v65) = WORD2(v61) + v65;
     }
     v49 = sub_124D41();
     v50 = sub_2F4EE(v49);
-    sub_1077D(v50);
+    sub_1077D(v50, 0, 0, 0);
 LABEL_84:
     sub_46CC8(word_1998F8, v14);
     sub_2C601(v51, v14);
@@ -11678,7 +11691,7 @@ LABEL_37:
               sub_12A478(v62, v60, a5);
               sub_12B65C();
               LOWORD(v20) = sub_128BE7();
-              sub_1077D(v20);
+              sub_1077D(v20, 0, 0, 0);
               sub_12C2C6(1);
               LOWORD(v65) = WORD2(v66) + v65;
             }
@@ -11793,7 +11806,7 @@ LABEL_19:
     {
       v11 = sub_124D41();
       v12 = sub_2F4EE(v11);
-      sub_1077D(v12);
+      sub_1077D(v12, 0, 0, 0);
     }
     if ( a4 == 1 )
     {

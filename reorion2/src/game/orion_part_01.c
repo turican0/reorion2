@@ -2231,7 +2231,7 @@ void sub_12479(int a1, int a2, int a3, int a4, int a5, int a6)
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
   sub_E64F4();
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
-  sub_E5832();
+  sub_E5832(0, 0, 0, 0);
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
   sub_10011B();
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
@@ -8615,7 +8615,7 @@ void sub_1AEB5( int a1, int a2)
 //----- (0001AFA0) --------------------------------------------------------
 int sub_1AFA0(__int16 a1, __int16 a2)
 {
-  return sub_1AFA6(a1, 1, a2);
+  return sub_1AFA6(a1, 1, a2, 0);
 }
 // 1AFA6: using guessed type int sub_1AFA6(_DWORD, _DWORD);
 

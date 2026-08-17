@@ -533,14 +533,14 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
 
   do
   {
-    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
     if ( (int16_t)measured <= (int16_t)maxHeight )
       break;
     fits = 1;
     /* 1) zmensuj rozestup radku, dokud je vetsi nez minimum pro dany font */
     while ( 1 )
     {
-      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
       if ( (int16_t)measured <= (int16_t)maxHeight )
         break;
       if ( (uint8_t)byte_1B3EC8 <= (uint8_t)byte_183684[(int16_t)dword_1B61E8] )
@@ -551,14 +551,14 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
     /* 2) pak word_1B3EA4, ale nikdy pod 2 */
     while ( 1 )
     {
-      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+      measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
       if ( (int16_t)measured <= (int16_t)maxHeight || word_1B3EA4 <= 2 )
         break;
       fits = 0;
       --word_1B3EA4;
     }
     /* 3) a nakonec o font niz */
-    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str);
+    measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
     if ( (int16_t)measured > (int16_t)maxHeight && (int16_t)dword_1B61E8 > 0 )
     {
       fontChanged = 1;

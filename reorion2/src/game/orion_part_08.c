@@ -1564,7 +1564,7 @@ void sub_8A6C2()
     v9 = sub_84E9D(v8);
     ServiceAudioTick_FE8BE(v9, 0, 0, 0);
     v10 = sub_131922(0, 255);
-    sub_1077D(v10);
+    sub_1077D(v10, 0, 0, 0);
     sub_123E6C((int)unk_17CF00, 1);
     if ( byte_199F38 && !sub_918D5(2) )
     {
@@ -5869,7 +5869,7 @@ void sub_8F1C4(void (*a1)(int, int), _BYTE *a2, int a3)
   {
     sub_C5C44();
   }
-  sub_1077D(v4);
+  sub_1077D(v4, 0, 0, 0);
   byte_199F38 = 0;
   sub_1172FC();
 }
@@ -8452,7 +8452,7 @@ void sub_91B89(int64_t a1, int a2, int16_t *a3)
   if ( word_19994C )
   {
     v3 = sub_1113CC(dword_192ED4, SHIDWORD(a1));
-    a1 = sub_91BD4(v3);
+    a1 = sub_91BD4(v3, 0);
     word_19994C = 0;
   }
   ServiceAudioTick_FE8BE(a1, SHIDWORD(a1), a2, a3);

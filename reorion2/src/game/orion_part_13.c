@@ -1051,7 +1051,7 @@ void sub_C702E( int a1, int16_t *a2)
     v5 = !byte_1831C4 || !sub_8A188(a1);
     if ( v5 && !byte_1831B6 )
     {
-      sub_1077D(v5);
+      sub_1077D(v5, 0, 0, 0);
       byte_182ACA = 1;
       sub_107C2((int (**)(void))&dword_1A11C0);
     }
@@ -3705,7 +3705,7 @@ void sub_CA6A6(_BYTE *a1, _BYTE *a2, int *a3, int a4, int a5, int a6)
   dword_1A11AC = (int)v8;
   sub_107AF(&dword_1A11B0);
   v7 = sub_107C2(&dword_1A11B0);
-  sub_1077D(v7);
+  sub_1077D(v7, 0, 0, 0);
   sub_CA6FB((int16_t *)dword_1A11AC, a1, a2, (int)a3, a4, a5, a6);
   sub_CBAD0((int)v8, 0, (int)a2, a3);
 }
@@ -4621,7 +4621,7 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
   v30 = 0;
   sub_CADC8(a2, &v25);
   sub_CB23C();
-  sub_1077D(v6);
+  sub_1077D(v6, 0, 0, 0);
   sub_124C08();
   if ( a2 == 2 )
   {
@@ -4705,7 +4705,7 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
     v5 = (int)&v28;
     HIDWORD(v10) = sub_CB88C((int16_t *)&v26, (int)&v24, &v28, &v25);
     sub_CB23C();
-    sub_1077D(v10);
+    sub_1077D(v10, 0, 0, 0);
     if ( a2 == 2 )
     {
       a4 = (int *)(intptr_t)*(uint32_t *)(dword_1A11AC + 31);

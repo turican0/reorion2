@@ -11107,3 +11107,66 @@ brzda, zadny pad. Obrazovka FLEET OPERATIONS se kresli cela.
 - `-t:Rebuild` bez chyb;
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - proklikano v portu: mapa -> FLEETS, `reorion2_crash.log` prazdny.
+
+### Vlna 104: LEADERS - argumenty `sub_1338C9` jsou BAJTY, ne inty
+
+Uzivatel: pad pri otevreni LEADERS. Zasobnik (uz plne symbolizovany):
+
+    sub_1338C9 (orion_part_20.c:4230)   <- cteni pres nesmyslny ukazatel
+    sub_133237 (4088) / sub_A404E (orion_part_10.c:4064) / sub_A3FE6 (3951)
+    sub_94C1D  (orion_part_09.c:1090)
+
+`sub_1338C9` hleda nejblizsi barvu palety a indexuje tabulku kosu
+`dword_1BB914[v11]` (65 prvku). asm prologu:
+
+```
+mov [ebp+var_4],  al      ; a1 = AL   -> BAJT
+mov [ebp+var_C],  dl      ; a2 = DL
+mov [ebp+var_10], bl      ; a3 = BL
+xor eax, eax / mov al, [ebp+var_4] / mov [ebp+var_38], eax   ; v11 = (uint8_t)a1
+```
+
+Argumenty jsou tedy **bajty** a do 32bitovych lokalek se dostanou NULOVE
+rozsirene. Port je mel jako `unsigned int` a bral cele, takze cokoliv nad 255
+slo rovnou do indexu tabulky. Opraveno na `(uint8_t)`.
+
+#### Ale to neni cely problem
+
+I po maskovani prichazeji hodnoty `a1 = 127`, `232`, `252` pri `a2 = a3 = 1`.
+Tabulka ma 65 prvku, takze i bajt je moc. Barevne slozky maji byt 6bitove
+(0..63) - `252` je podezrele presne `63 * 4`, tedy 8bitova hodnota.
+
+Stopa vede pres `sub_133237` (michani barev) do `sub_131ACB`, ktera plni
+zaznam (vaha, R, G, B) v `byte_1BA318`. Vsechna jeji volani jsou v
+`orion_part_03.c` kolem radku 12275-12414 a maji tvar
+
+```c
+sub_131ACB(v83, v84 + 13, v84 + 30, 63, v149);
+```
+
+tedy slozky odvozene z `v84`. **To je prave ta oblast, kde dekompilat pouziva
+`*(_UNKNOWN **)((char *)&retaddr + 2)`** (viz radky 12036 a 12477) - IDA tam
+ztratila rozvrzeni ramce, takze `v84` a spol. jsou nejspis smeti. Dokud se
+tahle oblast nezrekonstruuje, michani barev bude davat nesmysly.
+
+Do te doby je v `sub_1338C9` **zachranna brzda**: pri hodnote nad 64 se to
+jednou nahlasi (vcetne backtrace) a vrati 0, misto aby se cetla tabulka mimo
+rozsah.
+
+#### Kde LEADERS konci ted
+
+    SYMBOL SEH.rip = sub_A1C74+0xfc  (orion_part_10.c:2235)
+      #1 sub_9264E+0x61f  (orion_part_08.c:9235)
+
+Cteni z 0xFFFFFFFFFFFFFFFF v `*a9 = sub_11C3C5(...)`. Volani z `sub_9264E`
+jsem proti asm zkontroloval (0x929AC) a **argumenty sedi** - ctyri registry
+(eax, edx=132h, ebx=11h, ecx) a sest zasobnikovych (0,0,0,ptr,0,ptr), vcetne
+`a9 = 0`, ktere by melo poslat beh do vetve `else`. Priste tedy zacit sondou na
+skutecne hodnoty `a8`/`a9` v `sub_A1C74` - je mozne, ze radek 2235 je jen
+nejblizsi mapovani RIP a fault je jinde v te funkci.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- mapa, COLONIES, PLANETS a FLEETS dal funguji; LEADERS jeste ne.

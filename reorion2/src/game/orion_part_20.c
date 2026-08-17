@@ -4195,14 +4195,21 @@ int sub_1338C9( unsigned int a1, unsigned int a2, unsigned int a3)
      mel jako `unsigned int` a bral cele, takze cokoliv nad 255 letelo do
      indexu tabulky kosu `dword_1BB914[v11]` (65 prvku) a cetlo se pres
      nesmyslny ukazatel - pad na obrazovce LEADERS.
-     DOCASNA SONDA: kdyz index presto vyleze z rozsahu, nahlas to. */
+     ZACHRANNA BRZDA (ne oprava): i po maskovani chodi hodnoty jako 252, tedy
+     8bitove barevne slozky misto 6bitovych - viz PROGRESS.md vlna 104, kde je
+     stopa k `sub_131ACB` a oblasti orion_part_03.c ~12275. Do te doby radeji
+     jednou nahlasit a vratit 0 nez cist tabulku kosu mimo rozsah. */
   v11 = (uint8_t)a1;
   v8 = (uint8_t)a1;
   v4 = (uint8_t)a2;
   v5 = (uint8_t)a2;
   v15 = (uint8_t)a3;
   v13 = (uint8_t)a3;
-  if ( (uint8_t)a1 > 64 || (uint8_t)a2 > 64 || (uint8_t)a3 > 64 )
+  /* Prah je 74, ne 64: prvni pouziti indexu je az PO `v11 -= 10`, takze
+     hodnota 74 da index 64 - a to je posledni platny prvek tabulky kosu
+     (65 prvku, `if (v8 >= 53) v8 = 64` to potvrzuje). Zmereno: bezne chodi
+     73/74, coz je V PORADKU; problem jsou az 127/232/252. */
+  if ( (uint8_t)a1 > 74 || (uint8_t)a2 > 74 || (uint8_t)a3 > 74 )
   {
     static int rep = 0;
     if ( rep < 5 )
@@ -4211,6 +4218,19 @@ int sub_1338C9( unsigned int a1, unsigned int a2, unsigned int a3)
       PortDebug_CrashLog("sub_1338C9: mimo rozsah a1=%u a2=%u a3=%u",
                          (unsigned)(uint8_t)a1, (unsigned)(uint8_t)a2, (unsigned)(uint8_t)a3);
       PortDebug_Backtrace("sub_1338C9", 5);
+      /* DOCASNE (vlna 105): kde vznikaji ty velke hodnoty - v michaci tabulce,
+         nebo uz v palete? byte_1BA318 = (vaha, R, G, B) po 4 B, byte_1BB358
+         = paleta po 4 B. Obe maji byt 0..63 (resp. vaha 0..100). */
+      PortDebug_CrashLog("  michani j=0..3: (%u,%u,%u,%u) (%u,%u,%u,%u) (%u,%u,%u,%u) (%u,%u,%u,%u)",
+        (unsigned)(uint8_t)byte_1BA318[0], (unsigned)(uint8_t)byte_1BA318[1], (unsigned)(uint8_t)byte_1BA318[2], (unsigned)(uint8_t)byte_1BA318[3],
+        (unsigned)(uint8_t)byte_1BA318[4], (unsigned)(uint8_t)byte_1BA318[5], (unsigned)(uint8_t)byte_1BA318[6], (unsigned)(uint8_t)byte_1BA318[7],
+        (unsigned)(uint8_t)byte_1BA318[8], (unsigned)(uint8_t)byte_1BA318[9], (unsigned)(uint8_t)byte_1BA318[10], (unsigned)(uint8_t)byte_1BA318[11],
+        (unsigned)(uint8_t)byte_1BA318[12], (unsigned)(uint8_t)byte_1BA318[13], (unsigned)(uint8_t)byte_1BA318[14], (unsigned)(uint8_t)byte_1BA318[15]);
+      PortDebug_CrashLog("  paleta i=0..3: (%u,%u,%u,%u) (%u,%u,%u,%u) (%u,%u,%u,%u) (%u,%u,%u,%u)",
+        (unsigned)(uint8_t)byte_1BB358[0], (unsigned)(uint8_t)byte_1BB358[1], (unsigned)(uint8_t)byte_1BB358[2], (unsigned)(uint8_t)byte_1BB358[3],
+        (unsigned)(uint8_t)byte_1BB358[4], (unsigned)(uint8_t)byte_1BB358[5], (unsigned)(uint8_t)byte_1BB358[6], (unsigned)(uint8_t)byte_1BB358[7],
+        (unsigned)(uint8_t)byte_1BB358[8], (unsigned)(uint8_t)byte_1BB358[9], (unsigned)(uint8_t)byte_1BB358[10], (unsigned)(uint8_t)byte_1BB358[11],
+        (unsigned)(uint8_t)byte_1BB358[12], (unsigned)(uint8_t)byte_1BB358[13], (unsigned)(uint8_t)byte_1BB358[14], (unsigned)(uint8_t)byte_1BB358[15]);
     }
     return 0;
   }

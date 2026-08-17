@@ -178,7 +178,7 @@ int sub_F55A4(int a1, int a2, int a3, int a4)
   }
   v7 = sub_124D41();
   sub_F1075(v7, v4);
-  return sub_1077D(v8);
+  return sub_1077D(v8, 0, 0, 0);
 }
 // F5679: variable 'v8' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);

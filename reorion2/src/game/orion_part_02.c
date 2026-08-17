@@ -4851,7 +4851,7 @@ void sub_29837(int a1, int a2, int a3, int i)
           }
           v38 = sub_124D41();
           v39 = sub_2F4EE(v38);
-          sub_1077D(v39);
+          sub_1077D(v39, 0, 0, 0);
           sub_2864A(*(uint8_t *)(dword_192864 + 313 * word_1998F8 + 32), dword_192864, v15, i);
         }
         while ( v14 < 8 && !(uint16_t)sub_3897A(word_1998F8) );
@@ -6781,10 +6781,10 @@ int sub_2C555()
   sub_128EDE(401, 379, 488, 467, 0, 199);
   sub_3459E(401, 379);
   word_1998F4 = 666;
-  sub_2F4EE();
+  sub_2F4EE(0);
   sub_11E718();
   v1 = sub_124DEC();
-  result = sub_1077D(v1);
+  result = sub_1077D(v1, 0, 0, 0);
   word_1998E0 = 1;
   return result;
 }
@@ -6819,7 +6819,7 @@ void sub_2C601(int a1, int a2)
     sub_124E36();
     v3 = sub_124D41();
     v4 = sub_2F4EE(v3);
-    sub_1077D(v4);
+    sub_1077D(v4, 0, 0, 0);
   }
 }
 // 1077D: using guessed type int sub_1077D(_DWORD);
@@ -9790,7 +9790,7 @@ void sub_31F25( int a1)
   sub_107C2(&dword_19B568);
   sub_1174CB();
   v2 = sub_124E36();
-  sub_1077D(v2);
+  sub_1077D(v2, 0, 0, 0);
   sub_1191CA((int)sub_30631, 1);
   v15 = v1;
   sub_1112EC(dword_192ED4, 1);
@@ -9847,7 +9847,7 @@ void sub_31F25( int a1)
     v8 = (uint16_t)sub_1171AB(v9, 0, 639, 479) == v10;
     sub_124D41();
     sub_30631();
-    v9 = sub_1077D(v11);
+    v9 = sub_1077D(v11, 0, 0, 0);
   }
   if ( !v15 )
   {
@@ -10708,7 +10708,7 @@ void sub_32D94( int a1)
         v44,
         v45,
         v46);
-      sub_1077D(v25);
+      sub_1077D(v25, 0, 0, 0);
       sub_12C2C6(1);
       if ( (_WORD)v45 == word_1998AC )
         HIDWORD(v44) -= HIDWORD(v39);
@@ -11024,7 +11024,7 @@ int sub_33C05( int a1)
     v3 = sub_2E2CD();
   sub_2F4EE(v3);
   v4 = sub_124DEC();
-  sub_1077D(v4);
+  sub_1077D(v4, 0, 0, 0);
   sub_123E6C((int)unk_17CF00, 1);
   for ( i = 0; i < 81; ++i )
   {
@@ -11279,7 +11279,7 @@ int sub_33F60( int a1, int a2, int a3, int a4)
     sub_1344B0((int16_t *)&v24, (int16_t *)&v26, v25, v34, v29, v33, v32);
     v14 = sub_127C27((int)aCmbtmislLbx_0, v11, dword_193174);
     v15 = sub_12A478(v24 - 17, v26 - 17, v14);
-    sub_1077D(v15);
+    sub_1077D(v15, 0, 0, 0);
     sub_12C2C6(1);
   }
   if ( v35 )
@@ -11302,7 +11302,7 @@ int sub_33F60( int a1, int a2, int a3, int a4)
     sub_12B753(v20, v18);
     sub_12A478(v29 - 12, v33 - 12, v20);
     sub_A9223();
-    sub_1077D(v21);
+    sub_1077D(v21, 0, 0, 0);
     ++v18;
     sub_12C2C6(1);
   }
@@ -11832,7 +11832,7 @@ void sub_34C42(int a1, int a2)
     dword_19284C = sub_127C27((int)aCombatLbx_0, 9, dword_193174);
     v12 = 7;
     v9 = sub_12A478(248, 298, dword_19284C);
-    sub_1077D(v9);
+    sub_1077D(v9, 0, 0, 0);
   }
   else
   {
@@ -11845,7 +11845,7 @@ void sub_34C42(int a1, int a2)
     sub_2F4EE(v5);
     sub_34921();
     v6 = sub_124E36();
-    sub_1077D(v6);
+    sub_1077D(v6, 0, 0, 0);
     word_199876 = 0;
   }
   sub_1172D4();
@@ -11876,7 +11876,7 @@ void sub_34C42(int a1, int a2)
     sub_12A478(267, a2, dword_19282C);
     sub_12B65C();
     LOWORD(v10) = sub_128BE7();
-    sub_1077D(v10);
+    sub_1077D(v10, 0, 0, 0);
   }
   sub_465D0();
   sub_46CC8(word_1998F8, a2);
@@ -11967,7 +11967,7 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
   sub_2F4EE(v6);
   sub_1174CB();
   v7 = sub_124E36();
-  sub_1077D(v7);
+  sub_1077D(v7, 0, 0, 0);
   sub_119281();
   sub_1191CA((int)sub_34EC8, 1);
   sub_11C2F0();
@@ -11983,7 +11983,7 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
   v19 = sub_114C72(asc_178CD5, 1);
   sub_124D41();
   sub_34EC8();
-  sub_1077D(v12);
+  sub_1077D(v12, 0, 0, 0);
   LOWORD(v13) = sub_123E6C((int)unk_17CF00, 1);
   while ( 1 )
   {
@@ -12013,7 +12013,7 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
       break;
     sub_124D41();
     sub_34EC8();
-    v13 = sub_1077D(v14);
+    v13 = sub_1077D(v14, 0, 0, 0);
   }
   sub_1113CC(dword_192ED4, 1);
   sub_11C2F0();
