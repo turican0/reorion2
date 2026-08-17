@@ -1105,7 +1105,10 @@ int sub_732D6( int a1, int a2, int a3)
   int v11; // ecx
   int v12; // eax
   int v13; // [esp+0h] [ebp-30h]
-  int v14; // [esp+8h] [ebp-28h] BYREF
+  /* vlna 102: `sub_76028` zapisuje pres `_WORD *` (dva bajty) - jako `int`
+     zustavala horni pulka neinicializovana a do blitu sly souradnice typu
+     y = 19731 (zachytila je brzda v sub_14852C). */
+  int16_t v14; // [esp+8h] [ebp-28h] BYREF
   _WORD *v15; // [esp+Ch] [ebp-24h]
   int v16; // [esp+10h] [ebp-20h]
   int v17; // [esp+14h] [ebp-1Ch]
@@ -1113,7 +1116,7 @@ int sub_732D6( int a1, int a2, int a3)
   int v19; // [esp+1Ch] [ebp-14h]
   int v20; // [esp+20h] [ebp-10h]
   int v21; // [esp+24h] [ebp-Ch]
-  int v22; // [esp+28h] [ebp-8h] BYREF
+  int16_t v22; // [esp+28h] [ebp-8h] BYREF
   char v23; // [esp+2Ch] [ebp-4h]
 
   v23 = 0;
@@ -3061,8 +3064,13 @@ void sub_755D2()
 {
   int16_t i; // di
   int v1; // esi
-  int v2; // [esp+0h] [ebp-8h] BYREF
-  int v3; // [esp+4h] [ebp-4h] BYREF
+  /* PORT (vlna 102): `sub_773B7` zapisuje pres `_WORD *`, tedy jen DVA BAJTY.
+     Dokud tu byly `int`y, zustala horni pulka neinicializovana a `v3 + x`
+     vychazelo treba -65526 (0xFFFF000A - dolni pulka 10 je spravna sirka).
+     Hra to sama odchytila: `ERROR: Bad Rect in Add_Hidden_Field` s obdelnikem
+     (-10,-6265)-(-65536,-6256) na obrazovce FLEETS. */
+  int16_t v2; // [esp+0h] [ebp-8h] BYREF
+  int16_t v3; // [esp+4h] [ebp-4h] BYREF
 
   for ( i = 0; i < word_1999F8; ++i )
   {

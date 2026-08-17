@@ -18078,12 +18078,14 @@ extern int dword_1905F8[32];
 extern int dword_190678[4];
 extern int dword_190688[10];
 extern int dword_1906B0[];
-extern int16_t word_1906C0[];
-extern int16_t word_1906C2[];
-extern int16_t word_1906C4[];
-extern int16_t word_1906C6[];
-extern int16_t word_1906C8[3428];   /* vlna 85 */
-#define word_1906CA  (word_1906C8 + 1)   /* vlna 85 */
+/* vlna 103: souvisly blok zaznamu po 12 B od 0x1906C0 (asm 0x1886C0..0x18A190).
+   Kod indexuje vsechna pole jako `6 * i`, takze musi jit o JEDNO pole. */
+extern int16_t word_1906C0[3432];
+#define word_1906C2  (word_1906C0 + 1)
+#define word_1906C4  (word_1906C0 + 2)
+#define word_1906C6  (word_1906C0 + 3)
+#define word_1906C8  (word_1906C0 + 4)
+#define word_1906CA  (word_1906C0 + 5)
 extern int dword_192190[32];   /* vlna 73 */
 #define dword_19220C (dword_192190[31])
 extern int dword_192210[6];    /* vlna 73 */

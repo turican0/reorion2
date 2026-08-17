@@ -428,10 +428,6 @@ int unk_1C95D8;
    to realna CRT funkce a dekompilovany kod ji genuinne pouziva (napr.
    orion_part_12.c, orion_part_21.c, orion_part_24.c). */
 int word_18F500;
-int word_1906C0;
-int word_1906C2;
-int word_1906C4;
-int word_1906C6;
 /* vlna 85: `word_1906C8` NENI funkce, ale POLE pozic hvezd na mape -
    zaslepka se stejnym jmenem kolidovala s definici v orion_data.c a odkaz
    mohl skoncit v kodu (zmereno: zapis na 0x2149DF uvnitr modulu). */

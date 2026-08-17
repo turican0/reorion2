@@ -22,6 +22,7 @@
 /* vlna 92: dopredna deklarace - definice je az na konci souboru. */
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr);
 extern "C" void PortDebug_CrashLog(const char* fmt, ...);
+extern "C" void PortDebug_Backtrace(const char* tag, int frames);
 
 static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
 {
@@ -274,6 +275,40 @@ static void StartWatchdog()
 
 // Prelozi adresu na jmeno funkce + radek (vlna 26 pokr. 37). Pouziva se z
 // dekompilovaneho kodu k identifikaci volajiciho pres _ReturnAddress().
+// PORT (vlna 103): vypis N ramcu zasobniku z MISTA VOLANI v hernim kodu.
+// `PortDebug_Symbolize(_ReturnAddress())` rekne jen primeho volajiciho; kdyz je
+// chyba o dva-tri ramce vys (typicky u obecnych kreslicich funkci jako
+// sub_12A478, kterou vola pul hry), je potreba videt cely retez.
+extern "C" void PortDebug_Backtrace(const char* tag, int frames)
+{
+    static bool btInited = false;
+    HANDLE proc = GetCurrentProcess();
+    if (!btInited) { SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME); SymInitialize(proc, nullptr, TRUE); btInited = true; }
+    if (frames <= 0 || frames > 24) frames = 8;
+    void* stack[24] = {0};
+    USHORT got = CaptureStackBackTrace(1, (ULONG)frames, stack, nullptr);
+    unsigned char btbuf[sizeof(SYMBOL_INFO) + 256] = {0};
+    SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(btbuf);
+    sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+    sym->MaxNameLen = 255;
+    for (USHORT i = 0; i < got; ++i) {
+        DWORD64 disp = 0;
+        IMAGEHLP_LINE64 line = {}; line.SizeOfStruct = sizeof(line);
+        DWORD ld = 0;
+        if (SymFromAddr(proc, (DWORD64)stack[i], &disp, sym)) {
+            if (SymGetLineFromAddr64(proc, (DWORD64)stack[i], &ld, &line))
+                std::fprintf(stderr, "BT %s #%u %s+0x%llx  (%s:%lu)\n", tag, i, sym->Name,
+                             (unsigned long long)disp, line.FileName, line.LineNumber);
+            else
+                std::fprintf(stderr, "BT %s #%u %s+0x%llx\n", tag, i, sym->Name,
+                             (unsigned long long)disp);
+        } else {
+            std::fprintf(stderr, "BT %s #%u %p\n", tag, i, stack[i]);
+        }
+    }
+    std::fflush(stderr);
+}
+
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr)
 {
     static bool inited = false;

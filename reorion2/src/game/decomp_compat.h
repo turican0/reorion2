@@ -171,6 +171,8 @@ int PortDebug_EnvInt(const char* name, int fallback);
 void PortDebug_Message(const char* text);
 /* vlna 94: radek do reorion2_crash.log (prezije i beh pod debuggerem). */
 void PortDebug_CrashLog(const char* fmt, ...);
+/* vlna 103: N ramcu zasobniku z aktualniho mista (viz reorion2.cpp). */
+void PortDebug_Backtrace(const char* tag, int frames);
 /* Vsync cekani (port 0x3DA) -> vykresleni snimku + ~70Hz takt, vlna 13. */
 void PortVga_WaitVsync(void);
 /* Stejne, ale ~1 BIOS tik (~55ms) mezi Present() volanimi - pro busy-wait

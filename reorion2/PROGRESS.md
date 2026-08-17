@@ -10996,3 +10996,114 @@ Dalsi krok je najit, odkud ta souradnice leze (okoli `sub_732D6` /
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - COLONIES i PLANETS dal funguji, mapa se kresli;
 - FLEETS jeste ne - konci na `ERROR: Bad Rect in Add_Hidden_Field`.
+
+### Vlna 102: FLEET OPERATIONS BEZI
+
+Navazuje na vlnu 101. Zbyvala hlaska, kterou si hra hlida sama:
+
+    KONEC (sub_126487): ERROR: Bad Rect in Add_Hidden_Field
+
+`sub_11438B` (Add_Hidden_Field) doplnena o vypis obdelniku a volajiciho - ta
+hlaska sama o sobe nerika ani jedno a je to fatalni konec, takze jinak se to
+nezjisti. Vysledek:
+
+    sub_11438B: obdelnik (-10,-6265)-(-65536,-6256)
+    SYMBOL sub_11438B.volajici = sub_755D2+0xd5  (orion_part_06.c:3071)
+
+**-65536 = 0xFFFF0000**, tedy hodnota, jejiz DOLNI pulka je v poradku (10 =
+sirka) a horni je smeti. Klasicky priznak.
+
+#### Pricina: 16bitovy vystup do 32bitove lokalky
+
+```c
+int v2, v3;                 // BYREF
+sub_773B7(i, &v3, &v2);     // ...ale sub_773B7 ma `_WORD *a2, _WORD *a3`
+sub_11438B(x, y, v3 + x, v2 + y, ...);
+```
+
+`sub_773B7` zapisuje `*a2 = *v7;`, tedy **dva bajty**. Dokud byly `v2`/`v3`
+`int`y, horni pulka zustala neinicializovana a soucet vysel nesmyslny.
+Opraveno na `int16_t` (BYREF na `_WORD *` musi byt 16bitovy).
+
+Tataz chyba jeste jednou: `sub_732D6` predava `&v14` a `&v22` do `sub_76028`
+(taky `_WORD *`) - opraveno stejne.
+
+**Recept:** kdykoliv dekompilat predava `&lokalka` do parametru typu
+`_WORD *` / `int16_t *`, musi byt ta lokalka 16bitova. Grep na `BYREF` u
+`int` lokalek je dobre lovisti - `sub_773B7` a `sub_76028` byly jen dve z nich.
+
+#### Vysledek
+
+**FLEET OPERATIONS se vykresli cely**: titulek, hvezdna mapa, mrizka lodi se
+tremi lodemi, posuvnik i tlacitka ALL / RELOCATE / SCRAP / LEADERS /
+Support / Combat / RETURN. Zadny pad, `reorion2_crash.log` obsahuje uz jen
+jeden radek z brzdy v `sub_14852C` (viz nize).
+
+| obrazovka | stav |
+|---|---|
+| mapa galaxie | funguje |
+| COLONIES | funguje |
+| PLANETS | funguje |
+| **FLEETS** | **funguje** |
+
+#### Co zbyva na te obrazovce
+
+Brzda v `sub_14852C` porad hlasi jeden sprite mimo framebuffer
+(`x=-10, y=22227`, pri kazdem behu jina Y - tedy dalsi neinicializovana
+hodnota). Ten sprite se nekresli, jinak je obrazovka v poradku. Brzda vypisuje
+`x`, `y`, ukazatel na sprite i volajiciho, takze dohledani je pripravene.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- proklikano primo v portu: mapa -> FLEETS se otevre a vykresli, bez padu.
+
+### Vlna 103: posledni sprite na FLEETS - blok zaznamu zacinal o 8 bajtu driv
+
+Z vlny 102 zbyval jeden sprite, ktery brzda v `sub_14852C` odmitala vykreslit
+(`x=-10`, `y` pri kazdem behu jina - naposledy -6281).
+
+#### Novy nastroj: `PortDebug_Backtrace(tag, pocet)`
+
+`PortDebug_Symbolize(_ReturnAddress())` rekne jen PRIMEHO volajiciho, a to u
+obecnych kreslicich funkci nestaci - `sub_12A478` vola pul hry. Novy pomocnik
+(`reorion2.cpp`, pres `CaptureStackBackTrace` + `SymFromAddr`) vypise N ramcu
+z aktualniho mista:
+
+    BT sub_14852C #0 sub_14852C+0x10f  (orion_part_22.c:137)
+    BT sub_14852C #1 sub_12A478+0x658  (orion_part_19.c:8080)
+    BT sub_14852C #2 sub_737A2+0x19c   (orion_part_06.c:1367)
+    BT sub_14852C #3 sub_72F92+0x6e    (orion_part_06.c:982)
+
+Tim padl vinik na prvni pokus: `sub_737A2` kresli sprite lodi na
+`sub_12A478(word_1906C8[6 * v0], word_1906CA[6 * v0], sprite)`.
+
+#### Pricina
+
+Blok zaznamu o 12 bajtech zacina uz na **0x1906C0**, ne az na 0x1906C8. Vlna 85
+srovnala jen `word_1906C8`/`word_1906CA` (x a y), ale kod indexuje `6 * i` i u
+prvnich ctyr poli - `word_1906C2[6 * v0]` (id lodi), `word_1906C6[6 * v0]`
+(typ) - a ty zustaly jako JEDNOPRVKOVA pole, navic s duplicitnimi skalary
+v `link_stubs.c`. Pro i > 0 tedy cetly cizi pamet a `sub_737A2` z toho pocitala
+souradnice.
+
+Rozsah z asm: 0x1886C0 az 0x18A190 (dalsi symbol `dword_18A190`), tedy
+6864 B = **3432 slov**. Slouceno do `word_1906C0[3432]`, ostatni pole
+(`C2/C4/C6/C8/CA`) jsou makra na offsety +1..+5 slova, duplicitni skalary
+z `link_stubs.c` odstraneny.
+
+**Ponauceni:** kdyz uz jednou nekdo takovy blok srovnaval (vlna 85), overit
+CELY rozsah z asm, ne jen ta dve pole, ktera tehdy zlobila. Zbytek se ozve az
+o osmnact vln pozdeji.
+
+#### Vysledek
+
+`reorion2_crash.log` po prochazce mapa -> FLEETS **zustava prazdny** - zadna
+brzda, zadny pad. Obrazovka FLEET OPERATIONS se kresli cela.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- proklikano v portu: mapa -> FLEETS, `reorion2_crash.log` prazdny.

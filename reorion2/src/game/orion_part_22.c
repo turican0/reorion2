@@ -134,7 +134,7 @@ void sub_14852C(int x, int y, int a2)
         reported = 1;
         PortDebug_CrashLog("sub_14852C: cil mimo framebuffer (x=%d y=%d sprite=%p odsazeni=%td)",
                            x, y, (void *)(intptr_t)a2, (ptrdiff_t)(v2 - fb));
-        PortDebug_Symbolize("sub_14852C.volajici", _ReturnAddress());
+        PortDebug_Backtrace("sub_14852C", 6);   /* vlna 103: cely retez volajicich */
       }
       return;
     }

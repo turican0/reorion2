@@ -15546,16 +15546,22 @@ int dword_1905F8[32]; // weak
 int dword_190678[4]; // weak
 int dword_190688[10]; // weak
 int dword_1906B0[]; // weak
-int16_t word_1906C0[]; // weak
-int16_t word_1906C2[]; // weak
-int16_t word_1906C4[]; // weak
-int16_t word_1906C6[]; // weak
+// PORT (vlna 103): CELY blok zaznamu o 12 B zacina uz na 0x1906C0, ne az na
+// 0x1906C8. Vlna 85 srovnala jen `word_1906C8`/`word_1906CA`, ale kod
+// indexuje `6 * i` i u prvnich ctyr poli (`word_1906C2[6 * v0]` = id lodi,
+// `word_1906C6[6 * v0]` = typ), takze pro i > 0 letely mimo jednoprvkove pole.
+// Projevilo se to na obrazovce FLEETS: `sub_737A2` kreslila sprite lodi na
+// souradnice z takoveho cteni (zmereno brzdou v sub_14852C: x=-10,
+// y = kazdy beh jina - naposledy -6281).
+// Rozsah z asm: 0x1886C0 az 0x18A190 (dalsi symbol dword_18A190), tedy
+// 6864 B = 3432 slov. `word_1906C2/C4/C6/C8/CA` jsou makra do nej.
+int16_t word_1906C0[3432]; // weak - 6864 B
 // PORT (vlna 85): SOUVISLY BLOK pozic hvezd na mape, zaznam 12 B
 // (`word_1906C8[6*i]` = x, `word_1906CA[6*i]` = y). IDA ho rozdelila na dva
 // symboly 2 B od sebe; `word_1906CA` uz mel spravnych 3427 prvku, ale
 // `word_1906C8` zustal neurcity (1 prvek) a v `link_stubs.c` byl navic
 // jako FUNKCE. Zapis `word_1906C8[6*i]` proto letel mimo.
-int16_t word_1906C8[3428]; // weak - 6856 B
+/* vlna 103: `word_1906C8` je ted makro do `word_1906C0` (+4 slova). */
 /* vlna 85: makro do word_1906C8 (+2 B) - viz orion_common.h */
 // PORT (vlna 73): tri souvisle bloky, ktere IDA rozdelila na skalary.
 // Rozvrzeni z asm: 18A190 + 4*31 = 18A20C (dword_19220C je prvek 31),

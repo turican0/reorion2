@@ -4188,12 +4188,32 @@ int sub_1338C9( unsigned int a1, unsigned int a2, unsigned int a3)
   int v15; // [esp+238h] [ebp-28h]
   int v16; // [esp+23Ch] [ebp-24h]
 
-  v11 = a1;
-  v8 = a1;
-  v4 = a2;
-  v5 = a2;
-  v15 = a3;
-  v13 = a3;
+  /* PORT (vlna 104): argumenty jsou BAJTY. asm prologu:
+       mov [ebp+var_4], al / mov [ebp+var_C], dl / mov [ebp+var_10], bl
+       xor eax, eax / mov al, [ebp+var_4] / mov [ebp+var_38], eax
+     tedy `al`/`dl`/`bl` a NULOVE rozsireni do 32bitovych lokalek. Port je
+     mel jako `unsigned int` a bral cele, takze cokoliv nad 255 letelo do
+     indexu tabulky kosu `dword_1BB914[v11]` (65 prvku) a cetlo se pres
+     nesmyslny ukazatel - pad na obrazovce LEADERS.
+     DOCASNA SONDA: kdyz index presto vyleze z rozsahu, nahlas to. */
+  v11 = (uint8_t)a1;
+  v8 = (uint8_t)a1;
+  v4 = (uint8_t)a2;
+  v5 = (uint8_t)a2;
+  v15 = (uint8_t)a3;
+  v13 = (uint8_t)a3;
+  if ( (uint8_t)a1 > 64 || (uint8_t)a2 > 64 || (uint8_t)a3 > 64 )
+  {
+    static int rep = 0;
+    if ( rep < 5 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_1338C9: mimo rozsah a1=%u a2=%u a3=%u",
+                         (unsigned)(uint8_t)a1, (unsigned)(uint8_t)a2, (unsigned)(uint8_t)a3);
+      PortDebug_Backtrace("sub_1338C9", 5);
+    }
+    return 0;
+  }
   for ( i = 0; i < 25; ++i )
   {
     if ( v11 <= 10 )

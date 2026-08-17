@@ -5300,8 +5300,15 @@ unsigned int sub_11438B( int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
 
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aTooManyFields, a2);
+  /* PORT (vlna 102): hlaska hry sama o sobe nerika, KDO obdelnik poslal ani
+     jak vypadal - a je to fatalni konec, takze uz se to jinak nezjisti.
+     Tyhle dva radky to doplni (a jdou i do reorion2_crash.log). */
   if ( a1 > a3 || a2 > a4 )
+  {
+    PortDebug_CrashLog("sub_11438B: obdelnik (%d,%d)-(%d,%d)", a1, a2, a3, a4);
+    PortDebug_Symbolize("sub_11438B.volajici", _ReturnAddress());
     sub_126487(aErrorBadRectIn, a2);
+  }
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = a1;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = a2;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 4) = a3;
