@@ -101,8 +101,24 @@ int sub_12B726(int result)
   // here avoids the crash and lets execution proceed past this frontier;
   // the skipped slots may render incorrectly until the real init gap is
   // found - flagged as an open item, see PROGRESS.md wave 24.
-  if (!result)
+  /* PORT (vlna 108): obrana z vlny 24 chytala jen NULU, jenze nenaplneny slot
+     okenni tabulky nese casto smeti (zmereno 0x2100). Kazdy skutecny sprite lezi
+     v herni hromade hluboko nad 64 KB, takze cokoliv pod tim je jiste vadne.
+     Hlasi se jednou i s backtrace, at je ta fronta z vlny 24 porad videt. */
+  if ((unsigned int)result < 0x10000u)
+  {
+    if (result)
+    {
+      static int rep = 0;
+      if (!rep)
+      {
+        rep = 1;
+        PortDebug_CrashLog("sub_12B726: sprite 0x%X - nenaplneny slot okenni tabulky", (unsigned)result);
+        PortDebug_Backtrace("sprite.smeti", 5);
+      }
+    }
     return result;
+  }
   *(_WORD *)(result + 4) = 0;
   return result;
 }
@@ -3118,6 +3134,25 @@ int sub_1319E4(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
   int result; // eax
   int i; // [esp+14h] [ebp-14h]
 
+  /* PORT (vlna 108): ZACHRANNA BRZDA + sonda. Tahle funkce pise barevnou rampu
+     do palety `byte_1BB358` (256 zaznamu po 4 B) na `4 * a1 + 4 * i`. Kdyz jsou
+     `a1`/`a2` smeti, zapisuje daleko za paletu (nebo pod ni) - a protoze prvni
+     bajt kazdeho zaznamu je 1 a rampa z 1 do 1 da same jednicky, vznikne v pameti
+     souvisly vzor 0x01010101. Presne ten byl videt ve dvou nesouvisejicich
+     globalech: `dword_1BB880` (ukazatel na paletu, lezi hned za blokem) i drive
+     v AIL handlu. Rozsah tedy overujeme a mimo nej jen jednou nahlasime. */
+  if ( a1 < 0 || a2 < 0 || a1 > 255 || a1 + a2 > 256 )
+  {
+    static int rep = 0;
+    if ( rep < 4 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_1319E4 mimo paletu: a1=%d a2=%d rgb %d,%d,%d -> %d,%d,%d",
+                         a1, a2, a3, a4, a5, a6, a7, a8);
+      PortDebug_Backtrace("paleta.rampa", 5);
+    }
+    return 0;
+  }
   for ( i = 0; ; ++i )
   {
     result = i;

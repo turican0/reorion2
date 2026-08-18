@@ -1706,7 +1706,12 @@ void sub_1414E4(int a1)
 
 
 //----- (001415D5) --------------------------------------------------------
-void sub_1415D5(int a1)
+/* PORT (vlna 106): tataz trida jako `sub_140BB1` - trasovaci obal, ktery VRACI
+   hodnotu. asm konci `jmp loc_1415C4` a to je SDILENY trasovaci epilog
+   (`push esi / push offset "Result = %d"`), tedy vysledek drzi esi. IDA funkci
+   otypovala `void` a navratovou hodnotu `sub_1577D0` (AIL_sample_volume)
+   zahodila, takze `sub_11299D` pracovala s neinicializovanou lokalkou. */
+int sub_1415D5(int a1)
 {
   int v1; // edx
   unsigned int i; // edx
@@ -1715,16 +1720,16 @@ void sub_1415D5(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_volume(0x%X)\n", a1);
-  sub_1577D0(a1);
+  int volume = sub_1577D0(a1);   /* vlna 106: vysledek drzi esi */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    return volume;   /* vlna 106: JUMPOUT 0x1415C4 = trasovaci epilog */
   }
-  JUMPOUT(0x13FCD2);
+  return volume;   /* vlna 106: tentyz epilog bez vypisu */
 }
 // 1416B5: control flows out of bounds to 1415C4
 // 14164A: control flows out of bounds to 13FCD2

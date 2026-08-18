@@ -1938,6 +1938,26 @@ int sub_11E718()
       switch ( *(_WORD *)((char *)off_184480 + 55 * v12 + 8) )
       {
         case 0:
+          /* DOCASNA SONDA (vlna 108): stara fronta z vlny 24 - sloty okenni
+             tabulky na +44 (zdroj spritu) byvaji prazdne nebo smeti. Vypis cely
+             zaznam, at je videt, jestli je vadny index nebo obsah. */
+          {
+            const unsigned char *slot = (const unsigned char *)off_184480 + 55 * v12;
+            unsigned int src = *(unsigned int *)(slot + 44);
+            if ( src && src < 0x10000u )
+            {
+              static int rep = 0;
+              if ( rep < 4 )
+              {
+                ++rep;
+                PortDebug_CrashLog("okno %d z %d: +44=0x%X typ=%d x=%d y=%d +12=0x%X +53=%d",
+                                   (int)v12, (int)word_1B3E0E, src,
+                                   *(short *)(slot + 8), *(short *)(slot + 0), *(short *)(slot + 2),
+                                   *(unsigned int *)(slot + 12), *(short *)(slot + 53));
+                PortDebug_Backtrace("okno44", 5);
+              }
+            }
+          }
           sub_12B726(*(_DWORD *)((char *)off_184480 + 55 * v12 + 44));
           sub_12A478(
             *(_WORD *)((char *)off_184480 + 55 * v12),
@@ -2596,6 +2616,23 @@ int sub_120BB5(int a1, int a2)
 {
   int i; // [esp+8h] [ebp-4h]
 
+  /* PORT (vlna 108): `a2` je ukazatel na 8bajtovou barevnou rampu. Prichazi sem
+     ze slotu okenni tabulky (`off_184480 + 55*i + 12`, viz sub_11E718) a u
+     nekterych oken je NULOVY - tedy tataz otevrena vec jako u zdroje spritu na
+     +44 (PRIRUCKA, "NEVYRESENO" od vlny 24: sloty okenni tabulky se neplni).
+     Stejna obrana jako v `sub_12B726`: radeji nekreslit nez cist z adresy 0.
+     Hlaseni je jednorazove, at je ta fronta porad videt. */
+  if ( !a2 )
+  {
+    static int rep = 0;
+    if ( !rep )
+    {
+      rep = 1;
+      PortDebug_CrashLog("sub_120BB5: rampa je NULL (a1=%d) - nenaplneny slot okenni tabulky", a1);
+      PortDebug_Backtrace("rampa.null", 5);
+    }
+    return 0;
+  }
   for ( i = 0; i < 8; ++i )
   {
     byte_1B3E88[i] = *(_BYTE *)(i + a2);

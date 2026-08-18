@@ -11170,3 +11170,292 @@ nejblizsi mapovani RIP a fault je jinde v te funkci.
 - `-t:Rebuild` bez chyb;
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - mapa, COLONIES, PLANETS a FLEETS dal funguji; LEADERS jeste ne.
+
+### Vlna 105: ZAKLADNI NALEZ - blok "plnych signatur" je cely v `#if 0`,
+### takze prekladac nekontroloval ANI JEDNO volani
+
+Uzivatel zadal "vezmi to od zakladu a zrekonstruuj celou oblast" (mel se tim
+myslet `sub_47939` v `orion_part_03.c`, kde dekompilat pouziva
+`(char *)&retaddr + 2`). **Merenim se ale ukazalo, ze ta rekonstrukce neni
+potreba** - a misto ni vypadl mnohem zakladnejsi nalez.
+
+#### Nejdriv mereni, az potom prepisovani
+
+Podezreni bylo, ze `sub_47939` plni michaci tabulku barev smetim (protoze
+`sub_1338C9` dostavala `a1 = 252`). Sonda vypsala skutecny obsah obou tabulek:
+
+    michani j=0..3: (50,0,0,0) (50,0,0,0) (10,0,0,0) (50,64,64,0)
+    paleta  i=0..3: (1,0,0,0) (1,0,3,0) (1,4,4,6) (1,6,6,8)
+
+Vahy 50/50/10/50 jsou v poradku, paleta je 6bitova v poradku. **Tabulky jsou
+dobre**, takze prepisovat 950 radku `sub_47939` by byla ztrata casu. Pri tom se
+zjistilo, ze i muj prah v brzde byl spatny: prvni pouziti indexu je az PO
+`v11 -= 10`, takze hodnoty do 74 jsou LEGITIMNI (daji index 64, posledni platny
+prvek tabulky kosu). Prah upraven z 64 na 74 - do te doby brzda zahazovala
+platna volani a barvy vracela jako 0.
+
+#### Skutecna pricina padu LEADERS
+
+Sonda v `sub_A1C74` vypsala argumenty:
+
+    sub_A1C74: r=0 a2=306 a3=17 a4=0 a5=0 a6=0 a7=0
+               a8=0000000000EFF1C0
+               a9=191B7CC800000000      <- SMETI!
+               a10=0000000000EFF1BC
+
+Volajici (`sub_9264E`) pritom predava `a9` jako literalni `0`. Dolni pulka je
+tedy 0 spravne a **horni pulka je zbytek po predchozim zapisu do toho slotu**.
+Pricina: `orion_common.h` deklaruje vsechny funkce jako
+
+    extern unsigned int sub_A1C74();
+
+Prazdne zavorky v C znamenaji "neznamy seznam argumentu" - prekladac tedy
+NEKONTROLUJE pocet ani typy a NEKONVERTUJE. U parametru typu UKAZATEL to na x64
+znamena, ze volajici zapise do 8bajtoveho slotu jen 4 bajty. Plne signatury
+v hlavicce sice jsou, ale **cely jejich blok je od radku 10449 uzavreny
+v `#if 0 /* puvodni Hex-Rays deklarace, jen pro referenci */`**.
+
+To vysvetluje celou radu padu z poslednich vln, ktere se resily jednotlive
+(vzdy "ukazatel se smetim v horni pulce").
+
+#### Oprava: zapnuty prototypy pro funkce s ukazatelovymi argumenty
+
+`tools/enable_ptr_protos.py` prepise `extern T f();` skutecnym prototypem u
+kazde funkce, jejiz `// plna signatura:` obsahuje `*`. Zapnuto **1308
+prototypu** (z 5093 funkci; u ciselnych argumentu prazdne zavorky nevadi a
+hromadna zmena by prinesla jen riziko).
+
+Prvni preklad po te zmene nasel:
+
+| chyba | pocet | co to je |
+|---|---|---|
+| C2198 "moc maly pocet argumentu" | **73 volani** (6 funkci) | volajici nastavil jen prvni registr a zbytek si funkce cetla jako "co v registru zbylo" |
+| C2371 "odlisne typy" | 3 funkce | `sub_110CEE`/`sub_110D3C`/`PoolRawAlloc_110DFE` - port jim uz dal spravnejsi typ `PoolMemType *`, prototyp z komentare je zastaraly |
+
+Z tech 73 mist je 65 na `sub_1077D` (obal nad `ServiceAudioTick_FE8BE`), zbytek
+na `sub_103952`, `sub_E5832`, `sub_91BD4`, `sub_2F4EE`, `sub_1AFA6`. U
+`ServiceAudioTick_FE8BE` je konvence v projektu zavedena uz drive (viz komentar
+u jeji definice): doplnit explicitni nuly, protoze "co zbylo v registru" se na
+x64 reprodukovat neda. `tools/pad_call_args.py` to udela podle chyb prekladace
+(73 volani), tri konfliktni prototypy zustavaji jako `extern`.
+
+**Past, ktera me stala cas:** nektere `.c` maji SMISENE konce radku (jeden CRLF
+ve LF souboru staci). Nastroj, ktery si urci "konec radku" podle prvniho
+vyskytu, pak rozhodi cisla radku - `pad_call_args.py` proto deli vzdy na `\n`.
+
+#### Kam se LEADERS posunul
+
+Pad uz neni v `sub_A1C74` (a9 je ted cista nula, overeno sondou). Beh dojde dal:
+
+    SYMBOL SEH.rip = sub_138CEE+0x302  (orion_part_20.c:6539)
+      #1 sub_128C32+0x2d3  (orion_part_19.c:7204)
+      #2 sub_93A1E+0x6b    (orion_part_08.c:10150)
+      #3 sub_93550+0x82    (orion_part_08.c:9936)
+
+tedy prenos obdelniku mezi strankami (`sub_138CEE`, vlna 78). To je dalsi krok.
+
+#### Overeno
+
+- `-t:Rebuild` **bez chyb** (po doplneni 73 volani a vyjmuti 3 konfliktnich prototypu);
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged** - 1308 novych
+  prototypu ani 73 doplnenych volani intro nezmenilo;
+- mapa, COLONIES, PLANETS a FLEETS dal funguji.
+
+### Vlna 106: LEADERS - dva zahozene navraty v AIL obalech; pad se posunul do
+### emulovaneho zvukoveho driveru
+
+Po vlne 105 pad LEADERS vedl pres audio tep:
+
+    sub_1577D0 (orion_part_23.c:1694)   <- *(handle + 64)
+    sub_1415D5 (orion_part_21.c:1718)
+    sub_11299D (orion_part_18.c:4106)
+    sub_1131F0 (orion_part_18.c:4530)
+    ServiceAudioTick_FE8BE / sub_A404E / sub_A3FE6 / sub_94C1D
+
+#### Dva zahozene navraty (obojí overene v asm)
+
+Tataz trida jako `sub_140BB1`, opravena uz driv - **trasovaci obaly AIL, ktere
+konci `JUMPOUT` do SDILENEHO epilogu**. Ten epilog (0x1415C4) dela
+`push esi / push offset "Result = %d"`, tedy vysledek drzi `esi` a funkce ho
+vraci:
+
+* `sub_1415D5` (AIL_sample_volume) byla `void` a zahazovala navrat
+  `sub_1577D0`; ted vraci `volume`.
+* `sub_11299D` volala `sub_1415D5(dword_1B0670[a1])`, vysledek zahodila a
+  vracela **neinicializovanou lokalku `v1`** - a volajici `sub_1131F0` s ni
+  pocital fade hlasitosti MIDI kanalu. Ted vraci skutecnou hodnotu.
+
+#### Kam se pad posunul a co je o nem zmereno
+
+    SYMBOL SEH.rip = sub_1577E0+0x47  (orion_part_23.c:1709)   av_write
+      #1 sub_14129D+0x86  (orion_part_21.c:1594)
+
+`sub_1577E0` = AIL_set_sample_volume, radek 1709 je `*(_DWORD *)(a1 + 64) = a2`.
+**Zapis mimo pamet na adresu 0x01010141**, tedy `handle = 0x01010101`. To je
+ucebnicovy vzor "buffer vyplneny bajty 0x01".
+
+Zajimave je, ze o radek vys (1707) se tataz adresa CTE a nespadne - takze to
+neni neplatny ukazatel, ale ukazatel do pameti, kam nejde zapisovat.
+
+Handle pochazi z `dword_1B0670[i]`, ktere plni `sub_140BB1(dword_184388)` ->
+`sub_157610`, a ta vraci `2196 * v1 + *(_DWORD *)(a1 + 92)` - tedy adresu
+v poli samplu nahradniho DIG driveru (`PortSound_CreateDigDriver`, +92 = pole,
++96 = pocet). Sonda v `sub_11299D` s prahem `< 0x1000` NEVYSTRELILA, takze
+handle projde jako "rozumny" - je to 0x01010101.
+
+**Dalsi krok:** projit inicializaci samplu v `PortSound_CreateDigDriver`
+(`port_sound.cpp` kolem r. 444-470, kde se nastavuje priznak "volny sample"
+`*(s+4) = 1`) a zjistit, jestli se tam nekde neplni cely blok bajtem 1 - pak by
+`*(a1+92)` (nebo prvek pole) vysel presne 0x01010101. Sonda k tomu je uz na
+miste: staci prah zvednout a vypsat i `dword_184388` a `*(dword_184388 + 92)`.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- mapa, COLONIES, PLANETS a FLEETS dal funguji.
+
+### Vlna 107: LEADERS - blok 160 B rozsekany na dva symboly a NO-OP `JUMPOUT`
+### jako vychod ze smycky
+
+Pad po vlne 106:
+
+    SYMBOL SEH.rip = sub_6F95F+0x9a  (orion_part_05.c:9562)   av_write
+      #1 sub_9872C+0x5b  (orion_part_09.c:4385)
+      #2 sub_94C1D+0x59c (orion_part_09.c:1148)   <- LEADERS
+
+`sub_6F95F` je kratka funkce a mela hned DVE chyby.
+
+#### 1. `qmemcpy` 160 bajtu do JEDNOBAJTOVEHO objektu
+
+```c
+qmemcpy(&unk_19BA34, &off_181C7C, 0xA0u);      // 160 bajtu
+...
+word_19BA38[5 * v1 + 15] += 17 * *v2 + 16;     // tentyz blok, offset +4
+```
+
+V asm je to jeden souvisly usek: `unk_193A34` (0x193A34) a hned za nim
+`word_193A38[78]`, konec na 0x193AD4 - dohromady presne **160 bajtu**, tedy
+velikost toho `qmemcpy`. V portu byl ale `unk_19BA34` deklarovany jako
+`_UNKNOWN` (jeden bajt), takze kopirovani prepsalo 159 bajtu sousednich globalu
+a do `word_19BA38` se pritom nedostalo NIC.
+
+Slouceno do `blk_19BA34[160]`, `unk_19BA34` a `word_19BA38` jsou makra na
+offsety +0 a +4.
+
+#### 2. NO-OP `JUMPOUT` jako jediny vychod ze smycky
+
+```c
+while ( 1 ) {
+  ...
+  if ( ++v1 >= 4 ) { sub_1196F7(); JUMPOUT(0x6F521); }   // <- nic nedela
+}
+```
+
+`JUMPOUT` je v `decomp_compat.h` prazdne makro, takze smycka **nikdy
+neskoncila** a `word_19BA38[5 * v1 + 15]` odjelo za konec pole - odtud ten zapis
+mimo pamet. asm:
+
+```
+call sub_1196F7 / mov edx, 10h / mov eax, offset unk_193A34 / jmp loc_6F521
+loc_6F521: call sub_1196B8 / leave / pop edi / pop esi / pop edx / pop ecx / retn
+```
+
+`loc_6F521` je tedy SDILENY EPILOG - doplneno `sub_1196B8(&unk_19BA34, 16);` a
+`return;`. Tataz trida jako `sub_77B42` (vlna 89) nebo `sub_7927F` (vlna 89k),
+jen tentokrat slo o vychod ze smycky, ne o cele telo funkce.
+
+#### Kam se LEADERS posunul
+
+    SYMBOL SEH.rip = sub_12B726+0x30  (orion_part_20.c:106)   av_write na 0x2104
+      #1 sub_11E718+0x23c  (orion_part_19.c:1941)
+      #2 sub_124ECB+0x49   (orion_part_19.c:5130)
+
+`sub_12B726` zapisuje `*(_WORD *)(result + 4) = 0` a `result` je 0x2100, tedy
+smeti. Uz tam JE obrana `if (!result) return result;` z vlny 24 - jenze ta chyti
+jen nulu. Volajici `sub_11E718` bere zdroj z okenni tabulky
+`off_184480 + 55*i + 44` a **je to tataz "nenaplnene sloty okenni tabulky", ktera
+je otevrena od vlny 24** (viz PRIRUCKA, sekce "NEVYRESENO"). Neni to tedy novy
+regres, ale stara znama fronta - a ted uz na ni dosahla i cesta na LEADERS.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- mapa, COLONIES, PLANETS a FLEETS dal funguji.
+
+#### Docasne sondy, ktere v kodu zustaly (na priste odstranit)
+
+- `orion_part_18.c`: vypis `AIL init:` a kontrola invariantu handlu
+  (`g_ailSnapshot`) na vstupu `sub_1131F0` - handle se za behu NEMENI, takze
+  puvodni podezreni na prepis pameti padlo;
+- `orion_part_10.c`: vypis argumentu `sub_A1C74`;
+- `orion_part_20.c`: vypis michaci tabulky a palety v brzde `sub_1338C9`.
+
+### Vlna 108: LEADERS SE OTEVRE - a narazil presne na starou frontu z vlny 24
+
+Cesta na LEADERS koncila pokazde jinde: `sub_12B726`, pak `sub_132C80`, pak
+`sub_120BB5`. To samo je diagnoza - **kazdy beh cetl jinou neinicializovanou
+pamet**, tedy nejde o tri chyby, ale o jednu: sloty okenni tabulky
+(`off_184480 + 55*i + ...`) se neplni. Presne to ma prirucka otevrene od vlny 24.
+
+#### Co bylo zmereno
+
+| misto | co tam bylo |
+|---|---|
+| `sub_12B726` (+44 = zdroj spritu) | 0x2100 - smeti, obrana z vlny 24 chytala jen NULU |
+| `sub_120BB5` (+12 = barevna rampa) | 0 - cteni z adresy 0 |
+| `sub_132C80` pres `dword_1BB880` | 0x01010101 |
+
+`dword_1BB880` lezi hned za paletou (`byte_1BB358`, 1024 B) a v jednom behu byla
+cela paleta vyplnena jednickami - odtud i ta hodnota 0x01010101, ktera se drive
+objevila v AIL handlu. Podezreni padlo na `sub_1319E4` (generator barevne rampy,
+pise na `4 * a1 + 4 * i`), takze tam pribyla kontrola rozsahu - **ale ta pri
+behu ANI JEDNOU nevystrelila**, takze zdroj tech jednicek je jinde a zustava
+otevreny.
+
+Overeno take, ze AIL handly (`dword_1B0670`) se za behu nemeni - kontrola
+invariantu po fazich (recept z vlny 87) nevystrelila. Podezreni z vlny 106 na
+prepis pameti tim padlo.
+
+#### Co se udelalo
+
+Sjednocena obrana na obou mistech, ktera uz jedno takove misto melo (`sub_12B726`
+od vlny 24). Nulu i smeti pod 64 KB ted zahazuji obe:
+
+* `sub_12B726` - sprite ze slotu +44,
+* `sub_120BB5` - barevna rampa ze slotu +12.
+
+Obe hlasi jednorazove do `reorion2_crash.log` vcetne backtrace, takze fronta
+zustava viditelna a neztrati se.
+
+#### Vysledek
+
+**Obrazovka LEADERS se otevre a nepada**: zalozky "Colony Leaders" /
+"Ship Officers", ctyri sloty vudcu, hvezdna mapa s vyberem soustavy a tlacitka
+HIRE / POOL / DISMISS / RETURN. `reorion2_crash.log` obsahuje jediny radek -
+jednorazove hlaseni o prazdnem slotu.
+
+Chybi portrety vudcu (cerne obdelniky) - to je prave ten prazdny slot, tedy
+viditelny projev fronty z vlny 24, ne novy problem.
+
+| obrazovka | stav |
+|---|---|
+| mapa galaxie | funguje |
+| COLONIES | funguje |
+| PLANETS | funguje |
+| FLEETS | funguje |
+| **LEADERS** | **otevre se; chybi portrety (prazdne sloty okenni tabulky)** |
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- mapa, COLONIES, PLANETS a FLEETS dal funguji.
+
+#### Dalsi krok
+
+Fronta z vlny 24 je ted jasne ohranicena: **kdo ma naplnit sloty okenni
+tabulky** `off_184480 + 55*i + 12` (rampa) a `+ 44` (sprite). Zapisuji je
+`sub_114FBA` a spol., takze otazka zni, ktera okna na obrazovce LEADERS vznikaji
+jinou cestou - backtrace v obou novych obranach to rekne hned pri prvnim behu.

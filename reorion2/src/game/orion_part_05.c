@@ -9562,8 +9562,14 @@ void sub_6F95F(int a1)
       word_19BA38[5 * v1 + 15] += 17 * *v2 + 16;
     if ( ++v1 >= 4 )
     {
+      /* PORT (vlna 107): `JUMPOUT` je v portu NO-OP, takze smycka nikdy
+         neskoncila a `word_19BA38[5 * v1 + 15]` odjelo za konec pole (pad na
+         zapis). asm: `call sub_1196F7 / mov edx, 10h / mov eax, offset
+         unk_193A34 / jmp loc_6F521`, a `loc_6F521` je SDILENY EPILOG:
+         `call sub_1196B8 / leave / pop .. / retn`. */
       sub_1196F7();
-      JUMPOUT(0x6F521);
+      sub_1196B8((int)&unk_19BA34, 16);   /* eax = &unk_193A34, edx = 10h */
+      return;
     }
   }
 }

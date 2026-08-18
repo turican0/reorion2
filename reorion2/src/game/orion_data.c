@@ -16814,8 +16814,7 @@ char byte_19B9B8; // weak
 char byte_19B9B9; // weak
 char byte_19B9BA; // weak
 _UNKNOWN unk_19B9BC; // weak
-_UNKNOWN unk_19BA34; // weak
-int16_t word_19BA38[78]; // weak
+uint8_t blk_19BA34[160]; // weak (vlna 107: souvisly blok, viz orion_common.h)
 _UNKNOWN unk_19BAD4; // weak
 _UNKNOWN unk_19BB4C; // weak
 _UNKNOWN unk_19BB4E; // weak

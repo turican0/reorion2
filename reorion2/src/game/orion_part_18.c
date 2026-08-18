@@ -3654,6 +3654,23 @@ void sub_111F3E()
         dword_1B0670[i] = v2;
         sub_140DFC((int *)(uintptr_t)dword_1B0670[i]);
       }
+      /* DOCASNA SONDA (vlna 107): snimek handlu po inicializaci - pak se po
+         kazdem audio tepu overuje, jestli je nekdo neprepsal. */
+      {
+        extern int g_ailSnapshot[17];
+        extern int g_ailSnapshotValid;
+        int k;
+        for ( k = 0; k < 17; ++k )
+          g_ailSnapshot[k] = dword_1B0670[k];
+        g_ailSnapshotValid = 1;
+      }
+      /* DOCASNA SONDA (vlna 107): odkud je handle 0x01010101? */
+      PortDebug_CrashLog("AIL init: drv=0x%X  +92=0x%X  +96=%d  h1=0x%X h2=0x%X h16=0x%X",
+                         (unsigned)dword_184388,
+                         (unsigned)*(_DWORD *)((uintptr_t)dword_184388 + 92),
+                         *(int *)((uintptr_t)dword_184388 + 96),
+                         (unsigned)dword_1B0670[1], (unsigned)dword_1B0670[2],
+                         (unsigned)dword_1B0670[16]);
       dword_184380 = 1;
     }
     if ( dword_184394 )
@@ -4103,8 +4120,23 @@ int sub_11299D(int a1)
     return 0;
   if ( !a1 || a1 > 16 )
     return 0;
-  sub_1415D5(dword_1B0670[a1]);
-  return v1;
+  /* PORT (vlna 106): navratova hodnota `sub_1415D5` (hlasitost samplu) se
+     zahazovala a vracela se neinicializovana `v1`; `sub_1131F0` s ni pocital
+     fade hlasitosti.
+     DOCASNA SONDA: nesmyslny handle nahlas a nepredavej dal - pad byl prave
+     v `sub_1577D0` na `*(handle + 64)`. */
+  if ( (unsigned int)dword_1B0670[a1] < 0x1000u )
+  {
+    static int rep = 0;
+    if ( rep < 3 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_11299D: kanal %d ma handle 0x%X (dword_184380=%d)",
+                         a1, (unsigned)dword_1B0670[a1], dword_184380);
+    }
+    return 0;
+  }
+  return sub_1415D5(dword_1B0670[a1]);
 }
 // 1129E2: variable 'v1' is possibly undefined
 // 184380: using guessed type int dword_184380;
@@ -4508,8 +4540,42 @@ void sub_1131BB(int a1)
 
 
 //----- (001131F0) --------------------------------------------------------
+int g_ailSnapshot[17];
+int g_ailSnapshotValid;
+
 void sub_1131F0(int a1, int a2)
 {
+  /* DOCASNA SONDA (vlna 107): kontrola invariantu po fazich (recept z vlny 87).
+     Handle 0x01010101 v `dword_1B0670` nevznika pri inicializaci (zmereno),
+     takze ho nekdo prepisuje az za behu - tohle rekne KDY a na kterem indexu. */
+  /* DOCASNA SONDA (vlna 108): `dword_1BB880` (ukazatel na paletu) se za behu
+     meni na 0x01010101 a `sub_132C80` pak pise na tuhle adresu. Nastavuje ho
+     jen `sub_1248AB` na `&byte_1BB358`, takze kazda jina hodnota = prepis. */
+  {
+    static int palReported = 0;
+    if ( !palReported && dword_1BB880 && dword_1BB880 != (int)(intptr_t)byte_1BB358 )
+    {
+      palReported = 1;
+      PortDebug_CrashLog("dword_1BB880 prepsan: 0x%X (ma byt 0x%X)",
+                         (unsigned)dword_1BB880, (unsigned)(uintptr_t)byte_1BB358);
+      PortDebug_Backtrace("paleta.prepis", 6);
+    }
+  }
+  if ( g_ailSnapshotValid )
+  {
+    int k;
+    for ( k = 0; k < 17; ++k )
+    {
+      if ( dword_1B0670[k] != g_ailSnapshot[k] )
+      {
+        g_ailSnapshotValid = 0;   /* nahlas jen prvni zmenu */
+        PortDebug_CrashLog("AIL handle prepsan: index %d  0x%X -> 0x%X",
+                           k, (unsigned)g_ailSnapshot[k], (unsigned)dword_1B0670[k]);
+        PortDebug_Backtrace("AIL.prepis", 6);
+        break;
+      }
+    }
+  }
   int v2; // eax
   unsigned int v3; // eax
   int v4; // [esp+0h] [ebp-20h]

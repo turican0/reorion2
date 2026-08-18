@@ -8365,7 +8365,7 @@ extern int sub_1413FF();
 // plna signatura: void sub_1414E4(int a1);
 extern void sub_1414E4();
 // plna signatura: void sub_1415D5(int a1);
-extern void sub_1415D5();
+extern int sub_1415D5();   /* vlna 106: vraci esi (hlasitost samplu) */
 // plna signatura: void sub_1416BA(int a1);
 extern void sub_1416BA();
 // plna signatura: void sub_14179F(int a1);
@@ -19411,8 +19411,15 @@ extern char byte_19B9B8;
 extern char byte_19B9B9;
 extern char byte_19B9BA;
 extern _UNKNOWN unk_19B9BC;
-extern _UNKNOWN unk_19BA34;
-extern int16_t word_19BA38[78];
+/* PORT (vlna 107): SOUVISLY BLOK 160 B od 0x19BA34. `sub_6F95F` do nej dela
+   `qmemcpy(&unk_19BA34, &off_181C7C, 0xA0u)` - tedy 160 bajtu - a hned potom
+   pise `word_19BA38[5*i+15]`, coz je tentyz blok od offsetu 4. V portu byl
+   `unk_19BA34` JEDNOBAJTOVY objekt, takze to kopirovani prepsalo 159 bajtu
+   sousednich globalu a do `word_19BA38` se pritom nedostalo nic.
+   Rozsah z asm: unk_193A34 (0x193A34) + word_193A38[78] konci na 0x193AD4. */
+extern uint8_t blk_19BA34[160];
+#define unk_19BA34   (*(uint8_t *)(blk_19BA34 + 0))
+#define word_19BA38  ((int16_t *)(blk_19BA34 + 4))
 extern _UNKNOWN unk_19BAD4;
 extern _UNKNOWN unk_19BB4C;
 extern _UNKNOWN unk_19BB4E;
