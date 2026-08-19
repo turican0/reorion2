@@ -6801,7 +6801,7 @@ void sub_B8F5F(int a1)
   v11 = (int16_t)v24 - (*(int16_t *)(*(_DWORD *)(a1 + 13) + 2) + (int16_t)v26);
   if ( v10 >= (int)((HIDWORD(v11) ^ v11) - HIDWORD(v11)) )
   {
-    v12 = **(int16_t **)(a1 + 13) + (int16_t)v27;
+    v12 = *(int16_t *)(intptr_t)*(uint32_t *)(a1 + 13) + (int16_t)v27;
     v13 = (int16_t)v25;
   }
   else

@@ -2782,8 +2782,8 @@ void sub_7DA76(_WORD *a1, int a2, int a3, int a4);   /* vlna 105: skutecny proto
 void sub_7DD41(int a1, int16_t *a2, char *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_7E00F(_WORD *a1);
 void sub_7E00F(_WORD *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_7E154();
-extern void sub_7E154();
+// plna signatura: void sub_7E154(int a1);
+void sub_7E154(int a1);   /* vlna 110: spillnuty registrovy argument (&var_C volajiciho) */
 // plna signatura: int sub_7E514(int a1, int a2, int16_t *a3);
 int sub_7E514(int a1, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_7E59A(int a1, unsigned int a2, int16_t *a3);
@@ -11746,7 +11746,7 @@ void sub_7DA13();
 void sub_7DA76(_WORD *a1, int a2, int a3, int a4);
 // void sub_7DD41(int a1, int16_t *a2, char *a3);
 void sub_7E00F(_WORD *a1);
-void sub_7E154();
+void sub_7E154(int a1);
 // int sub_7E514(int a1, int a2, int16_t *a3);
 // int sub_7E59A(int a1, uint16_t a2, int16_t *a3);
 void sub_7E609(int a1, _BYTE *a2);

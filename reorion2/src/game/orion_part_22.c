@@ -6200,7 +6200,7 @@ uint8_t *sub_14F93A( unsigned int a1, int a2, int a3, int a4, int a5, int a6, in
       {
         if ( *(_DWORD *)(v15 + 30) )
         {
-          if ( *(_BYTE *)v12 < **(_BYTE **)(v15 + 30) )
+          if ( *(_BYTE *)v12 < *(_BYTE *)(intptr_t)*(uint32_t *)(v15 + 30) )
           {
             v13 = *(_DWORD *)(v15 + 30);
             *(_DWORD *)(v15 + 30) = v12;
@@ -6295,7 +6295,7 @@ int sub_14FB47(int a1, int a2, int a3, int a4)
       {
         if ( *(_DWORD *)(v9 + 30) )
         {
-          if ( *(_BYTE *)v7 < **(_BYTE **)(v9 + 30) )
+          if ( *(_BYTE *)v7 < *(_BYTE *)(intptr_t)*(uint32_t *)(v9 + 30) )
           {
             v5 = *(_DWORD *)(v9 + 30);
             *(_DWORD *)(v9 + 30) = v7;

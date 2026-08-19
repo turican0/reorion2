@@ -11218,7 +11218,7 @@ int sub_F40D3(int a1, int a2, int a3, int16_t *a4)
   v6 = sub_126AFD((int)aMultigmLbx, 257, dword_192ED4);
   v7 = dword_192680;
   *(_DWORD *)(dword_192680 + 115) = v6;
-  *(_WORD *)(v7 + 243) = (640 - **(int16_t **)(v7 + 27)) / 2;
+  *(_WORD *)(v7 + 243) = (640 - *(int16_t *)(intptr_t)*(uint32_t *)(v7 + 27)) / 2;
   v8 = (480 - *(int16_t *)(*(_DWORD *)(v7 + 27) + 2) - 81) / 2;
   *(_BYTE *)(v7 + 488) = 0;
   *(_BYTE *)(v7 + 489) = 1;
@@ -11273,7 +11273,7 @@ LABEL_11:
   v7 = sub_126AFD((int)aMultigmLbx, 257, dword_192ED4);
   v8 = dword_192680;
   *(_DWORD *)(dword_192680 + 115) = v7;
-  *(_WORD *)(v8 + 243) = (640 - **(int16_t **)(v8 + 27)) / 2;
+  *(_WORD *)(v8 + 243) = (640 - *(int16_t *)(intptr_t)*(uint32_t *)(v8 + 27)) / 2;
   *(_BYTE *)(v8 + 489) = 1;
   *(_BYTE *)(v8 + 488) = 0;
   JUMPOUT(0xF419E);
@@ -11351,7 +11351,7 @@ void sub_F44BB()
   v2 = sub_126B42((int)aMultigmLbx, 34, dword_192ED4);
   v3 = dword_192680;
   *(_DWORD *)(dword_192680 + 111) = v2;
-  *(_WORD *)(v3 + 243) = (640 - **(int16_t **)(v3 + 47)) / 2;
+  *(_WORD *)(v3 + 243) = (640 - *(int16_t *)(intptr_t)*(uint32_t *)(v3 + 47)) / 2;
   *(_BYTE *)(v3 + 270) = 1;
   JUMPOUT(0xF41A1);
 }
@@ -11583,7 +11583,7 @@ void sub_F4981()
   v2 = sub_126B42((int)aMultigmLbx, 37, dword_192ED4);
   v3 = dword_192680;
   *(_DWORD *)(dword_192680 + 111) = v2;
-  *(_WORD *)(v3 + 243) = (640 - **(int16_t **)(v3 + 47)) / 2;
+  *(_WORD *)(v3 + 243) = (640 - *(int16_t *)(intptr_t)*(uint32_t *)(v3 + 47)) / 2;
   *(_WORD *)(v3 + 245) = (480 - *(int16_t *)(*(_DWORD *)(v3 + 47) + 2)) / 2;
   qmemcpy(&unk_1AAED5, &dword_199C0D, 0x83u);
   qmemcpy(&dword_1AAEC4, &dword_199BFC, 0x11u);

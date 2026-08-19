@@ -7494,7 +7494,7 @@ int sub_11A2C8()
     result = (uint8_t)byte_1B3E1C;
     if ( (uint8_t)byte_1B3E1C <= (int16_t)i )
       break;
-    if ( **(_BYTE **)(dword_1B081C + 40 * (int16_t)i) )
+    if ( *(_BYTE *)(intptr_t)*(uint32_t *)(dword_1B081C + 40 * (int16_t)i) )
     {
       sub_120BB5(*(uint8_t *)(40 * (int16_t)i + dword_1B081C + 37), 40 * (int16_t)i + dword_1B081C + 13);
       LOWORD(v1) = sub_122259();

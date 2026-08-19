@@ -1944,7 +1944,9 @@ int sub_11E718()
           {
             const unsigned char *slot = (const unsigned char *)off_184480 + 55 * v12;
             unsigned int src = *(unsigned int *)(slot + 44);
-            if ( src && src < 0x10000u )
+            /* vlna 109: hlas i prazdnou rampu na +12 - typ okna je 0, coz NEZAPISUJE
+               zadny z tvurcu, takze jde nejspis o zaznam, ktery nikdo nevytvoril. */
+            if ( (src && src < 0x10000u) || !*(unsigned int *)(slot + 12) )
             {
               static int rep = 0;
               if ( rep < 4 )
@@ -2488,6 +2490,29 @@ int sub_1205E6( int a1, int a2, int a3)
   _DWORD *v4; // [esp+2Ch] [ebp-10h]
 
   v4 = sub_126AFD((int)&unk_1B3E20, (int16_t)(a1 + 1), dword_1B3E78);
+  /* PORT (vlna 109): ZACHRANNA BRZDA + sonda. Tohle kopiruje rozsah palety
+     [a2..a3] do `byte_1BB358` (1024 B = 256 zaznamu po 4 B) s POCITANOU delkou
+     `4 * (a3 - a2) + 4`. Kdyz je `a3` nad 255 (nebo `a2` zaporne), zapis prelezne
+     paletu a trefi `byte_1BB758` a hned za nim `dword_1BB880` - ukazatel na tu
+     samou paletu. Presne to bylo zmereno: paleta cela v jednickach a
+     `dword_1BB880` = 0x01010101, nasledovane padem v `sub_132C80`. */
+  if ( a2 < 0 || a3 > 255 || a3 < a2 )
+  {
+    static int rep = 0;
+    if ( rep < 4 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_1205E6 mimo paletu: a1=%d a2=%d a3=%d (delka %d B)",
+                         a1, a2, a3, 4 * (a3 - a2) + 4);
+      PortDebug_Backtrace("paleta.kopie", 5);
+    }
+    if ( a2 < 0 )
+      a2 = 0;
+    if ( a3 > 255 )
+      a3 = 255;
+    if ( a3 < a2 )
+      return 0;
+  }
   sub_12779E(&byte_1BB358[4 * a2], &v4[a2], 4 * (a3 - a2) + 4);
   dword_1BB900 = (int)(v4 + 256);
   return sub_1318D4(a2, a3);

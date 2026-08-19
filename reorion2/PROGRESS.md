@@ -11459,3 +11459,154 @@ Fronta z vlny 24 je ted jasne ohranicena: **kdo ma naplnit sloty okenni
 tabulky** `off_184480 + 55*i + 12` (rampa) a `+ 44` (sprite). Zapisuji je
 `sub_114FBA` a spol., takze otazka zni, ktera okna na obrazovce LEADERS vznikaji
 jinou cestou - backtrace v obou novych obranach to rekne hned pri prvnim behu.
+
+### Vlna 109: paleta - `sub_1318D4` pise priznak bez horni kontroly
+
+LEADERS uz se otevrel (vlna 108), ale behy se stridavym uspechem konciley padem
+v `sub_132C80`, ktera pise do palety pres `dword_1BB880`. Zmereno: ten ukazatel
+ma hodnotu **0x01010101** a cela paleta je vyplnena jednickami.
+
+#### Kde ta hodnota vznika
+
+`dword_1BB880` lezi **1320 bajtu za zacatkem palety** (`byte_1BB358`, 1024 B),
+takze pri kroku 4 bajty je to presne **index 330**. A `sub_1318D4` dela:
+
+```c
+for ( i = a1; ; ++i ) {
+  if ( a2 < i ) break;
+  byte_1BB358[4 * i] = 1;      // ZADNA horni kontrola
+}
+```
+
+Staci tedy `a2` nad 255 a smycka pise jednicky pres konec palety - pres
+`byte_1BB758` az do `dword_1BB880`, tedy do UKAZATELE na tu samou paletu.
+`sub_132C80` ho pak vezme jako cil zapisu a spadne.
+
+Doplnena kontrola rozsahu (orez na 0..255) s jednorazovym hlasenim a backtrace.
+
+#### Co bylo pri tom vylouceno (aby to nekdo nehledal znovu)
+
+Postupne jsem obelil tri dalsi kandidaty - u vsech pribyla kontrola rozsahu,
+ale ANI JEDNA za behu nevystrelila:
+
+* `sub_1319E4` (generator barevne rampy, pise vsechny ctyri kanaly) - `a1`/`a2`
+  jsou v rozsahu;
+* `sub_1205E6` (kopie rozsahu palety z resource, delka `4 * (a3 - a2) + 4`) -
+  `a2`/`a3` jsou v rozsahu;
+* `dword_1BB880` se **nemeni** mezi nastavenim v `sub_1248AB` a pouzitim
+  (kontrola invariantu nevystrelila) - takze to neni "nekdo prepsal ukazatel",
+  ale "nekdo prepsal pamet, ve ktere ukazatel lezi".
+
+Ty kontroly jsem v kodu nechal - jsou levne a priste rovnou vylouci celou vetev.
+
+#### Vysledek
+
+Beh na LEADERS je **bez padu** a paleta zustava zdrava
+(`(1,0,0,0) (1,0,3,0) (1,4,4,6) (1,6,6,8)` misto samych jednicek). Obrazovka se
+vykresli stejne jako ve vlne 108 - porad bez portretu vudcu, coz je fronta
+prazdnych slotu okenni tabulky z vlny 24.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- mapa, COLONIES, PLANETS, FLEETS i LEADERS bez padu.
+
+### Vlna 110: menu GAME - retez ctyr chyb na kodu, ktery v portu nikdy nebezel
+
+Klik na napis **GAME** (horni lista mapy, ~283,11 - neni to tlacitko ve spodni
+liste) padal v `sub_7EA5C`. Za nim se postupne vynorily dalsi tri chyby na tomtez
+retezu; kazda oprava odhalila nasledujici. Vsechny jsou z katalogu.
+
+#### 1. Sirka ukazatele na `dword_19C044` (15 mist)
+
+`dword_19C044` alokuje `sub_7D892` pres `sub_110CEE(0x65)` = **101 bajtu** a
+`sub_7EA5C` do nej pise vyhradne `*(_DWORD *)(dword_19C044 + N)` pro N = 0..96,
+tedy **25 ctyrbajtovych slotu**. Cteni tvarem `*(int16_t **)(dword_19C044 + N)`
+ale na x64 bere OSM bajtu - u N = 96 dokonce za konec bloku.
+
+Nejprukaznejsi jsou radky, kde je obe sirky vedle sebe na jednom radku:
+
+```c
+sub_7EDF2(*(int16_t **)(dword_19C044 + 44),
+          *(int16_t *)(*(_DWORD *)(dword_19C044 + 44) + 2), -1, 1u);
+```
+
+Opraveno na `(T *)(intptr_t)*(uint32_t *)(...)`. Stejna zaves probehla i pro
+dalsi globalni bloky, u kterych je v asm zmerena ctyrbajtova sirka slotu
+(`mov reg, [eax+N]`): `dword_19C458` (`sub_93A1E`), `dword_19C7C0`
+(`sub_9DEF7`), `dword_1A11AC` +31/+35 (`sub_CBAD0`), `dword_1ACF14` +2/+16
+(`sub_106171`), `dword_1AD39C` +24 (`sub_10CC4D`), `dword_1C9604` +20
+(`sub_159440`). **Celkem 39 mist; tim je tahle trida v `dword_`-tvaru vycerpana**
+(grep vraci nulu). Pozor, `tools/ptrwidth_fix.py` chytal jen dvojity deref
+`**(T **)`, jednoduchy `*(T **)` predavany jako argument mu unikal.
+
+#### 2. `sub_7F701` - 32bitove lokalky do 16bitovych argumentu
+
+Po prvni oprave se pad presunul do `memset32` volaneho z `sub_12D8F5`. Asm na
+`loc_7F8DA` konci pred volanim `movsx edx, ax` a `cwde` - **oba rozmery jsou
+16bitove**. Zdrojove lokalky pritom vznikly z `mov si, word_19183C` a
+`mov dx, [eax+74h]`, takze horni pulka nikdy nebyla nastavena; bez orezu slo do
+`sub_12D8F5` obrovske w/h a `memset32` prestrelil buffer.
+
+Doplnen orez na `(int16_t)` u obou `sub_12D8F5(v13 - v3 + 1, ...)` i u
+`sub_128AB6` a `sub_12A478` v tesnem okoli (asm ma u nich `movsx` na VSECH
+ctyrech argumentech, port orezaval jen posledni).
+
+#### 3. `sub_7DD41` - spillnuty registrovy argument (`v15`)
+
+IDA to hlasi sama: `// 7DDA9: variable 'v15' is possibly undefined`. Prolog je
+ucebnicovy tvar z katalogu:
+
+```
+enter   260h, 0
+push    eax          ; <- spillnuty prvni argument
+sub     ebp, 216h
+```
+
+`[ebp+216h+var_264]` je tedy **puvodni `a1`** a cte se pred kazdym
+`mov [eax], bx` (v portu `*v15 = 1`). Doplneno `v15 = (_WORD *)(intptr_t)a1;`
+hned na vstupu - `a1` se totiz v tele pozdeji prepisuje (`a1 = 479`, coz je
+ve skutecnosti `mov ecx, 1DFh` pro `sub_128C32`, jen recyklovane jmeno).
+
+#### 4. `sub_8012F` predaval `0` misto `&v11`, `sub_7E154` prisla o parametr
+
+Po opravce 3 padalo zapisem na adresu 0: jediny volajici predaval literal `0`.
+V asm maji **vsechny ctyri vetve** switche `lea eax, [ebp+var_C]`, pricemz
+`var_C` = port `v11` (sedi i `mov [ebp+var_C], 0` / `v11 = 0`). Vetve 1 a 2
+(`sub_7E00F`, `sub_7DA76`) `&v11` spravne predavaly, vetev 0 predavala `0`
+a vetev 3 (`sub_7E154`) nic - IDA z ni udelala bezparametrovou funkci, prestoze
+ma stejny spill (`enter 80h,0` / `push eax` / `sub ebp, 82h`) a dva skutecne
+zapisy `mov word ptr [eax], 1`. Dopsan parametr, inicializace `v14` a oba
+prototypy v `orion_common.h`.
+
+#### Vysledek
+
+**Menu GAME se otevre a vykresli kompletne** - SAVE / LOAD / NEW / QUIT GAME,
+posuvniky Music a Sound Fx, SETTINGS a RETURN - a reaguje na mys.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- cesta na mapu + klik na GAME bez jedineho SEH, `reorion2_crash.log` obsahuje
+  jen sondu `AIL init`.
+
+#### Co zbylo otevrene
+
+Tlacitko **SETTINGS** v tomhle menu jeste padne. Neni to uz sirka ani spill -
+hra sama rekne `ERROR: Bad Rect in Add_Hidden_Field` ze `sub_126487`, tedy
+dojde az do sve vlastni kontroly. Sonda hlasi
+`sub_A1C74: r=9 a2=22 a3=22 a4=25288 a5=25284` a z toho `sub_11438B: obdelnik
+(25310,25306)-(24310,25353)` - souradnice jsou smeti a obdelnik ma zapornou
+sirku. Zacit je tedy potreba u `a4`/`a5` v `sub_A1C74` (`orion_part_10.c`,
+tam uz DOCASNA SONDA je).
+
+#### Poznamka k merenii
+
+Snimky pres `REORION2_BLIT_DUMP_COUNT=9000` znamenaji **2,8 GB** zapisu
+(9000 x 308 KB) a znatelne vytizi stroj - blikajici kurzor v textovych polich
+zere rozpocet a na menu GAME je potreba ~4600 snimku. Kdyz jde jen o posledni
+obrazovku, vyplati se nechat bezet plny rozpocet a **soubory prubezne mazat**
+(drzet jen ~40 nejnovejsich); disk pak nese ~14 MB misto 2,8 GB. Na detekci
+padu snimky netreba vubec - staci SEH vypis a `reorion2_crash.log`.

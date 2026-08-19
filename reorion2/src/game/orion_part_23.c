@@ -1031,9 +1031,9 @@ LABEL_41:
     v17 = *(_DWORD *)(a2 + 32);
     if ( dword_1C9584 )
       v17 = (((v17 >> 12) + 4095) & 0xFF000) << 12;
-    **(_DWORD **)(a2 + 8) = v17;
+    *(_DWORD *)(intptr_t)*(uint32_t *)(a2 + 8) = v17;
     *(_DWORD *)(*(_DWORD *)(a2 + 8) + 4) = *(_DWORD *)(a2 + 16) + v17;
-    v18 = *(_DWORD **)(a2 + 8);
+    v18 = (_DWORD *)(intptr_t)*(uint32_t *)(a2 + 8);
     *(_DWORD *)(a2 + 44) = (uint16_t)*v18 + 16 * HIWORD(*v18);
     v19 = (uint16_t)v18[1] + 16 * HIWORD(v18[1]);
     v20 = v28;
@@ -3428,14 +3428,14 @@ int sub_159440(int *a1)
             {
               while ( 1 )
               {
-                v13 = *(uint8_t **)(dword_1C9604 + 20);
+                v13 = (uint8_t *)(intptr_t)*(uint32_t *)(dword_1C9604 + 20);
                 dword_1C9618 = *v13;
                 if ( (unsigned int)dword_1C9618 < 0x80 || dword_1C961C )
                 {
                   if ( !dword_1C961C )
                   {
                     v38 = dword_1C9604;
-                    v39 = *(uint8_t **)(dword_1C9604 + 20);
+                    v39 = (uint8_t *)(intptr_t)*(uint32_t *)(dword_1C9604 + 20);
                     *(_DWORD *)(dword_1C9604 + 20) = v39 + 1;
                     *(_DWORD *)(v38 + 44) = *v39;
                   }
@@ -3501,7 +3501,7 @@ LABEL_38:
                 {
                   dword_1C9614 = *(uint8_t *)(*(_DWORD *)(dword_1C9604 + 20) + 2)
                                + (*(uint8_t *)(*(_DWORD *)(dword_1C9604 + 20) + 1) << 8)
-                               + (**(uint8_t **)(dword_1C9604 + 20) << 16);
+                               + (*(uint8_t *)(intptr_t)*(uint32_t *)(dword_1C9604 + 20) << 16);
                   *(_DWORD *)(dword_1C9604 + 108) = 16 * dword_1C9614;
                   *(_DWORD *)(dword_1C9604 + 20) += dword_1C9620;
                 }
@@ -3510,7 +3510,7 @@ LABEL_38:
                   if ( dword_1C9624 == 88 )
                   {
                     v21 = dword_1C9604;
-                    *(_DWORD *)(dword_1C9604 + 96) = **(uint8_t **)(dword_1C9604 + 20);
+                    *(_DWORD *)(dword_1C9604 + 96) = *(uint8_t *)(intptr_t)*(uint32_t *)(dword_1C9604 + 20);
                     dword_1C9614 = *(uint8_t *)(*(_DWORD *)(v21 + 20) + 1) - 2;
                     v22 = 16000000 / dword_1C9568;
                     v23 = dword_1C9614;

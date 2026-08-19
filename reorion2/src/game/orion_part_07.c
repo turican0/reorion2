@@ -3201,7 +3201,7 @@ int sub_7D061(_WORD *a1, _WORD *a2)
     {
       if ( word_199A08 == 10 )
       {
-        v15 = *(int16_t **)(dword_19C044 + 44);
+        v15 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 44);
         word_19983C = (640 - *v15) / 2;
         word_19983A = (480 - v15[1]) / 2;
       }
@@ -3332,7 +3332,9 @@ int sub_7D061(_WORD *a1, _WORD *a2)
   else
   {
     v2 = (int *)dword_19C044;
-    *a1 = **(_WORD **)dword_19C044;
+    /* vlna 110: sirka ukazatele - asm ma `mov ebx, [eax]` (CTYRI bajty),
+       `**(_WORD **)` by na x64 vzalo osm a horni pulku ze slotu +4. */
+    *a1 = *(_WORD *)(intptr_t)*(uint32_t *)dword_19C044;
     v3 = *v2;
     word_19983C = 144;
     LOWORD(v3) = *(_WORD *)(v3 + 2);
@@ -3661,7 +3663,7 @@ LABEL_11:
           sub_124D41();
           a4 = 1;
           a3 = -1;
-          sub_7EDF2(*(int16_t **)(dword_19C044 + 44), *(int16_t *)(*(_DWORD *)(dword_19C044 + 44) + 2), -1, 1u);
+          sub_7EDF2((int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 44), *(int16_t *)(*(_DWORD *)(dword_19C044 + 44) + 2), -1, 1u);
         }
         v4 = v19;
         LOBYTE(a3) = sub_10E2F(v19, v19, a3, a4);
@@ -3764,6 +3766,13 @@ void sub_7DD41(int a1, int16_t *a2, char *a3)
   int v19; // [esp+25Ch] [ebp+20Eh]
   char v20; // [esp+260h] [ebp+212h]
 
+  /* vlna 110: `v15` byla NEINICIALIZOVANA (IDA to sama hlasi na 7DDA9).
+     V asm je to SPILLNUTY REGISTROVY ARGUMENT: po `enter 260h,0` nasleduje
+     `push eax` a `sub ebp, 216h`, takze [ebp+216h+var_264] je puvodni a1.
+     Cte se z nej pred kazdym `mov [eax], bx` (= *v15 = 1). Pozor, `a1` se
+     pozdeji v tele prepisuje (`a1 = 479` = `mov ecx, 1DFh`), proto se musi
+     zachytit tady na vstupu. */
+  v15 = (_WORD *)(intptr_t)a1;
   v3 = 1;
   v20 = 0;
   sub_1191CA((int)sub_7F701, 1);
@@ -3776,7 +3785,7 @@ void sub_7DD41(int a1, int16_t *a2, char *a3)
       if ( v20 && byte_199BE2 )
       {
         sub_11C2F0();
-        sub_7EDF2(*(int16_t **)dword_19C044, *(int16_t *)(*(_DWORD *)dword_19C044 + 2), -1, 0);
+        sub_7EDF2((int16_t *)(intptr_t)*(uint32_t *)dword_19C044, *(int16_t *)(*(_DWORD *)dword_19C044 + 2), -1, 0);
         *(_BYTE *)(dword_19C044 + 100) = 1;
       }
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7E50B je epilog funkce */
@@ -4019,7 +4028,7 @@ LABEL_9:
 
 
 //----- (0007E154) --------------------------------------------------------
-void sub_7E154()
+void sub_7E154(int a1)
 {
   int v0; // ecx
   char *v1; // edi
@@ -4045,6 +4054,11 @@ void sub_7E154()
   char v21; // [esp+7Ch] [ebp+7Ah]
   char v22; // [esp+80h] [ebp+7Eh]
 
+  /* vlna 110: `v14` byla NEINICIALIZOVANA - stejny spillnuty registrovy
+     argument jako u sub_7DD41 (asm: enter 80h,0 / push eax / sub ebp,82h).
+     Volajici sub_8012F predava `lea eax, [ebp+var_C]`, IDA z funkce udelala
+     bezparametrovou, takze obe `*v14 = 1` psaly pres smeti. */
+  v14 = (_WORD *)(intptr_t)a1;
   v22 = 0;
   v19 = 0;
   v20 = 0;
@@ -4075,7 +4089,7 @@ void sub_7E154()
       if ( v22 && byte_199BE2 )
       {
         sub_11C2F0();
-        sub_7EDF2(*(int16_t **)(dword_19C044 + 56), *(int16_t *)(*(_DWORD *)(dword_19C044 + 56) + 2), -1, 1u);
+        sub_7EDF2((int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 56), *(int16_t *)(*(_DWORD *)(dword_19C044 + 56) + 2), -1, 1u);
         *(_BYTE *)(dword_19C044 + 100) = 1;
       }
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7DA0D je epilog funkce */
@@ -4563,6 +4577,7 @@ _DWORD *sub_7EA5C(int a1, int a2, int a3, int16_t *a4)
   _DWORD *v42; // edx
   int v43; // eax
   int v44; // eax
+  int16_t *v45; // vlna 110: baze bloku (ctyrbajtovy slot)
   _DWORD *result; // eax
 
   ServiceAudioTick_FE8BE(a1, a2, a3, a4);
@@ -4632,7 +4647,12 @@ _DWORD *sub_7EA5C(int a1, int a2, int a3, int16_t *a4)
   v43 = dword_19C044;
   *(_DWORD *)(dword_19C044 + 96) = v42;
   ServiceAudioTick_FE8BE(v43, (int)v42, v41, a4);
-  v44 = sub_12DAA4(**(_WORD **)dword_19C044 + 1, *(_WORD *)(*(_DWORD *)dword_19C044 + 2) + 1);
+  /* vlna 110: totez - asm 0x7ED2E: `mov eax, dword_194044 / mov eax, [eax] /
+     mov dx, [eax+2] / mov ax, [eax] / inc edx / inc eax / movsx edx, dx / cwde`.
+     Baze je CTYRBAJTOVY slot (plni se `*(_DWORD *)dword_19C044 = v4;` vyse),
+     obe slozky jsou 16bitove se znamenkovym rozsirenim. */
+  v45 = (int16_t *)(intptr_t)*(uint32_t *)dword_19C044;
+  v44 = sub_12DAA4((int16_t)(v45[0] + 1), (int16_t)(v45[1] + 1));
   result = (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v44);
   dword_19C150 = (int)result;
   return result;
@@ -4996,7 +5016,7 @@ LABEL_12:
         v8 = dword_19C034;
         v6 = (int16_t)v6;
         v5 = (int16_t)v5;
-        v9 = *(int16_t **)(dword_19C044 + 64);
+        v9 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 64);
 LABEL_22:
         v10 = (int16_t *)v8;
         v11 = v9;
@@ -5015,7 +5035,7 @@ LABEL_23:
       {
         v6 = (int16_t)v6;
         v5 = (int16_t)v5;
-        v11 = *(int16_t **)(dword_19C044 + 72);
+        v11 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 72);
         v10 = (int16_t *)dword_19C034;
         goto LABEL_23;
       }
@@ -5145,7 +5165,7 @@ LABEL_54:
     v8 = dword_19C034;
     v6 = (int16_t)v6;
     v5 = (int16_t)v5;
-    v9 = *(int16_t **)(dword_19C044 + 68);
+    v9 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 68);
     goto LABEL_22;
   }
   v12 = *(_DWORD *)(dword_19C044 + 68);
@@ -5236,39 +5256,43 @@ void sub_7F701(int a1, int a2)
   }
   if ( byte_199F3A && byte_19C062 )
   {
-    sub_12D8F5(*(_WORD *)(intptr_t)*(uint32_t *)(dword_19C044 + 92), *(_WORD *)(*(_DWORD *)(dword_19C044 + 92) + 2), dword_19C150);
-    sub_12F7E6(0, 0, *(int16_t **)(dword_19C044 + 92), (int16_t *)dword_19C150);
+    sub_12D8F5(*(int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 92), *(int16_t *)(*(_DWORD *)(dword_19C044 + 92) + 2), dword_19C150);
+    sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 92), (int16_t *)dword_19C150);
     sub_12F7E6(147, 43, (int16_t *)dword_19C150, (int16_t *)dword_19C034);
-    sub_12D8F5(*(_WORD *)(intptr_t)*(uint32_t *)(dword_19C044 + 96), *(_WORD *)(*(_DWORD *)(dword_19C044 + 96) + 2), dword_19C150);
-    sub_12F7E6(0, 0, *(int16_t **)(dword_19C044 + 96), (int16_t *)dword_19C150);
+    sub_12D8F5(*(int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 96), *(int16_t *)(*(_DWORD *)(dword_19C044 + 96) + 2), dword_19C150);
+    sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 96), (int16_t *)dword_19C150);
     sub_12F7E6(40, 88, (int16_t *)dword_19C150, (int16_t *)dword_19C034);
   }
   if ( byte_19C062 )
   {
-    sub_12D8F5(v13 - v3 + 1, v16 - v19 + 1, dword_19C150);
-    sub_12F7E6(0, 0, *(int16_t **)(dword_19C044 + 28), (int16_t *)dword_19C150);
+    /* vlna 110: asm 0x7F8DA konci `movsx edx, ax` / `cwde`, tedy OBA rozmery
+       jsou 16bitove. v13/v3/v16/v19 vznikly z `mov si, word_19183C` a
+       `mov dx, [eax+74h]`, takze horni pulka je neinicializovana - bez orezu
+       slo do sub_12D8F5 obrovske w/h a memset32 prestrelil buffer. */
+    sub_12D8F5((int16_t)(v13 - v3 + 1), (int16_t)(v16 - v19 + 1), dword_19C150);
+    sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 28), (int16_t *)dword_19C150);
     sub_12F7E6((int16_t)v3, (int16_t)v19, (int16_t *)dword_19C150, (int16_t *)dword_19C034);
   }
   else
   {
     v9 = v19;
-    sub_128AB6(v3, v19, v13, (int16_t)v16);
+    sub_128AB6((int16_t)v3, (int16_t)v19, (int16_t)v13, (int16_t)v16);
     sub_12B634();
-    sub_12A478(v3, v9, *(_DWORD *)(dword_19C044 + 28));
+    sub_12A478((int16_t)v3, v9, *(_DWORD *)(dword_19C044 + 28));
     sub_128BE7();
     sub_12B65C();
   }
   if ( byte_19C062 )
   {
-    sub_12D8F5(v14 - v18 + 1, v17 - v20 + 1, dword_19C150);
-    sub_12F7E6(0, 0, *(int16_t **)(dword_19C044 + 28), (int16_t *)dword_19C150);
+    sub_12D8F5((int16_t)(v14 - v18 + 1), (int16_t)(v17 - v20 + 1), dword_19C150);
+    sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 28), (int16_t *)dword_19C150);
     sub_12F7E6((int16_t)v18, (int16_t)v20, (int16_t *)dword_19C150, (int16_t *)dword_19C034);
   }
   else
   {
     v10 = v20;
     v11 = v18;
-    sub_128AB6(v18, v20, v14, (int16_t)v17);
+    sub_128AB6((int16_t)v18, (int16_t)v20, (int16_t)v14, (int16_t)v17);
     sub_12B634();
     sub_12A478(v11, v10, *(_DWORD *)(dword_19C044 + 28));
     sub_128BE7();
@@ -5442,7 +5466,7 @@ void sub_7FA28()
     sub_12B753(*(_DWORD *)(dword_19C044 + 36), *(int16_t *)(2 * v1 + dword_19C038 + 144));
     if ( byte_19C062 )
     {
-      sub_12F7E6(0, 0, *(int16_t **)(dword_19C044 + 36), (int16_t *)dword_19C150);
+      sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 36), (int16_t *)dword_19C150);
       v0 = (int16_t)(v92 - word_19983A);
       v3 = sub_12F7E6((int16_t)(v79 - word_19983C), v0, (int16_t *)dword_19C150, (int16_t *)dword_19C034);
     }
@@ -5568,7 +5592,7 @@ void sub_7FA28()
       sub_12B753(*(_DWORD *)(dword_19C044 + 36), v46);
       v47 = (int16_t)v44;
       v44 += 17;
-      sub_12F7E6(26, v47, *(int16_t **)(dword_19C044 + 36), (int16_t *)dword_19C034);
+      sub_12F7E6(26, v47, (int16_t *)(intptr_t)*(uint32_t *)(dword_19C044 + 36), (int16_t *)dword_19C034);
     }
     while ( v45 < 13 );
   }
@@ -5689,7 +5713,7 @@ void sub_8012F(int a1, int a2)
         sub_124D41();
         v2 = 1;
         v4 = 0;
-        v5 = sub_7EDF2(*(int16_t **)dword_19C044, 0, 1, 0);
+        v5 = sub_7EDF2((int16_t *)(intptr_t)*(uint32_t *)dword_19C044, 0, 1, 0);
       }
       else
       {
@@ -5721,7 +5745,7 @@ void sub_8012F(int a1, int a2)
     switch ( word_199830 )
     {
       case 0:
-        sub_7DD41(0, v8, byte_199E05);
+        sub_7DD41((int)&v11, v8, byte_199E05);
         break;
       case 1:
         sub_7E00F(&v11);
@@ -5730,7 +5754,7 @@ void sub_8012F(int a1, int a2)
         sub_7DA76(&v11, (int)&v9, v2, 0);
         break;
       case 3:
-        sub_7E154();
+        sub_7E154((int)&v11);
         break;
       default:
         break;
@@ -5756,7 +5780,7 @@ void sub_8012F(int a1, int a2)
         sub_124D41();
         v2 = -1;
         v4 = *(int16_t *)(*(_DWORD *)dword_19C044 + 2);
-        sub_7EDF2(*(int16_t **)dword_19C044, v4, -1, 0);
+        sub_7EDF2((int16_t *)(intptr_t)*(uint32_t *)dword_19C044, v4, -1, 0);
       }
       if ( word_199A08 == 13 )
       {

@@ -10158,7 +10158,7 @@ void sub_93A1E()
       v3 = (90 - v1[1]) / 2 + 37 + 109 * i;
       v4 = dword_1930DC + 59 * v6;
       if ( *(char *)(v4 + 55) > 0 || *(_BYTE *)(v4 + 57) == 4 )
-        v1 = *(int16_t **)(dword_19C458 + 6 * (i + 4));
+        v1 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C458 + 6 * (i + 4));
       sub_12A478(v2, v3, (int)v1);
     }
   }

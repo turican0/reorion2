@@ -9115,7 +9115,7 @@ void sub_9DEF7(int a1, int a2)
     if ( *(_WORD *)(v20 + (uint8_t*)dword_197F98 + v21 + 498) )
     {
       HIWORD(v5) = HIWORD(dword_19C7C0);
-      v6 = *(int16_t **)(dword_19C7C0 + 4 * *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)v27 + 37) + 12);
+      v6 = (int16_t *)(intptr_t)*(uint32_t *)(dword_19C7C0 + 4 * *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)v27 + 37) + 12);
       LOWORD(v5) = v6[1];
       v19 = 3753 * (int16_t)v27;
       v26 = v5;

@@ -3085,6 +3085,26 @@ int sub_1318D4( int a1, int a2)
   int result; // eax
   int i; // [esp+0h] [ebp-Ch]
 
+  /* PORT (vlna 109): ZACHRANNA BRZDA. Tahle smycka pise priznak 1 do palety pro
+     i = a1..a2 a NEMA zadnou horni kontrolu. Paleta ma 256 zaznamu po 4 B
+     (byte_1BB358, 1024 B); index 330 uz trefi presne `dword_1BB880`, coz je
+     UKAZATEL na tu samou paletu - a ten se pak pouziva v `sub_132C80` jako cil
+     zapisu (pad na 0x01010101, zmereno). Rozsah tedy orezavame a jednou hlasime.
+     Volajici: `sub_1205E6` (rozsah z palety resource) a `sub_1318D4(0, 255)`. */
+  if ( a1 < 0 || a2 > 255 )
+  {
+    static int rep = 0;
+    if ( rep < 4 )
+    {
+      ++rep;
+      PortDebug_CrashLog("sub_1318D4 mimo paletu: a1=%d a2=%d", a1, a2);
+      PortDebug_Backtrace("paleta.priznak", 5);
+    }
+    if ( a1 < 0 )
+      a1 = 0;
+    if ( a2 > 255 )
+      a2 = 255;
+  }
   for ( i = a1; ; ++i )
   {
     result = a2;

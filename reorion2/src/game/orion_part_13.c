@@ -4666,7 +4666,7 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
         {
           if ( !(word_1828CC % 10) || v30 )
           {
-            sub_EC4FE(*(uint8_t **)(dword_1A11AC + 31), *(uint8_t **)(dword_1A11AC + 35));
+            sub_EC4FE((uint8_t *)(intptr_t)*(uint32_t *)(dword_1A11AC + 31), (uint8_t *)(intptr_t)*(uint32_t *)(dword_1A11AC + 35));
             v18 = *(_BYTE *)(dword_1A11AC + 11);
             v16 = *(_WORD *)(dword_1A11AC + 43);
             v15 = *(_WORD *)dword_1A11AC;
@@ -4712,7 +4712,7 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
       if ( *((_BYTE *)a4 + 22) >= 4u || *(_BYTE *)(*(_DWORD *)(dword_1A11AC + 35) + 22) >= 4u )
       {
         a4 = (int *)dword_1A11AC;
-        v12 = *(int16_t **)(dword_1A11AC + 31);
+        v12 = (int16_t *)(intptr_t)*(uint32_t *)(dword_1A11AC + 31);
         v19 = 3753 * *v12 + (uint8_t*)dword_197F98 + 21;
         if ( *((_BYTE *)v12 + 22) >= 4u )
         {
