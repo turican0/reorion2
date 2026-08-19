@@ -3222,7 +3222,7 @@ int sub_7D061(_WORD *a1, _WORD *a2)
         v17 = *(_DWORD *)(v16 + 56);
       }
       *a2 = *(_WORD *)(v17 + 2);
-      sub_7D954();
+      sub_7D954(dword_19C038 + 170);   /* vlna 111: asm `mov eax, dword_194038; add eax, 0AAh` */
       sub_7E6C1(v55, v42, v43);
       v18 = 0;
       sub_120F07((int)v43);
@@ -3496,7 +3496,7 @@ LABEL_9:
 
 
 //----- (0007D954) --------------------------------------------------------
-void sub_7D954()
+void sub_7D954(int a1)
 {
   int v0; // ecx
   int v1; // ebx
@@ -3510,6 +3510,10 @@ void sub_7D954()
   char v9[20]; // [esp+18h] [ebp-18h] BYREF
   int v10; // [esp+2Ch] [ebp-4h]
 
+  /* vlna 111: `v7` je SPILLNUTY prvni argument (asm `enter 2Ch,0` + `push eax`,
+     pak `mov ebx, [ebp+var_30]`). Volajici sub_7D061 predava dword_19C038+0xAA
+     - bajtove pole priznaku po slotech, do ktereho se pise `*v3 = 0`. */
+  v7 = a1;
   v0 = 0;
   do
   {
@@ -3517,16 +3521,14 @@ void sub_7D954()
     itoa((int16_t)v0 + 1, v9, 10, v0);
     strcpy(v8, "SAVE");
     v1 = v7;
-    v2 = (char *)&v7 + 3;
-    do
+    v2 = v8;   /* vlna 111: asm `lea edi, [ebp+var_2C]`; &v7+3 plati jen kdyz v7 a v8 sousedi */
+    while ( *v2 )
       ++v2;
-    while ( *v2 );
     strcpy(v2, v9);
     v3 = (_BYTE *)(v10 + v1);
-    v4 = (char *)&v7 + 3;
-    do
+    v4 = v8;
+    while ( *v4 )
       ++v4;
-    while ( *v4 );
     strcpy(v4, aGam_0);
     *v3 = 0;
     if ( FindMoxSetPath_1114D7(v8, v8) )
@@ -5916,7 +5918,7 @@ void sub_80556()
   _BYTE v8[25]; // [esp+0h] [ebp-20h] BYREF
   int v9; // [esp+1Ch] [ebp-4h]
 
-  sub_11C83();
+  sub_11C83(dword_19C038);   /* vlna 111: asm `mov eax, dword_194038` */
   v0 = 0;
   do
   {
@@ -5925,7 +5927,11 @@ void sub_80556()
     {
       v1 = 37 * (int16_t)v0;
       v3 = (int16_t)i;
-      saveSlotInfo_199699[1 + v1/37 + v3].name[0] = 0;
+      /* vlna 111: asm ma `mov byte_1916BE[ecx+ebx], 0` s ecx = 37*v0 (BAJTOVY
+         posun slotu) a ebx = i (bajt UVNITR slotu) - je to dopnuti zbytku
+         37bajtoveho slotu nulami. Port indexoval po SLOTECH, takze psal na
+         indexy 1..37 jedenactiprvkoveho pole. */
+      ((char *)&saveSlotInfo_199699[1 + v1/37])[v3] = 0;
     }
     ++v0;
   }
@@ -6016,8 +6022,9 @@ int16_t sub_80715(_WORD *a1)
   int v4; // [esp-8h] [ebp-F8h]
   char *v5; // [esp-4h] [ebp-F4h]
   _BYTE v6[200]; // [esp+0h] [ebp-F0h] BYREF
+  int slotDates[10];   /* vlna 111: [ebp-28h], vystup sub_11C83 */
 
-  sub_11C83();
+  sub_11C83((int)slotDates);   /* vlna 111: asm `lea eax, [ebp+var_28]`, 40 B za v6 */
   v5 = &saveSlotInfo_199699[1 + byte_199BF1];
   v4 = byte_199BF1;
   v2 = sub_7A990(0xCCu);
@@ -6055,8 +6062,9 @@ char sub_807A6(_WORD *a1)
   int v5; // [esp-8h] [ebp-F8h]
   char *v6; // [esp-4h] [ebp-F4h]
   _BYTE v7[200]; // [esp+0h] [ebp-F0h] BYREF
+  int slotDates[10];   /* vlna 111: [ebp-28h], vystup sub_11C83 */
 
-  sub_11C83();
+  sub_11C83((int)slotDates);   /* vlna 111: asm `lea eax, [ebp+var_28]`, 40 B za v7 */
   v6 = &saveSlotInfo_199699[1 + byte_199BF1];
   v5 = byte_199BF1;
   v2 = sub_7A990(0xCDu);

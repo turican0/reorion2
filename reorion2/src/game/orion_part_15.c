@@ -11465,7 +11465,7 @@ void sub_F4760(int a1, int16_t *a2)
   sub_F41AD(v4, 1, a1, a2);
   sub_1191CA((int)sub_F1CE6, 1);
   *(_BYTE *)(dword_192680 + 270) = 2;
-  sub_11C83();
+  sub_11C83((int)v11);   /* vlna 111: asm predava tentyz &var_34 i do sub_7E7FF */
   sub_7E7FF((int)v11, dword_192688, a1, 0);
   sub_7E752(dword_19268C);
   if ( sub_EFE7A() )

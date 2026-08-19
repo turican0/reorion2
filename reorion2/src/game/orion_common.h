@@ -251,8 +251,8 @@ extern void sub_1160B();
 extern char sub_11BE4();
 // plna signatura: char LoadSettingsFile_11C39(int a1);
 extern char LoadSettingsFile_11C39();
-// plna signatura: void sub_11C83();
-extern void sub_11C83();
+// plna signatura: void sub_11C83(int a1);
+void sub_11C83(int a1);   /* vlna 111: spillnuty registrovy argument (pole 10 dwordu volajiciho) */
 // plna signatura: char sub_11E04(int a1);
 extern char sub_11E04();
 // plna signatura: void sub_11E56(int a1);
@@ -2772,8 +2772,8 @@ int sub_7D061(_WORD *a1, _WORD *a2);   /* vlna 105: skutecny prototyp (ukazatelo
 _DWORD *sub_7D892();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_7D8F3( unsigned int a1, int a2, int16_t *a3);
 int sub_7D8F3( unsigned int a1, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_7D954();
-extern void sub_7D954();
+// plna signatura: void sub_7D954(int a1);
+void sub_7D954(int a1);   /* vlna 111: spillnuty registrovy argument */
 // plna signatura: void sub_7DA13();
 extern void sub_7DA13();
 // plna signatura: void sub_7DA76(_WORD *a1, int a2, int a3, int a4);
@@ -10473,7 +10473,7 @@ char sub_10E2F(int a1, int a2, int a3, int a4);
 void sub_1160B(int a1, int a2, int a3, int a4);
 char sub_11BE4();
 char LoadSettingsFile_11C39(int a1);
-void sub_11C83();
+void sub_11C83(int a1);
 char sub_11E04(int a1);
 void sub_11E56(int a1);
 int sub_11EAE(int16_t a1, int a2);
@@ -11741,7 +11741,7 @@ _BOOL1 sub_7D036();
 int sub_7D061(_WORD *a1, _WORD *a2);
 _DWORD *sub_7D892();
 // int sub_7D8F3(uint16_t a1, int16_t a2, int16_t *a3);
-void sub_7D954();
+void sub_7D954(int a1);
 void sub_7DA13();
 void sub_7DA76(_WORD *a1, int a2, int a3, int a4);
 // void sub_7DD41(int a1, int16_t *a2, char *a3);
@@ -18675,11 +18675,11 @@ extern int16_t word_1992D4[10];
 extern int16_t word_1992E8[5];
 extern char byte_1992F2[10];
 extern int16_t word_1992FC[462];
-extern TypeSaveSlotInfo_199699 saveSlotInfo_199699[10];
+extern TypeSaveSlotInfo_199699 saveSlotInfo_199699[11];
 //extern char byte_199699[19];
 //extern int16_t word_1996AC[9];
 //extern char byte_1996BE[333];
-extern char byte_19980B[37];
+#define byte_19980B ((char *)&saveSlotInfo_199699[10])   /* vlna 111: slot 10, ne samostatny objekt */
 extern int16_t word_199830;
 extern int16_t word_199832;
 extern int16_t word_199834;

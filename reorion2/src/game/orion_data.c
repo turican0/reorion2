@@ -16075,10 +16075,10 @@ int16_t word_1992E8[5]; // weak
 char byte_1992F2[10]; // weak
 int16_t word_1992FC[462]; // weak
 //char byte_199699[19]; // weak
-TypeSaveSlotInfo_199699 saveSlotInfo_199699[10];
+TypeSaveSlotInfo_199699 saveSlotInfo_199699[11];   /* vlna 111: 11 slotu (0..10) - kod indexuje [1+i] pro i=0..9 */
 //int16_t word_1996AC[9]; // weak
 //char byte_1996BE[333]; // weak
-char byte_19980B[37]; // weak
+/* vlna 111: byte_19980B JE slot 10 (rozsekany souvisly blok) - viz makro v orion_common.h */
 int16_t word_199830; // weak
 int16_t word_199832; // weak
 int16_t word_199834; // weak

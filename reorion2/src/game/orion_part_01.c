@@ -1563,7 +1563,7 @@ char LoadSettingsFile_11C39(int a1)
 
 
 //----- (00011C83) --------------------------------------------------------
-void sub_11C83()
+void sub_11C83(int a1)
 {
   int v0; // ecx
   char *v1; // edi
@@ -1581,29 +1581,35 @@ void sub_11C83()
   int v13; // [esp+28h] [ebp-8h]
   int v14; // [esp+2Ch] [ebp-4h]
 
+  /* vlna 111: `v7` byla NEINICIALIZOVANA. Asm ma `enter 2Ch,0` + `push eax`,
+     takze [ebp+var_30] je SPILLNUTY prvni argument - ukazatel na pole 10
+     dwordu volajiciho, do ktereho se pak cte `fread(v12, 4, 1, ...)`.
+     Bez toho slo do fread smeti (nebo NULL) a ladici CRT spustil zarazku. */
+  v7 = a1;
   v14 = 0;
   while ( 1 )
   {
     v0 = (int16_t)v14;
     itoa((int16_t)v14 + 1, v9, 10, (int16_t)v14);
     strcpy(v8, "SAVE");
-    v1 = (char *)&v7 + 3;
-    do
+    /* vlna 111: asm hleda konec retezce v `v8` (`lea edi, [ebp+var_2C]`).
+       IDA to napsala jako `&v7 + 3`, coz plati jen kdyz v7 a v8 sousedi -
+       na x64 to neplati a zapis sel mimo buffer nazvu souboru. */
+    v1 = v8;
+    while ( *v1 )
       ++v1;
-    while ( *v1 );
     strcpy(v1, v9);
-    v2 = (char *)&v7 + 3;
-    do
+    v2 = v8;
+    while ( *v2 )
       ++v2;
-    while ( *v2 );
     strcpy(v2, aGam);
     v3 = 37 * v0;
     v4 = access(v8, 0);
     v12 = (_DWORD *)(4 * v0 + v7);
-    v10 = &saveSlotInfo_199699[v0];
+    v10 = &saveSlotInfo_199699[1 + v0];   /* vlna 111: asm base byte_1916BE = slot 1, ne 0 */
     if ( v4 )
     {
-      strcpy(&saveSlotInfo_199699[v3/37], sub_7A990(0x184u));
+      strcpy(v10, sub_7A990(0x184u));
       *v12 = -1;
     }
     else
@@ -1621,11 +1627,11 @@ void sub_11C83()
         {
           if ( (_WORD)v14 == 9 )
           {
-            strcpy(&saveSlotInfo_199699[v3/37], "(Auto Save)");
+            strcpy(v10, "(Auto Save)");
           }
           else if ( !saveSlotInfo_199699[1 + v0].name[0])
           {
-            strcpy(&saveSlotInfo_199699[1 + v3].name[0], "<< no description >>");
+            strcpy(v10, "<< no description >>");
           }
         }
         else
