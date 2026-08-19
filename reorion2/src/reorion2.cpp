@@ -23,6 +23,7 @@
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr);
 extern "C" void PortDebug_CrashLog(const char* fmt, ...);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
+extern "C" void PortCtl_Init();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
 
 static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
 {
@@ -362,6 +363,10 @@ int main(int argc, char* argv[])
     Port::Sound::Init();
     Port::Mouse::Init();
     StartWatchdog();
+
+    // vlna 112: nativni strana srovnavaciho harnessu (genCompare/).
+    // Aktivuje se jen kdyz je nastaveno REORION2_CTL / DOSBOX_CTL_FILE.
+    PortCtl_Init();
 
     // Predavame puvodni parametry programu i tehdy, kdyz uzivatel nezadal
     // zadny argument (argc je v takovem pripade 1 a argv obsahuje cestu EXE).

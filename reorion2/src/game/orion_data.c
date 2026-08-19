@@ -18543,6 +18543,11 @@ int16_t word_1C9CC4; // weak
 int dword_1C9CCA; // weak
 int dword_1C9CCE; // weak
 char byte_1C9CD2; // weak
+/* vlna 112: deklarovane v orion_common.h, ale nikdy nedefinovane - v kodu se
+   objevuji jen v komentarich (zasobnik ovladace mysi, sub_19 kolem r. 4383).
+   Definice doplnena, aby prosla watch tabulka srovnavaciho harnessu. */
+_UNKNOWN dword_1B9E2B; // weak
+_UNKNOWN word_1B9E2F; // weak
 
 // PORT (vlna 26 pokr. 15): mixerove rutiny maji registrovou konvenci a vraci
 // posunuty zdrojovy (ESI) i cilovy (EDI) ukazatel; IDA je otypovala jako cdecl

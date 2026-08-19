@@ -11610,3 +11610,102 @@ zere rozpocet a na menu GAME je potreba ~4600 snimku. Kdyz jde jen o posledni
 obrazovku, vyplati se nechat bezet plny rozpocet a **soubory prubezne mazat**
 (drzet jen ~40 nejnovejsich); disk pak nese ~14 MB misto 2,8 GB. Na detekci
 padu snimky netreba vubec - staci SEH vypis a `reorion2_crash.log`.
+
+### Vlna 111: LOAD GAME - ctyri chyby na jedne ceste, z toho dvakrat tyz spill
+
+Klik na LOAD GAME padal v `PortFile_Read`. Nebyla to chyba prace se souborem -
+`fread` dostal neplatny cil a **ladici CRT spustil `__debugbreak()`**; ve
+Visual Studiu to vypada jako pad v CRT, ale zdroj je o dva ramce vys.
+
+#### 1. `sub_11C83` - spillnuty registrovy argument (potreti)
+
+Stejny prolog jako `sub_7DD41` a `sub_7E154` ve vlne 110:
+
+```
+enter   2Ch, 0
+push    eax          ; <- spillnuty prvni argument
+```
+
+`[ebp+var_30]` je ukazatel na **pole 10 dwordu volajiciho** (hvezdne datum
+kazdeho slotu), do ktereho se pak cte `fread(v12, 4, 1, f)`. IDA z funkce
+udelala bezparametrovou, takze `v12 = v7 + 4*v0` mirilo do smeti. Volajici
+podle asm:
+
+| volajici | asm | port |
+|---|---|---|
+| `sub_80556` | `mov eax, dword_194038` | `dword_19C038` |
+| `sub_80715` / `sub_807A6` | `lea eax, [ebp+var_28]` | nova lokalka `slotDates[10]` (40 B za `v6[200]`) |
+| `sub_F4760` | `lea eax, [ebp+82h+var_34]` | `v11[40]` - uz existovala, jen se nepredavala |
+
+#### 2. Nazev souboru se skladal MIMO buffer
+
+IDA napsala `v1 = (char *)&v7 + 3; do ++v1; while (*v1);`, jenze asm hleda
+konec retezce v `v8` (`lea edi, [ebp+var_2C]`). Ten tvar plati jen kdyz `v7`
+a `v8` v pameti sousedi - na x64 to neplati, takze `"SAVE" + cislo + ".GAM"`
+se skladalo do cizi pameti. Prepsano na `v1 = v8; while (*v1) ++v1;`.
+
+**Tenhle tvar je novy zapis do katalogu**: kdykoliv IDA sklada retezec pres
+`(char *)&<jina lokalka> + N`, je to ve skutecnosti adresa toho pole vedle
+a na x64 to nefunguje. Grep na `(char *)&v` + `+ 3` je levne loviste.
+
+#### 3. Zaklad pole slotu byl posunuty o jeden slot
+
+Asm pouziva `byte_1916BE`, coz je `saveSlotInfo_199699 + 37`, tedy **index 1**.
+Port zapisoval `fread` do `[v0]`, ale zbytek kodu (`sub_80556`, `sub_80715`, ...)
+cte `[1 + v0]` - jmena slotu se tedy nacitala jinam, nez se pak zobrazovala.
+
+Zaroven bylo pole o prvek kratke: komentar u struktury to ma popsane
+(*slot 0 / sloty 1-9 / `byte_19980B` = slot 10*), ale `orion_data.c` deklaroval
+`[10]`, takze index 10 byl mimo. Rozsireno na `[11]` a `byte_19980B` je ted
+makro na slot 10 misto samostatneho objektu - klasicky **rozsekany souvisly
+blok**; zapisy `"(Auto Save)"` do nej se dosud ztracely.
+
+#### 4. `sub_80556` - bajtovy index pouzity jako index slotu
+
+Doplneni zbytku 37bajtoveho slotu nulami. Asm ma
+`mov byte_1916BE[ecx+ebx], 0` s `ecx = 37*v0` (bajtovy posun slotu) a
+`ebx = i` (bajt UVNITR slotu). Port ale indexoval po SLOTECH:
+
+```c
+saveSlotInfo_199699[1 + v1/37 + v3].name[0] = 0;   // v3 = bajtovy index!
+```
+
+Pri kazdem kliku na LOAD GAME to psalo nuly na indexy 1..37 jedenactiprvkoveho
+pole. Opraveno na `((char *)&saveSlotInfo_199699[1 + v1/37])[v3] = 0;`.
+
+#### 5. `sub_7D954` - tyz spill jeste jednou
+
+Po opravach 1-4 se pad presunul o kus dal, do `sub_7D954` - blizence
+`sub_11C83` se **stejnymi tremi chybami** (spill, `&v7 + 3`, zapis `*v3 = 0`
+pres neinicializovany ukazatel). Volajici `sub_7D061` predava
+`dword_19C038 + 0xAA` (`mov eax, dword_194038; add eax, 0AAh`).
+
+#### Vysledek
+
+**Dialog LOAD GAME se otevre a je spravne naplneny**: devet slotu
+`... empty slot ... * INVALID *` a slot 10 `(Auto Save)` se
+`Stardate: 3500.0`, plus tlacitka LOAD a CANCEL. Sedi to na `SAVE10.GAM`
+(jedina existujici ulozena hra), datum ve strukture je 35000.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- cesta mapa -> GAME -> LOAD GAME bez jedineho SEH.
+
+#### Co zbylo otevrene
+
+* V radku slotu se vpravo kresli `0,8728 00:00` - vypada to na datum/cas
+  formatovany ze spatne hodnoty. Kosmeticke, obsah slotu je jinak spravne.
+* Samotne nacteni hry (tlacitko LOAD v dialogu) jeste neni vyzkousene.
+* Tlacitko SETTINGS v menu GAME porad padne - viz vlna 110.
+
+#### Poznamka k merenii (stalo me to tri behy)
+
+`REORION2_BLIT_DUMP_COUNT` **neni casove okno, ale pocet snimku**, a blit rate
+se mezi behy lisi klidne dvojnasobne (jednou 9000 snimku za 69 s, jindy 3900
+za 75 s). Kdyz rozpocet dojde pred sledovanou akci, posledni snimek v adresari
+je zpred ni - a vypada to, jako by se obrazovka nezmenila. Spravne je dat
+rozpocet nesmyslne vysoky (`1000000`) a **snimky prubezne mazat** (drzet ~50
+nejnovejsich); disk pak nese ~17 MB misto gigabajtu a posledni snimek je
+opravdu posledni.

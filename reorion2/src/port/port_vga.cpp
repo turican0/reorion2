@@ -14,6 +14,8 @@ extern "C" void PortDos_ServiceMouse(void);
 #include <string>
 #include <vector>
 
+extern "C" void PortCtl_Tick();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
+
 namespace Port::Vga {
 
 namespace {
@@ -267,6 +269,10 @@ void DumpFrameIfRequested(const uint8_t* framebuffer, const std::array<uint32_t,
 {
     static int s_presentCount = 0;
     ++s_presentCount;
+
+    // vlna 112: jeden "krok" srovnavaciho harnessu = jeden snimek.
+    // Bez REORION2_CTL/DOSBOX_CTL_FILE je to prazdne volani.
+    PortCtl_Tick();
 
     const char* dir = std::getenv("REORION2_DUMP_DIR");
     std::string base = dir ? dir : ".";
