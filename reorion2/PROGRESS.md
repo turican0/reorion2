@@ -11709,3 +11709,114 @@ je zpred ni - a vypada to, jako by se obrazovka nezmenila. Spravne je dat
 rozpocet nesmyslne vysoky (`1000000`) a **snimky prubezne mazat** (drzet ~50
 nejnovejsich); disk pak nese ~17 MB misto gigabajtu a posledni snimek je
 opravdu posledni.
+
+### Vlna 112: srovnavaci harness zapojen do portu + LOAD opravdu nacita
+
+Ukol: zapojit nativni stranu harnessu z `genCompare/` a overit, ze obrazovka
+dosboxu a portu po nacteni tehoz ulozeni sedi.
+
+#### Zapojeni harnessu (`src/port/port_ctl.cpp`)
+
+Nove soubory v portu: `src/port/ctl_common.h`, `src/port/native_ctl.h`,
+`src/game/trace_native_symbols.gen.cpp` (pregenerovano, **2935 symbolu**).
+
+**Past c. 1 - poradi includu.** `orion_common.h` pres `decomp_compat.h`
+predefinovava `fopen/fclose/fread/fwrite/fflush/fprintf` na `PortFile_*`.
+Harness ale potrebuje SKUTECNE CRT (pise si vlastni trace a hlasky na stderr).
+Funguje jen tohle poradi:
+
+```c
+#include "ctl_common.h"                        // prelozi se driv nez makra vzniknou
+#include "../game/trace_native_symbols.gen.cpp" // tahne orion_common.h = makra
+#undef fopen ... #undef fprintf                 // makra pryc
+#include "native_ctl.h"                         // zase nad skutecnym CRT
+```
+
+**Past c. 2 - kde lezi generovany soubor.** Generuje se s `#include
+"orion_common.h"`, takze **musi lezet v `src/game/`**, jinak se hlavicka
+nenajde. Pregenerovat po kazde zmene hlavicky:
+`gen_watchtable.exe src/game/orion_common.h src/game/`.
+
+**Past c. 3.** `dword_1B9E2B` a `word_1B9E2F` byly v `orion_common.h`
+deklarovane, ale nikde nedefinovane (v kodu jen v komentarich) - linker je
+zacal chtit az kvuli watch tabulce. Doplneny do `orion_data.c`.
+
+Zapojeni: `PortCtl_Init()` v `main()`, `PortCtl_Tick()` jednou za snimek
+(v `DumpFrameIfRequested`), `native_ctl_shutdown` pres `atexit` (GameMain se
+nevraci). **Aktivuje se jen pri `REORION2_CTL` / `DOSBOX_CTL_FILE`** - bez nich
+se neudela nic, takze normalni beh i regresni brana zustavaji nedotcene.
+
+Na nativni strane je "cyklus" = jeden snimek.
+
+#### Harness si hned vydelal: LOAD nic nenacital
+
+Config s `changed:` watchem ukazal casovou osu jednoho behu: hodnoty vzniknou
+pri generovani galaxie a **klik na LOAD s nimi nehnul**. Referencni hodnoty ze
+`SAVE10.GAM`: `word_1999A2` = 93, hvezd 36, lodi 17.
+
+**POZOR na past pri mereni:** nova hra generuje NAHODNOU galaxii, takze
+porovnavat pocty mezi dvema behy nema smysl (poprve mi to dalo falesny zaver).
+Merit se musi uvnitr JEDNOHO behu - pred klikem a po nem.
+
+#### Pricina: zase skladani jmena souboru pres sousedni lokalku
+
+`sub_10E2F` (loader, `orion_part_01.c`) mel **tutez chybu jako `sub_11C83`
+a `sub_7D954` z vlny 111**:
+
+```c
+strcpy((char *)v55, "SAVE");
+v5 = &v54;              // <- bajt TESNE PRED bufferem
+do ++v5; while (*v5);
+```
+
+Asm ma `lea edi, [ebp+82h+var_28]`, tedy `v55`. Na x64 spolu `v54` a `v55`
+nesousedi, takze se `"SAVE<n>.GAM"` skladalo mimo buffer, `fopen` selhal
+a LOAD **tise** nenacetl nic. Po oprave sonda hlasi `nazev="SAVE1.GAM"` a
+`fopen -> OK`, a harness potvrdil `word_1999A2 = 93`, hvezd 36, lodi 17 -
+presne obsah `SAVE10.GAM`.
+
+Opraveno 6 vyskytu v `orion_part_01.c` (loader i ukladani).
+
+#### SYSTEMOVY NALEZ: 97 mist s tímhle vzorcem
+
+Skript najde vzorec `vX = &vBASE; do ++vX; while (*vX);` na **97 mistech**:
+`part_02` 55x, `part_10` 20x, `part_17` 8x, `part_01` 6x (opraveno),
+`part_18` 4x, `part_07` 2x, `part_08`/`part_09` 1x.
+
+Poznat pravou chybu jde strojove: `vBASE` je osamocena `char vN;` s BYREF
+a **hned za ni je pole na adrese o 1 vyssi**. Overeno u vsech ctyr v `part_01`.
+Zbylych ~91 mist je v backlogu.
+
+#### `sub_806A2` - spillnuty registrovy argument (pate misto)
+
+Po oprave loaderu se objevil pad v `sub_806A2`: `_BYTE *v4` byla
+neinicializovana. Asm `enter 0CCh,0` / `push eax` / `sub ebp, 14Ah` a pak
+`mov esi, [ebp+14Ah+var_D0]` - je to `a1`. Doplneno `v4 = (_BYTE *)a1;`.
+
+#### Porovnani obrazovek - NESEDI
+
+Dosbox (CONTINUE nacte `SAVE10.GAM`, config `dbx/ctl_frame.cfg`):
+**mapa + dialog "Enter Home Star Name" s "Trilar"**.
+
+Port po nacteni tehoz souboru: **"Enter Ruler Name" s "Bladrov II"**, mapa
+zadna. Data se pritom nacetla spravne (harness to potvrdil) - "Bladrov II" je
+alkarijsky vladce a `SAVE10.GAM` ma rasu Alkari. Port tedy nacte data, ale
+misto rozbehnuti nactene hry spadne zpet do pruvodce novou hrou.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- harness overen ostrym behem (trace se zapisuje, `changed:` a `every:` funguji).
+
+#### Co zbylo otevrene
+
+* **Port nacita vzdy slot 1**, bez ohledu na to, ktery je vybrany
+  (`sub_10E2F` dostane `v48 = 0`). Kvuli tomu je v `x64/Debug` **testovaci
+  kopie `SAVE1.GAM`** (= `SAVE10.GAM`); bez ni nema LOAD co nacist.
+* Po nacteni port skonci v "Enter Ruler Name" misto na mape.
+* Lista LOAD/CANCEL zustava viset pres mapu po zavreni dialogu.
+* V radku slotu se kresli `0,8728 00:00` (spatne formatovane datum).
+* ~91 mist se vzorcem skladani retezce pres sousedni lokalku.
+* Dosbox: cesta k `dir=` musi byt WINDOWS tvar (`C:/...`), git-bash `/c/...`
+  dosbox neotevre a jen tise nic nezapise.

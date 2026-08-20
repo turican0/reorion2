@@ -807,10 +807,9 @@ LABEL_34:
   sub_127593((int)v10);
   if ( v10[v3 - 1] != 92 )
   {
-    v5 = &v9;
-    do
+    v5 = v10;
+    while ( *v5 )
       ++v5;
-    while ( *v5 );
     strcpy(v5, asc_17837F);
   }
   sprintf(v11, "%sdiplomat.lbx", v10);
@@ -1043,18 +1042,21 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
   v59 = v48;
   v58 = v48 + 1;
   v4 = itoa(v58, v53, 10, a4);
+  /* vlna 112: jmeno souboru se sklada v `v55` (asm `lea edi, [ebp+82h+var_28]`).
+     IDA to napsala pres `&v54`, tedy pres bajt TESNE PRED bufferem - to plati
+     jen kdyz spolu v pameti sousedi. Na x64 nesousedi, takze se "SAVE<n>.GAM"
+     skladalo mimo buffer, `fopen` selhal a LOAD tise nenacetl nic. */
   strcpy((char *)v55, "SAVE");
-  v5 = &v54;
-  do
+  v5 = (char *)v55;
+  while ( *v5 )
     ++v5;
-  while ( *v5 );
   strcpy(v5, v53);
-  v6 = &v54;
-  do
+  v6 = (char *)v55;
+  while ( *v6 )
     ++v6;
-  while ( *v6 );
   strcpy(v6, aGam);
   ServiceAudioTick_FE8BE(v4, (int)aRb, 10, v55);
+
   nullsub_14(v7);
   v60 = 0;
       // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
@@ -1355,15 +1357,13 @@ void sub_1160B(int a1, int a2, int a3, int a4)
   v34 = v25;
   v4 = itoa(v25 + 1, v31, 10, a4);
   strcpy(v30, "SAVE");
-  v5 = &v29;
-  do
+  v5 = v30;
+  while ( *v5 )
     ++v5;
-  while ( *v5 );
   strcpy(v5, v31);
-  v6 = &v29;
-  do
+  v6 = v30;
+  while ( *v6 )
     ++v6;
-  while ( *v6 );
   strcpy(v6, aGam);
   nullsub_14(v4);
   v35 = 0;
@@ -1451,10 +1451,9 @@ void sub_1160B(int a1, int a2, int a3, int a4)
     strcpy(v28, "Error saving game.\n");
     v8 = sub_129C88();
     v9 = (char *)strerror(*v8);
-    v10 = &v27;
-    do
+    v10 = v28;
+    while ( *v10 )
       ++v10;
-    while ( *v10 );
     strcpy(v10, v9);
     sub_77423((int)v28);
   }

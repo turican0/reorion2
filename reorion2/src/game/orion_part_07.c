@@ -5995,6 +5995,10 @@ int sub_806A2(char *a1, int a2)
   char v5; // [esp+4h] [ebp+7Eh] BYREF
   _BYTE v6[203]; // [esp+5h] [ebp+7Fh] BYREF
 
+  /* vlna 112: `v4` byla NEINICIALIZOVANA - opet spillnuty registrovy argument
+     (asm `enter 0CCh,0` / `push eax` / `sub ebp, 14Ah`, pak
+     `mov esi, [ebp+14Ah+var_D0]`). Je to `a1`, ne samostatna lokalka. */
+  v4 = (_BYTE *)a1;
   v2 = strlen(a1);
   result = memset(&v5, 0, 201);
   if ( v2 <= 200 )
