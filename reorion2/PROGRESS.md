@@ -11820,3 +11820,79 @@ misto rozbehnuti nactene hry spadne zpet do pruvodce novou hrou.
 * ~91 mist se vzorcem skladani retezce pres sousedni lokalku.
 * Dosbox: cesta k `dir=` musi byt WINDOWS tvar (`C:/...`), git-bash `/c/...`
   dosbox neotevre a jen tise nic nezapise.
+
+### Vlna 113: CONTINUE ozil, spravny slot, data sedi na bajt - obraz jeste ne
+
+Ukol: srovnat vykreslovani portu s dosboxem po nacteni TEHOZ ulozeni.
+
+#### CONTINUE v portu funguje (stara polozka z vlny 60)
+
+Pricinou bylo tote skladani jmena souboru pres sousedni lokalku, opravene ve
+vlne 112 (`sub_10E2F`). `fopen` uz neselhava, takze `REORION2_SENDKEY=67`
+('C' = CONTINUE) v hlavnim menu **nacte hru a dojede na mapu** - stejnou cestou
+jako dosbox. Tim je vubec poprve mozne srovnavat stejny stav.
+
+#### `sub_10E2F` - spillnuty registrovy argument = CISLO SLOTU (seste misto)
+
+`int16_t v48` se nikde neprirazovala, jen cetla (`v59 = v48; v58 = v48 + 1;`).
+Asm: `enter 6C8h,0` / `push eax` / `sub ebp, 82h`, takze
+`[ebp+82h+var_6CC]` = `[ebp-64Ah]` = prave `v48` - je to **prvni argument**.
+Bez toho port nacital VZDY slot 1, bez ohledu na vyber v dialogu i na to, ze
+`sub_10E2F(9, 0, 0, 0)` (CONTINUE) zada slot 9.
+
+Po oprave uz neni potreba testovaci kopie `SAVE1.GAM` - smazana.
+
+#### Nacitani je prokazatelne v poradku po cele delce
+
+Merenim (docasne sondy, uz odstranene):
+
+* **`ftell` na konci retezce = 208000**, presne velikost `SAVE10.GAM` - cely
+  retez `fread` je zarovnany, nikde se neposouva pozice v souboru;
+* **pet hlavnich bloku sedi na bajt** (kontrolni soucty proti souboru):
+  `dword_192B18` 406052, `dword_1930D4` 48561, `dword_19306C` 403128,
+  `dword_1930DC` 203671, `dword_197F98` 101674;
+* harness: `word_1999A2` = 93, hvezd 36, lodi 17 - vse jako v souboru;
+* start jde spravne vetvi HLAVNI MENU (ne quickload `word_18FF78 == 'q'`).
+
+#### Porovnani obrazu - JESTE NESEDI (7,65 %)
+
+Novy nastroj `scratchpad/diffshot.py` (768 B palety + 640x480 indexu, dosbox
+6bit vs port 8bit se normalizuje na 6 bitu) rekl:
+
+```
+paleta: 0/768 slozek se lisi          <- PALETA SEDI PRESNE
+rozdilnych pixelu: 23492 / 307200 (7,65 %)
+```
+
+**Neni to blikani hvezd.** `genCompare/find_match.exe` porovnal portovni snimek
+proti vsem 910 snimkum z dosboxu a vsech osm nejlepsich shod dalo **stejnych
+92,4 %** - kdyby slo o fazi animace, skore by se mezi snimky lisilo. Je to
+stabilni rozdil.
+
+Co je videt: dosbox ma na mape **mlhoviny**, port zadne; hvezdy jsou na jinych
+mistech; domovska hvezda je v dosboxu **Trilar**, v portu **Altair**; v bocnim
+panelu jidlo +1 vs +0.
+
+#### Zaver mereni: rozdil NENI v nactenych datech
+
+Vsechno, co se cte ze souboru, sedi (viz vyse). Rozdil tedy vznika az ve stavu
+**odvozenem po nacteni** - nejspis index domovske hvezdy a vrstva mlhovin.
+Dalsi krok je porovnat konkretni odvozene promenne mezi dosboxem (`DUMPMEM`,
+data = IDA + 0x216000) a portem, ne uz cele bloky.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- CONTINUE bez jedineho SEH.
+
+#### Poznamky k nastrojum
+
+* `scratchpad/diffshot.py <dosbox.raw> <port.raw> [maska.png]` - pocty a maska
+  rozdilnych pixelu.
+* `genCompare/find_match.exe <frame.raw> <refdir> 640 480` - najde nejlepsi
+  shodu; **timhle se pozna, jestli rozdil dela animace nebo je skutecny**.
+* Dosbox `dir=` chce WINDOWS cestu (`C:/...`); git-bash `/c/...` tise nezapise.
+* Pri dumpu snimku je `REORION2_BLIT_DUMP_COUNT` **pocet snimku, ne cas**, a
+  prubezne mazani nemusi stihat - 20k snimku = 6 GB. Radeji brat snimek podle
+  cisla (`ls | tail`), `ls -t` je na desetitisicich souboru pomale.

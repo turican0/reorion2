@@ -1039,6 +1039,11 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
   int v60; // [esp+6C8h] [ebp+7Eh]
 
   sub_7A795();
+  /* vlna 113: `v48` byla NEINICIALIZOVANA - je to SPILLNUTY prvni argument,
+     tedy CISLO SLOTU. Asm: `enter 6C8h,0` / `push eax` / `sub ebp, 82h`,
+     takze [ebp+82h+var_6CC] = [ebp-64Ah] = prave `v48`. Bez toho port
+     nacital vzdy slot 1 bez ohledu na vyber i na to, ze CONTINUE zada 9. */
+  v48 = (int16_t)a1;
   v59 = v48;
   v58 = v48 + 1;
   v4 = itoa(v58, v53, 10, a4);
