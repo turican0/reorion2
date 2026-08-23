@@ -12186,3 +12186,89 @@ Tohle je jeden z **199 podezrelych bloku** z `tools/idaarray_scan.py`. Vzorec
 + nasledujici skalary po 2 B" je pritom strojove detekovatelny - vyplati se
 ten skener pustit znovu a projit hlavne pripady, kde se symbol nekde
 INDEXUJE (`word_X[i]`), protoze prave tam to tise cte mimo.
+
+### Vlna 117: hvezdna mapa je 1:1; zbyva 85 px v titulku dialogu
+
+Navazuje na vlnu 116 (centrovani hvezd). Merit se dalo az po overeni te opravy:
+
+| krok | rozdilnych pixelu |
+|---|---|
+| ruzne savy (vlna 114) | 23492 (7,65 %) |
+| stejny sav (vlna 115) | 10940 (3,56 %) |
+| **po oprave centrovani (vlna 116)** | **389 (0,13 %)** |
+| **po oprave barevne rampy (tato vlna)** | **309 (0,10 %)** |
+
+Z tech 309 je **224 px kurzor mysi** - dosbox dumpuje zadni buffer BEZ kurzoru,
+port ho v blit dumpu ma. Neni to chyba, jen artefakt srovnani; pozice kurzoru
+se navic mezi behy meni (jednou (207,384), jindy roh (0,0)).
+
+**Skutecny zbytek je tedy 85 px = 0,028 %, a je JEN v titulku dialogu.**
+Hvezdna mapa sama - hvezdy, mlhoviny, pozadi, popisky hvezd, paleta - je
+pixelove shodna.
+
+#### Oprava: `byte_10010` byla jednoprvkova
+
+Popisek hvezdy mel v portu **oranzovou** barvu misto ruzove (indexy 82/87
+misto 46/51, tedy posun rampy o +36).
+
+Cesta k pricine:
+1. `sub_85C8A` vybira barvu podle vlastnika hvezdy (`zaznam + 20`). Sonda
+   ukazala, ze vlastnici v portu sedi se savem presne - data v poradku.
+2. Trilar je hvezda 29 s vlastnikem 0, takze jde vetvi `sub_7A00A(0, ...)`.
+3. Sonda na vyslednou rampu: port ma `82 87 87 87 ...`, ma byt `46 51 ...`.
+4. `sub_79138` bere zaklad rampy z **`byte_10010[rasa hrace]`**.
+
+A ta tabulka byla v `orion_data.c` definovana jako:
+
+```c
+char byte_10010[] = { 'I' }; // weak
+```
+
+**Jeden bajt.** Rasa hrace je 6, takze se cetlo sest bajtu za koncem pole.
+Skutecny obsah je primo v obrazu hry (`Orion2.exe.lst`, cseg01:00010010):
+
+    byte_10010  db 49h
+                db 62h, 6Eh, 20h
+                dd 552D943Eh          ; = 3E 94 2D 55
+
+Za nim uz na 0x10018 zacina kod funkce `main_`, takze pole ma **prave
+8 polozek**: `{0x49, 0x62, 0x6E, 0x20, 0x3E, 0x94, 0x2D, 0x55}`.
+Kontrola: rasa 6 -> `0x2D` = 45 -> rampa 46/51 = presne dosbox.
+
+**Pozor, dopad je sirsi nez jeden popisek:** `byte_10010[...]` se pouziva na
+**deseti dalsich mistech** (`orion_part_06/07/08/09/10`) - barvy popisku lodi
+a dalsich textu. Vsechny mely pro rasu != 0 barvu podle smeti za polem.
+
+#### Zbylych 85 px - titulek dialogu, ZATIM NEDORESENO
+
+Dosbox kresli titulek "Enter Home Star Name" indexem **19**, port **24**.
+Vystopovano az k rampe: port instaluje `12 24 24 24 ...`, dosbox ma na tom
+miste 19.
+
+Backtrace: `sub_120BB5` <- `sub_8FDA1` <- `sub_87BAE` (`orion_part_07.c:12214`).
+Tam se predava `char v81[8]`, ktere se ale **plni az O PET RADKU POZDEJI**
+(`sub_8F6F8(v86, 14, v112, v81)` na 12219). Port tedy posila neinicializovany
+zasobnik.
+
+**Asm ma ale STEJNE poradi** (`lea edx, [ebp+82h+var_88]` / `call sub_8FDA1`,
+teprve pak `sub_8F6F8`), a `var_88` se v cele funkci nikde driv neplni - jen
+se bere jeji adresa (`lea` na radcich 97/100/116). Original tedy zjevne take
+cte zbytek zasobniku, jen ma na tom miste jinou hodnotu.
+
+**Dalsi krok:** `DUMPREGS` na `call sub_8FDA1` v `sub_87BAE` -> `edx` je
+adresa bufferu, druhym behem z ni vypsat 8 B. Teprve to rekne, jestli
+original ma na tom miste smysluplnou rampu (a tedy ji nekdo naplnil driv,
+mimo tuhle funkci), nebo jestli je to skutecne zavislost na zbytku zasobniku.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene.
+
+#### Poznamka k metode
+
+Vzorec, ktery dnes zabral dvakrat: **nehledat kreslici funkci, ale sledovat
+DATA.** U popisku hvezdy jsem marne zkousel sondy v `sub_12A478`, `sub_1231B1`,
+`sub_12972D` i `sub_11C358` - zadna ten text nekresli. Ciloveho viníka nasla
+az sonda na VYSLEDNOU RAMPU (`sub_120BB5`) plus `PortDebug_Backtrace`.
