@@ -74,7 +74,7 @@ int byte_19B544;
 /* vlna 73: byte_19B688 je ted 8bajtove pole v orion_data.c */
 int byte_19C120;
 int byte_19C148;
-int byte_19C31C;
+/* vlna 119: duplicitni skalar odstranen - pole je v orion_data.c */
 /* vlna 58: byte_19C6EE je ted makro do bloku hofBlock_19C5FC - tenhle
    pahyl uz nic nealiasoval a jen mrtve zabiral symbol. */
 int byte_19C714;

@@ -16998,14 +16998,13 @@ char byte_19C2F4[36]; // weak
 char byte_19C318; // weak
 char byte_19C319; // weak
 char byte_19C31A; // weak
-char byte_19C31C[]; // weak
-char byte_19C31D; // weak
-char byte_19C31E; // weak
-char byte_19C31F; // weak
-char byte_19C320; // weak
-char byte_19C321; // weak
-char byte_19C322; // weak
-char byte_19C323; // weak
+/* vlna 119: SOUVISLA 8BAJTOVA BAREVNA RAMPA, ne osm skalaru. Stavi ji
+   `sub_8E5C5` (`memset(byte_19C31C, 0, 8)` + zapis [0] a [1..7]) a pak
+   prepisuje jednotlive polozky pres jmena +1..+7 (`byte_19C31E = ...`).
+   Dokud to byly samostatne promenne, ty prepisy do rampy VUBEC NESLY -
+   napr. index 2 zustal na `top` misto `min(top, base+1)`, takze titulek
+   dialogu mel barvu 24 misto 19. */
+char byte_19C31C[8]; // weak
 char byte_19C324; // weak
 int dword_19C330; // weak
 int dword_19C334; // weak

@@ -12272,3 +12272,71 @@ Vzorec, ktery dnes zabral dvakrat: **nehledat kreslici funkci, ale sledovat
 DATA.** U popisku hvezdy jsem marne zkousel sondy v `sub_12A478`, `sub_1231B1`,
 `sub_12972D` i `sub_11C358` - zadna ten text nekresli. Ciloveho viníka nasla
 az sonda na VYSLEDNOU RAMPU (`sub_120BB5`) plus `PortDebug_Backtrace`.
+
+### Vlna 118: zbylych 85 px zuzeno na rampu dialogu (NEDORESENO)
+
+Hvezdna mapa je po vlnach 116/117 pixelove shodna. Zbyva **85 px = 0,028 %**
+a je to VYHRADNE titulek dialogu "Enter Home Star Name": dosbox ho kresli
+indexem **19**, port **24** (jedina konzistentni zamena, paleta sedi 768/768).
+
+#### Kam az se to podarilo dovest
+
+Retez je vystopovany cely:
+
+1. Titulek kresli okno pres `sub_11E718` (`orion_part_19.c:2181`), ktere vola
+   `sub_120BB5(slot+8 >> 16, slot+12)` - rampa je **slot okenni tabulky +12**.
+2. Sonda na ten slot: **slot 2, typ 3, rampa = `byte_1B070C`**
+   (ne `byte_1B61D8`, jak by clovek cekal podle komentare u `sub_120BB5`).
+3. `byte_1B070C` se plni v `orion_part_19.c:822` jako **KOPIE `byte_1B61D8`**
+   (`v33 = sub_12222E()`), tedy kopie *prave aktualni* globalni rampy
+   v okamziku vzniku dialogu.
+4. V portu je v ni `12 24 24 24 24 24 24 24` a **v ustalenem stavu se uz nikdy
+   nemeni** (sonda na zmeny po 20000 volanich nevystrelila ani jednou).
+
+Chyba je tedy v tom, JAKA rampa byla naposledy nainstalovana pred vznikem
+dialogu.
+
+#### Co bylo VYLOUCENO (neopakovat)
+
+* **Neni to `sub_8F64C`** - vraci `int16_t`, takze asm `cwde` je respektovane.
+* **Neni to `sub_8F6F8`** - je to presne `qmemcpy(dest, sub_8E5C5(a1,a2,a3), 8)`,
+  sedi s asm (`call sub_8E5C5` + `rep movsb`).
+* **Neni to poradi volani v `sub_87BAE`** - port predava `v81` do `sub_8FDA1`
+  driv, nez ho naplni, ale **asm ma stejne poradi** (`lea edi, [ebp+82h+var_88]`
+  / `call sub_8FDA1`, teprve pak `sub_8E5C5`+`rep movsb`). Obe strany tedy
+  pouziji obsah z predchoziho pruchodu.
+* **Nesedi zadny zjevny kandidat na rampu 12/24**: `sub_8F6F8(v86, 14, 23, v81)`
+  dava `14 23 23...`, `sub_8E5C5(a1<=3, 12, 23)` dava `12 23 13 23...`.
+  Zdroj hodnoty 24 zustava nenalezeny.
+* Dumpy z dosboxu na EIP `0x2ABC8B` (za `call sub_8FDA1` v `sub_87BAE`):
+  `byte_1B61D8` = `29 0 0 0 2 0 0 0`, `byte_1B070C` = same nuly. **Oboji je
+  merene v NESPRAVNY OKAMZIK** - dialog se vytvari az pozdeji, takze to
+  o vysledne barve nic nerika.
+
+#### Dalsi krok
+
+Potreba je odecist `byte_1B61D8` z dosboxu **presne ve chvili vzniku dialogu**,
+tedy na EIP odpovidajicim `orion_part_19.c:822` (kopirovaci smycka
+`byte_1B070C[i] = v33[i]`). Najit jeji IDA adresu v `.lst`, prevest
+(+0x224000) a dat tam `DUMPMEM addr=0x3CC1D8 size=8`. Teprve to rekne,
+jakou rampu ma original, a odtud jde dohledat, kdo ji nastavil.
+
+Pozor: **`DUMPMEM` vypali pri PRVNIM zasahu EIP** a druhou podminku
+(`cond=cycle_ge:`) TISE IGNORUJE - overeno v `engine.cpp`, parsuje jen
+`cond=eip:`. Trigger tedy musi byt misto, ktere se driv netrefi.
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb, vsechny docasne sondy odstranene;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**.
+
+#### Stav srovnani port vs dosbox (stejny sav, obrazovka hvezdne mapy)
+
+| polozka | stav |
+|---|---|
+| paleta | 768/768 shodna |
+| hvezdy, mlhoviny, pozadi | pixelove shodne |
+| popisky hvezd | pixelove shodne (vlna 117) |
+| bocni panel, spodni lista | shodne |
+| kurzor mysi (224 px) | artefakt srovnani, ne chyba |
+| **titulek dialogu (85 px)** | **jedina zbyvajici odchylka** |

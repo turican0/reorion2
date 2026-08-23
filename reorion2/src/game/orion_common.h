@@ -19594,14 +19594,14 @@ extern char byte_19C2F4[36];
 extern char byte_19C318;
 extern char byte_19C319;
 extern char byte_19C31A;
-extern char byte_19C31C[];
-extern char byte_19C31D;
-extern char byte_19C31E;
-extern char byte_19C31F;
-extern char byte_19C320;
-extern char byte_19C321;
-extern char byte_19C322;
-extern char byte_19C323;
+extern char byte_19C31C[8];   /* vlna 119: barevna rampa, souvislych 8 B */
+#define byte_19C31D byte_19C31C[1]
+#define byte_19C31E byte_19C31C[2]
+#define byte_19C31F byte_19C31C[3]
+#define byte_19C320 byte_19C31C[4]
+#define byte_19C321 byte_19C31C[5]
+#define byte_19C322 byte_19C31C[6]
+#define byte_19C323 byte_19C31C[7]
 extern char byte_19C324;
 extern int dword_19C330;
 extern int dword_19C334;
