@@ -18540,12 +18540,12 @@ extern int dword_193184;
 extern int dword_193188;
 extern int dword_193190;
 extern int dword_193194[6];
-extern int16_t word_1931AC[];
-extern int16_t word_1931AE;
-extern int16_t word_1931B0;
-extern int16_t word_1931B2;
-extern int16_t word_1931B4;
-extern int16_t word_1931B6;
+extern int16_t word_1931AC[6];   /* vlna 116: velikosti spritu hvezd */
+#define word_1931AE word_1931AC[1]
+#define word_1931B0 word_1931AC[2]
+#define word_1931B2 word_1931AC[3]
+#define word_1931B4 word_1931AC[4]
+#define word_1931B6 word_1931AC[5]
 extern int dword_1931B8;
 extern int16_t word_1931BC[];
 extern int16_t word_1931BE[];

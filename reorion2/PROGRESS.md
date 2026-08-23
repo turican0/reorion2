@@ -11896,3 +11896,293 @@ data = IDA + 0x216000) a portem, ne uz cele bloky.
 * Pri dumpu snimku je `REORION2_BLIT_DUMP_COUNT` **pocet snimku, ne cas**, a
   prubezne mazani nemusi stihat - 20k snimku = 6 GB. Radeji brat snimek podle
   cisla (`ls | tail`), `ls -t` je na desetitisicich souboru pomale.
+
+### Vlna 114: rozdil v obraze zuzen na JEDEN BAJT v savu (pocet mlhovin)
+
+Navazuje na vlnu 113 (obraz se lisil o 7,65 %). Cil: najit, kde se to bere.
+
+#### 1. Data jsou pri kresleni nedotcena - chyba je jinde nez v nacitani
+
+Novy nastroj **`REORION2_BLOCKWATCH=1`** (`src/port/port_ctl.cpp`) pocita
+kazdy snimek kontrolni soucty bloku `dword_19306C` / `dword_192B18` /
+`dword_197F98` / `dword_1930DC` a hlasi KAZDOU zmenu. Vysledek:
+
+```
+BLOCKWATCH snimek=973  dword_19306C (hvezdy)  soucet 0 -> 403128
+BLOCKWATCH snimek=973  dword_192B18 (kolonie) soucet 0 -> 406052
+...a uz nikdy nic
+```
+
+Bloky se naplni spravnymi hodnotami (shodnymi se `SAVE10.GAM`) a **do konce
+behu se nezmeni**. Pred nactenim byly nulove, takze port kresli opravdu
+nactenou galaxii. Tim je vyloucene "nacetlo se to a pak to nekdo prepsal".
+
+#### 2. Kde presne se obraz lisi
+
+Rozklad rozdilu po oblastech (`diffshot.py` rozsireny o regiony):
+
+| oblast | rozdilnych pixelu | podil |
+|---|---|---|
+| MAPA | 21491 | 91,5 % |
+| dialog | 1686 | 7,2 % |
+| horni lista | 224 | 1,0 % |
+| bocni panel | 89 | 0,4 % |
+
+A podle toho, kdo co kresli:
+
+| | pixelu | podil |
+|---|---|---|
+| **chybi v portu** (dosbox kresli, port ne) | 16505 | **71,2 %** |
+| oba kresli, jina barva | 3534 | 15,2 % |
+| navic v portu | 3138 | 13,5 % |
+
+Tri ctvrtiny rozdilu je **obsah, ktery port vubec nenakresli** - mlhoviny.
+
+#### 3. Zmereno: original ma DVE mlhoviny, port JEDNU
+
+`byte_199F0D` = pocet mlhovin; `sub_8DA07` podle nej nacita sprity ze
+`STARBG.LBX` do `dword_190298[]`, a v loaderu je `if (byte_199F0D) sub_8DA07(...)`.
+
+Merit se musi ve STEJNEM okamziku (poprve jsem srovnaval port po `fread`
+s dosboxem na vstupu `sub_8DA07` - to nic nedokazuje):
+
+| | port | dosbox |
+|---|---|---|
+| na vstupu `sub_8DA07` | **1** | **2** |
+| hned po `fread` | 1 | **2** |
+
+V souboru je na pozici, kterou port cte (**203779**), hodnota `01`;
+hodnota `02` lezi az na 203780. Original tedy cte o bajt dal.
+
+#### 4. Bisekce: posun vznika az v poslednich 26 bajtech
+
+Vsechny skalary pred tim jsou v OBOU stranach na stejnem offsetu (zmereno
+`DUMPMEM` hned po prislusnem `fread`):
+
+| pole | offset | hodnota (port i dosbox) |
+|---|---|---|
+| word_19999C | 203746 | 0000 |
+| word_1999A0 | 203748 | 000F |
+| word_19997C | 203750 | 0001 |
+| byte_199F0A | 203752 | 02 |
+| word_199A0C | 203753 | 02F7 |
+| word_199A0A | 203755 | 0258 |
+| unk_1999F0 | 203757 | 0000 |
+
+Pozn.: `unk_1999F0` je pro urceni zarovnani NEPOUZITELNE - v souboru je
+`00 00` na obou kandidatnich offsetech. Rozhodujici je `word_199A0C`
+(`02F7` vs `5802`), a ten sedi zarovnane.
+
+Zbyva tedy jedine cteni: **`fread(dword_193068, 20, 1, ...)`**. Asm ma
+`mov edx, 14h` (20) a portovni kod je totozny, presto originalu vyjde
+o bajt vic. **Tady chase skoncila** - dump 20bajtoveho bloku z dosboxu
+nesel overit, protoze ukazatel `dword_193068` vysel 0x0001712C, coz je mimo
+datovou oblast hry (0x0038xxxx-0x003Exxxx), takze ten odecet nebyl platny.
+
+**Dalsi krok:** precist `dword_193068` ve spravny okamzik (EIP 0x23525D,
+tedy hned po jeho `fread`) a pak z te adresy vypsat 20 B - a najit tu
+posloupnost v `SAVE10.GAM`. Offset nalezu rekne, kde presne original cte.
+
+#### 5. OPRAVA PRIRUCKY: prevod adres dat
+
+Pravidlo v prirucce je dvojznacne a stalo me to dva behy. Zkalibrovano na
+hvezdnem datu (`dword_192FD8` = 35000 = 0x88B8):
+
+    runtime adresa dat = C jmeno + 0x216000     <- TOHLE PLATI
+    (asm jmeno = C jmeno - 0x8000, takze rovnez asm + 0x21E000)
+
+Kandidat "asm + 0x216000" (= C + 0x20E000) je SPATNE - vraci same nuly.
+
+#### 6. DUMPMEM: jak chytit spravny pruchod
+
+`DUMPMEM` vypali pri PRVNIM zasahu EIP. Loader ale ma v beznem behu adresy,
+ktere se trefi driv, nez se sav vubec nacte - proto prvni pokusy vracely same
+nuly. Reseni: **pridat druhou podminku**, parser dela AND:
+
+    DUMPMEM cond=eip:0x00235270 cond=cycle_ge:100000000 addr=... size=1
+
+Funguje, prestoze dokumentace tvrdi, ze DUMPMEM umi jen `cond=eip:`.
+(CONTINUE nacita kolem cyklu 106,7M, takze prah 100M je bezpecny.)
+
+#### Overeno
+
+- `-t:Rebuild` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene (`BLOCKWATCH` zustava - je pod env
+  promennou a bez ni nic nedela).
+
+#### Mimochodem nalezene
+
+`sub_103421` (`orion_part_17.c`) ma tez skladani retezce pres sousedni
+lokalku (`v0 = (char *)&v2 + 3`) - jedno z tech 97 mist z vlny 112.
+
+### Vlna 115: falesna stopa - dosbox a port cetly RUZNE ulozene hry
+
+Vlna 114 skoncila na tom, ze original ma `byte_199F0D` = 2 mlhoviny a port 1,
+pricemz v souboru je na cteném offsetu 1. Vypadalo to na posun o bajt v retezu
+`fread`. **Nebyl to posun.**
+
+#### Jak se to naslo
+
+Cesta pres registry (spolehlivejsi nez adresni matematika):
+
+    DUMPREGS cond=eip:<adresa instrukce `call fread_`>
+
+vypise `eax` = buffer, `edx` = velikost, `ebx` = pocet. Vysledek:
+
+* u `byte_191F0D` je `eax = 0x003AFF0D` - **potvrzena adresni baze
+  `runtime = C jmeno + 0x216000`**;
+* u bloku `dword_18B068` je `edx = 0x14` (20) - velikost sedi s portem.
+
+Pak jsem z `esi` (FILE*) vypsal I/O buffer a zdrojove bajty cteneho bloku:
+`0A 02 A2 00 0B 0A 02 D2 01 05` + deset nul, a hned za nimi `02`. **Tahle
+posloupnost v `x64/Debug/SAVE10.GAM` NENI** - ani na ctyri bajty.
+
+#### Pricina
+
+    mastori2\SAVE10.GAM        2018-08-09   md5 468a47c4...   <- cte dosbox
+    x64\Debug\SAVE10.GAM       2026-08-09   md5 f1a6e667...   <- cte port
+
+Dva ruzne soubory stejne velikosti (208000 B). Obsah:
+
+| | mastori2 (dosbox) | x64/Debug (port) |
+|---|---|---|
+| vladce / rasa | Klirr / **Trilarian** | Tavua Preet / **Alkari** |
+| pocet lodi | 21 | 17 |
+| word_1999A2 | 82 | 93 |
+| mlhoviny (203779) | **2** | **1** |
+
+V souboru z `mastori2` je na 203759..203779 presne ten blok, ktery dosbox
+nacetl, a na 203779 hodnota 2. **Obe strany tedy ctou na stejnem offsetu
+a loader je bajtove spravny** - jen kazda z jineho savu. Timhle se vysvetluje
+i "Trilar" vs "Altair": Trilar je domovska hvezda Trilarianu.
+
+**Ponauceni:** nez zacnu srovnavat chovani, overit `md5sum` vstupnich dat na
+obou stranach. Stalo me to celou vlnu 114.
+
+#### Srovnani se STEJNYM savem
+
+`x64/Debug/SAVE10.GAM` zalohovan jako **`SAVE10.GAM.alkari-reference-backup`**
+(to je ten, ke kteremu se vztahuji referencni hodnoty z vlny 89g!) a nahrazen
+kopii z `mastori2`. Vysledek:
+
+| | rozdilnych pixelu |
+|---|---|
+| ruzne savy (vlna 114) | 23492 (**7,65 %**) |
+| **stejny sav** | **10940 (3,56 %)** |
+
+Port ted ukazuje `Trilar`, **mlhoviny sedi**, hvezdy sedi, bocni panel ma `+1`
+jako original. Paleta 768/768.
+
+#### Co zbyva (3,56 %)
+
+Zmereno:
+
+* **neni to posun** - test posunu +-14 px v obou osach: nejlepsi je (0,0)
+  s velkym odstupem (745 vs 3187 rozdilnych ve vzorku);
+* **neni to animace** - dosbox snimky 455..908 se mezi sebou lisi jen o
+  **8 pixelu** (blikajici kurzor) a portovni snimky take o 8. Obe strany na
+  te obrazovce stoji;
+* zbytek jsou **jednotlive hvezdy** (nekolik desitek, na spravnych pozicich,
+  ale jinak vykreslene) a **titulek dialogu** "Enter Home Star Name".
+
+Dalsi krok: vzit konkretni hvezdu, ktera se lisi, a zjistit, cim se jeji
+zaznam (113 B v `dword_19306C`) lisi od tech, ktere sedi - nejspis nejaky
+priznak (typ/vlastnik), podle ktereho se vybira jiny sprite.
+
+#### Nastroje
+
+* `scratchpad/diffshot.py <dosbox.raw> <port.raw> [maska.png]` - pocty
+  a maska rozdilu, vcetne rozkladu po oblastech.
+* `genCompare/find_match.exe` - rozlisi "jina faze animace" od "skutecny
+  rozdil" (kdyz vsechny nejlepsi shody daji STEJNE skore, animace to neni).
+* `REORION2_BLOCKWATCH=1` - hlida, jestli nactena data nekdo neprepsal.
+
+#### DULEZITE pro dalsi praci
+
+V `x64/Debug` je ted sav **z mastori2** (Klirr/Trilarian). Puvodni referencni
+sav (Tavua Preet/Alkari), ke kteremu se vztahuji cisla ve vlne 89g, je
+`SAVE10.GAM.alkari-reference-backup`. Kdyz se budou overovat stara cisla,
+musi se vratit zpatky.
+
+### Vlna 116: hvezdy typu >0 se necentrovaly - rozsekana tabulka velikosti
+
+**Stav: oprava napsana a PRELOZENA, ale JESTE NEOVERENA behem.** Zitra
+zacit tim, ze se pusti porovnani a regresni brana (viz Dalsi krok nize).
+
+#### Jak se to naslo
+
+Ze zbylych 3,56 % rozdilu (vlna 115) tvorily vetsinu jednotlive hvezdy.
+Postup, ktery to dovedl az ke konkretni promenne:
+
+1. Klasifikace rozdilu ukazala skoro stejne "navic v portu" (4671) jako
+   "chybi v portu" (4321) a **50 blobu tvorilo PARY vzdalene 14 px**
+   (napr. 236,98 a 250,112) - typicky priznak jineho ukotveni spritu.
+2. Kontrola jasu v obou bodech: dosbox kresli na (236,98), port **tutez
+   hvezdu** na (250,112), oba se **stejnym jasem** - jde o tyz sprite.
+3. Podminena sonda primo v blitu (`sub_12A478`, jen pro dane souradnice)
+   + `PortDebug_Backtrace` rekla volajiciho: **`sub_83B02`**.
+4. `DUMPREGS` na `call sub_12A478` uvnitr `sub_83B02` (IDA 0x83BEF ->
+   runtime 0x2A7BEF, `repeat=always`) dal souradnice originalu: **(223,85)**
+   proti portovnim **(237,99)** - presne (+14,+14).
+
+#### Pricina
+
+`sub_83B02` centruje sprite hvezdy:
+
+```c
+LOWORD(v3) = word_1931AC[v3];   // velikost spritu podle typu hvezdy
+v15 = v3;
+v5 = (int16_t)v15 / 2;
+v14 = (int16_t)v14 - v5;        // odecti pulku
+v16 = (int16_t)v16 - v5;
+```
+
+Jenze `word_1931AC` byla **rozsekana na sest skalaru** a k tomu jeste
+DUPLICITNE definovana jako `int word_1931AC;` v `link_stubs.c`:
+
+```c
+int16_t word_1931AC[]; // weak   <- pole bez rozmeru
+int16_t word_1931AE; // weak
+int16_t word_1931B0; // weak
+...
+```
+
+Adresy 1931AC/AE/B0/B2/B4/B6 jdou po dvou bajtech a `dword_1931B8` blok
+ukoncuje - je to **pole o 6 prvcich**. Sam kod ho tak i plni:
+
+    word_1931AC[0] = 33;  word_1931AE = 29;  word_1931B0 = 25;
+    word_1931B2 = 23;     word_1931B4 = 21;  word_1931B6 = 17;
+
+Takze indexovat slo jen prvek 0. Hvezda typu 1 ma velikost **29**, pulka
+**14** - a port misto toho precetl nulu a **vubec necentroval**. Odtud
+presne tech +14,+14. Hvezdy typu 0 sedely, proto se lisila jen CAST hvezd.
+
+#### Oprava
+
+* `orion_data.c`: sest skalaru slouceno do `int16_t word_1931AC[6];`
+* `link_stubs.c`: odstranen duplicitni `int word_1931AC;`
+* `orion_common.h`: `extern int16_t word_1931AC[6];` + makra
+  `word_1931AE` -> `word_1931AC[1]` atd., aby stavajici kod fungoval beze zmen.
+
+`-t:Rebuild` bez chyb.
+
+#### Dalsi krok (zitra)
+
+1. `REORION2_SKIPINTRO=1 REORION2_SENDKEY=67:9000` -> snimek -> `diffshot.py`
+   proti `dbx_frames`; ceka se pokles pod 3,56 % (hvezdne bloby by mely zmizet).
+2. **Regresni brana** `compare_frames` 600/600 - zmena se dotkla `orion_data.c`
+   a `link_stubs.c`, takze je nutna.
+3. Zbytek rozdilu pak bude titulek dialogu "Enter Home Star Name" (335 px)
+   a pripadne hvezdy, ktere po teto oprave jeste zustanou.
+
+**POZOR:** v `x64/Debug` je stale sav z `mastori2` (Klirr/Trilarian);
+puvodni referencni je `SAVE10.GAM.alkari-reference-backup` (viz vlna 115).
+
+#### Poznamka
+
+Tohle je jeden z **199 podezrelych bloku** z `tools/idaarray_scan.py`. Vzorec
+"pole bez rozmeru v `orion_data.c` + stejnojmenny skalar v `link_stubs.c`
++ nasledujici skalary po 2 B" je pritom strojove detekovatelny - vyplati se
+ten skener pustit znovu a projit hlavne pripady, kde se symbol nekde
+INDEXUJE (`word_X[i]`), protoze prave tam to tise cte mimo.

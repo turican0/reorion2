@@ -2,7 +2,15 @@
 
 // Data declarations
 
-char byte_10010[] = { 'I' }; // weak
+/* vlna 117: TABULKA ZAKLADU BAREVNE RAMPY, indexovana rasou hrace
+   (`byte_10010[*(uint8_t *)(dword_197F98 + 3753*hrac + 38)]`).
+   V portu tu byl JEN PRVNI BAJT ('I' = 0x49), takze kazda rasa != 0
+   cetla za koncem pole - popisky hvezd, lodi a dalsi texty mely barvu
+   podle smeti. Skutecny obsah z obrazu hry (Orion2.exe.lst, cseg01:10010:
+   `db 49h` / `db 62h, 6Eh, 20h` / `dd 552D943Eh`), za nim uz zacina kod
+   funkce main_ na 0x10018, takze pole ma prave 8 polozek.
+   Kontrola: rasa 6 -> 0x2D = 45 -> rampa 46/51, presne jako dosbox. */
+char byte_10010[8] = { 0x49, 0x62, 0x6E, 0x20, 0x3E, 0x94, 0x2D, 0x55 }; // weak
 _UNKNOWN loc_1193F; // weak
 _UNKNOWN loc_12C00; // weak
 char byte_13A3A[] = { '\x03' }; // weak
@@ -15951,12 +15959,13 @@ int dword_193184; // weak
 int dword_193188; // weak
 int dword_193190; // weak
 int dword_193194[6]; // weak
-int16_t word_1931AC[]; // weak
-int16_t word_1931AE; // weak
-int16_t word_1931B0; // weak
-int16_t word_1931B2; // weak
-int16_t word_1931B4; // weak
-int16_t word_1931B6; // weak
+/* vlna 116: SOUVISLE POLE, ne sest skalaru. Adresy 1931AC/AE/B0/B2/B4/B6
+   jdou po dvou bajtech a `dword_1931B8` za nimi blok ukoncuje, takze je to
+   pole o 6 prvcich. Jsou to VELIKOSTI SPRITU hvezd {33,29,25,23,21,17}
+   (plni je sub_6xxxx / sub_1xxxx) a kod je indexuje `word_1931AC[typ]`.
+   Dokud to byly skalary, cetl se jen prvek 0 a hvezdy typu >0 se
+   necentrovaly - kreslily se o polovinu velikosti vpravo dolu. */
+int16_t word_1931AC[6]; // weak
 int dword_1931B8; // weak
 int16_t word_1931BC[]; // weak
 int16_t word_1931BE[]; // weak

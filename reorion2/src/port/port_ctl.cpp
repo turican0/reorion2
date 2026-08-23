@@ -56,8 +56,48 @@ extern "C" void PortCtl_Init()
 
 // Jeden "krok" nativni strany = jeden snimek (Present). Tim se vyhodnocuji
 // podminky cycle/every/changed/eq/neq.
+// NASTROJ (vlna 114): REORION2_BLOCKWATCH=1 hlida obsah bloku nactenych ze
+// savu a hlasi KAZDOU zmenu kontrolniho souctu i s poradim snimku. Odpovida
+// na otazku "nacetlo se to spravne a pak to nekdo prepsal?" vs "nacetlo se to
+// spravne a spatne se to kresli". Bez te promenne nedela nic - proto to tu
+// muze zustat natrvalo.
+extern "C" void PortDebug_CrashLog(const char* fmt, ...);
+
+static void PortCtl_BlockWatch()
+{
+    static int enabled = -1;
+    if (enabled < 0) enabled = std::getenv("REORION2_BLOCKWATCH") ? 1 : 0;
+    if (!enabled) return;
+
+    struct Blk { const char* name; const void* base; int len; unsigned long last; };
+    static Blk blks[] = {
+        { "dword_19306C (hvezdy)",   nullptr, 8136,  0 },
+        { "dword_192B18 (kolonie)",  nullptr, 90250, 0 },
+        { "dword_197F98 (hraci)",    nullptr, 30024, 0 },
+        { "dword_1930DC",            nullptr, 3953,  0 },
+    };
+    static long frame = 0;
+    ++frame;
+    const void* bases[4] = { (const void *)(intptr_t)dword_19306C,
+                             (const void *)(uint8_t*)dword_192B18,
+                             (const void *)(uint8_t*)dword_197F98,
+                             (const void *)(intptr_t)dword_1930DC };
+    for (int i = 0; i < 4; ++i) {
+        const unsigned char* p = (const unsigned char *)bases[i];
+        if (!p) continue;
+        unsigned long s = 0;
+        for (int k = 0; k < blks[i].len; ++k) s += p[k];
+        if (s != blks[i].last) {
+            PortDebug_CrashLog("BLOCKWATCH snimek=%ld  %s  soucet %lu -> %lu",
+                               frame, blks[i].name, blks[i].last, s);
+            blks[i].last = s;
+        }
+    }
+}
+
 extern "C" void PortCtl_Tick()
 {
+    PortCtl_BlockWatch();
     if (g_ctl_active)
         native_ctl_tick();
 }

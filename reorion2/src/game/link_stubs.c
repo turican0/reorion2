@@ -452,7 +452,7 @@ int word_192FF0;
 int word_192FF2;
 int word_192FF4;
 int word_192FF6;
-int word_1931AC;
+/* vlna 116: duplicitni skalar odstranen - pole je v orion_data.c */
 int word_1931BC;
 int word_1931BE;
 int word_1931C0;
