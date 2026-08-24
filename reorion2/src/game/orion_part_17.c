@@ -572,7 +572,16 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
     y = (int16_t)y - (int16_t)measured / 2;   /* asm: cdq / sub eax,edx / sar eax,1 */
 
   if ( useAlt )
-    sub_103BE2((int16_t)x, (int16_t)y, str, (int16_t)width, (int16_t)a_word, a8);
+    /* PORT (vlna 121): a3 je SIRKA (ebx) a a4 RETEZEC (ecx) - stejne jako
+       u merici dvojcete sub_103CAF, ktere uz to poradi melo spravne
+       (`movsx ebx, ax` = sirka, `mov ecx, edx` = retezec). Prohozene to
+       znamenalo, ze sub_103D53 dostala do kontroly `a3 < 10 || a3 > 640`
+       ukazatel na retezec, vyskocila hned na zacatku a NIC NENAKRESLILA -
+       tise, bez padu. Timhle mizel nazev kolonie i cely spodni panel
+       na obrazovce COLONIES.
+       POZOR: druha vetev (sub_10370A) ma poradi OPACNE (a3=ecx=retezec,
+       a4=ebx=sirka) - to neni preklep, ma jinou konvenci. */
+    sub_103BE2((int16_t)x, (int16_t)y, (int16_t)width, str, (int16_t)a_word, a8);
   else
     sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)width, (int16_t)a_word, 1, a8);
 
@@ -668,9 +677,18 @@ void sub_103200(int a1, int a2, int a3)
 
 
 //----- (0010323B) --------------------------------------------------------
-void sub_10323B(int a1, int a2)
+/* PORT (vlna 121): `JUMPOUT(0x1031D3)` byl NO-OP, takze KAZDY text kresleny
+   pres tuhle obalku mizel (na COLONIES chybel nazev kolonie i cely spodni
+   panel). `loc_1031D3` je spolecny ocas `sub_1031C6`; sub_10323B do nej skace
+   po `push 1 / push 1`, tedy s a8=1, a9=1 (sub_1031C6 tam jde s 0/1).
+
+   Ctyri registrove argumenty (eax=x, edx=y, ebx=sirka, ecx=vyska) IDA
+   zahodila - v hlavicce zbyly jen dva zasobnikove. Doplneny podle asm,
+   stejnym tvarem, jaky uz ma sub_1031C6: svisle se centruje pres y + h/2. */
+void sub_10323B(int x, int y, int w, int h, int str, int a6)
 {
-  JUMPOUT(0x1031D3);
+  sub_102FD8((int16_t)x, (int16_t)((int16_t)y + (int16_t)h / 2),
+             (int16_t)w, (int16_t)h, str, a6, 0, 1, 1);
 }
 // 103248: control flows out of bounds to 1031D3
 
@@ -1467,6 +1485,11 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   _BYTE v18[1202]; // [esp+23A6h] [ebp-50Eh] BYREF
   _BYTE ctx103D53[CTX103D53_SIZE]; // vlna 96: v19..v38 jako souvisly blok
 
+  /* DOCASNA SONDA (vlna 121) */
+  { static int _s; if (_s++ < 12) PortDebug_CrashLog(
+      "103D53 a1=%u a2=%u a3=%d a4=%p a5=%d a6=%d a7=%d -> %s",
+      a1, a2, a3, (void*)(intptr_t)a4, a5, a6, a7,
+      (a3 < 10 || a3 > 640 || a1 >= 0x280u || a2 >= 0x1E0u || !a4) ? "VEN" : "kresli"); }
   if ( a3 < 10 || a3 > 640 || a1 >= 0x280u || a2 >= 0x1E0u || !a4 )
     return a4;
   v24 = 479;
@@ -1593,6 +1616,7 @@ int sub_103F5D(int a1)
   int16_t v11; // bx
   int v12; // edx
 
+  int _it = 0;   /* DOCASNA SONDA (vlna 121) */
   v1 = 0;
   dword_1ACF10 = dword_1ACEFC;
   do
@@ -1672,6 +1696,14 @@ LABEL_30:
         v1 = sub_1043B0(v3, v3, v1, a1);
       v12 = dword_1ACF08;
       ++*(_DWORD *)(dword_1ACF14 + 2);
+      /* DOCASNA SONDA (vlna 121) */
+      if ( ++_it > 4000 && _it < 4020 )
+        PortDebug_CrashLog("103F5D it=%d znak=%02X v6=%d cur=%d max=%d p6=%d p12=%d p19=%d p25=%d ptr=%p v1=%d",
+                           _it, (unsigned)(uint8_t)v3, (int)v6,
+                           (int)*(int16_t *)dword_1ACF08, (int)*(int16_t *)(dword_1ACF08 + 4),
+                           (int)*(int16_t *)(dword_1ACF08 + 6), (int)*(int16_t *)(dword_1ACF08 + 12),
+                           (int)*(uint8_t *)(dword_1ACF08 + 25), (int)*(uint8_t *)(dword_1ACF08 + 24),
+                           (void *)(intptr_t)*(_DWORD *)(dword_1ACF14 + 2), (int)v1);
     }
     while ( !*(_BYTE *)(v12 + 24) && !v1 );
   }
@@ -7978,7 +8010,9 @@ LABEL_20:
     sub_102FA8();
     ServiceAudioTick_FE8BE(v29, 222, (int)v43, (int16_t *)a3);
     sub_120BB5(4, (int)&unk_183F3A);
-    sub_10323B((int)v35, 2);
+    /* vlna 121: asm 0x10ABF6 - eax=18h, edx=123h, ebx=0A4h, ecx=0AAh
+       (ecx zustava z `mov ecx, 0AAh` pred sub_120BB5) */
+    sub_10323B(24, 291, 164, 170, (int)v35, 2);
     sub_124DEC();
     sub_C5C44();
     byte_199F00 = 0;

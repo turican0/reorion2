@@ -6691,8 +6691,8 @@ extern void sub_1031B8();
 extern int sub_1031C6();
 // plna signatura: void sub_103200(int a1, int a2, int a3);
 extern void sub_103200();
-// plna signatura: void sub_10323B(int a1, int a2);
-extern void sub_10323B();
+// plna signatura: void sub_10323B(int x, int y, int w, int h, int str, int a6);
+extern void sub_10323B(int x, int y, int w, int h, int str, int a6);
 // plna signatura: void sub_10324A();
 extern void sub_10324A();
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=44)) - nutno dohledat rucne v IDA @ 0x10327D */ _DWORD sub_103259(_DWORD _p0);
@@ -13714,7 +13714,7 @@ int sub_1031AA(int x, int y, int w, int h, int str, int a_word);   /* vlna 95: d
 void sub_1031B8(int a1, int16_t a2, int a3);
 int sub_1031C6(int x, int y, int w, int h, int str, int a_word); // vlna 61
 void sub_103200(int a1, int16_t a2, int a3);
-void sub_10323B(int a1, int a2);
+void sub_10323B(int x, int y, int w, int h, int str, int a6);   /* vlna 121: doplneny registrove argumenty (eax/edx/ebx/ecx) */
 void sub_10324A();
 _DWORD sub_103259(_DWORD); // weak
 int sub_1032D8(int a1);

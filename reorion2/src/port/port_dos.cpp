@@ -263,6 +263,15 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
                 }
             }
             if (cur) {
+                // vlna 121: bez tohohle nejde poznat, jestli klik jen
+                // minul cil, nebo se vubec nedostal ke slovu (napr. proto,
+                // ze hra byla v tu chvili jeste v nacitani).
+                static const ClickEv* s_lastLogged = nullptr;
+                if (s_lastLogged != cur) {
+                    s_lastLogged = cur;
+                    SDL_Log("Port: REORION2_CLICK aktivni bod %d,%d (t=%u ms)",
+                            cur->x, cur->y, now);
+                }
                 const int maxX = (g_mouseMaxX > 0 ? g_mouseMaxX : 1279);
                 const int maxY = (g_mouseMaxY > 0 ? g_mouseMaxY : 479);
                 vx = cur->x * (maxX + 1) / 640;

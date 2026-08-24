@@ -301,6 +301,17 @@ void DumpFrameIfRequested(const uint8_t* framebuffer, const std::array<uint32_t,
             }
         }
     }
+    // PORT (vlna 121): REORION2_DUMP_AFTER_MS=<ms> odlozi zacatek dumpu.
+    // Bez nej se pri dlouhe ceste (nacteni hry) zapise 1,5 GB snimku
+    // z nacitani a ten diskovy provoz beh natolik zpomali, ze
+    // skriptovane kliky REORION2_CLICK padnou uplne jinam, nez maji.
+    static Uint64 s_afterMs = 0xFFFFFFFFULL;
+    if (s_afterMs == 0xFFFFFFFFULL) {
+        const char* env = std::getenv("REORION2_DUMP_AFTER_MS");
+        s_afterMs = env ? (Uint64)std::atoi(env) : 0;
+    }
+    if (SDL_GetTicks() < s_afterMs)
+        return;
     if (s_rangeStart > 0 && s_presentCount >= s_rangeStart && s_distinctWritten < s_rangeCount) {
         // PORT (wave 25p, per user correction; wave 25r: made opt-in via
         // REORION2_DUMP_INCLUDE_PALETTE): pixel-only trigger by default, see
@@ -322,8 +333,8 @@ void DumpFrameIfRequested(const uint8_t* framebuffer, const std::array<uint32_t,
             char name[64];
             std::snprintf(name, sizeof(name), "/frame_%05d.raw", s_distinctWritten);
             DumpRawFrame(base + name, framebuffer, palette, width, height);
-            SDL_Log("Port::Vga: batch frame #%d (Present #%d, distinct draw) dumped to %s%s",
-                    s_distinctWritten, s_presentCount, base.c_str(), name);
+            SDL_Log("Port::Vga: batch frame #%d (Present #%d, t=%llu ms, distinct draw) dumped to %s%s",
+                    s_distinctWritten, s_presentCount, (unsigned long long)SDL_GetTicks(), base.c_str(), name);
             s_lastFb.assign(framebuffer, framebuffer + fbBytes);
             s_lastPal = palette;
             s_havePrev = true;

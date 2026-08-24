@@ -7591,11 +7591,6 @@ char sub_129399(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 //----- (0012972D) --------------------------------------------------------
 char sub_12972D( int a1, int a2, int a3)
 {
-  /* DOCASNA SONDA (vlna 120) */
-  { static int _m; int _x=(int16_t)a1, _y=(int16_t)a2;
-    if ( _m < 6 && _y >= 475 && _x >= 170 && _x <= 190 )
-    { ++_m; PortDebug_CrashLog("PLOT479 x=%d y=%d barva=%d", _x, _y, a3);
-      PortDebug_Backtrace("PLOT479", 5); } }
   int16_t v4; // [esp+0h] [ebp-Ch]
 
   v4 = a1;
@@ -7979,12 +7974,6 @@ LABEL_54:
 //----- (0012A478) --------------------------------------------------------
 int sub_12A478( int a1, int a2, int a3)
 {
-  /* DOCASNA SONDA (vlna 120): kresli port neco na (178..179, 479)? */
-  { static int _n; int _x=(int16_t)a1, _y=(int16_t)a2;
-    if ( _n < 6 && a3 && _y <= 479 && _y >= 440 && _x <= 185 && _x >= 150 )
-    { ++_n; PortDebug_CrashLog("BLIT479 x=%d y=%d w=%d h=%d", _x, _y,
-        (int)*(uint16_t *)(intptr_t)a3, (int)*(uint16_t *)(intptr_t)(a3+2));
-      PortDebug_Backtrace("BLIT479", 5); } }
   int v3; // edx
   int result; // eax
   int64_t v5; // [esp+0h] [ebp-38h]

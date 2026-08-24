@@ -3255,7 +3255,10 @@ void sub_C9C3D(int a1, int a2, int a3, int a4)
     sub_C7F84();
     sub_12B7E1(word_1A123A, word_1A123C, (_WORD *)dword_1A114C);
     a4 = 92;
-    sub_10323B(dword_1A11B4, 2);
+    /* vlna 121: asm 0xC9CA6 - eax=word_1A123A+13h, edx=word_1A123C+13h,
+       ebx=0FCh, ecx=5Ch */
+    sub_10323B((int16_t)(word_1A123A + 19), (int16_t)(word_1A123C + 19),
+               252, 92, dword_1A11B4, 2);
     sub_124DEC();
     byte_182ACA = 0;
   }
@@ -5093,7 +5096,8 @@ int sub_CC491( int a1)
       v3 = (char *)sub_CDF5C(v2);
       sprintf(v8, v3, 500, v5, v7);
     }
-    sub_10323B((int)v8, 2);
+    /* vlna 121: asm 0xCC5F2 - eax=0BCh, edx=10Fh, ebx=106h, ecx=23h */
+    sub_10323B(188, 271, 262, 35, (int)v8, 2);
     sub_124DEC();
     byte_182ACA = 0;
   }

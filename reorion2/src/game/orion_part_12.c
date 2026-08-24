@@ -4950,7 +4950,9 @@ void sub_C1D6B()
   {
     sub_BAFC9(4u, 1);
     v1 = sub_CDF5C(802);
-    sub_10323B(v1, 2);
+    /* vlna 121: asm 0xC1E26 - eax=0A8h, edx=0F8h, ebx=131h, ecx=0A9h
+       (ecx zustava z drivejsiho `mov ecx, 0A9h` pred sub_BAFC9) */
+    sub_10323B(168, 248, 305, 169, v1, 2);
   }
 }
 // 182ACA: using guessed type char byte_182ACA;
@@ -5918,6 +5920,7 @@ void sub_C3111( int a1_idx)
   _BYTE v34[500]; // [esp+1F4h] [ebp-176h] BYREF
   _BYTE v35[500]; // [esp+3E8h] [ebp+7Eh] BYREF
   int v36; // [esp+5DCh] [ebp+272h]
+  int16_t v37_w; // vlna 121: ebx (sirka textoveho pole) - v asm se lisi podle vetve
 
   v3 = word_1A0534[a1_idx];
   v4 = 361 * v3;
@@ -5957,6 +5960,7 @@ void sub_C3111( int a1_idx)
     /* vlna 89: poradi argumentu podle asm - push var_5E0(v33), push 77B42, 
        push var_3EC(v34), push fmt, push var_1F8(v35) */
     sprintf(v35, v14, v25, v34, v33);
+    v37_w = 89;   /* asm 0xC32FC: `mov ebx, 59h` */
   }
   else
   {
@@ -5972,8 +5976,17 @@ void sub_C3111( int a1_idx)
     v24 = v7;
     v8 = (char *)sub_CDF5C(85);
     sprintf(v35, v8, v24, v34, (char *)(intptr_t)v29);
+    v37_w = 87;   /* asm 0xC3216: `mov ebx, 57h` */
   }
-  sub_10323B((int)v35, 0);
+  /* vlna 121: asm loc_C3305 - eax=0Ch, edx=31*radek+26h, ebx=viz vyse, ecx=17h.
+     ecx vznika jako ((radek+1)*31 + 38) - (radek*31 + 38) - 8 = 23. */
+  /* DOCASNA SONDA (vlna 121) */
+  { static int _s; if (_s++ < 4) { char _b[400]; int _i=0; const unsigned char*_p=(const unsigned char*)v35;
+      while (_p[_i] && _i < 120) ++_i; int _o=0;
+      for (int _k=0;_k<_i && _o<380;++_k) _o+=sprintf(_b+_o, (_p[_k]>=32&&_p[_k]<127)?"%c":"<%02X>", _p[_k]);
+      _b[_o]=0;
+      PortDebug_CrashLog("C3111 radek=%d w=%d text=[%s]", (int)a1_idx, (int)v37_w, _b); } }
+  sub_10323B(12, 31 * (int16_t)a1_idx + 38, v37_w, 23, (int)v35, 0);
   if ( byte_182ACA )
   {
     sub_120CCB(0, (int)&unk_182C2E);
@@ -6250,6 +6263,10 @@ int sub_C386B( int a1, int a2)
   int16_t v6; // ax
   int16_t v7; // dx
 
+  /* PORT (vlna 121): `movsx ebx, bx` / `movsx edx, dx` hned v prologu -
+     funkce si oba argumenty zuzuje na 16 bitu SE ZNAMENKEM. */
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
   if ( a1 != -1 && a2 != -1 )
   {
     v2 = 361 * a1;
@@ -6287,7 +6304,13 @@ LABEL_7:
         break;
     }
   }
-  JUMPOUT(0xC36F0);
+  /* PORT (vlna 121): `loc_C36F0` = `def_C38AB` je jen spolecny epilog
+     (pop edi/esi/ecx/ebx; retn) a sub_C386B do nej skace az PO `xor eax, eax`,
+     tedy VZDY s navratovou hodnotou 0. Jako NO-OP JUMPOUT vracela funkce smeti;
+     bublinkove trideni v sub_C3947 pak porovnavalo platny index s -1 kladne,
+     odsunulo jedinou kolonii na konec seznamu a obrazovka COLONIES zustala
+     prazdna. */
+  return 0;
 }
 // C38AB: control flows out of bounds to C36F0
 // 183104: using guessed type int16_t word_183104;
@@ -6309,7 +6332,12 @@ _WORD *sub_C3947()
     for ( i = 0; i < 249; ++i )
     {
       v2 = 2 * i;
-      result = (_WORD *)sub_C386B(*(_WORD *)(v2 + dword_1A08B0), *(_WORD *)(v2 + dword_1A08B0 + 2));
+      /* PORT (vlna 121): asm cte oba indexy pres `movsx` (`movsx edx, word ptr
+         [esi+eax+2]`), tedy ZNAMENKOVE. IDA dala `_WORD`, coz je bez znamenka,
+         takze prazdna polozka -1 prisla do porovnani jako 65535, projela
+         kontrolou `a1 != -1` a sub_C386B pak cetla 361*65535 mimo pole a vratila
+         smeti. Trideni proto odsunulo jedinou kolonii na konec seznamu. */
+      result = (_WORD *)sub_C386B(*(int16_t *)(v2 + dword_1A08B0), *(int16_t *)(v2 + dword_1A08B0 + 2));
       if ( (int16_t)result > 0 )
       {
         result = (_WORD *)(v2 + dword_1A08B0);
@@ -6341,6 +6369,12 @@ void sub_C3996()
     else
       word_1A0494[i] = *(_WORD *)((uint8_t*)dword_192B18 + 361 * v1 + 300);
   }
+  /* DOCASNA SONDA (vlna 121) */
+  { static int _s; if (_s++ < 4) PortDebug_CrashLog(
+      "C3996 off=%d buf=%p b[0]=%d b[1]=%d 0534=[%d,%d,%d] 0494=[%d,%d,%d]", (int)word_18315A,
+      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0, (int)*(int16_t*)(dword_1A08B0+2),
+      (int)word_1A0534[0], (int)word_1A0534[1], (int)word_1A0534[2],
+      (int)word_1A0494[0], (int)word_1A0494[1], (int)word_1A0494[2]); }
   sub_11C2F0();
   sub_C683E();
   sub_BF52F();
@@ -6484,6 +6518,13 @@ void sub_C3B3C()
     sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, v0, a0_0);
     /* vlna 95: asm 0xC3CF1 - eax=00Dh, edx=162h, ebx=050h, ecx=058h.
        Tohle je popis kolonie pod portretem planety. */
+    /* DOCASNA SONDA (vlna 121) */
+    { static int _s; if (_s++ < 25) { char _b[400]; int _i=0; const unsigned char*_p=(const unsigned char*)v19;
+        while (_p[_i] && _i < 120) ++_i; int _o=0;
+        for (int _k=0;_k<_i && _o<380;++_k) _o+=sprintf(_b+_o, (_p[_k]>=32&&_p[_k]<127)?"%c":"<%02X>", _p[_k]);
+        _b[_o]=0;
+        PortDebug_CrashLog("C3B3C len=%d fmt=%p v12=%p v13=%p v14=%p v15=%p v16=%d v17=%d v0=%d text=[%s]",
+          _i, (void*)v10, (void*)v12, (void*)v13, (void*)v14, (void*)v15, v16, v17, (int)v0, _b); } }
     sub_1031AA(13, 354, 80, 88, (int)v19, 0);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC267E je epilog funkce */
@@ -6972,14 +7013,19 @@ void sub_C4562(int a1, int16_t *a2, int a3)
   int v6; // eax
   int v7; // eax
   int v8; // eax
-  char v9; // [esp+0h] [ebp-200h] BYREF
+  /* PORT (vlna 121): v originale `var_200 = byte ptr -200h` a `enter 200h,0`,
+     tedy 0x200-0xC = 500 B buffer (250 polozek po 2 B) - presne tolik, kolik
+     jich `sub_C58D1` plni. IDA z nej udelala JEDEN bajt, takze seznam kolonii
+     se zapisoval pod ramec a volane funkce ho hned prepsaly - obrazovka
+     COLONIES pak byla prazdna (zadny radek, zadne panely). */
+  char v9[500]; // [esp+0h] [ebp-200h] BYREF
   int v10; // [esp+1F4h] [ebp-Ch] BYREF
   char *v11; // [esp+1F8h] [ebp-8h] BYREF
   int v12; // [esp+1FCh] [ebp-4h] BYREF
 
   v12 = 0;
   v11 = 0;
-  dword_1A08B0 = (uint8_t *)&v9;   /* vlna 89: byl (int) - orez adresy zasobniku */
+  dword_1A08B0 = (uint8_t *)v9;   /* vlna 89: byl (int) - orez adresy zasobniku */
   byte_18315F = 0;
   if ( word_199A08 != word_199A10 && !byte_1827BD && word_199A10 != 25 )
     word_1A05AC = word_199A10;
@@ -6987,7 +7033,13 @@ void sub_C4562(int a1, int16_t *a2, int a3)
   sub_C2259();
   nullsub_8();
   sub_C58D1();
+  { PortDebug_CrashLog("C4562 %s buf=%p [0]=%d [1]=%d 183104=%d", "po-C58D1",
+      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0,
+      (int)*(int16_t*)(dword_1A08B0+2), (int)word_183104); }
   sub_C3947();
+  { PortDebug_CrashLog("C4562 %s buf=%p [0]=%d [1]=%d 183104=%d", "po-C3947",
+      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0,
+      (int)*(int16_t*)(dword_1A08B0+2), (int)word_183104); }
   sub_C3996();
   if ( word_1A0546 == -1 )
   {
@@ -7832,6 +7884,9 @@ int sub_C58D1()
   int result; // eax
   int v5; // edx
 
+  /* DOCASNA SONDA (vlna 121) */
+  { static int _s; if (_s++ < 3) PortDebug_CrashLog("C58D1 planet=%d hrac=%d baze=%p",
+      (int)word_199996, (int)word_19999C, (void*)dword_192B18); }
   v0 = 0;
   for ( i = 0; i < word_199996; ++i )
   {
@@ -7842,6 +7897,7 @@ int sub_C58D1()
       *(_WORD *)(dword_1A08B0 + 2 * v3) = i;
     }
   }
+  { static int _s2; if (_s2++ < 3) PortDebug_CrashLog("C58D1 nalezeno=%d buf=%p [0]=%d [1]=%d", (int)(int16_t)v0, (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0, (int)*(int16_t*)(dword_1A08B0+2)); }
   for ( result = v0; (int16_t)result < 250; ++result )
   {
     v5 = (int16_t)result;
