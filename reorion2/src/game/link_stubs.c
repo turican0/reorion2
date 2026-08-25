@@ -387,8 +387,6 @@ int sub_C5B5F(void) { return 0; }
    DATOVY symbol -> 144 jeho "volani" skakalo do .bss (pad NEW GAME). */
 int unk_178A04;
 int unk_183938;
-int unk_183B46;
-int unk_183B93;
 int unk_183CEB;
 int unk_199A12;
 int unk_19C048;

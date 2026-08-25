@@ -113,7 +113,7 @@ void sub_10CFD7(int a1)
     do
     {
       if ( *(_DWORD *)(a1 + 24) )
-        sub_12F7E6(v2, *(int16_t *)(a1 + 2), *(int16_t **)(a1 + 20), *(int16_t **)(a1 + 24));
+        sub_12F7E6(v2, *(int16_t *)(a1 + 2), (int16_t *)(intptr_t)*(uint32_t *)(a1 + 20), (int16_t *)(intptr_t)*(uint32_t *)(a1 + 24));
       else
         sub_12A478(v2, *(_WORD *)(a1 + 2), *(_DWORD *)(a1 + 20));
       ++v3;

@@ -3763,7 +3763,8 @@ int sub_B4EF6( int a1,
   {
     sub_BB04E(3u);
     v23 = sub_CDF5C(387);
-    sub_10315D(v23, 2);
+    /* vlna 122: asm loc_B4FF8 - eax=var_50(=ecx=a4), edx=arg_0+5, ebx=arg_4-var_50, ecx=1Ch */
+    sub_10315D((int16_t)a4, (int16_t)(a5 + 5), (int16_t)(a6 - a4), 28, v23, 2);
   }
   for ( i = 0; (int16_t)i < 7; ++i )
   {
@@ -6790,7 +6791,7 @@ void sub_B8F5F(int a1)
   v20 = v6;
   LOWORD(v6) = *(_WORD *)(a1 + 2);
   v22 = v28 + v6;
-  v7 = *(int16_t **)(a1 + 13);
+  v7 = (int16_t *)(intptr_t)*(uint32_t *)(a1 + 13);
   LOWORD(v2) = *v7;
   v8 = (char *)v2 + v27;
   v30 = v8;

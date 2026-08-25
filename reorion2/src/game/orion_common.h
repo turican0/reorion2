@@ -6679,8 +6679,8 @@ extern void sub_102F78();
 extern void sub_102FA8();
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: int sub_10315D(int a1, int a2);
-extern int sub_10315D();
+// plna signatura: int sub_10315D(int x, int y, int w, int h, int str, int a_word);
+extern int sub_10315D(int x, int y, int w, int h, int str, int a_word);
 // plna signatura: int sub_103183(int a1, int a2, int a3);
 extern int sub_103183();
 // plna signatura: int sub_1031AA(int x, int y, int w, int h, int str, int a_word);  /* vlna 95 */
@@ -16704,7 +16704,7 @@ extern char byte_17D83E[21];
 extern int16_t word_17D853;
 extern int16_t word_17D855[9];
 extern int16_t word_17D867[9];
-extern _UNKNOWN unk_17D879;
+extern char unk_17D879[8];   /* vlna 122: barevna rampa */
 extern int16_t word_17D881[];
 extern char aLanguageIni[13];
 extern int16_t word_17D8AC[];
@@ -16944,7 +16944,7 @@ extern int16_t word_180156;
 extern int16_t word_180158;
 extern _UNKNOWN *off_18015A;
 extern _UNKNOWN unk_180164[];
-extern _UNKNOWN unk_180170;
+extern char unk_180170[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_180178[];
 extern char byte_180184[];
 extern char byte_180185[];
@@ -16953,7 +16953,7 @@ extern char byte_180A26[];
 extern char byte_180A27[];
 extern char byte_180A28[648];
 extern _UNKNOWN unk_180CB0[];
-extern _UNKNOWN unk_180CBC;
+extern char unk_180CBC[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_180CC4;
 extern int16_t word_180CCC[6];
 extern int16_t word_180CD8;
@@ -16962,9 +16962,9 @@ extern int16_t word_180CE8;
 extern int16_t word_180CF0[50];
 extern int16_t word_180D54[40];
 extern int16_t word_180DB8[10];
-extern _UNKNOWN unk_180DCC;
-extern _UNKNOWN unk_180DD4;
-extern _UNKNOWN unk_180DDC;
+extern char unk_180DCC[8];   /* vlna 122: barevna rampa */
+extern char unk_180DD4[8];   /* vlna 122: barevna rampa */
+extern char unk_180DDC[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_180DE4;
 extern _UNKNOWN unk_180DF6;
 extern _UNKNOWN unk_180E0C;
@@ -16974,7 +16974,7 @@ extern _UNKNOWN unk_180E30;
 extern _UNKNOWN unk_180E3E;
 extern _UNKNOWN unk_180E54;
 extern _UNKNOWN unk_180E62[];
-extern _UNKNOWN unk_180E7C;
+extern char unk_180E7C[8];   /* vlna 122: barevna rampa */
 extern char byte_180E84[36];
 extern _UNKNOWN unk_180EA8[];
 extern int16_t word_180EB4;
@@ -17083,7 +17083,7 @@ extern _UNKNOWN unk_182048;
 extern char byte_182078[8];
 extern _UNKNOWN unk_182080;
 extern _UNKNOWN unk_182088;
-extern _UNKNOWN unk_182098;
+extern char unk_182098[8];   /* vlna 122: barevna rampa */
 extern char *off_1820B4;
 extern char byte_1820B8;
 extern int16_t word_1820C0;
@@ -17115,12 +17115,12 @@ extern char byte_182246;
 extern char byte_182247;
 extern _UNKNOWN unk_182248;
 extern char *off_182278;
-extern _UNKNOWN unk_18227C;
+extern char unk_18227C[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_182284;
 extern _UNKNOWN unk_18228C[];
 extern _UNKNOWN unk_182298;
 extern _UNKNOWN unk_1822A0;
-extern _UNKNOWN unk_1822A8;
+extern char unk_1822A8[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_1822B0;
 extern int16_t word_1822B8[];
 extern int16_t word_1822BA[32];
@@ -17181,7 +17181,7 @@ extern int dword_182760;
 extern _UNKNOWN unk_182765[];
 extern _UNKNOWN unk_182795[];
 extern _UNKNOWN unk_1827A1[];
-extern _UNKNOWN unk_1827AD;
+extern char unk_1827AD[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_1827B5;
 extern char byte_1827BD;
 extern char byte_1827BE;
@@ -17362,7 +17362,7 @@ extern char byte_1831AE;
 extern int16_t word_1831B0;
 extern int dword_1831B2;
 extern char byte_1831B6;
-extern _UNKNOWN unk_1831B7;
+extern char unk_1831B7[8];   /* vlna 122: barevna rampa */
 extern int16_t word_1831C0;
 extern int16_t word_1831C2;
 extern char byte_1831C4;
@@ -17422,13 +17422,13 @@ extern char byte_18390D[8];
 extern char byte_183915[9];
 extern char byte_18391E[26];
 extern _UNKNOWN *off_183B0E;
-extern _UNKNOWN unk_183B1E;
+extern char unk_183B1E[8];   /* vlna 122: barevna rampa */
 extern char byte_183B24;
-extern _UNKNOWN unk_183B26;
-extern _UNKNOWN unk_183B2E;
+extern char unk_183B26[8];   /* vlna 122: barevna rampa */
+extern char unk_183B2E[8];   /* vlna 122: barevna rampa */
 extern char byte_183B36;
-extern _UNKNOWN *off_183B77;
-extern _UNKNOWN *off_183BCB;
+extern char *off_183B77[7];   /* vlna 122: sedm ukazatelu, ne jeden */
+extern char *off_183BCB[7];   /* vlna 122: sedm ukazatelu, ne jeden */
 extern _UNKNOWN unk_183BE7;
 extern char byte_183C27[];
 extern char byte_183C28[9];
@@ -17455,7 +17455,7 @@ extern _UNKNOWN *off_183ECF;
 extern _UNKNOWN unk_183EE7;
 extern char byte_183EFC;
 extern int dword_183EFD;
-extern _UNKNOWN unk_183F3A;
+extern char unk_183F3A[8];   /* vlna 122: barevna rampa */
 extern char byte_183F42;
 extern _UNKNOWN unk_183F43;
 extern char byte_183F64[26];
@@ -17484,15 +17484,15 @@ extern int16_t word_18409D;
 extern int16_t word_18409F;
 extern int16_t word_1840A1;
 extern int (*off_1840A3)();
-extern _UNKNOWN unk_1840A7;
-extern _UNKNOWN unk_1840AF;
+extern char unk_1840A7[8];   /* vlna 122: barevna rampa */
+extern char unk_1840AF[8];   /* vlna 122: barevna rampa */
 extern char byte_1840B7[8];
 extern char byte_1840BF[8];
 extern char byte_1840C7[9];
 extern char aScienceLbx[12];
 extern char aSrRScLbx[13];
-extern _UNKNOWN unk_18413C;
-extern _UNKNOWN unk_184144;
+extern char unk_18413C[8];   /* vlna 122: barevna rampa */
+extern char unk_184144[8];   /* vlna 122: barevna rampa */
 extern int16_t word_18414C[6];
 extern int16_t word_184158[6];
 extern int16_t word_184164[5];
@@ -20619,8 +20619,8 @@ extern char byte_1AD594;
 extern char byte_1AD595;
 extern int dword_1AD598;
 extern char byte_1AD59C[8];
-extern _UNKNOWN unk_1AD5A4;
-extern _UNKNOWN unk_1AD5AC;
+extern char unk_1AD5A4[8];   /* vlna 122: barevna rampa */
+extern char unk_1AD5AC[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_1AD5B4;
 extern char byte_1AD5CC[20];
 extern char byte_1AD5E0[20];
@@ -21185,8 +21185,21 @@ extern _UNKNOWN loc_E0000;
 extern _UNKNOWN loc_E40C7;
 extern _UNKNOWN unk_178A04;
 extern _UNKNOWN unk_183938;
-extern _UNKNOWN unk_183B46;
-extern _UNKNOWN unk_183B93;
+extern char unk_183B46[7];   /* vlna 122: prevodni tabulka barev */
+extern char unk_183B3E[8];   /* vlna 122 */
+extern char unk_183B4D[7];   /* vlna 122 */
+extern char unk_183B54[7];   /* vlna 122 */
+extern char unk_183B5B[7];   /* vlna 122 */
+extern char unk_183B62[7];   /* vlna 122 */
+extern char unk_183B69[7];   /* vlna 122 */
+extern char unk_183B70[7];   /* vlna 122 */
+extern char unk_183B9B[8];   /* vlna 122 */
+extern char unk_183BA3[8];   /* vlna 122 */
+extern char unk_183BAB[8];   /* vlna 122 */
+extern char unk_183BB3[8];   /* vlna 122 */
+extern char unk_183BBB[8];   /* vlna 122 */
+extern char unk_183BC3[8];   /* vlna 122 */
+extern char unk_183B93[8];
 extern _UNKNOWN unk_183CEB;
 extern _UNKNOWN unk_199A12;
 /* vlna 73: unk_19B772 == word_19B772, samostatny symbol zrusen */

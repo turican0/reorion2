@@ -3240,7 +3240,7 @@ char byte_17D83E[21] =
 int16_t word_17D853 = 1; // weak
 int16_t word_17D855[9] = { 0, 0, -10, -20, -30, -40, -55, -70, -85 }; // weak
 int16_t word_17D867[9] = { 0, 0, -10, -20, -30, -40, -50, -60, -65 }; // weak
-_UNKNOWN unk_17D879; // weak
+char unk_17D879[8] = { 0x81, 0x89, 0x89, 0x89, 0x89, 0x89, 0x89, 0x89 };   /* vlna 122: barevna rampa z obrazu hry */
 int16_t word_17D881[] = { 12 }; // weak
 char aLanguageIni[13] = "language.ini"; // weak
 int16_t word_17D8AC[] = { 41 }; // weak
@@ -3693,7 +3693,7 @@ int16_t word_180156 = -10; // weak
 int16_t word_180158 = 500; // weak
 _UNKNOWN *off_18015A = &unk_178A04; // weak
 _UNKNOWN unk_180164[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
-_UNKNOWN unk_180170; // weak
+char unk_180170[8] = { 0xFA, 0xFE, 0xFF, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_180178[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 char byte_180184[] = { '\x02' }; // weak
 char byte_180185[] = { '\a' }; // weak
@@ -6562,7 +6562,7 @@ char byte_180A28[648] =
   '\0'
 }; // weak
 _UNKNOWN unk_180CB0[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
-_UNKNOWN unk_180CBC; // weak
+char unk_180CBC[8] = { 0x96, 0x9A, 0x9B, 0x97, 0x98, 0x99, 0x9A, 0x9B };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_180CC4; // weak
 int16_t word_180CCC[6] = { -50, -20, -20, 0, 20, 30 }; // weak
 int16_t word_180CD8 = -70; // weak
@@ -6665,9 +6665,9 @@ int16_t word_180D54[40] =
   0
 }; // weak
 int16_t word_180DB8[10] = { 100, 50, 50, 100, 50, 20, 0, 0, 0, 0 }; // weak
-_UNKNOWN unk_180DCC; // weak
-_UNKNOWN unk_180DD4; // weak
-_UNKNOWN unk_180DDC; // weak
+char unk_180DCC[8] = { 0xF8, 0xFD, 0xFD, 0xFD, 0xFD, 0xFD, 0xFD, 0xFD };   /* vlna 122: barevna rampa z obrazu hry */
+char unk_180DD4[8] = { 0xFA, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };   /* vlna 122: barevna rampa z obrazu hry */
+char unk_180DDC[8] = { 0xF8, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA, 0xFA };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_180DE4; // weak
 _UNKNOWN unk_180DF6; // weak
 _UNKNOWN unk_180E0C; // weak
@@ -6677,7 +6677,7 @@ _UNKNOWN unk_180E30; // weak
 _UNKNOWN unk_180E3E; // weak
 _UNKNOWN unk_180E54; // weak
 _UNKNOWN unk_180E62[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
-_UNKNOWN unk_180E7C; // weak
+char unk_180E7C[8] = { 0xF8, 0xFE, 0xFD, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF };   /* vlna 122: barevna rampa z obrazu hry */
 char byte_180E84[36] =
 {
   '\x01',
@@ -7481,7 +7481,7 @@ _UNKNOWN unk_182048; // weak
 char byte_182078[8] = { 'o', 't', 'r', 't', 't', 't', 't', 't' }; // weak
 _UNKNOWN unk_182080; // weak
 _UNKNOWN unk_182088; // weak
-_UNKNOWN unk_182098; // weak
+char unk_182098[8] = { 0xA0, 0xA3, 0xA3, 0xA5, 0xAB, 0xAB, 0xAB, 0xAB };   /* vlna 122: barevna rampa z obrazu hry */
 char *off_1820B4 = "GAME.LBX"; // weak
 char byte_1820B8 = '\0'; // weak
 int16_t word_1820C0 = 0; // weak
@@ -7513,12 +7513,12 @@ char byte_182246 = '\x01'; // weak
 char byte_182247 = '\x01'; // weak
 _UNKNOWN unk_182248; // weak
 char *off_182278 = "OFFICER.LBX"; // weak
-_UNKNOWN unk_18227C; // weak
+char unk_18227C[8] = { 0x4B, 0x81, 0x4D, 0x81, 0x81, 0x81, 0x81, 0x81 };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_182284; // weak
 _UNKNOWN unk_18228C[12] = { 19, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_182298; // weak
 _UNKNOWN unk_1822A0; // weak
-_UNKNOWN unk_1822A8; // weak
+char unk_1822A8[8] = { 0xCF, 0xD3, 0xD2, 0xD3, 0xD3, 0xD3, 0xD3, 0xD3 };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_1822B0; // weak
 int16_t word_1822B8[] = { 0 }; // weak
 int16_t word_1822BA[32] =
@@ -7633,7 +7633,7 @@ int dword_182760 = 0; // weak
 _UNKNOWN unk_182765[48] = { 18, 0, 0, 0, (char)0xC7, 0, 68, 1, (char)0xD1, 1, (char)0xD8, 1, 16, 0, 0, 0, (char)0xDC, 1, 10, 0, 120, 2, 50, 1, 16, 0, 0, 0, 10, 0, 10, 0, (char)0xBC, 0, (char)0xD7, 1, 1, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_182795[12] = { 16, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_1827A1[12] = { 17, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
-_UNKNOWN unk_1827AD; // weak
+char unk_1827AD[8] = { 0xB8, 0xBB, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00 };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_1827B5; // weak
 char byte_1827BD = '\0'; // weak
 char byte_1827BE = '\0'; // weak
@@ -8021,7 +8021,7 @@ char byte_1831AE = '\0'; // weak
 int16_t word_1831B0 = -1; // weak
 int dword_1831B2 = 0; // weak
 char byte_1831B6 = '\0'; // weak
-_UNKNOWN unk_1831B7; // weak
+char unk_1831B7[8] = { 0xA0, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9 };   /* vlna 122: barevna rampa z obrazu hry */
 int16_t word_1831C0 = 0; // weak
 int16_t word_1831C2 = 0; // weak
 char byte_1831C4 = '\x01'; // weak
@@ -8177,13 +8177,41 @@ char byte_18391E[26] =
   '\0'
 }; // weak
 _UNKNOWN *off_183B0E = &unk_183938; // weak
-_UNKNOWN unk_183B1E; // weak
+/* PORT (vlna 122): datovy blok obrazovky INFO. V portu z nej byly same
+   jednobajtove/ctyrbajtove pahyly:
+     - `unk_183B1E/26/2E/3E` jsou OSMIBAJTOVE BAREVNE RAMPY (jdou do
+       `sub_120BB5`/`sub_120D79`, ktere z nich ctou 8 B),
+     - `off_183B77` a `off_183BCB` jsou TABULKY SEDMI CTYRBAJTOVYCH UKAZATELU
+       (asm: `dd offset unk_17BB46` a dalsich sest), ne jeden ukazatel;
+       `sub_107214` je indexuje `(char *)&off_183B77 + 4*i`, takze uz prvek 1
+       cetl mimo a `sub_10A064` sahala na adresu 0 - pad na INFO.
+   Obsah primo z obrazu hry (dseg02:0017BB1E a dal, C jmeno = asm + 0x8000).
+   `byte_183B24` a `byte_183B36` zustavaji samostatne - ctou se jen jako
+   skalary a maji spravnou hodnotu. */
+char unk_183B1E[8] = { 0xB2, 0xB9, 0xB7, 0xB6, 0xB8, 0xB9, 0xB9, 0xBA };
 char byte_183B24 = '\xB9'; // weak
-_UNKNOWN unk_183B26; // weak
-_UNKNOWN unk_183B2E; // weak
+char unk_183B26[8] = { 0xB2, 0xBF, 0xB7, 0xB9, 0xBB, 0xBC, 0xBF, 0xBF };
+char unk_183B2E[8] = { 0xB2, 0xA8, 0xA6, 0xA7, 0xA7, 0xA8, 0xA8, 0xA9 };
 char byte_183B36 = '\xB2'; // weak
-_UNKNOWN *off_183B77 = &unk_183B46; // weak
-_UNKNOWN *off_183BCB = &unk_183B93; // weak
+char unk_183B3E[8] = { 0xB2, 0xBE, 0xB7, 0xB9, 0xBB, 0xBC, 0xBD, 0xBD };
+char unk_183B46[7] = { 0xB0, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D };
+char unk_183B4D[7] = { 0xB0, 0x0D, 0x0F, 0x11, 0x13, 0x14, 0x16 };
+char unk_183B54[7] = { 0xB0, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9 };
+char unk_183B5B[7] = { 0xB0, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF };
+char unk_183B62[7] = { 0xB0, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3 };
+char unk_183B69[7] = { 0xB0, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97 };
+char unk_183B70[7] = { 0xB0, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA };
+char *off_183B77[7] = { unk_183B46, unk_183B4D, unk_183B54, unk_183B5B,
+                        unk_183B62, unk_183B69, unk_183B70 };
+char unk_183B93[8] = { 0x9B, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char unk_183B9B[8] = { 0x0D, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char unk_183BA3[8] = { 0xA4, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char unk_183BAB[8] = { 0xAA, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char unk_183BB3[8] = { 0x9E, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char unk_183BBB[8] = { 0x92, 0x02, 0x03, 0x03, 0x03, 0x03, 0x04, 0x04 };
+char unk_183BC3[8] = { 0xB5, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
+char *off_183BCB[7] = { unk_183B93, unk_183B9B, unk_183BA3, unk_183BAB,
+                        unk_183BB3, unk_183BBB, unk_183BC3 };
 _UNKNOWN unk_183BE7; // weak
 char byte_183C27[] = { '\x15' }; // weak
 char byte_183C28[9] = { '2', '\x15', 'M', '\x15', 'f', '\x15', '\x80', '\x15', '\x9A' }; // weak
@@ -8301,7 +8329,7 @@ _UNKNOWN *off_183ECF = &unk_183B1E; // weak
 _UNKNOWN unk_183EE7; // weak
 char byte_183EFC = '\0'; // weak
 int dword_183EFD = 0; // weak
-_UNKNOWN unk_183F3A; // weak
+char unk_183F3A[8] = { 0x14, 0xB9, 0xB8, 0xB6, 0xB8, 0xB9, 0xB9, 0xBA };   /* vlna 122: barevna rampa z obrazu hry */
 char byte_183F42 = '\0'; // weak
 _UNKNOWN unk_183F43; // weak
 char byte_183F64[26] =
@@ -8377,15 +8405,15 @@ int16_t word_18409D = 186; // weak
 int16_t word_18409F = 24; // weak
 int16_t word_1840A1 = 25; // weak
 int (*off_1840A3)() = &sub_10CDC1; // weak
-_UNKNOWN unk_1840A7; // weak
-_UNKNOWN unk_1840AF; // weak
+char unk_1840A7[8] = { 0xB0, 0xB9, 0xB5, 0xB6, 0xB8, 0xB9, 0xB9, 0xBA };   /* vlna 122: barevna rampa z obrazu hry */
+char unk_1840AF[8] = { 0xB0, 0xBF, 0xB7, 0xB9, 0xBB, 0xBC, 0xBF, 0xBF };   /* vlna 122: barevna rampa z obrazu hry */
 char byte_1840B7[8] = { 'C', '\x8B', '\x93', '&', '=', '_', 'j', '/' }; // weak
 char byte_1840BF[8] = { 'F', '\x8A', '\x95', '#', ';', '`', 'n', '1' }; // weak
 char byte_1840C7[9] = { 'H', 'a', '\x96', '\x1A', '9', 't', '\x9E', 'I', '\0' }; // weak
 char aScienceLbx[12] = "SCIENCE.LBX"; // weak
 char aSrRScLbx[13] = "SR_R?_SC.LBX"; // weak
-_UNKNOWN unk_18413C; // weak
-_UNKNOWN unk_184144; // weak
+char unk_18413C[8] = { 0xF0, 0xF6, 0xF3, 0xF4, 0xF4, 0xF5, 0xF6, 0xF7 };   /* vlna 122: barevna rampa z obrazu hry */
+char unk_184144[8] = { 0xF2, 0xF5, 0xF4, 0xF4, 0xF4, 0xF4, 0xF5, 0xF6 };   /* vlna 122: barevna rampa z obrazu hry */
 int16_t word_18414C[6] = { 6, 21, 37, 60, 85, 100 }; // weak
 int16_t word_184158[6] = { 6, 20, 37, 58, 85, 100 }; // weak
 int16_t word_184164[5] = { 373, 349, 320, 283, 239 }; // weak
@@ -18048,8 +18076,8 @@ char byte_1AD594; // weak
 char byte_1AD595; // weak
 int dword_1AD598; // weak
 char byte_1AD59C[8]; // weak
-_UNKNOWN unk_1AD5A4; // weak
-_UNKNOWN unk_1AD5AC; // weak
+char unk_1AD5A4[8];   /* vlna 122: barevna rampa (v obrazu neinicializovana) */
+char unk_1AD5AC[8];   /* vlna 122: barevna rampa (v obrazu neinicializovana) */
 _UNKNOWN unk_1AD5B4; // weak
 char byte_1AD5CC[20]; // weak
 char byte_1AD5E0[20]; // weak

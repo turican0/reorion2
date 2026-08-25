@@ -1901,7 +1901,7 @@ void sub_14AC60(int a1, int a2, int a3, int a4, int a5, int a6)
       *(_DWORD *)(a6 + 908) = a4;
       *(_DWORD *)(a6 + 904) = a5;
       v44 = (char *)(*(_DWORD *)(a6 + 928) + 1024);
-      v14 = *(_BYTE **)(a6 + 928);
+      v14 = (_BYTE *)(intptr_t)*(uint32_t *)(a6 + 928);
       *v14 = 0;
       v14[1] = (*(_BYTE *)(a6 + 902) & 0x20) != 0;
       v35 = a4 * a3 + a5;

@@ -3326,6 +3326,11 @@ int16_t sub_121D19(int a1, int a2, int a3, int a4)
 //----- (00121DEB) --------------------------------------------------------
 int sub_121DEB(int a1, int a2, unsigned int a3)
 {
+  /* DOCASNA SONDA (vlna 122) */
+  { extern int g_sonda122; static int _s;
+    if ( g_sonda122 && (int16_t)a2 >= 0 && (int16_t)a2 < 24 && ++_s < 4 )
+    { PortDebug_CrashLog("BLIT x=%d y=%d glyf=%u", (int)(int16_t)a1, (int)(int16_t)a2, a3);
+      PortDebug_Backtrace("BLIT", 8); } }
   int64_t v3; // rax
   int64_t v5; // [esp+0h] [ebp-38h] - dest ptr (low dword) : src glyph ptr (high dword)
   int v6; // [esp+8h] [ebp-30h]
@@ -3365,6 +3370,11 @@ int sub_121DEB(int a1, int a2, unsigned int a3)
 //----- (00121E85) --------------------------------------------------------
 int sub_121E85(int a1, int a2, unsigned int a3)
 {
+  /* DOCASNA SONDA (vlna 122) */
+  { extern int g_sonda122; static int _s;
+    if ( g_sonda122 && (int16_t)a2 >= 0 && (int16_t)a2 < 24 && ++_s < 4 )
+    { PortDebug_CrashLog("BLIT2 x=%d y=%d glyf=%u", (int)(int16_t)a1, (int)(int16_t)a2, a3);
+      PortDebug_Backtrace("BLIT2", 8); } }
   int64_t v3; // rax
   int64_t v5; // [esp+0h] [ebp-38h] - dest ptr (low dword) : src glyph ptr (high dword)
   int v6; // [esp+8h] [ebp-30h]

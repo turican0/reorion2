@@ -260,7 +260,7 @@ LABEL_70:
   }
   *(_WORD *)(a1 + 16) = i;
 LABEL_30:
-  **(_WORD **)(a1 + 4) = *(_WORD *)(a1 + 20);
+  *(_WORD *)(intptr_t)*(uint32_t *)(a1 + 4) = *(_WORD *)(a1 + 20);
   v8 = 0;
   v9 = *(_WORD *)(a1 + 12);
   v21 = v9 + *(_WORD *)(a1 + 16);
@@ -531,6 +531,7 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
   int y = centerY;                            /* edi    */
   int fits;                                   /* var_4  */
 
+
   do
   {
     measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
@@ -602,9 +603,15 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
 // Volajici tehle obalky je v portu nepredavaji (stejny deficit, jaky mela do
 // ted i sub_1031C6), takze sem jdou nuly - sub_10370A takovou sirku odmitne
 // a nevykresli nic, presne jako dosud. Doplnit az podle konkretni obrazovky.
-int sub_10315D(int a1, int a2)
+/* PORT (vlna 122): ctyri registrove argumenty (eax=x, edx=y, ebx=sirka,
+   ecx=vyska) IDA zahodila a nechala tu same nuly. Se sirkou 0 vyskoci
+   sub_10370A hned na kontrole `a4 < 10`, takze VSECHEN text kresleny pres
+   tuhle obalku tise mizel - napr. nazev planety na obrazovce PLANETS.
+   Stejny tvar uz ma sub_1031AA/sub_1031C6. */
+int sub_10315D(int x, int y, int w, int h, int str, int a_word)
 {
-  return sub_102FD8(0, 0, 0, 0, a1, a2, 0, 0, 0);
+  return sub_102FD8((int16_t)x, (int16_t)y, (int16_t)w, (int16_t)h,
+                    str, a_word, 0, 0, 0);
 }
 // 102FD8: using guessed type _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char);
 
@@ -4016,7 +4023,6 @@ void sub_106171()
       v4 = word_1B43A8[*(_BYTE *)(dword_1ACF10 + 4) & 0x7F] + v3;
       if ( v4 > word_1ACF1E )
         word_1ACF1E = v4;
-      if ( *(_BYTE *)(dword_1ACF14 + 20) )
       {
         if ( word_1B3E86 )
         {
@@ -4509,10 +4515,17 @@ void sub_106CAC( int a1)
   int v21; // eax
   char v22; // dl
   int v23; // [esp-Ch] [ebp-6Ah]
-  _DWORD *v24; // [esp+0h] [ebp-5Eh] BYREF
-  int v25; // [esp+4h] [ebp-5Ah]
-  _WORD *v26; // [esp+8h] [ebp-56h]
-  _DWORD v27[23]; // [esp+Ch] [ebp-52h]
+  /* PORT (vlna 122): v originale je tohle JEDNO pole 26 ctyrbajtovych handlu
+     LBX obrazku na var_5E - plni ho smycka `(&v24)[v3] = v2` pro v3 = 1..25.
+     IDA ho rozsekala na v24 (`_DWORD *`), v25, v26 a v27[23] (1+1+1+23 = 26).
+     V portu to znamenalo dvoji chybu naraz: zapisy sly mimo `v24` (samostatna
+     lokalka) a jeste s krokem 8 B misto 4 B, protoze `v24` mela typ ukazatele.
+     sub_107214 pak cetla `*(uint32_t *)(a1 + 92)` = prvek 20, tedy nulu, a hra
+     na obrazovce INFO padla. Drzeno jako jedno pole. */
+  uint32_t v24[26]; // [esp+0h] [ebp-5Eh] BYREF
+#define v25 (v24[1])
+#define v26 ((_WORD *)(intptr_t)v24[2])
+#define v27 (v24 + 3)
   int v28[7]; // [esp+68h] [ebp+Ah] BYREF
   _DWORD v29[7]; // [esp+84h] [ebp+26h] BYREF
   _BYTE v30[28]; // [esp+A0h] [ebp+42h] BYREF
@@ -4536,12 +4549,12 @@ void sub_106CAC( int a1)
   byte_199BA3[0] = word_19999C;
   sub_10248B(1, 0);
   v1 = 1;
-  v24 = sub_126AFD((int)aInfoLbx, 0, dword_192ED4);
+  v24[0] = (uint32_t)(uintptr_t)sub_126AFD((int)aInfoLbx, 0, dword_192ED4);
   do
   {
     v2 = sub_126B42((int)aInfoLbx, v1, dword_192ED4);
     v3 = (uint16_t)v1++;
-    (&v24)[v3] = v2;
+    v24[v3] = (uint32_t)(uintptr_t)v2;
   }
   while ( (uint16_t)v1 < 0x1Au );
   v4 = 0;
@@ -4563,7 +4576,7 @@ void sub_106CAC( int a1)
   }
   while ( (uint16_t)v8 < 7u );
   v36 = sub_1075AB((int)v30);
-  sub_107214((int)&v24, (int)v28, (int)v29, (int)v30);
+  sub_107214((int)(intptr_t)v24, (int)v28, (int)v29, (int)v30);
   sub_1318D4(0, 255);
   sub_12B79D(v25);
   sub_102CDF();
@@ -4574,7 +4587,7 @@ void sub_106CAC( int a1)
   do
   {
     v23 = (int16_t)v12;
-    v13 = (_WORD *)v27[v12];
+    v13 = (_WORD *)(intptr_t)v27[v12];
     v14 = (uint8_t)byte_183C28[2 * v12];
     v15 = (uint8_t)byte_183C27[2 * v12++];
     sub_115383(v15, v14, (int)&unk_17A28B, v13, (int)&v33, v23, &unk_17A28B, 41);
@@ -4597,7 +4610,7 @@ void sub_106CAC( int a1)
     sub_128C32(0, 0, 639, 479, 0);
     sub_120DED(176, 176);
     sub_129130(212, 23, 620, 457, 178, 179, 179);
-    sub_12A478(0, 0, (int)v24);
+    sub_12A478(0, 0, (int)v24[0]);
     sub_120BB5(4, (int)&unk_183B1E);
     sub_1210FD(151, 27, (int)v31);
     sub_10709A(v28, (int)v29, v34);
@@ -4612,12 +4625,12 @@ void sub_106CAC( int a1)
       case 0:
         sub_103A1B();
         v18 = (int16_t)v17;
-        v20 = sub_107E95((int)&v24, (int16_t)v17, a1);
+        v20 = sub_107E95((int)(intptr_t)v24, (int16_t)v17, a1);
         goto LABEL_17;
       case 1:
         sub_103A0C();
         v18 = (int16_t)v17;
-        v20 = sub_108057((int)&v24, v17);
+        v20 = sub_108057((int)(intptr_t)v24, v17);
         byte_183F42 = 0;
         goto LABEL_17;
       case 2:
@@ -4628,11 +4641,11 @@ void sub_106CAC( int a1)
       case 3:
         sub_1039EE();
         v18 = (int16_t)v17;
-        sub_108F98((int)&v24, (int16_t)v17);
+        sub_108F98((int)(intptr_t)v24, (int16_t)v17);
         goto LABEL_17;
       case 4:
         v18 = (int16_t)v17;
-        sub_109331((int)&v24);
+        sub_109331((int)(intptr_t)v24);
 LABEL_17:
         a1 = v20;
         break;
@@ -4656,6 +4669,9 @@ LABEL_17:
     }
   }
 }
+#undef v25
+#undef v26
+#undef v27
 // 107095: control flows out of bounds to 107668
 // 106E8E: variable 'v16' is possibly undefined
 // 106FD7: variable 'v20' is possibly undefined
@@ -4783,17 +4799,17 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
   v5 = sub_12DAA4(24, 9);
   v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v5);
   sub_12D8F5(24, 9, (int)v28);
-  sub_12F7E6(0, 0, *(int16_t **)(a1 + 92), v28);
+  sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(a1 + 92), v28);
   v6 = sub_12DAA4(24, 6);
   v32 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v6);
   sub_12D8F5(24, 6, (int)v32);
-  sub_12F7E6(0, 0, *(int16_t **)(a1 + 100), v32);
+  sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(a1 + 100), v32);
   v7 = sub_12DAA4(24, 108);
   v27 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, v7);
   sub_12D8F5(24, 108, (int)v27);
-  sub_12F7E6(0, 0, *(int16_t **)(a1 + 88), v27);
+  sub_12F7E6(0, 0, (int16_t *)(intptr_t)*(uint32_t *)(a1 + 88), v27);
   v8 = 0;
-  v29 = *(int16_t **)(a1 + 96);
+  v29 = (int16_t *)(intptr_t)*(uint32_t *)(a1 + 96);
   do
   {
     v9 = 4 * v8;
@@ -4804,12 +4820,14 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
     else
     {
       v24 = 4 * v8;
-      v10 = *(int16_t **)(v24 + v25);
+      /* vlna 122: pole ctyrbajtovych handlu - na x64 se nesmi cist jako 8 B */
+      v10 = (int16_t *)(intptr_t)*(uint32_t *)(v24 + v25);
       sub_12D8F5(24, 108, (int)v10);
       sub_12F7E6(0, (int16_t)(100 - *(_WORD *)(v24 + v26)), v27, v10);
       sub_12EFBD(0, 99, v10, (int *)v28, 1);
       sub_12F7E6(0, 102, v32, v10);
-      sub_10A064(v10, *(int *)((char *)&off_183B77 + v24), 1u, 7u);
+      /* vlna 122: off_183B77 je tabulka sedmi ukazatelu - v24 je 4*i */
+      sub_10A064(v10, (int)(intptr_t)off_183B77[v24 / 4], 1u, 7u);
     }
     ++v8;
   }
@@ -4821,13 +4839,13 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
   do
   {
     v11 = (uint16_t)v34;
-    v30 = *(int16_t **)(v31 + 4 * (uint16_t)v33);
+    v30 = (int16_t *)(intptr_t)*(uint32_t *)(v31 + 4 * (uint16_t)v33);   /* vlna 122 */
     v12 = v30;
     sub_12D8F5(160, 20, (int)v30);
     v13 = 4 * v11;
     sub_12F7E6(0, 0, v29, v12);
-    sub_10A064(v30, *(int *)((char *)&off_183B77 + v13), 1u, 7u);
-    sub_120BB5(2, *(int *)((char *)&off_183BCB + v13));
+    sub_10A064(v30, (int)(intptr_t)off_183B77[v13 / 4], 1u, 7u);   /* vlna 122 */
+    sub_120BB5(2, (int)(intptr_t)off_183BCB[v13 / 4]);   /* vlna 122 */
     if ( (_WORD)v34 )
     {
       v16 = v30;
@@ -5507,7 +5525,7 @@ int sub_107E95(int a1, int a2, int a3)
   do
   {
     v7 = (uint16_t)v6;
-    v8 = *(_WORD **)(a1 + 4 * (uint16_t)v6 + 32);
+    v8 = (_WORD *)(intptr_t)*(uint32_t *)(a1 + 4 * (uint16_t)v6 + 32);
     v6 = (int16_t *)((char *)v6 + 1);
     sub_11523B(word_183D9F[v7], 427, (int)&unk_17A28B, v8, (int)&v16 + v7 * 2, &unk_17A28B, 40);
   }
@@ -5648,14 +5666,14 @@ int sub_108073(int a1, int a2, int a3)
   do
   {
     v29 = (int16_t)v9;
-    v10 = *(_WORD **)(a1 + 4 * v9 + 16);
+    v10 = (_WORD *)(intptr_t)*(uint32_t *)(a1 + 4 * v9 + 16);
     v11 = word_183C33[2 * v9];
     v12 = word_183C31[2 * v9++];
     v40 = sub_115383(v12, v11, (int)&unk_17A28B, v10, (int)&word_183E55, v29, &unk_17A28B, 40);
   }
   while ( v9 < 4u );
-  v39 = sub_1151B0(410, 65, (int)&unk_17A28B, *(_WORD **)(a1 + 8), asc_17A289, 40);
-  v13 = (int16_t *)sub_1151B0(410, 395, (int)&unk_17A28B, *(_WORD **)(a1 + 12), asc_17A289, 40);
+  v39 = sub_1151B0(410, 65, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 8), asc_17A289, 40);
+  v13 = (int16_t *)sub_1151B0(410, 395, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 12), asc_17A289, 40);
   sub_249F9(aBilltextLbx, 6, v35, 40);
   sub_1210FD(416, 31, (int)v35);
   for ( i = word_183C63; i < word_183CA7; i = (int16_t *)((char *)i + 17) )
@@ -5833,7 +5851,7 @@ void sub_108611(int a1, int a2, int a3)
   int v8; // [esp+0h] [ebp-8h]
   char *v9; // [esp+4h] [ebp-4h]
 
-  v3 = *(_BYTE **)(a1 + 22);
+  v3 = (_BYTE *)(intptr_t)*(uint32_t *)(a1 + 22);
   v4 = (uint8_t *)*(&off_183B0E + (int16_t)a2);
   v3[73] = 0;
   *(_BYTE *)(a1 + 21) = 1;
@@ -6495,8 +6513,8 @@ void sub_108F98(int a1, int a2)
   v19 = v3;
   if ( (int16_t)v3 > 0 )
   {
-    v20 = sub_1151B0(592, 84, (int)&unk_17A28B, *(_WORD **)(a1 + 56), asc_17A289, 40);
-    v22 = sub_1151B0(592, 395, (int)&unk_17A28B, *(_WORD **)(a1 + 60), asc_17A289, 40);
+    v20 = sub_1151B0(592, 84, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 56), asc_17A289, 40);
+    v22 = sub_1151B0(592, 395, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 60), asc_17A289, 40);
     dword_183EB9 = (int)&v15;
     sub_108EC3((int)&unk_183EA3, (int16_t)v4, 4, 10);
     dword_1ACFE8 = sub_10A5A3((int)&unk_183EA3, byte_1AD208);
@@ -7733,7 +7751,7 @@ void sub_10A5E3(int a1, int a2)
   v7 = 1;
   v6 = 158 * *(uint8_t *)(a1 + 21);
   v3 = *(_DWORD *)(a1 + 22);
-  v4 = *(_BYTE **)(a1 + 26);
+  v4 = (_BYTE *)(intptr_t)*(uint32_t *)(a1 + 26);
   do
   {
     if ( (unsigned int)v4 >= v3 + v6 )
@@ -8974,6 +8992,14 @@ void sub_10BFBD(int a1)
   int v21; // [esp+11Ch] [ebp+CEh]
   int16_t v22; // [esp+120h] [ebp+D2h] BYREF
 
+  /* PORT (vlna 122): asm ma `enter 120h, 0` a hned za nim `push eax`, tedy
+     REGISTROVY ARGUMENT SPILLNUTY do var_124 - a to je prave `v14`. IDA to
+     zahodila (`variable 'a1' is possibly undefined`) a `v14` se cetla
+     neinicializovana uz na prvnim radku smycky (`*(_BYTE *)(v14 + 10)`).
+     Slot se pouziva jako ukazatel na zaznam rasy a posouva se o 84 B
+     (`v14 += 84`), takze `a1` sam nestaci - v tele funkce se prepisuje jako
+     pracovni promenna. */
+  v14 = a1;
   v20 = 0;
   while ( 1 )
   {
@@ -9052,7 +9078,7 @@ LABEL_24:
       }
       strcpy(v17, v5);
       sprintf(v16, "\r%s%i%s", byte_1AD472, v4, v17);
-      v6 = (char *)&v14 + 3;
+      v6 = v15 - 1;   /* vlna 122: asm `lea edi, var_120 / dec edi` - je to v15, ne &v14 */
       do
         ++v6;
       while ( *v6 );
@@ -9066,7 +9092,7 @@ LABEL_24:
         sprintf(v16, "\r%s%iMC", &unk_1AD454, *(int16_t *)(v8 + 1444));
       else
         sprintf(v16, "\r%s%iBC", &unk_1AD454, *(int16_t *)(v8 + 1444));
-      v9 = (char *)&v14 + 3;
+      v9 = v15 - 1;   /* vlna 122: asm `lea edi, var_120 / dec edi` - je to v15, ne &v14 */
       do
         ++v9;
       while ( *v9 );
@@ -9076,7 +9102,7 @@ LABEL_24:
       break;
     if ( *(_WORD *)((uint8_t*)dword_197F98 + 3753 * *(int16_t *)(v14 + 2) + 2 * word_19999C + 1599) )
     {
-      v12 = (char *)&v14 + 3;
+      v12 = v15 - 1;   /* vlna 122: asm `lea edi, var_120 / dec edi` - je to v15, ne &v14 */
       do
         ++v12;
       while ( *v12 );
@@ -9107,7 +9133,7 @@ LABEL_54:
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10B49B je epilog funkce */
     }
   }
-  v10 = (char *)&v14 + 3;
+  v10 = v15 - 1;   /* vlna 122: asm `lea edi, var_120 / dec edi` - je to v15, ne &v14 */
   do
     ++v10;
   while ( *v10 );
@@ -9119,7 +9145,7 @@ LABEL_54:
     v11 = 10;
 LABEL_48:
   sub_24E08(v16, v11, 64);
-  v13 = (char *)&v14 + 3;
+  v13 = v15 - 1;   /* vlna 122: asm `lea edi, var_120 / dec edi` - je to v15, ne &v14 */
   do
     ++v13;
   while ( *v13 );
@@ -9167,6 +9193,11 @@ int sub_10C4E9(
   int v18; // eax
   _WORD *v20; // [esp+0h] [ebp-8h]
 
+  /* PORT (vlna 122): dalsi spillnuty registrovy argument - asm ma
+     `enter 4, 0` + `push eax`, takze var_8 je prvni registrovy argument.
+     `mov ebx, [ebp+var_8] / mov [ebx], ax` = zapis navratove hodnoty pres
+     nej. IDA nechala `v20` neinicializovanou a zapis do ni hru shodil. */
+  v20 = (_WORD *)(intptr_t)a1;
   sub_11C2F0();
   v9 = sub_126B42((int)aRacesLbx, 9, dword_192ED4);
   *v20 = (uint16_t)sub_1151B0(535, 433, (int)&byte_17A356, v9, (_BYTE *)&off_17A37E + 2, 40);
@@ -9229,9 +9260,9 @@ void sub_10C670(int a1, int a2)
       v3 = 2 * v7;
       v6 = word_18406F[v3];
       v4 = word_184071[v3];
-      sub_115383(v6, v4, (int)&byte_17A356, *(_WORD **)(a1 + 72), v5, 1, &byte_17A356, 41);
-      sub_115383(v6 + 76, v4, (int)&byte_17A356, *(_WORD **)(a1 + 76), v5, 2, &byte_17A356, 41);
-      sub_115383(v6 + 149, v4, (int)&byte_17A356, *(_WORD **)(a1 + 80), v5, 3, &byte_17A356, 41);
+      sub_115383(v6, v4, (int)&byte_17A356, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 72), v5, 1, &byte_17A356, 41);
+      sub_115383(v6 + 76, v4, (int)&byte_17A356, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 76), v5, 2, &byte_17A356, 41);
+      sub_115383(v6 + 149, v4, (int)&byte_17A356, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 80), v5, 3, &byte_17A356, 41);
       *(_WORD *)(a1 + 54) = sub_11438B(
                               word_184053[v3],
                               word_184055[v3] - 6,

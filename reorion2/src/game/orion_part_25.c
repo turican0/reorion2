@@ -632,8 +632,8 @@ int sub_164920(int a1)
   int v13; // ecx
   int result; // eax
 
-  v2 = *(char **)(a1 + 2);
-  v3 = *(char **)(a1 + 6);
+  v2 = (char *)(intptr_t)*(uint32_t *)(a1 + 2);
+  v3 = (char *)(intptr_t)*(uint32_t *)(a1 + 6);
   v4 = *(uint16_t *)(a1 + 10);
   if ( *(_WORD *)(a1 + 10) )
   {

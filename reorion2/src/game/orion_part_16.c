@@ -1402,7 +1402,7 @@ int sub_F6FD9(int a1)
       return 0;
     if ( *(_DWORD *)(a1 + 13) + *(_DWORD *)(a1 + 5) == *(_DWORD *)(a1 + 9) )
       return -1;
-    v3 = *(uint8_t **)(a1 + 9);
+    v3 = (uint8_t *)(intptr_t)*(uint32_t *)(a1 + 9);
     v1 = *v3;
     *(_DWORD *)(a1 + 9) = v3 + 1;
   }

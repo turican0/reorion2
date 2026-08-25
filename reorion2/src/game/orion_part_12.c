@@ -1821,7 +1821,8 @@ LABEL_33:
   sub_BDA57();
   strcpy(v10, sub_B2FFA(v0));
   sub_120CCB(1, (int)&unk_182C2E);
-  sub_10315D((int)v10, 2);
+  /* vlna 122: asm 0xBDE4A - eax=20Ah, edx=26h, ebx=70h, ecx=8Dh */
+  sub_10315D(522, 38, 112, 141, (int)v10, 2);
   if ( *(_BYTE *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 297) )
   {
     sub_120CCB(1, (int)&unk_182C26);
@@ -6540,8 +6541,10 @@ int sub_C3CFB()
 
 //----- (000C3D34) --------------------------------------------------------
 
+int g_sonda122;   /* DOCASNA SONDA (vlna 122) */
 void sub_C3D34( int a1)
 {
+  ++g_sonda122;
   int v1; // edx
   int v2; // eax
   int16_t v3; // dx
@@ -6630,6 +6633,7 @@ void sub_C3D34( int a1)
          samo o sobe by nestacilo. Tohle je jeden z peti pripadu, ktere davkova
          zmena z vlny 79 oznacila jako "pokracuje jinam". */
       sub_12B65C();
+      --g_sonda122;
       return;
     }
   }
@@ -7682,7 +7686,8 @@ int sub_C5426( int a1, int a2)
     sub_BB04E(4u);
   }
   v3 = sub_77B28(*(_WORD *)((uint8_t*)dword_192B18 + 361 * a1 + 2));
-  sub_10315D((int)v3, 0);
+  /* vlna 122: asm 0xC54BC - eax=0Fh, edx=26h*radek+36h, ebx=82h, ecx=1Ch */
+  sub_10315D(15, 38 * (int16_t)a2 + 54, 130, 28, (int)v3, 0);
   return sub_C53C9(a2);
 }
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
