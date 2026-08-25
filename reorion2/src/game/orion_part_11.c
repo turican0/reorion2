@@ -2768,7 +2768,8 @@ void sub_B3CF7()
     v1 = (char *)sub_CDF5C(210);
     v2 = sprintf(v4, v1, v3);
     sub_120CCB(3, SHIDWORD(v2));
-    sub_1031C6(0, 0, 0, 0, (int)v4, 2); // vlna 61: registrove argumenty zatim nedohledane
+    /* vlna 122: asm sub_B3CF7 - eax=0EBh, edx=135h, ebx=0C2h, ecx=11h */
+    sub_1031C6(235, 309, 194, 17, (int)v4, 2);
     if ( byte_199F19 == 20 || word_19DEA6 == 20 )
     {
       sub_12B79D(dword_19DD98[0]);

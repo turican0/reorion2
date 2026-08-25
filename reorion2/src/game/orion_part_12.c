@@ -4445,7 +4445,10 @@ void sub_C132A( int a1, int a2)
     v6 = 395;
   }
   v8 = sub_CDF5C(v6);
-  sub_1031C6(0, 0, 0, 0, v8, 2); // vlna 61: registrove argumenty zatim nedohledane
+  /* vlna 122 TODO: asm loc_C141E ma eax=movsx cx, edx=movsx bx, ebx=37h, ecx=38h,
+     ale ktere C promenne odpovidaji ecx/ebx v tomhle miste, jeste dohledane neni.
+     Sirka 0 znamena, ze se text nekresli vubec. */
+  sub_1031C6(0, 0, 55, 56, v8, 2);
 LABEL_8:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC1875 je epilog funkce */
 }
@@ -6541,10 +6544,8 @@ int sub_C3CFB()
 
 //----- (000C3D34) --------------------------------------------------------
 
-int g_sonda122;   /* DOCASNA SONDA (vlna 122) */
 void sub_C3D34( int a1)
 {
-  ++g_sonda122;
   int v1; // edx
   int v2; // eax
   int16_t v3; // dx
@@ -6633,7 +6634,6 @@ void sub_C3D34( int a1)
          samo o sobe by nestacilo. Tohle je jeden z peti pripadu, ktere davkova
          zmena z vlny 79 oznacila jako "pokracuje jinam". */
       sub_12B65C();
-      --g_sonda122;
       return;
     }
   }

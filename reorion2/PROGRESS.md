@@ -12513,3 +12513,114 @@ Postup na COLONIES: 8389 px (uplne prazdna) -> tuhla -> 4408 -> 4338 -> **3913**
 4. **Dalsi `_UNKNOWN` symboly v `orion_data.c`** - rampa `unk_182C2E` byla
    jednobajtova a stala celou obrazovku. Stejny vzorec muze byt i jinde;
    `grep -c "^_UNKNOWN" src/game/orion_data.c` jich hlasi **383**.
+
+### Vlna 122: RACES a INFO uz nepadaji + hromadna oprava barevnych ramp
+
+Zadani: opravit pady na RACES a INFO a zmensit i ostatni rozdily.
+
+#### 1. RACES - dva ztracene spillnute registrove argumenty
+
+* **`sub_10BFBD`** (`orion_part_17.c`): asm ma `enter 120h, 0` a hned za nim
+  `push eax`, tedy registrovy argument SPILLNUTY do `var_124` - a to je
+  `v14`. IDA to zahodila (`variable 'a1' is possibly undefined`) a `v14` se
+  cetla neinicializovana uz na prvnim radku smycky (`*(_BYTE *)(v14 + 10)`).
+  Slot se pouziva jako ukazatel na zaznam rasy a posouva se o 84 B.
+* Tataz funkce mela **petkrat `(char *)&v14 + 3`** - skladani retezce pres
+  sousedni lokalku. Asm je `lea edi, [ebp+0D6h+var_120] / dec edi`, tedy
+  `v15 - 1`, ne `&v14`. (Backlog "91 mist" - tohle je prvnich pet.)
+* **`sub_10C4E9`**: dalsi `enter 4, 0` + `push eax`; `mov ebx, [ebp+var_8] /
+  mov [ebx], ax` zapisuje navratovou hodnotu pres nej. IDA nechala `v20`
+  neinicializovanou a zapis do ni hru shodil.
+
+#### 2. INFO - pole 26 handlu rozsekane na ctyri lokalky
+
+`sub_106CAC` ma v originale na `var_5E` **jedno pole 26 ctyrbajtovych handlu
+LBX obrazku**, ktere plni smycka `(&v24)[v3] = v2` pro v3 = 1..25. IDA ho
+rozsekala na `v24` (`_DWORD *`), `v25`, `v26` a `v27[23]` (1+1+1+23 = 26).
+V portu to znamenalo dvoji chybu naraz: zapisy sly mimo `v24` (samostatna
+lokalka) a jeste **s krokem 8 B misto 4 B**, protoze `v24` mela typ ukazatele.
+`sub_107214` pak cetla `*(uint32_t *)(a1 + 92)` = prvek 20, tedy nulu.
+Opraveno na jedno pole `uint32_t v24[26]` s makry `v25/v26/v27`.
+
+#### 3. INFO - `off_183B77` a `off_183BCB` nebyly ukazatele, ale TABULKY
+
+Asm: `off_17BB77 dd offset unk_17BB46` a **dalsich sest** `dd offset ...`.
+V portu byl jen jeden ukazatel (`_UNKNOWN *off_183B77 = &unk_183B46;`) a jeho
+cil `unk_183B46` byl v `link_stubs.c` jako `int` (4 nulove bajty).
+`sub_107214` je pritom indexuje `(char *)&off_183B77 + 4*i`, takze uz prvek 1
+cetl mimo a `sub_10A064` sahala na adresu 0. Doplneno vsech 7 + 7 cilovych
+sedmibajtovych prevodnich tabulek a k tomu ctyri rampy z tehoz bloku.
+
+#### 4. Sirka ukazatele u argumentu funkce - 23 mist
+
+Vlna 97 vycistila tvar `*(T **)(dword_X + N)` (globalni baze), ale
+**parametrove baze** (`*(T **)(a1 + N)`) nikdo neprosel. Asm cte ta pole
+32bitove (`mov ebx, [esi+5Ch]`), port 64bitove. Opraveno 23 mist v sesti
+souborech na `(T *)(intptr_t)*(uint32_t *)(...)`; dve dalsi mista maji misto
+`aN` lokalku (`*(int16_t **)(v24 + v25)` v `sub_107214`).
+
+#### 5. NEJVETSI NALEZ: 19 dalsich barevnych ramp bylo po jednom bajtu
+
+Vlna 121 nasla sest ramp `unk_182Cxx`. Ukazalo se, ze je to cela trida:
+posbirat vsechny symboly, ktere jdou jako druhy argument do
+`sub_120BB5/120CCB/120D05/120D79/120940/120705` (tedy jako rampa), dalo
+**31 symbolu, z toho 19 bylo `_UNKNOWN` = jeden nulovy bajt**. Kazdy text
+kresleny pres ne mel barvu 0.
+
+Obsah vytazen skriptem primo z `Debug/diss/Orion2.exe.asm` (C jmeno =
+asm + 0x8000, 8 bajtu za navestim). Overeno, ze u vsech 19 je k dalsimu
+symbolu v `orion_data.c` mezera >= 8 B, takze pole nikde nekoliduji.
+
+Recept pro pristi hledani stejne tridy:
+
+    grep -rhno 'sub_120\(BB5\|CCB\|D05\|D79\|940\|705\)([^;]*&\(unk\|byte\)_[0-9A-F]*' \
+      src/game/orion_part_*.c | grep -o '&[a-z]*_[0-9A-F]*' | sort -u
+
+#### 6. `sub_10315D` - ctyri ztracene registrove argumenty
+
+Stejny vzorec jako `sub_10323B` z vlny 121: port mel
+`sub_102FD8(0, 0, 0, 0, a1, a2, 0, 0, 0)`. Se sirkou 0 vyskoci `sub_10370A`
+hned na kontrole `a4 < 10`, takze text tise mizel (nazev planety na PLANETS).
+Doplneno na vsech trech volajicich mistech. Totez u ctyr z osmi volani
+`sub_1031C6` (RACES, INFO, dalsi dve obrazovky); u `sub_C132A` zustava TODO -
+z asm neni zrejme, ktere C promenne odpovidaji ecx/ebx.
+
+#### 7. POZOR - vlastni chyba pri uklidu sond (stalo to jeden beh)
+
+Regularni vyraz na odstraneni docasne sondy v `sub_106171` snedl **o radek
+vic** a odstranil `if ( *(_BYTE *)(dword_1ACF14 + 20) )` - branu "kreslit?".
+Merici pruchod (`sub_103CAF`) pak kreslil, a protoze mericí volani jde na
+souradnice (0,0), objevil se popis planety pres zahlavi tabulky. **Projevilo
+se to az po oprave ramp** - dokud byla rampa nulova, kreslilo se cerne na
+cerne a nebylo to videt. COLONIES kvuli tomu docasne spadly z 3913 na 5698 px.
+Ponauceni: sondy odstranovat radkove s kontrolou, ne regularnim vyrazem
+s poctem radku.
+
+#### 8. Stav (nejlepsi shoda ze vsech dvojic snimku, stejny sav)
+
+| zalozka | vlna 121 | ted | co zbyva |
+|---|---|---|---|
+| FLEETS | 266 px (0,09 %) | **266 px (0,09 %)** | prakticky hotovo |
+| COLONIES | 3913 px (1,27 %) | **3913 px (1,27 %)** | stredni a pravy spodni panel, "Trilar I" misto "Trilar III", "(8/0)" misto "(8/15)" |
+| PLANETS | 4358 px (1,42 %) | **4358 px (1,42 %)** | jen jeden radek misto dvou, sloupce pres sebe |
+| RACES | **pad** | **5597 px (1,82 %)** | chybi zelene "NO CONTACT" a "SPY/AGENT" |
+| LEADERS | 6650 px (2,16 %) | **6650 px (2,16 %)** | prazdny pohled na soustavu, paleta 188/768 |
+| INFO | **pad** | **112380 px (36,58 %)** | chybi seznam v zelenem panelu; tlacitka vlevo se kresli dvakrat |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene (a brana v `sub_106171` je zpatky).
+
+#### Dalsi krok
+
+1. **INFO** - dominuje zeleny panel: chybi cely seznam polozek
+   (Governmental, Planetary Systems, ...). Tlacitka vlevo se kresli dvakrat
+   (uzsi + sirsi) - stejny symptom jako sloupce na PLANETS, takze nejspis
+   jedna spolecna pricina.
+2. **RACES** - "NO CONTACT" se kresli jinou cestou nez opravene `sub_1031C6`;
+   najit ji (sonda na `sub_106171`/`sub_10370A` se zeleneho textu).
+3. **LEADERS** - paleta se lisi ve 188/768 slozkach, takze tam bude jeste
+   chyba v nahravani palety, ne jen v kresleni.
+4. Zbyva **359 `_UNKNOWN`** v `orion_data.c` (`grep -c "^_UNKNOWN"`).

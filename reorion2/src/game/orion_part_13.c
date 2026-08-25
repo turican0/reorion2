@@ -1361,7 +1361,10 @@ LABEL_15:
         v0 = (char *)sub_CDF5C(2);
         sprintf(v11, v0, v4, v5, v6, &v9);
 LABEL_14:
-        sub_1031C6(0, 0, 0, 0, (int)v11, 2); // vlna 61: registrove argumenty zatim nedohledane
+        /* vlna 122: asm sub_C76FA - eax=word_1A123A+0Eh, edx=word_1A123C+95h,
+           ebx=119h, ecx=3Eh */
+        sub_1031C6((int16_t)(word_1A123A + 14), (int16_t)(word_1A123C + 149),
+                   281, 62, (int)v11, 2);
         goto LABEL_15;
       case 1:
         v8 = (int16_t)sub_97A29(word_1831B0, word_1831C6);

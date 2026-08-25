@@ -4023,6 +4023,7 @@ void sub_106171()
       v4 = word_1B43A8[*(_BYTE *)(dword_1ACF10 + 4) & 0x7F] + v3;
       if ( v4 > word_1ACF1E )
         word_1ACF1E = v4;
+      if ( *(_BYTE *)(dword_1ACF14 + 20) )
       {
         if ( word_1B3E86 )
         {
@@ -8002,9 +8003,11 @@ LABEL_20:
     ServiceAudioTick_FE8BE(v28, 28, 76, (int16_t *)a3);
     sub_1297C3(71, 29, 74, 86, 1, (uint8_t)byte_1840BF[*(uint8_t *)(v27 + (uint8_t*)dword_197F98 + 38)]);
     sub_120BB5(3, (int)&unk_183F3A);
-    sub_1031C6(0, 0, 0, 0, dword_192BD8 + 1, 2); // vlna 61: registrove argumenty zatim nedohledane
+    /* vlna 122: asm 0x10AF0E - eax=2Ah, edx=87h, ebx=80h, ecx=1Ah */
+    sub_1031C6(42, 135, 128, 26, dword_192BD8 + 1, 2);
     sub_120BB5(4, (int)&unk_183F3A);
-    sub_1031C6(0, 0, 0, 0, (int)v36, 2); // vlna 61: registrove argumenty zatim nedohledane
+    /* vlna 122: asm 0x10AF2E - eax=18h, edx=0A7h, ebx=0A4h, ecx=2Ah */
+    sub_1031C6(24, 167, 164, 42, (int)v36, 2);
     if ( (_WORD)v48 )
     {
       sub_10CFD7((int)v45);
@@ -9118,7 +9121,9 @@ LABEL_51:
     if ( !strlen(v15) )
       strcpy(v15, (char *)dword_199150[0]);
     sub_120BB5(2, (int)&unk_1840A7);
-    a1 = sub_1031C6(0, 0, 0, 0, (int)v15, 2); // vlna 61: registrove argumenty zatim nedohledane
+    /* vlna 122: asm loc_10C405 - eax=var_10(=v19), edx=var_8(=v21), ebx=0B6h, ecx=2Bh.
+       Bez nich se s sirkou 0 nekreslilo nic - odtud chybejici "NO CONTACT" na RACES. */
+    a1 = sub_1031C6((int16_t)v19, (int16_t)v21, 182, 43, (int)v15, 2);
 LABEL_54:
     ++v20;
     v14 += 84;
