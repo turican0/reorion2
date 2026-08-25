@@ -6895,8 +6895,8 @@ extern int sub_1068F1();
 extern int sub_1069EE();
 // plna signatura: int16_t sub_106A6E();
 extern int16_t sub_106A6E();
-// plna signatura: void sub_106AF3();
-extern void sub_106AF3();
+// plna signatura: char sub_106AF3();
+extern char sub_106AF3();
 // plna signatura: void sub_106CAC( int a1);
 extern void sub_106CAC();
 // plna signatura: int sub_10709A(int *a1, int a2, int a3);
@@ -13815,7 +13815,7 @@ int16_t sub_10688C(int16_t result);
 int sub_1068F1();
 int sub_1069EE(int result, int a2);
 int16_t sub_106A6E();
-void sub_106AF3();
+char sub_106AF3();   /* vlna 121: vraci al, viz orion_part_17.c */
 // void sub_106CAC(int16_t a1);
 int sub_10709A(int *a1, int a2, int16_t a3);
 _DWORD *sub_107214(int a1, int a2, int a3, int a4);
@@ -17291,12 +17291,12 @@ extern int dword_182C05;
 extern int dword_182C0D;
 extern int16_t word_182C1D;
 extern int16_t word_182C1F;
-extern _UNKNOWN unk_182C26;
-extern _UNKNOWN unk_182C2E;
-extern _UNKNOWN unk_182C36;
-extern _UNKNOWN unk_182C3E;
-extern _UNKNOWN unk_182C46;
-extern _UNKNOWN unk_182C56;
+extern char unk_182C26[8];   /* vlna 121: barevna rampa textu, 8 B na polozku */
+extern char unk_182C2E[8];   /* vlna 121: barevna rampa textu, 8 B na polozku */
+extern char unk_182C36[8];   /* vlna 121: barevna rampa textu, 8 B na polozku */
+extern char unk_182C3E[8];   /* vlna 121: barevna rampa textu, 8 B na polozku */
+extern char unk_182C46[16];   /* vlna 121: barevna rampa textu, 8 B na polozku */
+extern char unk_182C56[64];   /* vlna 121: barevna rampa textu, 8 B na polozku */
 extern int dword_182C96;
 extern int16_t word_182C9A;
 extern int16_t word_182C9C[];

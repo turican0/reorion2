@@ -5980,12 +5980,6 @@ void sub_C3111( int a1_idx)
   }
   /* vlna 121: asm loc_C3305 - eax=0Ch, edx=31*radek+26h, ebx=viz vyse, ecx=17h.
      ecx vznika jako ((radek+1)*31 + 38) - (radek*31 + 38) - 8 = 23. */
-  /* DOCASNA SONDA (vlna 121) */
-  { static int _s; if (_s++ < 4) { char _b[400]; int _i=0; const unsigned char*_p=(const unsigned char*)v35;
-      while (_p[_i] && _i < 120) ++_i; int _o=0;
-      for (int _k=0;_k<_i && _o<380;++_k) _o+=sprintf(_b+_o, (_p[_k]>=32&&_p[_k]<127)?"%c":"<%02X>", _p[_k]);
-      _b[_o]=0;
-      PortDebug_CrashLog("C3111 radek=%d w=%d text=[%s]", (int)a1_idx, (int)v37_w, _b); } }
   sub_10323B(12, 31 * (int16_t)a1_idx + 38, v37_w, 23, (int)v35, 0);
   if ( byte_182ACA )
   {
@@ -6369,12 +6363,6 @@ void sub_C3996()
     else
       word_1A0494[i] = *(_WORD *)((uint8_t*)dword_192B18 + 361 * v1 + 300);
   }
-  /* DOCASNA SONDA (vlna 121) */
-  { static int _s; if (_s++ < 4) PortDebug_CrashLog(
-      "C3996 off=%d buf=%p b[0]=%d b[1]=%d 0534=[%d,%d,%d] 0494=[%d,%d,%d]", (int)word_18315A,
-      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0, (int)*(int16_t*)(dword_1A08B0+2),
-      (int)word_1A0534[0], (int)word_1A0534[1], (int)word_1A0534[2],
-      (int)word_1A0494[0], (int)word_1A0494[1], (int)word_1A0494[2]); }
   sub_11C2F0();
   sub_C683E();
   sub_BF52F();
@@ -6518,13 +6506,6 @@ void sub_C3B3C()
     sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, v0, a0_0);
     /* vlna 95: asm 0xC3CF1 - eax=00Dh, edx=162h, ebx=050h, ecx=058h.
        Tohle je popis kolonie pod portretem planety. */
-    /* DOCASNA SONDA (vlna 121) */
-    { static int _s; if (_s++ < 25) { char _b[400]; int _i=0; const unsigned char*_p=(const unsigned char*)v19;
-        while (_p[_i] && _i < 120) ++_i; int _o=0;
-        for (int _k=0;_k<_i && _o<380;++_k) _o+=sprintf(_b+_o, (_p[_k]>=32&&_p[_k]<127)?"%c":"<%02X>", _p[_k]);
-        _b[_o]=0;
-        PortDebug_CrashLog("C3B3C len=%d fmt=%p v12=%p v13=%p v14=%p v15=%p v16=%d v17=%d v0=%d text=[%s]",
-          _i, (void*)v10, (void*)v12, (void*)v13, (void*)v14, (void*)v15, v16, v17, (int)v0, _b); } }
     sub_1031AA(13, 354, 80, 88, (int)v19, 0);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC267E je epilog funkce */
@@ -6558,6 +6539,7 @@ int sub_C3CFB()
 
 
 //----- (000C3D34) --------------------------------------------------------
+
 void sub_C3D34( int a1)
 {
   int v1; // edx
@@ -7033,13 +7015,7 @@ void sub_C4562(int a1, int16_t *a2, int a3)
   sub_C2259();
   nullsub_8();
   sub_C58D1();
-  { PortDebug_CrashLog("C4562 %s buf=%p [0]=%d [1]=%d 183104=%d", "po-C58D1",
-      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0,
-      (int)*(int16_t*)(dword_1A08B0+2), (int)word_183104); }
   sub_C3947();
-  { PortDebug_CrashLog("C4562 %s buf=%p [0]=%d [1]=%d 183104=%d", "po-C3947",
-      (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0,
-      (int)*(int16_t*)(dword_1A08B0+2), (int)word_183104); }
   sub_C3996();
   if ( word_1A0546 == -1 )
   {
@@ -7884,9 +7860,6 @@ int sub_C58D1()
   int result; // eax
   int v5; // edx
 
-  /* DOCASNA SONDA (vlna 121) */
-  { static int _s; if (_s++ < 3) PortDebug_CrashLog("C58D1 planet=%d hrac=%d baze=%p",
-      (int)word_199996, (int)word_19999C, (void*)dword_192B18); }
   v0 = 0;
   for ( i = 0; i < word_199996; ++i )
   {
@@ -7897,7 +7870,6 @@ int sub_C58D1()
       *(_WORD *)(dword_1A08B0 + 2 * v3) = i;
     }
   }
-  { static int _s2; if (_s2++ < 3) PortDebug_CrashLog("C58D1 nalezeno=%d buf=%p [0]=%d [1]=%d", (int)(int16_t)v0, (void*)dword_1A08B0, (int)*(int16_t*)dword_1A08B0, (int)*(int16_t*)(dword_1A08B0+2)); }
   for ( result = v0; (int16_t)result < 250; ++result )
   {
     v5 = (int16_t)result;

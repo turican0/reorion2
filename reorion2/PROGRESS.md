@@ -12340,3 +12340,176 @@ Pozor: **`DUMPMEM` vypali pri PRVNIM zasahu EIP** a druhou podminku
 | bocni panel, spodni lista | shodne |
 | kurzor mysi (224 px) | artefakt srovnani, ne chyba |
 | **titulek dialogu (85 px)** | **jedina zbyvajici odchylka** |
+
+### Vlna 121: zalozky proti dosboxu - klikaci harness + pet chyb v kresleni textu
+
+Zadani: doladit zalozky COLONIES / PLANETS / FLEETS / LEADERS / RACES / INFO,
+aby se po nacteni hry kreslily stejne jako v dosboxu.
+
+#### 1. Nejdriv nastroj: dosbox neumel mys
+
+Vsechen obsah za hlavni obrazovkou je dostupny JEN mysi - klavesove zkratky na
+zalozky nevedou. Dosboxovy ctl protokol mel `SENDKEY`, ale nic pro mys, takze
+referencni strana se na ty obrazovky vubec nedostala.
+
+Pribylo (v `dosbox-x-remc2`):
+
+* `Mouse_CtlWarp(gx, gy)` v `src/ints/mouse.cpp` - zapisuje pozici primo do
+  stavu INT 33h. `Mouse_CursorMoved()` se pouzit neda, bere relativni pohyb
+  v mickey a nad nim jede jeste skalovani citlivosti, takze na pixel nesedi.
+* `SENDCLICK` v `src/engine/engine.cpp`:
+
+      SENDCLICK after=0x002A56F2 delay=24000000 x=275 y=258 hold=4000000 label=ACCEPT
+
+  Souradnice jsou v HERNICH pixelech 640x480 - stejna konvence jako
+  `REORION2_CLICK` v portu, aby sla obe strany ridit jednim seznamem bodu.
+  `hold=0` znamena jen presun kurzoru (hover).
+
+**`after=` + `delay=` je jedina prenositelna kotva.** Pri `cycles=auto` se
+absolutni cislo cyklu lisi beh od behu o desitky milionu (CONTINUE padl jednou
+na cyklus 121M, podruhe na 150M), takze `cond=cycle_ge:` na dlouhou cestu
+nefunguje. Odstup OD UDALOSTI uz stabilni je. Totez pribylo i k `SENDKEY`.
+
+**Past:** bez `SENDKEY cond=cycle_ge:40000000 key=esc` (a druheho na 90M) se
+intro dohraje cele a hlavni menu se v rozpoctu cyklu vubec neobjevi - `after=`
+se pak nikdy neodpali. Prvni dva pokusy vysly jen proto, ze klik naplanovany
+na absolutni cyklus intro sam preskocil.
+
+#### 2. A na portovni strane: dump snimku sam sebe rozbijel
+
+`REORION2_DUMP_FRAME_RANGE=1:5000` zapsalo 1,5 GB snimku z nacitani a ten
+diskovy provoz beh zpomalil natolik, ze skriptovane kliky (`REORION2_CLICK`
+v 45. a 55. sekunde) padly jeste do nacitaci faze a neudelaly nic. Vypadalo to
+jako "klikani nefunguje", pritom slo o merici artefakt.
+
+Pribylo `REORION2_DUMP_AFTER_MS=<ms>` (odlozi zacatek dumpu) a casova znacka
+v logovacim radku dumpu. Kalibrovano: dialog "Enter Home Star Name" je na
+obrazovce ve 40. sekunde, takze ACCEPT v 45 s a zalozka v 55 s projdou.
+
+Recept na jednu zalozku:
+
+    REORION2_SKIPINTRO=1 REORION2_SENDKEY=67:9000 \
+    REORION2_CLICK="275,258@45000:800;50,446@55000:800" \
+    REORION2_DUMP_AFTER_MS=65000 REORION2_DUMP_FRAME_RANGE=1:30 ./reorion2.exe
+
+Souradnice zalozek (y=446): COLONIES 50, PLANETS 122, FLEETS 196, LEADERS 345,
+RACES 417, INFO 492.
+
+Novy nastroj `tools/compare/bestmatch.py <port_dir> <dosbox_dir> [--top N]`
+projde VSECHNY dvojice snimku a vrati nejlepsi shodu - obrazovky s animaci
+(panacci na COLONIES) maji na kazde strane jinou fazi a "posledni proti
+poslednimu" hlasi rozdil, ktery neni chyba.
+
+#### 3. Nalezene chyby
+
+**a) `sub_C4562` - seznam kolonii byl JEDEN BAJT** (`orion_part_12.c`)
+
+Asm ma `enter 200h, 0` a `var_200 = byte ptr -200h`, tedy 0x200-0xC = 500 B
+(250 polozek po 2 B) - presne tolik, kolik jich `sub_C58D1` plni. IDA z toho
+udelala `char v9;`. Sesterska `sub_C5934` mela `_BYTE v9[500]` spravne.
+
+**b) `sub_C386B` - NO-OP `JUMPOUT` v porovnavaci funkci** (`orion_part_12.c`)
+
+`loc_C36F0` = `def_C38AB` je jen spolecny epilog a sub_C386B do nej skace az
+PO `xor eax, eax`, tedy vzdy s navratovou hodnotou 0. Jako NO-OP vracela
+funkce smeti.
+
+**c) `sub_C3947` - `_WORD` misto `movsx`** (`orion_part_12.c`)
+
+Bublinkove trideni cetlo indexy pres `*(_WORD *)`, tedy BEZ znamenka. Prazdna
+polozka -1 prisla do porovnani jako 65535, projela kontrolou `a1 != -1`
+a sub_C386B pak cetla `361*65535` mimo pole. Trideni proto odsunulo jedinou
+kolonii na konec seznamu a **obrazovka COLONIES byla uplne prazdna**.
+Asm ma `movsx edx, word ptr [esi+eax+2]`.
+
+**d) `sub_10323B` - NO-OP `JUMPOUT` + ctyri ztracene registrove argumenty**
+(`orion_part_17.c`)
+
+`JUMPOUT(0x1031D3)` znamenal, ze KAZDY text kresleny pres tuhle obalku mizel.
+`loc_1031D3` je spolecny ocas `sub_1031C6`; sub_10323B do nej skace po
+`push 1 / push 1` (a8=1, a9=1; sub_1031C6 tam jde s 0/1). IDA navic zahodila
+registrove argumenty (eax=x, edx=y, ebx=sirka, ecx=vyska) - v hlavicce zbyly
+jen dva zasobnikove. Doplneno na vsech peti volajicich mistech, hodnoty
+odecteny z asm (napr. `sub_C3111`: x=12, y=31*radek+38, sirka 89 nebo 87 podle
+vetve, vyska 23).
+
+**e) `sub_102FD8` - prohozena SIRKA a RETEZEC** (`orion_part_17.c`)
+
+`sub_103BE2` bere a3 = sirka (ebx) a a4 = retezec (ecx) - stejne jako merici
+dvojce `sub_103CAF`, ktera to uz mela spravne. sub_102FD8 je predavala
+obracene, takze `sub_103D53` dostala do kontroly `a3 < 10 || a3 > 640`
+ukazatel na retezec, **vyskocila hned na zacatku a nic nenakreslila** - tise,
+bez padu. POZOR: druha vetev (`sub_10370A`) ma poradi OPACNE (a3=ecx=retezec,
+a4=ebx=sirka), to neni preklep.
+
+**f) `sub_1043B0` - predaval se UKAZATEL misto ZNAKU** (`orion_part_17.c`)
+
+Asm ma `movzx eax, dl`, tedy jen dolni bajt. V portu se predavalo cele `v3`,
+coz je ukazatel, kteremu se o radek vys prepsal jen dolni bajt
+(`LOBYTE(v3) = *(_BYTE *)v3`). sub_1043B0 ho videla jako >= 0x17, spadla do
+`default: return a2` a nikdy nevratila 1. Dusledek: **koncova nula retezce se
+nezpracovala jako konec** a merici smycka `sub_103F5D` bezela dal pres pamet
+za retezcem - nekonecne. Tim tuhla cela obrazovka COLONIES, jakmile na ni byl
+radek. Zmereno sondou, ktera logovala prvnich 40 pruchodu smycky: po devati
+znacich "Trilar_ I" prisel `znak=00` a smycka pokracovala.
+
+**g) `sub_106AF3` - zahozena navratova hodnota + NO-OP `JUMPOUT`**
+(`orion_part_17.c`)
+
+Vraci `al` (`mov al, 1` / `xor al, al` pred skokem na spolecny epilog
+`def_1050D5`). IDA ji udelala `void`, takze `sub_10494E` cetla
+neinicializovanou lokalku (`variable 'v2' is possibly undefined`) - test
+`test al, al` po `call sub_106AF3`. Viceradkovy text se pak neposunul na dalsi
+radek.
+
+**h) SEST BAREVNYCH RAMP TEXTU byla kazda JEDEN NULOVY BAJT** (`orion_data.c`)
+
+`_UNKNOWN unk_182C26/2E/36/3E/46/56;` - a `_UNKNOWN` je `char`. Pritom
+`sub_120BB5`/`sub_120CCB` z nich kopiruji **8 bajtu** do `byte_1B3E88`, odkud
+se po stinovem pruchodu obnovuje aktivni rampa `byte_1B3E7C`. Vysledek: kazdy
+text kresleny pres tuhle cestu mel barvu **0 = cernou na cernem podkladu**.
+
+Zmereno: sonda v `sub_106171` ukazala, ze glyfy VZNIKAJI na spravnych
+souradnicich (`x=13 y=354 znak=4D`), ale s `rampa=00 00 00 00 00 00 00 00`.
+Kontrola primo v zadnim bufferu ukazala 5786 neprazdnych pixelu v obdelniku
+panelu - text tam byl, jen cerny. Histogram dosboxu na tomtez miste ma
+632 pixelu indexu **253** a 149 indexu **245**, coz presne odpovida obsahu
+`unk_17AC2E` = `F5 FD FC 00 00 00 00 00` (0xF5=245, 0xFD=253, 0xFC=252).
+
+Obsah vsech sesti doplnen primo z obrazu hry (`cseg01:0017AC26` a dal,
+C jmeno = asm + 0x8000). `unk_182C46` ma 16 B (dve rampy), `unk_182C56` 64 B
+(osm ramp) - hranici dava az dalsi symbol `dword_182C96`.
+
+#### 4. Stav (nejlepsi shoda ze vsech dvojic snimku, stejny sav)
+
+| zalozka | rozdil | co zbyva |
+|---|---|---|
+| FLEETS | **266 px (0,09 %)** | prakticky hotovo |
+| COLONIES | **3913 px (1,27 %)** | levy spodni panel a popisek mapy uz sedi; zbyva stredni panel (panacci), pravy panel (Reserve/Income), jmeno "Trilar I" misto "Trilar III" a "Population (8/0)" misto "(8/15)" (`sub_E0B4F` vraci 0) |
+| PLANETS | 4358 px (1,42 %) | jen JEDEN radek misto dvou a vsechny sloupce se kresli pres sebe |
+| LEADERS | 6650 px (2,16 %) | prazdny (zeleny) pohled na soustavu, jmeno hvezdy "Orion" misto "Trilar", **paleta 188/768** |
+| RACES | - | **pad** ve `strcpy` z `sub_10BFBD` (`orion_part_17.c:9060`) <- `sub_10ACBA` |
+| INFO | - | **pad** (SEH v reorion2.exe, rva 0x490276) |
+
+Postup na COLONIES: 8389 px (uplne prazdna) -> tuhla -> 4408 -> 4338 -> **3913**.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+1. **RACES a INFO** - jsou to pady, tedy nejtvrdsi vada. Zasobnik u RACES je
+   znamy: `strcpy` <- `sub_10BFBD+0x5c1` <- `sub_10ACBA+0xcfe` <- `sub_1049B`.
+2. **PLANETS** - vsechny sloupce jednoho radku se kresli na TOTEZ y, takze
+   neposkakuje offset radku; a chybi druhy radek. Hledat stejnou tridu chyby
+   jako u seznamu kolonii (trideni/plneni seznamu).
+3. **COLONIES** - stredni panel (panacci, `sub_BC972`) a pravy panel
+   (Reserve/Income, kresli se pres `sub_103D53` na x=520 y=354 sirka 104).
+   Levy panel uz sedi, takze cesta textu je v poradku - hledat u techto dvou
+   zvlast.
+4. **Dalsi `_UNKNOWN` symboly v `orion_data.c`** - rampa `unk_182C2E` byla
+   jednobajtova a stala celou obrazovku. Stejny vzorec muze byt i jinde;
+   `grep -c "^_UNKNOWN" src/game/orion_data.c` jich hlasi **383**.

@@ -1485,11 +1485,6 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   _BYTE v18[1202]; // [esp+23A6h] [ebp-50Eh] BYREF
   _BYTE ctx103D53[CTX103D53_SIZE]; // vlna 96: v19..v38 jako souvisly blok
 
-  /* DOCASNA SONDA (vlna 121) */
-  { static int _s; if (_s++ < 12) PortDebug_CrashLog(
-      "103D53 a1=%u a2=%u a3=%d a4=%p a5=%d a6=%d a7=%d -> %s",
-      a1, a2, a3, (void*)(intptr_t)a4, a5, a6, a7,
-      (a3 < 10 || a3 > 640 || a1 >= 0x280u || a2 >= 0x1E0u || !a4) ? "VEN" : "kresli"); }
   if ( a3 < 10 || a3 > 640 || a1 >= 0x280u || a2 >= 0x1E0u || !a4 )
     return a4;
   v24 = 479;
@@ -1616,7 +1611,6 @@ int sub_103F5D(int a1)
   int16_t v11; // bx
   int v12; // edx
 
-  int _it = 0;   /* DOCASNA SONDA (vlna 121) */
   v1 = 0;
   dword_1ACF10 = dword_1ACEFC;
   do
@@ -1693,17 +1687,17 @@ LABEL_12:
       }
 LABEL_30:
       if ( (uint8_t)v3 < 0x20u )
-        v1 = sub_1043B0(v3, v3, v1, a1);
+        /* PORT (vlna 121): asm `movzx eax, dl` - predava se JEN ZNAK (dolni
+           bajt), nulou rozsireny. `v3` je pritom ukazatel na znak, kteremu se
+           o radek vys prepsal jen dolni bajt (`LOBYTE(v3) = *(_BYTE *)v3`),
+           takze cele `v3` je nekolikamilionove cislo. sub_1043B0 ho videla
+           jako >= 0x17, spadla do `default: return a2` a nikdy nevratila 1.
+           Dusledek: koncova nula retezce se nezpracovala jako konec a merici
+           smycka sub_103F5D bezela dal pres pamet za retezcem - nekonecne.
+           Tim tuhla cela obrazovka COLONIES, jakmile na ni byl radek. */
+        v1 = sub_1043B0((uint8_t)v3, v3, v1, a1);
       v12 = dword_1ACF08;
       ++*(_DWORD *)(dword_1ACF14 + 2);
-      /* DOCASNA SONDA (vlna 121) */
-      if ( ++_it > 4000 && _it < 4020 )
-        PortDebug_CrashLog("103F5D it=%d znak=%02X v6=%d cur=%d max=%d p6=%d p12=%d p19=%d p25=%d ptr=%p v1=%d",
-                           _it, (unsigned)(uint8_t)v3, (int)v6,
-                           (int)*(int16_t *)dword_1ACF08, (int)*(int16_t *)(dword_1ACF08 + 4),
-                           (int)*(int16_t *)(dword_1ACF08 + 6), (int)*(int16_t *)(dword_1ACF08 + 12),
-                           (int)*(uint8_t *)(dword_1ACF08 + 25), (int)*(uint8_t *)(dword_1ACF08 + 24),
-                           (void *)(intptr_t)*(_DWORD *)(dword_1ACF14 + 2), (int)v1);
     }
     while ( !*(_BYTE *)(v12 + 24) && !v1 );
   }
@@ -2356,7 +2350,7 @@ char sub_10494E( int a1)
   v1 = *(_WORD *)dword_1ACF14;
   for ( *(_WORD *)dword_1ACF14 += a1; ; ++*(_WORD *)dword_1ACF14 )
   {
-    sub_106AF3();
+    v2 = sub_106AF3();   /* vlna 121: asm `call sub_106AF3 / test al, al` */
     if ( v2 || *(_WORD *)dword_1ACF14 > *(_WORD *)(dword_1ACF14 + 25) )
       break;
   }
@@ -4373,7 +4367,12 @@ int16_t sub_106A6E()
 
 
 //----- (00106AF3) --------------------------------------------------------
-void sub_106AF3()
+/* PORT (vlna 121): funkce vraci `al` (asm: `mov al, 1` / `xor al, al` pred
+   skokem na spolecny epilog def_1050D5). IDA ji udelala `void` a JUMPOUT
+   nechala jako NO-OP, takze sub_10494E cetla neinicializovanou lokalku -
+   viceradkovy text (spodni panel COLONIES) se pak nikdy neposunul na dalsi
+   radek a nevykreslil se vubec. */
+char sub_106AF3()
 {
   int v0; // eax
   _WORD *v1; // ecx
@@ -4470,7 +4469,7 @@ void sub_106AF3()
     *(_WORD *)(dword_1ACF14 + 21) = v9[1];
     *(_WORD *)(v10 + 23) = v9[2];
   }
-  JUMPOUT(0x104385);
+  return v2 >= v3 ? 0 : 1;   /* asm loc_106C77: `xor al,al`, jinak `mov al,1` */
 }
 // 106C72: control flows out of bounds to 104385
 // 1849EE: using guessed type int16_t word_1849EE;

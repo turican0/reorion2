@@ -7799,12 +7799,27 @@ int dword_182C05 = 0; // weak
 int dword_182C0D = 0; // weak
 int16_t word_182C1D = -1; // weak
 int16_t word_182C1F = -1; // weak
-_UNKNOWN unk_182C26; // weak
-_UNKNOWN unk_182C2E; // weak
-_UNKNOWN unk_182C36; // weak
-_UNKNOWN unk_182C3E; // weak
-_UNKNOWN unk_182C46; // weak
-_UNKNOWN unk_182C56; // weak
+/* PORT (vlna 121): SEST BAREVNYCH RAMP TEXTU byla kazda jen JEDEN nulovy bajt.
+   `sub_120BB5`/`sub_120CCB` z nich kopiruji 8 B do `byte_1B3E88` (a odtud se
+   po stinovem pruchodu obnovuje `byte_1B3E7C`), takze VSECHEN text kresleny
+   pres ne mel barvu 0 = cernou na cernem podkladu - "prazdne" spodni panely
+   na COLONIES. Obsah je primo z obrazu hry (Orion2.exe.asm, cseg01:0017AC26
+   a dal; C jmeno = asm + 0x8000). Kazda rampa ma 8 polozek, unk_182C46 dve
+   a unk_182C56 osm - hranice dava az dalsi symbol dword_182C96. */
+char unk_182C26[8] = { 0xE4, 0xE5, 0xE5, 0, 0, 0, 0, 0 };
+char unk_182C2E[8] = { 0xF5, 0xFD, 0xFC, 0, 0, 0, 0, 0 };
+char unk_182C36[8] = { 0xF4, 0xF9, 0xF8, 0, 0, 0, 0, 0 };
+char unk_182C3E[8] = { 0xF4, 0x85, 0x84, 0, 0, 0, 0, 0 };
+char unk_182C46[16] = { 0xEC, 0xEE, 0xED, 0, 0, 0, 0, 0,
+  0xEC, 0xEF, 0xEE, 0, 0, 0, 0, 0 };
+char unk_182C56[64] = { 0xEC, 0xEE, 0xED, 0, 0, 0, 0, 0,
+  0xB7, 0xBB, 0xB9, 0, 0, 0, 0, 0,
+  0xE8, 0xEA, 0xE9, 0, 0, 0, 0, 0,
+  0x53, 0x66, 0x64, 0, 0, 0, 0, 0,
+  0xF5, 0xFB, 0xF9, 0, 0, 0, 0, 0,
+  0x9A, 0x9C, 0x9B, 0, 0, 0, 0, 0,
+  0xF0, 0xF2, 0xF1, 0, 0, 0, 0, 0,
+  0x9A, 0x9C, 0x9B, 0, 0, 0, 0, 0 };
 int dword_182C96 = -1; // weak
 int16_t word_182C9A = -1; // weak
 int16_t word_182C9C[] = { 316 }; // weak
