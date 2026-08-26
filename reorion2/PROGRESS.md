@@ -12624,3 +12624,113 @@ s poctem radku.
 3. **LEADERS** - paleta se lisi ve 188/768 slozkach, takze tam bude jeste
    chyba v nahravani palety, ne jen v kresleni.
 4. Zbyva **359 `_UNKNOWN`** v `orion_data.c` (`grep -c "^_UNKNOWN"`).
+
+### Vlna 123: INFO ze 36,6 % na 4,3 %; paleta na LEADERS je nasledek, ne pricina
+
+#### 1. INFO - seznam v zelenem panelu chybel kvuli int64 fuzi u `sprintf`
+
+`sub_1093CD` kresli polozky pres `sub_1212B3(221, SWORD2(v8), (int)v7)`, kde
+`v8` je navratova hodnota `sprintf`. Asm ma ale `movsx edx, word ptr
+[ebp+82h+var_C]` **jeste PRED `call sprintf_`** - y se bere z `var_C` (=v31)
+pred jeho zvysenim o 20. IDA to spojila do int64 navratu a nechala `SWORD2(v8)`.
+Text se proto kreslil na nesmyslne y a **oba sloupce seznamu byly prazdne**.
+Totez v druhem sloupci (`var_10` = v30).
+
+#### 2. INFO - dalsi pad: skladani retezce pres sousedni lokalku
+
+`sub_10988E` ma `v0 = &v27; do ++v0; while (*v0); strcpy(v0, ...)`, pricemz
+`v27` je osamocena `char` a buffer zacina az o bajt dal (`v28`, ebp-6).
+Opraveno na `v0 = v28 - 1`.
+
+#### 3. INFO - `sub_109331` a spol. mely dalsi ztracene argumenty
+
+* `sub_109331` ma v asm `mov esi, eax / mov edi, edx` a oba predava dal
+  (`movsx edx, di / mov eax, esi`) - druhy registrovy argument IDA zahodila.
+* `sub_1093CD`: `enter 6C4h, 0` + `push edx` - `var_6C8` (= `v20`) je
+  SPILLNUTY druhy argument (`variable 'v20' is possibly undefined`). Vstupni
+  smycka pak porovnavala `v16 >= v20` proti smetim, vybrala si nahodnou
+  polozku a `dword_192C08[word_1AD1F8]` ukazovalo na nulu -> pad ve `strcpy`.
+* `sub_10988E`: `enter 2680h, 0` + `push eax` - `var_2684` (= `v25`).
+
+#### 4. INFO - NEJVETSI KUS: `unk_183CFC` byla tabulka CTYR zaznamu po 17 B
+
+`sub_1093CD` prochazi `while (v0 < word_183D40) { sub_109E01(v0); v0 += 17; }`
+a `sub_109E01` z kazdeho zaznamu kresli ramecek pres `sub_129130` s barvami
+z offsetu 8..16. V portu byla `unk_183CFC` **jeden nulovy bajt**, takze se
+neprekreslilo nic a zeleny panel zustal v odstinu z `sub_129130`
+(178/179/179) misto spravneho 179/177/177.
+
+Doplneny tri takove tabulky: `unk_183CFC` (4 zaznamy, 68 B), `unk_183D73`
+(2 zaznamy, 34 B) a `word_183D62` (mel 16 B misto 17).
+
+**Pozor na tvar smycky:** hranice je v originale ADRESA nasledujiciho symbolu
+(`v0 < word_183D40`), coz v C neplati - pole jsou samostatne objekty. Vsechny
+tri smycky prepsany na `(char *)v < tabulka + sizeof(tabulka)`.
+
+Dalsi kus stejne tridy: `sub_103990` a jeho **sest dvojcat** (sub_1039B9/C8/
+EE/FD, sub_103A0C, sub_103A1B). Spolecny ocas `loc_10399D` kopiruje
+`movsd/movsd/movsw` = DESET bajtu stylu okna; IDA z toho udelala tri
+jednobajtova prirazeni a ze vsech sesti dvojcat NO-OP JUMPOUTy.
+
+#### 5. `sub_10315D` - ctyri ztracene registrove argumenty
+
+Stejny vzorec jako `sub_10323B` z vlny 121: port mel
+`sub_102FD8(0, 0, 0, 0, a1, a2, 0, 0, 0)`. Se sirkou 0 vyskoci `sub_10370A`
+hned na kontrole `a4 < 10`. Doplneno na vsech trech volajicich mistech.
+Ctyri z osmi volani `sub_1031C6` doplnena taktez; u `sub_C132A` zustava TODO
+(ecx i ebx tam vychazi na `a1`, takze se nekde uprostred funkce prepisuji -
+zkusmo dosazena sirka kreslila do leveho horniho rohu, tedy hur nez nic).
+
+#### 6. LEADERS: paleta NENI samostatna chyba
+
+Merenim se ukazalo, ze indexy **192..255** ma port `(0,63,0)` (zelena),
+dosbox skutecne barvy portretu. Vystopovano:
+
+* `sub_1205E6(8, 0, 255)` (z `sub_93BB0`) nacita FONTS.LBX zaznam 9 - a ten
+  **v souboru opravdu ma na indexu 192 `01 00 3F 00`**, tedy zelenou.
+  Overeno ctenim souboru primo (`off=149657`, `[192] = 01 00 3F 00`), takze
+  port cte spravne. Soubory `*.LBX` v `x64/Debug` a `mastori2` jsou shodne.
+* Skutecnou paletu 192..255 instaluje az `sub_12AE00`, kterou vola
+  `sub_12A478`, kdyz ma sprite priznak `*(a3+11) & 0x10` - tedy **vlastni
+  paletu nese az obrazek portretu vudce**.
+* Portrety v portu chybi (prazdne sloty okenni tabulky, fronta z vlny 24),
+  takze se paleta nikdy nenainstaluje.
+
+**Zaver: paletu na LEADERS neni potreba resit zvlast - spravi se s portrety.**
+
+#### 7. Poznamka k mericimu nastroji
+
+`tools/compare/bestmatch.py` chvili filtroval referencni snimky podle shody
+palety; u LEADERS to vybralo snimky JESTE PRED prekreslenim obrazovky a
+hlasilo 81 %. Vraceno zpet na porovnani vsech dvojic - **nenulova neshoda
+palety ve vysledku znamena jen to, ze vybrany referencni snimek je uprostred
+fadu, ne nutne chybu portu**.
+
+#### 8. Stav
+
+| zalozka | vlna 122 | ted |
+|---|---|---|
+| FLEETS | 266 px (0,09 %) | **266 px (0,09 %)** |
+| COLONIES | 3913 px (1,27 %) | **4055 px (1,32 %)** (rozdil je faze animace panacku) |
+| PLANETS | 4358 px (1,42 %) | **4358 px (1,42 %)** |
+| RACES | 5597 px (1,82 %) | **5597 px (1,82 %)** |
+| LEADERS | 6650 px (2,16 %) | **6650 px (2,16 %)** |
+| INFO | 112380 px (36,58 %) | **13209 px (4,30 %)** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+1. **LEADERS portrety** = fronta z vlny 24 (prazdne sloty `off_184480 +
+   55*i + 44`). Spravi zaroven paletu 192..255.
+2. **INFO** - zbyva 13 tis. px: tlacitka vlevo se kresli dvakrat (uzsi +
+   sirsi) a prvni sloupec seznamu je o par pixelu vlevo. Dvojite tlacitko je
+   stejny symptom jako sloupce na PLANETS.
+3. **RACES** - chybi zelene "NO CONTACT" a "SPY/AGENT".
+4. **Obcasne tuhnuti** portu na obrazovkach s textem (RACES se povede az na
+   druhy pokus). Zasobnik vede do `sub_103F5D`; hlidac `REORION2_WATCHDOG=8`
+   ho chyti.

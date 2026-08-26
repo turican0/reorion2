@@ -1152,20 +1152,29 @@ int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 
 
 //----- (00103990) --------------------------------------------------------
-int sub_103990()
+/* PORT (vlna 123): spolecny ocas `loc_10399D` - `mov edx, 3 / movsd / movsd /
+   movsw`, tedy kopie DESETI bajtu stylu okna, pak `sub_1196F7` a
+   `sub_1196B8(&unk_1836A0, 3)`. IDA z toho udelala tri jednobajtova prirazeni
+   a ze SESTI dvojcat (sub_1039B9/C8/EE/FD, sub_103A0C, sub_103A1B) NO-OP
+   JUMPOUTy - styl okna se proto nikdy neprepnul a zeleny panel na obrazovce
+   INFO mel jiny odstin nez v originale. */
+static int styl_10399D(const char *src)
 {
-  unk_1836B4 = unk_1836C8;
-  unk_1836B8 = unk_1836CC;
-  unk_1836BC = unk_1836D0;
+  memcpy(unk_1836B4, src, 10);
   sub_1196F7();
   return sub_1196B8((int)&unk_1836A0, 3);
+}
+
+int sub_103990()
+{
+  return styl_10399D(unk_1836C8);
 }
 
 
 //----- (001039B9) --------------------------------------------------------
 void sub_1039B9()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_1836D2);   /* vlna 123: asm `mov esi, offset unk_1836D2` */
 }
 // 1039C6: control flows out of bounds to 10399D
 
@@ -1173,7 +1182,7 @@ void sub_1039B9()
 //----- (001039C8) --------------------------------------------------------
 void sub_1039C8()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_1836DC);   /* vlna 123: asm `mov esi, offset unk_1836DC` */
 }
 // 1039D5: control flows out of bounds to 10399D
 
@@ -1189,7 +1198,7 @@ int sub_1039D7()
 //----- (001039EE) --------------------------------------------------------
 void sub_1039EE()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_1836E6);   /* vlna 123: asm `mov esi, offset unk_1836E6` */
 }
 // 1039FB: control flows out of bounds to 10399D
 
@@ -1197,7 +1206,7 @@ void sub_1039EE()
 //----- (001039FD) --------------------------------------------------------
 void sub_1039FD()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_1836FA);   /* vlna 123: asm `mov esi, offset unk_1836FA` */
 }
 // 103A0A: control flows out of bounds to 10399D
 
@@ -1205,7 +1214,7 @@ void sub_1039FD()
 //----- (00103A0C) --------------------------------------------------------
 void sub_103A0C()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_183704);   /* vlna 123: asm `mov esi, offset unk_183704` */
 }
 // 103A19: control flows out of bounds to 10399D
 
@@ -1213,7 +1222,7 @@ void sub_103A0C()
 //----- (00103A1B) --------------------------------------------------------
 void sub_103A1B()
 {
-  JUMPOUT(0x10399D);
+  styl_10399D(unk_18370E);   /* vlna 123: asm `mov esi, offset unk_18370E` */
 }
 // 103A28: control flows out of bounds to 10399D
 
@@ -4646,7 +4655,7 @@ void sub_106CAC( int a1)
         goto LABEL_17;
       case 4:
         v18 = (int16_t)v17;
-        sub_109331((int)(intptr_t)v24);
+        sub_109331((int)(intptr_t)v24, (int16_t)v17);   /* vlna 123: druhy argument */
 LABEL_17:
         a1 = v20;
         break;
@@ -6665,7 +6674,10 @@ void sub_1092BD()
 
 
 //----- (00109331) --------------------------------------------------------
-void sub_109331(int a1)
+/* PORT (vlna 123): asm `mov esi, eax / mov edi, edx` - funkce ma DVA registrove
+   argumenty a oba predava dal (`movsx edx, di / mov eax, esi`). IDA druhy
+   zahodila. */
+void sub_109331(int a1, int a2)
 {
   char v2[40]; // [esp+0h] [ebp-28h] BYREF
 
@@ -6677,7 +6689,7 @@ void sub_109331(int a1)
     if ( (uint8_t)byte_1AD207 <= 1u )
     {
       sub_1039B9();
-      sub_10988E();
+      sub_10988E(a1);
     }
     else
     {
@@ -6690,7 +6702,7 @@ void sub_109331(int a1)
   else
   {
     sub_103990();
-    sub_1093CD();
+    sub_1093CD(a1, (int16_t)a2);
   }
   JUMPOUT(0x108023);
 }
@@ -6700,7 +6712,12 @@ void sub_109331(int a1)
 
 
 //----- (001093CD) --------------------------------------------------------
-void sub_1093CD()
+/* PORT (vlna 123): `enter 6C4h, 0` + `push edx` - var_6C8 (= v20) je SPILLNUTY
+   druhy registrovy argument. IDA ho zahodila (`variable 'v20' is possibly
+   undefined`) a vstupni smycka pak porovnavala `v16 >= v20` proti smetim:
+   misto ukonceni si vybrala nahodnou polozku a `dword_192C08[word_1AD1F8]`
+   ukazovalo na nulu -> pad ve `strcpy`. */
+void sub_1093CD(int a1, int a2)
 {
   int16_t *v0; // edx
   int v1; // ecx
@@ -6737,10 +6754,15 @@ void sub_1093CD()
   int v32; // [esp+6C0h] [ebp+7Ah]
   int v33; // [esp+6C4h] [ebp+7Eh]
 
-  v0 = (int16_t *)&unk_183CFC;
+  v20 = (int16_t)a2;
+  (void)a1;   /* eax se v teto funkci nepouziva (v asm se nespilluje) */
+  v0 = (int16_t *)unk_183CFC;
   dword_1ACFE0 = (int)v22;
   dword_1ACFE4 = (int)v21;
-  while ( v0 < word_183D40 )
+  /* PORT (vlna 123): v originale je hranice smycky ADRESA nasledujiciho
+     symbolu (`v0 < word_183D40`), coz v C neplati - pole jsou samostatne
+     objekty. Pocitame proto pres velikost tabulky: 68 B = ctyri zaznamy. */
+  while ( (char *)v0 < unk_183CFC + sizeof(unk_183CFC) )
   {
     sub_109E01(v0);
     v0 = (int16_t *)((char *)v0 + 17);
@@ -6771,9 +6793,15 @@ void sub_1093CD()
       v26 = (uint16_t)v27;
       v7 = &v22[3 * (uint16_t)v27];
       v1 = (int16_t)v6;
+      /* PORT (vlna 123): asm `movsx edx, word ptr [ebp+82h+var_C]` je JESTE PRED
+         `call sprintf_`, tedy y se bere z var_C (=v31) pred jeho zvysenim.
+         IDA to spojila do int64 navratu sprintf a nechala `SWORD2(v8)` - text
+         se pak kreslil na nesmyslne y a seznam v zelenem panelu na INFO byl
+         prazdny. */
+      int16_t y31 = (int16_t)v31;
       v8 = sprintf(v7, "^ %s", v19);
       v31 += 20;
-      sub_1212B3(221, SWORD2(v8), (int)v7);
+      sub_1212B3(221, y31, (int)v7);
       v2 = 411;
       v6 += 20;
       sub_11438B(221, v33, 411, v1, &unk_17A28B, 0);
@@ -6797,13 +6825,16 @@ void sub_1093CD()
   {
     v11 = (char *)sub_126BDD((int)v24, 15, (int)v25, (int16_t)v10++, 1u, 84);
     *((_DWORD *)&v22[48] + (uint16_t)v9) = *((_DWORD *)v11 + 20);
+    /* vlna 123: totez v druhem sloupci - `movsx edx, word ptr [var_10]` je pred
+       `add [var_10], 14h`, takze y je hodnota v30 PRED zvysenim. */
+    int16_t y30 = (int16_t)v30;
     v30 += 20;
     v12 = &v21[3 * (uint16_t)v9];
     v9 = (int16_t *)((char *)v9 + 1);
     v1 = (int16_t)v28;
     v13 = sprintf(v12, "^ %s", v11);
     v28 += 20;
-    sub_1212B3(421, SWORD2(v13), (int)v12);
+    sub_1212B3(421, y30, (int)v12);
     WORD2(v13) = v29;
     v2 = 611;
     v29 += 20;
@@ -6929,7 +6960,8 @@ void sub_109762(int a1)
   v8 = a1;
   v1 = word_183D40;
   sub_A6547(v10);
-  while ( v1 < word_183D62 )
+  /* vlna 123: totez - `word_183D40` ma 34 B, tedy dva zaznamy po 17 B. */
+  while ( (char *)v1 < (char *)word_183D40 + sizeof(word_183D40) )
   {
     sub_109E01(v1);
     v1 = (int16_t *)((char *)v1 + 17);
@@ -6976,7 +7008,9 @@ void sub_109762(int a1)
 
 
 //----- (0010988E) --------------------------------------------------------
-void sub_10988E()
+/* PORT (vlna 123): `enter 2680h, 0` + `push eax` - var_2684 (= v25) je
+   SPILLNUTY registrovy argument (`variable 'v25' is possibly undefined`). */
+void sub_10988E(int a1)
 {
   char *v0; // edi
   int v1; // eax
@@ -7018,9 +7052,13 @@ void sub_10988E()
   int j; // [esp+267Ch] [ebp+7Ah]
   char *v38; // [esp+2680h] [ebp+7Eh]
 
+  v25 = a1;
   sub_109E01(word_183D62);
   sub_249F9(aBilltextLbx, 12, v28, 80);
-  v0 = &v27;
+  /* PORT (vlna 123): skladani retezce pres sousedni lokalku - `v27` je jen
+     osamocena `char` a skutecny buffer zacina o bajt dal (`v28`, ebp-6).
+     asm: `lea edi, [ebp-6] / dec edi / inc edi / cmp byte [edi],0`. */
+  v0 = v28 - 1;
   do
     ++v0;
   while ( *v0 );
@@ -7075,18 +7113,19 @@ void sub_10988E()
     }
   }
   sub_10A0A7((int)&unk_183EE7, (int16_t)i, (int)v7);
-  v33 = sub_1151B0(386, 427, (int)&unk_17A28B, *(_WORD **)(v25 + 84), &unk_17A28B, 40);
-  v12 = (int16_t *)sub_1151B0(398, 96, (int)&unk_17A28B, *(_WORD **)(v25 + 56), asc_17A289, 40);
-  v13 = *(_WORD **)(v25 + 60);
+  v33 = sub_1151B0(386, 427, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(v25 + 84), &unk_17A28B, 40);
+  v12 = (int16_t *)sub_1151B0(398, 96, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(v25 + 56), asc_17A289, 40);
+  v13 = (_WORD *)(intptr_t)*(uint32_t *)(v25 + 60);
   v38 = sub_1151B0(398, 396, (int)&unk_17A28B, v13, asc_17A289, 40);
   sub_1191CA((int)sub_109D25, 2);
   byte_1AD207 = 0;
   v30 = byte_183D95;
   while ( 1 )
   {
-    v14 = (int16_t *)&unk_183D73;
+    v14 = (int16_t *)unk_183D73;
     v15 = v30;
-    while ( v14 < (int16_t *)v15 )
+    /* vlna 123: hranice byla adresa `byte_183D95`; tabulka ma 34 B = dva zaznamy. */
+    while ( (char *)v14 < unk_183D73 + sizeof(unk_183D73) )
     {
       sub_109E01(v14);
       v14 = (int16_t *)((char *)v14 + 17);

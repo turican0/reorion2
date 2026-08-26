@@ -6945,16 +6945,16 @@ extern int sub_108F81();
 extern void sub_108F98();
 // plna signatura: void sub_1092BD();
 extern void sub_1092BD();
-// plna signatura: void sub_109331(int a1);
-extern void sub_109331();
-// plna signatura: void sub_1093CD();
-extern void sub_1093CD();
+// plna signatura: void sub_109331(int a1, int a2);   /* vlna 123 */
+extern void sub_109331(int a1, int a2);
+// plna signatura: void sub_1093CD(int a1, int a2);   /* vlna 123 */
+extern void sub_1093CD(int a1, int a2);   /* vlna 123 */
 // plna signatura: void sub_1096D9();
 extern void sub_1096D9();
 // plna signatura: void sub_109762(int a1);
 extern void sub_109762();
-// plna signatura: void sub_10988E();
-extern void sub_10988E();
+// plna signatura: void sub_10988E(int a1);   /* vlna 123 */
+extern void sub_10988E(int a1);   /* vlna 123 */
 // plna signatura: void sub_109D25();
 extern void sub_109D25();
 // plna signatura: void sub_109DB5(int a1, int16_t *a2);
@@ -13843,11 +13843,11 @@ int sub_108F81(int a1, int16_t a2);
 int nullsub_18(_DWORD); // weak
 void sub_108F98(int a1, int a2);
 void sub_1092BD();
-void sub_109331(int a1);
-void sub_1093CD();
+void sub_109331(int a1, int a2);   /* vlna 123 */
+void sub_1093CD(int a1, int a2);   /* vlna 123 */
 void sub_1096D9();
 void sub_109762(int a1);
-void sub_10988E();
+void sub_10988E(int a1);   /* vlna 123 */
 void sub_109D25();
 // void sub_109DB5(int a1, int16_t *a2);
 int sub_109E01(int16_t *a1);
@@ -17402,14 +17402,16 @@ extern char byte_183609;
 extern char byte_18360A;
 extern int dword_18360C[30];
 extern char byte_183684[7];
-extern _UNKNOWN unk_1836A0;
-extern _UNKNOWN unk_1836B4;
-extern _UNKNOWN unk_1836B8;
-extern _UNKNOWN unk_1836BC;
-extern _UNKNOWN unk_1836C8;
-extern _UNKNOWN unk_1836CC;
-extern _UNKNOWN unk_1836D0;
-extern _UNKNOWN unk_1836F0;
+extern char unk_1836A0[20];   /* vlna 123 */
+extern char unk_1836B4[10];   /* vlna 123 */
+extern char unk_1836D2[10];
+extern char unk_1836DC[10];
+extern char unk_1836E6[10];
+extern char unk_1836FA[10];
+extern char unk_183704[10];
+extern char unk_18370E[10];
+extern char unk_1836C8[10];   /* vlna 123 */
+extern char unk_1836F0[10];   /* vlna 123 */
 extern _UNKNOWN unk_18386C;
 extern _UNKNOWN unk_18386E;
 extern char *off_183871[21];
@@ -17438,10 +17440,10 @@ extern _UNKNOWN unk_183C41;
 extern int16_t word_183C63[34];
 extern int16_t word_183CA7[34];
 extern int16_t word_183CEB[8];
-extern _UNKNOWN unk_183CFC;
+extern char unk_183CFC[68];   /* vlna 123 */
 extern int16_t word_183D40[17];
-extern int16_t word_183D62[8];
-extern _UNKNOWN unk_183D73;
+extern int16_t word_183D62[9];   /* vlna 123 */
+extern char unk_183D73[34];   /* vlna 123 */
 extern char byte_183D95[10];
 extern int16_t word_183D9F[];
 extern int16_t word_183E0D[4];

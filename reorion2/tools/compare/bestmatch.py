@@ -24,8 +24,11 @@ def main(a, b, *rest):
     if '--top' in rest:
         top = int(rest[list(rest).index('--top') + 1])
     ref = list(frames(b))
+    # POZOR: kdyz vysledek hlasi nenulovou neshodu palety, je vybrany
+    # referencni snimek nejspis uprostred fadu - neni to nutne chyba portu.
+    src = list(frames(a))
     results = []
-    for fa, pala, fba in frames(a):
+    for fa, pala, fba in src:
         for fb, palb, fbb in ref:
             if fba.size != fbb.size:
                 continue
