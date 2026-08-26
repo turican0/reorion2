@@ -7520,42 +7520,23 @@ _UNKNOWN unk_182298; // weak
 _UNKNOWN unk_1822A0; // weak
 char unk_1822A8[8] = { 0xCF, 0xD3, 0xD2, 0xD3, 0xD3, 0xD3, 0xD3, 0xD3 };   /* vlna 122: barevna rampa z obrazu hry */
 _UNKNOWN unk_1822B0; // weak
-int16_t word_1822B8[] = { 0 }; // weak
-int16_t word_1822BA[32] =
+/* PORT (vlna 125): v originale je tohle JEDNA souvisla tabulka - `word_17A2B8 dw 0`
+   a hned za ni `word_17A2BA[32]`. `sub_9BF70` indexuje OBE cislem radku:
+   `word_1822B8[v69]` je horni okraj radku (+39) a `word_1822BA[v69]` spodni,
+   takze prvek i+1 prvni tabulky musi byt prvek i te druhe. V portu bylo
+   `word_1822B8[] = { 0 }`, tedy JEDNOPRVKOVE pole - uz radek 1 cetl mimo a
+   vsechny radky na obrazovce PLANETS se kreslily na stejne y.
+   Zmereno zespoda: sonda na `sub_1210FD` v dosboxu i v portu vede do
+   `sub_9BF70`, y radku vychazi z teto tabulky. */
+int16_t word_1822B8[33] =
 {
-  55,
-  109,
-  164,
-  219,
-  274,
-  329,
-  383,
-  479,
-  1,
   0,
-  0,
-  0,
-  639,
-  479,
-  14,
-  8,
-  0,
-  35,
-  416,
-  472,
-  1,
-  0,
-  0,
-  0,
-  639,
-  479,
-  2,
-  0,
-  0,
-  35,
-  416,
-  472
+  55, 109, 164, 219, 274, 329, 383, 479,
+  1, 0, 0, 0, 639, 479, 14, 8,
+  0, 35, 416, 472, 1, 0, 0, 0,
+  639, 479, 2, 0, 0, 35, 416, 472
 }; // weak
+/* word_1822BA je druhy prvek te same tabulky - viz orion_common.h */
 char *off_1822FA = "PLNTSUM.LBX"; // weak
 int dword_1822FE = 0; // weak
 int dword_182302 = 0; // weak

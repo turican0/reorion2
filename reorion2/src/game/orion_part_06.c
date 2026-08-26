@@ -5180,7 +5180,7 @@ char sub_77E1F( int a1, char *a2, int a3)
   v10 = a2;
   *(_WORD *)v8 = word_179354;
   v3 = *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * a1 + 2);
-  sub_79C6B(a1);
+  v4 = sub_79C6B(a1);   /* vlna 125: navratova hodnota se zahazovala */
   if ( a3 )
   {
     v5 = v4;
@@ -7292,7 +7292,12 @@ int16_t sub_79C54( int a1, int a2)
 
 
 //----- (00079C6B) --------------------------------------------------------
-void sub_79C6B( int a1)
+/* PORT (vlna 125): funkce vraci `dl` (asm: `mov al, dl` tesne pred skokem na
+   spolecny epilog `locret_78F44`) - je to poradove cislo planety v soustave,
+   tedy index rimske cislice v `off_17D5E4`. IDA ji udelala `void` a v
+   `sub_77E1F` nechala `v4` neinicializovanou (`variable 'v4' is possibly
+   undefined`), takze kazda planeta dostala tutez cislici. */
+char sub_79C6B( int a1)
 {
   int16_t v2; // si
   int16_t v3; // bx
@@ -7317,7 +7322,7 @@ void sub_79C6B( int a1)
     }
     ++v3;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x78F44 je epilog funkce */
+  return v4;   /* vlna 125: asm `mov al, dl` pred skokem na locret_78F44 */
 }
 // 79CCD: control flows out of bounds to 78F44
 // 19306C: using guessed type int dword_19306C;

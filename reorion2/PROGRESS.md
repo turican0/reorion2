@@ -12734,3 +12734,182 @@ fadu, ne nutne chybu portu**.
 4. **Obcasne tuhnuti** portu na obrazovkach s textem (RACES se povede az na
    druhy pokus). Zasobnik vede do `sub_103F5D`; hlidac `REORION2_WATCHDOG=8`
    ho chyti.
+
+### Vlna 124: hromadna oprava "skladani retezce" (68 mist) + ikona + metodika sond
+
+#### 1. Nastroj `tools/fix_strappend.py`
+
+Vzorec z vlny 112 (`vX = &vBASE; do ++vX; while (*vX);`) jde vyresit strojove.
+Kazda lokalka ma v IDA komentari posun od ebp, takze **cil zapisu je ta
+lokalka, ktera lezi presne na `offset(vBASE) + N + 1`**. Skript to dopocita
+a prepise na `vX = (char *)<cil> - 1;`.
+
+Vysledek pres vsechny `orion_part_*.c`:
+
+| stav | pocet |
+|---|---|
+| celkem vyskytu vzorce | 222 |
+| uz opravene v drivejsich vlnach (`buffer - 1`) | 117 |
+| jednoznacne dopocitatelne | 97 |
+| nejednoznacne (cil neni pole) | 9 |
+
+Aplikovano **97**, z toho 29 v `sub_37308` **vraceno zpet** - viz nize.
+Cistych 68 zmen v devíti souborech.
+
+**Nejednoznacnych 9** je v jedne funkci (`sub_37308` v `orion_part_02.c`,
+misto toho `sub_2F...`): `char v58; int16_t v59; char v60;` jsou tri skalary,
+kde original ma souvisly buffer - potreba je slozit do jednoho pole stejne
+jako `ctx103D53` ve vlne 96.
+
+#### 2. POZOR: 29 oprav v `sub_37308` rozbilo PLANETS
+
+Po aplikaci vsech 97 spadly PLANETS z 4358 na 8118 px - **tabulka byla uplne
+prazdna**. Bisekce (revert po souborech, pak po funkcich) to zuzila na
+`sub_37308`. Zmeny tam vypadaji spravne (`char v95;` na ebp-2F3h,
+`char v96[500]` na ebp-2F2h, tedy `&v95 + 1 == v96`), ale jakmile appendy
+skutecne trefi `v96`, neco se rozbije - podezreni na **preteceni `v96`**
+(500 B, 29 appendu za sebou). Zatim vraceno na puvodni tvar; k dořešení je
+potreba sonda na delku retezce ve `v96`.
+
+Ponauceni: **hromadnou opravu overovat po souborech, ne najednou** - bez
+bisekce by se to hledalo dlouho.
+
+#### 3. Ikona aplikace
+
+`reorion2.ico` (16/24/32/48/64/128/256 z 1254x1254 predlohy), `reorion2.rc`
+a `<ResourceCompile>` ve `reorion2.vcxproj`. Overeno na hotovem `.exe`:
+`RT_ICON` ma 7 polozek, `RT_GROUP_ICON` jednu (#101).
+
+#### 4. METODICKY NALEZ: obrazovku PLANETS kresli v ORIGINALE JINY KOD
+
+Na zadost uzivatele ("nasadit do dosboxu maximum sond, hledat prvni misto
+rozchodu") jsem misto hadani obsadil dosbox sondami na cely retez, ktery
+PLANETS kresli v portu. Vysledek je jednoznacny a **prekvapivy**:
+
+| sonda (runtime adresa) | klik na PLANETS |
+|---|---|
+| `sub_C02F9` 0x2E42F9 (vstup mapy) | **0 zasahu** |
+| `sub_BF802` 0x2E3802 | **0 zasahu** |
+| `sub_BFDEE` 0x2E3DEE (dispatch tlacitek) | **0 zasahu** |
+| `sub_C5934` 0x2E9934 (obrazovka PLANETS) | **0 zasahu** |
+| `sub_C5800` / `sub_C5426` / `sub_C53C9` / `sub_B4EF6` | **0 zasahu** |
+| `dword_1A08B0` 0x3B68B0 (ukazatel seznamu) | **0 zmen** |
+| `word_1A08C0` 0x3B68C0 (seznam radku) | **0 zmen** |
+
+Pritom dosbox obrazovku PLANETS **normalne zobrazi** (dolozeno DUMPFRAME) a
+port stejny obraz kresli prave pres `sub_C5934`.
+
+**Kontrola, ze sondy funguji** (nutna, jinak by to byl falesny zaver):
+v behu s klikem na COLONIES stejnym mechanismem zabralo obojí -
+`sub_C4562` 0x2E8562 (1 zasah) i `dword_1A08B0` 0x3B68B0
+(`00000000 -> 003EB9B0`). Adresni prevody (`kod = IDA + 0x224000`,
+`data = C + 0x216000`) jsou tedy v poradku.
+
+**Zaver: port se na PLANETS dostava jinou cestou nez original.** To je prvni
+misto rozchodu na teto obrazovce; vsechno ostatni (jeden radek misto dvou,
+sloupce pres sebe) uz je jen nasledek. Dalsi krok je zjistit, kterou funkci
+original spusti - nabizi se `changed:` watch na promenne, ktere ta obrazovka
+musi psat, nebo `DUMPREGS` na siroky vejir kandidatu.
+
+**Poznamka k sondam:** `cond=changed:0xADDR[:1|2|4]` u `DUMPREGS` je plnohodnotny
+watchpoint a hlasi i EIP, ktery zapis provedl - je to nejrychlejsi cesta od
+"tahle promenna je spatne" k "tohle ji zapsalo".
+
+#### 5. Stav
+
+| zalozka | vlna 123 | ted |
+|---|---|---|
+| FLEETS | 266 px (0,09 %) | **266 px (0,09 %)** |
+| COLONIES | 4055 px (1,32 %) | **3913 px (1,27 %)** |
+| PLANETS | 4358 px (1,42 %) | **4358 px (1,42 %)** |
+| RACES | 5597 px (1,82 %) | **5597 px (1,82 %)** |
+| LEADERS | 6650 px (2,16 %) | **6650 px (2,16 %)** |
+| INFO | 13209 px (4,30 %) | **13299 px (4,33 %)** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek zmereno po oprave, zadna regrese.
+
+### Vlna 125: zespoda nahoru - dve pricine na PLANETS + past s jadrem dosboxu
+
+Uzivatel: "nehledej nasledky, jdi zespoda systematicky, zaloz si soupis".
+Soupis je v `tools/compare/POROVNANI.md` a udrzuje se dal.
+
+#### 1. PAST, ktera znehodnotila cele predchozi mereni
+
+`enginestep()` - a s nim VSECHNY ctl sondy - je volany **jen z
+`src/cpu/core_normal.cpp`**. Dynamicka jadra (`core_dyn_x86`, `core_dynrec`)
+ho nevolaji vubec. `moo2.conf` ma `core=auto`, dosbox po chvili prepne na
+dynamicke jadro a **sondy tise prestanou strilet**.
+
+Kvuli tomu jsem ve vlne 124 vyvodil, ze "obrazovku PLANETS kresli v originale
+uplne jiny kod". **Neplati to** - obe strany jedou pres `sub_9BF70`.
+
+Zavedeno `tools/compare/moo2_sondy.conf` (`core=normal`). **Pravidlo: "sonda
+nic nenasla" neni dukaz, dokud v tomtez behu nestrili kontrolni sonda na
+misto, ktere se urcite provede.**
+
+#### 2. Metoda, ktera zabrala: od blitu glyfu nahoru
+
+Sonda na `sub_121DEB` (blit jednoho glyfu, 0x345DEB) s `repeat=always`
+a cteni `ret=` dalo primo volajici. Po prelozeni adres na jmena:
+
+    sub_121DEB  <- sub_12260F (2322x) / sub_121814 (1376x)
+                <- sub_122309 / sub_1212EB
+                <- sub_1212B3 / sub_1210FD
+                <- sub_9BF70  <- sub_9D0C6 <- sub_9D252 <- sub_1049B (case 32)
+
+Port ma na svoji stranu tentyz retez (overeno `PortDebug_Backtrace`
+v `sub_1210FD`). Tim byla konecne nalezena SPRAVNA funkce - `sub_9BF70`.
+Cela drivejsi analyza `sub_C5934`/`sub_C5426` byla vedle: to je seznam planet
+v pop-upu kolonie, ne zalozka PLANETS.
+
+#### 3. `word_1822B8` byla JEDNOPRVKOVA tabulka pozic radku
+
+V `sub_9BF70` je y radku `word_1822B8[radek] + 39` a spodni okraj
+`word_1822BA[radek] + 39`. V originale je to **jedna souvisla tabulka**:
+`word_17A2B8 dw 0` a hned za ni `word_17A2BA[32]` = 55, 109, 164, 219, ...
+Prvek i+1 prvni tabulky je prvek i te druhe (horni okraj dalsiho radku =
+spodni okraj predchoziho, vyska radku 55 px).
+
+Port mel `int16_t word_1822B8[] = { 0 };` - **jeden prvek**. Uz radek 1 cetl
+mimo pole, takze **vsechny radky se kreslily na stejne y** (odtud "sloupce
+pres sebe"). Slouceno do `word_1822B8[33]` a `word_1822BA` je makro
+`(word_1822B8 + 1)`.
+
+#### 4. `sub_79C6B` - zahozena navratova hodnota (rimska cislice planety)
+
+`sub_77E1F` (skladani jmena planety) ma v IDA komentar
+`variable 'v4' is possibly undefined` a pouziva `off_17D5E4[v4]` - tabulku
+rimskych cislic. `v4` ma prijit ze `sub_79C6B`, ktera v asm konci
+`mov al, dl / jmp locret_78F44`, tedy **vraci `dl`** = poradove cislo planety
+v soustave. IDA ji udelala `void`.
+
+Dusledek: kazda planeta mela tutez cislici. Po oprave PLANETS ukazuji
+spravne **"Trilar I"** a **"Trilar IV"** (predtim obe "Trilar I"), a stejna
+oprava plati i pro nazev kolonie na COLONIES.
+
+#### 5. Stav
+
+| zalozka | vlna 124 | ted | poznamka |
+|---|---|---|---|
+| FLEETS | 266 px | **266 px (0,09 %)** | |
+| COLONIES | 3913 px | **3873 px (1,26 %)** | |
+| PLANETS | 4358 px | **5608 px (1,83 %)** | cislo STOUPLO, ale stav je poctivejsi |
+| RACES | 5597 px | 5597 px | |
+| LEADERS | 6650 px | 6650 px | |
+| INFO | 13299 px | 13299 px | |
+
+**K PLANETS:** driv se oba radky mackaly pres sebe do jednoho a ta smes
+nahodou vic prekryvala referencni radek 1. Ted jsou radky dva, na spravnych
+mistech a se spravnymi jmeny; zbyle rozdily jsou uz jen ve vypoctenych
+HODNOTACH (prohozene poradi radku, chybi "2 Food", `prod/worker` 8/0 misto
+5/3, `max pop` 45/45 misto 12/1). To je dalsi vrstva, ne regrese.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene.

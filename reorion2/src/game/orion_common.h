@@ -2598,8 +2598,8 @@ extern int sub_79BEB();
 extern _BOOL1 sub_79C1D();
 // plna signatura: int16_t sub_79C54( int a1, int a2);
 extern int16_t sub_79C54();
-// plna signatura: void sub_79C6B( int a1);
-extern void sub_79C6B();
+// plna signatura: char sub_79C6B( int a1);
+extern char sub_79C6B(int a1);
 // plna signatura: int16_t sub_79CD2( int a1, int a2);
 extern int16_t sub_79CD2();
 // plna signatura: int sub_79CF9(int a1, int a2);
@@ -11654,7 +11654,7 @@ int sub_79BEB(int16_t a1, int16_t a2);
 int nullsub_4(_DWORD); // weak
 _BOOL1 sub_79C1D(int16_t a1);
 int16_t sub_79C54(int16_t a1, int16_t a2);
-void sub_79C6B(int16_t a1);
+char sub_79C6B(int16_t a1);   /* vlna 125: vraci poradi planety v soustave */
 int16_t sub_79CD2(int16_t a1, int16_t a2);
 int sub_79CF9(int a1, int a2);
 _BOOL1 sub_79D1C(int16_t a1, int16_t a2);
@@ -17122,8 +17122,8 @@ extern _UNKNOWN unk_182298;
 extern _UNKNOWN unk_1822A0;
 extern char unk_1822A8[8];   /* vlna 122: barevna rampa */
 extern _UNKNOWN unk_1822B0;
-extern int16_t word_1822B8[];
-extern int16_t word_1822BA[32];
+extern int16_t word_1822B8[33];   /* vlna 125: 1 + 32, viz orion_data.c */
+#define word_1822BA (word_1822B8 + 1)
 extern char *off_1822FA;
 extern int dword_1822FE;
 extern int dword_182302;
