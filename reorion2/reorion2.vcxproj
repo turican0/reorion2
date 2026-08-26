@@ -207,6 +207,10 @@
     <ClCompile Include="src\port\port_ctl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <!-- vlna 124: ikona aplikace -->
+    <ResourceCompile Include="reorion2.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="src\game\decomp_compat.h" />
     <ClInclude Include="src\game\orion_common.h" />
     <ClInclude Include="src\port\port_dos.h" />

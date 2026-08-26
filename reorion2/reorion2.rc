@@ -1,0 +1,5 @@
+// Ikona aplikace (vlna 124). Prvni ICON v .rc je ta, kterou Windows
+// pouzije jako ikonu .exe v pruzkumniku a na hlavnim panelu.
+#define IDI_REORION2 101
+
+IDI_REORION2 ICON "reorion2.ico"
