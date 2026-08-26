@@ -605,12 +605,12 @@ int16_t sub_10D31C(
           {
             if ( (v45 & 1) != 0 )
             {
-              v46 = (char *)&v60 + 3;
+              v46 = (char *)v61 - 1;   /* vlna 124: cil je sousedni buffer v61, ne &v60 */
               do
                 ++v46;
               while ( *v46 );
               strcpy(v46, *(char **)((char *)&off_17FD0B + 15 * v44));
-              v47 = (char *)&v60 + 3;
+              v47 = (char *)v61 - 1;   /* vlna 124: cil je sousedni buffer v61, ne &v60 */
               do
                 ++v47;
               while ( *v47 );
@@ -739,7 +739,7 @@ void sub_10DB17(int a1, int a2, unsigned int a3)
 
   v7[0] = word_17A3A0;
   v3 = sub_10F7A1(a3, word_19999C);
-  v4 = &v6;
+  v4 = (char *)v7 - 1;   /* vlna 124: cil je sousedni buffer v7, ne &v6 */
   do
     ++v4;
   while ( *v4 );
@@ -1436,7 +1436,7 @@ LABEL_12:
   sub_128C32(v24, 31, (int16_t)v57, 449, 0);
   sub_12A478(v24, 31, (int)v42);
   strcpy((char *)v47, &byte_1AD5CC[20 * *(uint16_t *)(v40 + 4)]);
-  v25 = &v46;
+  v25 = (char *)v47 - 1;   /* vlna 124: cil je sousedni buffer v47, ne &v46 */
   do
     ++v25;
   while ( *v25 );
@@ -2079,7 +2079,7 @@ void sub_10F62F(int a1, int a2)
   v3 = sub_E1E96((uint8_t*)dword_197F98 + 3753 * word_19999C, *(int16_t *)((char *)&word_17E07F + 13 * a2));
   sub_249F9(aBilltextLbx_3, 61, v9, 80);
   itoa(v3, v10, 10, 80);
-  v4 = &v8;
+  v4 = (char *)v9 - 1;   /* vlna 124: cil je sousedni buffer v9, ne &v8 */
   do
     ++v4;
   while ( *v4 );
@@ -2101,7 +2101,7 @@ void sub_10F62F(int a1, int a2)
       v5 = aRp_1;
       break;
   }
-  v6 = &v8;
+  v6 = (char *)v9 - 1;   /* vlna 124: cil je sousedni buffer v9, ne &v8 */
   do
     ++v6;
   while ( *v6 );

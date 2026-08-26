@@ -809,7 +809,7 @@ _BYTE *sub_103421()
       sub_1117BF((int)v4);
     strcpy(v3, byte_184544);
     v2 = v3;
-    v0 = (char *)&v2 + 3;
+    v0 = (char *)v3 - 1;   /* vlna 124: cil je sousedni buffer v3, ne &v2 */
     do
       ++v0;
     while ( *v0 );
@@ -4901,7 +4901,7 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
     {
       v14 = sprintf(v23, "%i", *(int16_t *)(dword_192BD8 + 174));
       sub_249F9(aBilltextLbx, SHIDWORD(v14), v21, 40);
-      v15 = &v22;
+      v15 = (char *)v23 - 1;   /* vlna 124: cil je sousedni buffer v23, ne &v22 */
       do
         ++v15;
       while ( *v15 );
@@ -6017,7 +6017,7 @@ LABEL_40:
           v32 = a05;
         }
 LABEL_26:
-        v33 = &v41;
+        v33 = (char *)v42 - 1;   /* vlna 124: cil je sousedni buffer v42, ne &v41 */
         do
           ++v33;
         while ( *v33 );
@@ -6031,7 +6031,7 @@ LABEL_26:
           v30 = asc_17A2DA;
         else
           v30 = asc_17A2D8;
-        v31 = &v41;
+        v31 = (char *)v42 - 1;   /* vlna 124: cil je sousedni buffer v42, ne &v41 */
         do
           ++v31;
         while ( *v31 );
@@ -6969,7 +6969,7 @@ void sub_109762(int a1)
   v2 = (char *)sub_126C37((int)v10, 0, dword_192ED4, word_1AD1F8, 1u, 1403);
   v11 = v2;
   sub_249F9(aBilltextLbx, 13, (char *)v9, 80);
-  v3 = (char *)&v8 + 3;
+  v3 = (char *)v9 - 1;   /* vlna 124: cil je sousedni buffer v9, ne &v8 */
   do
     ++v3;
   while ( *v3 );
@@ -7962,7 +7962,7 @@ int sub_10A6C0( int a1, int a2, char *a3)
     if ( v16 == 2 )
     {
       v17 = (char*)((uint8_t*)dword_197F98 + 21 + (intptr_t)a3);
-      v18 = &v37;
+      v18 = (char *)v38 - 1;   /* vlna 124: cil je sousedni buffer v38, ne &v37 */
       do
         ++v18;
       while ( *v18 );
@@ -7975,7 +7975,7 @@ int sub_10A6C0( int a1, int a2, char *a3)
       if ( v16 < 4u )
         goto LABEL_20;
       v20 = (char*)((uint8_t*)dword_197F98 + 21 + (intptr_t)a3);
-      v21 = &v39;
+      v21 = (char *)v40 - 1;   /* vlna 124: cil je sousedni buffer v40, ne &v39 */
       do
         ++v21;
       while ( *v21 );
@@ -7998,7 +7998,7 @@ LABEL_20:
     v13 = v38;
     v14 = 29;
     sub_249F9(aBilltextLbx_1, 29, v38, 40);
-    v23 = &v37;
+    v23 = (char *)v38 - 1;   /* vlna 124: cil je sousedni buffer v38, ne &v37 */
     do
       ++v23;
     while ( *v23 );
@@ -8010,7 +8010,7 @@ LABEL_20:
     v13 = v40;
     v14 = 30;
     sub_249F9(aBilltextLbx_1, 30, v40, 40);
-    v24 = &v39;
+    v24 = (char *)v40 - 1;   /* vlna 124: cil je sousedni buffer v40, ne &v39 */
     do
       ++v24;
     while ( *v24 );

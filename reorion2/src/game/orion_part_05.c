@@ -2893,14 +2893,14 @@ void sub_67BC7(int a1)
   (_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 1403);
   strcpy(v6, (char *)sub_126C37((int)v8, 0, (int)v9, 0x190u, 1u, 1403) + 103);
   v1 = v9;
-  v2 = (char *)&v5 + 3;
+  v2 = (char *)v6 - 1;   /* vlna 124: cil je sousedni buffer v6, ne &v5 */
   do
     ++v2;
   while ( *v2 );
   strcpy(v2, asc_1791D4);
   v3 = (char *)sub_126C37((int)v8, 0, (int)v1, (int16_t)(v5 + 400), 1u, 1403);
   strcpy(v7, v3 + 103);
-  v4 = (char *)&v5 + 3;
+  v4 = (char *)v6 - 1;   /* vlna 124: cil je sousedni buffer v6, ne &v5 */
   do
     ++v4;
   while ( *v4 );

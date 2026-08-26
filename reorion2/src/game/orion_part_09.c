@@ -1693,7 +1693,7 @@ LABEL_8:
       v13 = sub_7A990(v12);
       sprintf(v29, v13, v26);
       v26 = (int)v27;
-      v14 = (char *)&v26 + 3;
+      v14 = (char *)v27 - 1;   /* vlna 124: cil je sousedni buffer v27, ne &v26 */
       do
         ++v14;
       while ( *v14 );
@@ -1714,7 +1714,7 @@ LABEL_8:
       v16 = sub_7A990(v15);
       sprintf(v29, v16, v26);
       v26 = (int)v27;
-      v17 = (char *)&v26 + 3;
+      v17 = (char *)v27 - 1;   /* vlna 124: cil je sousedni buffer v27, ne &v26 */
       do
         ++v17;
       while ( *v17 );
@@ -1735,7 +1735,7 @@ LABEL_8:
       v19 = sub_7A990(v18);
       sprintf(v29, v19, v26);
       v26 = (int)v27;
-      v20 = (char *)&v26 + 3;
+      v20 = (char *)v27 - 1;   /* vlna 124: cil je sousedni buffer v27, ne &v26 */
       do
         ++v20;
       while ( *v20 );
@@ -1751,7 +1751,7 @@ LABEL_8:
           v22 = shipSizeNameB_18003E[i];   /* vlna 81 */
         sprintf(v29, "%d %s, ", (int16_t)v30[i], v22);
         v26 = (int)v27;
-        v23 = (char *)&v26 + 3;
+        v23 = (char *)v27 - 1;   /* vlna 124: cil je sousedni buffer v27, ne &v26 */
         do
           ++v23;
         while ( *v23 );
@@ -2158,7 +2158,7 @@ int16_t sub_9636D( int a1, int a2, int a3)
   sprintf(v15, "%s", (char *)v4);
   if ( byte_199CAE != 4 && *(_BYTE *)(dword_1930DC + 59 * a3 + 15) )
   {
-    v5 = &v14;
+    v5 = (char *)v15 - 1;   /* vlna 124: cil je sousedni buffer v15, ne &v14 */
     do
       ++v5;
     while ( *v5 );

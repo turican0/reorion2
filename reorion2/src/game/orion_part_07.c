@@ -4416,12 +4416,12 @@ void sub_7E752(int a1)
   {
     itoa((int16_t)v1 + 1, v11, 10, v1);
     strcpy(v10, "SAVE");
-    v2 = &v9;
+    v2 = (char *)v10 - 1;   /* vlna 124: cil je sousedni buffer v10, ne &v9 */
     do
       ++v2;
     while ( *v2 );
     strcpy(v2, v11);
-    v3 = &v9;
+    v3 = (char *)v10 - 1;   /* vlna 124: cil je sousedni buffer v10, ne &v9 */
     do
       ++v3;
     while ( *v3 );

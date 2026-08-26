@@ -1147,7 +1147,7 @@ LABEL_10:
 LABEL_11:
         v38 = (char *)&a19 + 2;
 LABEL_12:
-        v43 = (char *)&v53 + 3;
+        v43 = (char *)v54 - 1;   /* vlna 124: cil je sousedni buffer v54, ne &v53 */
         do
           ++v43;
         while ( *v43 );
@@ -7595,12 +7595,12 @@ LABEL_134:
       else
         v8 = *(uint8_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 10);
       itoa(v8, v43, 10, a4);
-      v9 = &v40;
+      v9 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
       do
         ++v9;
       while ( *v9 );
       strcpy(v9, v43);
-      v10 = &v40;
+      v10 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
       do
         ++v10;
       while ( *v10 );
@@ -7610,18 +7610,18 @@ LABEL_134:
         if ( *(int16_t *)(361 * word_199878 + (uint8_t*)dword_192B18 + 306) > 0 )
         {
           sub_58F1E(1, v42, 80);
-          v11 = &v40;
+          v11 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
           do
             ++v11;
           while ( *v11 );
           strcpy(v11, v42);
           itoa(*(int16_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 306), v43, 10, a4);
-          v12 = &v40;
+          v12 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
           do
             ++v12;
           while ( *v12 );
           strcpy(v12, v43);
-          v13 = &v40;
+          v13 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
           do
             ++v13;
           while ( *v13 );
@@ -7630,13 +7630,13 @@ LABEL_134:
         if ( *(int16_t *)(361 * word_199878 + (uint8_t*)dword_192B18 + 304) > 0 )
         {
           sub_58F1E(2, v42, 80);
-          v14 = &v40;
+          v14 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
           do
             ++v14;
           while ( *v14 );
           strcpy(v14, v42);
           itoa(*(int16_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 304), v43, 10, a4);
-          v15 = &v40;
+          v15 = (char *)v41 - 1;   /* vlna 124: cil je sousedni buffer v41, ne &v40 */
           do
             ++v15;
           while ( *v15 );
@@ -7883,7 +7883,7 @@ LABEL_32:
       v22 = (char *)off_17FD2D;
 LABEL_43:
       strcpy(v44, v22);
-      v23 = &v43;
+      v23 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v23;
       while ( *v23 );
@@ -7897,7 +7897,7 @@ LABEL_49:
       v25 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v24 + 82));
     else
       v25 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v24 + 82));
-    v26 = &v43;
+    v26 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
     do
       ++v26;
     while ( *v26 );
@@ -7928,7 +7928,7 @@ LABEL_62:
       || byte_17F80F[28 * *(int16_t *)(v29 + 82)] == 4
       || *(_WORD *)(v29 + 82) == 33 )
     {
-      v30 = &v43;
+      v30 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v30;
       while ( *v30 );
@@ -7941,7 +7941,7 @@ LABEL_62:
     {
       if ( byte_17F80F[28 * *(int16_t *)(v29 + 82)] )
         goto LABEL_102;
-      v34 = &v43;
+      v34 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v34;
       while ( *v34 );
@@ -7978,7 +7978,7 @@ LABEL_62:
               goto LABEL_98;
             v36 = a360;
 LABEL_95:
-            v37 = &v43;
+            v37 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
             do
               ++v37;
             while ( *v37 );
@@ -7995,7 +7995,7 @@ LABEL_90:
 LABEL_98:
       v31 = asc_178C5E;
 LABEL_99:
-      v38 = &v43;
+      v38 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v38;
       while ( *v38 );
@@ -8004,13 +8004,13 @@ LABEL_99:
     }
     if ( *(int16_t *)(v29 + 88) > 0 )
     {
-      v32 = &v43;
+      v32 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v32;
       while ( *v32 );
       strcpy(v32, asc_178C52);
       itoa(*(int16_t *)(v28 + dword_192864 + 313 * word_1998F8 + 88), v45, 10, v6);
-      v33 = &v43;
+      v33 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
       do
         ++v33;
       while ( *v33 );
@@ -9519,14 +9519,14 @@ LABEL_28:
         sub_58F1E(v79, v106, 80);
 LABEL_166:
         v104 = v109;
-        v81 = &v108;
+        v81 = (char *)v109 - 1;   /* vlna 124: cil je sousedni buffer v109, ne &v108 */
         do
           ++v81;
         while ( *v81 );
         strcpy(v81, v80);
 LABEL_169:
         v104 = v109;
-        v82 = &v108;
+        v82 = (char *)v109 - 1;   /* vlna 124: cil je sousedni buffer v109, ne &v108 */
         do
           ++v82;
         while ( *v82 );

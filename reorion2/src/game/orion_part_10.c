@@ -2583,7 +2583,7 @@ LABEL_12:
   {
     v35 = 361 * v26;
     sprintf(var4E, "(%s", (char *)((uint8_t*)dword_197F98 + 3753 * v27 + 21));
-    v36 = &_B9;
+    v36 = (char *)vars2 - 1;   /* vlna 124: cil je sousedni buffer vars2, ne &_B9 */
     do
       ++v36;
     while ( *v36 );
@@ -2592,7 +2592,7 @@ LABEL_12:
       v37 = sub_7A990(0x161u);
     else
       v37 = asc_179C33;
-    v38 = &_B9;
+    v38 = (char *)vars2 - 1;   /* vlna 124: cil je sousedni buffer vars2, ne &_B9 */
     do
       ++v38;
     while ( *v38 );
@@ -4303,12 +4303,12 @@ void sub_A453F( int16_t a1)
   sub_E5430((_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C), (_BYTE *)(v0 + (uint8_t*)dword_1930D4), &v42);
   v1 = sub_7A990(0x170u);
   sprintf(v36, aM2530, v1);
-  v2 = &v35;
+  v2 = (char *)v36 - 1;   /* vlna 124: cil je sousedni buffer v36, ne &v35 */
   do
     ++v2;
   while ( *v2 );
   strcpy(v2, byte_179C5A);
-  v3 = &v35;
+  v3 = (char *)v36 - 1;   /* vlna 124: cil je sousedni buffer v36, ne &v35 */
   do
     ++v3;
   while ( *v3 );
@@ -4326,7 +4326,7 @@ void sub_A453F( int16_t a1)
     v5 = sub_7A990(0x171u);
     sprintf(v38, byte_179C61, v5);
   }
-  v7 = &v33;
+  v7 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
   do
     ++v7;
   while ( *v7 );
@@ -4334,7 +4334,7 @@ void sub_A453F( int16_t a1)
   v30 = v46;
   v8 = sub_7A990(0x172u);
   sprintf(v38, byte_179C6A, v8, v30);
-  v9 = &v33;
+  v9 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
   do
     ++v9;
   while ( *v9 );
@@ -4342,14 +4342,14 @@ void sub_A453F( int16_t a1)
   v31 = v47;
   v10 = sub_7A990(0x173u);
   sprintf(v38, byte_179C6A, v10, v31);
-  v11 = &v33;
+  v11 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
   do
     ++v11;
   while ( *v11 );
   strcpy(v11, v38);
   if ( v43 )
   {
-    v14 = &v33;
+    v14 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
     do
       ++v14;
     while ( *v14 );
@@ -4363,7 +4363,7 @@ void sub_A453F( int16_t a1)
     v17 = sub_7A990(v16);
     sprintf(v38, byte_179C95, v17);
     sprintf(v49, "%d%%\n", abs16(v43));
-    v18 = &v37;
+    v18 = (char *)v38 - 1;   /* vlna 124: cil je sousedni buffer v38, ne &v37 */
     do
       ++v18;
     while ( *v18 );
@@ -4371,7 +4371,7 @@ void sub_A453F( int16_t a1)
   }
   else
   {
-    v12 = &v33;
+    v12 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
     do
       ++v12;
     while ( *v12 );
@@ -4380,14 +4380,14 @@ void sub_A453F( int16_t a1)
     sprintf(v38, byte_179C7D, v13);
   }
   strlen(v34);
-  v19 = &v33;
+  v19 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
   do
     ++v19;
   while ( *v19 );
   strcpy(v19, v38);
   if ( v44 )
   {
-    v22 = &v33;
+    v22 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
     do
       ++v22;
     while ( *v22 );
@@ -4401,7 +4401,7 @@ void sub_A453F( int16_t a1)
     v25 = sub_7A990(v24);
     sprintf(v38, byte_179C95, v25);
     sprintf(v48, "%d%%\n", abs16(v44));
-    v26 = &v37;
+    v26 = (char *)v38 - 1;   /* vlna 124: cil je sousedni buffer v38, ne &v37 */
     do
       ++v26;
     while ( *v26 );
@@ -4409,7 +4409,7 @@ void sub_A453F( int16_t a1)
   }
   else
   {
-    v20 = &v33;
+    v20 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
     do
       ++v20;
     while ( *v20 );
@@ -4418,7 +4418,7 @@ void sub_A453F( int16_t a1)
     sprintf(v38, byte_179C7D, v21);
   }
   strlen(v34);
-  v27 = &v33;
+  v27 = (char *)v34 - 1;   /* vlna 124: cil je sousedni buffer v34, ne &v33 */
   do
     ++v27;
   while ( *v27 );
@@ -4487,12 +4487,12 @@ void sub_A4989(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
         sub_79D50();
         if ( v15 )
         {
-          v16 = &v27;
+          v16 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */
           do
             ++v16;
           while ( *v16 );
           strcpy(v16, (char *)(3753 * v14 + (uint8_t*)dword_197F98 + 1));
-          v17 = &v27;
+          v17 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */
           do
             ++v17;
           while ( *v17 );
@@ -4519,12 +4519,12 @@ LABEL_3:
         v11 = 3753 * v10;
         if ( (uint8_t)sub_79CF9(v11 + (uint8_t*)dword_197F98, 113 * v25 + dword_19306C) )
         {
-          v12 = &v27;
+          v12 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */
           do
             ++v12;
           while ( *v12 );
           strcpy(v12, (char *)(v11 + (uint8_t*)dword_197F98 + 21));
-          v13 = &v27;
+          v13 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */
           do
             ++v13;
           while ( *v13 );
@@ -4534,7 +4534,7 @@ LABEL_3:
       }
 LABEL_24:
       *(&v26 + (int16_t)strlen(v28)) = 0;
-      v18 = &v27;
+      v18 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */
       do
         ++v18;
       while ( *v18 );

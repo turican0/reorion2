@@ -7850,7 +7850,7 @@ void sub_5B649()
       v12 = 100;
       v13 = (int)v33;
       sub_58F1E(78, v33, 100);
-      v14 = (char *)&v31 + 3;
+      v14 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
       do
         ++v14;
       while ( *v14 );

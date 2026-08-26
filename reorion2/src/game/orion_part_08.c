@@ -4003,7 +4003,7 @@ LABEL_11:
           sprintf(v36, "(%s)", (char *)(v12 + dword_19306C));
           if ( strlen((char *)(v12 + dword_19306C)) < 7 )
           {
-            v16 = &v35;
+            v16 = (char *)v36 - 1;   /* vlna 124: cil je sousedni buffer v36, ne &v35 */
             do
               ++v16;
             while ( *v16 );

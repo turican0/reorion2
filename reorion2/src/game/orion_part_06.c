@@ -823,26 +823,26 @@ char sub_72B33(int a1, int a2, int a3)
         v24 = 13 * (int16_t)v35[(int16_t)k];
         sub_E4204((uint8_t*)dword_197F98 + 3753 * (int16_t)v38, v35[(int16_t)k], (int)v32);
         v31 = (int16_t *)v32;
-        v25 = (char *)&v31 + 3;
+        v25 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
         do
           ++v25;
         while ( *v25 );
         strcpy(v25, byte_1792DD);
         v31 = (int16_t *)v32;
-        v26 = (char *)&v31 + 3;
+        v26 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
         do
           ++v26;
         while ( *v26 );
         strcpy(v26, "^ ");
         v27 = *(char **)((char *)&off_17E079 + v24);
         v31 = (int16_t *)v32;
-        v28 = (char *)&v31 + 3;
+        v28 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
         do
           ++v28;
         while ( *v28 );
         strcpy(v28, v27);
         v31 = (int16_t *)v32;
-        v29 = (char *)&v31 + 3;
+        v29 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
         do
           ++v29;
         while ( *v29 );
