@@ -5955,7 +5955,11 @@ LABEL_31:
     if ( (_BYTE)v2 )
     {
       v7 = 17 * v3;
-      sub_E0B4F((int16_t *)(v7 + (uint8_t*)dword_1930D4), word_19999C);
+      /* PORT (vlna 126): navratova hodnota sub_E0B4F (maximalni populace)
+         se zahazovala a do zaznamu se ukladala neinicializovana `v8` -
+         na PLANETS z toho bylo "45 max pop" u obou radku. Stejny vzorec
+         uz byl opraven ve `sub_C3B3C` (vlna 91). */
+      v8 = (int16_t)sub_E0B4F((int16_t *)(v7 + (uint8_t*)dword_1930D4), word_19999C);
       v5[14 * *a1] = v8;
       v9 = v7 + (uint8_t*)dword_1930D4;
       v5[14 * *a1 + 1] = *(uint8_t *)(v7 + (uint8_t*)dword_1930D4 + 11);

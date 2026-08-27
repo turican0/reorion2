@@ -12913,3 +12913,89 @@ HODNOTACH (prohozene poradi radku, chybi "2 Food", `prod/worker` 8/0 misto
 - `-t:Build` bez chyb;
 - **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
 - vsechny docasne sondy odstranene.
+
+### Vlna 126: spatne hodnoty na PLANETS - pet zkracenych tabulek a rozsekany buffer
+
+Pokracovani vlny 125 stejnou metodou (zespoda nahoru), ted na HODNOTY.
+
+#### 1. Novy nastroj `tools/compare/dumpdata.py`
+
+Opisovat tabulky z `Orion2.exe.lst` je pomale a chybove - IDA slucuje
+`db`/`dw`/`dd` do jednoho radku a `align` nevypisuje vubec. Nastroj cte bajty
+primo z obrazu hry; mapovani **`soubor = cseg01 + 0x85654`** nalezeno pres
+unikatni vzorek (`byte_DD4B5 = 01 02 03 05 08` nasledovany `word_DD4BA = 1932h`).
+
+    python tools/compare/dumpdata.py 0xDD4E1 32
+
+#### 2. `prod/worker` - `byte_DD4B5` mela jeden prvek
+
+`sub_9A2BA` plni zaznam radku: offset 4 = `byte_DD4B5[bohatost nerostu]`.
+V obraze je to `db 1 / dw 302h / db 5, 8`, tedy **{1, 2, 3, 5, 8}** (Ultra Poor
+az Ultra Rich). Port mel `{ 1 }`, takze Abundant (index 2) a Rich (3) cetly
+mimo pole - na PLANETS vychazelo 8 a 0 misto 3 a 5.
+
+#### 3. `max pop` - dve chyby naraz
+
+* `sub_9A2BA` **zahazovala navratovou hodnotu `sub_E0B4F`** (maximalni
+  populace) a do zaznamu ukladala neinicializovanou `v8` -> "45 max pop"
+  u obou radku. Tyz vzorec uz byl opraven ve `sub_C3B3C` (vlna 91).
+* Retez `sub_E0B4F -> sub_E0A93 -> sub_E0A18` pocita
+  `(velikost * (25*gravitace + byte_DD4EB[klima]) + 50) / 100`. Tabulka
+  `byte_DD4EB` mela take **jeden prvek** misto deseti
+  ({25,25,25,25,25,25,40,60,80,100}).
+
+Stejnou kontrolou proslo jeste `byte_DD4E1` ([3] -> [5]), `byte_DD4E6`
+([1] -> [5]) a `byte_DD4F5` ([3] -> [8]) - vsechny se indexuji.
+
+Po oprave PLANETS ukazuji **5 a 3 prod/worker** a **12 a 1 max pop**, presne
+jako dosbox. Stejna oprava spravila i COLONIES: spodni panel ma ted
+**"Population (8/15)"** misto "(8/0)".
+
+#### 4. "Trilar_" - editacni buffer rozsekany na ctyri symboly
+
+Sonda na syrove bajty jmena hvezdy dala `54 72 69 6C 61 72 5F 00` = **"Trilar_"**,
+tedy kurzor `_` ULOZENY v zaznamu hvezdy. Pricina je ve widgetu textoveho pole:
+
+V originale je na `0x1B071B..0x1B081B` **jeden buffer 257 B** (hned za nim uz je
+`dword_1B081C`). IDA ho rozsekala na `byte_1B071B[1]`, `byte_1B071C[1]`,
+`byte_1B071D[1]` a `byte_1B071E[254]` - a widget s nimi pracuje SOUCASNE a
+spoleha na to, ze na sebe navazuji:
+
+```c
+for ( k = 0; byte_1B071C[k] && byte_1B071C[k] != 95 && ...; ++k ) ;
+if ( k > 0 ) byte_1B071B[k] = 0;      /* == byte_1B071C[k-1] = 0 */
+```
+
+Tim se maze posledni znak pred kurzorem. V portu to byly samostatne objekty,
+takze koncova nula sla jinam a `_` v ulozenem jmenu zustal. Slouceno do
+`byte_1B071B[257]`, zbytek jsou makra `(byte_1B071B + 1/2/3)`; z `link_stubs.c`
+odstraneny tri duplicitni `int` pahyly.
+
+#### 5. Stav
+
+| zalozka | vlna 125 | ted |
+|---|---|---|
+| FLEETS | 266 px (0,09 %) | **266 px (0,09 %)** |
+| PLANETS | 5608 px (1,83 %) | **2351 px (0,77 %)** |
+| COLONIES | 3873 px (1,26 %) | **3815 px (1,24 %)** |
+| RACES | 5597 px (1,82 %) | 5597 px (1,82 %) |
+| LEADERS | 6650 px (2,16 %) | 6901 px (2,25 %) * |
+| INFO | 13299 px (4,33 %) | **8966 px (2,92 %)** |
+
+\* LEADERS: vybrany referencni snimek ma `paleta 188/768`, tedy je uprostred
+fadu - rozdil je faze, ne regrese (viz poznamka u `bestmatch.py` ve vlne 123).
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+1. **PLANETS (2351 px)**: chybi druhy radek ve sloupci CLIMATE ("2 Food" /
+   "0 Food") a pod jmenem planety pribyva "()" - `sprintf(v49, "(%s)", v21)`
+   se v originale nejspis preskakuje, kdyz je `v21` prazdne.
+2. **COLONIES (3815 px)**: stredni panel (panacci) a pravy panel
+   (Reserve/Income) - jit stejnou metodou od `sub_1210FD`/`sub_12A478` nahoru.
+3. **RACES / LEADERS / INFO** - viz `tools/compare/POROVNANI.md`.

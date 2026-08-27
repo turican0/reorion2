@@ -15805,17 +15805,17 @@ extern int16_t word_C5102;
 extern int dword_C6E40[3];
 extern char byte_CF38F[];
 extern char byte_D575C[];
-extern char byte_DD4B5[];
+extern char byte_DD4B5[5];   /* vlna 126: 5 polozek, viz orion_data.c */
 extern int16_t word_DD4BA;
 extern char byte_DD4C4[];
 extern char byte_DD4CC[];
 extern char byte_DD4CF[];
 extern char byte_DD4D7[];
 extern char byte_DD4DC[];
-extern char byte_DD4E1[3];
-extern char byte_DD4E6[];
-extern char byte_DD4EB[];
-extern char byte_DD4F5[3];
+extern char byte_DD4E1[5];   /* vlna 126 */
+extern char byte_DD4E6[5];   /* vlna 126 */
+extern char byte_DD4EB[10];   /* vlna 126 */
+extern char byte_DD4F5[8];   /* vlna 126 */
 extern _UNKNOWN loc_E0002;
 extern _UNKNOWN loc_E1000;
 extern int16_t word_EA27A;
@@ -20687,10 +20687,10 @@ extern int16_t word_1B0700;
 extern char byte_1B0704[8];
 extern char byte_1B070C[8];
 extern char byte_1B0714[7];
-extern char byte_1B071B[];
-extern char byte_1B071C[];
-extern char byte_1B071D[];
-extern char byte_1B071E[254];
+extern char byte_1B071B[257];   /* vlna 126: jeden buffer, viz orion_data.c */
+#define byte_1B071C (byte_1B071B + 1)
+#define byte_1B071D (byte_1B071B + 2)
+#define byte_1B071E (byte_1B071B + 3)
 extern int dword_1B081C;
 extern int dword_1B0820;
 extern int dword_1B0824;

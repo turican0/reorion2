@@ -76,3 +76,27 @@ def owner(rt):
         else: break
     return f'{prev[1]} + 0x{ida-prev[0]:X}'
 ```
+
+## Opraveno ve vlne 126 (vsechno pres retez sub_9BF70)
+
+| symbol / funkce | co bylo spatne |
+|---|---|
+| `byte_DD4B5` | `[1]` misto `[5] {1,2,3,5,8}` - prod/worker podle nerostu |
+| `byte_DD4EB` | `[1]` misto `[10] {25,25,25,25,25,25,40,60,80,100}` - klima -> obyvatelnost |
+| `byte_DD4E1` | `[3]` misto `[5]` |
+| `byte_DD4E6` | `[1]` misto `[5]` |
+| `byte_DD4F5` | `[3]` misto `[8]` |
+| `sub_9A2BA` | zahozena navratova hodnota `sub_E0B4F` (max. populace) |
+| `byte_1B071B..1E` | JEDEN editacni buffer 257 B rozsekany na ctyri symboly |
+
+Novy nastroj: **`tools/compare/dumpdata.py <adresa> <pocet>`** vypise bajty
+primo z `Debug/diss/Orion2.exe` (mapovani `soubor = cseg01 + 0x85654`).
+Rychlejsi a spolehlivejsi nez opisovat z `.lst`, kde IDA slucuje `db/dw/dd`
+a `align` vubec nevypisuje.
+
+## Kontrolni seznam pro "zkracenou tabulku"
+
+1. `grep -n "^char <jmeno>\[" src/game/orion_data.c` - ma rozmer?
+2. `grep -rn "<jmeno>\[" src/game/orion_part_*.c` - indexuje se? cim?
+3. `python tools/compare/dumpdata.py <adresa> <n>` - kolik prvku ma obraz?
+4. hranici urcuje dalsi symbol v `orion_data.c` (musi byt mezera >= n)

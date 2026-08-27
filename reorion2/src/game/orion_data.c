@@ -238,17 +238,27 @@ int16_t word_C5102 = -1; // weak
 int dword_C6E40[3] = { 41633, -1600192512, 41633 }; // weak
 char byte_CF38F[] = { '\x01' }; // weak
 char byte_D575C[] = { '\x02' }; // weak
-char byte_DD4B5[] = { '\x01' }; // weak
+/* PORT (vlna 126): tabulka "produkce na delnika podle bohatosti nerostu".
+   V obraze hry (cseg01:000DD4B5) je `db 1 / dw 302h / db 5, 8`, tedy PET
+   polozek { 1, 2, 3, 5, 8 } = Ultra Poor, Poor, Abundant, Rich, Ultra Rich.
+   V portu byla jednoprvkova, takze `byte_DD4B5[2]` (Abundant) a `[3]` (Rich)
+   cetly mimo pole - na PLANETS vychazelo 8 a 0 misto 3 a 5.
+   Indexuje se na ctyrech mistech (sub_9A2BA, sub_D27A7, sub_D2CAE). */
+char byte_DD4B5[5] = { 1, 2, 3, 5, 8 };
 int16_t word_DD4BA = 6450; // weak
 char byte_DD4C4[] = { '\xFC' }; // weak
 char byte_DD4CC[] = { '\xF6' }; // weak
 char byte_DD4CF[] = { '\x04' }; // weak
 char byte_DD4D7[] = { '\xF6' }; // weak
 char byte_DD4DC[] = { '\x05' }; // weak
-char byte_DD4E1[3] = { '\x02', '\x04', '\x06' }; // weak
-char byte_DD4E6[] = { '\0' }; // weak
-char byte_DD4EB[] = { '\x19' }; // weak
-char byte_DD4F5[3] = { '\x1E', '<', '\x1E' }; // weak
+/* PORT (vlna 126): tabulky v kodovem segmentu, ktere IDA zkratila.
+   Obsah nacten primo z obrazu hry: tools/compare/dumpdata.py 0xDD4E1 32
+   (mapovani soubor = cseg01 + 0x85654). Vsechny se INDEXUJI, takze
+   zkraceni znamenalo cteni mimo pole. */
+char byte_DD4E1[5] = { 2, 4, 6, 8, 10 };   /* velikost planety -> pocet (sub_DEE1B) */
+char byte_DD4E6[5] = { 0, 0, 1, 2, 3 };   /* obtiznost -> bonus (sub_E03F1, index byte_199CB0) */
+char byte_DD4EB[10] = { 25, 25, 25, 25, 25, 25, 40, 60, 80, 100 };   /* klima -> obyvatelnost v % (sub_E0A18, index 0..9) */
+char byte_DD4F5[8] = { 30, 60, 30, 60, 60, 120, 12, 16 };   /* sub_E3456 */
 _UNKNOWN loc_E0002; // weak
 _UNKNOWN loc_E1000; // weak
 int16_t word_EA27A = 8739; // weak
@@ -18171,10 +18181,14 @@ int16_t word_1B0700; // weak
 char byte_1B0704[8]; // weak
 char byte_1B070C[8]; // weak
 char byte_1B0714[7]; // weak
-char byte_1B071B[]; // weak
-char byte_1B071C[]; // weak
-char byte_1B071D[]; // weak
-char byte_1B071E[254]; // weak
+/* PORT (vlna 126): v originale je tohle JEDEN editacni buffer 0x1B071B..0x1B081B
+   (257 B, hned za nim uz je dword_1B081C). IDA ho rozsekala na ctyri symboly
+   po jednom bajtu. Widget textoveho pole s nimi pracuje SOUCASNE a spoleha na
+   to, ze na sebe navazuji: `byte_1B071C[k]` cte znak a `byte_1B071B[k] = 0`
+   ukonci retezec o znak driv (backspace / smazani kurzoru "_"). V portu to byly
+   samostatne objekty, takze se koncova nula zapisovala jinam a v ulozenem jmenu
+   hvezdy zustal kurzor - odtud "Trilar_" misto "Trilar" na PLANETS i COLONIES. */
+char byte_1B071B[257]; // weak
 int dword_1B081C; // weak
 int dword_1B0820; // weak
 int dword_1B0824; // weak
