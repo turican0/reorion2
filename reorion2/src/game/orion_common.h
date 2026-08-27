@@ -2656,8 +2656,8 @@ int sub_7A371(int result, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp
 extern int sub_7A3E3();
 // plna signatura: int sub_7A440();
 extern int sub_7A440();
-// plna signatura: void sub_7A47A( int a1, _WORD *a2);
-void sub_7A47A( int a1, _WORD *a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: char sub_7A47A( int a1, _WORD *a2);
+char sub_7A47A( int a1, _WORD *a2);   /* vlna 105: skutecny prototyp; vlna 127: vraci cl */
 // plna signatura: char sub_7A523( int a1);
 extern char sub_7A523();
 // plna signatura: int sub_7A54F();
@@ -11683,7 +11683,7 @@ int sub_7A352(int a1);
 int sub_7A371(int result, int a2, int16_t *a3);
 int sub_7A3E3(int16_t a1, int16_t a2);
 int sub_7A440();
-void sub_7A47A(int16_t a1, _WORD *a2);
+char sub_7A47A(int16_t a1, _WORD *a2);   /* vlna 127: vraci cl */
 char sub_7A523(int16_t a1);
 int sub_7A54F();
 _DWORD *sub_7A586(int a1, int a2, int16_t a3, _WORD *a4, _WORD *a5);
@@ -17131,7 +17131,8 @@ extern int16_t word_182306;
 extern int16_t word_182308;
 extern int16_t word_18230A;
 extern int16_t word_18230C;
-extern void (__noreturn *off_18230E)();
+extern int16_t word_18230E;   /* vlna 127: dva priznaky, ne ukazatel */
+extern int16_t word_182310;
 extern char *off_182314;
 extern char aMoise[200]; // vlna 58: tabulka 10 jmen po 20 B, viz orion_data.c
 extern char byte_1823E0[];

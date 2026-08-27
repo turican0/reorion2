@@ -12999,3 +12999,110 @@ fadu - rozdil je faze, ne regrese (viz poznamka u `bestmatch.py` ve vlne 123).
 2. **COLONIES (3815 px)**: stredni panel (panacci) a pravy panel
    (Reserve/Income) - jit stejnou metodou od `sub_1210FD`/`sub_12A478` nahoru.
 3. **RACES / LEADERS / INFO** - viz `tools/compare/POROVNANI.md`.
+
+---
+
+### Vlna 127-128: PLANETS dotazeno na 8 px + zaseknuti RACES
+
+Pokracovani metody "zespoda nahoru" z vlny 126 - tri zbyle rozdily na PLANETS
+a jeden zaseknuty proces.
+
+#### 1. "2 Food" - druhy radek ve sloupci CLIMATE se kreslil na spatne y
+
+`sub_9BF70` vola `sub_122259()` (vyska aktivniho fontu) a hodnotu zahazovala.
+V asm je `call sub_122259` nasledovan `mov edi, eax`, tedy navratova hodnota se
+POUZIVA - a to prave jako rozestup mezi prvnim a druhym radkem. IDA misto toho
+dosadila `SWORD2(v27)`, tj. horni pulku jineho 64bitoveho slova (typicka chyba
+z fuze kolem `sprintf`). Opraveno:
+
+```c
+int v70_fontH;                       /* asm: mov edi, eax */
+v70_fontH = sub_122259();
+sub_1210FD(v25, (int16_t)(v67 + v70_fontH + 4), (int)v49);
+```
+
+#### 2. "()" pod jmenem planety - zahozena navratova hodnota
+
+`sub_7A47A` konci `mov al, cl` pred `locret_7A43A`, ale v portu byla
+deklarovana jako `void`. Volajici pak testoval neinicializovanou promennou a
+tiskl `sprintf(v49, "(%s)", v21)` i pro prazdny retezec. Opraveno na
+`char sub_7A47A(int a1, _WORD *a2)` s `return v2;` a volajici si vysledek
+uklada do `v22`.
+
+#### 3. "Planets In Range" - filtr byl vypnuty
+
+Ve vlne 127 jsem `void (__noreturn *off_18230E)() = &sub_10000;` (nesmyslny
+ukazatel, ktery IDA vyrobila ze dvou sousednich `dw`) rozdelil na dva priznaky
+`word_18230E` / `word_182310`. Vychozi hodnoty jsem odhadl na nuly - spatne.
+
+Sonda v dosboxu ukazala, ze hodnota se nemeni za behu, ale prichazi rovnou
+z obrazu hry:
+
+```
+REGS filtr_range cycle=12559488 eip=00000E64 CHANGED addr=00398310 0000->0001
+```
+
+`dumpdata.py` ale hlasil nuly, protoze jeho posun `0x85654` plati JEN pro
+kodovy usek. Datovy usek ma posun **`0x7E654`** (mezi useky je 0x7000
+nealokovaneho mista); posun jsem nasel hledanim znameho vzorku rampy
+`E4 E5 E5 00x5 F5 FD FC 00x5`. Pak uz sedelo vsechno:
+
+```
+DATA cseg01:0017A30E: 00 00 | 01 00       -> word_18230E=0, word_182310=1
+```
+
+`dumpdata.py` proto ted vypisuje **obe** varianty a obe kotvy ma zdokumentovane
+primo v hlavicce.
+
+#### 4. RACES: nekonecna smycka v RLE blitteru
+
+Behem mereni prestal port na RACES odpovidat. Hlidac (`REORION2_WATCHDOG=8`)
+ukazal presne misto:
+
+```
+#0 sub_14852C+0x264 (orion_part_22.c:169)
+#1 sub_12A478 -> #2 sub_10CFD7 -> #3 sub_10C8E0 -> #4 sub_10ACBA -> #5 sub_1049B
+```
+
+Smycka `while (v4 > 0)` zmensuje `v4` vyhradne v `else` vetvi, a to o `rc`.
+Kdyz prijde vadny sprite (same nuly), je `v6 == 0` i `rc == 0`, smycka nedela
+zadny pokrok a proces visi. Pridana druha zachranna brzda po vzoru te, kterou
+funkce uz mela pro zapis mimo framebuffer: pri `rc == 0` jednou nahlasit
+souradnice, ukazatel na sprite a retez volajicich, a skoncit. Pri opakovanem
+mereni uz se zasek neobjevil (je casove zavisly), brzda zustava jako pojistka
+a jako sonda - az znovu nastane, rovnou rekne, ktery sprite je spatne.
+
+#### 5. Stav
+
+| zalozka | vlna 126 | ted |
+|---|---|---|
+| PLANETS | 2351 px (0,77 %) | **8 px (0,00 %)** |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| COLONIES | 3815 px (1,24 %) | 3815 px (1,24 %) |
+| RACES | 5597 px (1,82 %) | 5597 px (1,82 %) |
+| LEADERS | 6901 px (2,25 %) * | 6901 px (2,25 %) * |
+| INFO | 8966 px (2,92 %) | 8966 px (2,92 %) |
+
+\* LEADERS: referencni snimek je uprostred fadu (`paleta 188/768`), rozdil je
+faze, ne regrese.
+
+**PLANETS je hotove.** Zbylych 8 pixelu je oblast 3x4 na (462..464, 20..23) -
+jeden animovany prvek v horni liste, u ktereho dosbox nabidl jediny ustaleny
+snimek k porovnani, takze jde nejspis o fazi animace, ne o chybu kresleni.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek zmereno po prekladu, zadna regrese.
+
+#### Dalsi krok
+
+1. **COLONIES (3815 px)**: stredni panel (panacci) a pravy panel
+   (Reserve/Income) jsou prazdne - stejnou metodou od `sub_1210FD` /
+   `sub_12A478` nahoru.
+2. **RACES (5597 px)**: chybi zelene "NO CONTACT" a "SPY/AGENT".
+3. **LEADERS (6901 px)**: chybi portrety (prazdne sloty okna
+   `off_184480 + 55*i + 44` z vlny 24); tim se spravi i paleta 192-255.
+4. **INFO (8966 px)**: zdvojena leva tlacitka, prvni sloupec seznamu posunuty.
+

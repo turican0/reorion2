@@ -165,6 +165,25 @@ void sub_14852C(int x, int y, int a2)
     }
     else
     {
+      /* PORT (vlna 128): DRUHA ZACHRANNA BRZDA. Smycka konci jen tim, ze `v4`
+         klesne na nulu, a `v4` se zmensuje vyhradne tady - o `rc`. Kdyz prijde
+         vadny sprite (typicky same nuly, tj. neinicializovane okno), je v6==0
+         i rc==0, smycka nedela zadny pokrok a proces zamrzne. Zmereno na RACES:
+         hlidac ukazal zaseknuti presne tady, retez sub_1049B -> sub_10ACBA ->
+         sub_10C8E0 -> sub_10CFD7 -> sub_12A478. Nahlasit a skoncit je lepsi nez
+         viset - a hlaska rovnou rekne, ktery sprite je spatne. */
+      if ( !rc )
+      {
+        static int reportedRc = 0;
+        if ( !reportedRc )
+        {
+          reportedRc = 1;
+          PortDebug_CrashLog("sub_14852C: RLE bez pokroku (x=%d y=%d sprite=%p zbyva=%d)",
+                             x, y, (void *)(intptr_t)a2, v4);
+          PortDebug_Backtrace("sub_14852C rc=0", 6);
+        }
+        return;
+      }
       v4 -= rc;
       v5 += 512 * rc + 128 * rc;
       v2 = v5;

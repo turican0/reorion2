@@ -7554,7 +7554,15 @@ int16_t word_182306 = 0; // weak
 int16_t word_182308 = 0; // weak
 int16_t word_18230A = 0; // weak
 int16_t word_18230C = 0; // weak
-void (__noreturn *off_18230E)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
+/* PORT (vlna 127): v originale jsou to DVA nezavisle 16bitove priznaky
+   (`DISPLAY RESTRICTIONS` na obrazovce PLANETS - tlacitka na y=266 a y=358);
+   v obraze hry jsou oba nulove. IDA je slepila do jednoho ctyrbajtoveho
+   symbolu a v portu z toho vznikl UKAZATEL NA FUNKCI - na x64 osm bajtu,
+   inicializovany adresou sub_10000. Cteni `(_WORD)off_18230E` tedy vracelo
+   spodni pulku te adresy, tedy nenulu, a filtr "No Enemy Presence" byl
+   natrvalo zapnuty. */
+int16_t word_18230E = 0; // weak
+int16_t word_182310 = 1; // weak  (v obraze hry je 01 00 - filtr "Planets In Range" je vychozi)
 char *off_182314 = "SCORE.LBX"; // weak
 // PORT (vlna 58): NENI to sesti bajtovy retezec, ale TABULKA 10 jmen po 20
 // bajtech (jen prvni je predvyplnene "Moise", zbytek je v originale nulovy).

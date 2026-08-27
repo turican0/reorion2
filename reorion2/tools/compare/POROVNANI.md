@@ -100,3 +100,38 @@ a `align` vubec nevypisuje.
 2. `grep -rn "<jmeno>\[" src/game/orion_part_*.c` - indexuje se? cim?
 3. `python tools/compare/dumpdata.py <adresa> <n>` - kolik prvku ma obraz?
 4. hranici urcuje dalsi symbol v `orion_data.c` (musi byt mezera >= n)
+
+## Vlna 127-128
+
+### Posuny do `Orion2.exe` - POZOR, jsou DVA
+
+| usek | posun | kotva |
+|---|---|---|
+| kod (a tabulky v nem, napr. `0xDD4B5`) | `+0x85654` | `0xDD4B5` = `01 02 03 05 08` |
+| data (`dseg` symboly, napr. `0x17AC26`) | `+0x7E654` | `0x17AC26` = `E4 E5 E5 00x5` |
+
+Mezi useky je 0x7000 nealokovaneho mista. `dumpdata.py` proto vypisuje obe
+varianty a spravnou pozna clovek podle kontextu (nebo si ji overi sondou
+`DUMPREGS cond=changed:<C jmeno + 0x216000>:2 repeat=always`).
+
+Tohle byla prima pricina toho, ze `word_182310` vypadal jako nula, i kdyz
+je v obraze `01 00`.
+
+### Opraveno ve vlne 127-128
+
+| symbol / funkce | co bylo spatne |
+|---|---|
+| `sub_122259` v `sub_9BF70` | zahozena navratova hodnota (vyska fontu) -> druhy radek CLIMATE na spatne y |
+| `sub_7A47A` | deklarovana `void`, ale konci `mov al, cl` -> volajici tiskl "()" |
+| `off_18230E` | nesmyslny ukazatel ze dvou `dw` -> rozdeleno na `word_18230E=0`, `word_182310=1` |
+| `sub_14852C` | RLE smycka bez pokroku pri `rc==0` -> zamrznuti (pridana brzda) |
+
+### Nova pravidla
+
+- **Zaseknuty proces se meri hlidacem, ne hadanim.** `REORION2_WATCHDOG=8`
+  (prah kratsi nez zbyvajici cas behu!) pozastavi hlavni vlakno a vypise
+  zasobnik. Prah 70 s pri behu do 95 s se nikdy nestihne projevit.
+- **Kdyz smycka konci jen ubyvanim jedne promenne, over, ze v KAZDE vetvi
+  ubyva.** Dekompilator umi vetev, kde je krok nulovy, poskladat tak, ze to
+  neni videt.
+

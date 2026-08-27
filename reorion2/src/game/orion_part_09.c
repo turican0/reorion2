@@ -5293,7 +5293,7 @@ void sub_995D1()
   v4 = sub_115383(567, 200, (int)&unk_179B78, v3, (int)&word_182306, 2, &unk_179B78, 41);
   v5 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 16);
   *(_WORD *)(dword_19C598 + 60) = v4;
-  v6 = sub_11523B(441, 266, (int)&unk_179B78, v5, (int)&off_18230E, a1_2, 41);
+  v6 = sub_11523B(441, 266, (int)&unk_179B78, v5, (int)&word_18230E, a1_2, 41);
   v7 = dword_19C598;
   *(_WORD *)(dword_19C598 + 62) = v6;
   v8 = sub_11523B(441, 289, (int)&unk_179B78, (_WORD *)(intptr_t)*(uint32_t *)(v7 + 20), (int)&word_182308, a2_2, 41);
@@ -5305,7 +5305,7 @@ void sub_995D1()
   v12 = sub_11523B(441, 335, (int)&unk_179B78, v11, (int)&word_18230C, a4, 41);
   v13 = (_WORD *)(intptr_t)*(uint32_t *)(dword_19C598 + 32);
   *(_WORD *)(dword_19C598 + 68) = v12;
-  v14 = sub_11523B(441, 358, (int)&unk_179B78, v13, (int)&off_18230E + 2, a5, 41);
+  v14 = sub_11523B(441, 358, (int)&unk_179B78, v13, (int)&word_182310, a5, 41);
   v15 = dword_19C598;
   *(_WORD *)(dword_19C598 + 70) = v14;
   if ( byte_19C5EA )
@@ -5906,7 +5906,7 @@ void sub_9A2BA(int16_t *a1)
     v6 = sub_1276F0((int)&byte_19C5B2, v3);
     if ( !(_WORD)v6 )
       goto LABEL_31;
-    if ( HIWORD(off_18230E) )
+    if ( word_182310 )   /* vlna 127 */
     {
       LOBYTE(v6) = sub_9AAC1(v3);
       if ( !(_BYTE)v6 )
@@ -5924,7 +5924,7 @@ void sub_9A2BA(int16_t *a1)
     }
     if ( (_BYTE)v2 )
     {
-      if ( (_WORD)off_18230E )
+      if ( word_18230E )   /* vlna 127 */
       {
         v4 = word_19999C;
         LOBYTE(v6) = sub_9AAED(v3);
@@ -7549,6 +7549,7 @@ void sub_9BF70()
   int v66; // [esp+120h] [ebp+6Eh]
   int v67; // [esp+124h] [ebp+72h]
   int v68; // [esp+128h] [ebp+76h]
+  int v70_fontH;   /* vlna 127: vyska fontu z sub_122259 (asm: mov edi, eax) */
   int v69; // [esp+12Ch] [ebp+7Ah]
   _BOOL1 v70; // [esp+130h] [ebp+7Eh]
 
@@ -7660,7 +7661,7 @@ LABEL_27:
     }
     else
     {
-      sub_7A47A(v64, &v55);
+      v22 = sub_7A47A(v64, &v55);   /* vlna 127: navratova hodnota se zahazovala */
       if ( !v22 )
       {
 LABEL_33:
@@ -7670,14 +7671,20 @@ LABEL_33:
         v56 = v68 + 140;
         v67 = v62 + v57;
         sub_8FDA1(dword_18F990[(int16_t)v59], (int)v53, 2, 2, -1, 65, 1);
-        sub_122259();
+        /* PORT (vlna 127): asm `call sub_122259 / mov edi, eax` - vyska fontu
+           se schovava do EDI a o par instrukci dal z ni vznika y druheho
+           radku sloupce CLIMATE (`add edi, var_10` = v67, pak `add edi, 4`,
+           `movsx edx, di`). IDA hodnotu zahodila a y vzala ze `SWORD2` navratu
+           `sprintf` - stejny artefakt jako u seznamu na INFO (vlna 123).
+           Dusledek: "2 Food" / "0 Food" se kreslilo mimo radek. */
+        v70_fontH = sub_122259();
         v25 = v56;
         sub_1210FD(v56, v67, dword_18F990[v24]);
         sub_120BB5(1, (int)v53);
         v46 = *(int16_t *)(28 * (int16_t)v65 + dword_19C5A0 + 2);
         v26 = sub_7A990(0x141u);
         v27 = sprintf(v49, v26, v46);
-        sub_1210FD(v25, SWORD2(v27), (int)v49);
+        sub_1210FD(v25, (int16_t)(v67 + v70_fontH + 4), (int)v49);   /* vlna 127 */
         v28 = (int16_t)v58;
         v29 = (char *)dword_192C74[(int16_t)v58];
         v56 = v68 + 217;

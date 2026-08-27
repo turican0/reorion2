@@ -443,7 +443,13 @@ int sub_7A440()
 
 
 //----- (0007A47A) --------------------------------------------------------
-void sub_7A47A( int a1, _WORD *a2)
+/* PORT (vlna 127): funkce vraci `cl` (asm: `mov al, cl` pred skokem na
+   spolecny epilog `locret_7A43A`) - priznak "nasla se lod u teto hvezdy".
+   Volajici `sub_9BF70` na nem stavi `test al, al / jz`, ale IDA ji udelala
+   `void` a nechala tam `v22` neinicializovanou (`variable 'v22' is possibly
+   undefined`). Podle smeti se pak na PLANETS obcas vzal blok, ktery kresli
+   "(%s)" s prazdnym jmenem - odtud "()" pod nazvem planety. */
+char sub_7A47A( int a1, _WORD *a2)
 {
   char v2; // cl
   int16_t i; // si
@@ -456,7 +462,7 @@ void sub_7A47A( int a1, _WORD *a2)
   for ( i = 0; ; ++i )
   {
     if ( i >= word_199A02 || v2 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7A43A je epilog funkce */
+      return v2;   /* vlna 127: asm `mov al, cl` pred locret_7A43A */
     v4 = word_192248[i];
     for ( j = *(int16_t *)((char *)&word_1975D4 + 5 * v4); ; j = *(int16_t *)((char *)&word_1975D4 + 5 * v4) )
     {
