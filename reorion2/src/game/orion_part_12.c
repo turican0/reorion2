@@ -4,13 +4,15 @@
 /* Adresni rozsah: 0xBBC8B - 0xC5F52  (200 funkci) */
 
 //----- (000BBC8B) --------------------------------------------------------
-int sub_BBC8B()
+/* PORT (vlna 129): asm 0xBBC8B - `movzx ebx,bl / movsx edx,dx / cwde` pred
+   volanim sub_BBC6F, tedy tri registrove argumenty se predavaji dal, a
+   `mov esi, eax` za nim, tedy se pouziva navratova hodnota. IDA nechala
+   `sub_BBC6F();` a `v1 = v0;` s neinicializovanym v0. */
+int sub_BBC8B( int a1, int a2, int a3)
 {
-  int16_t *v0; // eax
   int16_t *v1; // esi
 
-  sub_BBC6F();
-  v1 = v0;
+  v1 = (int16_t *)(intptr_t)sub_BBC6F(a1, a2, a3);
   sub_12D8F5(30, 30, dword_19F7B0);
   sub_12F7E6(1, 1, v1, (int16_t *)dword_19F7B0);
   sub_12E64F((int16_t *)dword_19F7B0, (int16_t *)dword_19F7B0, 237, 0);
@@ -6473,12 +6475,15 @@ void sub_C3B3C()
     v20 = v1;
     do
     {
+      /* vlna 129: asm 0xC3B7E - ecx=[ebp+var_8] se cte PRED prictenim 18,
+         takze y je 349, 367, 385, 403. IDA zvedla obe inkrementace nad
+         volani a registrove argumenty zahodila uplne. */
+      sub_B55C7(word_182AB7, v2, 106, v21, 366, 20);
       v21 += 18;
       ++v2;
-      sub_B55C7(366, 20);
     }
     while ( v2 < 4 );
-    sub_B53C8();
+    sub_B53C8(word_182AB7, 106, 421, 366);   /* vlna 129: asm 0xC3BAD */
     sub_BB04E(1u);
     v4 = 0;
     do

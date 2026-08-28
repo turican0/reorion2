@@ -622,6 +622,63 @@ extern "C" void PortDebug_CrashLog(const char* fmt, ...)
     }
 }
 
+// PORT (vlna 129): BUFFEROVANY sondovy log do `probe_text.log`.
+//
+// `PortDebug_CrashLog` vyse dela fopen+fclose na kazdy radek. To je spravne
+// pro par hlasek pri padu, ale jako sonda uvnitr kreslici funkce je to past:
+// pri 27 tisicich volani se beh zpomali tak, ze kliky zadavane v milisekundach
+// (REORION2_CLICK) dopadnou do jineho stavu hry - prvni pokus takhle uvizl
+// v dialogu "Enter Home Star Name" a na merenou obrazovku se vubec nedostal.
+// Tady se soubor otevre jednou a necha se bufferovany.
+//
+// Zapina REORION2_PROBE_LOG=1 (bez nej sonda nic nedela, takze prelozeny kod
+// muze zustat i pri regresni brane). Volat z herniho kodu lze primo - na
+// rozdil od `fprintf` v `.c` souborech, ktere `decomp_compat.h` presmerovava
+// na emulaci DOSovych souboru.
+// PORT (vlna 129): casova brana pro sondy. Kreslici funkce se volaji
+// desetitisickrat uz behem intra a menu, takze sonda s poctovym limitem se
+// vycerpa driv, nez hra dojde na merenou obrazovku. `REORION2_PROBE_AFTER_MS`
+// rekne, od ktere sekundy behu ma sonda platit (kliky se zadavaji v tychz
+// milisekundach pres REORION2_CLICK, takze se to snadno srovna).
+extern "C" int PortDebug_ProbeArmed(void)
+{
+    static unsigned prah = 0;
+    static bool tried = false;
+    if (!tried) {
+        tried = true;
+        const char* e = getenv("REORION2_PROBE_AFTER_MS");
+        prah = e ? (unsigned)atoi(e) : 0u;
+    }
+    return (unsigned)SDL_GetTicks() >= prah;
+}
+
+extern "C" void PortDebug_ProbeLog(const char* fmt, ...)
+{
+    static std::FILE* f = nullptr;
+    static bool tried = false;
+    if (!tried) {
+        tried = true;
+        const char* e = getenv("REORION2_PROBE_LOG");
+        if (e && *e != '0')
+            f = std::fopen("probe_text.log", "w");
+    }
+    if (!f)
+        return;
+    // cas od prvniho zapisu - bez nej se v logu nepozna, co se kreslilo
+    // v okamziku, kdy padl snimek (REORION2_DUMP_AFTER_MS).
+    static unsigned long long t0 = (unsigned long long)SDL_GetTicks();
+    std::fprintf(f, "[%6llu] ", (unsigned long long)((unsigned long long)SDL_GetTicks() - t0));
+    va_list ap;
+    va_start(ap, fmt);
+    std::vfprintf(f, fmt, ap);
+    va_end(ap);
+    std::fputc('\n', f);
+    // flush po kazdem radku: beh sondy koncime `taskkill /F`, takze bez nej
+    // se posledni (a casto jediny zajimavy) kus logu ztrati v bufferu. Proti
+    // `PortDebug_CrashLog` je to porad jen jeden zapis misto fopen+write+fclose.
+    std::fflush(f);
+}
+
 void PortDebug_Message(const char* text)
 {
     // Vlna 58: hlaska z sub_126487 (JEDINY konec programu) se ztracela.

@@ -1482,6 +1482,8 @@ int16_t sub_103D0C()
 #define v37 (*(uint32_t *)(ctx103D53 + 83))
 #define v38 (*(uint32_t *)(ctx103D53 + 87))
 //----- (00103D53) --------------------------------------------------------
+
+
 int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6, int a7)
 {
   int result; // eax
@@ -1542,7 +1544,7 @@ int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6
   *(_WORD *)(dword_1ACF14 + 25) = 480 - *(_WORD *)(dword_1ACF00 + 5);
   while ( 1 )
   {
-    sub_106AF3();
+    v10 = sub_106AF3();   /* vlna 129: asm `call sub_106AF3 / test al, al` na 00103EC9 - navratova hodnota je podminka smycky */
     if ( v10 )
       break;
     v11 = (_WORD *)dword_1ACF14;
@@ -2321,7 +2323,7 @@ char sub_1048AC()
   *v0 = v2 + v1;
   while ( 1 )
   {
-    sub_106AF3();
+    v3 = sub_106AF3();   /* vlna 129: asm `call sub_106AF3 / test al, al` na 001048C6 - navratova hodnota je podminka smycky */
     if ( v3 || *(_WORD *)dword_1ACF14 > *(_WORD *)(dword_1ACF14 + 25) )
       break;
     ++*(_WORD *)dword_1ACF14;
@@ -2344,7 +2346,7 @@ char sub_1048FF()
   v0 = *(_WORD *)dword_1ACF14;
   for ( *(_WORD *)dword_1ACF14 += *(_WORD *)(dword_1ACF14 + 29); ; ++*(_WORD *)dword_1ACF14 )
   {
-    sub_106AF3();
+    v1 = sub_106AF3();   /* vlna 129: asm `call sub_106AF3 / test al, al` na 00104915 - navratova hodnota je podminka smycky */
     if ( v1 || *(_WORD *)dword_1ACF14 > *(_WORD *)(dword_1ACF14 + 25) )
       break;
   }
@@ -4899,8 +4901,8 @@ _DWORD *sub_107214(int a1, int a2, int a3, int a4)
     }
     else
     {
-      v14 = sprintf(v23, "%i", *(int16_t *)(dword_192BD8 + 174));
-      sub_249F9(aBilltextLbx, SHIDWORD(v14), v21, 40);
+      sprintf(v23, "%i", *(int16_t *)(dword_192BD8 + 174));
+      sub_249F9(aBilltextLbx, 19, v21, 40);   /* vlna 129: asm 0x10744B `mov edx, 13h` */
       v15 = (char *)v23 - 1;   /* vlna 124: cil je sousedni buffer v23, ne &v22 */
       do
         ++v15;

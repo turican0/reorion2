@@ -13106,3 +13106,257 @@ snimek k porovnani, takze jde nejspis o fazi animace, ne o chybu kresleni.
    `off_184480 + 55*i + 44` z vlny 24); tim se spravi i paleta 192-255.
 4. **INFO (8966 px)**: zdvojena leva tlacitka, prvni sloupec seznamu posunuty.
 
+
+---
+
+### Vlna 129: COLONIES 3815 -> 459 px (spodni panely)
+
+Zadani: dotahnout COLONIES. Chybel cely stredni panel (panacci) a cely pravy
+panel (Reserve/Income/...). Postup byl zase zespoda nahoru, ale nejdriv bylo
+potreba najit SPRAVNOU kreslici funkci - a to trvalo tri pokusy.
+
+#### 0. Slepa ulicka: text na COLONIES nejde pres sub_1212B3
+
+Sonda na `sub_1212B3` (a pak i na `sub_1212EB` / `sub_122309` / `sub_121814`)
+za cely beh zachytila jen 19 ruznych retezcu, vsechny z mapy a z dialogu.
+Tahle rodina obsluhuje mapu a dialogy; **seznamove obrazovky kresli text pres
+obalovaci engine `sub_103D53(x, y, sirka, retezec, ...) -> sub_106171 ->
+sub_121DEB`**. To je zaznamenane v `POROVNANI.md`, at se to nehleda znovu.
+
+#### 0b. Sonda musi byt levna, jinak meni to, co meri
+
+Prvni verze sondy psala pres `PortDebug_CrashLog`, ktery dela `fopen`+`fclose`
+na kazdy radek. Pri 27 tisicich volani se beh zpomalil natolik, ze kliky
+zadavane v milisekundach (`REORION2_CLICK`) dopadly do jineho stavu hry - beh
+uvizl v dialogu "Enter Home Star Name" a na COLONIES se vubec nedostal.
+Pribyl proto **`PortDebug_ProbeLog`** (port_dos.cpp): jeden bufferovany soubor
+`probe_text.log` s casovou znackou, zapina `REORION2_PROBE_LOG=1`.
+
+Casova znacka je nutna: bez ni se v logu nepozna, co se kreslilo v okamziku,
+kdy padl snimek. Obrazovka se totiz cela vykresli JEDNOU pri vstupu a pak uz
+se prekresluji jen animovane casti, takze konec logu vypada jako uplne jina
+obrazovka.
+
+#### 1. Pravy panel: `sub_106AF3` vraci `al`, tri volajici to zahazovali
+
+Sonda ukazala, ze `sub_103D53(520, 354, 104, ...)` se **vola** a dostava
+spravny retezec:
+
+```
+[     0] WRAP x=520 y=354 sirka=104 str="\x1a0Reserve: \x1a150\r\x1a0Income: \x1a1+8\r..."
+```
+
+(`\x1A` + '0'/'1' jsou kody zarovnani sloupce, `\r` konec radku.) Hned za tim
+ale nasleduje dalsi volani - zadne `RADEK`, zadny `ZNAK`. Funkce tedy skoncila,
+aniz by cokoli vykreslila.
+
+Duvod je v jeji layoutovaci smycce:
+
+```
+loc_103EC9:  call sub_106AF3
+             test al, al        <- navratova hodnota je podminka ukonceni
+             jnz  short loc_103EE7
+```
+
+IDA nechala `sub_106AF3();` a `if ( v10 )` s neinicializovanym `v10`. Podle
+nahodneho obsahu zasobniku tedy funkce bud kreslila, nebo skoncila `return 0`.
+Uz vlna 121 opravila samotnou `sub_106AF3` (z `void` na `char`) a jedno volani
+v `sub_10494E`; **tri dalsi volajici zustali** - `sub_103D53`, `sub_1048AC`,
+`sub_1048FF`. Opraveno u vsech.
+
+COLONIES 3815 -> 2768 px, pravy panel pixelove shodny.
+
+#### 2. Stredni panel: dva prazdne thunky a jeden ztraceny argument
+
+Sonda na `sub_12A478` ukazala, ze v oblasti stredniho panelu port nekresli
+**zadny** sprite. `sub_C3B3C` ma pritom smycku presne pres ctyri radky ikon:
+
+```c
+v21 = 349;
+do { v21 += 18; ++v2; sub_B55C7(366, 20); } while ( v2 < 4 );
+sub_B53C8();
+```
+
+`v21` (y) se nikam nepredava. V asm:
+
+```
+loc_C3B7E:  push 14h                     ; a6 = 20
+            movsx ecx, [ebp+var_8]       ; a4 = y (349, 367, 385, 403)
+            mov   ebx, 6Ah               ; a3 = 106 (x)
+            movsx eax, word_17AAB7       ; a1 = index kolonie
+            movsx edx, di                ; a2 = poradi radku 0..3
+            push  16Eh                   ; a5 = 366
+            add   [ebp+var_8], 12h       ; POZOR: az ZA ctenim ecx
+            call  sub_B55C7
+```
+
+Tri chyby na sebe:
+
+1. **`sub_B55C7` a `sub_B53C8` jsou thunky** (`push 1 / jmp` na spolecne telo
+   `sub_B55CF` resp. `sub_B53CC`). IDA z nich udelala `JUMPOUT`, coz je
+   v portu NO-OP - **nedelaly nic**. Sourozenci s priznakem 0 (`sub_B55A3`,
+   `sub_B53B6`) pritom v portu spravne byli.
+2. Volajici ztratil ctyri registrove argumenty a IDA navic zvedla obe
+   inkrementace nad volani, takze y bylo posunute o jeden krok.
+3. Po zprovozneni thunku port **spadl** ve `sub_12A478` - uvnitr `sub_B55CF`
+   je `sub_BBC6F`, dalsi prazdny `JUMPOUT` thunk. V asm je to
+   `test bl,bl / 4*dx + 8 nebo +23h / jmp loc_BBC5D`, tedy telo uvnitr
+   `sub_BBC46` zakoncene `jmp sub_127C27` - funkce **bere tri registrove
+   argumenty a vraci ukazatel na sprite**. Sest volajicich (ctyrikrat primo,
+   dvakrat pres `sub_BBC8B`) kreslilo sprite z neinicializovane lokalky.
+
+COLONIES 2768 -> 946 px.
+
+#### 3. `sub_B55CF`: prvni argument ulozeny pres `push eax`
+
+Zbyle rozdily byly kratsi radky - misto peti krumpacu tri, misto osmi zkumavek
+ctyri. Pocty se cetly pres `v58`, u ktereho IDA sama hlasi
+`variable 'v58' is possibly undefined`. V asm se `[ebp+var_48]` nikde
+nezapisuje - protoze ho zapsal prolog:
+
+```
+enter 44h, 0
+push  eax          <- prvni argument na [ebp-48h]
+```
+
+`v58` je tedy proste `a1` (index kolonie). Bez toho se pocty ikon cetly
+z nahodneho indexu.
+
+COLONIES 946 -> **459 px**.
+
+#### 4. Stav
+
+| zalozka | vlna 128 | ted |
+|---|---|---|
+| PLANETS | 8 px (0,00 %) | 8 px (0,00 %) |
+| COLONIES | 3815 px (1,24 %) | **459 px (0,15 %)** |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| RACES | 5597 px (1,82 %) | 5597 px (1,82 %) |
+| LEADERS | 6901 px (2,25 %) * | 6901 px (2,25 %) * |
+| INFO | 8966 px (2,92 %) | 8966 px (2,92 %) |
+
+\* LEADERS: referencni snimek je uprostred fadu, rozdil je faze.
+
+**Zbylych 459 px na COLONIES je jediny obdelnik** 17x27 na (601..617, 36..62) -
+jezdec posuvniku seznamu. Port ho kresli SVETLEJSI; prevod je cisty posun po
+sede rampe, `dbx = 81 + (port - 81) / 2` (82->81, 92->86, 99->90, 104->92,
+248->246). Originál tedy na ten obdelnik jeste pousti stinovaci tabulku
+(nejspis "neni co rolovat" = ztlumeno), port ne.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese;
+- vsechny docasne sondy odstranene (`grep -c SONDA` = 0).
+
+#### Dalsi krok
+
+1. **INFO (8966 px)**: zdvojena leva tlacitka, prvni sloupec seznamu posunuty.
+2. **LEADERS (6901 px)**: chybi portrety (prazdne sloty okna
+   `off_184480 + 55*i + 44` z vlny 24); tim se spravi i paleta 192-255.
+3. **RACES (5597 px)**: chybi zelene "NO CONTACT" a "SPY/AGENT".
+4. **COLONIES (459 px)**: stinovaci tabulka na jezdci posuvniku.
+
+
+---
+
+### Vlna 129 (pokracovani): INFO 8966 -> 321 px
+
+Stejnou metodou. Sonda ted uz umi i **casovou branu** `REORION2_PROBE_AFTER_MS`
+- kreslici funkce se volaji desetitisickrat uz behem intra, takze sonda
+s poctovym limitem se vycerpala driv, nez hra dosla na merenou obrazovku.
+`PortDebug_ProbeLog` navic flushuje po kazdem radku, protoze beh sondy koncime
+`taskkill /F` a bez toho se posledni (a casto jediny zajimavy) kus logu ztratil.
+
+#### 1. Leva tlacitka: zkracena tabulka souradnic
+
+Vsech pet tlacitek ma byt na x = 21; port je mel na 21, **40, 8, 26, 27**.
+Sonda na tvorbe prvku (`sub_114FBA`) to potvrdila. Zdroj je v `sub_106CAC`:
+
+```c
+v14 = (uint8_t)byte_183C28[2 * v12];      /* y */
+v15 = (uint8_t)byte_183C27[2 * v12++];    /* x */
+```
+
+V obraze hry je to jedna souvisla tabulka peti dvojic (`dumpdata.py 0x17BC27`):
+
+```
+15 32 15 4D 15 66 15 80 15 9A   =  (21,50) (21,77) (21,102) (21,128) (21,154)
+```
+
+IDA ji rozsekala na **jednoprvkovy** `byte_183C27` a `byte_183C28[9]`, takze
+`byte_183C27[2*i]` cetlo mimo pole. Presne vzorec z kontrolniho seznamu vlny
+126. Slouceno na `byte_183C27[10]`, `byte_183C28` je uz jen makro na +1.
+
+INFO 8966 -> 642 px.
+
+#### 2. Prvni radek legendy: index retezce z horni pulky navratu `sprintf`
+
+Port psal `11Behold the .` misto `11 BC INCOME`. V `sub_107214`:
+
+```c
+v14 = sprintf(v23, "%i", ...);
+sub_249F9(aBilltextLbx, SHIDWORD(v14), v21, 40);
+```
+
+V asm je `mov edx, 13h` JESTE PRED `call sprintf_`, takze index je 19.
+Zase fuze `int64` kolem `sprintf` (stejna trida jako `SWORD2(v27)` ve vlne 127).
+
+INFO 642 -> **321 px**.
+
+#### 3. Zbytek: `sub_24ACA` neni v portu nikdy volana
+
+Posledni rozdil je `Net Income:  BC` misto `Net Income: 8 BC` - chybi cislo.
+Dosazuje ho `sub_24E08(buffer, hodnota, velikost)`, coz je v portu
+**`DECOMP_TODO` pahyl**. V asm je to tenky thunk nad `sub_24ACA`:
+
+```
+sub_24E08:  push ecx / movsx ebx,bx / push ebx / push -1 x3
+            movsx edx,dx / mov ecx,-1 / push edx / mov ebx,ecx / mov edx,ecx
+            call sub_24ACA
+```
+tedy `sub_24ACA(buffer, -1, -1, -1, hodnota, -1, -1, -1, velikost, ...)`.
+
+Jenze **cela ta rodina je v portu nedodelana** - `sub_24ACA` (dosazovani cisel
+a jmen do retezcu z LBX) nema v portu ANI JEDNOHO volajiciho:
+
+| funkce | stav v portu |
+|---|---|
+| `sub_24D4C`, `sub_24E08`, `sub_24E54` | `DECOMP_TODO` pahyl |
+| `sub_24D6A`, `sub_24D83`, `sub_24DF0`, `sub_24E27`, `sub_24E3E`, `sub_24E73` | `JUMPOUT` (NO-OP) |
+| `sub_24ACA` | prelozena, ale IDA ji rozbila (`v53` neinicializovany ukazatel na format, vsechno slite do `a29`/`a33`/`a34` int64) |
+
+Je to systemova mezera, ne jednotlivost - chybejici cisla v retezcich budou
+i na dalsich obrazovkach. Nechavam jako samostatny ukol, protoze `sub_24ACA`
+je ~600 B s velkym `switch` a chce vlastni prubeh.
+
+#### Stav
+
+| zalozka | vlna 128 | ted |
+|---|---|---|
+| PLANETS | 8 px (0,00 %) | 8 px (0,00 %) |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| COLONIES | 3815 px (1,24 %) | **459 px (0,15 %)** |
+| INFO | 8966 px (2,92 %) | **321 px (0,10 %)** |
+| RACES | 5597 px (1,82 %) | 5597 px (1,82 %) |
+| LEADERS | 6901 px (2,25 %) * | 6901 px (2,25 %) * |
+
+\* LEADERS: referencni snimek je uprostred fadu, rozdil je faze.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+1. **RACES (5597 px)**: chybi zelene "NO CONTACT" a "SPY/AGENT".
+2. **LEADERS (6901 px)**: chybi portrety; tim se spravi i paleta 192-255.
+3. **`sub_24ACA` + rodina** (viz vyse) - systemova mezera v dosazovani cisel
+   do retezcu.
+4. **COLONIES (459 px)**: stinovaci tabulka na jezdci posuvniku.
+5. **INFO (321 px)**: cislo u "Net Income" - vyresi bod 3.
+

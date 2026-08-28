@@ -3908,9 +3908,12 @@ int sub_B53B6( int a1, int a2, int a3, int a4)
 
 
 //----- (000B53C8) --------------------------------------------------------
-void sub_B53C8()
+/* PORT (vlna 129): thunk. asm: `push 1 / jmp loc_B53B8`, tedy stejne telo
+   jako sub_B53B6, jen s priznakem 1. IDA z nej udelala JUMPOUT (v portu
+   NO-OP) a funkce nedelala nic. */
+int sub_B53C8( int a1, int a2, int a3, int a4)
 {
-  JUMPOUT(0xB53B8);
+  return sub_B53CC(a1, a2, a3, a4, 1);
 }
 // B53CA: control flows out of bounds to B53B8
 
@@ -4005,9 +4008,13 @@ void sub_B55A3( int a1, int a2, int a3, int a4, int a5, int a6)
 
 
 //----- (000B55C7) --------------------------------------------------------
-void sub_B55C7(int a1, int a2)
+/* PORT (vlna 129): thunk. asm: `push 1 / jmp loc_B55A9`, tedy stejne telo
+   jako sub_B55A3, jen s priznakem 1. IDA z nej udelala JUMPOUT (v portu
+   NO-OP) a videla jen dva zasobnikove argumenty; ctyri registrove
+   (eax/edx/ebx/ecx) zahodila. */
+void sub_B55C7( int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  JUMPOUT(0xB55A9);
+  sub_B55CF(a1, a2, a3, a4, a5, a6, 1);
 }
 // B55CD: control flows out of bounds to B55A9
 
@@ -4074,6 +4081,12 @@ void sub_B55CF( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
   int v64; // [esp+30h] [ebp-18h]
   int v66; // [esp+40h] [ebp-8h]
 
+  /* PORT (vlna 129): asm 0xB55D5 - hned za `enter 44h,0` je `push eax`, cimz
+     se prvni argument ulozi na [ebp-48h]. IDA z toho udelala samostatnou
+     lokalku `v58`, kterou uz nikdy nikdo neinicializoval ("variable v58 is
+     possibly undefined"), a pocty ikon ve strednim panelu COLONIES se pak
+     cetly z nahodneho indexu kolonie. */
+  v58 = (int16_t)a1;
   LOWORD(v60) = 0;
   LOWORD(v62) = 0;
   LOWORD(v66) = 0;
@@ -4166,19 +4179,17 @@ LABEL_8:
       v27 = 0;
       while ( v27 < (int16_t)v64 )
       {
-        sub_BBC6F();
+        v29 = sub_BBC6F(1, 1, a7);   /* vlna 129: asm 0xB5A8E */
         ++v27;
-        v29 = v28;
-        LOWORD(v28) = v8++ * (a6 - word_182AB9) + a3;
+        v28 = v8++ * (a6 - word_182AB9) + a3;
         sub_12A478(v28, a4, v29);
       }
       v30 = 0;
       while ( v30 < (int16_t)v66 )
       {
-        sub_BBC6F();
+        v32 = sub_BBC6F(1, 0, a7);   /* vlna 129: asm 0xB5AF5 */
         ++v30;
-        v32 = v31;
-        LOWORD(v31) = v8++ * (a6 - word_182AB9) + a3;
+        v31 = v8++ * (a6 - word_182AB9) + a3;
         sub_12A478(v31, a4, v32);
       }
     }
@@ -4228,26 +4239,24 @@ LABEL_8:
     v40 = 0;
     while ( v40 < (int16_t)v62 )
     {
-      sub_BBC6F();
+      v42 = sub_BBC6F(a2, 1, a7);   /* vlna 129: asm 0xB5C6A */
       ++v40;
-      v42 = v41;
-      LOWORD(v41) = v39++ * (a6 - word_182AB9) + a3;
+      v41 = v39++ * (a6 - word_182AB9) + a3;
       sub_12A478(v41, a4, v42);
     }
     v43 = 0;
     while ( v43 < (int16_t)v60 )
     {
-      sub_BBC6F();
+      v45 = sub_BBC6F(a2, 0, a7);   /* vlna 129: asm 0xB5CCF */
       ++v43;
-      v45 = v44;
-      LOWORD(v44) = v39++ * (a6 - word_182AB9) + a3;
+      v44 = v39++ * (a6 - word_182AB9) + a3;
       sub_12A478(v44, a4, v45);
     }
     v46 = 0;
     while ( v46 < (int16_t)v59 )
     {
       ++v46;
-      v47 = sub_BBC8B();
+      v47 = sub_BBC8B(a2, 1, a7);   /* vlna 129: asm 0xB5D37 */
       v48 = v39++ * (a6 - word_182AB9) + a3;
       sub_12A478(v48, a4, v47);
     }
@@ -4255,7 +4264,7 @@ LABEL_8:
     while ( v49 < (int16_t)v61 )
     {
       ++v49;
-      v50 = sub_BBC8B();
+      v50 = sub_BBC8B(a2, 0, a7);   /* vlna 129: asm 0xB5D9C */
       v51 = v39++ * (a6 - word_182AB9) + a3;
       sub_12A478(v51, a4, v50);
     }
@@ -9304,9 +9313,20 @@ int sub_BBC46( int a1, int a2, int a3)
 
 
 //----- (000BBC6F) --------------------------------------------------------
-void sub_BBC6F()
+/* PORT (vlna 129): asm 0xBBC6F je thunk - spocita `edx` a skoci na loc_BBC5D,
+   coz je spolecne telo uvnitr sub_BBC46 zakoncene `jmp sub_127C27`. Funkce
+   tedy BERE tri registrove argumenty (eax/dx/bl) a VRACI ukazatel na sprite.
+   IDA z ni udelala `void ... { JUMPOUT }`, v portu NO-OP. Proti sub_BBC46 se
+   lisi jen konstantou: 8 misto 0 a 35 (23h) misto 27 (1Bh). */
+int sub_BBC6F( int a1, int a2, int a3)
 {
-  JUMPOUT(0xBBC5D);
+  int v3; // edx
+
+  if ( a3 )
+    v3 = 4 * a2 + 35;
+  else
+    v3 = 4 * a2 + 8;
+  return sub_127C27((int)aColony2Lbx, a1 + v3, dword_193174);
 }
 // BBC7D: control flows out of bounds to BBC5D
 

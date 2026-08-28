@@ -135,3 +135,90 @@ je v obraze `01 00`.
   ubyva.** Dekompilator umi vetev, kde je krok nulovy, poskladat tak, ze to
   neni videt.
 
+
+## Vlna 129
+
+### Ktera funkce kresli text? Zalezi na obrazovce
+
+| rodina | co obsluhuje |
+|---|---|
+| `sub_1212B3` / `sub_1212EB` / `sub_122309` / `sub_121814` | mapa, dialogy, jednotlive popisky |
+| `sub_103D53` -> `sub_106171` -> `sub_121DEB` | **seznamove obrazovky** (COLONIES, PLANETS, INFO) - obalovani, sloupce, zarovnani |
+
+`sub_103D53(x, y, sirka, retezec, ...)`. V retezci jsou ridici kody:
+`\x1A` + '0'/'1' prepina zarovnani sloupce, `\r` konci radek.
+
+Sonda na spatne rodine vypada jako "obrazovka se vubec nekresli" - a to je
+falesne. Kontrola: kdyz sonda za cely beh zachyti jen par retezcu z mapy,
+je spatne SONDA, ne hra.
+
+### Sonda nesmi menit to, co meri
+
+`PortDebug_CrashLog` dela `fopen`+`fclose` na kazdy radek. Jako sonda uvnitr
+kreslici funkce (desetitisice volani) zpomali beh tak, ze kliky zadavane
+v milisekundach dopadnou do jineho stavu hry. Pouzivej **`PortDebug_ProbeLog`**
+(`REORION2_PROBE_LOG=1`, bufferovany `probe_text.log` s casovou znackou).
+
+Casova znacka je nutna: obrazovka se cela vykresli JEDNOU pri vstupu, pak uz
+se prekresluji jen animovane casti. Konec logu proto vypada jako jina
+obrazovka, i kdyz hra nikam neodesla.
+
+### Tri vzorce chyb, ktere se v teto vlne opakovaly
+
+| vzorec | jak se pozna | priklady |
+|---|---|---|
+| zahozena navratova hodnota | IDA hlasi `variable 'vX' is possibly undefined`, v asm je za `call` hned `test al,al` nebo `mov ?, eax` | `sub_106AF3` (3 volajici), `sub_BBC6F`, `sub_BBC8B` |
+| prazdny thunk | v portu `void f() { JUMPOUT(0x...); }`; v asm `push <priznak> / jmp <spolecne telo>` | `sub_B55C7`, `sub_B53C8`, `sub_BBC6F` |
+| argument ulozeny prologem | `[ebp+var_N]` se v cele funkci jen CTE; v prologu je `push eax` hned za `enter` | `sub_B55CF` (`v58` = `a1`) |
+
+Postup u thunku: najdi sourozence se stejnym telem a jinym priznakem - ten uz
+byva v portu spravne prelozeny a staci ho okopirovat.
+
+### Retez kresleni COLONIES (overeny obema stranami)
+
+```
+sub_1049B -> sub_C4562 -> sub_C3D34 -> sub_C26F4  -> sub_103BC4 -> sub_103D53   (pravy panel)
+                                    -> sub_C3B3C  -> sub_B55C7  -> sub_B55CF    (stredni panel, panacci)
+                                                  -> sub_B53C8  -> sub_B53CC
+                                                  -> sub_1031AA                 (levy panel)
+                                    -> sub_90C4F                                (nahled soustavy)
+```
+
+
+### Sonda: casova brana a flush (vlna 129)
+
+`PortDebug_ProbeLog` (port_dos.cpp, `REORION2_PROBE_LOG=1`) ma dva doplnky,
+bez kterych se sonda chova zradne:
+
+- **`REORION2_PROBE_ARMED` / `REORION2_PROBE_AFTER_MS`** - `PortDebug_ProbeArmed()`
+  vrati true az po zadane milisekunde behu. Kreslici funkce se volaji
+  desetitisickrat uz behem intra, takze sonda s poctovym limitem (`n < 40`) se
+  vycerpa driv, nez hra dojde na merenou obrazovku. Prah se dava stejne jako
+  cas kliku v `REORION2_CLICK`.
+- **flush po kazdem radku** - beh sondy koncime `taskkill /F`, takze bez nej
+  se posledni (a casto jediny zajimavy) kus logu ztrati v bufferu. Proti
+  `PortDebug_CrashLog` je to porad jen jeden zapis misto fopen+write+fclose.
+
+### Nedodelana rodina sub_24ACA (vlna 129)
+
+Dosazovani cisel a jmen do retezcu z LBX. **V portu nema `sub_24ACA` ani
+jednoho volajiciho** - vsechny thunky nad ni jsou bud `DECOMP_TODO` pahyly
+(`sub_24D4C`, `sub_24E08`, `sub_24E54`), nebo `JUMPOUT` NO-OPy (`sub_24D6A`,
+`sub_24D83`, `sub_24DF0`, `sub_24E27`, `sub_24E3E`, `sub_24E73`). Samotna
+`sub_24ACA` je prelozena spatne (`v53` je neinicializovany ukazatel na format,
+argumenty slite do `a29`/`a33`/`a34` jako int64).
+
+Projev: v retezci chybi cislo - napr. "Net Income:  BC" misto
+"Net Income: 8 BC" na INFO. Kdykoliv v porovnani chybi jen CISLO a text kolem
+nej sedi, je podezreni na tuhle rodinu.
+
+Prevod argumentu thunku (Watcom: eax, edx, ebx, ecx, pak zasobnik; posledni
+`push` je prvni zasobnikovy argument):
+
+```
+sub_24E08(eax=buffer, dx=hodnota, bx=velikost)
+    -> sub_24ACA(buffer, -1, -1, -1, hodnota, -1, -1, -1, velikost, ecx_orig)
+sub_24D4C(eax=buffer, dx=v1, bx=v2, cx=velikost)
+    -> sub_24ACA(buffer, v1, -1, -1, v2, -1, -1, -1, velikost)
+```
+

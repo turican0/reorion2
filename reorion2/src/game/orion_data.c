@@ -8219,8 +8219,13 @@ char unk_183BC3[8] = { 0xB5, 0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04 };
 char *off_183BCB[7] = { unk_183B93, unk_183B9B, unk_183BA3, unk_183BAB,
                         unk_183BB3, unk_183BBB, unk_183BC3 };
 _UNKNOWN unk_183BE7; // weak
-char byte_183C27[] = { '\x15' }; // weak
-char byte_183C28[9] = { '2', '\x15', 'M', '\x15', 'f', '\x15', '\x80', '\x15', '\x9A' }; // weak
+/* vlna 129: v obraze hry je souvisla tabulka peti dvojic (x, y) pro tlacitka
+   na obrazovce INFO (sub_106CAC): 15 32 15 4D 15 66 15 80 15 9A. IDA ji
+   rozsekala na jednoprvkovy byte_183C27 a byte_183C28[9], takze
+   `byte_183C27[2*i]` (x) cetlo mimo pole - tlacitka mela x 21, 40, 8, 26, 27
+   misto petkrat 21. byte_183C28 je proto uz jen makro na +1 (orion_common.h).
+   Hranici dava dalsi symbol word_183C31 na +10 (v obraze D8 00 = 216). */
+char byte_183C27[10] = { 21, 50, 21, 77, 21, 102, 21, 128, 21, 154 };
 int16_t word_183C31[] = { 216 }; // weak
 int16_t word_183C33[7] = { 427, 318, 427, 373, 427, 438, 427 }; // weak
 _UNKNOWN unk_183C41; // weak
