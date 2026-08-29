@@ -2,7 +2,7 @@
 
 A from-scratch, functionally faithful **native Windows port of Master of Orion II** (MicroProse / SimTex, 1996), rebuilt from a decompilation of the original DOS binary into readable modern C++ / SDL3.
 
-> **Status: work in progress — not playable yet.** The engine boots, initializes its subsystems, and now runs deep into game start-up (menus, text/font rendering, resource loading), but still hits crashes and hangs before the main game loop is reachable. See [Current status](#current-status) below.
+> **Status: work in progress.** The engine boots through the intro and menus, starts a game, and renders the main in-game screens — five of the six of them within 0.15 % of the original, pixel for pixel. Gameplay beyond rendering (turns, combat, diplomacy) is not verified yet. See [Current status](#current-status) below.
 
 ## What this is
 
@@ -17,23 +17,76 @@ The goal is a modern, readable, maintainable codebase that plays identically to 
 
 ## Current status
 
-_Last updated: 2026-07-24_
+_Last updated: 2026-08-29_
 
-| Platform | Builds | Runs to |
-|---|---|---|
-| x86 (Win32) | ✅ | Main menu entry (crashes shortly after, see below) |
-| x64 | ✅ | Main menu entry (crashes shortly after — same fixes apply to both) |
+The port is compared against the original running under DOSBox-X, frame by frame,
+from the same starting position. Each in-game screen is measured as "how many of
+the 307,200 pixels differ":
+
+| Screen | Differing pixels | |
+|---|---:|---|
+| RACES | **0** | 0.00 % — pixel-identical |
+| PLANETS | 8 | 0.00 % |
+| FLEETS | 266 | 0.09 % |
+| INFO | 321 | 0.10 % |
+| COLONIES | 459 | 0.15 % |
+| LEADERS | 6,459 | 2.10 % — system view still missing |
+
+A 600-frame regression harness (`compare_frames`) runs the boot sequence against
+recorded DOSBox-X output and currently reports 600/600 identical frames; it has to
+stay green for any change to be accepted.
+
+Day-to-day work happens on the **x64 Debug** build, which is what the numbers above
+were measured on. x86 still builds, but has not been re-verified against the harness
+recently — the fixes are platform-independent, the verification effort simply goes
+into one configuration.
 
 Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave engineering log):
 
-- The DOS-era intro-video / logo cinematics play through their animation loops correctly.
-- Font/text rendering, the tech-tree init tables, and localized string tables no longer crash.
-- A cluster of **x64-only** bugs was found and fixed: a register-fusion trick that only works when a pointer fits in 32 bits (it doesn't on x64), a couple of "the decompiler mistook this integer constant for a function address" false positives, and a parser context pointer that silently truncated 64-bit stack addresses.
-- Known open issues right now: the intro sequence can get stuck right at the very end (loading the main intro cinematic data — under investigation), and there's a new crash just past the main-menu entry point.
+- The intro, menus and game start-up run through; the in-game screens render.
+- Several recurring classes of decompiler damage were identified and are now hunted
+  systematically rather than one at a time:
+  - **Truncated tables** — a contiguous array in the binary split into a one-element
+    symbol plus "the rest", so `table[2*i]` read out of bounds.
+  - **Overlapping views** — one record table exposed as several symbols at different
+    offsets, all but one of them one element long. Spotted by the *stride* in the
+    code: `dword[3*i]`, `word[6*i]`, `byte[12*i]` all mean the same 12-byte record.
+  - **Empty thunks** — `push <flag> / jmp <shared body>` decompiled to `JUMPOUT`,
+    which is a no-op in the port, so the function silently did nothing.
+  - **Dropped return values and lost register arguments** — the Watcom register
+    calling convention (`eax/edx/ebx/ecx`) is invisible to the decompiler, so calls
+    lost arguments and callers read uninitialized locals instead of results.
+  - **The same address under two names** — a stub in `link_stubs.c` and real data in
+    `orion_data.c` became two separate objects: one got filled, the other got read.
+- Tooling added alongside the fixes, under `tools/compare/`: byte-level reads from the
+  original image (`dumpdata.py`), best-frame matching between port and DOSBox
+  (`bestmatch.py`), and scanners for the two aliasing/sizing bug classes
+  (`scan_alias.py`, `scan_velikosti.py`). The port itself grew a hardware watchpoint
+  (`PortDebug_WatchWrite`, x86 debug registers) that names the exact instruction
+  corrupting a global — it found a memory-overwrite bug on the first attempt.
+- Known open issues right now: the LEADERS screen draws the correct star system's name
+  and map position but leaves the system view itself empty, and a family of string
+  helpers (`sub_24ACA` and its thunks) that substitutes numbers into text from the
+  game's string archives is still unimplemented, so a few numbers are missing from
+  otherwise correct labels.
 
 ## Screenshots
 
 Progress screenshots live on the [`wiki`](https://github.com/turican0/reorion2/tree/wiki/screenshots) branch (kept separate so binary images don't bloat `main`'s history).
+
+**2026-08-29 — in-game screens render 1:1 with the original.** Port on the left, original under DOSBox-X on the right, same starting position:
+
+![COLONIES screen, port next to the original](https://raw.githubusercontent.com/turican0/reorion2/wiki/screenshots/2026-08-29-colonies-port-vs-original.png)
+
+459 of 307,200 pixels differ (0.15 %) — a single 17×27 rectangle, the scrollbar
+thumb, which the original still shades and the port does not.
+
+**2026-08-29 — RACES, from the port alone:**
+
+![RACES screen rendered by the port](https://raw.githubusercontent.com/turican0/reorion2/wiki/screenshots/2026-08-29-races-port.png)
+
+This one is pixel-identical to the original, so a side-by-side would just be the
+same image twice.
 
 **2026-07-24 — intro cinematics render correctly:**
 
@@ -108,6 +161,10 @@ Useful environment variables while debugging:
 
 - `REORION2_TRACE=1` — print diagnostic checkpoints to stderr as the game boots.
 - `REORION2_SKIPINTRO=1` — skip the intro cinematics and jump straight to menu init (faster iteration while bisecting crashes).
+- `REORION2_SENDKEY=<code>:<ms>` and `REORION2_CLICK="x,y@ms:hold;..."` — scripted input, so a run can drive itself to a specific screen unattended.
+- `REORION2_DUMP_DIR=<dir>` with `REORION2_DUMP_AFTER_MS` / `REORION2_DUMP_FRAME_RANGE` — dump raw framebuffers (palette + 640×480 indices) for comparison against DOSBox-X.
+- `REORION2_WATCHDOG=<seconds>` — if no frame is presented for that long, suspend the main thread and print its stack. Turns "the window stopped responding" into a call stack.
+- `REORION2_PROBE_LOG=1` with `REORION2_PROBE_AFTER_MS` — buffered, timestamped log for temporary probes placed in game code (`PortDebug_ProbeLog`). The threshold matters: drawing functions are called tens of thousands of times before the interesting screen is reached.
 
 ## Porting methodology
 
