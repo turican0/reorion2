@@ -582,7 +582,7 @@ LABEL_8:
         sub_968D1((int)a1, a2);
         goto LABEL_13;
       }
-      sub_85BDD();
+      v4 = sub_85BDD();   /* vlna 130: asm 0x945B0 `mov word_19453E, ax` */
     }
     byte_199F15 = -1;
     word_19C53E = v4;

@@ -222,3 +222,85 @@ sub_24D4C(eax=buffer, dx=v1, bx=v2, cx=velikost)
     -> sub_24ACA(buffer, v1, -1, -1, v2, -1, -1, -1, velikost)
 ```
 
+
+### Kontrolni seznam pro "zkracenou tabulku" (doplneno vlnou 130)
+
+Vzorec uz poctvrte. Priznak: kod indexuje `pole[2*i]`, ale pole je v portu
+jednoprvkove a hned za nim je druhy symbol s "zbytkem".
+
+```
+word_A[]   = { prvni_x };
+word_B[13] = { y0, x1, y1, x2, y2, ... };
+```
+
+Oprava: slouc do `word_A[N]` s hodnotami z obrazu a z `word_B` udelej makro
+`(word_A + 1)`. N urci **dalsi symbol** v `orion_data.c`.
+
+Nalezene dosud: `byte_1B071B` (v126), `byte_183C27` (v129), `word_183FF1`,
+`word_18400D`, `word_184037`, `word_184053`, `word_18406F` (v130).
+
+**Pozor na tabulky schovane v `align`**: `byte_100A36` mela v `.lst` jen
+`db 0`, pak `align 4`, `dd 0F6F60F0Ah` a `db 2 dup(0Fh)` - dohromady 8 bajtu.
+`dumpdata.py` je ukaze vsechny; `.lst` ne.
+
+### Tyz symbol dvakrat (vlna 130)
+
+IDA dava temuz miste ruzna jmena podle toho, jak se na nej kod diva
+(`unk_` = neznamy typ). Kdyz pak `link_stubs.c` vyrobi `int unk_ADR;`
+a `orion_data.c` ma na te adrese skutecna data, vzniknou **dva objekty**:
+jeden se plni, z druheho se cte.
+
+Sken: `scratchpad/scan_alias.py` (adresy z obou souboru, prunik). Vlna 130
+nasla 13 kolizi; vsechny se pouzivaly jen jako `&unk_X`, takze staci
+`#define unk_X (*realny_symbol)` v `orion_common.h` a pahyl smazat.
+
+Priznak v obraze: text/hodnota se pocita spravne, ale kresli se prazdno.
+
+### Prazdne thunky - jak je poznat a opravit
+
+`void f() { JUMPOUT(0x...); }` v portu = **NO-OP**. V asm je to
+`push <priznak> / jmp <spolecne telo>`.
+
+Postup: najdi sourozence, ktery skace do TEHOZ tela s jinym priznakem - ten
+uz byva v portu prelozeny spravne a staci ho okopirovat. Poradi zasobnikovych
+argumentu: **posledni `push` je prvni zasobnikovy argument**.
+
+Nalezene dosud: `sub_B55C7`, `sub_B53C8`, `sub_BBC6F` (v129),
+`sub_102FA8`, `sub_10275F`, `sub_102776` (v130).
+
+
+### Hardwarovy watchpoint (vlna 130)
+
+Kdyz se v portu prepisuje pamet, nehadej podle sousedu - nech to rict procesoru:
+
+```c
+extern void PortDebug_WatchWrite(void *addr, int len);   /* len = 1, 2 nebo 4 */
+PortDebug_WatchWrite(&dword_1BB880, 4);
+```
+
+Nastavi debug registr (DR0-DR3) na zapis; `DebugVectoredHandler` v reorion2.cpp
+odchyti `EXCEPTION_SINGLE_STEP`, vypise instrukci i cely zasobnik a bezi dal.
+Ctyri watchpointy naraz, per-vlakno (volat z hlavniho vlakna).
+
+Vlna 130 tim nasla prepis palety a AIL handlu na prvni pokus - `byte_1BD154[i] = 1`
+v `sub_139D7E` s nesmyslnym `i`.
+
+### Prekryvajici se pohledy na jednu tabulku (vlna 130)
+
+Nejzakernejsi varianta "zkracene tabulky": IDA vyrobi NEKOLIK symbolu, ktere
+ukazuji do TEHOZ bloku s ruznym posunem, a vsechny krome jednoho jsou
+jednoprvkove. `scan_velikosti.py` je nenajde (kazdy ma "spravnou" vzdalenost
+k sousedovi), pozna je az **indexace v kodu**:
+
+```
+dword_1BD352[3*i]   word_1BD356[6*i]   word_1BD358[6*i]   byte_1BD35A[12*i]
+```
+
+Ruzne nasobky u sousednich adres = jeden zaznam, tady 12 bajtu:
+`3*i` dwordu = 12*i B, `6*i` slov = 12*i B, `12*i` bajtu = 12*i B.
+Krok v bajtech vyjde u vsech stejny -> je to jedna tabulka a symboly jsou
+jen pohledy na jeji pole.
+
+Oprava: jeden `char blok_ADR[velikost]` a z ostatnich udelat makra s pretypovanim.
+Velikost = vzdalenost k prvnimu symbolu, ktery uz do bloku nepatri.
+

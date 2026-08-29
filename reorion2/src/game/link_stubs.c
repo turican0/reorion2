@@ -384,23 +384,19 @@ int sub_C5B5F(void) { return 0; }
    DATOVY symbol -> 144 jeho "volani" skakalo do .bss (pad NEW GAME). */
 int unk_178A04;
 int unk_183938;
-int unk_183CEB;
-int unk_199A12;
-int unk_19C048;
 /* vlna 58: unk_19C6F8 a unk_19C7C6 jsou druha jmena IDA pro byte_19C6F8
    resp. byte_19C7C6 - ted makra v orion_common.h; pahyly by z nich zase
    udelaly samostatne objekty a cetlo by se prazdno. */
-int unk_19DA6C;
 int unk_1A74B4;
-int unk_1AA414;
-int unk_1AAED5;
-int unk_1AD404;
-int unk_1AD418;
-int unk_1AD454;
-int unk_1AD494;
-int unk_1AE054;
 /* unk_1AE5D4 zrusen (vlna 26 pokr. 54) - je to tentyz symbol jako
    word_1AE5D4[2086] v orion_data.c; viz prekryvove makro v orion_common.h. */
+/* vlna 130: trinact pahylu odstraneno - byla to druha jmena IDA pro
+   skutecna data v orion_data.c (word_183CEB, byte_199A12, word_19C048,
+   byte_19DA6C, byte_1AA414, byte_1AAED5, byte_1AD404, byte_1AD418,
+   byte_1AD454, byte_1AD494, byte_1AE054, byte_1BB8C4, word_1C95D8).
+   Jako samostatne objekty se plnil jeden a cetl druhy; ted jsou to
+   prekryvova makra v orion_common.h. Stejny pripad jako unk_19C6F8
+   (vlna 58) a unk_1AE5D4 (vlna 26). */
 int unk_1B000D;
 int unk_1B0020;
 int unk_1B002B;
@@ -413,8 +409,6 @@ int unk_1B0057;
 // this same "window slot table": 250 slots * 55 bytes, per the loop bounds
 // in sub_11E718/sub_1198F9 and the sibling constant word_18447E=250).
 char unk_1B0848[13750];
-int unk_1BB8C4;
-int unk_1C95D8;
 /* unknown_libname_1/2 (puvodni Watcom v9.x DOS runtime FINDFIRST/FINDNEXT,
    INT 21h AH=1Ah+4Eh/4Fh) UZ NEJSOU stubovane - skutecna implementace
    (case-insensitive, s * a ? wildcards) je v src/port/port_file.cpp,

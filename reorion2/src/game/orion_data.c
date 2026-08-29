@@ -292,7 +292,11 @@ int dword_F594C[16] =
 }; // weak
 _UNKNOWN loc_FFFF8; // weak
 _UNKNOWN loc_100000; // weak
-char byte_100A36[] = { '\0' }; // weak
+/* vlna 130: bonus spionaze podle typu vlady. V obraze osm bajtu
+   (0x100A36..0x100A3D, dalsi symbol je sub_100A3E): 00 00 0A 0F F6 F6 0F 0F.
+   IDA vypsala jen prvni `db 0` a zbytek schovala do `align 4` + `dd` + `dup`,
+   takze v portu byla tabulka jednoprvkova a "AGENT: 10%" vychazelo 0 %. */
+char byte_100A36[8] = { 0, 0, 10, 15, -10, -10, 15, 15 };
 _UNKNOWN loc_103428; // weak
 // PORT (vlna 65): NENI to jeden bajt, ale TABULKA 9 kodu zarovnani, kterou
 // `sub_1035AF` prohledava (`v12 = byte_10357B; ... *(_WORD *)v12 == v10`) a
@@ -8405,17 +8409,30 @@ char byte_183F7E[17] =
   '\xFF'
 }; // weak
 _UNKNOWN unk_183F8F; // weak
-int16_t word_183FF1[] = { 21 }; // weak
-int16_t word_183FF3[13] = { 49, 21, 156, 21, 262, 21, 369, 544, 50, 544, 157, 544, 262 }; // weak
-int16_t word_18400D[] = { 105 }; // weak
-int16_t word_18400F[13] = { 49, 105, 155, 105, 262, 105, 370, 528, 49, 528, 156, 528, 261 }; // weak
+/* vlna 130: dalsi souvisla tabulka sedmi dvojic (x, y), rozsekana IDA na
+   jednoprvkovy word_183FF1 a word_183FF3[13]. Hranici dava word_18400D na +28. */
+int16_t word_183FF1[14] = { 21, 49, 21, 156, 21, 262, 21, 369, 544, 50, 544, 157, 544, 262 };
+/* vlna 130: v obraze je jedna souvisla tabulka sedmi dvojic (x, y).
+   IDA ji rozsekala na jednoprvkovy word_18400D a word_18400F[13],
+   takze `word_18400D[2*i]` cetlo mimo pole. word_18400F je uz jen
+   makro na +1 (orion_common.h). */
+int16_t word_18400D[14] = { 105, 49, 105, 155, 105, 262, 105, 370, 528, 49, 528, 156, 528, 261 };
 int16_t word_184029[7] = { 96, 96, 96, 96, 520, 520, 520 }; // weak
-int16_t word_184037[] = { 125 }; // weak
-int16_t word_184039[13] = { 50, 125, 157, 125, 262, 125, 366, 333, 50, 333, 157, 333, 262 }; // weak
-int16_t word_184053[] = { 121 }; // weak
-int16_t word_184055[] = { 98 }; // weak
-int16_t word_18406F[] = { 120 }; // weak
-int16_t word_184071[] = { 126 }; // weak
+/* vlna 130: v obraze je jedna souvisla tabulka sedmi dvojic (x, y).
+   IDA ji rozsekala na jednoprvkovy word_184037 a word_184039[13],
+   takze `word_184037[2*i]` cetlo mimo pole. word_184039 je uz jen
+   makro na +1 (orion_common.h). */
+int16_t word_184037[14] = { 125, 50, 125, 157, 125, 262, 125, 366, 333, 50, 333, 157, 333, 262 };
+/* vlna 130: v obraze je jedna souvisla tabulka sedmi dvojic (x, y).
+   IDA ji rozsekala na jednoprvkovy word_184053 a word_184055[13],
+   takze `word_184053[2*i]` cetlo mimo pole. word_184055 je uz jen
+   makro na +1 (orion_common.h). */
+int16_t word_184053[14] = { 121, 98, 121, 205, 121, 311, 121, 417, 333, 98, 333, 206, 333, 311 };
+/* vlna 130: v obraze je jedna souvisla tabulka sedmi dvojic (x, y).
+   IDA ji rozsekala na jednoprvkovy word_18406F a word_184071[13],
+   takze `word_18406F[2*i]` cetlo mimo pole. word_184071 je uz jen
+   makro na +1 (orion_common.h). */
+int16_t word_18406F[14] = { 120, 126, 120, 233, 120, 338, 120, 445, 332, 126, 332, 233, 332, 338 };
 int16_t word_18408B = 332; // weak
 int16_t word_18408D = 392; // weak
 int16_t word_18408F = 613; // weak
@@ -18450,18 +18467,19 @@ char byte_1BD0A0[]; // weak
 char byte_1BD0AA[166]; // weak
 int dword_1BD150; // weak
 char byte_1BD154[510]; // weak
-int dword_1BD352[]; // weak
-int16_t word_1BD356[]; // weak
-int16_t word_1BD358[]; // weak
-char byte_1BD35A[]; // weak
-char byte_1BD35B[]; // weak
-char byte_1BD35C[]; // weak
-char byte_1BD35D[]; // weak
-char byte_1BD35E[]; // weak
-char byte_1BD35F[3059]; // weak
-int16_t word_1BDF52[]; // weak
-int16_t word_1BDF54[]; // weak
-int16_t word_1BDF56[511]; // weak
+/* vlna 130: 0x1BD352..0x1BDF52 je JEDNA tabulka 256 zaznamu po 12 bajtech.
+   IDA z ni udelala osm prekryvajicich se pohledu, z toho sedm jednoprvkovych;
+   `dword_1BD352[3*a2]` tak cetlo mimo pole a `sub_139D7E` pak psala
+   `byte_1BD154[i] = 1` s nesmyslnym `i` - odtud jednicky v palete, prepsane
+   AIL handly a pady na LEADERS (nalezeno hardwarovym watchpointem).
+   Rozlozeni zaznamu je videt primo z indexace v kodu:
+     dword_1BD352[3*i] -> +0 (dword),  word_1BD356[6*i] -> +4,
+     word_1BD358[6*i]  -> +6,          byte_1BD35A..F[12*i] -> +8 az +13.
+   Pohledy jsou ted makra v orion_common.h. */
+char blok_1BD352[3072];
+/* vlna 130: 0x1BDF52..0x1BE354 = 513 slov; word_1BDF52/54/56 se indexuji
+   TYMZ `i`, takze jsou to tri sousedni prvky jedne tabulky. */
+int16_t word_1BDF52[513];
 _UNKNOWN unk_1BE354; // weak
 char byte_1BE355[]; // weak
 char byte_1BE356[]; // weak

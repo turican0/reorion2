@@ -495,9 +495,14 @@ void sub_102F78( int a1, int a2, int a3, int a4, int a5)
 
 
 //----- (00102FA8) --------------------------------------------------------
-void sub_102FA8()
+/* PORT (vlna 130): thunk. asm 0x102FA8: `push 1 / push 2 / jmp loc_102F14`,
+   tedy stejne telo jako sub_102F10, jen s jinymi zasobnikovymi argumenty
+   (posledni push je prvni zasobnikovy argument -> a5=0, a6=2, a7=1).
+   IDA z nej udelala JUMPOUT, v portu NO-OP, a vsech pet volajicich prislo
+   i o ctyri registrove argumenty. */
+void sub_102FA8( int a1, int a2, int a3, int a4)
 {
-  JUMPOUT(0x102F14);
+  sub_102DAB(a1, a2, a3, a4, 0, 2u, 1);
 }
 // 102FAC: control flows out of bounds to 102F14
 
@@ -1482,6 +1487,7 @@ int16_t sub_103D0C()
 #define v37 (*(uint32_t *)(ctx103D53 + 83))
 #define v38 (*(uint32_t *)(ctx103D53 + 87))
 //----- (00103D53) --------------------------------------------------------
+
 
 
 int sub_103D53( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6, int a7)
@@ -8068,7 +8074,7 @@ LABEL_20:
       sub_120BB5(3, (int)&unk_183F3A);
       sub_249F9(aBilltextLbx_1, 28, v43, 40);
     }
-    sub_102FA8();
+    sub_102FA8(24, 222, (int)v43, 164);   /* vlna 130: asm 0x10ABDE */
     ServiceAudioTick_FE8BE(v29, 222, (int)v43, (int16_t *)a3);
     sub_120BB5(4, (int)&unk_183F3A);
     /* vlna 121: asm 0x10ABF6 - eax=18h, edx=123h, ebx=0A4h, ecx=0AAh
@@ -8885,7 +8891,7 @@ void sub_10BA3D(int a1, int a2)
     v2 += 84;
     if ( v25 >= 7u )
     {
-      sub_10275F();
+      v14 = sub_10275F();   /* vlna 130: asm 0x10BD1A `mov edx, eax` */
       *(_WORD *)a2 = word_18408B;
       *(_WORD *)(a2 + 2) = word_18408D;
       *(_WORD *)(a2 + 4) = word_18408F;
@@ -9067,14 +9073,14 @@ void sub_10BFBD(int a1)
           if ( !*(_BYTE *)(*(int16_t *)(v14 + 2) + a1 + 1412) )
           {
             sub_120D79(2, (int)&unk_1840AF);
-            sub_102FA8();
+            sub_102FA8(word_183FF1[2 * (uint16_t)v20], (int16_t)(word_183FF3[2 * (uint16_t)v20] + 76), *(_DWORD *)(v14 + 56), 76);   /* vlna 130: asm 0x10C0F8 */
           }
         }
       }
       goto LABEL_54;
     }
     sub_120D79(2, (int)&unk_1840AF);
-    sub_102FA8();
+    sub_102FA8(word_183FF1[2 * (uint16_t)v20], (int16_t)(word_183FF3[2 * (uint16_t)v20] + 76), *(_DWORD *)(v14 + 56), 76);   /* vlna 130: asm 0x10C139 */
     HIWORD(a1) = HIWORD(v14);
     if ( *(_BYTE *)(v14 + 11) )
       goto LABEL_54;
@@ -9173,9 +9179,9 @@ LABEL_54:
       sub_120BB5(3, (int)&unk_1840A7);
       sub_100A83((_BYTE *)dword_192BD8, &v22, &v18);
       sprintf(v16, "%s%hi%%", byte_1AD440, v22);
-      sub_102FA8();
+      sub_102FA8(417, 372, (int)v16, 98);   /* vlna 130: asm 0x10C4A4 */
       sprintf(v16, "%s%hi%%", byte_1AD42C, v18);
-      sub_102FA8();
+      sub_102FA8(519, 372, (int)v16, 97);   /* vlna 130: asm 0x10C4D9 */
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10B49B je epilog funkce */
     }
   }

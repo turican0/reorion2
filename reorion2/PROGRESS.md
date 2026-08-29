@@ -13360,3 +13360,224 @@ je ~600 B s velkym `switch` a chce vlastni prubeh.
 4. **COLONIES (459 px)**: stinovaci tabulka na jezdci posuvniku.
 5. **INFO (321 px)**: cislo u "Net Income" - vyresi bod 3.
 
+
+---
+
+### Vlna 130: RACES 5597 -> 0 px
+
+Zadani: "potrebujeme to 1:1". RACES melo prazdne panely (chybelo zelene
+"NO CONTACT" u vsech sedmi ras) a chybejici "SPY: 0% / AGENT: 10%".
+
+#### 1. Souradnice panelu: ctyri zkracene tabulky naraz
+
+Sonda ukazala, ze port kresli text na (91,167), (141,272), (216,60), (248,376),
+(353,60), (457,167) - tedy nesmyslne rozhazene. Ma byt dva sloupce, 216 a 424.
+
+Souradnice se ctou takhle:
+
+```c
+LOWORD(a1) = word_184037[2 * (uint16_t)v20];   /* x */
+LOWORD(a1) = word_184039[2 * (uint16_t)v20];   /* y */
+```
+
+V obraze je to jedna souvisla tabulka sedmi dvojic
+(`dumpdata.py 0x17C037 40 --data`):
+
+```
+7D 00 32 00 7D 00 9D 00 ...  = (125,50) (125,157) (125,262) (125,366)
+                               (333,50) (333,157) (333,262)
+```
+
+IDA ji rozsekala na **jednoprvkovy** `word_184037` a `word_184039[13]`, takze
+`word_184037[2*i]` cetlo mimo pole. **Stejny vzorec byl hned petkrat za sebou** -
+`word_183FF1`, `word_18400D`, `word_184037`, `word_184053`, `word_18406F`.
+Vsechny slouceny na `[14]`, sousedni symbol je uz jen makro na +1.
+
+#### 2. Prazdne retezce: tyz symbol existoval v portu DVAKRAT
+
+Souradnice uz sedely, ale kreslil se prazdny retezec. Duvod:
+
+```c
+sub_249F9(aBilltextLbx_0, 51, byte_1AD418, 20);   /* naplni */
+sub_1210FD(v19 + 91, v21 + 10, (int)&unk_1AD418); /* cte NECO JINEHO */
+```
+
+`byte_1AD418[20]` je v `orion_data.c`, ale `link_stubs.c` mel navic
+`int unk_1AD418;` - **dva ruzne objekty na tomtez miste**. IDA dava temuz
+miste ruzna jmena podle toho, jak se na nej kod diva.
+
+Sken (`scan_alias.py`) nasel **trinact** takovych kolizi. Vsechny se pouzivaji
+jen jako `&unk_X`, takze staci prekryvove makro - presne jak uz vlna 58
+udelala s `unk_19C6F8` a vlna 26 s `unk_1AE5D4`.
+
+RACES 5597 -> 1019 px.
+
+#### 3. "SPY / AGENT": dalsi prazdny thunk
+
+`sub_102FA8` (5 volajicich) byl `JUMPOUT`, tedy NO-OP. V asm:
+
+```
+sub_102FA8:  push 1 / push 2 / jmp loc_102F14   ->  sub_102DAB(a1,a2,a3,a4, 0,2,1)
+```
+
+Sourozenec `sub_102F10` (`push 1 / push 0`) uz v portu spravne byl. Vsech pet
+volajicich navic prislo o ctyri registrove argumenty; obnoveny z asm.
+
+RACES 1019 -> 824 px.
+
+#### 4. "AGENT: 0%" misto 10%: tabulka schovana v `align`
+
+```c
+char byte_100A36[] = { '\0' };   // v portu
+```
+
+V obraze je 8 bajtu (`00 00 0A 0F F6 F6 0F 0F`), ale IDA vypsala jen prvni
+`db 0` a zbytek schovala do `align 4` + `dd 0F6F60F0Ah` + `db 2 dup(0Fh)`.
+Hranici dava nasledujici funkce `sub_100A3E`. Index 2 -> 10 %.
+
+RACES 824 -> 366 px.
+
+#### 5. Ikona navic v panelu BONUSES
+
+Zbyl jediny sprite 21x24 na (333,392), ktery v originale neni. Sonda
+s backtrace ukazala `sub_10CFD7`, ktera kresli `*(a1+12)` kopii ikony.
+Hodnotu plni `sub_10BA3D`:
+
+```
+0x10BCDC  call sub_10275F
+0x10BD1A  mov  edx, eax        <- navratova hodnota
+0x10BD29  mov  [edi+0Ch], dx
+```
+
+`sub_10275F` je dalsi prazdny thunk - skace do tela `sub_102711` (loc_102727)
+s `eax = word_19999C`, takze je to proste `sub_102711(word_19999C)`. Totez
+`sub_102776` -> `sub_102739(word_19999C)`. IDA opet nechala `sub_10275F();`
+a neinicializovanou `v14`.
+
+**RACES 366 -> 0 px.**
+
+#### 6. Stav
+
+| zalozka | vlna 129 | ted |
+|---|---|---|
+| **RACES** | 5597 px (1,82 %) | **0 px (0,00 %)** |
+| PLANETS | 8 px (0,00 %) | 8 px (0,00 %) |
+| INFO | 321 px (0,10 %) | 321 px (0,10 %) |
+| COLONIES | 459 px (0,15 %) | 459 px (0,15 %) |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| LEADERS | 6901 px (2,25 %) | 6650 px (2,16 %) |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+**LEADERS (6650 px)** je uz jediny velky rozdil: port ukazuje jinou soustavu
+("Orion" misto "Trilar"), prazdny pohled na ni a jinak oznacenou hvezdu
+v minimape. Jmeno se cte z `word_19C53E`. Prvni pokus (`sub_85BDD` vraci `bx`,
+volajici v `sub_9453C` to zahazoval - opraveno) nic nezmenil, takze se hodnota
+nastavuje jinou cestou; bezi sonda `changed:` v dosboxu.
+
+
+---
+
+### Vlna 130 (pokracovani): LEADERS - spravna soustava a konec padu
+
+#### 7. `sub_85BDD` vraci index hvezdy, dva volajici to zahazovali
+
+LEADERS ukazovaly "Orion" misto "Trilar", prazdny pohled na soustavu a spatne
+oznacenou hvezdu v minimape. Jmeno se cte z `word_19C53E`, ktere se plni
+z `word_199838` (`sub_94C1D`: `word_19C53E = word_199838`).
+
+`word_199838` nastavuje `sub_86188`:
+
+```
+0x86E39  call sub_85BDD
+0x86E3E  mov  word_191838, ax        <- navratova hodnota
+```
+
+`sub_85BDD` byla v portu `void` (asm ma `mov eax, ebx / jmp loc_83D00`, tedy
+skok na SPOLECNY epilog - IDA z toho udelala `JUMPOUT` a funkci bez navratu)
+a volajici nechal `v40` neinicializovanou. Prepsana podle asm; navic IDA
+rozdelila jeden registr (`bx`) na dve promenne a zahodila zaverecny blok
+`loc_85C6A`. Po oprave vraci 29 = "Trilar".
+
+#### 8. Pad odhaleny touhle opravou: hardwarovy watchpoint
+
+Jakmile se hra poprve dostala k nacteni SKUTECNE soustavy, zacala v portu
+zhruba v polovine behu padat - a hlidace portu hlasily prepsanou pamet
+(paleta `byte_1BB358` same jednicky, `dword_1BB880 = 0x1010101`,
+`AIL handle prepsan`). Hledat to po sousedech je stridani hypotez, tak
+pribyl **hardwarovy watchpoint**:
+
+```c
+PortDebug_WatchWrite(&nejaky_global, 4);   /* DR0-DR3 + EXCEPTION_SINGLE_STEP */
+```
+
+Procesor pak po kazdem zapisu na tu adresu vyvola vyjimku a vectored handler
+vypise instrukci i cely zasobnik. Odpoved prisla na prvni pokus:
+
+```
+BT watchpoint #4 sub_139D7E+0x224  (orion_part_20.c:7063)   <- byte_1BD154[i] = 1;
+BT watchpoint #5 sub_139AF3   #6 sub_13AC01   #7 sub_A404E   #8 sub_A3FE6
+```
+
+#### 9. Pricina: 0x1BD352..0x1BDF52 je JEDNA tabulka, IDA z ni udelala osm pohledu
+
+Meze te smycky se ctou z `dword_1BD352[3 * a2]`, jenze `dword_1BD352` bylo
+v portu **jednoprvkove**. Indexace v kodu prozradi skutecne rozlozeni -
+zaznam ma 12 bajtu:
+
+| symbol | indexace | offset v zaznamu |
+|---|---|---|
+| `dword_1BD352` | `[3*i]` | +0 (dword) |
+| `word_1BD356` | `[6*i]` | +4 |
+| `word_1BD358` | `[6*i]` | +6 |
+| `byte_1BD35A..F` | `[12*i]` | +8 az +13 |
+
+Blok ma `0x1BDF52 - 0x1BD352 = 0xC00` = 3072 B = 256 zaznamu. Slouceno do
+`blok_1BD352[3072]`, pohledy jsou makra. Hned za nim je druha tabulka
+(`word_1BDF52/54/56`, 513 slov, tri sousedni prvky) - taky sloucena.
+
+**Pady prestaly** (3 ze 3 behu ciste) a LEADERS ukazuji spravne "Trilar"
+i spravne oznacenou hvezdu v minimape.
+
+Novy nastroj proti teto tride chyb: **`tools/compare/scan_velikosti.py`** -
+vypise symboly z `orion_data.c` mensi, nez kolik mista zabiraji v obraze.
+(Na prekryvajici se pohledy jako tenhle nestaci - ty pozna az indexace
+v kodu, viz tabulka vyse.)
+
+#### 10. Stav
+
+| zalozka | vlna 129 | ted |
+|---|---|---|
+| **RACES** | 5597 px (1,82 %) | **0 px (0,00 %)** |
+| PLANETS | 8 px (0,00 %) | 8 px (0,00 %) |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| **INFO** | 8966 px (2,92 %) | **321 px (0,10 %)** |
+| **COLONIES** | 3815 px (1,24 %) | **459 px (0,15 %)** |
+| LEADERS | 6901 px (2,25 %) | 6459 px (2,10 %) |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- vsechny docasne sondy odstranene (`PortDebug_WatchWrite` zustava jako nastroj).
+
+#### Dalsi krok
+
+**LEADERS (6459 px)**: hvezda uz je spravna, ale panel soustavy zustava prazdny -
+zmereno, ze port v oblasti (306..620, 15..200) nekresli ANI JEDEN sprite,
+zatimco dosbox tam ma drahy planet a samotne planety. Bezi sonda `DUMPREGS`
+na `sub_12A478` v dosboxu, ktera rekne, ktera funkce je kresli. S tim souvisi
+i zbyla odchylka palety (185/768) - barvy planet se nenacetly.
+
+Pak uz zbyva jen drobne: COLONIES 459 px (stinovaci tabulka na jezdci
+posuvniku), INFO 321 px (cislo u "Net Income" - rodina `sub_24ACA`),
+FLEETS 266 px, PLANETS 8 px.
+

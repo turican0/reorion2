@@ -11933,9 +11933,11 @@ int sub_102739( int a1)
 
 
 //----- (0010275F) --------------------------------------------------------
-void sub_10275F()
+/* PORT (vlna 130): thunk do tela sub_102711 (loc_102727). asm dava do eax
+   `word_19199C` (C: word_19999C), tedy index vlastni rasy. */
+int16_t sub_10275F()
 {
-  JUMPOUT(0x102727);
+  return sub_102711(word_19999C);
 }
 // 102774: control flows out of bounds to 102727
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -11943,9 +11945,11 @@ void sub_10275F()
 
 
 //----- (00102776) --------------------------------------------------------
-void sub_102776()
+/* PORT (vlna 130): thunk do tela sub_102739 (loc_10274F) - tentyz bajt,
+   ale horni dva bity. */
+int sub_102776()
 {
-  JUMPOUT(0x10274F);
+  return sub_102739(word_19999C);
 }
 // 10278B: control flows out of bounds to 10274F
 // 197F98: using guessed type int (uint8_t*)dword_197F98;

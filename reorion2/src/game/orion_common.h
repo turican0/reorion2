@@ -2986,8 +2986,8 @@ extern int sub_85AEC();
 extern int16_t sub_85B71();
 // plna signatura: int sub_85B93( int a1, _WORD *a2, _WORD *a3);
 int sub_85B93( int a1, _WORD *a2, _WORD *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_85BDD();
-extern void sub_85BDD();
+// plna signatura: int16_t sub_85BDD();
+extern int16_t sub_85BDD();
 // plna signatura: void sub_85C8A(int a1, int a2, _BYTE *a3, char *a4, int16_t **a5);
 void sub_85C8A(int a1, int a2, _BYTE *a3, char *a4, int16_t **a5);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_85F2F();
@@ -6625,10 +6625,10 @@ extern int sub_1026F1();
 extern int16_t sub_102711();
 // plna signatura: int sub_102739( int a1);
 extern int sub_102739();
-// plna signatura: void sub_10275F();
-extern void sub_10275F();
-// plna signatura: void sub_102776();
-extern void sub_102776();
+// plna signatura: int16_t sub_10275F();
+extern int16_t sub_10275F();
+// plna signatura: int sub_102776();
+extern int sub_102776();
 // plna signatura: int sub_10278D( int a1, int a2, int a3);
 extern int sub_10278D();
 // plna signatura: void sub_1027B5( int a1, int a2);
@@ -6675,8 +6675,8 @@ extern void sub_102F10();
 extern void sub_102F4F();
 // plna signatura: void sub_102F78( int a1, int a2, int a3, int a4, int a5);
 extern void sub_102F78();
-// plna signatura: void sub_102FA8();
-extern void sub_102FA8();
+// plna signatura: void sub_102FA8(int a1, int a2, int a3, int a4);
+extern void sub_102FA8(int a1, int a2, int a3, int a4);
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_10315D(int x, int y, int w, int h, int str, int a_word);
@@ -11849,7 +11849,7 @@ int sub_85ABF(int16_t a1, int16_t a2, _WORD *a3, _WORD *a4);
 int sub_85AEC();
 int16_t sub_85B71(int16_t a1);
 int sub_85B93(int16_t a1, _WORD *a2, _WORD *a3);
-void sub_85BDD();
+int16_t sub_85BDD();
 void sub_85C8A(int a1, int a2, _BYTE *a3, char *a4, int16_t **a5);
 void sub_85F2F();
 // void sub_85FF2(int a1);
@@ -13681,8 +13681,8 @@ int16_t sub_1026CF(int16_t a1, int16_t a2);
 int sub_1026F1(int16_t a1, int16_t a2);
 int16_t sub_102711(int16_t a1);
 int sub_102739(int16_t a1);
-void sub_10275F();
-void sub_102776();
+int16_t sub_10275F();
+int sub_102776();
 int sub_10278D(int16_t a1, int16_t a2, char a3);
 void sub_1027B5(int16_t a1, int16_t a2);
 int sub_1027D9(int16_t a1, char a2);
@@ -13706,7 +13706,7 @@ void sub_102DAB(int16_t a1, int16_t a2, int a3, int16_t a4, int a5, uint16_t a6,
 void sub_102F10(int16_t a1, int16_t a2, int a3, int16_t a4);
 void sub_102F4F(int16_t a1, int16_t a2, int a3, int16_t a4);
 void sub_102F78(int16_t a1, int16_t a2, int a3, int16_t a4, int a5);
-void sub_102FA8();
+void sub_102FA8(int a1, int a2, int a3, int a4);
 _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char); // weak
 int sub_10315D(int a1, int16_t a2);
 int sub_103183(int a1, int16_t a2, int a3);
@@ -15830,7 +15830,7 @@ extern _UNKNOWN *off_EDB2D;
 extern int dword_F594C[16];
 extern _UNKNOWN loc_FFFF8;
 extern _UNKNOWN loc_100000;
-extern char byte_100A36[];
+extern char byte_100A36[8];
 extern _UNKNOWN loc_103428;
 extern char byte_10357B[16]; // vlna 65: tabulka kodu zarovnani, viz orion_data.c
 extern _UNKNOWN loc_1310FD;
@@ -17464,17 +17464,17 @@ extern _UNKNOWN unk_183F43;
 extern char byte_183F64[26];
 extern char byte_183F7E[17];
 extern _UNKNOWN unk_183F8F;
-extern int16_t word_183FF1[];
-extern int16_t word_183FF3[13];
-extern int16_t word_18400D[];
-extern int16_t word_18400F[13];
+extern int16_t word_183FF1[14];
+#define word_183FF3 (word_183FF1 + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
+extern int16_t word_18400D[14];
+#define word_18400F (word_18400D + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
 extern int16_t word_184029[7];
-extern int16_t word_184037[];
-extern int16_t word_184039[13];
-extern int16_t word_184053[];
-extern int16_t word_184055[];
-extern int16_t word_18406F[];
-extern int16_t word_184071[];
+extern int16_t word_184037[14];
+#define word_184039 (word_184037 + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
+extern int16_t word_184053[14];
+#define word_184055 (word_184053 + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
+extern int16_t word_18406F[14];
+#define word_184071 (word_18406F + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
 extern int16_t word_18408B;
 extern int16_t word_18408D;
 extern int16_t word_18408F;
@@ -20942,18 +20942,20 @@ extern char byte_1BD0A0[];
 extern char byte_1BD0AA[166];
 extern int dword_1BD150;
 extern char byte_1BD154[510];
-extern int dword_1BD352[];
-extern int16_t word_1BD356[];
-extern int16_t word_1BD358[];
-extern char byte_1BD35A[];
-extern char byte_1BD35B[];
-extern char byte_1BD35C[];
-extern char byte_1BD35D[];
-extern char byte_1BD35E[];
-extern char byte_1BD35F[3059];
-extern int16_t word_1BDF52[];
-extern int16_t word_1BDF54[];
-extern int16_t word_1BDF56[511];
+/* vlna 130: jedna tabulka 256 zaznamu po 12 B - viz orion_data.c */
+extern char blok_1BD352[3072];
+#define dword_1BD352 ((int *)blok_1BD352)
+#define word_1BD356  ((int16_t *)(blok_1BD352 + 4))
+#define word_1BD358  ((int16_t *)(blok_1BD352 + 6))
+#define byte_1BD35A  (blok_1BD352 + 8)
+#define byte_1BD35B  (blok_1BD352 + 9)
+#define byte_1BD35C  (blok_1BD352 + 10)
+#define byte_1BD35D  (blok_1BD352 + 11)
+#define byte_1BD35E  (blok_1BD352 + 12)
+#define byte_1BD35F  (blok_1BD352 + 13)
+extern int16_t word_1BDF52[513];
+#define word_1BDF54 (word_1BDF52 + 1)
+#define word_1BDF56 (word_1BDF52 + 2)
 extern _UNKNOWN unk_1BE354;
 extern char byte_1BE355[];
 extern char byte_1BE356[];
@@ -21203,10 +21205,10 @@ extern char unk_183BB3[8];   /* vlna 122 */
 extern char unk_183BBB[8];   /* vlna 122 */
 extern char unk_183BC3[8];   /* vlna 122 */
 extern char unk_183B93[8];
-extern _UNKNOWN unk_183CEB;
-extern _UNKNOWN unk_199A12;
+#define unk_183CEB (*word_183CEB)
+#define unk_199A12 (*byte_199A12)
 /* vlna 73: unk_19B772 == word_19B772, samostatny symbol zrusen */
-extern _UNKNOWN unk_19C048;
+#define unk_19C048 (*word_19C048)
 /* vlna 73: unk_19C348 == byte_19C348, samostatny symbol zrusen */
 // vlna 58: TENTYZ objekt jako byte_19C6F8 (nazvy ras v zaznamu Hall of
 // Fame). sub_9FC27 z nej pri prestavbe zaznamu CTE (`&unk_19C6F8 + v8`),
@@ -21215,15 +21217,15 @@ extern _UNKNOWN unk_19C048;
 #define unk_19C6F8 (*byte_19C6F8)
 // vlna 58: TENTYZ objekt jako byte_19C7C6 (dve jmena IDA pro jednu adresu).
 #define unk_19C7C6 (*byte_19C7C6)
-extern _UNKNOWN unk_19DA6C;
+#define unk_19DA6C (*byte_19DA6C)
 extern _UNKNOWN unk_1A74B4;
-extern _UNKNOWN unk_1AA414;
-extern _UNKNOWN unk_1AAED5;
-extern _UNKNOWN unk_1AD404;
-extern _UNKNOWN unk_1AD418;
-extern _UNKNOWN unk_1AD454;
-extern _UNKNOWN unk_1AD494;
-extern _UNKNOWN unk_1AE054;
+#define unk_1AA414 (*byte_1AA414)
+#define unk_1AAED5 (*byte_1AAED5)
+#define unk_1AD404 (*byte_1AD404)
+#define unk_1AD418 (*byte_1AD418)
+#define unk_1AD454 (*byte_1AD454)
+#define unk_1AD494 (*byte_1AD494)
+#define unk_1AE054 (*byte_1AE054)
 // PORT (vlna 26 pokr. 54): `unk_1AE5D4` a `word_1AE5D4` jsou V ORIGINALE
 // TENTYZ SYMBOL (IDA ho na ruznych mistech pojmenovala jednou jako pole slov,
 // jednou jako `_UNKNOWN`). V portu z toho vznikly DVA RUZNE objekty:
@@ -21243,8 +21245,8 @@ extern _UNKNOWN unk_1B0043;
 extern _UNKNOWN unk_1B004F;
 extern _UNKNOWN unk_1B0057;
 extern char unk_1B0848[13750]; // wave 24: 250-slot * 55-byte window table, see link_stubs.c comment
-extern _UNKNOWN unk_1BB8C4;
-extern _UNKNOWN unk_1C95D8;
+#define unk_1BB8C4 (*byte_1BB8C4)
+#define unk_1C95D8 (*word_1C95D8)
 extern _UNKNOWN word_1B9E2F;
 
 /* ==== ruzne pojmenovane FLIRT-rozpoznane knihovni symboly ==== */

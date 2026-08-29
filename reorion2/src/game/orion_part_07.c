@@ -10445,12 +10445,15 @@ int sub_85B93( int a1, _WORD *a2, _WORD *a3)
 
 
 //----- (00085BDD) --------------------------------------------------------
-void sub_85BDD()
+/* PORT (vlna 130): asm 0x85C83 `mov eax, ebx / jmp loc_83D00` - funkce VRACI
+   `bx`. IDA z toho udelala `void` + JUMPOUT a zahodila i zaverecny blok
+   loc_85C6A. Registr `bx` navic rozdelila na dve promenne (v1 a v3);
+   tady je to jedna. */
+int16_t sub_85BDD()
 {
   int16_t v0; // di
-  int16_t v1; // bx
+  int16_t v1; // bx  (v IDA rozdeleno na v1 a v3)
   int v2; // ecx
-  int v3; // ebx
 
   v0 = *(_WORD *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 41);
   v1 = -1;
@@ -10459,17 +10462,20 @@ void sub_85BDD()
   if ( v1 == -1 || !sub_79D1C(word_19999C, v1) )
   {
     v2 = 0;
-    LOWORD(v3) = *(uint8_t *)(17 * v0 + (uint8_t*)dword_1930D4 + 2);
+    v1 = *(uint8_t *)(17 * v0 + (uint8_t*)dword_1930D4 + 2);
     do
     {
-      if ( sub_79D1C(word_19999C, v3) )
+      if ( sub_79D1C(word_19999C, v1) )
         break;
       ++v2;
-      v3 = ((int16_t)v3 + 1) % word_19999A;
+      v1 = (int16_t)(v1 + 1) % word_19999A;
     }
     while ( (int16_t)v2 < word_19999A );
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x83D00 je epilog funkce */
+  /* asm loc_85C6A: kdyz ani tak nic nevyslo, vezmi vychozi hvezdu rasy */
+  if ( v1 == -1 )
+    v1 = *(uint8_t *)(17 * v0 + (uint8_t*)dword_1930D4 + 2);
+  return v1;
 }
 // 85C85: control flows out of bounds to 83D00
 // 192FDE: using guessed type int16_t word_192FDE[];
@@ -11344,7 +11350,14 @@ LABEL_115:
     {
       if ( byte_199F1F )
       {
-        sub_85BDD();
+        /* PORT (vlna 130): asm 0x86E39 `call sub_85BDD` -> loc_86E3E
+           `mov word_191838, ax` - navratova hodnota jde do `word_199838`, coz je
+           soustava, kterou ukaze obrazovka LEADERS (nastavuje se word_199A08 = 29).
+           IDA ji zahodila a nechala `v40` neinicializovanou ("variable v40 is
+           possibly undefined"); vychazela z ni 0, takze LEADERS ukazovaly "Orion"
+           misto "Trilar", prazdny pohled na soustavu a spatne oznacenou hvezdu
+           v minimape. Po oprave vraci sub_85BDD 29 = "Trilar". */
+        v40 = sub_85BDD();
       }
       else if ( sub_918D5(2) )
       {

@@ -37,6 +37,25 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
         return EXCEPTION_CONTINUE_SEARCH;
     struct HandlerGuard { volatile LONG* f; ~HandlerGuard() { InterlockedExchange((LONG*)f, 0); } } guard{ &s_inHandler };
 
+    // PORT (vlna 130): HARDWAROVY WATCHPOINT. Kdyz je nastaveny pres
+    // PortDebug_WatchWrite, procesor po kazdem zapisu na hlidanou adresu
+    // vyvola EXCEPTION_SINGLE_STEP a DR6 rekne, ktery registr to byl.
+    // Timhle se najde prepisujici instrukce primo, bez hadani podle sousedu.
+    if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_SINGLE_STEP &&
+        (ep->ContextRecord->Dr6 & 0xF) != 0)
+    {
+        static int s_hits = 0;
+        if (s_hits < 8) {
+            ++s_hits;
+            PortDebug_CrashLog("WATCHPOINT: zapis na hlidanou adresu, DR6=0x%llx rip=%p",
+                               (unsigned long long)ep->ContextRecord->Dr6,
+                               (void*)ep->ContextRecord->Rip);
+            PortDebug_Backtrace("watchpoint", 12);
+        }
+        ep->ContextRecord->Dr6 = 0;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+
     DWORD code = ep->ExceptionRecord->ExceptionCode;
     if (code == EXCEPTION_ACCESS_VIOLATION || code == EXCEPTION_STACK_OVERFLOW ||
         code == EXCEPTION_ILLEGAL_INSTRUCTION || code == EXCEPTION_INT_DIVIDE_BY_ZERO)
@@ -280,6 +299,47 @@ static void StartWatchdog()
 // `PortDebug_Symbolize(_ReturnAddress())` rekne jen primeho volajiciho; kdyz je
 // chyba o dva-tri ramce vys (typicky u obecnych kreslicich funkci jako
 // sub_12A478, kterou vola pul hry), je potreba videt cely retez.
+// PORT (vlna 130): nastavi hardwarovy watchpoint na ZAPIS.
+//
+// Debug registry jsou per-vlakno, takze se to musi volat z toho vlakna,
+// ktere hru pousti (hlavni). `len` smi byt 1, 2 nebo 4 a adresa musi byt
+// na tolik zarovnana - jinak procesor hlidani proste neprovede.
+//
+// DR7: bity 0/2/4/6 = "lokalne zapnuto" pro DR0..DR3, pak dvojice bitu
+// od 16 urcuji typ (01 = zapis) a od 18 delku (00=1 B, 01=2 B, 11=4 B).
+extern "C" void PortDebug_WatchWrite(void* addr, int len)
+{
+    static int slot = 0;
+    if (slot > 3 || !addr)
+        return;
+    CONTEXT ctx = {};
+    ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
+    HANDLE th = GetCurrentThread();
+    if (!GetThreadContext(th, &ctx)) {
+        PortDebug_CrashLog("WATCHPOINT: GetThreadContext selhalo");
+        return;
+    }
+    const DWORD64 a = (DWORD64)(uintptr_t)addr;
+    switch (slot) {
+        case 0: ctx.Dr0 = a; break;
+        case 1: ctx.Dr1 = a; break;
+        case 2: ctx.Dr2 = a; break;
+        default: ctx.Dr3 = a; break;
+    }
+    DWORD64 delka = (len == 1) ? 0ull : (len == 2) ? 1ull : 3ull;
+    ctx.Dr7 &= ~(0xFull << (16 + 4 * slot));
+    ctx.Dr7 |= (1ull | (delka << 2)) << (16 + 4 * slot);   // 01 = zapis
+    ctx.Dr7 |= 1ull << (2 * slot);                          // lokalne zapnuto
+    ctx.Dr6 = 0;
+    if (!SetThreadContext(th, &ctx)) {
+        PortDebug_CrashLog("WATCHPOINT: SetThreadContext selhalo (err=%lu)", GetLastError());
+        return;
+    }
+    PortDebug_CrashLog("WATCHPOINT: hlidam zapis na %p (%d B, DR%d)", addr, len, slot);
+    ++slot;
+}
+
+
 extern "C" void PortDebug_Backtrace(const char* tag, int frames)
 {
     static bool btInited = false;
