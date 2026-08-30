@@ -6230,7 +6230,7 @@ int sub_138615( int a1, int a2)
     }
     else
     {
-      return -((v4 * (unsigned int)*((uint16_t *)&loc_13829B + v5 + 1) + 0x8000) >> 16);
+      return -((v4 * (unsigned int)word_138405[v5 - 180] + 0x8000) >> 16);
     }
   }
   else if ( v5 >= 90 )
@@ -6318,8 +6318,8 @@ int sub_1387B2( int a1, int *a2, int *a3)
     }
     else
     {
-      v9 = -*((uint16_t *)&loc_13829B + v13 + 1) * *a2;
-      v8 = -*((uint16_t *)&loc_13829B + v13 + 1) * *a3;
+      v9 = -word_138405[v13 - 180] * *a2;
+      v8 = -word_138405[v13 - 180] * *a3;
       v11 = -(uint16_t)word_138405[270 - v13] * *a2;
       result = -(uint16_t)word_138405[270 - v13] * *a3;
       v12 = result;

@@ -13581,3 +13581,124 @@ Pak uz zbyva jen drobne: COLONIES 459 px (stinovaci tabulka na jezdci
 posuvniku), INFO 321 px (cislo u "Net Income" - rodina `sub_24ACA`),
 FLEETS 266 px, PLANETS 8 px.
 
+
+---
+
+### Vlna 131: LEADERS - pohled na soustavu (6459 -> 2143 px), COLONIES na nulu
+
+Panel soustavy na LEADERS zustaval prazdny. Sonda na `sub_12A478` v dosboxu
+rekla, ktere funkce ho kresli:
+
+```
+36x sub_A2D7C+0x21E (325,32)   14x sub_A3025+0x9A (448,92)
+13x sub_A2C11+0x51  (425,49)   13x sub_A3BC4+0x156 (311,178)
+12x sub_A30FD+0xCD  (325,32)
+```
+
+V portu z nich nezavolala sub_12A478 ANI JEDNA, i kdyz `sub_974A6(word_19C53E)`
+-> `sub_A31DA(29, 0, ..., 306, 17, 0, 0, 3, 3)` probehlo se spravnymi argumenty.
+
+#### 1. `sub_A31DA`: prvni argument ulozeny prologem (potreti)
+
+```
+asm 0xA31DA:  push esi / push edi / enter 140h, 0 / push eax
+```
+
+Ten `push eax` ulozi prvni argument na [ebp-144h]; pri fpd=6Eh je to
+`[ebp-D6h]`, coz IDA pojmenovala `v50` (a tentyz slot podruhe `v51`) a uz je
+nikdy neinicializovala. Do slotu se v cele funkci JEN CTE (devet mist).
+Hned prvni vetveni `if ( !sub_A44FC(v50, word_19999C) )` se tak rozhodovalo
+podle obsahu zasobniku a kresleni soustavy se preskocilo.
+
+Stejny vzorec uz vlna 130 opravila u `sub_B55CF` (`v58` = `a1`). **Uz potreti** -
+zapsano do POROVNANI.md jako samostatna trida.
+
+#### 2. 32bitovy ukazatel cteny jako 64bitovy
+
+Po opravce se spravna vetev rozbehla a port spadl ve `sub_12F7E6` na cteni
+z 0xFFFFFFFFFFFFFFFF. V `sub_A2D7C`:
+
+```c
+sub_133C9C(*(_DWORD *)(v23 + dword_193184 + 10), 35);          /* 32 bitu */
+sub_12F7E6(2, 2, *(int16_t **)(v23 + dword_193184 + 10), v13); /* 64 bitu! */
+```
+
+Tyz pole na +10 cetla sousedni mista pres `*(_DWORD *)`, jen dve mista mela
+`*(int16_t **)`. Opraveno na `PORT_PTR32`.
+
+LEADERS 6459 -> 2234 px, drahy a pas asteroidu se objevily.
+
+#### 3. Polomery obeznych drah: zkracena tabulka
+
+`sub_EBEEB` bere polomery z `word_EB4C5[2*a2]` / `word_EB4C7[2*a2]`. V obraze
+je to souvislych 12 slov (sest dvojic x/y: 464/242, 704/372, 949/502,
+1199/632, 1423/751, 1650/873) na 0x EB4C5..0xEB4DD - dal uz je kod. IDA
+pojmenovala jen prvni dve a zbytek nechala jako `db`/`dd` bez jmena.
+
+#### 4. Sinusova tabulka mela v portu JEDINOU hodnotu
+
+To byla vlastni pricina toho, ze se planety kupily do stredu. `sub_138615`
+je sinus s pevnou radovou carkou:
+
+```c
+return (polomer * (uint16_t)word_138405[uhel] + 0x8000) >> 16;
+```
+
+`word_138405` drzi sin(deg)*65536 pro 0..89 stupnu (90/180/270 se resi zvlast),
+v obraze 90 slov na 0x138405..0x1384B9. Port mel `int16_t word_138405[] = { 0 }`,
+takze **vsechny uhly krome nuly davaly 0**. Zmereno pres sondu v `sub_EBEEB`:
+
+```
+pred:  draha=0 uhel=126 -> x=1 y=1     draha=3 uhel=79 -> x=1 y=1
+po:    draha=0 uhel=126 -> x=-27 y=-19 draha=3 uhel=79 -> x=23 y=-62
+```
+
+`loc_13829B` je druha baze TEHOZ pole: `(uint16_t *)&loc_13829B + v + 1` je
+0x13829B + 2*(v+1), coz pro v=180 dava presne 0x138405. Nahrazeno za
+`word_138405[v - 180]`, pahyl zrusen.
+
+**Vedlejsi ucinek: COLONIES spadly z 459 px na 0.** Ten "stinovaci" rozdil na
+jezdci posuvniku z vlny 129 byl taky dusledek nefunkcniho sinu.
+
+#### 5. Stav
+
+| zalozka | vlna 130 | ted |
+|---|---|---|
+| **COLONIES** | 459 px (0,15 %) | **0 px (0,00 %)** |
+| RACES | 0 px (0,00 %) | 0 px (0,00 %) |
+| PLANETS | 8 px (0,00 %) | 8 px (0,00 %) |
+| FLEETS | 266 px (0,09 %) | 266 px (0,09 %) |
+| INFO | 321 px (0,10 %) | 321 px (0,10 %) |
+| **LEADERS** | 6459 px (2,10 %) | **2143 px (0,70 %)** |
+
+Tri ze sesti obrazovek jsou ted pixelove shodne nebo do 8 px.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+**LEADERS (2143 px)**: soustava uz se kresli spravne - hvezda, ctyri planety
+na svych drahach, pas asteroidu. Zbyvaji dve veci:
+
+1. Planety maji kolem sebe **cerny lem** a jinou barvu (paleta 185/768).
+   Skladaji se pres `sub_12D8F5(35,35,v13)` -> `sub_12F7E6` -> dvakrat
+   `sub_12E64F(v13, v13, 31/30, 0)` -> `sub_12EFBD(..., 0)`. Ten posledni
+   argument 0 znamena NEPRUHLEDNE kopirovani a v asm je taky 0 (`push 0`),
+   takze chyba bude v prebarveni (`sub_12E64F`) nebo v instalaci podpalety
+   (`sub_133C9C(..., 35)`).
+2. Chybi ikona flotily vlevo dole - v dosboxu ji kresli `sub_A3BC4` na
+   (311,178), v portu se nevola.
+
+Dal pak uz jen INFO 321 px (cislo u "Net Income" - rodina `sub_24ACA`),
+FLEETS 266 px a PLANETS 8 px.
+
+**Poznamka k prostredi:** `Debug/diss/` je prazdny - referencni disassembly
+(`Orion2.exe`, `.lst`, `.asm`) tam uz nejsou. Nastroje na ne odkazuji
+(`tools/compare/dumpdata.py` cte `Debug/diss/Orion2.exe`). Identicke kopie
+jsou v `C:/prenos/mastori2/diss/` a `C:/prenos/parseEXE/x64/Debug/`.
+

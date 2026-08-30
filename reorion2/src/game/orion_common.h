@@ -15822,8 +15822,8 @@ extern int16_t word_EA27A;
 extern _UNKNOWN loc_EB4BD;
 extern _UNKNOWN loc_EB4BF;
 extern int16_t word_EB4C3[];
-extern int16_t word_EB4C5[];
-extern int16_t word_EB4C7[];
+extern int16_t word_EB4C5[12];
+#define word_EB4C7 (word_EB4C5 + 1)   /* vlna 131: tataz tabulka, posunuta o slovo */
 extern _UNKNOWN locret_ED903;
 extern _UNKNOWN *off_EDB2D;
 // loc_F4240 odstraneno - IDA false-positive z konstanty 1000000 (vlna 12)
@@ -15835,10 +15835,11 @@ extern _UNKNOWN loc_103428;
 extern char byte_10357B[16]; // vlna 65: tabulka kodu zarovnani, viz orion_data.c
 extern _UNKNOWN loc_1310FD;
 extern _UNKNOWN loc_1381E8;
-extern _UNKNOWN loc_13829B;
+/* vlna 131: druha baze tehoz pole - `(uint16_t *)&loc_13829B + v + 1`
+   je 0x13829B + 2*(v+1), coz pro v=180 dava 0x138405 = word_138405[0]. */
 extern _UNKNOWN loc_138350;
 extern char byte_138385[];
-extern int16_t word_138405[];
+extern uint16_t word_138405[90];
 extern int dword_138CAC;
 extern char byte_138F31[3];
 extern int dword_155104;

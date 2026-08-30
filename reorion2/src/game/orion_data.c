@@ -265,8 +265,12 @@ int16_t word_EA27A = 8739; // weak
 _UNKNOWN loc_EB4BD; // weak
 _UNKNOWN loc_EB4BF; // weak
 int16_t word_EB4C3[] = { 118 }; // weak
-int16_t word_EB4C5[] = { 464 }; // weak
-int16_t word_EB4C7[] = { 242 }; // weak
+/* vlna 131: polomery sesti obeznych drah, (x, y) po dvojicich. V obraze je to
+   souvislych 12 slov (0xEB4C5..0xEB4DD, dal uz je kod - `56 57` = push esi/edi);
+   IDA pojmenovala jen prvni dve a zbytek nechala jako `db`/`dd` bez jmena,
+   takze `word_EB4C5[2*a2]` cetlo pro drahy 1-5 mimo pole a planety se
+   v pohledu na soustavu shlukly do stredu. word_EB4C7 je pohled na +1. */
+int16_t word_EB4C5[12] = { 464, 242, 704, 372, 949, 502, 1199, 632, 1423, 751, 1650, 873 };
 _UNKNOWN locret_ED903; // weak
 _UNKNOWN *off_EDB2D = &loc_93D66; // weak
 // loc_F4240 ODSTRANENO (vlna 12): IDA false-positive z konstanty 1000000
@@ -316,10 +320,25 @@ char byte_10357B[16] = { 3, 8, 2, 8, 1, 8, 0, 8, 3, 0, 2, 0, 1, 0, 0, 0 }; // we
 // sub_1276F0, which now returns its bit directly (see orion_part_19.c).
 _UNKNOWN loc_1310FD; // weak
 _UNKNOWN loc_1381E8; // weak
-_UNKNOWN loc_13829B; // weak
 _UNKNOWN loc_138350; // weak
 char byte_138385[] = { '\0' }; // weak
-int16_t word_138405[] = { 0 }; // weak
+/* vlna 131: sinus s pevnou radovou carkou, sin(deg) * 65536 pro 0..89 stupnu
+   (0x138405..0x1384B9; hodnota pro 90, 180 a 270 se v sub_138615 resi zvlast).
+   IDA vypsala jen prvni nulu, takze vsechny uhly krome nuly davaly 0 a planety
+   na obrazovce LEADERS se nakupily do stredu misto na sve obezne drahy.
+   Typ je uint16_t - kod hodnoty stejne cte pres `(uint16_t)`. */
+uint16_t word_138405[90] =
+{
+  0, 1144, 2287, 3430, 4572, 5712, 6850, 7987, 9121, 10252,
+  11380, 12505, 13626, 14742, 15855, 16962, 18064, 19161, 20252, 21336,
+  22415, 23486, 24550, 25607, 26656, 27697, 28729, 29753, 30767, 31772,
+  32768, 33754, 34729, 35693, 36647, 37590, 38521, 39441, 40348, 41243,
+  42126, 42995, 43852, 44695, 45525, 46341, 47143, 47930, 48703, 49461,
+  50203, 50931, 51643, 52339, 53020, 53684, 54332, 54963, 55578, 56175,
+  56756, 57319, 57865, 58393, 58903, 59396, 59870, 60326, 60764, 61183,
+  61584, 61966, 62328, 62672, 62997, 63303, 63589, 63856, 64104, 64332,
+  64540, 64729, 64898, 65048, 65177, 65287, 65376, 65446, 65496, 65526,
+};
 int dword_138CAC = 0; // weak
 char byte_138F31[3] = { 'M', 'O', 'O' }; // weak
 int dword_155104 = 1397753374; // weak

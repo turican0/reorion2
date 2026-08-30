@@ -3152,7 +3152,11 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   sub_A3D84((int *)(v23 + dword_193184 + 10), *(_WORD *)(v23 + dword_193184));
   sub_133C9C(*(_DWORD *)(v23 + dword_193184 + 10), 35);
   sub_12D8F5(35, 35, (int)v13);
-  sub_12F7E6(2, 2, *(int16_t **)(v23 + dword_193184 + 10), v13);
+  /* PORT (vlna 131): pole na +10 je v herni strukture 32bitovy ukazatel -
+     sousedni radky ho ctou `*(_DWORD *)`, jen tyhle dve mista mela
+     `*(int16_t **)`, coz na x64 nacte 8 bajtu a vysledek je nesmysl
+     (pad v sub_12F7E6 pri cteni z 0xFFFFFFFFFFFFFFFF). */
+  sub_12F7E6(2, 2, PORT_PTR32(int16_t *, v23 + dword_193184 + 10), v13);
   sub_12E64F(v13, v13, 31, 0);
   sub_12E64F(v13, v13, 30, 0);
   sub_12EFBD((int16_t)(v21 + 141), (int16_t)(v22 + 74), (_WORD *)dword_19D21C, (int *)v13, 0);
@@ -3162,7 +3166,7 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   sub_12B753(v19, v24);
   sub_A3D84((int *)(v23 + dword_193184 + 10), *(_WORD *)(v23 + dword_193184));
   sub_12B753(*(_DWORD *)(v23 + dword_193184 + 10), word_19987A % *(int16_t *)(*(_DWORD *)(v23 + dword_193184 + 10) + 6));
-  sub_A512E(v21 + v25 + 161 - 2, v29, *(int16_t **)(v23 + dword_193184 + 10), dword_1933F8[v18]);
+  sub_A512E(v21 + v25 + 161 - 2, v29, PORT_PTR32(int16_t *, v23 + dword_193184 + 10), dword_1933F8[v18]);
   return sub_1113CC(dword_192ED4, v29);
 }
 // 192ED4: using guessed type int dword_192ED4;
@@ -3359,6 +3363,15 @@ void sub_A31DA(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, i
   int v103; // [esp+13Ch] [ebp+66h]
   char v104; // [esp+140h] [ebp+6Ah]
 
+  /* PORT (vlna 131): asm 0xA31DA - hned za `enter 140h, 0` je `push eax`,
+     cimz se prvni argument ulozi na [ebp-144h] (pri fpd=6Eh tedy [ebp-D6h]).
+     IDA z toho slotu udelala lokalky `v50` a `v51`, ktere uz nikdo
+     neinicializoval ("variable v50/v51 is possibly undefined") - do slotu se
+     v cele funkci jen cte. Je to index hvezdy; bez nej se hned prvni vetveni
+     (`sub_A44FC(v50, ...)`) rozhodovalo podle obsahu zasobniku a panel
+     soustavy na LEADERS zustaval prazdny. */
+  v50 = (int16_t)a1;
+  v51 = (int16_t)a1;
   v104 = a2;
   v79 = a3;
   v102 = a4;

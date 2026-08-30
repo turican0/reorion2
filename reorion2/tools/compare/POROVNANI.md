@@ -304,3 +304,35 @@ jen pohledy na jeji pole.
 Oprava: jeden `char blok_ADR[velikost]` a z ostatnich udelat makra s pretypovanim.
 Velikost = vzdalenost k prvnimu symbolu, ktery uz do bloku nepatri.
 
+
+### Argument ulozeny prologem (uz potreti - vlna 131)
+
+Watcom u vetsich funkci ulozi prvni registrovy argument hned za `enter` pres
+`push eax`, tedy POD ramec. IDA z toho udela lokalku, kterou uz nikdo
+neinicializuje, a sama to prizna hlaskou `variable 'vX' is possibly undefined`.
+
+Poznaci se to takhle:
+1. IDA hlasi "possibly undefined" pro promennou, ktera vypada jako index/handle.
+2. V asm je hned za `enter <N>, 0` instrukce `push eax`.
+3. Slot `[ebp-(N+4)]` (u IDA `[ebp+fpd+var_(N+4)]`) se v cele funkci **jen cte**.
+
+Nalezene: `sub_10BFBD` (v122), `sub_B55CF` (v130, `v58`), `sub_A31DA` (v131,
+`v50` i `v51` - tyz slot dvakrat).
+
+Rychla kontrola vsech kandidatu:
+```bash
+grep -rn "possibly undefined" src/game/*.c | wc -l
+```
+
+### Tabulka schovana v nepojmenovanych `db`/`dd` (vlna 131)
+
+`word_EB4C5` a `word_138405` mely v `.lst` pojmenovany jen PRVNI prvek a zbytek
+zustal jako `db 0C0h, 2, 74h` / `dd 0F603B501h ...` bez jmena. `scan_velikosti.py`
+je nenajde (dalsi POJMENOVANY symbol je daleko), pozna je az indexace v kodu
+(`tabulka[2*i]`, `tabulka[uhel]`) a vypis z obrazu pres `dumpdata.py`.
+
+Sinusova tabulka `word_138405` (sin(deg)*65536, 0..89) je zvlast zradna: port
+z ni mel jen nulu, takze VSECHNY uhly krome nuly davaly 0. Projevilo se to az
+o tri urovne vys - planety v pohledu na soustavu se nakupily do stredu - a
+zaroven to tise kazilo stinovani na COLONIES.
+
