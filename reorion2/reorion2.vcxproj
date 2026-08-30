@@ -219,6 +219,7 @@
     <ClInclude Include="src\port\port_sound.h" />
     <ClInclude Include="src\port\port_mouse.h" />
     <ClInclude Include="src\port\port_file.h" />
+    <ClInclude Include="src\port\scalers2x.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
