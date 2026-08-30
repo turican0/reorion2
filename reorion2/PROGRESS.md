@@ -13819,3 +13819,100 @@ Takze neco behem smycky prepise `dword_1BC2A4` (nebo pamet, na kterou ukazuje).
 Dalsi krok: hardwarovy watchpoint (`PortDebug_WatchWrite(&dword_1BC2A4, 4)`) -
 tenhle nastroj uz ve vlne 130 nasel prepis palety na prvni pokus.
 
+
+---
+
+### Vlna 133: paleta 192-255 - najito srovnanim PAMETI s dosboxem
+
+Cerny lem kolem planet na LEADERS jsem dve kola hledal hadanim hypotez
+(prepisuje se `dword_1BC2A4`? je spatna paleta spritu? nefunguje hledani
+nejblizsi barvy?) a **kazda z nich se merenim vyvratila**. Ta spravna cesta
+byla jednoducha: **vypsat tutez pamet z portu i z dosboxu a odecist ji.**
+
+#### Postup, ktery to nasel
+
+1. `DUMPMEM` v dosboxu spusteny na vstupu `sub_A2D7C` (funkce, ktera bezi JEN
+   v pohledu na soustavu), vypis 1728 B od `byte_1BB358`:
+
+   ```
+   DUMPMEM cond=eip:0x002C6D7C addr=0x003D1358 size=1728 label=paleta
+   ```
+
+   To pokryje herni paletu (1024 B), setrideny seznam `byte_1BB758` (296 B)
+   i tabulku kbelicku `dword_1BB914` (260 B).
+
+2. Tyz vypis z portu, sondou na tomtez miste.
+
+3. Odecist. Vysledek byl okamzity a jednoznacny:
+
+   ```
+   PALETA  (1024 B): lisi se 185 bajtu - zaznamy 0..191 SEDI, 192..255 NE
+   SEZNAM  (296 B):  lisi se 218 bajtu   <- dusledek
+   KBELIKY (65):     lisi se od [2] dal  <- dusledek
+   ```
+
+   A port mel v 192..255 **opakujici se 22prvkovy blok** (192 = 214 = 236)
+   misto 64 ruznych barev.
+
+4. Hardwarovy watchpoint na R slozku zaznamu 192
+   (`PortDebug_WatchWrite(&byte_1BB358[769], 1)`) ukazal zapisovatele:
+   `sub_13AC01+0xbb`, coz je presne `sub_13AC01(192, 64)` volana z `sub_A404E`.
+
+#### Pricina
+
+```c
+byte_1BB359[4*i + 4*a1] = byte_1BE355[4*i];
+byte_1BB35A[4*i + 4*a1] = byte_1BE356[4*i];
+byte_1BB35B[4*i + 4*a1] = byte_1BE357[4*i];
+```
+
+Adresy 0x1BE355/56/57 jdou po jednom bajtu a vsechny se indexuji `4*i` - je to
+jeden blok se zaznamem 4 B `[priznak, R, G, B]` od 0x1BE354. IDA z nej udelala
+`unk_1BE354` + **dve jednoprvkova pole** + `byte_1BE357[2045]`, takze
+`byte_1BE355[4*i]` a `byte_1BE356[4*i]` cetly pro i>0 mimo pole - odtud ten
+opakujici se blok.
+
+Velikost bloku: dalsi symbol `dword_1BEB54` je na 0x1BEB54, tedy 0x800 = 2048 B
+= 512 zaznamu. Slouceno do `blok_1BE354[2048]`, pohledy jsou makra.
+`byte_1BE355` a `byte_1BE356` byly navic definovane jeste jednou v
+`link_stubs.c` (dalsi dva z 181 dvojite definovanych symbolu z vlny 132).
+
+**Paleta na LEADERS je ted 0/768** - shoduje se s originalem bit po bitu -
+a planety maji spravne barvy.
+
+#### Stav
+
+| zalozka | vlna 132 | ted |
+|---|---|---|
+| COLONIES | 0 px | 0 px (0,00 %) |
+| RACES | 0 px | 0 px (0,00 %) |
+| PLANETS | 8 px | 8 px (0,00 %) |
+| FLEETS | 266 px | 266 px (0,09 %) |
+| INFO | 321 px | 321 px (0,10 %) |
+| **LEADERS** | 1935 px, paleta 185/768 | **1885 px (0,61 %), paleta 0/768** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+Na LEADERS uz sedi barvy, pozice, drahy, hvezda i ikona flotily. Zbyva, ze
+planeta je vykreslena **mensi nez cerny disk pod ni** (v originale disk cely
+vyplni). Sprite ma pritom spravnych 31x31 a spravny ramec - takze bude spatna
+**velikostni trida**: `v26` v `sub_A2D7C`
+
+```c
+if ( (_WORD)v10 == 3 )
+    v26 = *(uint8_t *)(v8 + (uint8_t*)dword_1930D4 + 5);   /* +5 = velikost */
+else
+    v26 = 4;
+```
+
+Port meri `v26` = 2, 2, 0. Dalsi krok podle metody z teto vlny: **vypsat
+DUMPMEM zaznam planety** (`dword_1930D4 + 17*index`, 17 B) z dosboxu i z portu
+a odecist - ukaze se, jestli je spatne pole +5, nebo uz samotny `dword_1930D4`.
+

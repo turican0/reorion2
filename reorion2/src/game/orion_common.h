@@ -20959,10 +20959,12 @@ extern char blok_1BD352[3072];
 extern int16_t word_1BDF52[513];
 #define word_1BDF54 (word_1BDF52 + 1)
 #define word_1BDF56 (word_1BDF52 + 2)
-extern _UNKNOWN unk_1BE354;
-extern char byte_1BE355[];
-extern char byte_1BE356[];
-extern char byte_1BE357[2045];
+/* vlna 133: jeden blok 512 zaznamu po 4 B - viz orion_data.c */
+extern char blok_1BE354[2048];
+#define unk_1BE354  (blok_1BE354[0])
+#define byte_1BE355 (blok_1BE354 + 1)
+#define byte_1BE356 (blok_1BE354 + 2)
+#define byte_1BE357 (blok_1BE354 + 3)
 extern int dword_1BEB54;
 extern int dword_1BF358;
 extern int dword_1BF35C;

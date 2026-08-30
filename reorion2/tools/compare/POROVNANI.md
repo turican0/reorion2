@@ -412,3 +412,32 @@ i s `0x193270 - 0x1931BC`.
 grep -rn "memset(&\|qmemcpy(&" src/game/*.c | grep -v "sizeof"
 ```
 
+
+### Srovnani PAMETI mezi portem a dosboxem (vlna 133)
+
+Kdyz se hypotezy zacnou stridat rychleji nez mereni, prestan hadat a **odecti
+tutez pamet z obou stran**. Ve vlne 133 to nasло pricinu na prvni pokus,
+kdyz tri predchozi domnenky merenim padly.
+
+**dosbox** - `DUMPMEM` umi jen `cond=eip:` a vypali JEDNOU, takze spousteci
+adresa musi byt funkce, ktera bezi jen na merene obrazovce:
+
+```
+DUMPMEM cond=eip:<funkce + 0x224000> addr=<data + 0x216000> size=<N> label=x
+```
+
+Velikost neni omezena - klidne 1728 B naraz, at je v jednom vypisu cela
+struktura i jeji pomocne tabulky.
+
+**port** - sonda na tomtez miste, vypis pres `PortDebug_ProbeLog` v hex.
+
+**odecteni** - hledej PRVNI odlisny bajt. Ve vlne 133 vyslo "zaznamy 0..191
+sedi, 192..255 ne", coz okamzite rekne, ktery blok se plni spatne; setrideny
+seznam a kbelicky uz byly jen nasledek.
+
+Pozor na ukazatele: v portu jsou 64bitove, v dosboxu 32bitove herni adresy.
+Porovnavej je jako ODSTUPY od prvniho prvku, ne absolutne.
+
+Az je blok zuzeny, doraz to hardwarovym watchpointem na jeho prvni bajt -
+ten rekne zapisovatele.
+

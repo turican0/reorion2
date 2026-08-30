@@ -141,8 +141,6 @@ int byte_1BD35B;
 int byte_1BD35C;
 int byte_1BD35D;
 int byte_1BD35E;
-int byte_1BE355;
-int byte_1BE356;
 /* dos_getdiskfree/dos_getvect/dos_setvect (Watcom _dos_* runtime, INT 21h
    AH=36h/35h/25h) UZ NEJSOU stubovane - skutecna implementace (realne volne
    misto na disku pres std::filesystem + emulovana tabulka interrupt vektoru)

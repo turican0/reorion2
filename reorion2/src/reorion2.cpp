@@ -23,7 +23,13 @@
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr);
 extern "C" void PortDebug_CrashLog(const char* fmt, ...);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
+extern "C" void PortDebug_WatchEnable(int on);
 extern "C" void PortCtl_Init();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
+
+// PORT (vlna 133): spinac vypisu hardwaroveho watchpointu (PortDebug_WatchWrite).
+// Registr zustava nastaveny, jen se hlaseni potlaci - hodi se, kdyz se
+// sledovana promenna legitimne prepisuje casto a hleda se JEDEN konkretni zapis.
+static volatile long g_watchLog = 1;
 
 static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
 {
@@ -45,7 +51,7 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
         (ep->ContextRecord->Dr6 & 0xF) != 0)
     {
         static int s_hits = 0;
-        if (s_hits < 8) {
+        if (s_hits < 8 && g_watchLog) {
             ++s_hits;
             PortDebug_CrashLog("WATCHPOINT: zapis na hlidanou adresu, DR6=0x%llx rip=%p",
                                (unsigned long long)ep->ContextRecord->Dr6,
@@ -307,9 +313,21 @@ static void StartWatchdog()
 //
 // DR7: bity 0/2/4/6 = "lokalne zapnuto" pro DR0..DR3, pak dvojice bitu
 // od 16 urcuji typ (01 = zapis) a od 18 delku (00=1 B, 01=2 B, 11=4 B).
+// PORT (vlna 133): spinac vypisu watchpointu. Registr zustava nastaveny,
+// jen se hlaseni potlaci - viz PortDebug_WatchWrite nize.
+
+extern "C" void PortDebug_WatchEnable(int on)
+{
+    g_watchLog = on ? 1 : 0;
+}
+
 extern "C" void PortDebug_WatchWrite(void* addr, int len)
 {
     static int slot = 0;
+    static void* uz[4] = {};
+    for (int s = 0; s < 4; ++s)
+        if (uz[s] == addr)
+            return;              // tuhle adresu uz hlidame
     if (slot > 3 || !addr)
         return;
     CONTEXT ctx = {};
@@ -336,6 +354,7 @@ extern "C" void PortDebug_WatchWrite(void* addr, int len)
         return;
     }
     PortDebug_CrashLog("WATCHPOINT: hlidam zapis na %p (%d B, DR%d)", addr, len, slot);
+    uz[slot] = addr;
     ++slot;
 }
 

@@ -18502,10 +18502,14 @@ char blok_1BD352[3072];
 /* vlna 130: 0x1BDF52..0x1BE354 = 513 slov; word_1BDF52/54/56 se indexuji
    TYMZ `i`, takze jsou to tri sousedni prvky jedne tabulky. */
 int16_t word_1BDF52[513];
-_UNKNOWN unk_1BE354; // weak
-char byte_1BE355[]; // weak
-char byte_1BE356[]; // weak
-char byte_1BE357[2045]; // weak
+/* vlna 133: 0x1BE354..0x1BEB54 je JEDEN blok 512 zaznamu po 4 bajtech
+   [priznak, R, G, B] - zdroj podpalety, kterou sub_13AC01 kopiruje do
+   herni palety (`sub_13AC01(192, 64)` = 64 barev na indexy 192-255).
+   IDA z nej udelala unk_1BE354 + dve JEDNOPRVKOVA pole + byte_1BE357[2045],
+   takze `byte_1BE355[4*i]` a `byte_1BE356[4*i]` cetly pro i>0 mimo pole.
+   Dusledek: paleta 192-255 byla v portu jina nez v originale (zmereno
+   DUMPMEM proti dosboxu) a planety v pohledu na soustavu se kreslily tmave. */
+char blok_1BE354[2048];
 int dword_1BEB54; // weak
 int dword_1BF358; // weak
 int dword_1BF35C; // weak
