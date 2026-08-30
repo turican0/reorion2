@@ -13702,3 +13702,120 @@ FLEETS 266 px a PLANETS 8 px.
 (`tools/compare/dumpdata.py` cte `Debug/diss/Orion2.exe`). Identicke kopie
 jsou v `C:/prenos/mastori2/diss/` a `C:/prenos/parseEXE/x64/Debug/`.
 
+
+---
+
+### Vlna 132: ikona flotily na LEADERS + 181 dvojite definovanych symbolu
+
+#### 0. Referencni disassembly uz nesmi byt v `Debug/diss/`
+
+Ta cesta je v `.gitignore`, takze prepnuti vetve ji smazalo a nastroje prestaly
+fungovat. Data ted lezi v **`C:/prenos/reorion2Data/diss/`** a nastroje si je
+najdou pres novy `tools/compare/diss.py` (poradi: `REORION2_DISS`, pak
+reorion2Data, pak stare Debug/diss, pak mastori2). Do repozitare pribyl taky
+`tools/compare/owner.py` - prevod `ret=` z dosboxoveho trace na jmeno funkce,
+ktery jsem uz potreti psal do scratchpadu.
+
+#### 1. Ikona flotily: `sub_A200E` prisla o argument (uz poctvrte)
+
+V dosboxu kresli ikonu `sub_A3BC4` na (311,178), v portu se nekreslila. Sonda
+ukazala, ze tabulka flotil `0x1931BC` je cela `-1`. Plni ji `sub_A200E`:
+
+```c
+if ( *(_WORD *)(v3 + 101) == v6 && *(char *)(v3 + 100) < 3 )   /* v6 = ktera hvezda */
+```
+
+`v6` je opet slot z prologu - asm 0xA200E: `enter 8, 0` / `push eax`, tedy prvni
+argument na `[ebp-0Ch]`, do ktereho se v cele funkci **jen cte**. IDA z funkce
+udelala `void sub_A200E()` a `v6` nechala neinicializovanou. Zadna flotila proto
+neprosla porovnanim.
+
+Volajici `sub_A1C74` ma v `eax` `(int16_t)result` (asm 0xA1CAC), takze
+`sub_A200E(result)`.
+
+Po oprave: `[0] index=12 x=5 y=161` -> kresli se na (306+5, 17+161) = **(311,178)**,
+presne jako dosbox.
+
+#### 2. Tabulka flotil 0x1931BC: pet pohledu, ctyri jednoprvkove
+
+Rozlozeni zaznamu (12 B) je videt z indexace:
+
+```
+word_1931BC[6*i] -> +0   word_1931BE[6*i] -> +2   word_1931C0[6*i] -> +4
+word_1931C2[6*i] -> +6   dword_1931C4[3*i] -> +8
+```
+
+Velikost potvrzuje primo kod: `memset(&word_1931BC, 0, 180)` a
+`0x193270 - 0x1931BC = 180` = 15 zaznamu. Slouceno do `blok_1931BC[180]`.
+
+#### 3. NALEZ: 181 symbolu je definovanych DVAKRAT
+
+`link_stubs.c` definuje `int word_1931BC;` a `orion_data.c` zaroven
+`int16_t word_1931BC[];`. Dve "tentative" definice tehoz jmena linker slouci a
+vezme tu **vetsi**, takze z dvoubajtoveho pole vznikne ctyrbajtovy objekt -
+a `memset(..., 180)` do nej psal daleko za nej.
+
+Sken (prunik nazvu mezi obema soubory) najde **181 takovych dvojic**. Vlna 130
+opravila trinact z nich (ty s prefixem `unk_`); zbytek jsou `byte_`/`word_`/
+`dword_` a ceka na projiti. Vetsina je nejspis neskodna (stub 4 B vs pole,
+kde se stejne pouziva jen prvni prvek), ale kazdy `memset`/`qmemcpy` pres
+takovy symbol je latentni prepis pameti.
+
+Ve vlne 132 opravene: `word_1931BC`, `word_1931BE`, `word_1931C0`, `word_1931C2`.
+
+#### 4. Stav
+
+| zalozka | vlna 131 | ted |
+|---|---|---|
+| COLONIES | 0 px | 0 px (0,00 %) |
+| RACES | 0 px | 0 px (0,00 %) |
+| PLANETS | 8 px | 8 px (0,00 %) |
+| FLEETS | 266 px | 266 px (0,09 %) |
+| INFO | 321 px | 321 px (0,10 %) |
+| **LEADERS** | 2143 px (0,70 %) | **1935 px (0,63 %)** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok: cerny lem kolem planet (zuzeno, ale nedoresene)
+
+Planety v pohledu na soustavu maji kolem sebe cerny disk - kresli se pozadi
+(sprite `v26 + 143`) a planeta pres nej, ale planeta vyjde skoro cela tmava.
+
+Co uz je **vyloucene**:
+- sprity maji spravnou velikost (31x31, 39-40 ramcu) i spravne ramce;
+- palety spritu jsou v poradku - napr. (16,16,10), (18,18,12) pro pisecnou
+  planetu, (32,12,8), (26,10,7) pro cervenou;
+- `sub_1338C9` (hledani nejblizsi barvy) funguje a vraci rozumne indexy;
+- straz "mimo rozsah" v `sub_1338C9` uz nepadá (byla to jen nasledovna skoda
+  po prepisu pameti z vlny 130);
+- `sub_12EFBD` kopiruje neprusvitne, ale to dela i original (`push 0` v asm).
+
+Kde to je: `sub_133D16` staví přemapovací tabulku `byte_1BC79C`. Vypis pro tri
+planety jedne soustavy:
+
+```
+sprite A (paleta 0,0,0 / 16,16,10 / 18,18,12):  1 140 212 212 142 196 193 ...   OK
+sprite B (paleta 0,0,0 /  0, 3, 0 /  4, 4, 6):  1 1 2 3 4 5 6 ... 21           IDENTITA
+sprite C (paleta 0,0,0 / 32,12, 8 / 26,10, 7):  1 206 151 188 209 184 90 ...   OK
+```
+
+U spritu B se smycka v `sub_133D16` po dvou prvcich zastavila, i kdyz hlavicka
+palety hlasi `od=0 poctu=22`. Podminka smycky se cte ZNOVU v kazdem kole:
+
+```c
+for ( j = 0; ; ++j ) {
+    result = *(int *)dword_1BC2A4 >> 16;      /* pocet - cte se porad dokola */
+    if ( result <= j ) break;
+    ...sub_1338C9(...)
+}
+```
+
+Takze neco behem smycky prepise `dword_1BC2A4` (nebo pamet, na kterou ukazuje).
+Dalsi krok: hardwarovy watchpoint (`PortDebug_WatchWrite(&dword_1BC2A4, 4)`) -
+tenhle nastroj uz ve vlne 130 nasel prepis palety na prvni pokus.
+

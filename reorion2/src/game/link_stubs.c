@@ -442,10 +442,6 @@ int word_192FF2;
 int word_192FF4;
 int word_192FF6;
 /* vlna 116: duplicitni skalar odstranen - pole je v orion_data.c */
-int word_1931BC;
-int word_1931BE;
-int word_1931C0;
-int word_1931C2;
 int word_19918A;
 int word_1991B6;
 /* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_1992C0 */

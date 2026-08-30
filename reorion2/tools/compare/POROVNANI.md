@@ -336,3 +336,79 @@ z ni mel jen nulu, takze VSECHNY uhly krome nuly davaly 0. Projevilo se to az
 o tri urovne vys - planety v pohledu na soustavu se nakupily do stredu - a
 zaroven to tise kazilo stinovani na COLONIES.
 
+
+### Kde lezi referencni disassembly (vlna 131)
+
+**Ne v `Debug/diss/`.** Ta cesta je v `.gitignore`, takze prepnuti vetve ten
+adresar smaze a nastroje prestanou fungovat - presne to se stalo ve vlne 131.
+
+Referencni data (`Orion2.exe`, `.lst`, `.asm`, `.c`, `.map`, ...) patri
+**mimo pracovni strom**, doporucene do `C:/prenos/reorion2Data/diss/`.
+
+Nastroje si cestu najdou samy pres `tools/compare/diss.py`:
+
+```
+1. promenna prostredi REORION2_DISS
+2. C:/prenos/reorion2Data/diss
+3. Debug/diss (stara cesta, pokud jeste existuje)
+4. C:/prenos/mastori2/diss
+```
+
+```python
+from diss import soubor
+open(soubor('Orion2.exe.lst'), 'rb')
+```
+
+Kdyz nic nenajde, skonci s hlaskou, kde hledal - ne s `FileNotFoundError`
+uprostred mereni.
+
+### tools/compare/owner.py
+
+`ret=` z dosboxoveho trace -> `sub_XXXXX+0xNN`. Zakladni krok metody
+"zespoda nahoru": sonda `DUMPREGS cond=eip:<funkce> repeat=always` rekne,
+KDO tu funkci vola, a to i s x/y (eax/edx) a tretim argumentem (ebx).
+
+```bash
+python tools/compare/owner.py <trace.txt> [cyklus_od] [cyklus_do]
+```
+
+Skript uz nepiste porad dokola do scratchpadu - je soucasti repozitare.
+
+
+### Tyz symbol definovany dvakrat (vlna 132)
+
+`link_stubs.c` a `orion_data.c` obcas definuji **tentyz nazev**:
+
+```c
+/* link_stubs.c */   int word_1931BC;
+/* orion_data.c */   int16_t word_1931BC[];
+```
+
+V C jsou to obe "tentative definitions". MSVC je emituje jako COMMON a linker
+je **slouci - vezme tu vetsi**. Vysledek: z dvoubajtoveho pole je ctyrbajtovy
+objekt, `memset(&word_1931BC, 0, 180)` do nej psal daleko za nej a tise nicil
+sousedni globaly.
+
+Sken (prunik nazvu mezi obema soubory) najde **181 takovych dvojic**. Vetsina
+je nejspis neskodna, ale kazdy `memset`/`qmemcpy`/`strcpy` pres takovy symbol
+je latentni prepis pameti. Priznak: hlidace portu hlasi prepsany global,
+nebo se data "sama od sebe" meni.
+
+```python
+# prunik definic mezi link_stubs.c a orion_data.c
+vz = re.compile(r'^(?:[A-Za-z_][A-Za-z0-9_ ]*?)\s*\**\s*'
+                r'(?P<jm>[A-Za-z_][A-Za-z0-9_]*_[0-9A-Fa-f]{4,6})\s*(\[[^\]]*\])?\s*(=|;)')
+```
+
+Opravene dosud: 13 s prefixem `unk_` (vlna 130), `word_1931BC/BE/C0/C2` (vlna 132).
+
+### Kde hledat velikost bloku: primo v kodu
+
+Nejlepsi dukaz velikosti tabulky neni sousedni symbol, ale **`memset` v hernim
+kodu**. `memset(&word_1931BC, 0, 180)` rekne rovnou 180 bajtu - a sedelo to
+i s `0x193270 - 0x1931BC`.
+
+```bash
+grep -rn "memset(&\|qmemcpy(&" src/game/*.c | grep -v "sizeof"
+```
+

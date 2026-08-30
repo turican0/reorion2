@@ -3911,8 +3911,8 @@ extern int sub_A1C0D();
    (zmereno sondou), takze `if (a9)` proslo a `*a9 = ...` slo do neznama. */
 unsigned int sub_A1C74(unsigned int result, int a2, int a3, int a4, int a5, int a6, int a7,
                        _WORD *a8, _WORD *a9, _WORD *a10);
-// plna signatura: void sub_A200E();
-extern void sub_A200E();
+// plna signatura: void sub_A200E(int a1);
+extern void sub_A200E(int a1);
 // plna signatura: int sub_A20CD();
 extern int sub_A20CD();
 // plna signatura: int sub_A20EC();
@@ -12311,7 +12311,7 @@ char sub_A1BC9(int16_t a1, _BYTE *a2, _BYTE *a3);
 int sub_A1BF4(int result);
 int sub_A1C0D(int a1);
 unsigned int sub_A1C74(unsigned int result, int16_t a2, int16_t a3, int16_t a4, int16_t a5, int16_t a6, int16_t a7, _WORD *a8, _WORD *a9, _WORD *a10);
-void sub_A200E();
+void sub_A200E(int a1);
 int sub_A20CD();
 int sub_A20EC();
 // int sub_A2123(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, __int128 a14, int64_t a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, __int128 a24, int a25);
@@ -18551,11 +18551,13 @@ extern int16_t word_1931AC[6];   /* vlna 116: velikosti spritu hvezd */
 #define word_1931B4 word_1931AC[4]
 #define word_1931B6 word_1931AC[5]
 extern int dword_1931B8;
-extern int16_t word_1931BC[];
-extern int16_t word_1931BE[];
-extern int16_t word_1931C0[];
-extern int16_t word_1931C2[];
-extern int dword_1931C4[43];
+/* vlna 132: jedna tabulka 15 zaznamu po 12 B - viz orion_data.c */
+extern char blok_1931BC[180];
+#define word_1931BC  ((int16_t *)blok_1931BC)
+#define word_1931BE  ((int16_t *)(blok_1931BC + 2))
+#define word_1931C0  ((int16_t *)(blok_1931BC + 4))
+#define word_1931C2  ((int16_t *)(blok_1931BC + 6))
+#define dword_1931C4 ((int *)(blok_1931BC + 8))
 extern int dword_193270;
 extern int dword_193274;
 extern int dword_193278;

@@ -22,11 +22,13 @@ Pouziti:
   dumpdata.py 0x17A310 4 --data   # jen datova
   dumpdata.py 0xDD4EB 10 --kod --c   # jen kodova, jako C inicializator
 """
-import sys
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from diss import soubor
 
 DELTA_KOD  = 0x85654
 DELTA_DATA = 0x7E654
-EXE = 'Debug/diss/Orion2.exe'
+EXE = soubor('Orion2.exe')   # vlna 131: uz ne Debug/diss - viz diss.py
 
 def show(d, addr, count, delta, label, as_c):
     off = addr + delta

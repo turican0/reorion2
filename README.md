@@ -176,7 +176,7 @@ This project follows a deliberate, verify-before-you-fix process (full rules in 
 4. Remove `JUMPOUT`/`goto` artifacts where possible, without changing behavior.
 5. Route anything BIOS/DOS/hardware-shaped into `src/port/*.cpp`.
 6. Strip decompiler calling-convention noise (`__fastcall`, `__usercall`, ...) once it's confirmed dead.
-7. **Always cross-check against the original disassembly** (`Debug/diss/Orion2.exe.asm`) when decompiled control flow, argument counts, or return values look suspicious — the decompiler gets things wrong often enough that "looks weird" is a real signal, not noise.
+7. **Always cross-check against the original disassembly** when decompiled control flow, argument counts, or return values look suspicious — the decompiler gets things wrong often enough that "looks weird" is a real signal, not noise. The reference dump (`Orion2.exe` plus its IDA listings) is kept **outside the working tree** — by default `C:/prenos/reorion2Data/diss/`, overridable with `REORION2_DISS`; `tools/compare/diss.py` resolves it. It used to live in `Debug/diss/`, which is gitignored and therefore got wiped on a branch switch.
 8. English for all comments and all `.md` documentation.
 
 ## Contributing / history

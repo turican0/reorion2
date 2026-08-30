@@ -2242,7 +2242,7 @@ unsigned int sub_A1C74(
   result = (int16_t)result;
   if ( (int16_t)result > -1 && (int16_t)result < word_19999A && !byte_19D32F )
   {
-    sub_A200E();
+    sub_A200E(result);   /* vlna 132: asm 0xA1CAC - eax = (int16_t)result */
     if ( a9 )
     {
       *a9 = sub_11C3C5(
@@ -2364,7 +2364,7 @@ unsigned int sub_A1C74(
 
 
 //----- (000A200E) --------------------------------------------------------
-void sub_A200E()
+void sub_A200E(int a1)
 {
   int v0; // edi
   int16_t v1; // si
@@ -2375,6 +2375,13 @@ void sub_A200E()
   int16_t v6; // [esp+0h] [ebp-Ch]
   int v7; // [esp+8h] [ebp-4h] BYREF
 
+  /* PORT (vlna 132): asm 0xA200E - za `enter 8, 0` je `push eax`, tedy prvni
+     argument na [ebp-0Ch]. IDA z nej udelala lokalku `v6`, kterou uz nikdo
+     neinicializoval ("variable v6 is possibly undefined"), a je to pritom
+     index hvezdy, proti kteremu se porovnavaji flotily. Bez nej neprosla ani
+     jedna a tabulka 0x1931BC zustala cela -1 - v pohledu na soustavu na
+     LEADERS proto chybela ikona flotily. */
+  v6 = (int16_t)a1;
   v7 = 0;
   sub_A20EC();
   v0 = 0;
@@ -2426,7 +2433,7 @@ int sub_A20EC()
   int v0; // edx
   int result; // eax
 
-  memset(&word_1931BC, 0, 180);
+  memset(blok_1931BC, 0, 180);   /* vlna 132: cely blok, ne jeden pohled */
   v0 = 0;
   do
   {

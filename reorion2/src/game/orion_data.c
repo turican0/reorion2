@@ -16069,11 +16069,14 @@ int dword_193194[6]; // weak
    necentrovaly - kreslily se o polovinu velikosti vpravo dolu. */
 int16_t word_1931AC[6]; // weak
 int dword_1931B8; // weak
-int16_t word_1931BC[]; // weak
-int16_t word_1931BE[]; // weak
-int16_t word_1931C0[]; // weak
-int16_t word_1931C2[]; // weak
-int dword_1931C4[43]; // weak
+/* vlna 132: 0x1931BC..0x193270 je JEDNA tabulka 15 zaznamu po 12 bajtech
+   (180 B - potvrzuje to `memset(&word_1931BC, 0, 180)` v orion_part_10.c).
+   IDA z ni udelala pet prekryvajicich se pohledu, ctyri jednoprvkove:
+     word_1931BC[6*i] -> +0,  word_1931BE[6*i] -> +2,  word_1931C0[6*i] -> +4,
+     word_1931C2[6*i] -> +6,  dword_1931C4[3*i] -> +8.
+   `word_1931C2[6*i] > -1` je test platnosti zaznamu, takze se cetlo mimo pole
+   a sub_A3BC4 nenakreslila ikonu flotily v pohledu na soustavu (LEADERS). */
+char blok_1931BC[180];
 int dword_193270; // weak
 int dword_193274; // weak
 int dword_193278; // weak
