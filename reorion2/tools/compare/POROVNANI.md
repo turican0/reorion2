@@ -441,3 +441,71 @@ Porovnavej je jako ODSTUPY od prvniho prvku, ne absolutne.
 Az je blok zuzeny, doraz to hardwarovym watchpointem na jeho prvni bajt -
 ten rekne zapisovatele.
 
+
+### Dobra doba behu dosboxovych sond (vlna 134)
+
+`STOP cond=cycle_ge:140000000` staci - klik na zalozku padne kolem 81M cyklu.
+Puvodnich 200M znamenalo 15+ minut na jedno mereni.
+
+**Oba `esc` (cycle_ge:40000000 i 90000000) tam musi zustat.** Emulace neni mezi
+behy uplne deterministicka (`cycles=auto` v moo2_sondy.conf), takze intro
+nekdy dobiha dyl; bez druheho `esc` se hra do menu nedostane a beh propadne
+naprazdno - trace je prazdny a vypada to jako "sonda nic nenasla".
+
+Kontrola v logu: musi tam byt `SENDKEY : stisk v cyklu ... (eip=002A56F2)`.
+Kdyz tam neni, hra se do menu nedostala a mereni je neplatne.
+
+
+### Trida poskozeni 9: `memset` pres nekolik samostatnych symbolu
+
+`memset(&symbol, v, N)`, kde `N` je vetsi nez velikost `symbol`, znamena, ze
+v originale slo o **jeden souvisly blok**, ktery IDA rozdrobila na nekolik
+symbolu. V portu jsou to samostatne objekty a memset prepise **cizi pamet**.
+
+Priklad (vlna 135):
+
+```c
+memset(&word_199EC7, -1, 9);   /* word_199EC7 je int16_t = 2 B */
+```
+
+Blok 0x199EC7..0x199ED0 = `word_199EC7/EC9/ECB/ECD` + `byte_199ECF`.
+
+**Jak to poznat plosne:** hledej `memset`/`memcpy`, kde treti argument je vetsi
+nez `sizeof` ciloveho symbolu. Velikost bloku potvrd adresou nasledujiciho
+symbolu (tady `word_199ED0` = 0x199EC7 + 9).
+
+**Proc je to zakerne:** chyba se neprojevi, dokud linker nepolozi za obet neco
+dulezitehо. Vlna 135 ji odhalila az tim, ze vlna 134 zvetsila `byte_199EC2`
+z jednoho bajtu na pet a linker ho presunul prave za `word_199EC7`. Kazde
+sloucovani tabulek muze takovou latentni chybu probudit - proto po nem VZDY
+promerit vsechny obrazovky, ne jen tu opravovanou.
+
+### Nasazovani watchpointu: kdyz nic nezachyti, arm ho DRIV
+
+Watchpoint, ktery nezasahne, neznamena "nikdo tam nepise" - znamena "nikdo tam
+nepise PO nasazeni". Nasazuj ho co nejbliz k mistu, kde je hodnota jeste
+spravna, ideálne **hned za inicializaci**, a k tomu si nech vypsat obsah:
+
+```c
+PortDebug_ProbeLog("EC2 po inicializaci: %d %d %d %d %d", ...);
+PortDebug_WatchWrite(&pole[0], 1);
+PortDebug_WatchEnable(1);
+```
+
+Vypis rekne, jestli je vychozi stav spravny (a hledas prepisovatele), nebo uz
+inicializace sama je spatne (a hledas jinde).
+
+### Regresni brana `gate.py`
+
+`genCompare/compare_frames.exe` nikdy nebyla v gitu a pri prepnuti vetve zmizela.
+Nahradil ji `tools/compare/gate.py`, ktery **v gitu je**:
+
+```
+python tools/compare/gate.py <ref_dir> <port_dir> 640 480
+```
+
+Snimky portu: `REORION2_BLIT_DUMP_DIR=<d> REORION2_BLIT_DUMP_COUNT=600
+REORION2_DUMP_INCLUDE_PALETTE=1 REORION2_VIDEO_AUDIO=0`.
+Referencni sada patri do `C:/prenos/reorion2Data/`, ne do pracovniho stromu.
+Branu nikdy nepoustej, kdyz bezi dosbox.
+

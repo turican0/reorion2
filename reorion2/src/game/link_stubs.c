@@ -63,7 +63,6 @@ int byte_199A67;
 int byte_199A6C;
 int byte_199A6D;
 int byte_199BA2;
-int byte_199EC2;
 int byte_19A0D8;
 int byte_19ABA4;
 int byte_19ABA5;
@@ -77,7 +76,6 @@ int byte_19C148;
 /* vlna 119: duplicitni skalar odstranen - pole je v orion_data.c */
 /* vlna 58: byte_19C6EE je ted makro do bloku hofBlock_19C5FC - tenhle
    pahyl uz nic nealiasoval a jen mrtve zabiral symbol. */
-int byte_19C714;
 int byte_19DECA;
 int byte_19DECD;
 int byte_19E57C;

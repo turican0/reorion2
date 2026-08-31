@@ -17136,16 +17136,16 @@ extern int16_t word_18230E;   /* vlna 127: dva priznaky, ne ukazatel */
 extern int16_t word_182310;
 extern char *off_182314;
 extern char aMoise[200]; // vlna 58: tabulka 10 jmen po 20 B, viz orion_data.c
-extern char byte_1823E0[];
-extern char byte_1823E1;
-extern char byte_1823E2;
-extern char byte_1823E3;
-extern char byte_1823E4;
-extern char byte_1823E5;
-extern char byte_1823E6;
-extern char byte_1823E7;
-extern char byte_1823E8;
-extern char byte_1823E9;
+extern char byte_1823E0[10];
+#define byte_1823E1 (byte_1823E0[1])
+#define byte_1823E2 (byte_1823E0[2])
+#define byte_1823E3 (byte_1823E0[3])
+#define byte_1823E4 (byte_1823E0[4])
+#define byte_1823E5 (byte_1823E0[5])
+#define byte_1823E6 (byte_1823E0[6])
+#define byte_1823E7 (byte_1823E0[7])
+#define byte_1823E8 (byte_1823E0[8])
+#define byte_1823E9 (byte_1823E0[9])
 extern int16_t word_182433;
 extern char byte_182435;
 extern char byte_182436;
@@ -18964,16 +18964,18 @@ extern uint8_t blk_199BCD[15];
 #define byte_199BD5  (*(char *)(blk_199BCD + 8))
 extern char byte_199E05[63];
 extern char byte_199E44[126];
-extern char byte_199EC2[];
-extern char byte_199EC3;
-extern char byte_199EC4;
-extern char byte_199EC5;
-extern char byte_199EC6;
-extern int16_t word_199EC7;
-extern int16_t word_199EC9;
-extern int16_t word_199ECB;
-extern int16_t word_199ECD;
-extern char byte_199ECF;
+extern char byte_199EC2[5];
+#define byte_199EC3 (byte_199EC2[1])
+#define byte_199EC4 (byte_199EC2[2])
+#define byte_199EC5 (byte_199EC2[3])
+#define byte_199EC6 (byte_199EC2[4])
+/* vlna 135: jeden devitibajtovy blok mazany jednim memsetem - viz orion_data.c */
+extern char blok_199EC7[9];
+#define word_199EC7 (*(int16_t *)(blok_199EC7 + 0))
+#define word_199EC9 (*(int16_t *)(blok_199EC7 + 2))
+#define word_199ECB (*(int16_t *)(blok_199EC7 + 4))
+#define word_199ECD (*(int16_t *)(blok_199EC7 + 6))
+#define byte_199ECF (blok_199EC7[8])
 extern int16_t word_199ED0;
 extern int16_t word_199ED2;
 extern int16_t word_199ED6;
@@ -19683,7 +19685,11 @@ extern char hofBlock_19C5FC[452];
 #define byte_19C6EE  ((char *)(hofBlock_19C5FC + 242))
 #define byte_19C6EF  (byte_19C6EE + 1)
 #define byte_19C6F8  ((char *)(hofBlock_19C5FC + 252))
-extern char byte_19C714[];
+/* vlna 134: stinovaci tabulka planet. Kod ji cte jako
+   `byte_19C714[256*stin + barva]` (index vzdy >= 256, stin 0 se preskakuje),
+   ale ulozena je jako byte_19C813[1..2560] (plni sub_A5050). Adresne plati
+   byte_19C714[i] == byte_19C813[i - 255]. */
+#define byte_19C714 (byte_19C813 - 255)
 extern int dword_19C7C0;
 extern int16_t word_19C7C4;
 // Nazvy obtiznosti - souvisle sloty po 15 B (vlna 58), viz orion_data.c.

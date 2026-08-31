@@ -7608,16 +7608,12 @@ char aMoise[200] =
     "J W R\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
     "Ripping_Fang\0\0\0\0\0\0\0\0"
     "Chewy\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-char byte_1823E0[] = { '\n' }; // weak
-char byte_1823E1 = '\x14'; // weak
-char byte_1823E2 = '\x1E'; // weak
-char byte_1823E3 = '('; // weak
-char byte_1823E4 = '2'; // weak
-char byte_1823E5 = '<'; // weak
-char byte_1823E6 = 'F'; // weak
-char byte_1823E7 = 'P'; // weak
-char byte_1823E8 = 'Z'; // weak
-char byte_1823E9 = 'd'; // weak
+/* vlna 134: procenta ztmaveni pro deset urovni stinu planety (sub_A5050),
+   v obraze souvislych 10 bajtu 0A 14 1E 28 32 3C 46 50 5A 64. IDA vypsala
+   prvni jako jednoprvkove pole a zbylych devet jako samostatne skalary,
+   takze `byte_1823E0[uroven]` cetlo pro uroven>0 mimo pole.
+   byte_1823E1..E9 jsou ted makra do nej (orion_common.h). */
+char byte_1823E0[10] = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 int16_t word_182433 = 0; // weak
 char byte_182435 = '\xA0'; // weak
 char byte_182436 = '\xC0'; // weak
@@ -16476,16 +16472,19 @@ uint8_t blk_199BCD[15]; // weak
 TypeStateBlock_199BDC stateBlock_199BDC;
 char byte_199E05[63]; // weak
 char byte_199E44[126]; // weak
-char byte_199EC2[]; // weak
-char byte_199EC3; // weak
-char byte_199EC4; // weak
-char byte_199EC5; // weak
-char byte_199EC6; // weak
-int16_t word_199EC7; // weak
-int16_t word_199EC9; // weak
-int16_t word_199ECB; // weak
-int16_t word_199ECD; // weak
-char byte_199ECF; // weak
+/* vlna 134: centrovaci odsazeni spritu planety podle velikostni tridy 0..4
+   (plni sub_6xxxx: 19, 20, 22, 22, 24). IDA vypsala prvni jako jednoprvkove
+   pole a zbyle ctyri jako samostatne skalary, takze `byte_199EC2[velikost]`
+   cetlo pro velikost>0 mimo pole a planeta se v pohledu na soustavu kreslila
+   posunuta. byte_199EC3..EC6 jsou ted makra do nej. */
+char byte_199EC2[5];
+/* vlna 135: 0x199EC7..0x199ED0 je JEDEN devitibajtovy blok - sub_86188 ho
+   maze jednim `memset(&word_199EC7, -1, 9)`. IDA z nej udelala pet
+   samostatnych symbolu, takze v portu memset prepisoval sedm bajtu
+   v sousednim objektu (naposledy byte_199EC2 - odsazeni stredu spritu
+   planety -> pad v sub_147F3E pri kresleni LEADERS).
+   word_199EC7/EC9/ECB/ECD a byte_199ECF jsou ted pohledy do nej. */
+char blok_199EC7[9];
 int16_t word_199ED0; // weak
 int16_t word_199ED2; // weak
 int16_t word_199ED6; // weak
@@ -17190,7 +17189,6 @@ char byte_19C5EA; // weak
 // bylo poskozene. Rozlozeni: +0 magic, +2 jmena 10x20, +202 skore 10x2,
 // +222 rasa 10x2, +242 obtiznost 10x1, +252 nazev rasy 10x20.
 char hofBlock_19C5FC[452]; // weak
-char byte_19C714[]; // weak
 int dword_19C7C0; // weak
 int16_t word_19C7C4; // weak
 // PORT (vlna 58): ctyri nazvy obtiznosti po 15 B lezi za sebou a

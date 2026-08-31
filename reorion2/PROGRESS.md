@@ -13916,3 +13916,214 @@ Port meri `v26` = 2, 2, 0. Dalsi krok podle metody z teto vlny: **vypsat
 DUMPMEM zaznam planety** (`dword_1930D4 + 17*index`, 17 B) z dosboxu i z portu
 a odecist - ukaze se, jestli je spatne pole +5, nebo uz samotny `dword_1930D4`.
 
+
+---
+
+### Vlna 134: stinovani planet - dve zkracene tabulky (LEADERS 1885 -> 1661 px)
+
+Pokracovani metody z vlny 133: **vypsat tutez pamet z obou stran a odecist.**
+
+#### 1. Data i vyber spritu SEDI - overeno
+
+Nez jsem sahl na kresleni, overil jsem vstupy. `DUMPMEM` na zaznam planety
+(`dword_1930D4 + 17*index`, 17 B) a `DUMPREGS` na `0xA3E32` (kde `edx` drzi
+vysledne cislo spritu):
+
+```
+zaznam planety 66:  04 00 1D 02 03 02 01 03 05 00 02 02 00 05 00 00 00   port == dbx
+zaznam planety 67:  FF FF 1D 01 01 03 01 00 01 02 01 00 00 07 00 00 00   port == dbx
+zaznam planety 68:  FF FF 1D 03 03 02 01 02 06 00 03 02 00 05 00 00 00   port == dbx
+zaznam planety 69:  FF FF 1D 00 03 00 00 00 01 ...                       port == dbx
+
+cisla spritu:  port 97, 100, 119, 124   dbx 97, 100, 119, 124
+```
+
+Velikostni trida ani vyber spritu tedy problem nebyly (dve me predchozi
+domnenky, obe merenim vyvracene). Rozdil vznika az v kresleni.
+
+#### 2. Stinovaci tabulka se cetla mimo pole
+
+`sub_A53DC` kresli planetu pres masku den/noc:
+
+```
+movzx edi, byte ptr [eax]      ; pixel spritu
+movzx edx, byte_1B479C[edi]    ; premapovana barva
+movzx edi, [ebp+var_4]         ; stin
+shl   edi, 8                   ; 256 * stin
+add   edi, edx
+mov   dl, byte_194714[edi]     ; stinovaci tabulka
+```
+
+`DUMPMEM` na `0x3B2714` (4352 B) ukazal, jak tabulka vypada: **uroven 0 same
+nuly, urovne 1-10 plne, od 11 dal nuly** - tedy deset urovni po 256 bajtech,
+kazda tmavsi (uroven 1 je skoro identita `C0 01 02 03 04...`, uroven 10 uz
+silne ztmavena).
+
+V portu je `byte_19C714` JEDNOPRVKOVE pole (a jeste jednou jako `int`
+v `link_stubs.c`), takze cteni na indexu >= 256 slo uplne mimo. Skutecna data
+pritom v portu jsou - plni je `sub_A5050` jako `byte_19C813[1..2560]`.
+Adresne plati `byte_19C714[i] == byte_19C813[i - 255]`, takze staci makro.
+
+#### 3. A procenta ztmaveni take
+
+`sub_A5050` stavi kazdou uroven se ztmavenim `byte_1823E0[uroven]`. V obraze
+je to souvislych deset bajtu `0A 14 1E 28 32 3C 46 50 5A 64` (10 az 100 %),
+ale IDA vypsala prvni jako jednoprvkove pole a **zbylych devet jako samostatne
+skalary** `byte_1823E1..E9`. `byte_1823E0[uroven]` tedy pro uroven>0 cetlo
+mimo pole. Slouceno; E1..E9 jsou makra.
+
+**Planety se ted kresli v plne velikosti, se spravnymi barvami i stinovanim** -
+cerny disk zmizel.
+
+#### 4. Stav
+
+| zalozka | vlna 133 | ted |
+|---|---|---|
+| COLONIES | 0 px | 0 px (0,00 %) |
+| RACES | 0 px | 0 px (0,00 %) |
+| PLANETS | 8 px | 8 px (0,00 %) |
+| FLEETS | 266 px | 266 px (0,09 %) |
+| INFO | 321 px | 321 px (0,10 %) |
+| **LEADERS** | 1885 px (0,61 %) | **1661 px (0,54 %)** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana `compare_frames` 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+Zbyva, ze planety stoji na **jinych mistech obeznych drah** nez v originale.
+Neni to posun obrazu (krizova korelace oblasti planet nenasla zadny posun,
+ktery by rozdil zmensil) - jsou to jine uhly.
+
+Uhel pocita `sub_EBEEB`:
+
+```c
+v10 = 5311 * (dword_192FD8 + 7 * a1) / (a1 + 100 * a2 + 150) % 360;
+```
+
+Port meri pro hvezdu 29: draha 0 -> 126, draha 1 -> 158, draha 2 -> 106,
+draha 3 -> 79. Bezi sonda `DUMPREGS cond=eip:0x0030FF22` (kde `edx` drzi
+`v10` a `edi` cislo drahy) plus `DUMPMEM` na hvezdne datum `dword_192FD8`,
+aby se ukazalo, jestli se lisi uhel, nebo uz vstup do vzorce.
+
+#### Poznamka k dobe behu sond
+
+Dosboxove behy trvaly 15+ minut, protoze `STOP` byl az na 200M cyklech -
+pritom klik na zalozku padne kolem 81M. Nove staci `STOP cond=cycle_ge:140000000`.
+**Oba `esc` (40M i 90M) tam ale musi zustat**: emulace neni mezi behy uplne
+deterministicka (`cycles=auto`), takze intro obcas dobiha dyl a bez druheho
+`esc` se hra do menu vubec nedostane - zmereno, jeden beh takhle propadl
+naprazdno.
+
+
+---
+
+### Vlna 135: memset pres nekolik IDA symbolu (LEADERS 1661 -> 918 px)
+
+Ve vlne 134 jsem slouceny `byte_199EC2` (odsazeni stredu spritu planety) - a hra
+zacala na LEADERS **padat**:
+
+```
+SEH code=0xC0000005 av_write  sub_147F3E+0x73 (orion_part_21.c:5899)
+  #1 sub_12EFBD+0x4b8 (orion_part_20.c:1990)
+  #2 sub_A2D7C+0x334  (orion_part_10.c:3169)
+```
+
+Podle instrukce "nic nevracet, dulezitejsi je shoda kodu" jsem opravu nechal
+a hledal pricinu padu.
+
+#### Jak se to naslo
+
+Sonda v `sub_A404E` ukazala, ze tabulka ma za behu jine hodnoty, nez do ni
+zapisuje inicializace (`orion_part_06.c:6713` pise 19/20/22/22/24):
+
+```
+A404E planeta=69 v30=0 v14=255  v26=-27 v25=-19 -> x=-154 y=-146
+A404E planeta=67 v30=3 v14=22   v26=-65 v25=-13 -> x=-76  y=-24
+```
+
+`v14 = 255` misto 19 znamena stred spritu 127 -> `v26 - v14/2` jde daleko do
+zaporu a `sub_12EFBD` pise mimo panel 288x154.
+
+Hardwarovy watchpoint na `&byte_199EC2[0]` a `[2]` nasazeny **na vstupu
+`sub_94C1D`** ale nezachytil NIC. To byla ta informace: zapis je driv.
+Prenesl jsem ho **hned za inicializaci** (a nechal si k tomu vypsat obsah pole)
+a odpoved prisla okamzite:
+
+```
+EC2 po inicializaci: 19 20 22 22 24        <- inicializace je v poradku
+BT watchpoint #4 memset+0x9b
+BT watchpoint #5 sub_86188+0xd6  (orion_part_07.c:10875)
+```
+
+#### Pricina - nova trida poskozeni
+
+```c
+memset(&word_199EC7, -1, 9);
+```
+
+`sub_86188` maze **jednim tahem devitibajtovy blok** na 0x199EC7. IDA z nej ale
+udelala PET samostatnych symbolu:
+
+```c
+int16_t word_199EC7;  int16_t word_199EC9;  int16_t word_199ECB;
+int16_t word_199ECD;  char byte_199ECF;
+```
+
+V originale lezi za sebou, v portu jsou to samostatne objekty, ktere linker
+rozmisti, jak chce - takze memset prepsal sedm bajtu **v cizim objektu**.
+Ta chyba tam byla celou dobu; projevila se az ted, kdy `byte_199EC2` prestalo
+byt jednoprvkove a linker ho polozil prave za `word_199EC7`.
+
+Ze je blok opravdu 9 B, potvrzuje pouziti `byte_199ECF` (0x199EC7+8):
+nastavuje se na 0 nebo `a3` a testuje se `!= 1`, tedy 0xFF z memsetu znamena
+"nic nevybrano". Dalsi symbol `word_199ED0` uz je na 0x199EC7+9.
+
+Slouceno do `blok_199EC7[9]`, vsech pet jmen jsou makra do nej.
+
+#### Uhly obeznych drah SEDI - hypoteza z vlny 134 padla
+
+Sonda `DUMPREGS cond=eip:0x0030FF22` v dosboxu dobehla:
+
+```
+draha 1 -> edx=0x9E=158    draha 2 -> edx=0x6A=106    draha 3 -> edx=0x4F=79
+hvezdne datum (0x3A8FD8) = B8880000 = 35000
+```
+
+Port meri pro tutez hvezdu 158, 106, 79 a datum 35000. **Uhly ani vstup do
+vzorce tedy problem nejsou** - to byla ctvrta merenim vyvracena domnenka
+k planetam. Zbyvajici rozdil na LEADERS je jinde.
+
+#### Regresni brana se musela obnovit
+
+`genCompare/compare_frames.exe` **nikdy nebyla v gitu** a pri prepnuti vetve
+se ztratila - stejne jako `Debug/diss` ve vlne 132. Referencni snimky
+prezily ve scratchpadu. Komparator jsem prepsal do
+`tools/compare/gate.py`, ktery **uz v gitu je**:
+
+```
+python tools/compare/gate.py <ref_dir> <port_dir> 640 480
+```
+
+#### Stav
+
+| zalozka | vlna 134 | ted |
+|---|---|---|
+| COLONIES | 0 px | 0 px (0,00 %) |
+| RACES | 0 px | 0 px (0,00 %) |
+| PLANETS | 8 px | 8 px (0,00 %) |
+| FLEETS | 266 px | 268 px (0,09 %) |
+| INFO | 321 px | 321 px (0,10 %) |
+| **LEADERS** | 1661 px (0,54 %) | **918 px (0,30 %)** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged** (novym `gate.py`);
+- vsech sest zalozek premereno, zadna regrese, **zadny pad na zadne z nich**;
+- vsechny docasne sondy odstranene.
+
