@@ -1023,44 +1023,25 @@ char sub_249F9(char *a1, int a2, char *a3, int a4)
 
 
 //----- (00024ACA) --------------------------------------------------------
+/* vlna 139: SKUTECNA signatura podle asm (Orion2.exe.lst, cseg01:00024ACA).
+   Prolog `enter 0F4h,0` + `push eax/edx/ebx/ecx` + `sub ebp, 82h` uklada
+   ctyri registrove argumenty do ramce; IDA z nich udelala neinicializovane
+   lokalky v50..v53 (sama to hlasi: "variable 'v51'/'v52' is possibly
+   undefined"). `v53` je pritom BUFFER, ktery se cte i prepisuje - proto se
+   v portu nedosazovalo do textu nic (na INFO chybelo cislo v "Net Income").
+   Skutecne zasobnikove argumenty zacinaji na [ebp_orig+10h] = [ebp'+92h];
+   IDA je pojmenovala s posunem 0x10 (arg_82 = offset 92h = argument 1).
+   Prirazeni s1..s5 k puvodnim a33..a37 je overene misto po miste proti asm. */
 char sub_24ACA(
-        unsigned int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int a26,
-        int a27,
-        int a28,
-        int64_t a29,
-        int a30,
-        int a31,
-        int a32,
-        int a33,
-        int a34,
-        int a35,
-        int a36,
-        int a37)
+        char *bufEax,      /* eax -> [ebp-0F8h] (IDA var_76) - buffer se sablonou */
+        int16_t regEdx,    /* edx -> [ebp-0FCh] (var_7A) */
+        int16_t regEbx,    /* ebx -> [ebp-100h] (var_7E) */
+        int16_t regEcx,    /* ecx -> [ebp-104h] (var_82) */
+        int16_t s1,        /* zasobnikovy argument 1 (arg_82) - cislo pro itoa */
+        int16_t s2,        /* 2 (arg_86) */
+        int16_t s3,        /* 3 (arg_8A) */
+        int16_t s4,        /* 4 (arg_8E) */
+        int16_t s5)        /* 5 (arg_92) - velikost ciloveho bufferu */
 {
   int16_t v37; // di
   char *v38; // esi
@@ -1074,17 +1055,24 @@ char sub_24ACA(
   char *v46; // eax
   int v47; // esi
   int64_t v48; // rax
-  char result; // al
-  int16_t v50; // [esp+72h] [ebp-82h]
-  int16_t v51; // [esp+76h] [ebp-7Eh]
-  int16_t v52; // [esp+7Ah] [ebp-7Ah]
-  char *v53; // [esp+7Eh] [ebp-76h] BYREF
+  char result = 0; // al
+  /* vlna 139: ctyri registrove argumenty, ktere ulozil prolog */
+  int16_t v50 = regEcx;   /* [ebp-104h] */
+  int16_t v51 = regEbx;   /* [ebp-100h] */
+  int16_t v52 = regEdx;   /* [ebp-0FCh] */
+  char *v53 = bufEax;     /* [ebp-0F8h] - buffer se sablonou */
   char v54[114]; // [esp+82h] [ebp-72h] BYREF
+  /* vlna 139: `arg_46` (56h) a `arg_6E` (7Eh) jsou po `sub ebp,82h` UVNITR
+     ramce, tedy lokalky - v dekompilatu vystupovaly jako `scratch`
+     a `*(_DWORD *)((char *)&a29 + 2)`. Buffer saha do 7Dh, tedy 40 B. */
+  char scratch[40];       /* arg_46: sem itoa/sprintf/strcpy sklada vysledek */
+  int16_t i;              /* arg_6E: citac smycky (asm `cmp word ptr ..., 0C8h`) */
+  unsigned int a1 = 0;    /* ecx pro itoa; asm ho nenastavuje, itoa ho ignoruje */
 
   v37 = 0;
-  for ( *(_DWORD *)((char *)&a29 + 2) = 0; SWORD1(a29) < 200; ++*(_DWORD *)((char *)&a29 + 2) )
+  for ( i = 0; i < 200; ++i )
   {
-    v46 = &v53[SWORD1(a29)];
+    v46 = &v53[i];
     if ( !*v46 )
       break;
     switch ( *v46 )
@@ -1098,9 +1086,9 @@ char sub_24ACA(
         v38 = (char *)(113 * v51 + dword_19306C);
         goto LABEL_12;
       case -126:
-        v38 = (char *)&a19 + 2;
+        v38 = scratch;
         v54[v37] = 0;
-        itoa(SHIWORD(a33), (char *)&a19 + 2, 10, a1);
+        itoa(s1, scratch, 10, a1);
         goto LABEL_12;
       case -125:
         v40 = v52;
@@ -1109,12 +1097,12 @@ char sub_24ACA(
         goto LABEL_9;
       case -124:
         v54[v37] = 0;
-        v38 = (char *)(3753 * SHIWORD(a34) + (uint8_t*)dword_197F98 + 1);
+        v38 = (char *)(3753 * s2 + (uint8_t*)dword_197F98 + 1);
         goto LABEL_12;
       case -123:
-        v40 = HIWORD(a34);
+        v40 = s2;
         v54[v37] = 0;
-        v41 = HIWORD(a35);
+        v41 = s3;
 LABEL_9:
         v42 = sub_10F7A1(v41, v40);
         goto LABEL_10;
@@ -1124,28 +1112,28 @@ LABEL_9:
         goto LABEL_5;
       case -121:
         v54[v37] = 0;
-        v39 = SHIWORD(a34);
+        v39 = s2;
 LABEL_5:
         v38 = (char *)((uint8_t*)dword_197F98 + 3753 * v39 + 21);
         goto LABEL_12;
       case -120:
         v54[v37] = 0;
         if ( byte_199CAE )
-          sprintf((char *)&a19 + 2, "%d,%d", dword_192FD8 / 10, dword_192FD8 % 10);
+          sprintf(scratch, "%d,%d", dword_192FD8 / 10, dword_192FD8 % 10);
         else
-          sprintf((char *)&a19 + 2, "%d.%d", dword_192FD8 / 10, dword_192FD8 % 10);
+          sprintf(scratch, "%d.%d", dword_192FD8 / 10, dword_192FD8 % 10);
         goto LABEL_11;
       case -119:
         v54[v37] = 0;
-        v42 = sub_10F772(SHIWORD(a36));
+        v42 = sub_10F772(s4);
         goto LABEL_10;
       case -118:
         v54[v37] = 0;
         v42 = (char *)sub_77B28(v51);
 LABEL_10:
-        strcpy((char *)&a19 + 2, v42);
+        strcpy(scratch, v42);
 LABEL_11:
-        v38 = (char *)&a19 + 2;
+        v38 = scratch;
 LABEL_12:
         v43 = (char *)v54 - 1;   /* vlna 124: cil je sousedni buffer v54, ne &v53 */
         do
@@ -1158,11 +1146,11 @@ LABEL_12:
         break;
       default:
         v45 = v37++;
-        v54[v45] = v53[SWORD1(a29)];
+        v54[v45] = v53[i];
         break;
     }
   }
-  v47 = SHIWORD(a37);
+  v47 = s5;
   v54[v37] = 0;
   if ( strlen(v54) >= v47 - 1 )
   {
@@ -1240,10 +1228,20 @@ void sub_24DF0()
 
 
 //----- (00024E08) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x24E20 */
-int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2)
+/* vlna 139: thunk do sub_24ACA - dosadi CISLO do sablony textu.
+   asm (cseg01:00024E08):
+       push ecx / movsx ebx,bx / push ebx    ; zasobnikovy argument 5 = velikost
+       push -1 / push -1 / push -1           ; argumenty 4, 3, 2
+       movsx edx,dx / mov ecx,-1 / push edx  ; argument 1 = cislo
+     loc_24E1C: mov ebx, ecx                 ; ebx = -1
+     loc_24E1E: mov edx, ecx                 ; edx = -1
+     loc_24E20: call sub_24ACA / pop ecx / retn
+   Posledni `push` lezi nejnize, je to tedy argument 1; sedi to i vyznamove -
+   argument 1 jde do `itoa` a argument 5 do kontroly delky bufferu.
+   Registrove argumenty: eax = buffer (nemeni se), edx = ebx = ecx = -1. */
+int sub_24E08(void *a1, int a2, int a3)
 {
-  DECOMP_TODO("call analysis failed (funcsize=14)");
+  return sub_24ACA((char *)a1, -1, -1, -1, (int16_t)a2, -1, -1, -1, (int16_t)a3);
 }
 
 

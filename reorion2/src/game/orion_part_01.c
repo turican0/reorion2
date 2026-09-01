@@ -8262,7 +8262,7 @@ int sub_1A1FD( int a1, int a2, int a3, int a4)
   sub_E5B69(a2, word_199960);
   word_19AA42 = v4;
   sub_249F9(aJimtext2Lbx, 56, (char *)dword_19A2AC, 30);
-  sub_24E08(dword_19A2AC, word_19AA42, 30);
+  sub_24E08((char *)dword_19A2AC, word_19AA42, 30);
   sub_249F9(aJimtext2Lbx, 58, (char *)dword_19A2C8, 35);
   v5 = 0;
   sub_24E27();
@@ -9923,7 +9923,7 @@ LABEL_19:
       word_19AA42 = v14;
       sub_249F9(aJimtext2Lbx, 56, (char *)dword_19A2AC, 30);
       v8 = 35;
-      sub_24E08(dword_19A2AC, word_19AA42, 30);
+      sub_24E08((char *)dword_19A2AC, word_19AA42, 30);
       sub_249F9(aJimtext2Lbx, 58, (char *)dword_19A2C8, 35);
       v9 = 35;
       v10 = word_199960;

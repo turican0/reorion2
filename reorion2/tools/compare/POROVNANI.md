@@ -509,3 +509,164 @@ REORION2_DUMP_INCLUDE_PALETTE=1 REORION2_VIDEO_AUDIO=0`.
 Referencni sada patri do `C:/prenos/reorion2Data/`, ne do pracovniho stromu.
 Branu nikdy nepoustej, kdyz bezi dosbox.
 
+
+### Animovane oblasti: porovnavej MINIMUM pres snimky, ne jeden snimek
+
+Pevne cislo "918 rozdilnych pixelu" muze byt z vetsiny artefakt mereni.
+Na LEADERS se otaceji planety, takze porovnani jednoho snimku portu s jednim
+snimkem dosboxu ukazalo 690 px rozdilu tam, kde je port **pixel-presny** -
+jen v jine fazi otaceni.
+
+Postup:
+
+1. **Rozdel rozdilove pixely do shluku** (souvisle oblasti, tolerance ~3 px)
+   misto jednoho souctu. Shluk je jedna vec, kterou lze samostatne vysetrit.
+2. Pro kazdy shluk vezmi **minimum pres vsechny zachycene snimky portu**.
+   Shluk, ktery nekde klesne na 0, je hotovy - jde o animaci, ne o chybu.
+3. Teprve zbytek je skutecny rozdil.
+
+Kdyz shluk na 0 neklesne, jeste over **posun**: zkus dx,dy v rozsahu -4..+4.
+Kdyz nejlepsi vysledek zustane na dx=0,dy=0, neni to posunuty obraz.
+
+### Barevne rampy fontu (8 B) - kde hledat cernou barvu textu
+
+Kdyz text ma SPRAVNE TVARY, ale spatnou barvu, chyba neni v kresleni fontu.
+Barva glyfu je `byte_1B3E7C[k-1]`; tu plni `sub_120BB5(font, rampa)` z
+osmibajtove rampy. Rampy jsou v datech souvisle rady osmibajtovych bloku,
+ktere IDA casto vypise jako `_UNKNOWN` skalary - pak je rampa v portu nulova
+a text vychazi CERNY.
+
+Sonda, ktera to rekne hned:
+
+```c
+PortDebug_ProbeLog("120BB5 font=%d rampa=%02X %02X %02X %02X %02X %02X %02X %02X", ...);
+PortDebug_Backtrace("rampa", 4);
+```
+
+Skutecne bajty pak `tools/compare/dumpdata.py <asm adresa> 8 --data`
+(asm adresa = C jmeno - 0x8000). **Vzdy over posun na sousedni jiz opravene
+rampe** - kdyz sedi bajt po bajtu, cte se na spravnem miste.
+
+Zname rampy u sebe (vlna 122 + 136): 18227C, 182284, 182298, 1822A0,
+1822A8, 1822B0. Kdyz najdes dalsi `_UNKNOWN` mezi opravenymi rampami,
+je to skoro jiste taky rampa.
+
+
+### Sondovy soubor se dosboxu predava pres DOSBOX_CTL_FILE, NE druhym -conf
+
+```
+DOSBOX_CTL_FILE="<cesta>/muj.cfg" \
+  C:/prenos/dosbox-x-remc2/bin/x64/Release/dosbox-x.exe -conf moo2_sondy.conf
+```
+
+Kdyz se sondovy soubor preda jako **druhy `-conf`**, dosbox ho vezme jako
+dalsi KONFIGURACI, nezname klice tise zahodi a **zadny verb se nespusti**.
+Beh pak dojede az do `STOP` (nebo visi v menu), trace je prazdny a vypada to
+jako "sonda nic nenasla" - stejne zradne jako vypadly `esc` z vlny 134.
+
+**Kontrola pred cekanim na vysledek:** v behovem logu musi byt radky
+`SENDKEY` / `SENDCLICK` / `DUMPMEM`. Kdyz tam nejsou, ctl soubor se vubec
+nenacetl - beh zabij a spust znovu spravne, nemá smysl cekat.
+
+
+### Trida poskozeni 10: dva zasobnikove sloty splacane do jedne promenne
+
+Kdyz IDA slouci nekolik sousednich zasobnikovych slotu do jedne siroke
+promenne (typicky `int64_t`), zacnou `SWORD1`, `SHIWORD` a `HIWORD` nad ni
+ukazovat na **TYZ dvoubajt** (vsechna tri jsou `*((short *)&x + 1)`), i kdyz
+v originale jde o RUZNA mista.
+
+Priklad (vlna 137, `sub_77048`):
+
+```c
+int64_t a26;                 /* pokryva arg_64..arg_6B */
+SWORD1(a26)   /* a26+2 = arg_66  - index  */
+SHIWORD(a26)  /* a26+2           - ale asm cte arg_6A = a26+6 */
+```
+
+Port pak misto `arg_6A/2` odecital `index/2` a znacky objektu na male mape
+byly o `index/2` radku vys.
+
+**Jak to poznat:** kdyz je promenna sirsi nez 4 B a pouzivaji se nad ni
+`SWORD1` i `SHIWORD`/`HIWORD` s ruznym VYZNAMEM (jednou index, jindy hodnota),
+je to skoro jiste tohle. Over v `.lst`, ktere `arg_XX` asm na tom miste cte.
+
+**Pozor - zapis byva spravne.** V teto vlne `sub_773B7(..., (_WORD *)&a26 + 3)`
+plnil arg_6A korektne; poskozena byla jen CTENI. Nehledej tedy chybu
+u zapisovatele, kdyz sedi.
+
+**Oprava:** pojmenovane makro na spravny offset, platne jen v te funkci:
+
+```c
+#define PORT_A26_ARG6A (*((int16_t *)&a26 + 3))
+...
+#undef PORT_A26_ARG6A
+```
+
+### Pozor pri davkove nahrade: neprepis vlastni komentar
+
+Skript, ktery nahrazuje `SHIWORD(a26)` -> `PORT_A26_ARG6A` v rozsahu funkce,
+zasahne i komentar, ktery si prave vlozil a ten retezec v nem ma. Pocitadlo
+nahrad pak nesedi. Bud komentar formuluj bez toho retezce, nebo nahrazuj az
+pred jeho vlozenim.
+
+
+### Kurzor mysi: port ho kresli do dumpu, dosbox ne
+
+Hru si kurzor kresli sama (`port_dos.cpp`, INT 33h funkce 2 - "schovej kurzor,
+hra si kresli vlastni"), takze v portu skonci v tomtez bufferu, ktery se
+dumpuje. Dosboxovy `DUMPFRAME` ale cte obraz hry BEZ nej.
+
+**Dusledek:** kazde mereni zalozky, kde kurzor lezi nad obsahem, ma navic
+~226 px "rozdilu", ktery neni chyba portu. Na FLEETS to bylo 226 z 228 px -
+skutecny rozdil jsou 2 px.
+
+**Jak to poznat:** shluk ~20x17 px prave tam, kam skript naposledy presunul
+mys. **Jak to dokazat:** pridej do `REORION2_CLICK` presun jinam
+(`;620,300@62000:0`) a znovu zmer - kdyz se shluk presune s mysi, je to kurzor.
+
+Pri mereni zalozek kurzor vyrad - maskou na jeho zname pozici nebo presunem
+mimo zajmovou oblast.
+
+### Cervena brana nemusi byt regrese - overuj, ze beh vubec probehl
+
+Beh portu obcas propadne: hra nespusti intro a nabehne rovnou do menu.
+Brana pak hlasi ~1/600 matched, protoze reference ma intro video.
+
+Kontrola: vyrenderuj snimek 5 z portu. Kdyz je na nem MENU misto hvezdnych
+car intra, beh je neplatny - opakuj ho, nehledej regresi. Tataz trida jako
+vypadly `esc` (vlna 134) nebo ctl soubor predany druhym `-conf` (vlna 136):
+**vzdy nejdriv over, ze mereni vubec probehlo, nez zacnes vysetrovat vysledek.**
+
+
+### Jmena `arg_XX` od IDA nemusi byt offsety - u posunute baze jsou posunuta
+
+Kdyz funkce v prologu posune bazi (`sub ebp, 82h`), IDA pojmenuje argumenty
+podle nejakeho vlastniho pocatku, ne podle skutecneho offsetu. U `sub_24ACA`
+(vlna 139) plati **jmeno = offset - 0x10**:
+
+```
+arg_82 je na offsetu 92h,  arg_86 na 96h,  arg_92 na 0A2h
+```
+
+Skutecne zasobnikove argumenty zacinaji na `[ebp_orig + 10h]` (za `push esi`,
+`push edi`, ulozenym `ebp` a navratovou adresou).
+
+**Nikdy neodvozuj prirazeni pseudoargumentu `aN` aritmetikou z jejich cisla** -
+IDA michá dvou- a ctyrbajtove pseudoargumenty, takze cislovani nesedi.
+Misto toho **projdi asm radek po radku** a u kazdeho pouziti `aN`
+v dekompilatu se podivej, ktere `[ebp+arg_XX]` se tam ve skutecnosti cte.
+U `sub_24ACA` to dalo jednoznacne prirazeni sedmi mist na pet argumentu,
+zatimco aritmeticky odhad vychazel pokazde jinak.
+
+### Prazdny thunk + prolog ukladajici registry = dve tridy poskozeni naraz
+
+`sub_24E08` (vlna 139) byl `DECOMP_TODO`, ale sam o sobe je trivialni - jen
+nastavi -1 a skoci do sdileneho tela. Problem byl, ze **i to sdilene telo**
+melo poskozeny ramec (registrove argumenty jako neinicializovane lokalky).
+Opravit jen thunk by nepomohlo.
+
+Priznak, ze telo je taky rozbite: IDA pod nim vypise
+`variable 'vXX' is possibly undefined` prave pro ty lokalky, ktere odpovidaji
+slotum ulozenym prologem (`push eax/edx/ebx/ecx` hned za `enter`).
+

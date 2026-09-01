@@ -4418,6 +4418,14 @@ int sub_77048(int a1, int a2, int a3, int a4)
   int v38; // ecx
   int v39; // ecx
   int64_t a26 = 0;   /* vlna 101: byval pseudo-argument, ve skutecnosti lokalka */
+  /* vlna 137: `a26` pokryva arg_64..arg_6B. INDEX do v44 je arg_66
+     (`SWORD1(a26)`), ale DELENEC/SCITANEC je arg_6A - samostatny slot na
+     a26+6, ktery plni `sub_773B7` pres treti (ebx) argument. IDA je oba
+     vypsala jako horni pulku a26, jenze ta je TOTEZ misto
+     jako SWORD1(a26) = a26+2. Port proto odecital index/2 misto arg_6A/2 a
+     znacky objektu na male mape byly o index/2 radku vys (zmereno: znacka
+     flotily na LEADERS y=224 misto 234). Overeno proti Orion2.exe.lst. */
+#define PORT_A26_ARG6A (*((int16_t *)&a26 + 3))
   int a27 = 0;       /* dtto */
   int16_t v40; // [esp+72h] [ebp-DAh]
   int16_t v41; // [esp+76h] [ebp-D6h]
@@ -4462,7 +4470,7 @@ int sub_77048(int a1, int a2, int a3, int a4)
         v36 = sub_78BCF(word_1906C2[6 * i]);
         *(_DWORD *)((char *)&a26 + 2) = sub_7A3E3(v35, v36);
         v34 = (int16_t)v44[SWORD1(a26) + 72] - SHIWORD(a27) / 2;
-        v32 = SHIWORD(a26) / 2;
+        v32 = PORT_A26_ARG6A / 2;
         LOWORD(v33) = v44[SWORD1(a26)] - 3;
       }
       else
@@ -4476,7 +4484,7 @@ int sub_77048(int a1, int a2, int a3, int a4)
         if ( word_1906C6[6 * i] < 5 )
         {
           LOWORD(v34) = v44[SWORD1(a26) + 72] - HIWORD(a27);
-          v37 = HIWORD(a26) + v44[SWORD1(a26)] - 5;
+          v37 = PORT_A26_ARG6A + v44[SWORD1(a26)] - 5;
           goto LABEL_15;
         }
         v38 = 129 * *(int16_t *)((char *)&word_1975D4 + 5 * word_1906C2[6 * i]);
@@ -4484,13 +4492,13 @@ int sub_77048(int a1, int a2, int a3, int a4)
         v39 = (int16_t)sub_7926C(*(_WORD *)(v38 + dword_197F9C + 105));
         sub_A1BC9(v46, &byte_192E80[v46], &byte_192ECC[v46]);
         v34 = 1000 * v45 / (506000 / v41) + v43 - SHIWORD(a27) / 2;
-        v32 = SHIWORD(a26) / 2;
+        v32 = PORT_A26_ARG6A / 2;
         v33 = 1000 * v39 / (400000 / v40) + v42;
       }
     }
     else
     {
-      v32 = SHIWORD(a26) / 2;
+      v32 = PORT_A26_ARG6A / 2;
       LOWORD(v33) = v44[SWORD1(a26)] - 3;
       LOWORD(v34) = v44[SWORD1(a26) + 72] + 4;
     }
@@ -4502,6 +4510,7 @@ LABEL_15:
   }
   return result * 2;
 }
+#undef PORT_A26_ARG6A
 // 770AE: variable 'v43' is possibly undefined
 // 770AE: variable 'v42' is possibly undefined
 // 770AE: variable 'v41' is possibly undefined

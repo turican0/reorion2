@@ -679,7 +679,7 @@ extern int sub_2496C();
 // plna signatura: char sub_249F9(char *a1, int a2, char *a3, int a4);
 char sub_249F9(char *a1, int a2, char *a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char sub_24ACA( unsigned int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int64_t a29, int a30, int a31, int a32, int a33, int a34, int a35, int a36, int a37);
-extern char sub_24ACA();
+char sub_24ACA(char *bufEax, int16_t regEdx, int16_t regEbx, int16_t regEcx, int16_t s1, int16_t s2, int16_t s3, int16_t s4, int16_t s5);   /* vlna 139: skutecna signatura podle asm */
 // plna signatura: void sub_24D30();
 extern void sub_24D30();
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=12)) - nutno dohledat rucne v IDA @ 0x24D64 */ int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3);
@@ -695,7 +695,7 @@ extern void sub_24D83();
 // plna signatura: void sub_24DF0();
 extern void sub_24DF0();
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x24E20 */ int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x24E20 */ int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_24E08(void *a1, int a2, int a3);   /* vlna 139: thunk do sub_24ACA - dosazeni cisla */
 // plna signatura: void sub_24E27();
 extern void sub_24E27();
 // plna signatura: void sub_24E3E();
@@ -10697,7 +10697,7 @@ void sub_24D83();
 _DWORD sub_24D9C(int16_t); // weak
 _DWORD sub_24DC5(int16_t, int16_t); // weak
 void sub_24DF0();
-int sub_24E08(_DWORD, _DWORD, _DWORD); // weak
+int sub_24E08(void *a1, int a2, int a3); // vlna 139
 void sub_24E27();
 void sub_24E3E();
 int sub_24E54(_DWORD, _DWORD); // weak
@@ -17117,12 +17117,12 @@ extern char byte_182247;
 extern _UNKNOWN unk_182248;
 extern char *off_182278;
 extern char unk_18227C[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_182284;
+extern char unk_182284[8];   /* vlna 136: barevna rampa fontu */
 extern _UNKNOWN unk_18228C[];
-extern _UNKNOWN unk_182298;
-extern _UNKNOWN unk_1822A0;
+extern char unk_182298[8];   /* vlna 136: barevna rampa fontu */
+extern char unk_1822A0[8];   /* vlna 136: barevna rampa fontu */
 extern char unk_1822A8[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_1822B0;
+extern char unk_1822B0[8];   /* vlna 136: barevna rampa fontu */
 extern int16_t word_1822B8[33];   /* vlna 125: 1 + 32, viz orion_data.c */
 #define word_1822BA (word_1822B8 + 1)
 extern char *off_1822FA;

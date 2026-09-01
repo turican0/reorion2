@@ -14127,3 +14127,499 @@ python tools/compare/gate.py <ref_dir> <port_dir> 640 480
 - vsech sest zalozek premereno, zadna regrese, **zadny pad na zadne z nich**;
 - vsechny docasne sondy odstranene.
 
+
+---
+
+### Vlna 136: barevne rampy fontu + animovane oblasti se musi merit jinak
+
+#### 1. Rozdil 918 px nebyl 918 px
+
+Rozdilove pixely na LEADERS jsem nejdriv rozdelil do SHLUKU (souvisle oblasti,
+tolerance 3 px) misto abych se dival na jedno cislo:
+
+```
+270 px  x=480..501 y=35..56   (22x22)   planeta
+252 px  x=429..453 y=49..71   (25x23)   planeta
+168 px  x=432..450 y=80..98   (19x19)   planeta
+140 px  x=446..483 y=210..219 (38x10)   napis jmena hvezdy
+ 63 px  x=326..339 y=237..250 (14x14)   drobny sprite
+ 25 px  x=334..339 y=227..231 ( 6x 5)   tyz sprite jinde
+```
+
+Tri nejvetsi shluky jsou planety - a ty se **otaceji**. Kdyz jsem misto
+pevneho snimku vzal MINIMUM pres vsech 30 zachycenych snimku portu, vyslo:
+
+```
+planeta zluta  0 px (frame_00014)
+planeta modra  0 px (frame_00018)
+planeta ruda   0 px (frame_00014)
+```
+
+**Planety jsou pixel-presne**, jen v jine fazi otaceni. Tech 690 px byl
+artefakt mereni, ne chyba portu. Zbyval napis (140 px) a sprite (25 px).
+
+#### 2. Napis jmena hvezdy byl cerny misto modreho
+
+Tvary glyfu sedely PRESNE, lisila se jen barva - takze chyba nebyla
+v kresleni fontu:
+
+```
+dosbox: index 68 (130 px) + index 61 (10 px)
+port:   index  0 (140 px)
+```
+
+Barva glyfu je `byte_1B3E7C[k-1]`, kterou plni `sub_120BB5` z osmibajtove
+rampy. Sonda tam vypsala:
+
+```
+120BB5 font=3 rampa=00 00 00 00 00 00 00 00
+BT rampa #1 sub_8FDA1+0x5a   (orion_part_08.c:6720)
+BT rampa #2 sub_93550+0x593  (orion_part_08.c:10053)
+BT rampa #3 sub_94C1D+0x1297 (orion_part_09.c:1456)
+```
+
+a volani je `sub_8FDA1((int)v22, (int)&unk_182284, 3, 2, 0, 203, 1)`.
+
+`unk_182284` byl v portu `_UNKNOWN` skalar (1 B, nula). V obraze hry je to
+osmibajtova rampa a je jich tam **cela souvisla rada**. Vlna 122 opravila jen
+dve z nich (`unk_18227C`, `unk_1822A8`); ctyri mezi nimi zustaly pahyly:
+
+```
+unk_182284 = 3D 44 43 44 44 44 44 44   = 61, 68, 67, 68...
+unk_182298 = 3E 47 45 47 47 47 47 47
+unk_1822A0 = 40 FF 43 FF FF FF FF FF
+unk_1822B0 = DB DE DD DE DE DE DE DE
+```
+
+`unk_182284` obsahuje presne 68 a 61 - ty dva indexy, ktere dosbox v napisu
+kresli. Kotva pro overeni posunu: `unk_18227C` v obraze = `4B 81 4D 81 81 81
+81 81`, presne jak ji opsala vlna 122. Hranice sedi taky: `unk_18228C[12]`
+konci na 0x182298 a `word_1822B8` (vlna 125) zacina hned za `unk_1822B0`+8.
+Osmibajtovou velikost potvrzuje i druhe pouziti: `v13 = &unk_182284;`
+`qmemcpy(v54, v13, sizeof(v54))`, kde `v54` je `_BYTE v54[8]`.
+
+**Napis je ted 0 px.**
+
+#### 3. Stav
+
+| zalozka | vlna 135 | ted |
+|---|---|---|
+| COLONIES | 0 px | 0 px (0,00 %) |
+| RACES | 0 px | 0 px (0,00 %) |
+| PLANETS | 8 px | 8 px (0,00 %) |
+| FLEETS | 268 px | 266 px (0,09 %) |
+| INFO | 321 px | 321 px (0,10 %) |
+| **LEADERS** | 918 px (0,30 %) | **344 px (0,11 %)** |
+
+Tech 344 px na LEADERS je nejlepsi CELY snimek; po shlucich je skutecny zbytek
+**jen ~50 px** (drobny sprite u zeleneho ramecku), protoze zadny jediny snimek
+nema vsechny tri planety naraz ve spravne fazi otaceni.
+
+#### 4. Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadna regrese, zadny pad;
+- docasna sonda odstranena.
+
+#### Dalsi krok
+
+Zbyva drobny vicebarevny sprite u zeleneho ramecku vlevo dole
+(x=326..345, y=227..250, ~25 px). Je v obou verzich, ale na jinem miste.
+Krizova korelace pres posuny -4..+4 v obou osach rozdil NEZMENSI (nejlepsi je
+dx=0, dy=0), takze to neni posunuty obraz, ale sprite kresleny jinam -
+nebo jina faze jeho animace. Postup: sonda na jeho kreslici volani z obou
+stran a porovnani souradnic, stejne jako u `sub_A404E` ve vlne 135.
+
+
+---
+
+### Vlna 137: dva ruzne zasobnikove sloty splacane do jedne promenne
+
+Posledni skutecny rozdil na LEADERS: drobna vicebarevna **znacka flotily** na
+male mape se kreslila o **presne 10 radku vys** (dosbox y=237..241, port
+227..231); x=334..339 sedelo v obou. Krizova korelace pres posuny -4..+4
+rozdil nezmensila, takze to nebyl posunuty obraz.
+
+#### Cesta ke kreslici rutine
+
+Sonda `sub_14852C` (RLE blitter) filtrovana na tu oblast dala rovnou celou
+cestu - a par slepych ulicek po ceste: `sub_12EFBD` kresli JEN planety
+(35x35 do panelu 288x154), `sub_12EB23` se nevola vubec a hardwarovy
+watchpoint na pixel v back bufferu chytil jen `memcpy`, protoze obraz se
+sklada jinde.
+
+```
+sub_93550 (orion_part_08.c:9957)
+  -> sub_737A2 (orion_part_06.c:1367)
+      -> sub_12A478(word_1906C8[6*v0], word_1906CA[6*v0], v4)  ... x=332, y=224
+```
+
+#### Zuzovani merenim
+
+`DUMPMEM` na tabulku pozic `word_1906C0` (zaznam 12 B) proti portu:
+
+```
+dosbox: 0C 00 0C 00 1D 00 00 00 4C 01 EA 00   -> x=332, y=234
+port:   0C 00 0C 00 1D 00 00 00 4C 01 E0 00   -> x=332, y=224
+```
+
+**Jediny odlisny bajt v celem zaznamu.** Dal:
+
+* posuny mapy `word_19998C` / `word_199990` - v obou 0/0 (a 199992=15). Sedi.
+* `sub_85B93` pro a1=29 - v obou `svet 60/35 -> obrazovka 61/44`. Sedi.
+* `sub_A0BB0` dava v portu x=69, y=29, `sub_A0CD5` se nevola - tabulku tedy
+  plni treti zapisovatel, `sub_77048`.
+
+#### Pricina
+
+`sub_77048`, vetev `word_1906C6[6*i] == 0`, v originale
+(`Orion2.exe.lst`, cseg01:00077105):
+
+```
+movsx   eax, word ptr [ebp+arg_66]   ; INDEX
+mov     bx,  [ebp+eax*2+var_3A]      ; x
+movsx   ecx, [ebp+eax*2+var_CA]      ; y
+movsx   eax, word ptr [ebp+arg_6A]   ; JINY SLOT
+cdq / sub eax, edx / sar eax, 1      ; arg_6A / 2
+lea     edx, [ecx-3]
+add     ebx, 4
+sub     edx, eax                     ; y = var_CA[index] - 3 - arg_6A/2
+```
+
+Index je `arg_66`, delenec `arg_6A` - **dva ruzne sloty**. V portu je `a26`
+`int64_t` (vlna 101 uz zjistila, ze to neni argument, ale lokalka) a pokryva
+arg_64..arg_6B, jenze:
+
+```c
+#define SWORD1(x)  (*((short *)&(x) + 1))          /* a26+2 = arg_66 */
+#define SHIWORD(x) (*((short *)&(x) + 1))          /* a26+2 - MELO byt a26+6 */
+#define HIWORD(x)  (*((unsigned short *)&(x) + 1)) /* a26+2 - dtto */
+```
+
+Vsechna tri ctou **tyz dvoubajt**. Port proto odecital `index/2` misto
+`arg_6A/2`; `arg_6A` je nula, takze rozdil je presne `index/2` = 10.
+
+ZAPIS do arg_6A byl pritom spravne - `sub_773B7(i, (_WORD *)&a27 + 1,
+(_WORD *)&a26 + 3)`, treti argument je `&a26 + 6` (v asm `lea ebx,
+[ebp+arg_6A]`). Chyba byla jen ve ctenich. Opraveno makrem
+`PORT_A26_ARG6A = *((int16_t *)&a26 + 3)` na ctyrech mistech; `SWORD1(a26)`
+(index) i vsechna `SHIWORD/HIWORD(a27)` zustavaji - `a27` je ctyrbajtovy
+`int`, takze jeho +2 (= arg_6E) je spravne.
+
+Tataz oprava plati pro vetve `word_1906C6 == 1` a `< 5`, kde asm rovnez cte
+`[ebp+arg_6A]`.
+
+#### Stav LEADERS
+
+| oblast | vlna 136 | ted |
+|---|---|---|
+| tri planety | 0 px kazda | 0 px kazda |
+| napis jmena hvezdy | 0 px | 0 px |
+| **znacka flotily** | 25 px | **0 px** |
+| cela obrazovka, nejlepsi snimek | 344 px | **294 px (0,10 %)** |
+
+Zbylych 294 px je uz jen **artefakt mereni**: planety se otaceji a zadny
+jediny snimek nema vsechny tri naraz ve spravne fazi. Po shlucich je LEADERS
+**bez rozdilu**.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- LEADERS premereno, **zadny pad**, znacka flotily 0 px;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+- Pustit regresni branu (`tools/compare/gate.py`) a premerit zbylych pet
+  zalozek - oprava je v `sub_77048`, ktera plni pozice objektu na mape, takze
+  se muze projevit i jinde (hlavne FLEETS 266 px).
+- Prohledat ostatni funkce na tutez tridu poskozeni: `SHIWORD`/`HIWORD` nad
+  promennou sirsi nez 4 B, kde asm cte jiny slot.
+
+
+---
+
+### Vlna 138: kurzor mysi je artefakt mereni; zbytek INFO je nedodelana rodina sub_24ACA
+
+#### 1. Brana zelena, ale pozor na propadle behy
+
+Po vlne 137 dala brana nejdriv **1/600 matched, 599 diverged** - a nebyla to
+regrese. Snimek 5 z portu ukazoval HLAVNI MENU, zatimco reference ma intro
+video: beh proste propadl, hra intro vubec nespustila. Opakovany beh dal
+**600/600 matched, 0 diverged**.
+
+Kontrola pred tim, nez cervene brane uveris: podivej se na snimek z portu.
+Kdyz je tam menu misto intra, beh je neplatny - stejna trida chyby jako
+vypadly `esc` (vlna 134) nebo spatne predany ctl soubor (vlna 136).
+
+#### 2. Vsech sest zalozek po vlne 137
+
+Oprava `sub_77048` pomohla i jinde - FLEETS spadl z 266 na 228 px.
+
+| zalozka | vlna 136 | vlna 137 |
+|---|---|---|
+| COLONIES | 0 px | 0 px |
+| RACES | 0 px | 0 px |
+| PLANETS | 8 px | 8 px |
+| FLEETS | 266 px | 228 px |
+| LEADERS | 344 px | 294 px |
+| INFO | 321 px | 321 px |
+
+#### 3. Kurzor mysi - systematicky artefakt mereni
+
+Rozdil na FLEETS je jeden shluk **226 px na x=194..213, y=446..462** - a je to
+**kurzor mysi**. Dokazano prime: pridal jsem do skriptu presun mysi
+(`REORION2_CLICK="...;620,300@62000:0"`) a shluk se presunul na
+x=618..637, y=300..316, tedy presne tam. Mimo nej je na FLEETS rozdil **2 px**.
+
+Proc to vznika: hru si kurzor kresli sama (`port_dos.cpp`, INT 33h funkce 2 -
+"schovej kurzor, hra si kresli vlastni"). V portu skonci v tomtez bufferu,
+ktery se dumpuje. Dosboxovy `DUMPFRAME` ale cte obraz hry BEZ nej - v zadnem
+z 259 referencnich snimku FLEETS kurzor neni (overeno hledanim vzoru i
+porovnanim poslednich snimku mezi sebou: meni se tam jen 20 px jinde).
+
+**Je to strukturalni rozdil odberu, ne chyba vykreslovani.** Pri mereni
+zalozek se kurzor musi vyradit - bud maskou na jeho zname pozici, nebo
+presunem mimo merenou oblast. Do te doby beri cisla u zalozek s vedomim,
+ze ~226 px muze byt kurzor.
+
+#### 4. Skutecny stav zalozek (po vyrazeni artefaktu)
+
+| zalozka | skutecny rozdil | poznamka |
+|---|---|---|
+| COLONIES | **0 px** | |
+| RACES | **0 px** | |
+| LEADERS | **0 px** | po shlucich; 294 px je faze otaceni planet |
+| FLEETS | **2 px** | x=466..467, y=479 (spodni okraj) |
+| PLANETS | **8 px** | jeden shluk x=462..464, y=20..23 (3x4) |
+| INFO | **321 px** | chybejici cislo - viz nize |
+
+#### 5. INFO: chybi cislo, protoze rodina `sub_24ACA` neni dodelana
+
+Shluk 321 px na x=57..150, y=196..204 je jeden radek textu:
+
+```
+port:    "Net Income:  BC"
+original:"Net Income: 8 BC"
+```
+
+Cislo v portu chybi uplne. Kresli to `sub_107214` (orion_part_17.c:4767):
+
+```c
+sub_249F9(aBilltextLbx, 27, v14, 64);   /* nacte sablonu textu */
+sub_24E08(v14, (int16_t)v11, 64);       /* dosadi do ni cislo   */
+return sub_1210FD(105, 196, (int)v14);
+```
+
+`sub_24E08` je v portu `DECOMP_TODO("call analysis failed (funcsize=14)")`.
+V originale je to **thunk** do sdileneho tela `sub_24ACA` (textovy substitucni
+stroj, switch nad znaky 0x80..0x8A v sablone):
+
+```
+sub_24E08:  push ecx / movsx ebx,bx / push ebx
+            push -1 / push -1 / push -1
+            movsx edx,dx / mov ecx,-1 / push edx
+loc_24E1C:  mov ebx, ecx
+loc_24E1E:  mov edx, ecx
+loc_24E20:  call sub_24ACA / pop ecx / retn
+```
+
+**Cela rodina je nedodelana** - 60 volani v celem portu:
+
+| funkce | stav | volani |
+|---|---|---|
+| sub_24ACA | telo je | 1 |
+| sub_24D30 | DECOMP_TODO | 12 |
+| sub_24D4C | DECOMP_TODO | 11 |
+| sub_24D9C | DECOMP_TODO | 3 |
+| sub_24DC5 | DECOMP_TODO | 3 |
+| sub_24DF0 | JUMPOUT | 4 |
+| **sub_24E08** | DECOMP_TODO | **15** |
+| sub_24E27 | JUMPOUT | 5 |
+| sub_24E3E | DECOMP_TODO | 2 |
+| sub_24E54 | DECOMP_TODO | 3 |
+| sub_24E73 | JUMPOUT | 2 |
+
+Chybi tedy nejspis **kazde dosazeni cisla do herniho textu**, ne jen tohle.
+
+#### 6. Rozbor ramce sub_24ACA (hotova prace pro pristi vlnu)
+
+`sub_24ACA` je `__userpurge ...@<al>(unsigned int@<ecx>, int, int, ...)` s 37
+pseudoargumenty a prologem, ktery uklada registrove argumenty na zasobnik:
+
+```
+push esi / push edi / enter 0F4h,0
+push eax / push edx / push ebx / push ecx
+sub  ebp, 82h
+```
+
+`sub ebp, 82h` posune bazi, takze vsechna `[ebp+X]` v tele jsou proti
+`ebp - 0x82`. Skutecne zasobnikove argumenty zacinaji na `[ebp_orig + 16]`
+(za `push esi`, `push edi`, ulozenym `ebp` a navratovou adresou), tedy
+na `[ebp' + 0x92]`. Odtud:
+
+```
+arg_82 (0x92) = zasobnikovy argument 1
+arg_86 (0x96) = 2
+arg_8A (0x9A) = 3
+arg_8E (0x9E) = 4
+arg_92 (0xA2) = 5
+a1 = ecx  (IDA to znaci `@<ecx>`)
+```
+
+Pro `sub_24E08(buffer, cislo, 64)` (registry eax, edx, ebx) tedy plati:
+
+```
+eax = buffer  (do sub_24ACA jde nezmeneny)
+edx = -1, ebx = -1, ecx = -1
+zasobnik: [1]=cislo, [2]=-1, [3]=-1, [4]=-1, [5]=64
+```
+
+`arg_46` (0x56) a `arg_6E` (0x7E) jsou po posunu bazi UVNITR ramce, tedy
+LOKALKY, ne argumenty - stejna trida jako `sub_77048` (vlna 137) nebo
+`sub_100010` (vlna 87). Tomu odpovida i to, ze telo pouziva `a29` pres
+`*(_DWORD *)((char *)&a29 + 2)` jako lokalku.
+
+#### 7. Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- vsech sest zalozek premereno, zadny pad;
+- v pracovnim strome nezustaly zadne sondy.
+
+#### Dalsi krok
+
+Zrekonstruovat rodinu `sub_24ACA` z asm - zacit `sub_24E08` (15 volani,
+nejvic ze vsech) podle rozboru ramce vyse a overit prave na
+`Net Income` na INFO. Pak zbylych devet thunku, ktere se lisi jen tim,
+ktere argumenty nastavuji na -1.
+
+
+---
+
+### Vlna 139: rekonstrukce sub_24E08 - INFO z 321 px na NULU
+
+`sub_24E08` byl v portu `DECOMP_TODO` (Hex-Rays: "call analysis failed
+(funcsize=14)"), takze na INFO chybelo cislo: port kreslil `"Net Income:  BC"`
+misto `"Net Income: 8 BC"`. V originale je to **thunk** do textoveho
+substitucniho stroje `sub_24ACA` (switch nad znaky 0x80..0x8A v sablone z LBX).
+
+#### Rozbor ramce sub_24ACA
+
+```
+push esi / push edi / enter 0F4h,0
+push eax / push edx / push ebx / push ecx
+sub  ebp, 82h
+```
+
+`sub ebp,82h` posune bazi, takze vsechna `[ebp+X]` v tele jsou proti
+`ebp' = ebp_orig - 0x82`. Ctyri registrove argumenty ulozene prologem lezi na:
+
+| slot | adresa | registr | IDA | v portu |
+|---|---|---|---|---|
+| var_82 | ebp_orig-104h | ecx | arg | v50 |
+| var_7E | ebp_orig-100h | ebx | | v51 |
+| var_7A | ebp_orig-0FCh | edx | | v52 |
+| var_76 | ebp_orig-0F8h | **eax** | | **v53** |
+
+`v53` je **BUFFER se sablonou** - cte se i prepisuje (`strcpy(v53, v54)`) -
+a IDA z nej udelala NEINICIALIZOVANOU LOKALKU. Proto se v portu nedosazovalo
+nic. IDA to sama hlasi: *"variable 'v51'/'v52' is possibly undefined"*.
+Tataz trida jako `sub_77048` (vlna 137) nebo `sub_100010` (vlna 87).
+
+Skutecne zasobnikove argumenty zacinaji na `[ebp_orig+10h]` = `[ebp'+92h]`.
+**IDA je pojmenovala s posunem 0x10** (jmeno = offset - 0x10):
+
+```
+arg_82 (offset 92h) = argument 1     arg_86 (96h) = 2     arg_8A (9Ah) = 3
+arg_8E (9Eh) = 4                     arg_92 (0A2h) = 5
+```
+
+Prirazeni k pseudoargumentum dekompilatu jsem overil **misto po miste** podle
+toho, ktere `[ebp+arg_XX]` se na danem radku v asm cte:
+
+```
+0x24B71  movsx eax, [ebp+arg_82]  -> itoa(SHIWORD(a33), ...)   => s1
+0x24BD7  movsx edx, [ebp+arg_86]  -> v40 = HIWORD(a34)         => s2
+0x24BF4  movsx eax, [ebp+arg_86]  -> v39 = SHIWORD(a34)        => s2
+0x24C17  movsx eax, [ebp+arg_86]  -> SHIWORD(a34)              => s2
+0x24BE3  movsx eax, [ebp+arg_8A]  -> v41 = HIWORD(a35)         => s3
+0x24C79  movsx eax, [ebp+arg_8E]  -> sub_10F772(SHIWORD(a36))  => s4
+0x24CD2  movsx esi, [ebp+arg_92]  -> v47 = SHIWORD(a37)        => s5
+```
+
+`arg_46` (56h) a `arg_6E` (7Eh) jsou po posunu bazi **uvnitr** ramce, tedy
+lokalky, ne argumenty:
+
+* `arg_46` = pracovni buffer, kam `itoa`/`sprintf`/`strcpy` skladaji vysledek
+  (v dekompilatu `(char *)&a19 + 2`); saha do 7Dh, tedy 40 B;
+* `arg_6E` = citac smycky (asm `inc [ebp+arg_6E]`, `cmp word ptr ..., 0C8h`),
+  v dekompilatu `*(_DWORD *)((char *)&a29 + 2)` / `SWORD1(a29)`.
+
+#### sub_24E08
+
+```
+push ecx / movsx ebx,bx / push ebx      ; zasobnikovy argument 5 = velikost
+push -1 / push -1 / push -1             ; argumenty 4, 3, 2
+movsx edx,dx / mov ecx,-1 / push edx    ; argument 1 = cislo
+loc_24E1C: mov ebx, ecx                 ; ebx = -1
+loc_24E1E: mov edx, ecx                 ; edx = -1
+loc_24E20: call sub_24ACA / pop ecx / retn
+```
+
+Posledni `push` lezi nejnize, je to tedy argument 1. Sedi to i vyznamove:
+argument 1 jde do `itoa` (cislo), argument 5 do kontroly delky
+("Decode message too long"), coz je velikost bufferu. Vysledek:
+
+```c
+int sub_24E08(void *a1, int a2, int a3)
+{
+  return sub_24ACA((char *)a1, -1, -1, -1, (int16_t)a2, -1, -1, -1, (int16_t)a3);
+}
+```
+
+`sub_24ACA` v portu do ted NIKDO nevolal, takze zmena jeho signatury byla
+bezpecna.
+
+#### Vysledek
+
+**INFO je 0 px** - cela obrazovka se s originalem shoduje bit po bitu.
+
+| zalozka | vlna 138 | vlna 139 |
+|---|---|---|
+| COLONIES | 0 px | 0 px |
+| RACES | 0 px | 0 px |
+| **INFO** | 321 px | **0 px** |
+| PLANETS | 8 px | 8 px |
+| FLEETS | 228 px | 228 px (z toho 226 kurzor) |
+| LEADERS | 294 px | 294 px (faze otaceni planet) |
+
+Skutecny stav po vyrazeni znamych artefaktu:
+
+| zalozka | skutecny rozdil |
+|---|---|
+| COLONIES, RACES, INFO, LEADERS | **0 px** |
+| FLEETS | **2 px** (x=466..467, y=479) |
+| PLANETS | **8 px** |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged** (a snimek 5 overen, ze beh
+  opravdu bezel intro - viz vlna 138);
+- vsech sest zalozek premereno, **zadna regrese, zadny pad**;
+- zadne docasne sondy v pracovnim strome.
+
+#### Dalsi krok
+
+1. **PLANETS, 8 px**: shluk 3x4 na x=462..464, y=20..23 - dosbox ma vedle
+   hvezdy drobny prvek, ktery port nekresli. Postup jako u znacky flotily
+   (vlna 137): sonda na `sub_14852C` zuzena na tu oblast.
+2. **Zbylych devet thunku rodiny `sub_24ACA`** (`sub_24D30` 12 volani,
+   `sub_24D4C` 11, `sub_24DF0` 4, `sub_24E27` 5, `sub_24E54` 3, `sub_24D9C` 3,
+   `sub_24DC5` 3, `sub_24E3E` 2, `sub_24E73` 2). Lisi se jen tim, ktere
+   argumenty nastavuji na -1 a ktere predavaji - rozbor ramce vyse plati pro
+   vsechny, takze uz to je mechanicka prace. Projevi se to na obrazovkach,
+   ktere zalozky nepokryvaji (dialogy, hlaseni).
+

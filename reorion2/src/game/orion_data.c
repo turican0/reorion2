@@ -7547,12 +7547,12 @@ char byte_182247 = '\x01'; // weak
 _UNKNOWN unk_182248; // weak
 char *off_182278 = "OFFICER.LBX"; // weak
 char unk_18227C[8] = { 0x4B, 0x81, 0x4D, 0x81, 0x81, 0x81, 0x81, 0x81 };   /* vlna 122: barevna rampa z obrazu hry */
-_UNKNOWN unk_182284; // weak
+char unk_182284[8] = { 0x3D, 0x44, 0x43, 0x44, 0x44, 0x44, 0x44, 0x44 };   /* vlna 136: barevna rampa fontu z obrazu hry */
 _UNKNOWN unk_18228C[12] = { 19, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
-_UNKNOWN unk_182298; // weak
-_UNKNOWN unk_1822A0; // weak
+char unk_182298[8] = { 0x3E, 0x47, 0x45, 0x47, 0x47, 0x47, 0x47, 0x47 };   /* vlna 136: barevna rampa fontu z obrazu hry */
+char unk_1822A0[8] = { 0x40, 0xFF, 0x43, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };   /* vlna 136: barevna rampa fontu z obrazu hry */
 char unk_1822A8[8] = { 0xCF, 0xD3, 0xD2, 0xD3, 0xD3, 0xD3, 0xD3, 0xD3 };   /* vlna 122: barevna rampa z obrazu hry */
-_UNKNOWN unk_1822B0; // weak
+char unk_1822B0[8] = { 0xDB, 0xDE, 0xDD, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE };   /* vlna 136: barevna rampa fontu z obrazu hry */
 /* PORT (vlna 125): v originale je tohle JEDNA souvisla tabulka - `word_17A2B8 dw 0`
    a hned za ni `word_17A2BA[32]`. `sub_9BF70` indexuje OBE cislem radku:
    `word_1822B8[v69]` je horni okraj radku (+39) a `word_1822BA[v69]` spodni,
