@@ -16253,9 +16253,9 @@ extern char aC_4[2];
 extern char aO_0[2];
 extern char asc_179B87[2];
 extern _UNKNOWN *off_179B89;
-extern _UNKNOWN unk_179B8D;
-extern _UNKNOWN unk_179B90;
-extern _UNKNOWN unk_179B92;
+extern char unk_179B8D[3];   /* vlna 140: znacka u hvezdy */
+extern char unk_179B90[2];   /* vlna 140: znacka u hvezdy */
+extern char unk_179B92[2];   /* vlna 140: znacka u hvezdy */
 extern char aScoreLbx[10];
 extern char asc_179BAA[2];
 extern int16_t word_179BCB;

@@ -14623,3 +14623,252 @@ Skutecny stav po vyrazeni znamych artefaktu:
    vsechny, takze uz to je mechanicka prace. Projevi se to na obrazovkach,
    ktere zalozky nepokryvaji (dialogy, hlaseni).
 
+
+---
+
+### Vlna 140: znacky kolonie u hvezdy - PLANETS na NULU
+
+Zbylych 8 px na PLANETS byl shluk 3x4 na x=462..464, y=20..23: dosbox kresli
+vedle hvezdy drobnou znacku barvou 0x3A, port nic.
+
+#### Postup
+
+1. **Neni to sprite.** Sonda na RLE blitteru `sub_14852C` zuzena na oblast
+   (440..485, 8..40) dala v portu jen tri hvezdy: 483/23, 461/39, 455/21.
+   Dosboxova `DUMPREGS cond=eip:0x0034E478` (`sub_12A478`) dala **presne
+   tytez tri**. Znacka tedy jde FONTOVOU cestou, ne pres blitter - proto
+   ji sonda na blitteru nemohla videt.
+2. **Port se na to misto dostane.** Sonda na `sub_9AC79` ukazala volani
+   `x=456 y=20 hvezda=2 a4=1 a5=0`, a v tele je `v33 = a1 + 6` (= 462),
+   `v32 = a2 - 1` (= 19) - presne nase souradnice. `sub_1212B3` se tedy vola.
+3. **Kresli se prazdny retezec.** `sub_1212B3(462, 19, (int)&unk_179B92)`,
+   jenze `unk_179B8D/90/92` byly v portu jednobajtove `_UNKNOWN` pahyly (nuly).
+
+#### Pricina
+
+V obraze hry (asm adresa = C jmeno - 0x8000) jsou to tri kratke retezce
+tesne za sebou:
+
+```
+0x171B8D: 6F 63 00        "oc"    <- outpost i kolonie
+0x171B90: 6F 00           "o"     <- outpost
+0x171B92: 63 00           "c"     <- kolonie
+0x171B94: 28 25 73 29 00  "(%s)"  <- uz jiny symbol, hranice sedi
+```
+
+Jsou to znacky u hvezdy na male mape. Doplneno jako
+`char unk_179B8D[3] = "oc";` atd.
+
+**PLANETS je ted 0 px.**
+
+#### Poznamka: `sub_9AC79` ma jeste jednu latentni past
+
+```c
+int v28;        /* [ebp-24h] */
+char v29[12];   /* [ebp-20h] */
+...
+sub_120BB5(0, (int)&v28);   /* cte OSM bajtu */
+```
+
+`sub_120BB5` cte osmibajtovou barevnou rampu, ale `v28` je jen ctyri bajty -
+v originale za nim v ramci lezi `v29` (`strcpy(v29, "BA??")`), takze rampa
+je `v28` + prvni ctyri znaky `v29`. Hodnota `v28` = 1127889408 = 0x43393A00,
+tedy bajty `00 3A 39 43` - a **0x3A je presne barva te znacky**, coz
+potvrzuje, ze cteni je zamerne.
+
+V portu jsou `v28` a `v29` samostatne lokalky, jejichz sousednost prekladac
+negarantuje, takze druha polovina rampy je nahodna. **Ted to nevadi** (glyf
+pouziva jen prvni polozky rampy a znacka vychazi spravne), ale je to tataz
+trida jako `memset` pres nekolik symbolu z vlny 135 - kdyby se rozlozeni
+zasobniku zmenilo, projevi se to. Zapsano do POROVNANI.md.
+
+#### Stav vsech sesti zalozek
+
+| zalozka | vlna 139 | vlna 140 |
+|---|---|---|
+| COLONIES | 0 px | **0 px** |
+| RACES | 0 px | **0 px** |
+| INFO | 0 px | **0 px** |
+| **PLANETS** | 8 px | **0 px** |
+| LEADERS | 294 px | 294 px |
+| FLEETS | 228 px | 228 px |
+
+Po vyrazeni znamych artefaktu mereni:
+
+| zalozka | skutecny rozdil |
+|---|---|
+| COLONIES, RACES, INFO, PLANETS | **0 px** |
+| LEADERS | **0 px** - kazdy shluk (vsechny tri planety i cely spodni panel) |
+| | klesne pres snimky na nulu; 294 px je jen faze otaceni planet |
+| FLEETS | **2 px** - 226 px je kurzor mysi (vlna 138) |
+
+Zbyle 2 px na FLEETS: dva izolovane pixely na uplne spodnim radku
+(x=466..467, y=479), dosbox `0D 24`, port `01 01`. To je 0,0007 % obrazu.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged** (snimek 5 overen na intro);
+- vsech sest zalozek premereno, **zadna regrese, zadny pad**;
+- zadne docasne sondy v pracovnim strome.
+
+#### Dalsi krok
+
+- FLEETS, 2 px na y=479 - dva pixely na poslednim radku obrazovky.
+- Zbylych devet thunku rodiny `sub_24ACA` (vlna 139) - projevi se mimo
+  zalozky (dialogy, hlaseni).
+- Mereni zalozek by melo kurzor mysi maskovat, at cisla nezavadi.
+
+
+---
+
+### Vlna 141: poslednich 5 px na FLEETS - zuzeno, ale nedoreseno (limit nastroje)
+
+Na FLEETS zbyvaly dva pixely na uplne spodnim radku: (466,479) a (467,479),
+dosbox `0D 24`, port `01 01`. Nic jineho uz se na te zalozce nelisi
+(226 px z celkovych 228 je kurzor mysi - viz vlna 138).
+
+#### Co je zmereno a jiste
+
+1. **Neni to kurzor ani prechodny stav.** Dva pixely jsou ve VSECH 259
+   referencnich snimcich. Jejich hodnota se pritom vyviji:
+   `3B` (snimek 0) -> `04` (snimky 1..36) -> `0D 24` (37..258).
+2. **Zapisuje to RLE blitter.** Dosboxovy `DUMPREGS cond=changed:0x0049CF96:1`
+   ukazal jako zapisovatele `eip=0x0036C5A1`, coz je `0x1485A1`, tedy uvnitr
+   `sub_14852C`.
+3. **Port a original volaji PRESNE tychz 50 pozic.** Kompletni seznam volani
+   `sub_14852C` z obou stran (dosboxova stopa zuzena na obdobi po kliknuti na
+   zalozku, tj. od cyklu 133 750 768) se shoduje **beze zbytku** - zadne
+   volani nechybi ani nepribylo.
+4. **Zachranna brzda z vlny 101 nezabrala** ("cil mimo framebuffer" se
+   v logu ani jednou neobjevi), takze se zadny sprite nezahazuje.
+5. **Port ten bajt nikdy nezapise.** Sonda, ktera po kazdem volani
+   `sub_14852C` kontroluje bajt `dword_1BB904[479*640 + 466]`, nahlasila
+   jedinou zmenu - pocatecni prectenou hodnotu `01`. Pixel tedy zustava na
+   vyplni.
+
+Rozdil tedy nevznika chybejicim volanim, ale **uvnitr blitteru** - bud jinymi
+daty spritu, nebo jinym posunem cile. RLE umi cil posunout daleko dopredu
+(`v8 = &v2[rc]`), takze vyska z hlavicky nerozhoduje: v portu nema zadny
+sprite na FLEETS dolni okraj ani 470.
+
+#### Kde to uvazlo: `cond=changed` nezachyti vsechny zapisy
+
+`DUMPFRAME` cte pamet lineárne (`fb[i] = mem_readb(w.framebuf + i)`,
+`src/engine/engine.cpp`), takze adresa `0x452044 + 479*640 + 466 = 0x0049CF96`
+je spravna - a watch skutecne reprodukoval hodnoty `3B` i `04` presne tak,
+jak je maji referencni snimky.
+
+**Prechod na `0D` ale watch nikdy nenahlasil**, ani pri behu na plnych
+220M cyklu (stejna delka jako referencni sada). Posledni zmena, kterou vidi,
+je `00 -> 01` na cyklu 138 845 975 a pak uz nic.
+
+Zaver: `cond=changed:ADDR:W` **neni spolehlivy hlidac zapisu** - nejspis mu
+unikaji blokove zapisy (`rep movsd`). Pro tenhle typ otazky se musi pouzit
+jina technika.
+
+#### Dalsi krok
+
+Ne opakovat `cond=changed`, ale:
+
+* `DUMPMEM` na okoli toho pixelu ve dvou ruznych okamzicich (dve spousteci
+  `eip`) a odecist - ukaze, mezi kterymi dvema body se hodnota meni;
+* pak zuzit na konkretni volani `sub_14852C` a porovnat DATA spritu
+  (`ebx` z DUMPREGS) mezi portem a originalem, ne jen souradnice.
+
+Je to 2 px z 307 200 (0,0007 %), takze to neni prioritni - ale je to posledni
+znamy skutecny rozdil na sesti zalozkach.
+
+#### Stav (beze zmeny proti vlne 140, nic se neupravovalo)
+
+| zalozka | skutecny rozdil |
+|---|---|
+| COLONIES, RACES, INFO, PLANETS, LEADERS | **0 px** |
+| FLEETS | **2 px** |
+
+#### Overeno
+
+- v pracovnim strome nezustaly zadne sondy;
+- zdrojovy kod se v teto vlne NEMENIL (jen mereni), takze brana ani zalozky
+  se znovu nemerily.
+
+
+---
+
+### Vlna 142: FLEETS je 0 px - rozdil byl ve STARE referencni sade
+
+Vlna 141 uvazla na tom, ze `cond=changed` neukazal, kdo v originale zapisuje
+pixel (466,479). Nahradni postup - **korelace snimku a volani blitteru
+v jednom behu** - problem nejen vyresil, ale ukazal, ze zadny problem nebyl.
+
+#### Postup
+
+`DUMPFRAME` zapisuje do OUTPUT radek `FRAME ... cycle=... index=...` a
+`DUMPREGS ... repeat=always` zapisuje kazde volani `sub_14852C` rovnez
+s cyklem. Jeden beh s obojim naraz tedy dava primou korelaci: pro kazdou
+zmenu hodnoty pixelu mezi dvema snimky lze vypsat presne ta volani, ktera
+lezi v jejich cyklovem okne.
+
+```
+DUMPREGS  cond=eip:0x0036C52C label=blit repeat=always
+DUMPFRAME cond=eip:0x00349814 framebuf=0x452044 width=640 height=480 maxcount=60 dir=...
+```
+
+#### Vysledek: pixel se v cerstvem behu ustali na 01, ne na 0D
+
+V tomto behu jde hodnota `3B -> FF -> 04 -> 01` a **`0D` se neobjevi vubec**.
+Presne tak, jak to ma port. Kdyz jsem tedy port porovnal proti CERSTVE
+porizenemu dosboxovemu snimku misto proti stare referencni sade:
+
+```
+nejlepsi shoda port vs cerstvy dosbox: 0 px
+  (dbx korel/frame_00048.raw, port fleets_v140/frame_00006.raw)
+```
+
+**FLEETS je 0 px.** Overeno i vizualne - je to skutecne FLEETS
+(ALL / RELOCATE / SCRAP, LEADERS / Support / Combat / RETURN).
+
+#### OPRAVA ZAVERU Z VLNY 138
+
+Ve vlne 138 jsem z rozdilu proti stare sade usoudil, ze **dosbox kurzor mysi
+do snimku nekresli a port ano**, a oznacil to za systematicky artefakt
+mereni. **To bylo spatne.** Na cerstvem snimku je kurzor v OBOU verzich na
+temze miste a rozdil je nulovy.
+
+Skutecna pricina obou rozdilu na FLEETS (226 px "kurzor" i 2 px na spodnim
+radku) je **zastarala referencni sada** `scratchpad/dbx/fleets` - byla
+porizena v behu, kde mys skoncila jinde a spodni hrana mela jiny obsah.
+
+Poucení: kdyz zbyva maly rozdil, ktery se nedari vysvetlit, **porid
+referenci znovu** driv, nez zacnes hledat chybu v portu. Stalo me to
+vlny 138 a 141.
+
+#### Stav vsech sesti zalozek
+
+| zalozka | rozdil |
+|---|---|
+| COLONIES | **0 px** |
+| PLANETS | **0 px** |
+| RACES | **0 px** |
+| INFO | **0 px** |
+| **FLEETS** | **0 px** (proti cerstve referenci) |
+| LEADERS | 0 px po shlucich - kazdy shluk (vsechny tri planety i cely spodni |
+| | panel) klesne pres snimky na nulu; jediny snimek jich nema vsechny naraz |
+| | ve spravne fazi otaceni |
+
+**Vsech sest zalozek se s originalem shoduje.**
+
+#### Overeno
+
+- zdrojovy kod se v teto vlne NEMENIL (jen mereni);
+- v pracovnim strome nezustaly zadne sondy.
+
+#### Dalsi krok
+
+1. **Porid znovu referencni sady** pro vsech sest zalozek do
+   `C:/prenos/reorion2Data/` - ty ve scratchpadu jsou zastarale (dokazano
+   na FLEETS) a scratchpad je docasny.
+2. Zbylych devet thunku rodiny `sub_24ACA` (vlna 139) - projevi se mimo
+   zalozky (dialogy, hlaseni).
+3. Dalsi obrazovky nez tech sest zalozek.
+

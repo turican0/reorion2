@@ -670,3 +670,107 @@ Priznak, ze telo je taky rozbite: IDA pod nim vypise
 `variable 'vXX' is possibly undefined` prave pro ty lokalky, ktere odpovidaji
 slotum ulozenym prologem (`push eax/edx/ebx/ecx` hned za `enter`).
 
+
+### Kdyz sonda na blitteru mlci, hledej text
+
+Drobny prvek na obrazovce nemusi byt sprite. Ve vlne 140 sonda na RLE
+blitteru `sub_14852C` v oblasti znacky nenasla nic navic - a **dosboxova
+sonda na `sub_12A478` dala presne tytez volani jako port**. To je silny
+signal: kdyz obe strany kresli pres blitter totez, a presto se obraz lisi,
+jde ten rozdil JINOU cestou - typicky pres font (`sub_1212B3`,
+`sub_1231B1`).
+
+Postup pak je: najit funkci, ktera to misto pocita (tady `sub_9AC79`,
+`a1 + 6` a `a2 - 1`), overit sondou, ze se do ni port dostane, a teprve pak
+se divat, CO se kresli. Ve vlne 140 se kreslil prazdny retezec, protoze
+`unk_179B8D/90/92` ("oc", "o", "c") byly jednobajtove `_UNKNOWN` pahyly.
+
+### Sousedni lokalky, ze kterych se cte jako z jednoho bloku
+
+`sub_9AC79` dela:
+
+```c
+int v28;        /* [ebp-24h] */
+char v29[12];   /* [ebp-20h] */
+sub_120BB5(0, (int)&v28);   /* cte OSM bajtu */
+```
+
+`sub_120BB5` cte osmibajtovou rampu, `v28` ma ctyri bajty - v originale za
+nim v ramci lezi `v29`, takze rampa je `v28` + prvni ctyri znaky `v29`
+("BA??"). Ze je to zamerne, potvrzuje hodnota `v28` = 0x43393A00: bajt 0x3A
+je presne barva, kterou ta znacka ma.
+
+V portu jsou to samostatne lokalky a jejich sousednost prekladac
+NEGARANTUJE. Je to tataz trida jako `memset` pres nekolik symbolu (vlna 135),
+jen na zasobniku misto v datech. Hledej `sub_120BB5`/`memcpy`/`memset`, kde
+je delka vetsi nez `sizeof` predaneho objektu - a poznamenej si to i tam,
+kde to zatim nevadi.
+
+
+### `cond=changed:ADDR:W` neni spolehlivy hlidac zapisu
+
+Ve vlne 141 watch na bajt framebufferu spravne reprodukoval dve ze tri hodnot,
+ktere ma dany pixel v referencnich snimcich (`3B`, `04`), ale **treti (`0D`)
+nenahlasil nikdy** - ani pri behu na plnou delku. Adresa pritom byla overene
+spravna: `DUMPFRAME` cte pamet lineárne
+(`fb[i] = mem_readb(w.framebuf + i)`, `src/engine/engine.cpp`).
+
+Nejpravdepodobnejsi vysvetleni: watchi unikaji blokove zapisy (`rep movsd`).
+
+**Nepouzivej ho tedy jako dukaz, ze se nekam nezapisuje.** Kdyz `cond=changed`
+mlci, ale obsah snimku se lisi, je to signal o NASTROJI, ne o hre.
+
+Nahradni postup: `DUMPMEM` na tutez oblast ve dvou ruznych okamzicich (dve
+spousteci `eip`) a odecteni - ukaze, mezi kterymi dvema body se hodnota meni,
+a odtud uz jde zuzovat dal.
+
+### Srovnani SEZNAMU volani je silnejsi nez srovnani jednoho mista
+
+Ve vlne 141 se ukazalo uzitecne vypsat **vsechna** volani kreslici funkce
+z obou stran a porovnat mnoziny pozic:
+
+* v portu sondou bez filtru (cap 400 radku),
+* v dosboxu `DUMPREGS cond=eip:<funkce> repeat=always`.
+
+**Dosboxovou stopu je nutne zuzit na spravne obdobi** - pokryva cely beh
+vcetne obrazovek pred merenou zalozkou. Kotva: prvni vyskyt nektere pozice,
+ktera patri jen te zalozce (tady `(425,435)`, cyklus 133 750 768). Bez toho
+zuzeni vychazelo 46 "chybejicich" volani, po nem **nula**.
+
+Kdyz se seznamy shoduji beze zbytku, rozdil neni v tom, CO se kresli, ale
+v datech nebo uvnitr kreslici rutiny - a hledani se tim posune o patro niz.
+
+
+### Korelace DUMPFRAME + DUMPREGS v jednom behu
+
+Kdyz potrebujes vedet, KTERE volani zpusobilo zmenu na obrazovce, a
+`cond=changed` neni spolehlivy (vlna 141), pust v JEDNOM behu obojí:
+
+```
+DUMPREGS  cond=eip:<kreslici funkce> label=blit repeat=always
+DUMPFRAME cond=eip:0x00349814 framebuf=0x452044 width=640 height=480 maxcount=60 dir=...
+```
+
+`DUMPFRAME` zapisuje do OUTPUT radek `FRAME <label> cycle=<N> index=<i>
+file=<cesta>`, `DUMPREGS` zapisuje kazde volani rovnez s cyklem. Pak staci
+najit dva sousedni snimky, mezi kterymi se sledovane misto zmenilo, a vypsat
+volani v jejich cyklovem okne.
+
+### NEJDRIV OVER REFERENCI, teprve pak hledej chybu v portu
+
+Ve vlne 142 se ukazalo, ze rozdil 228 px na FLEETS (226 "kurzor" + 2 px na
+spodnim radku) **nebyl chybou portu vubec** - referencni sada
+`scratchpad/dbx/fleets` byla porizena v behu, kde mys skoncila jinde a
+spodni hrana mela jiny obsah. Proti CERSTVE porizene referenci je rozdil
+**0 px**.
+
+Stalo to dve vlny hledani (138 a 141) a vedlo to k zapsani chybneho zaveru
+("dosbox kurzor nekresli, port ano"), ktery je ted opraveny.
+
+**Pravidlo:** kdyz zbyva maly rozdil, ktery nejde vysvetlit, nebo kdyz
+vysvetleni zacina znit jako "artefakt mereni", **porid referenci znovu**.
+Je to jeden beh dosboxu (~4 minuty) proti hodinam hledani neexistujici chyby.
+
+Referencni sady patri do `C:/prenos/reorion2Data/`, ne do scratchpadu -
+scratchpad je docasny a jeho sady zastaravaji.
+

@@ -1503,9 +1503,9 @@ char aC_4[2] = "C"; // weak
 char aO_0[2] = "O"; // weak
 char asc_179B87[2] = "-"; // weak
 _UNKNOWN *off_179B89 = &unk_1B002B; // weak
-_UNKNOWN unk_179B8D; // weak
-_UNKNOWN unk_179B90; // weak
-_UNKNOWN unk_179B92; // weak
+char unk_179B8D[3] = "oc";   /* vlna 140: znacka u hvezdy - outpost i kolonie */
+char unk_179B90[2] = "o";   /* vlna 140: znacka u hvezdy - outpost */
+char unk_179B92[2] = "c";   /* vlna 140: znacka u hvezdy - kolonie */
 char aScoreLbx[10] = "SCORE.LBX"; // weak
 char asc_179BAA[2] = "\x1B"; // weak
 int16_t word_179BCB = 46; // weak
