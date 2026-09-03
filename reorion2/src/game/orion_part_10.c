@@ -4504,7 +4504,8 @@ void sub_A4989(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
       v30 = sub_12066F((int)v28);
       while ( v14 < word_199998 )
       {
-        sub_79D50();
+        /* vlna 146: asm 0xA4B30 - eax = dword_197F98 + 3753*bx, edx = dword_19306C + 113*var_E0 */
+        v15 = sub_79D50(3753 * v14 + (uint8_t*)dword_197F98, 113 * v25 + dword_19306C);
         if ( v15 )
         {
           v16 = (char *)v28 - 1;   /* vlna 124: cil je sousedni buffer v28, ne &v27 */

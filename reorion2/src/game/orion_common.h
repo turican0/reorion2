@@ -2610,8 +2610,8 @@ extern _BOOL1 sub_79D1C();
 extern _BOOL1 sub_79D40();
 // plna signatura: _BOOL1 sub_79D48(int a1);
 extern _BOOL1 sub_79D48();
-// plna signatura: void sub_79D50();
-extern void sub_79D50();
+// plna signatura: int sub_79D50(int a1, int a2);   /* vlna 146 */
+int sub_79D50(int a1, int a2);   /* vlna 146: sourozenec sub_79CF9, bajt +40h */
 // plna signatura: int sub_79D68( int a1, int a2);
 extern int sub_79D68();
 // plna signatura: _BOOL1 sub_79D86(int a1, int a2);
@@ -11660,7 +11660,7 @@ int sub_79CF9(int a1, int a2);
 _BOOL1 sub_79D1C(int16_t a1, int16_t a2);
 _BOOL1 sub_79D40(int a1);
 _BOOL1 sub_79D48(int a1);
-void sub_79D50();
+int sub_79D50(int a1, int a2);   /* vlna 146: sourozenec sub_79CF9, bajt +40h */
 int sub_79D68(char a1, int16_t a2);
 _BOOL1 sub_79D86(int a1, int16_t a2);
 void sub_79DEA();

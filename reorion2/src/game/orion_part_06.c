@@ -7378,9 +7378,15 @@ _BOOL1 sub_79D48(int a1)
 
 
 //----- (00079D50) --------------------------------------------------------
-void sub_79D50()
+/* vlna 146: PRAZDNY THUNK. asm (cseg01:00079D50) je presna kopie sub_79CF9,
+   jen cte bajt na +40h misto +3Fh, a sdili s ni telo od loc_79D0F:
+       movsx ecx, ax / mov eax, ebx / sar eax, cl / and eax, 1 / retn
+   IDA z nej udelala `JUMPOUT(0x79D0F)`, coz je v portu NO-OP: funkce nic
+   nevracela a oba volajici cetli neinicializovanou promennou. Dusledek:
+   na galakticke mape se kreslil znak, ktery original nema. */
+int sub_79D50(int a1, int a2)
 {
-  JUMPOUT(0x79D0F);
+  return ((int)*(uint8_t *)(a2 + 64) >> (((uint8_t*)a1 - (uint8_t*)dword_197F98) / 3753)) & 1;
 }
 // 79D66: control flows out of bounds to 79D0F
 // 197F98: using guessed type int (uint8_t*)dword_197F98;

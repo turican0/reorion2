@@ -802,3 +802,41 @@ prepisuje, do repozitare nepatri.
 chvile hra soubor povazuje za platny a vychozi hodnoty uz nikdy nepouzije.
 Originál to ma stejne, takze to neopravuj; jen o tom vedet.
 
+
+### Runtime adresa dat = C jmeno + 0x216000, NE asm jmeno
+
+Ve vlne 145 jsem si tim vyrobil falesny nalez: spocital jsem
+`0x191BE0 + 0x216000` (ASM jmeno `byte_191BE0`) misto
+`0x199BE0 + 0x216000` (C jmeno `byte_199BE0`). Rozdil je prave tech 0x8000,
+takze adresa ukazovala na uplne jinou promennou - nahodou dovnitr tabulky
+`word_1906C0`, kterou hra plni `memset(-1, 6864)`. Vysledek: "v originale je
+tam 0xFF, v portu 0" a hodina honeni neexistujici chyby.
+
+**Kontrola:** kdyz z watchpointu vyleze podezrele kulata hodnota (same 0xFF),
+over, jestli adresa nelezi uvnitr nejakeho velkeho pole, ktere se memsetuje.
+`DUMPMEM` na sousedni bajty to ukaze hned.
+
+### `DUMPREGS` nepodporuje `cond=cycle_ge:`
+
+Jen `cond=eip:`, `cond=eax:` a `cond=changed:`. Pri `cycle_ge` ctl hlasi
+*"DUMPREGS bez platne cond=eip:/eax:/changed:, preskakuji"* a mlci.
+Vypsat okno instrukci kolem konkretniho cyklu takhle nejde - pouzij misto
+toho `cond=eip:` na kandidatske funkci, nebo `changed:` na dotcene pameti.
+
+### Kdyz sonda na blitteru mlci, zkus DISPECERA, ne jen jednu vetev
+
+Vlna 146: znak na (305,149) nekreslil `sub_14852C` ani textove
+`sub_1210FD`/`sub_1212B3`. Kreslil ho `sub_12A478` - DISPECER, ktery podle
+`*(_BYTE *)(dword_1BC2A8 + 11) & 3` vybira mezi `sub_14852C`, `sub_1485B3`,
+`sub_12B2D9`/`sub_12AFCC`. Sonda na dispecerovi pokryje vsechny vetve naraz
+a rovnou da i backtrace.
+
+### Sourozenci lisici se jedinym bajtem offsetu
+
+`sub_79CF9` (bajt +3Fh) a `sub_79D50` (bajt +40h) sdileji telo od `loc_79D0F`.
+IDA prvni dekompilovala spravne a z druhe udelala `JUMPOUT` - v portu NO-OP.
+
+**Postup, kdyz najdes `JUMPOUT` thunk:** podivej se na asm TESNE PRED cilem
+skoku. Sdilene telo je obvykle konec sousedni funkce, ktera uz v portu
+implementovana JE - staci ji zkopirovat a zmenit ten jeden lisici se detail.
+

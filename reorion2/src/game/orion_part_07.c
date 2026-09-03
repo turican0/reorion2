@@ -8629,12 +8629,6 @@ LABEL_9:
 //----- (00083669) --------------------------------------------------------
 void sub_83669( int a1)
 {
-  /*SONDA-SYS*/ if ( PortDebug_ProbeArmed() ) {
-  /*SONDA-SYS*/   static int n = 0;
-  /*SONDA-SYS*/   if ( n < 20 ) { ++n;
-  /*SONDA-SYS*/     PortDebug_ProbeLog("sub_83669 VOLANA a1(star)=%d vlastnik=%d", a1,
-  /*SONDA-SYS*/       (int)*(int8_t *)(dword_19306C + 113 * a1 + 20));
-  /*SONDA-SYS*/     PortDebug_Backtrace("sys", 6); } }
   int v2; // eax
   int v3; // eax
   int16_t v4; // [esp+0h] [ebp-Ch] BYREF
@@ -8750,8 +8744,9 @@ LABEL_30:
   v25 = 3753 * word_19999C;
   v40 = sub_79CF9(v25 + (uint8_t*)dword_197F98, 113 * v1 + dword_19306C);
   v6 = 113 * v1 + dword_19306C;
-  sub_79D50();
-  v39 = v7;
+  /* vlna 146: asm `call sub_79D50` + `mov [ebp+var_C], al` - navratova
+     hodnota sla do v39; IDA ji zahodila a dosadila prazdne v7. */
+  v39 = sub_79D50(v25 + (uint8_t*)dword_197F98, v6);
   v8 = 0;
   sub_1112EC(dword_192ED4, v6);
   do
@@ -11081,22 +11076,10 @@ void sub_86188(char *a1)
     }
     if ( !word_199976 )
     {
-      /*SONDA-CLK*/ if ( PortDebug_ProbeArmed() ) {
-      /*SONDA-CLK*/   static int n2 = 0;
-      /*SONDA-CLK*/   if ( n2 < 25 ) { ++n2;
-      /*SONDA-CLK*/     PortDebug_ProbeLog("KLIK pred857F8: 199EC7=%d 199ECB=%d 199EC9=%d 199ECD=%d 199ECF=%d word19999C=%d",
-      /*SONDA-CLK*/       (int)word_199EC7, (int)word_199ECB, (int)word_199EC9, (int)word_199ECD,
-      /*SONDA-CLK*/       (int)(uint8_t)byte_199ECF, (int)word_19999C); } }
       v20 = sub_857F8(0, (int16_t *)&v78, &v73);
       v21 = v20;
       v22 = 0;
       word_19C18A = v78;
-      /*SONDA-CLK2*/ if ( PortDebug_ProbeArmed() ) {
-      /*SONDA-CLK2*/   static int n3 = 0;
-      /*SONDA-CLK2*/   if ( n3 < 25 ) { ++n3;
-      /*SONDA-CLK2*/     PortDebug_ProbeLog("KLIK po857F8: v20=%d v78(star)=%d v73(star2)=%d 199EC7=%d 199ECB=%d 199EC9=%d 199ECD=%d",
-      /*SONDA-CLK2*/       v20, (int)v78, (int)v73, (int)word_199EC7, (int)word_199ECB,
-      /*SONDA-CLK2*/       (int)word_199EC9, (int)word_199ECD); } }
       if ( (!v20 || v20 == 4) && sub_918D5(2) )
         v22 = sub_72617();
       if ( !v21 && *(_BYTE *)(dword_19306C + 113 * v73 + 22) != 6 && byte_19C19C )

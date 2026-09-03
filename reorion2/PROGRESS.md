@@ -15059,3 +15059,139 @@ Projit ostatni funkce se stejnym prologem (`enter N,0` + `push eax`/`push edx`
 + `sub ebp, X`), kde IDA hlasi *"variable 'vXX' is possibly undefined"* -
 je to spolehlivy ukazatel teze chyby a hleda se gerpem po tech hlaskach.
 
+
+---
+
+### Vlna 145: klik na vlastni hvezdu - port je VERNY, chyba nikde nebyla
+
+Hlaseni: "kdyz kliknu na svou soustavu, nezobrazi se". Zmereno na obou stranach
+stejnym skriptovanym klikem na domovskou hvezdu Trilar (60,44):
+
+| | port | original |
+|---|---|---|
+| `sub_83669` zavolana | ano, `a1=29` | ano, `a1=29` |
+| `byte_199BE0` | 0 | 0 |
+| `sub_918D5(2)` | 0 | 0 (`word_193016=0`, `word_1992C4=0`) |
+| `sub_83EFD` (kresleni) | nezavolana | **nezavolana** |
+| obrazovka po kliku | galakticka mapa | **galakticka mapa** |
+
+`sub_83669` ma dve vetve a **ani jedna se nesplni**:
+
+```c
+if ( byte_199BE0 )       sub_83EFD(...);      /* 0 -> preskoceno */
+else if ( v6 )           /* prekresleni */;   /* v6 = sub_918D5(2) = 0 */
+```
+
+Overeno i vizualne: dosboxovy `DUMPFRAME` po temze kliku ukazuje **galaktickou
+mapu**, presne jako port. Pohled na soustavu se tedy neotevre ani v originale -
+port se chova verne a tenhle konkretni klik neni chyba portu.
+
+#### Moje chyba v mereni, kterou stoji za to si zapamatovat
+
+Nejdriv jsem "nasel" rozdil: v originale `byte_191BE0 = 0xFF`, v portu 0.
+**Bylo to spatne mereni.** Runtime adresu jsem spocital z ASM jmena
+(`0x191BE0 + 0x216000`), ale plati **runtime = C jmeno + 0x216000**
+(`0x199BE0 + 0x216000 = 0x3AFBE0`). Meril jsem tim uplne jinou promennou -
+nahodou uvnitr tabulky pozic `word_1906C0`, kterou hra plni `memset(-1, 6864)`.
+Odtud ta "0xFF".
+
+Se spravnou adresou vychazi v obou 0.
+
+#### Nalezeny limit nastroje
+
+`DUMPREGS` v ctl protokolu **nepodporuje `cond=cycle_ge:`** - hlasi
+*"DUMPREGS bez platne cond=eip:/eax:/changed:, preskakuji"*. Okno instrukci
+kolem daneho cyklu tedy takhle vypsat nejde.
+
+---
+
+### Vlna 146: prazdny thunk sub_79D50 - znak navic na galakticke mape
+
+Pri overovani vlny 145 se ukazal SKUTECNY rozdil: port kresli na galakticke
+mape oranzovy znak na **(305,149)**, ktery original nema. Zmereno pocitanim
+oranzovych pixelu v te oblasti: **port 8 px v KAZDEM snimku, original 0 px
+ve vsech**.
+
+#### Cesta ke kreslici rutine
+
+Sonda na dispecerovi `sub_12A478` (ne na `sub_14852C` - ten to nekreslil,
+stejne jako u vlny 140 to slo jinou vetvi):
+
+```
+sub_86188 -> sub_84555 -> sub_83741 -> sub_12A478(305, 149)
+```
+
+V `sub_83741` to kresli vetev `if ( v39 )`, kde stalo:
+
+```c
+sub_79D50();
+v39 = v7;      /* IDA sama hlasi: "83841: variable 'v7' is possibly undefined" */
+```
+
+asm (cseg01:0008383C):
+
+```
+call sub_79D50
+mov  [ebp+var_C], al      ; var_C = v39 = NAVRATOVA HODNOTA
+```
+
+#### Pricina: `sub_79D50` je sourozenec `sub_79CF9`
+
+```
+sub_79CF9:  push ebx / push ecx / mov ebx, edx
+            sub eax, dword_18FF98 / mov ecx, 0EA9h / cdq / idiv ecx
+            movzx ebx, byte ptr [ebx+3Fh]
+loc_79D0F:  movsx ecx, ax / mov eax, ebx / sar eax, cl / and eax, 1 / retn
+
+sub_79D50:  ... TOTEZ, jen `movzx ebx, byte ptr [ebx+40h]`
+            a `jmp short loc_79D0F`  (SDILENE telo)
+```
+
+Lisi se **jedinym bajtem offsetu**: +3Fh (63) vs +40h (64). Port mel
+`sub_79CF9` spravne, ale `sub_79D50` byla `JUMPOUT(0x79D0F)` - v portu NO-OP
+(trida poskozeni 3). Nevracela tedy nic a **oba** volajici cetli
+neinicializovanou promennou (trida poskozeni 4 nad tridou 3 v jedne funkci).
+
+#### Oprava
+
+```c
+int sub_79D50(int a1, int a2)
+{
+  return ((int)*(uint8_t *)(a2 + 64) >> (((uint8_t*)a1 - (uint8_t*)dword_197F98) / 3753)) & 1;
+}
+```
+
+a oba volajici podle asm:
+
+```c
+/* sub_83741 */  v39 = sub_79D50(v25 + (uint8_t*)dword_197F98, v6);
+/* sub_A4989 */  v15 = sub_79D50(3753 * v14 + (uint8_t*)dword_197F98, 113 * v25 + dword_19306C);
+```
+
+Pozn.: `v25` v `sub_A4989` je ztraceny argument ("possibly undefined") -
+sousedni volani `sub_79CF9` tam ma uz ted tentyz vzorec, takze to zustava
+konzistentni; oprava `sub_A4989` je na samostatnou vlnu.
+
+#### Vysledek
+
+Znak zmizel. Galakticka mapa proti originalu:
+
+| oblast | rozdil |
+|---|---|
+| cela mapa mimo dva viry | **0 px** |
+| dva viry (cerne diry) | 381 px - **faze rotace** (tyz objekt, jina otocka) |
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- zadny pad;
+- vsechny docasne sondy odstranene.
+
+#### Dalsi krok
+
+- `sub_A4989` ma ztracene argumenty (`v24`, `v25` "possibly undefined") -
+  stejna trida jako vlna 144.
+- Projit dalsi `JUMPOUT` thunky, jestli nemaji sourozence lisiciho se jen
+  offsetem - `sub_79CF9`/`sub_79D50` je presne ten vzor.
+
