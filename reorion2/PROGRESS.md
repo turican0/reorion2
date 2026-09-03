@@ -14872,3 +14872,190 @@ vlny 138 a 141.
    zalozky (dialogy, hlaseni).
 3. Dalsi obrazovky nez tech sest zalozek.
 
+
+---
+
+### Vlna 143: prazdny panel PLAYERS na NEW GAME - poskozeny mox.set V GITU
+
+Na obrazovce NEW GAME chybel cely panel PLAYERS (prazdny ramecek i popisek),
+zatimco ostatni ctyri (DIFFICULTY, GALAXY SIZE, GALAXY AGE, TECH LEVEL) byly
+v poradku. **Neni to chyba v kodu portu** - kod je proti asm shodny.
+
+#### Klic: u me se to kreslilo spravne, u uzivatele ne
+
+To byla nejcennejsi informace. Rozdil nebyl v kodu, ale v **pracovnim
+adresari**: `fopen(aMoxSet_0, "rb")` je RELATIVNI cesta, takze zalezi na tom,
+odkud se hra spousti.
+
+#### Retez
+
+`sub_CCC3D` kresli mrizku 3x2 a pro PLAYERS bere obrazek z
+`dword_1A1314[word_1A1366]`, kde
+
+```c
+word_1A1366 = (uint8_t)byte_199CB1 - 2;   /* pocet hracu minus 2 */
+```
+
+Sonda pri spusteni z korene projektu:
+
+```
+CCC3D pole(0,1) a1=0000000000000000  199CB1=0 idx: 1362=0 135E=0 1358=0 1366=-2 1360=0
+```
+
+`byte_199CB1 = 0` -> index **-2** -> cteni mimo pole -> ukazatel NULL -> nic se
+nenakresli. A ostatni volby na indexu 0 davaji presne to, co bylo na snimku:
+Tutor / Small / Mineral Rich / Pre Warp.
+
+#### Pricina: soubor s nastavenim
+
+V kореni projektu lezel `mox.set` s **551 z 553 bajtu nulovymi**, ale
+s platnou znackou `word_199CBE = 130`. Hra ho tedy povazuje za platny a
+vychozi hodnoty (`InitDefaultSettings_127E1`, ktera nastavuje `byte_199CB1 = 5`)
+se nikdy nepouziji:
+
+```c
+if ( v4 ) {                              /* mox.set nalezen */
+    LoadSettingsFile_11C39(v4);          /* nacte 553 B do stavoveho bloku */
+    if ( word_199CBE != 130 )            /* 130 tam JE -> preskoci se */
+        LoadOrResetSettings_12227();     /* ...a tim i vychozi hodnoty */
+} else {
+    InitDefaultSettings_127E1();
+}
+```
+
+Jak takovy soubor vznikne: kdyz `mox.set` existuje, ale je prazdny nebo
+uriznuty, `sub_12227` ho nacte (blok zustane nulovy), nastavi
+`word_199CBE = 130` a `sub_11BE4` ho **zapise zpet** - tim se nula "uzamkne".
+**Originál se chova uplne stejne** (`sub_12227` je instrukci po instrukci
+shodna, overeno v Orion2.exe.lst), takze to neni odchylka portu.
+
+#### Co bylo overeno, aby se vyloucil kod portu
+
+* struktura `TypeStateBlock_199BDC` (`pack(1)`): **553 B, vsech 57 offsetu
+  presne odpovida adresam ve jmenech clenu** - `fread` do ni je v poradku;
+* vetveni v `main` je shodne s asm (`sub_1114D7` -> `sub_11C39` /
+  `sub_12227` / `sub_127E1`, prah 0x82 = 130);
+* `sub_12227` shodna s asm vcetne poradi (nacti, znacka, zapis, jinak defaulty);
+* `MOX.SET` v `c:/prenos/mastori2/` je v poradku (offset 213 = 5).
+
+#### Soubor je v GITU
+
+`git status` po prejmenovani ukazal `D reorion2/mox.set` - **poskozeny soubor
+je verzovany**, takze se kazdemu, kdo hru spusti z korene projektu, vrati.
+Prejmenovan na `mox.set.poskozeny`; s odstranenim z gitu ceka na uzivatele.
+
+Po odstraneni:
+
+```
+CCC3D pole(0,1) a1=0000000019FFC230  199CB1=5 idx: 1362=0 135E=1 1358=1 1366=3 1360=1
+```
+
+Panel PLAYERS se kresli spravne ("5 Players").
+
+#### Poznamka
+
+Cteni `dword_1A1314[-2]` je v C nedefinovane chovani; v originale je to
+definovany pristup do sousedni pameti. Zatim to vzdy vyslo jako NULL (nic se
+nenakresli), ale pri jinem rozlozeni pameti by to mohl byt neplatny ukazatel
+a pad. Kdyby to nekdy spadlo, tohle je misto.
+
+
+---
+
+### Vlna 144: pad pri kliknuti na VYZKUM - sub_10F089 prisla o oba argumenty
+
+```
+0xC0000005: Porusení pristupu v miste cteni 0x0000000000000014
+  sub_10F089()  radek 1806:  v0 = *(uint16_t *)(v21 + 4);
+  <- sub_10DC12 (951)  <- sub_10DBCE (786)  <- sub_1049B (438)
+```
+
+Cteni na `0x14` znamena `v21 == 0x10`, tedy nesmyslny ukazatel: `v21` je
+NEINICIALIZOVANA LOKALKA, ktera ma byt registrovy argument.
+
+#### Rozbor prologu (Orion2.exe.lst, cseg01:0010F089)
+
+```
+push ebx / push ecx / push esi / push edi
+enter 88h, 0
+push eax          ; -> [ebp-8Ch]  = IDA var_8C
+push edx          ; -> [ebp-90h]  = IDA var_90
+sub  ebp, 82h
+```
+
+Po `sub ebp,82h` jsou to `[ebp'-0Ah]` a `[ebp'-0Eh]` - presne tam, kde port
+deklaruje `v21` a `v20`. Ze `var_8C` je opravdu prvni argument, potvrzuje telo:
+
+```
+mov eax, [ebp+82h+var_8C] / add eax, 6Ch   ->  v28 = (char *)(v21 + 108)
+mov eax, [ebp+82h+var_8C] / add eax, 9     ->  v26 = (char *)(v21 + 9)
+mov eax, [ebp+82h+var_8C] / add eax, 57h   ->  v27 = v21 + 87
+movzx eax, word ptr [eax+4]                ->  v0  = *(uint16_t *)(v21 + 4)
+add [ebp+82h+var_8C], 188h                 ->  v21 += 392   (uz v portu bylo)
+```
+
+`var_90` (= edx) je v portu `v20`, pouzity na
+`v16 = sub_E1E96(dword_192BD8, v15) - v20;`. IDA to sama hlasi:
+*"10F359: variable 'v20' is possibly undefined"*.
+
+#### Zahozena navratova hodnota
+
+```
+mov eax, [ebp+82h+var_8]   ; var_8 -> [ebp'+7Ah] = v32
+jmp loc_10EC8A             ; sdileny epilog
+```
+
+Funkce vraci `v32` (pocitadlo), port ji mel jako `void`.
+
+#### Volajici (sub_10DC12)
+
+```
+; 0x10DFAF
+mov eax, dword_18ABD8 / mov edx, [eax+1EBh]   ; edx = *(int *)(dword_192BD8 + 491)
+mov eax, [ebp+82h+var_1C] / call sub_10F089
+mov [ebp+82h+var_10], eax                     ; var_10 -> [ebp'+72h] = v61
+
+; 0x10DFEE
+mov eax, [ebp+82h+var_1C] / xor edx, edx      ; edx = 0
+call sub_10F089 / mov [ebp+82h+var_10], eax
+```
+
+Ze `var_1C` je `v58`, potvrzuje predchazejici `mov eax, [ebp+82h+var_1C];
+call sub_10EFC3` = v portu `sub_10EFC3(v58)`.
+
+Port misto navratove hodnoty prirazoval `v61 = v25;` a `v61 = v26;`, kde
+`v25`/`v26` jsou prazdne lokalky `// eax` - **zahozena navratova hodnota**
+(trida poskozeni 4) nad **argumenty ulozenymi prologem** (trida 5) v jedne
+funkci.
+
+#### Oprava
+
+```c
+int sub_10F089(int a1, int a2)
+{
+  ...
+  v21 = a1;   /* eax */
+  v20 = a2;   /* edx */
+  ...
+  return v32;
+}
+```
+
+a volani:
+
+```c
+v61 = sub_10F089((int)v58, *(int *)(dword_192BD8 + 491));
+v61 = sub_10F089((int)v58, 0);
+```
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **obrazovku VYZKUM zkousi uzivatel** - beh jsem na jeho zadost nespoustel.
+
+#### Dalsi krok
+
+Projit ostatni funkce se stejnym prologem (`enter N,0` + `push eax`/`push edx`
++ `sub ebp, X`), kde IDA hlasi *"variable 'vXX' is possibly undefined"* -
+je to spolehlivy ukazatel teze chyby a hleda se gerpem po tech hlaskach.
+

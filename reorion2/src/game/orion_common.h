@@ -7078,7 +7078,7 @@ extern int sub_10EF45();
 // plna signatura: void sub_10EFC3(int16_t *a1);
 void sub_10EFC3(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_10F089();
-extern void sub_10F089();
+int sub_10F089(int a1, int a2);   /* vlna 144: dva registrove argumenty + navratova hodnota */
 // plna signatura: void sub_10F409(int a1, _WORD **a2);
 void sub_10F409(int a1, _WORD **a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_10F49B(int a1, unsigned int a2);
@@ -13910,7 +13910,7 @@ void sub_10ED00(int a1);
 int sub_10EE6F(int result);
 int sub_10EF45(int a1, int16_t a2);
 void sub_10EFC3(int16_t *a1);
-void sub_10F089();
+int sub_10F089(int a1, int a2);   /* vlna 144: dva registrove argumenty + navratova hodnota */
 void sub_10F409(int a1, _WORD **a2);
 void sub_10F49B(int a1, uint16_t a2);
 void sub_10F62F(int a1, int16_t a2);

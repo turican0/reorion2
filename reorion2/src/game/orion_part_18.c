@@ -948,8 +948,8 @@ void sub_10DC12(int a1, int a2, int a3, int16_t *a4)
     v24 = (int)sub_1151B0(word_1AD6B4 + 189, word_1AD6B6 + 452, (int)&unk_17A3A4, v55, byte_17A3A2, 40);
     *(_BYTE *)(dword_192BD8 + 801) = 0;
     sub_10EFC3(v58);
-    sub_10F089();
-    v61 = v25;
+    v61 = sub_10F089((int)v58, *(int *)(dword_192BD8 + 491));   /* vlna 144: asm edx = [dword_18ABD8+1EBh] */
+    /* vlna 144: navratovou hodnotu ted bere primo volani vyse */
     *(_BYTE *)(dword_192BD8 + 801) = v63;
   }
   else
@@ -958,8 +958,7 @@ void sub_10DC12(int a1, int a2, int a3, int16_t *a4)
     v24 = -1;
     if ( *(_BYTE *)(dword_192BD8 + 801) >= 0x4Bu )
       *(_BYTE *)(dword_192BD8 + 801) = 0;
-    sub_10F089();
-    v61 = v26;
+    v61 = sub_10F089((int)v58, 0);   /* vlna 144: asm `xor edx, edx` */
   }
   word_1AD6B2 = sub_113E65();
   v27 = 0;
@@ -1758,7 +1757,12 @@ void sub_10EFC3(int16_t *a1)
 
 
 //----- (0010F089) --------------------------------------------------------
-void sub_10F089()
+/* vlna 144: prolog uklada DVA registrove argumenty (`push eax` / `push edx`
+   za `enter 88h,0`, pak `sub ebp,82h`), z nichz IDA udelala neinicializovane
+   lokalky v21 a v20 - odtud pad "cteni na 0x14" pri kliknuti na VYZKUM.
+   Funkce navic VRACI `v32` (asm: `mov eax, [ebp+82h+var_8]`), coz IDA
+   zahodila. Overeno proti Orion2.exe.lst. */
+int sub_10F089(int a1, int a2)
 {
   int v0; // eax
   uint16_t v1; // bx
@@ -1794,6 +1798,10 @@ void sub_10F089()
   int v31; // [esp+84h] [ebp+76h]
   int v32; // [esp+88h] [ebp+7Ah]
   uint16_t v33; // [esp+8Ch] [ebp+7Eh]
+
+  /* vlna 144: registrove argumenty ulozene prologem */
+  v21 = a1;   /* eax -> [ebp-8Ch], po `sub ebp,82h` [ebp-0Ah] (IDA var_8C) */
+  v20 = a2;   /* edx -> [ebp-90h], po `sub ebp,82h` [ebp-0Eh] (IDA var_90) */
 
   sub_249F9(aBilltextLbx_3, 62, v22, 80);
   v28 = (char *)(v21 + 108);
@@ -1908,7 +1916,7 @@ void sub_10F089()
     v27 += 392;
     v21 += 392;
     if ( (uint16_t)v29 >= 8u )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10EC8A je epilog funkce */
+      return v32;   /* vlna 144: asm `mov eax, [ebp+82h+var_8]` - var_8 je v32; JUMPOUT na 0x10EC8A je sdileny epilog */
   }
 }
 // 10F404: control flows out of bounds to 10EC8A

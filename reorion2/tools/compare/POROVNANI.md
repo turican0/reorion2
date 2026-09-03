@@ -774,3 +774,31 @@ Je to jeden beh dosboxu (~4 minuty) proti hodinam hledani neexistujici chyby.
 Referencni sady patri do `C:/prenos/reorion2Data/`, ne do scratchpadu -
 scratchpad je docasny a jeho sady zastaravaji.
 
+
+### "U tebe to funguje, u me ne" = hledej PROSTREDI, ne kod
+
+Ve vlne 143 se stejny build choval jinak u me a u uzivatele. Pricinou nebyl
+kod, ale **pracovni adresar**: `fopen("MOX.SET", "rb")` je relativni cesta.
+Ja spoustel z `x64/Debug` (soubor tam neni -> pouziji se vychozi hodnoty),
+uzivatel z korene projektu, kde lezel poskozeny `mox.set`.
+
+Kdyz se projev lisi mezi dvema spustenimi teze binarky, projdi v tomhle
+poradi:
+
+1. **pracovni adresar** a vsechny relativni cesty (`fopen` bez cesty),
+2. datove soubory vedle exe i v hernim adresari (`find -iname` napric stromem
+   - klidne najdes tri kopie s ruznym obsahem),
+3. promenne prostredi,
+4. teprve pak kod.
+
+A pozor na **verzovane stavove soubory**: `mox.set` byl v gitu, takze se
+poskozeny stav vracel po kazdem checkoutu. Stavove soubory, ktere si hra sama
+prepisuje, do repozitare nepatri.
+
+### Sebeuzamykajici se poskozeny stav
+
+`sub_12227` nacte `mox.set`, nastavi znacku `word_199CBE = 130` a soubor
+**zapise zpet**. Kdyz byl vstup prazdny, ulozi se nuly SE znackou - a od te
+chvile hra soubor povazuje za platny a vychozi hodnoty uz nikdy nepouzije.
+Originál to ma stejne, takze to neopravuj; jen o tom vedet.
+
