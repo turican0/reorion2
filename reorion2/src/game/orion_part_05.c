@@ -10575,7 +10575,7 @@ void sub_70875()
   byte_199F00 = 0;
   if ( byte_199F23 )
   {
-    sub_78800(word_199A06);
+    v31 = sub_78800(word_199A06);   /* vlna 147: asm `cwde; imul eax, 0Ch` */
     v32 = 6 * v31;
     v33 = (int16_t)(word_1906CA[v32] + 3);
     v34 = (int16_t)(word_1906C8[v32] + 3);

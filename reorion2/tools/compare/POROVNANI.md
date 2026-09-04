@@ -840,3 +840,38 @@ IDA prvni dekompilovala spravne a z druhe udelala `JUMPOUT` - v portu NO-OP.
 skoku. Sdilene telo je obvykle konec sousedni funkce, ktera uz v portu
 implementovana JE - staci ji zkopirovat a zmenit ten jeden lisici se detail.
 
+
+### Zahozena navratova hodnota: pozor na `for` a `++i`
+
+Vlna 147: `sub_78800` v asm drzi vysledek v `ebx` (`mov ebx, eax` pri
+nalezeni) a vraci ho (`mov eax, ebx`). Port ji mel jako `void`.
+
+Pri doplnovani NESTACI vratit citac smycky: dekompilovany `for (i = 0;
+i < N && !v2; ++i)` provede `++i` i v iteraci, kde se naslo, takze `i`
+ukazuje **o jedna dal** nez asm `ebx`. Vzdy zaved samostatnou promennou
+presne tam, kde asm dela `mov ebx, eax`.
+
+### Jak najit VSECHNY volajici, kteri navratovou hodnotu potrebuji
+
+Vypis v `.lst` vsechna `call sub_XXXX` a podivej se na NASLEDUJICI instrukci:
+
+```
+cwde / movsx ecx, ax / mov ebx, eax / mov [ebp+var_N], eax / imul eax, ...
+        -> navratovou hodnotu POUZIVA
+lea eax, [...] / mov eax, <neco jineho>
+        -> eax se PREPISE, volajici ji nepotrebuje
+```
+
+Ve vlne 147 to z osmi volani `sub_78800` oddelilo sedm "pouziva" od jednoho
+"nepotrebuje" - a rovnou reklo, do ktere promenne v portu hodnota patri
+(`mov ebx, eax` -> promenna komentovana `// ebx`, `mov [ebp+var_8], eax` ->
+lokalka na `[ebp-8]`).
+
+### Zpetne apostrofy v komentarich pri generovani pres bash
+
+`python -c "...'`mov eax, ebx`'..."` uvnitr dvojitych uvozovek v bashi:
+zpetne apostrofy se vyhodnoti jako substituce prikazu a text z komentare
+ZMIZI (a bash hlasi "movsx: command not found"). Patchovaci skripty piš
+pres nastroj Write, nebo se zpetnym apostrofum v generovanem textu vyhni -
+je to tataz trida jako zakaz heredocu kvuli zpetnym lomitkum.
+

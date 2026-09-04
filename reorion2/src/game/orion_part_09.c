@@ -5494,7 +5494,7 @@ void sub_99AFA()
       v20 = 0;
       while ( !v20 )
       {
-        sub_78800(v1);
+        v2 = sub_78800(v1);   /* vlna 147: asm `mov ebx, eax` */
         *(_WORD *)(dword_19C5A4 + 8 * word_19C5B0 + 4) = v2;
         v3 = *(int16_t *)((char *)&word_1975D4 + 5 * v1);
         v4 = sub_77FF5(v3);

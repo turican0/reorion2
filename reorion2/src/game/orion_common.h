@@ -2490,8 +2490,8 @@ extern int sub_7872E();
 extern int16_t sub_78770();
 // plna signatura: int sub_787EA( int a1, int a2, int a3);
 extern int sub_787EA();
-// plna signatura: void sub_78800( int a1);
-extern void sub_78800();
+// plna signatura: int sub_78800( int a1);   /* vlna 147 */
+int sub_78800(int a1);   /* vlna 147: vraci nalezeny index */
 // plna signatura: int sub_78879( int a1);
 extern int sub_78879();
 // plna signatura: int16_t sub_78889( int a1);
@@ -2616,8 +2616,8 @@ int sub_79D50(int a1, int a2);   /* vlna 146: sourozenec sub_79CF9, bajt +40h */
 extern int sub_79D68();
 // plna signatura: _BOOL1 sub_79D86(int a1, int a2);
 extern _BOOL1 sub_79D86();
-// plna signatura: void sub_79DEA();
-extern void sub_79DEA();
+// plna signatura: int sub_79DEA(int a1, int a2);   /* vlna 148 */
+int sub_79DEA(int a1, int a2);   /* vlna 148: sourozenec sub_79D68, bajt +3Dh */
 // plna signatura: _BOOL1 sub_79E06( int a1);
 extern _BOOL1 sub_79E06();
 // plna signatura: char sub_79E32( int a1, int a2);
@@ -11599,7 +11599,7 @@ int sub_786E9(int16_t a1, int16_t a2);
 int sub_7872E(int16_t a1);
 int16_t sub_78770(int16_t a1);
 int sub_787EA(int16_t a1, int16_t a2, int16_t a3);
-void sub_78800(int16_t a1);
+int sub_78800(int a1);   /* vlna 147 */
 int sub_78879(int16_t a1);
 int16_t sub_78889(int16_t a1);
 int16_t sub_788A2(int16_t a1);
@@ -11663,7 +11663,7 @@ _BOOL1 sub_79D48(int a1);
 int sub_79D50(int a1, int a2);   /* vlna 146: sourozenec sub_79CF9, bajt +40h */
 int sub_79D68(char a1, int16_t a2);
 _BOOL1 sub_79D86(int a1, int16_t a2);
-void sub_79DEA();
+int sub_79DEA(int a1, int a2);   /* vlna 148: sourozenec sub_79D68, bajt +3Dh */
 _BOOL1 sub_79E06(int16_t a1);
 char sub_79E32(char a1, int16_t a2);
 _BOOL1 sub_79E4D(char a1, int16_t a2);

@@ -1051,7 +1051,7 @@ void sub_A070F( int a1)
   if ( sub_918D5(2) )
   {
     sub_7836A(word_1999B8);
-    sub_78800(v1);
+    v2 = sub_78800(v1);   /* vlna 147: asm `mov [ebp+var_8], eax` */
     v9 = v2;
   }
   v3 = word_1999F8;

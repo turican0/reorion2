@@ -8382,7 +8382,8 @@ void sub_831B1(int a1, int a2, int a3, int16_t *a4)
     v4 = sub_77FE9(word_192248[word_1999B8]);
   }
   word_193016 = 1;
-  word_1999B8 = sub_78ABA(v16);
+  /* vlna 147: asm `movsx eax, word ptr [ebp+var_10]` - jen dolnich 16 bitu */
+  word_1999B8 = sub_78ABA((int16_t)v16);
   if ( word_1999B8 == -1 )
   {
     sub_91A40();
@@ -8390,7 +8391,8 @@ void sub_831B1(int a1, int a2, int a3, int16_t *a4)
   else
   {
     v10 = (int16_t)v16;
-    sub_856F7(2, v16, &word_19301C, &word_19301E);
+    /* vlna 147: asm `movsx edx, word ptr [ebp+var_10]` */
+    sub_856F7(2, (int16_t)v16, &word_19301C, &word_19301E);
     if ( byte_199BE0 )
       byte_199F23 = 1;
     v11 = sub_77FE9(word_192248[word_1999B8]);
@@ -8739,7 +8741,7 @@ LABEL_30:
   v27 = 0;
   v5 = ((uint16_t)sub_79917() != 0) + 2;
   v33 = 0;
-  sub_79DEA();
+  sub_79DEA(word_19999C, v1);   /* vlna 148: asm eax=word_19999C, edx=index hvezdy */
   sub_79D68(word_19999C, v1);
   v25 = 3753 * word_19999C;
   v40 = sub_79CF9(v25 + (uint8_t*)dword_197F98, 113 * v1 + dword_19306C);
@@ -9035,7 +9037,7 @@ void sub_83DEA()
     LOWORD(v0) = 0;
   v1 = v0;
   sub_7836A(word_1999B8);
-  sub_78800(v2);
+  v3 = sub_78800(v2);   /* vlna 147: asm `cwde` -> prvni argument sub_A0A5C */
   sub_A0A5C(v3, &v9, (int16_t *)&v8);
   sub_A1BC9(v1, &byte_192E80[v1], &byte_192ECC[v1]);
   v9 = (int16_t)v9 + (uint8_t)byte_192E80[v1] / 2;
@@ -9319,7 +9321,7 @@ void sub_843B3()
   int16_t v6; // [esp+4h] [ebp-4h] BYREF
 
   sub_7836A(word_1999B8);
-  sub_78800(v0);
+  v1 = sub_78800(v0);   /* vlna 147: asm `movsx ecx, ax; mov eax, ecx` */
   v2 = v1;
   v3 = sub_78879(v1);
   v4 = sub_A0D78(v3, 1);
@@ -11212,7 +11214,7 @@ LABEL_115:
         }
         else
         {
-          sub_78800(v77);
+          v35 = sub_78800(v77);   /* vlna 147: asm `cwde` -> a1 pro sub_831B1 */
           sub_831B1(v35, 0, 0, (int16_t *)a1);
         }
       }

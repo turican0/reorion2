@@ -5901,12 +5901,20 @@ int sub_787EA( int a1, int a2, int a3)
 
 
 //----- (00078800) --------------------------------------------------------
-void sub_78800( int a1)
+/* vlna 147: VRACI nalezeny index (asm: `mov ebx, eax` pri nalezeni,
+   `mov eax, ebx` pred navratem). Port ji mel jako `void` a index vubec
+   nesledoval, takze vsichni volajici cetli neinicializovanou promennou -
+   odtud pad v sub_831B1 pri kliku na flotilu. Pozor: `for` provede `++i`
+   i pri nalezeni, takze `i` ukazuje o jedna dal - proto samostatne `v5`. */
+int sub_78800( int a1)
 {
   int16_t v2; // cx
   int16_t i; // ax
   int16_t v4; // dx
 
+  int16_t v5; // ebx - vlna 147: nalezeny index
+
+  v5 = 0;
   v2 = 0;
   for ( i = 0; i < word_1999F8 && !v2; ++i )
   {
@@ -5914,6 +5922,7 @@ void sub_78800( int a1)
     if ( v4 == a1 )
     {
       v2 = 1;
+      v5 = i;   /* vlna 147: asm `mov ebx, eax` */
     }
     else
     {
@@ -5923,6 +5932,7 @@ void sub_78800( int a1)
         if ( v4 == a1 )
         {
           v2 = 1;
+          v5 = i;   /* vlna 147: asm `mov ebx, eax` */
         }
         else if ( v4 != -1 )
         {
@@ -5931,7 +5941,7 @@ void sub_78800( int a1)
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x785E6 je epilog funkce */
+  return v5;   /* vlna 147: asm `mov eax, ebx` pred skokem na epilog */
 }
 // 78874: control flows out of bounds to 785E6
 // 1906C2: using guessed type int16_t word_1906C2[];
@@ -7427,9 +7437,15 @@ _BOOL1 sub_79D86(int a1, int a2)
 
 
 //----- (00079DEA) --------------------------------------------------------
-void sub_79DEA()
+/* vlna 148: PRAZDNY THUNK, sourozenec sub_79D68 - lisi se jen offsetem
+   bajtu (+3Dh = 61 misto +3Eh = 62) a sdili s ni telo od loc_79D7F:
+       sar eax, cl / and eax, 1 / pop ecx / retn
+   Pozn.: jediny volajici (sub_83741) navratovou hodnotu zahazuje i
+   v originale (movsx eax, word_19199C ji hned prepise), takze to je
+   oprava vernosti, ne zmena chovani. */
+int sub_79DEA(int a1, int a2)
 {
-  JUMPOUT(0x79D7F);
+  return ((int)*(uint8_t *)(dword_19306C + 113 * a2 + 61) >> a1) & 1;
 }
 // 79E01: control flows out of bounds to 79D7F
 // 19306C: using guessed type int dword_19306C;

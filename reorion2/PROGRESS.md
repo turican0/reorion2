@@ -15195,3 +15195,131 @@ Znak zmizel. Galakticka mapa proti originalu:
 - Projit dalsi `JUMPOUT` thunky, jestli nemaji sourozence lisiciho se jen
   offsetem - `sub_79CF9`/`sub_79D50` je presne ten vzor.
 
+
+---
+
+### Vlna 147: pad pri kliku na flotilu - sub_78800 zahazovala navratovou hodnotu
+
+Hlaseni: pad v `sub_831B1` na radku `word_1999B8 = sub_78ABA(v16);`,
+"porusenie pristupu pro cteni", `v16 = 0x30`.
+
+`v16 = a1`, a `a1` prichazi ze `sub_86188`:
+
+```c
+sub_78800(v77);
+sub_831B1(v35, 0, 0, (int16_t *)a1);   /* v35 se NIKDE nepriradi! */
+```
+
+`int16_t v35; // ax` je v cele funkci jen deklarovane - klasicka zahozena
+navratova hodnota (trida poskozeni 4).
+
+#### asm (cseg01:00086AA9)
+
+```
+call sub_78800
+cwde                  ; AX -> EAX, tedy NAVRATOVA HODNOTA
+xor  edx, edx         ; a2 = 0
+call sub_831B1        ; eax = a1
+```
+
+#### sub_78800 vraci nalezeny index
+
+```
+mov  esi, eax         ; hledana hodnota
+xor  ecx, ecx         ; priznak nalezeni
+xor  ebx, ebx         ; VYSLEDEK
+xor  eax, eax         ; citac i
+loc_7880F: ...
+  mov ecx, 1
+  mov ebx, eax        ; <<< zapamatuj si index
+loc_78872:
+  mov eax, ebx        ; <<< VRAT ebx
+  jmp loc_785E6       ; sdileny epilog
+```
+
+Port ji mel jako `void` a index vubec nesledoval. **Pozor:** v portu `for`
+provede `++i` i pri nalezeni, takze `i` na konci ukazuje o jedna dal - proto
+je potreba samostatna promenna (asm `ebx`), ne pouziti `i`.
+
+#### Vsichni volajici
+
+Osm volani v asm; navratovou hodnotu **pouziva sedm z nich**:
+
+| asm | funkce | jak spotrebuje eax | v portu |
+|---|---|---|---|
+| 0x70E8D | sub_70875 | `cwde; imul eax, 0Ch` | part_05:10578 → `v31` |
+| 0x83E1D | sub_83DEA | `cwde; …; call sub_A0A5C` | part_07:9042 → `v3` |
+| 0x843C8 | sub_843B3 | `movsx ecx, ax; mov eax, ecx` | part_07:9326 → `v1` |
+| 0x86AA9 | sub_86188 | `cwde; xor edx,edx; call sub_831B1` | part_07:11219 → `v35` |
+| 0x99BA2 | sub_99AFA | `mov ebx, eax` | part_09:5497 → `v2` |
+| 0xA073E | sub_A070F | `mov [ebp+var_8], eax` | part_10:1054 → `v2` |
+| 0xA146F | sub_A1455 | `lea eax, [edx+edx*4]` - **prepise** | part_10:1772 - beze zmeny |
+
+Opraveno vsech sest.
+
+#### Navic: sub_831B1 cetla v16 jako 32bit
+
+asm cte `var_10` **vzdy jako znamenkove SLOVO**:
+
+```
+cseg01:00083283  movsx eax, word ptr [ebp+var_10]  -> sub_78ABA
+cseg01:000832AB  movsx edx, word ptr [ebp+var_10]  -> sub_856F7
+```
+
+Port predaval cely `int`. Doplneno `(int16_t)` na obou mistech.
+
+---
+
+### Vlna 148: sub_79DEA - dalsi prazdny thunk teze rodiny
+
+`sub_79DEA` byla `JUMPOUT(...)`, tedy NO-OP. V asm je to sourozenec
+`sub_79D68`, lisici se **jedinym bajtem offsetu** (+3Dh = 61 misto +3Eh = 62)
+a sdileji telo od `loc_79D7F` (`sar eax, cl / and eax, 1`). Presne tentyz vzor
+jako `sub_79CF9`/`sub_79D50` z vlny 146.
+
+Implementovano; jediny volajici (`sub_83741`) navratovou hodnotu zahazuje
+i v originale (`movsx eax, word_19199C` ji hned prepise), takze je to
+**oprava vernosti, ne zmena chovani**.
+
+---
+
+### Co NENI chyba portu (dve overena hlaseni)
+
+#### Pohled na soustavu se po kliku na hvezdu neotevre
+
+Zmereno na obou stranach (vlna 145): `sub_83669` se zavola s `a1=29`,
+`byte_199BE0 = 0`, `sub_918D5(2) = 0` -> **ani jedna vetev se nesplni**
+a `sub_83EFD` (kresleni) se nezavola. Dosboxovy `DUMPFRAME` po temze kliku
+ukazuje **galaktickou mapu**, presne jako port.
+
+#### Na zacatku hry jsou videt soustavy souperu
+
+Zmereno porovnanim priznaku `star+0x33` (bitova maska "kdo tuhle hvezdu zna",
+cte ji `sub_79E32`) mezi portem a originalem:
+
+```
+hvezda:      0     1     2     3     4     5     6     7     8   ...  12
+port:      0x00  0x00  0x08  0x00  0x00  0x02  0xFF  0x00  0xFF  ...  0x10
+original:  0x00  0x00  0x08  0x00  0x00  0x02  0xFF  0x00  0xFF  ...  0x10
+```
+
+**Bajt po bajtu shodne.** Hvezdy s `0xFF` (zname vsem osmi rasam) ma original
+uplne stejne - jsou to zjevne zvlastni soustavy, ktere se znaji od zacatku.
+Rozlozeni v originale: 145x 0x00, 10x 0xFF a po peti vyskytech jednotlivych
+bitu (0x01, 0x02, 0x04, 0x08, 0x10) = domovske soustavy jednotlivych ras.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- klik na flotilu i na hvezdu: **zadny pad**;
+- galakticka mapa mimo kurzor a faze viru: 0 px;
+- zadne docasne sondy v pracovnim strome.
+
+#### Dalsi krok
+
+- `sub_A4989` ma ztracene argumenty (`v24`, `v25` "possibly undefined").
+- Projit ostatni `JUMPOUT` thunky - `sub_79CF9`/`sub_79D50` a
+  `sub_79D68`/`sub_79DEA` ukazuji, ze sourozenec lisici se jednim offsetem
+  byva uz implementovany vedle.
+
