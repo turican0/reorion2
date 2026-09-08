@@ -17,7 +17,7 @@ The goal is a modern, readable, maintainable codebase that plays identically to 
 
 ## Current status
 
-_Last updated: 2026-08-29_
+_Last updated: 2026-09-08_
 
 The port is compared against the original running under DOSBox-X, frame by frame,
 from the same starting position. Each in-game screen is measured as "how many of
@@ -31,6 +31,7 @@ the 307,200 pixels differ":
 | INFO | 321 | 0.10 % |
 | COLONIES | 459 | 0.15 % |
 | LEADERS | 6,459 | 2.10 % — system view still missing |
+| Fleet panel (galaxy map) | 35 | 0.09 % of the panel area — 34 of them one animated background sprite caught mid-phase |
 
 A 600-frame regression harness (`compare_frames`) runs the boot sequence against
 recorded DOSBox-X output and currently reports 600/600 identical frames; it has to
@@ -44,6 +45,12 @@ into one configuration.
 Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave engineering log):
 
 - The intro, menus and game start-up run through; the in-game screens render.
+- **Clicking a fleet on the galaxy map now opens a panel that matches the original.**
+  It went from "nothing happens" through a crash and a panel drawn 128 px too high
+  to a pixel comparison of 35 differing pixels out of 38,016 (0.09 %) — 34 of which
+  are an animated background sprite caught at a different phase, leaving one real
+  stray pixel. Five waves (161–165), each a different class of decompiler damage;
+  the details are in [`PROGRESS.md`](PROGRESS.md).
 - Several recurring classes of decompiler damage were identified and are now hunted
   systematically rather than one at a time:
   - **Truncated tables** — a contiguous array in the binary split into a one-element
@@ -58,6 +65,14 @@ Recent milestones (see [`PROGRESS.md`](PROGRESS.md) for the full, wave-by-wave e
     lost arguments and callers read uninitialized locals instead of results.
   - **The same address under two names** — a stub in `link_stubs.c` and real data in
     `orion_data.c` became two separate objects: one got filled, the other got read.
+  - **Silent 32 → 16 bit narrowing** — the original keeps a value in a 16-bit stack
+    slot and the callee narrows on entry (`cwde`, or reloading a saved argument
+    with `movsx ..., word ptr [ebp+var_N]`). Hex-Rays folds that away, so the port
+    passed 32 bits whose upper half was never initialised. A scan of the listing
+    found 25 functions of the `cwde` shape — not one of them narrowed.
+  - **Shared tails mistaken for no-ops** — a `JUMPOUT` whose target sits just above
+    a function epilogue is not necessarily dead: it can be 40 bytes of drawing code
+    that two sibling functions share.
 - Tooling added alongside the fixes, under `tools/compare/`: byte-level reads from the
   original image (`dumpdata.py`), best-frame matching between port and DOSBox
   (`bestmatch.py`), and scanners for the two aliasing/sizing bug classes

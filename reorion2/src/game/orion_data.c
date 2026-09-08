@@ -16502,17 +16502,17 @@ char byte_199EC2[5];
    word_199EC7/EC9/ECB/ECD a byte_199ECF jsou ted pohledy do nej. */
 char blok_199EC7[9];
 /* vlna 157: 0x199ED0 je ZACATEK STRUKTURY posuvniku (v originale si jeji adresu bere sub_6FF08 a sub_A00F1 z ni cte az +27), ne skalar. */
-int16_t word_199ED0_blok[15]; // weak - 30 B, makra viz orion_common.h
-/* vlna 157: bajt 2 struktury word_199ED0_blok */
-/* vlna 157: bajt 6 struktury word_199ED0_blok */
-/* vlna 157: bajt 8 struktury word_199ED0_blok */
-/* vlna 157: bajt 10 struktury word_199ED0_blok */
-/* vlna 157: bajt 12 struktury word_199ED0_blok */
-/* vlna 157: bajt 14 struktury word_199ED0_blok */
-/* vlna 157: bajt 16 struktury word_199ED0_blok */
-/* vlna 157: bajt 18 struktury word_199ED0_blok */
-/* vlna 157: bajt 24 struktury word_199ED0_blok */
-/* vlna 157: bajt 26 struktury word_199ED0_blok */
+int16_t word_199ED0_block[15]; // weak - 30 B, makra viz orion_common.h
+/* vlna 157: bajt 2 struktury word_199ED0_block */
+/* vlna 157: bajt 6 struktury word_199ED0_block */
+/* vlna 157: bajt 8 struktury word_199ED0_block */
+/* vlna 157: bajt 10 struktury word_199ED0_block */
+/* vlna 157: bajt 12 struktury word_199ED0_block */
+/* vlna 157: bajt 14 struktury word_199ED0_block */
+/* vlna 157: bajt 16 struktury word_199ED0_block */
+/* vlna 157: bajt 18 struktury word_199ED0_block */
+/* vlna 157: bajt 24 struktury word_199ED0_block */
+/* vlna 157: bajt 26 struktury word_199ED0_block */
 char byte_199EED; // weak
 char byte_199EEF; // weak
 char byte_199EF1; // weak

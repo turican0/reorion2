@@ -16186,3 +16186,187 @@ tam tlacitko `ATTACK ANTARES`. Kresleni tri tlacitek uz ale sedi.
 Doresit chybejici horni cast panelu - postupovat stejne: kliknout,
 precist padovy/kreslici retez a porovnat s dosboxovym snimkem.
 
+
+---
+
+## Waves 161-165: the fleet panel reaches 1:1
+
+Starting point: clicking a fleet on the galaxy map opened *something*, but
+the panel was drawn 128 px too high, its bottom frame and both green
+captions were missing, and the second button read `ATTACK ANTARES`
+instead of `COLONIZE PLANET`.
+
+Measured against DOSBox-X (`DUMPMEM` at the entry to `sub_70602`), the
+original panel is `x=0x0149=329  y=0x00E5=229  width=0x00C6=198  ships=3`.
+
+### Wave 161: sub_711E6 dropped the panel HEIGHT
+
+```
+000712C6  cwde
+000712C7  call sub_71198
+000712CC  add  eax, ecx          ; height of the first sprite
+000712CE  add  eax, edi          ; height of the second sprite
+000712D0  add  eax, [ebp+var_4]  ; height of dword_193278
+000712D3  jmp  locret_7086E      ; RETURN eax
+```
+
+The port had neither the return value nor the computation. All three
+call sites use the result (`mov word_191BB0, ax`).
+
+### Wave 162: 25 functions that start with `cwde`
+
+The panel then crashed mid-draw:
+
+```
+SEH 0xC0000005 av_read=0x0000000007A359C7
+  #0 sub_77F5D+0x30  (orion_part_06.c:5249)
+  #1 sub_70875+0xcee (orion_part_05.c:10561)
+```
+
+```
+cseg01:00077F5D  ; char __fastcall sub_77F5D(__int16)
+cseg01:00077F5D      cwde                   <- narrows to AX
+cseg01:00077F5E      lea  eax, [eax+eax*8]  ; 9 * a1
+```
+
+The caller passes `v52`, which in the original is the 16-bit slot
+`[ebp+var_10]` - only `LOWORD(v52)` is ever written, so the upper half is
+never initialised. Every other use in the port casts (`(int16_t)v52`);
+the two calls did not, so `9 * a1` computed from all 32 bits and the
+index left `blk_197FBC`.
+
+The declarations in `orion_common.h` from line 10456 on sit inside
+`#if 0`, so the only declaration in effect is the K&R
+`extern char sub_77F5D();` - nothing narrows anything.
+
+A scan of the `.lst` found **25 functions that begin with `cwde` and take
+`int a1` in the port; not one of them narrowed `a1`**. All 25 got the
+literal transcription of that instruction:
+
+```c
+a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
+```
+
+### Wave 163: sub_71C01 dropped FIVE return values
+
+The panel now drew, but 128 px too high. Measured:
+
+```
+port      Y BAC=329 BAE=101 BB0=320 BB2=198   <- first draw
+          Y BAC=329 BAE=101 BB0=192 BB2=198   <- later draws
+original  x=329 y=229 width=198
+```
+
+`sub_721EB` only clamps `y` while `y + height > 421`. The first draw had
+height 320, so `y = 421 - 320 = 101`, and it was never recomputed.
+
+The height is assembled in `sub_71C01` from five calls whose results the
+port threw away - IDA says so itself ("variable 'v1' is possibly
+undefined" ... `v5`):
+
+```
+cseg01:00071C10   call sub_71F35
+cseg01:00071C17   mov  byte_191BCA, al      <- the return value
+```
+
+All five end with `jmp locret_7086E` (a shared epilogue, damage class 3)
+and fill AL right before that jump:
+
+| function | tail | early exit |
+|---|---|---|
+| `sub_71CE7` | `mov al, ch` | `xor ch, ch` |
+| `sub_71DD8` | `mov al, [ebp+var_4]` | `xor al, al` |
+| `sub_71F35` | `mov dl, [ebp+var_8]` | `xor dl, dl` |
+| `sub_7209D` | `mov al, [ebp+var_8]` | `xor al, al` |
+| `sub_72346` | `mov al, [ebp+var_C]` | `xor al, al` |
+
+`sub_7209D` was missing more: the return value of `sub_7A3E3`
+(`mov edx, eax` at 0x72140) and the whole trailing block
+0x721BD - 0x721DF.
+
+After this the geometry matched exactly (`x=329 y=229 width=198`) and the
+second button correctly read `COLONIZE PLANET`.
+
+### Wave 164: sub_70602 ended in `JUMPOUT(0x705D4)`
+
+A pixel-by-pixel comparison with the DOSBox-X frame then showed one solid
+band of 37 rows that the port did not draw at all - exactly the height of
+sprite 56 in `BUFFER0.LBX`.
+
+`sub_70602` and `sub_704A6` are siblings sharing a tail. `sub_704A6` has
+it written out; `sub_70602` had a `JUMPOUT` instead:
+
+```
+cseg01:00070779   mov   edx, 38h ; '8'   ; <- the INDEX, set up BEFORE the call
+cseg01:0007077E   call  sub_8FD56
+cseg01:00070783   mov   eax, [ebp+var_4]
+cseg01:00070786   jmp   loc_705D4
+cseg01:000705D4   add   [esi], ax
+cseg01:000705E2   call  sub_127C27       ; edx is still 56 here
+cseg01:000705F0   call  sub_12A478       ; the bottom frame of the panel
+```
+
+That `mov edx, 38h` two instructions before an unrelated call is why the
+tail itself carries no visible index.
+
+### Wave 165: the text entry points must narrow x/y to 16 bits
+
+Both captions did reach the glyph renderer - with garbage coordinates:
+
+```
+PTR draw a1=444793209 a2=444793075 [Trilarian Fleet]
+PTR draw a1=444793239 a2=889585994 [Orbiting Trilar]
+```
+
+The caller is
+`sub_1210FD(v51 + v47 + (int16_t)v54 / 2, v48 + v50 + 14, (int)v35)`,
+and `v48`/`v50`/`v51` are the same kind of 16-bit slots as `v52` in wave
+162. The asm does not care because every entry point reloads its saved
+arguments as WORDS:
+
+```
+sub_1210B7  0x1210E6  movsx edx, word ptr [ebp+var_8]
+sub_1210FD  0x12112B  movsx ecx, word ptr [ebp+var_8]
+            0x12113C  movsx edx, word ptr [ebp+var_4]
+sub_12126B  0x1212A0  movsx edx, word ptr [ebp+var_4]
+sub_1212B3  0x1212D7  movsx edx, word ptr [ebp+var_4]
+```
+
+This is damage class 5 (arguments saved by the prologue): Hex-Rays folds
+the store/reload pair away and the 32 -> 16 bit narrowing with it.
+
+### Result
+
+Pixel comparison of the panel area (329..527 x 229..421 = 38016 px)
+against the DOSBox-X frame:
+
+| after wave | differing pixels | share |
+|---|---|---|
+| 162 | 6928 | 18.22 % |
+| 163 | 1328 | 3.49 % |
+| 164 | 945 | 2.49 % |
+| **165** | **35** | **0.09 %** |
+
+Of those 35, 34 belong to the animated wormhole showing through the
+transparent corner of the panel (the two captures are at different
+animation phases), and one is a genuine single-pixel difference at
+(517, 392) on the `COLONIZE PLANET` button: the port has index 0, the
+original index 5. Stable across frames on both sides - still open.
+
+Whole screen: 846 px of 307200 (0.28 %), all of it in the two animated
+28x28 wormhole sprites plus that one pixel.
+
+#### Verified
+
+- `-t:Build` clean;
+- **regression gate 600/600 matched, 0 diverged**;
+- all temporary probes removed.
+
+#### Next step
+
+The single pixel at (517, 392), and the broader question raised by waves
+162 and 165: how many more functions narrow their arguments in the asm
+(`cwde`, `movsx ..., word ptr [ebp+var_N]`) while the port passes full
+32-bit values. The `cwde` family was swept completely (25 functions); the
+`movsx word ptr` family was only fixed on the four text entry points.
+

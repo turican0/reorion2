@@ -18977,18 +18977,18 @@ extern char blok_199EC7[9];
 #define word_199ECB (*(int16_t *)(blok_199EC7 + 4))
 #define word_199ECD (*(int16_t *)(blok_199EC7 + 6))
 #define byte_199ECF (blok_199EC7[8])
-extern int16_t word_199ED0_blok[15];   /* vlna 157: struktura posuvniku */
-#define word_199ED0  (word_199ED0_blok[0])
-#define word_199ED2  (word_199ED0_blok[1])   /* vlna 157 */
-#define word_199ED6  (word_199ED0_blok[3])   /* vlna 157 */
-#define word_199ED8  (word_199ED0_blok[4])   /* vlna 157 */
-#define word_199EDA  (word_199ED0_blok[5])   /* vlna 157 */
-#define word_199EDC  (word_199ED0_blok[6])   /* vlna 157 */
-#define word_199EDE  (word_199ED0_blok[7])   /* vlna 157 */
-#define word_199EE0  (word_199ED0_blok[8])   /* vlna 157 */
-#define word_199EE2  (word_199ED0_blok[9])   /* vlna 157 */
-#define byte_199EE8  (((char *)word_199ED0_blok)[24])   /* vlna 157 */
-#define byte_199EEA  (((char *)word_199ED0_blok)[26])   /* vlna 157 */
+extern int16_t word_199ED0_block[15];   /* vlna 157: struktura posuvniku */
+#define word_199ED0  (word_199ED0_block[0])
+#define word_199ED2  (word_199ED0_block[1])   /* vlna 157 */
+#define word_199ED6  (word_199ED0_block[3])   /* vlna 157 */
+#define word_199ED8  (word_199ED0_block[4])   /* vlna 157 */
+#define word_199EDA  (word_199ED0_block[5])   /* vlna 157 */
+#define word_199EDC  (word_199ED0_block[6])   /* vlna 157 */
+#define word_199EDE  (word_199ED0_block[7])   /* vlna 157 */
+#define word_199EE0  (word_199ED0_block[8])   /* vlna 157 */
+#define word_199EE2  (word_199ED0_block[9])   /* vlna 157 */
+#define byte_199EE8  (((char *)word_199ED0_block)[24])   /* vlna 157 */
+#define byte_199EEA  (((char *)word_199ED0_block)[26])   /* vlna 157 */
 extern char byte_199EED;
 extern char byte_199EEF;
 extern char byte_199EF1;

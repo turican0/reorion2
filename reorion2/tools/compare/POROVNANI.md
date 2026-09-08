@@ -1134,3 +1134,73 @@ cte, co dal linker.
 najdi symbol na ni a napis ho primo. Zaroven zkontroluj sirku - `_DWORD`
 na 64bitovem ukazateli je druha chyba ve stejnem vyrazu.
 
+
+### 16-bit variables whose upper half is never initialised
+
+Waves 162 and 165, two different symptoms of one cause. The original
+keeps a value in a 16-bit stack slot; Hex-Rays renders it as `int` and
+writes to it only through `LOWORD(...)`:
+
+```c
+LOWORD(v52) = 0;
+LOWORD(v52) = v52 + 1;
+LOWORD(v52) = word_1999FC;
+```
+
+Every read in the port is cast - except at the call sites:
+
+```c
+if ( sub_77F5D(v52) == 1 )     // <- the upper half goes along
+v29 = sub_78013(v52);          // <- and here
+```
+
+The asm does not care, because the callee narrows on entry. There are two
+shapes, and both are invisible in the Hex-Rays output:
+
+| shape | where | how to spot it |
+|---|---|---|
+| `cwde` as the FIRST instruction | `__fastcall f(__int16)` | `; char __fastcall sub_X(__int16)` above `proc near` |
+| `movsx r, word ptr [ebp+var_N]` | arguments saved by the prologue | the prologue stores EAX/EDX/EBX/ECX into `var_N` and reloads them as words |
+
+**Recipe:** the fix belongs in the CALLEE and is a literal transcription
+of the instruction - `a1 = (int16_t)a1;` for `cwde`, `(int16_t)a1` at the
+forwarding call for `movsx word ptr`. Fixing the call sites instead would
+leave every other caller broken.
+
+**Scan:** parse the `.lst` for `proc near`, take the first real
+instruction, keep the functions where it is `cwde`, and cross-check the
+port for `int a1` used in arithmetic without a cast. That found 25
+functions - and not one of them narrowed. A path that has never run hides
+the whole family at once.
+
+### A shared tail is not a no-op just because its target is an epilogue
+
+Wave 164. `sub_70602` ended with `JUMPOUT(0x705D4)` and an earlier wave
+had written it off as a no-op because 0x705D4 is "inside the epilogue of
+`sub_704A6`". It is not - it is 40 bytes of drawing code that ends in the
+epilogue:
+
+```
+cseg01:000705D4   add   [esi], ax
+cseg01:000705E2   call  sub_127C27
+cseg01:000705F0   call  sub_12A478    ; the bottom frame of the panel
+cseg01:000705FC   leave               ; <- the epilogue starts HERE
+```
+
+**Check before dismissing a JUMPOUT:** read from the target down to the
+first `leave`/`pop`. Only if there is nothing in between is it a no-op.
+Watch for arguments staged into registers well before the jump
+(`mov edx, 38h` two instructions ahead of an unrelated call) - that is
+exactly why the tail looks argument-less.
+
+### Measure the frame, not the code path - and use the right palette
+
+Waves 161-165 were driven by one pixel diff of the panel rectangle
+(38016 px) rerun after every wave: 18.22 % -> 3.49 % -> 2.49 % -> 0.09 %.
+Each remaining band named the next defect: 37 solid rows = a missing
+sprite, a text-shaped band = a missing caption.
+
+Watch the palette width: DOSBox-X dumps a 6-bit palette, the port an
+8-bit one. Rendering the original without the `>> 2` conversion makes the
+whole screen look dimmed and invites the wrong conclusion.
+
