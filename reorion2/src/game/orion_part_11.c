@@ -322,9 +322,9 @@ int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4)
   v5 = v4 - 1634;
   v22 = a3;
   if ( a4 > 1u )
-    v6 = (char *)*(&off_17F807 + 7 * *a1);
+    v6 = (char *)*(off_17F807 + *a1);
   else
-    v6 = (char *)*(&off_17F803 + 7 * *a1);
+    v6 = (char *)*(off_17F803 + *a1);
   strcpy(v20, v6);
   strcpy(v19, (char *)sub_CDF5C(12));
   strcpy(v18, (char *)sub_CDF5C(12));
@@ -794,6 +794,7 @@ void sub_B1458()
 //----- (000B16F0) --------------------------------------------------------
 int sub_B16F0( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   switch ( a1 )
   {
     case -12:
@@ -8717,6 +8718,7 @@ char *sub_BB3DB( int a1)
    po `imul eax, 13h`). Jako `int` se na x64 orezaval. */
 char *sub_BB40D( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return TECHNAME_AT(19 * a1);
 }
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;

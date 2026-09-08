@@ -1652,7 +1652,7 @@ void sub_8A84B(char *a1, int16_t *a2)
     sub_A0305();
     if ( byte_199F3A != 1 && ((uint8_t)sub_91999(2) || sub_918D5(2)) )
     {
-      sub_789D4();
+      v2 = sub_789D4();   /* vlna 158 */
       word_1999B8 = v2;
       if ( v2 == -1 )
       {
@@ -1670,7 +1670,7 @@ void sub_8A84B(char *a1, int16_t *a2)
       sub_71B1C();
     if ( v3 )
     {
-      sub_789D4();
+      v4 = sub_789D4();   /* vlna 158 */
       word_1999B8 = v4;
       if ( v4 == -1 )
       {
@@ -1766,7 +1766,7 @@ int sub_8A97A(int16_t *a1)
     word_193016 = 1;
     sub_A0305();
     word_19995C = -1;
-    sub_789D4();
+    v7 = sub_789D4();   /* vlna 158 */
     word_1999B8 = v7;
     if ( v7 == -1 )
       sub_91A40();
@@ -2216,7 +2216,7 @@ void sub_8B2DE()
     sub_585E0(word_19999C, i);
     word_193016 = 1;
     sub_A0305();
-    sub_789D4();
+    v10 = sub_789D4();   /* vlna 158 */
     word_1999B8 = v10;
     if ( v10 == -1 )
       sub_91A40();
@@ -2426,7 +2426,7 @@ int sub_8B7A5(int16_t *a1)
     sub_1077D(v9, v4, v3, a1);
     sub_585E0(word_19999C, v4);
     word_193016 = 1;
-    sub_789D4();
+    v10 = sub_789D4();   /* vlna 158 */
     word_1999B8 = v10;
     if ( v10 == -1 )
       sub_91A40();
@@ -7126,7 +7126,7 @@ void sub_90430()
       sub_A4F58();
     if ( word_1992E8[i] == 2 && word_193016 > word_1992C4 )
     {
-      sub_7836A(word_1999B8);
+      v1 = sub_7836A(word_1999B8);   /* vlna 158 */
       if ( v1 == -1 )
         sub_91A40();
       else
@@ -7321,7 +7321,8 @@ int16_t sub_9086B( int a1)
   int v5; // edx
 
   v2 = 28 * a1;
-  *(int16_t *)((char *)&word_192FEC + v2) = -1000;
+  /* vlna 156: word_192FEC uz je adresa pole, & se zahazuje */
+  *(int16_t *)((char *)word_192FEC + v2) = -1000;
   *(int16_t *)((char *)word_192FEA + v2) = -1000;
   *(int16_t *)((char *)word_192FEE + v2) = -1000;
   if ( a1 )
@@ -8294,6 +8295,7 @@ int sub_91999( int a1)
 {
   int v1; // eax
 
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   v1 = 3 * a1;
   LOBYTE(v1) = byte_199BCF[v1];
   return nullsub_5(v1);

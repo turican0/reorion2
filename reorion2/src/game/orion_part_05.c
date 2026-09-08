@@ -993,6 +993,7 @@ int16_t sub_65288(_WORD *a1, _WORD *a2)
 //----- (000654DD) --------------------------------------------------------
 int16_t sub_654DD( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return (uint8_t)byte_17E085[13 * a1];
 }
 
@@ -2437,7 +2438,7 @@ LABEL_14:
     if ( (int16_t)v48 <= 0 )
       strcpy(v30, sub_7A990(0x32u));
     else
-      sprintf(v30, "%s (%d)", (char *)*(&off_17F803 + 7 * (int16_t)v48), (int16_t)v17);
+      sprintf(v30, "%s (%d)", (char *)*(off_17F803 + (int16_t)v48), (int16_t)v17);
     v18 = v43;
     sub_120E8C(1);
     v19 = v47;
@@ -2975,7 +2976,7 @@ LABEL_8:
     case 5:
       v11 = *(_WORD *)(dword_192694 + 6 * word_19B972);
       sub_8F6DF(0x40u, v13);
-      sprintf(v12, v13, *(_UNKNOWN **)((char *)&off_17FD0B + v3), *(&off_17F803 + 7 * v11));
+      sprintf(v12, v13, *(_UNKNOWN **)((char *)&off_17FD0B + v3), *(off_17F803 + v11));
       break;
     default:
       break;
@@ -4545,7 +4546,7 @@ LABEL_80:
       {
         sub_8F6DF(0x4Fu, v28);
         v21 = sub_69529(word_19B972);
-        v9 = sprintf(v34, v28, *(&off_17F803 + 7 * v21));
+        v9 = sprintf(v34, v28, *(off_17F803 + v21));
         LODWORD(v9) = v34;
         goto LABEL_80;
       }
@@ -5202,7 +5203,7 @@ int sub_6A7C8( int a1, int a2)
   *(_WORD *)(dword_1927A8 + 231) = (uint8_t)sub_77CD5(a1, a2);
   sub_5685F(a1);
   *(_WORD *)(dword_1927A8 + 49) = v8;
-  sub_5709F(a1);
+  v9 = sub_5709F(a1);   /* vlna 150: asm `mov ebx, eax` -> [dword_1927A8+47] */
   *(_WORD *)(dword_1927A8 + 47) = v9;
   v10 = 0;
   *(_WORD *)(dword_1927A8 + 17) = sub_5679E(word_19999C);
@@ -5746,7 +5747,7 @@ int sub_6B247()
   *(_WORD *)(dword_1927A8 + 43) = sub_5680D(word_19999C);
   sub_5685F(word_19999C);
   *(_WORD *)(dword_1927A8 + 49) = v2;
-  sub_5709F(word_19999C);
+  v4 = sub_5709F(word_19999C);   /* vlna 150: asm `mov edx, eax` */
   v3 = 0;
   *(_WORD *)(dword_1927A8 + 47) = v4;
   do
@@ -5959,7 +5960,7 @@ int sub_6B577(int a1, int a2)
   *(_WORD *)(v7 + 43) = *(uint8_t *)(a2 + 21);
   *(_WORD *)(v7 + 231) = *(char *)(a2 + 92);
   *(_WORD *)(v7 + 49) = *(uint8_t *)(a2 + 22);
-  sub_5709F(v23);
+  v9 = sub_5709F(v23);   /* vlna 150: asm `mov edx, eax` */
   v8 = 0;
   *(_WORD *)(dword_1927A8 + 47) = v9;
   do
@@ -7796,9 +7797,9 @@ void sub_6D29C()
       sub_6EFF8(*(_BYTE *)(v23 + dword_1927A8 + 85), v72);
       v24 = dword_1927A8 + v22;
       if ( *(int16_t *)(v24 + 69) <= 1 )
-        v25 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v24 + 53));
+        v25 = (char *)*(off_17F803 + *(int16_t *)(v24 + 53));
       else
-        v25 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v24 + 53));
+        v25 = (char *)*(off_17F807 + *(int16_t *)(v24 + 53));
       v62 = v63;
       strcpy(v63, v25);
       v26 = (int16_t)v84;
@@ -8833,6 +8834,7 @@ int sub_6EC74( int a1, int a2, int a3, unsigned int a4, int a5)
 //----- (0006EDAE) --------------------------------------------------------
 _BOOL2 sub_6EDAE( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return byte_17F80F[28 * a1] == 1;
 }
 
@@ -8976,6 +8978,7 @@ int sub_6EE8E(int a1, int a2, int a3, int a4, unsigned int a5, int a6)
 //----- (0006EFEB) --------------------------------------------------------
 int16_t sub_6EFEB( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return (uint8_t)byte_17F80F[28 * a1];
 }
 
@@ -9921,10 +9924,10 @@ void sub_6FF08()
 
   v15 = -1;
   v16 = -1;
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   if ( v0 == word_199A06 )
   {
-    sub_7836A(word_1999B8);
+    v1 = sub_7836A(word_1999B8);   /* vlna 158 */
     v2 = sub_71465(v1);
     sub_71A37(v2);
     word_193026 = -1000;
@@ -9954,7 +9957,7 @@ void sub_6FF08()
       sub_78013(i);
       *(int16_t *)((char *)&word_197FC1 + 9 * v13) = sub_11438B(v7, v8, v7 + 53, v8 + 53, &unk_1792A6, 41);
     }
-    sub_7836A(word_1999B8);
+    v9 = sub_7836A(word_1999B8);   /* vlna 158 */
     v10 = *(int16_t *)((char *)&word_1975D4 + 5 * v9);
     if ( word_1992E8[0] == 2
       && v12
@@ -10406,7 +10409,7 @@ void sub_70875()
   v47 = v1;
   LOWORD(v1) = word_19302E;
   v48 = v1;
-  sub_7836A(word_1999B8);
+  v2 = sub_7836A(word_1999B8);   /* vlna 158 */
   v49 = v2;
   v46 = v2;
   if ( (_WORD)v2 == word_199A06 )
@@ -10415,7 +10418,7 @@ void sub_70875()
   }
   else
   {
-    sub_7836A(word_1999B8);
+    v3 = sub_7836A(word_1999B8);   /* vlna 158 */
     v4 = sub_71465(v3);
     v5 = v4;
     sub_71A37(v4);
@@ -10472,6 +10475,33 @@ void sub_70875()
       sub_120DED(2, 1);
       sub_120E8C(1);
     }
+    /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+    /*SONDA-TXT*/   static int n_t = 0;
+    /*SONDA-TXT*/   if ( n_t < 3 ) { ++n_t;
+    /*SONDA-TXT*/     PortDebug_CrashLog("TXT titulek x=%d y=%d v40=%d [%.40s]",
+    /*SONDA-TXT*/       (int)(int16_t)(v51 + v47 + (int16_t)v54 / 2),
+    /*SONDA-TXT*/       (int)(int16_t)(v48 + v50 + 14), (int)(int16_t)v40, v35); } }
+    /*SONDA-BARVA*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+    /*SONDA-BARVA*/   static int n_b = 0;
+    /*SONDA-BARVA*/   if ( n_b < 3 ) { ++n_b;
+    /*SONDA-BARVA*/     PortDebug_CrashLog("BARVA rampa= %02X %02X %02X %02X %02X %02X %02X %02X"
+    /*SONDA-BARVA*/       "  1B3E88= %02X %02X %02X %02X  1B3E7C= %02X %02X %02X %02X"
+    /*SONDA-BARVA*/       "  1B61D8= %02X %02X %02X %02X  1B3E86=%d",
+    /*SONDA-BARVA*/       (unsigned char)v37[0],(unsigned char)v37[1],(unsigned char)v37[2],(unsigned char)v37[3],
+    /*SONDA-BARVA*/       (unsigned char)v37[4],(unsigned char)v37[5],(unsigned char)v37[6],(unsigned char)v37[7],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B3E88[0],(unsigned char)byte_1B3E88[1],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B3E88[2],(unsigned char)byte_1B3E88[3],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B3E7C[0],(unsigned char)byte_1B3E7C[1],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B3E7C[2],(unsigned char)byte_1B3E7C[3],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B61D8[0],(unsigned char)byte_1B61D8[1],
+    /*SONDA-BARVA*/       (unsigned char)byte_1B61D8[2],(unsigned char)byte_1B61D8[3],
+    /*SONDA-BARVA*/       (int)word_1B3E86); } }
+    /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+    /*SONDA-PTR*/   static int n_p = 0;
+    /*SONDA-PTR*/   if ( n_p < 3 ) { ++n_p;
+    /*SONDA-PTR*/     PortDebug_CrashLog("PTR volajici v35=%016llX  (int)v35=%08X  [%.24s]",
+    /*SONDA-PTR*/       (unsigned long long)(size_t)(void *)v35,
+    /*SONDA-PTR*/       (unsigned)(int)v35, v35); } }
     sub_1210FD(v51 + v47 + (int16_t)v54 / 2, v48 + v50 + 14, (int)v35);
   }
   if ( word_199A06 != (_WORD)v46 || word_199A06 == -1 )
@@ -10789,15 +10819,28 @@ int16_t sub_71198( unsigned int a1)
 
 
 //----- (000711E6) --------------------------------------------------------
-void sub_711E6( int a1)
+/* vlna 161: VRACI VYSKU panelu. Portu chybela nejen navratova hodnota, ale
+   i cely vypocet - asm scita ctyri veci:
+       000712C7  call sub_71198
+       000712CC  add  eax, ecx          ; vyska prvniho spritu
+       000712CE  add  eax, edi          ; vyska druheho spritu
+       000712D0  add  eax, [ebp+var_4]  ; vyska dword_193278
+   Bez toho zustala `word_199BB0` (vyska) smetim a s ni i `word_199BAE`
+   (y panelu) - horni cast panelu flotily padala na tlacitka. */
+int16_t sub_711E6( int a1)
 {
   int v2; // eax
   int v3; // eax
+  int v_ecx; // ecx - vyska prvniho spritu
+  int v_edi; // edi - vyska druheho spritu
+  int var_4; // [ebp-4h] - vyska dword_193278
 
+  var_4 = *(int16_t *)(dword_193278 + 2);   /* asm `mov ax, [eax+2]` */
   if ( byte_199BC6 )
   {
     dword_1932B0 = sub_127C27((int)aBuffer0Lbx_0, 52, dword_193174);
     dword_199BBE = dword_1932B0;
+    v_ecx = *(int16_t *)(dword_1932B0 + 2);   /* asm `mov cx, [eax+2]` */
     v2 = sub_127C27((int)aBuffer0Lbx_0, 56, dword_193174);
     dword_1932AC = v2;
   }
@@ -10805,22 +10848,25 @@ void sub_711E6( int a1)
   {
     dword_193298 = sub_127C27((int)aBuffer0Lbx_0, 51, dword_193174);
     dword_199BBE = dword_193298;
+    v_ecx = *(int16_t *)(dword_193298 + 2);
     v2 = sub_127C27((int)aBuffer0Lbx_0, 55, dword_193174);
     dword_1932CC = v2;
   }
   dword_199BC2 = v2;
+  v_edi = *(int16_t *)(v2 + 2);   /* asm `mov di, [eax+2]` na loc_71282 */
   if ( a1 <= 9 )
   {
     v3 = (a1 - 1) / 3 + 1;
     if ( v3 > 3 )
-      LOWORD(v3) = 3;
-    sub_71198(v3);
+      v3 = 3;
+    v3 = sub_71198(v3) + v_ecx;
   }
   else
   {
     dword_1932D4 = sub_127C27((int)aBuffer0Lbx_0, 53, dword_193174);
+    v3 = v_ecx + *(int16_t *)(dword_1932D4 + 2);   /* asm `add cx, [eax+2]` */
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return (int16_t)(v3 + v_edi + var_4);   /* asm loc_712CE */
 }
 // 712D3: control flows out of bounds to 7086E
 // 193174: using guessed type int dword_193174;
@@ -11037,6 +11083,12 @@ void sub_71506()
   v0 = sub_78013(0);
   v33 = 9;
   v2 = sub_72617();
+  /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-TXT*/   static int n_u = 0;
+  /*SONDA-TXT*/   if ( n_u < 3 ) { ++n_u;
+  /*SONDA-TXT*/     PortDebug_CrashLog("TXT 72617=%d 19995C=%d 1999CA=%d 19C186=%d v0=%d",
+  /*SONDA-TXT*/       (int)sub_72617(), (int)word_19995C, (int)word_1999CA,
+  /*SONDA-TXT*/       (int)word_19C186, (int)v0); } }
   if ( byte_199BC6 )
     v3 = 56;
   else
@@ -11117,6 +11169,11 @@ LABEL_59:
           sprintf(v28, v12, v22, v25);
         }
 LABEL_71:
+        /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+        /*SONDA-TXT*/   static int n_v = 0;
+        /*SONDA-TXT*/   if ( n_v < 3 ) { ++n_v;
+        /*SONDA-TXT*/     PortDebug_CrashLog("TXT stav v33=%d v31=%d v32=%d [%.40s]",
+        /*SONDA-TXT*/       (int)(int16_t)v33, (int)(int16_t)v31, (int)(int16_t)v32, v28); } }
         if ( v28[0] )
         {
           sub_8FDA1((int)v28, (int)v29, v36, v34, 0, v38, 1);
@@ -11310,7 +11367,7 @@ int16_t sub_71A17()
 
   if ( !sub_780D3() )
     return sub_91A40();
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   v1 = sub_71465(v0);
   return sub_71A37(v1);
 }
@@ -11342,8 +11399,7 @@ int16_t sub_71A37( int a1)
     word_199BAC = word_19301C;
     word_199BAE = word_19301E;
     word_199BB2 = *(_WORD *)dword_199BBE;
-    sub_711E6(a1);
-    word_199BB0 = v1;
+    word_199BB0 = sub_711E6(a1);   /* vlna 161: asm `mov word_191BB0, ax` */
     word_199BB4 = word_199962;
     v5 = word_199962 + *(_WORD *)(dword_199BBE + 2);
   }
@@ -11357,8 +11413,7 @@ int16_t sub_71A37( int a1)
     word_199BAC = word_19301C;
     word_199BB2 = *(_WORD *)dword_193298;
     word_199BAE = word_19301E;
-    sub_711E6(a1);
-    word_199BB0 = v4;
+    word_199BB0 = sub_711E6(a1);   /* vlna 161: asm 0x71ADA */
     dword_1932D4 = sub_127C27((int)aBuffer0Lbx_0, 53, dword_193174);
     word_199BB4 = *(_WORD *)(dword_1932D4 + 2);
     v5 = word_199BB4 + *(_WORD *)(dword_199BBE + 2);
@@ -11403,6 +11458,7 @@ int sub_71B0E( int a1, int a2)
 {
   int result; // eax
 
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   result = sub_585E0(a1, a2);
   byte_199F1D = 2;
   return result;
@@ -11419,7 +11475,7 @@ char sub_71B1C()
   int16_t i; // cx
   unsigned int v4; // esi
 
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   v1 = (int16_t)sub_77FE9(v0);
   LOBYTE(v2) = word_19999C;
   if ( v1 == word_19999C )
@@ -11448,7 +11504,7 @@ int sub_71B91()
   int v3; // eax
   int16_t v4; // dx
 
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   result = sub_77FE9(v0);
   if ( (_WORD)result == word_19999C )
   {

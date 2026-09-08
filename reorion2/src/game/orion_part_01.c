@@ -2599,7 +2599,7 @@ void sub_12983(int16_t *a1)
     sub_5E55F(n);
     ServiceAudioTick_FE8BE(v34, n, v5, v4);
     sub_54FBF(n);
-    sub_5709F(n);
+    v35 = sub_5709F(n);   /* vlna 150: asm `movsx esi, ax; imul esi, 0Ah` */
     v2 = 10 * v35;
     HIWORD(v5) = HIWORD(dword_197F98);
     v36 = (uint8_t*)dword_197F98 + 3753 * (int16_t)n;

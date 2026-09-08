@@ -2968,7 +2968,7 @@ int sub_3C539(
   strcpy((char *)&a17 + 2, vars6);
   v28 = dword_192B14 + 26 * *(_DWORD *)((char *)&a27 + 2);
   if ( *(_BYTE *)(v28 + 8) )
-    v29 = (char *)*(&off_17F803 + 7 * *(int16_t *)(26 * *(int16_t *)(v28 + 6) + dword_192B14));
+    v29 = (char *)*(off_17F803 + *(int16_t *)(26 * *(int16_t *)(v28 + 6) + dword_192B14));
   else
     v29 = (char *)(313 * *(int16_t *)(v28 + 6) + dword_192864);
   v30 = (char *)&a17 + 1;

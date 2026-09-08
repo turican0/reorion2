@@ -8963,7 +8963,14 @@ char sub_FF4E9(uint8_t* a1, int a2, int a3)
 
 
 //----- (000FF593) --------------------------------------------------------
-void sub_FF593(int a1, int a2, int a3)
+/* vlna 149: DVOJITY JUMPOUT THUNK. asm (cseg01:000FF593) drzi vysledek
+   v `ch` (`xor ch, ch` / `mov ch, 1`) a sdili epilog se sousedni
+   sub_FF4E9: `loc_FF58C: mov al, ch / leave / retn`. IDA z obou skoku
+   udelala JUMPOUT, takze funkce byla v portu `void` a NEVRACELA NIC -
+   volajici sub_FF5F8 pak cetla smeti ze zasobniku. Dusledek: kazda
+   dvojice risi byla "na dosah", vsichni se znali od prvniho tahu a na
+   galakticke mape byla videt jmena vsech domovin souperu. */
+char sub_FF593(int a1, int a2, int a3)
 {
   int v4; // eax
   int v5; // eax
@@ -8974,9 +8981,9 @@ void sub_FF593(int a1, int a2, int a3)
     && (v5 = dword_19306C + 113 * v4, (((int)*(uint8_t *)(v5 + 51) >> a2) & 1) != 0)
     && sub_FF4E9(v5, a2, a3) )
   {
-    JUMPOUT(0xFF58A);
+    return 1;   /* vlna 149: asm `loc_FF58A: mov ch, 1` */
   }
-  JUMPOUT(0xFF58C);
+  return 0;   /* vlna 149: asm `loc_FF58C` s ch == 0 */
 }
 // FF5F6: control flows out of bounds to FF58A
 // FF5D0: control flows out of bounds to FF58C
@@ -8984,24 +8991,22 @@ void sub_FF593(int a1, int a2, int a3)
 
 
 //----- (000FF5F8) --------------------------------------------------------
+/* vlna 149: asm dvakrat dela `call sub_FF593 / test al, al` - port obe
+   navratove hodnoty zahodil a vetvil se na neinicializovanych v4/v6. */
 char sub_FF5F8(int a1, int a2, int a3)
 {
-  char v4; // al
   int v5; // ecx
-  char v6; // al
   char v8; // [esp+4h] [ebp-4h]
 
   v8 = 0;
-  sub_FF593(a1, a2, a3);
-  if ( v4 )
+  if ( sub_FF593(a1, a2, a3) )
     return 1;
   v5 = word_199998;
   while ( v5 > 0 )
   {
     if ( --v5 != a2 && *(_BYTE *)(v5 + (uint8_t*)dword_197F98 + 3753 * a2 + 1575) == 2 )
     {
-      sub_FF593(a1, v5, a3);
-      if ( v6 )
+      if ( sub_FF593(a1, v5, a3) )
         return 1;
     }
   }

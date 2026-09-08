@@ -7892,9 +7892,9 @@ LABEL_43:
 LABEL_49:
     v24 = 11 * (int16_t)v51 + 313 * word_1998F8 + dword_192864;
     if ( *(_BYTE *)(v24 + 91) == 1 )
-      v25 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v24 + 82));
+      v25 = (char *)*(off_17F803 + *(int16_t *)(v24 + 82));
     else
-      v25 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v24 + 82));
+      v25 = (char *)*(off_17F807 + *(int16_t *)(v24 + 82));
     v26 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
     do
       ++v26;
@@ -9469,9 +9469,9 @@ LABEL_28:
           ++v76;
         strcpy(v76, asc_178C52);
         if ( byte_199A66[v75] == 1 )
-          v77 = (char *)*(&off_17F803 + 7 * *(int16_t *)((char *)&word_199A64 + v75));
+          v77 = (char *)*(off_17F803 + *(int16_t *)((char *)&word_199A64 + v75));
         else
-          v77 = (char *)*(&off_17F807 + 7 * *(int16_t *)((char *)&word_199A64 + v75));
+          v77 = (char *)*(off_17F807 + *(int16_t *)((char *)&word_199A64 + v75));
         /* vlna 73: puvodne `v104 = v105; v78 = (char *)&v104 + 3;` -
            v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
            v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
@@ -14047,9 +14047,9 @@ void sub_37308( int a1,
           strcpy(v58, (char *)&off_178CE6);
           v59 = 11 * *(_DWORD *)((char *)&a14 + 14);
           if ( *(int16_t *)((char *)&a3 + v56) <= 1 )
-            v60 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v59 + 313 * v93 + dword_192864 + 82));
+            v60 = (char *)*(off_17F803 + *(int16_t *)(v59 + 313 * v93 + dword_192864 + 82));
           else
-            v60 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v59 + dword_192864 + 313 * v93 + 82));
+            v60 = (char *)*(off_17F807 + *(int16_t *)(v59 + dword_192864 + 313 * v93 + 82));
           v61 = &v95;
           do
             ++v61;

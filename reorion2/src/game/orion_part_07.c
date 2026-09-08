@@ -9036,7 +9036,7 @@ void sub_83DEA()
   if ( v0 <= 0 )
     LOWORD(v0) = 0;
   v1 = v0;
-  sub_7836A(word_1999B8);
+  v2 = sub_7836A(word_1999B8);   /* vlna 158 */
   v3 = sub_78800(v2);   /* vlna 147: asm `cwde` -> prvni argument sub_A0A5C */
   sub_A0A5C(v3, &v9, (int16_t *)&v8);
   sub_A1BC9(v1, &byte_192E80[v1], &byte_192ECC[v1]);
@@ -9125,7 +9125,7 @@ void sub_83EFD(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
   v32 = v9;
   if ( a7 == 2 )
   {
-    sub_7836A(word_1999B8);
+    v10 = sub_7836A(word_1999B8);   /* vlna 158 */
     v11 = sub_71465(v10);
     sub_71A37(v11);
     a5 = word_199BB2;
@@ -9320,7 +9320,7 @@ void sub_843B3()
   int16_t v5; // [esp+0h] [ebp-8h] BYREF
   int16_t v6; // [esp+4h] [ebp-4h] BYREF
 
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   v1 = sub_78800(v0);   /* vlna 147: asm `movsx ecx, ax; mov eax, ecx` */
   v2 = v1;
   v3 = sub_78879(v1);

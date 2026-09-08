@@ -990,7 +990,7 @@ void sub_94C1D(int a1, int a2, int16_t *a3, int a4)
   int v16; // esi
   int16_t v17; // ax
   int v18; // eax
-  int v19; // edx
+  intptr_t v19; // edx   /* vlna 154 */
   char *v20; // eax
   int v21; // edx
   int16_t *v22; // edi
@@ -2905,10 +2905,10 @@ int sub_97041( int a1, int a2, int16_t *a3, int16_t *a4)
   int16_t v4; // dx
   int v5; // esi
   int16_t i; // ax
-  int v7; // edx
-  int v8; // edx
+  intptr_t v7; // edx   /* vlna 154 */
+  intptr_t v8; // edx   /* vlna 154 */
   int16_t j; // ax
-  int v10; // edx
+  intptr_t v10; // edx   /* vlna 154 */
   int16_t v14; // [esp+10h] [ebp-Ch]
   int16_t v15; // [esp+14h] [ebp-8h]
   char v16; // [esp+18h] [ebp-4h]

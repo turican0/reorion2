@@ -6374,6 +6374,7 @@ int16_t sub_CDED3(int16_t *a1, int16_t *a2)
 //----- (000CDF5C) --------------------------------------------------------
 int sub_CDF5C( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return dword_1A6578[a1];
 }
 // 1A6578: using guessed type int dword_1A6578[368];
@@ -7233,6 +7234,7 @@ char sub_CF34C(int a1, int16_t *a2, int a3, int a4)
 //----- (000CF398) --------------------------------------------------------
 char *sub_CF398( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   if ( a1 == -37 )
     return aAiTradeGoods;
   else

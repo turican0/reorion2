@@ -1050,7 +1050,7 @@ void sub_A070F( int a1)
   v9 = -1;
   if ( sub_918D5(2) )
   {
-    sub_7836A(word_1999B8);
+    v1 = sub_7836A(word_1999B8);   /* vlna 158 */
     v2 = sub_78800(v1);   /* vlna 147: asm `mov [ebp+var_8], eax` */
     v9 = v2;
   }
@@ -1148,7 +1148,7 @@ void sub_A080D()
     v9 = 0;
     if ( sub_918D5(2) )
     {
-      sub_7836A(word_1999B8);
+      v8 = sub_7836A(word_1999B8);   /* vlna 158 */
       if ( v8 == (_WORD)v19 )
         v9 = 1;
     }
@@ -1494,8 +1494,15 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
   int v13; // eax
   int v14; // esi
   int16_t v15; // dx
-  int64_t v17; // [esp+0h] [ebp-78h] BYREF
-  unsigned int v18; // [esp+8h] [ebp-70h]
+  /* vlna 151: [ebp-78h] je 100bajtovy BUFFER - asm ma `enter 78h, 0` a hned
+     `sub_127678(&var_78, 64h, 0)`, a cte ho jako pole slov
+     (`movsx eax, word ptr [esi+ebp-78h]`). IDA z nej pojmenovala jen prvni
+     dva sloty (var_78 = 8 B, var_70 = 4 B) a zbylych 88 B nechala bez jmena,
+     takze port memsetem 100 B prepsal cely zbytek ramce vcetne ULOZENEHO RBP
+     volajiciho; sub_831B1 pak cetla svou lokalku pres nulovy rbp a padala.
+     Projevilo se to az pri DVOJKLIKU na flotilu - prvni klik jde s a2 = 0
+     a tuhle vetev preskoci. */
+  int16_t v17[50]; // [esp+0h] [ebp-78h] BYREF - 100 B
   int v19; // [esp+64h] [ebp-14h]
   int v20; // [esp+68h] [ebp-10h]
   int v21; // [esp+6Ch] [ebp-Ch]
@@ -1510,7 +1517,7 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
   {
     v22 = 0;
     v20 = 0;
-    sub_127678((char *)&v17, 0x64u, 0);
+    sub_127678((char *)v17, 0x64u, 0);
     v8 = 0;
     sub_788AE();
     for ( i = 0; i < word_1999F8 && !(_WORD)v20; ++i )
@@ -1520,7 +1527,7 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
         && (int)abs32(word_1906CA[6 * i] - word_1906CA[6 * *a1]) < (int16_t)v21 )
       {
         v11 = v8++;
-        *((_WORD *)&v17 + v11) = i;
+        *((_WORD *)v17 + v11) = i;
         if ( v8 >= 50 )
           v20 = 1;
       }
@@ -1531,16 +1538,24 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
       while ( (int16_t)v23 < v8 - 1 )
       {
         v12 = 2 * (int16_t)v23;
-        sub_1277DE(v17, v18);
-        v13 = *(int16_t *)((char *)&v17 + v12 + 2);
-        v14 = *(int16_t *)((char *)&v17 + v12);
+        v13 = *(int16_t *)((char *)v17 + v12 + 2);
+        v14 = *(int16_t *)((char *)v17 + v12);
+        /* vlna 152: asm prohodi 12bajtovy zaznam flotily v word_1906C0:
+             movsx edx, word ptr [esi+ebp-76h] / imul edx, 0Ch
+             movsx eax, word ptr [esi+ebp-78h] / imul eax, 0Ch
+             mov ebx, 0Ch / add edx/eax, offset word_1886C0 / call sub_1277DE
+           Port sem posilal prvnich osm bajtu razeneho bufferu, takze se
+           zaznam flotily neprohodil vubec. Cteni v13/v14 je presunute pred
+           volani (v asm je az za nim) - prohazuje se word_1906C0 a
+           word_192248, nikoli buffer v17, ze ktereho se ctou. */
+        sub_1277DE((char *)word_1906C0 + 12 * v14, (char *)word_1906C0 + 12 * v13, 12);
         v15 = word_192248[v13];
         word_192248[v13] = word_192248[v14];
         ++v23;
         word_192248[v14] = v15;
       }
       v22 = 1;
-      *a1 = v17;
+      *a1 = v17[0];
     }
   }
   else
@@ -1767,7 +1782,7 @@ void sub_A1455()
   int16_t v16; // [esp+Ch] [ebp-8h]
   int16_t v17; // [esp+10h] [ebp-4h]
 
-  sub_7836A(word_1999B8);
+  v0 = sub_7836A(word_1999B8);   /* vlna 158 */
   v1 = v0;
   sub_78800(v0);
   v2 = *(int16_t *)((char *)&word_1975D4 + 5 * v1);
@@ -4760,7 +4775,8 @@ void sub_A4F58()
   v3 = word_192FF4;
   v4 = word_192FF6;
   sub_A3FE6(word_192FDE[0]);
-  sub_A1C74(v2, v1, v0, v3, v4, 13, 47, word_192FEA, &word_192FEC, word_192FEE);
+  /* vlna 156: word_192FEC uz je adresa pole, & se zahazuje */
+  sub_A1C74(v2, v1, v0, v3, v4, 13, 47, word_192FEA, word_192FEC, word_192FEE);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA20C6 je epilog funkce */
 }
 // A4FB9: control flows out of bounds to A20C6

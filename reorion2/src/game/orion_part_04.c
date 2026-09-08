@@ -3539,21 +3539,34 @@ int sub_57072( int a1)
 
 
 //----- (0005709F) --------------------------------------------------------
-void sub_5709F( int a1)
+/* vlna 150: PRAZDNY THUNK. asm (cseg01:0005709F) drzi vysledek v `ebx`
+   (`xor ebx, ebx`, pri lepsim nalezu `mov ebx, edx`) a vraci ho sdilenym
+   epilogem `loc_56D16: mov eax, ebx / leave / retn`. IDA z toho skoku
+   udelala JUMPOUT, takze funkce v portu NEVRACELA NIC a vsech pet
+   volajicich cetlo neinicializovanou promennou.
+   POZOR: vraci se INDEX polozky (0..5), ne nalezeny dosah `v2` - ten je
+   v asm jen `var_4` a slouzi k porovnavani. Volajici si dosah dohleda sam
+   jako word_17FFEA[5 * index]. */
+int16_t sub_5709F( int a1)
 {
   int16_t i; // dx
+  int16_t v3; // ebx - vlna 150: index nejlepsi polozky
   int16_t v2; // [esp+4h] [ebp-4h]
 
+  v3 = 0;
   v2 = word_17FFEA[0];
   if ( a1 < 8 )
   {
     for ( i = 0; i < 6; ++i )
     {
       if ( *(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + word_17FFE8[5 * i] + 279) == 3 && word_17FFEA[5 * i] > v2 )
+      {
+        v3 = i;   /* vlna 150: asm `mov ebx, edx` */
         v2 = word_17FFEA[5 * i];
+      }
     }
   }
-  JUMPOUT(0x56D16);
+  return v3;   /* vlna 150: asm `loc_56D16: mov eax, ebx` */
 }
 // 5710D: control flows out of bounds to 56D16
 // 17FFE8: using guessed type int16_t word_17FFE8[];
@@ -3829,6 +3842,7 @@ int16_t sub_57617( int a1, int a2)
 //----- (00057651) --------------------------------------------------------
 int16_t sub_57651( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return word_180030[18 * a1];
 }
 // 180030: using guessed type int16_t word_180030[];
@@ -3837,6 +3851,7 @@ int16_t sub_57651( int a1)
 //----- (0005765D) --------------------------------------------------------
 int16_t sub_5765D( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return word_180032[18 * a1];
 }
 // 180032: using guessed type int16_t word_180032[];

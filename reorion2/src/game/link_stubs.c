@@ -180,7 +180,7 @@ int dword_19A21C;
 int dword_19A22C;
 int dword_19A248;
 int dword_19A26C;
-int dword_19BEDC;
+/* vlna 155: duplicitni definice - skutecne pole je v orion_data.c */
 int dword_19DD98;
 int dword_19EAF4;
 int dword_19EAF8;
@@ -425,18 +425,18 @@ int word_192C86;
 int word_192C88;
 /* vlna 88: duplicitni skalar - skutecne pole je v orion_data.c */
 /* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FDE */
-int word_192FE0;
-int word_192FE2;
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
 /* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FE4 */
 /* vlna 85: DUPLICITNI skalarni definice - skutecne pole je v orion_data.c word_192FE6 */
-int word_192FE8;
-int word_192FEA;
-int word_192FEC;
-int word_192FEE;
-int word_192FF0;
-int word_192FF2;
-int word_192FF4;
-int word_192FF6;
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
+/* vlna 156: duplicita - skutecna pamet je word_192FDC */
 /* vlna 116: duplicitni skalar odstranen - pole je v orion_data.c */
 int word_19918A;
 int word_1991B6;

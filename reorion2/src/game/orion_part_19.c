@@ -2874,6 +2874,11 @@ int sub_1210FD( int a1, int a2, int a3)
 {
   int16_t v3; // ax
 
+  /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-PTR*/   static int n_q = 0;
+  /*SONDA-PTR*/   if ( n_q < 6 ) { ++n_q;
+  /*SONDA-PTR*/     PortDebug_CrashLog("PTR volany a1=%d a2=%d a3=%016llX",
+  /*SONDA-PTR*/       a1, a2, (unsigned long long)(size_t)a3); } }
   v3 = sub_12066F(a3);
   return sub_1212B3(a1 - v3 / 2, a2, a3);
 }
@@ -2951,6 +2956,11 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
 
   v9 = *(int *)((char *)&dword_1B3E82 + 2) >> 16;
   v7 = 0;
+  /*SONDA-V9*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-V9*/   static int n9 = 0;
+  /*SONDA-V9*/   if ( n9 < 6 && a3 && ((const char *)a3)[0] == 84 ) { ++n9;
+  /*SONDA-V9*/     PortDebug_CrashLog("V9 rezim=%d 1B3EA0=%d 1B3E86=%d [%.24s]",
+  /*SONDA-V9*/       (int)v9, (int)word_1B3EA0, (int)word_1B3E86, (const char *)a3); } }
   if ( *(int *)((char *)&dword_1B3E82 + 2) >> 16 )
   {
     for ( i = 1; i < 8; ++i )
@@ -3035,6 +3045,12 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     for ( j = 0; j < 8; ++j )
       byte_1B3E7C[j] = byte_1B3E88[j];
   }
+  /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-PTR*/   static int n_r = 0;
+  /*SONDA-PTR*/   if ( n_r < 40 ) { ++n_r;
+  /*SONDA-PTR*/     PortDebug_CrashLog("PTR kresli a1=%d a2=%d rezim=%d barva0=%02X 1845D8=%d [%.24s]",
+  /*SONDA-PTR*/       a1, a2, (int)v9, (unsigned char)byte_1B3E7C[0], (int)word_1845D8,
+  /*SONDA-PTR*/       (const char *)a3); } }
   LOWORD(dword_184510) = 0;
   if ( word_1845D8 == 1 )
     sub_122309(a1, a2, a3, 1, a4);
@@ -6559,111 +6575,31 @@ _BYTE *sub_12779E(_BYTE *result, _BYTE *a2, unsigned int a3)
 
 
 //----- (001277DE) --------------------------------------------------------
-int64_t sub_1277DE(int64_t a1, unsigned int a2)
-{
-  int64_t v2; // rdi
-  unsigned int v3; // ecx
-  char v4; // al
-  char v5; // ah
-  unsigned int j; // ecx
-  int v8; // eax
-  int v9; // edx
-  int v10; // ecx
-  char v11; // al
-  char v12; // ah
-  unsigned int v14; // ebx
-  unsigned int i; // ecx
-  int v16; // eax
-  int v17; // edx
-  int v18; // ecx
-  char v19; // al
-  char v20; // ah
-  int64_t v21; // [esp-20h] [ebp-20h]
+/* vlna 152: PROHOZENI a3 BAJTU mezi dvema buffery.
 
-  v21 = a1;
-  v2 = a1;
-  if ( (a1 & 0x100000000LL) != 0 )
+   asm (cseg01:001277DE) ma tri registrove argumenty - eax = prvni ukazatel,
+   edx = druhy, ebx = pocet bajtu - a telo je
+       lodsb / mov ah, [edi] / stosb / mov [esi-1], ah / loop
+   tedy prosta vymena. Vetve navic jen zarovnavaji na slova a dvojslova,
+   vysledek je stejny; `pusha` na zacatku znamena, ze se nic nevraci.
+
+   IDA z obou UKAZATELU udelala jednu promennou `int64_t a1` (dolni pulka =
+   eax, horni = edx) - trida poskozeni 10. Na x64 se dva ukazatele do 64 bitu
+   nevejdou, takze funkce cetla a zapisovala na nesmyslne adresy a jediny
+   volajici (sub_A0FA8) ji navic volal jen se dvema argumenty. */
+void sub_1277DE(void *a1, void *a2, unsigned int a3)
+{
+  uint8_t *p = (uint8_t *)a1;
+  uint8_t *q = (uint8_t *)a2;
+  unsigned int i;
+
+  for ( i = 0; i < a3; ++i )
   {
-    if ( (a1 & 1) != 0 )
-    {
-      HIDWORD(v2) = HIDWORD(a1) + 1;
-      BYTE1(a1) = *(_BYTE *)a1;
-      *(_BYTE *)v2 = *(_BYTE *)HIDWORD(a1);
-      LODWORD(v2) = v2 + 1;
-      *(_BYTE *)HIDWORD(a1) = BYTE1(a1);
-      v14 = a2 - 1;
-      for ( i = v14 >> 2; i; --i )
-      {
-        v16 = *(_DWORD *)HIDWORD(v2);
-        HIDWORD(v2) += 4;
-        v17 = *(_DWORD *)v2;
-        *(_DWORD *)v2 = v16;
-        LODWORD(v2) = v2 + 4;
-        *(_DWORD *)(HIDWORD(v2) - 4) = v17;
-      }
-      v18 = v14 & 3;
-      if ( (v14 & 3) != 0 )
-      {
-        do
-        {
-          v19 = *(_BYTE *)HIDWORD(v2);
-          ++HIDWORD(v2);
-          v20 = *(_BYTE *)v2;
-          *(_BYTE *)v2 = v19;
-          LODWORD(v2) = v2 + 1;
-          *(_BYTE *)(HIDWORD(v2) - 1) = v20;
-          --v18;
-        }
-        while ( v18 );
-      }
-      return v21;
-    }
-    goto LABEL_5;
+    uint8_t t = p[i];
+    p[i] = q[i];
+    q[i] = t;
   }
-  if ( (a1 & 1) != 0 )
-  {
-LABEL_5:
-    v3 = a2;
-    do
-    {
-      v4 = *(_BYTE *)HIDWORD(v2);
-      ++HIDWORD(v2);
-      v5 = *(_BYTE *)v2;
-      *(_BYTE *)v2 = v4;
-      LODWORD(v2) = v2 + 1;
-      *(_BYTE *)(HIDWORD(v2) - 1) = v5;
-      --v3;
-    }
-    while ( v3 );
-    return v21;
-  }
-  for ( j = a2 >> 2; j; --j )
-  {
-    v8 = *(_DWORD *)HIDWORD(v2);
-    HIDWORD(v2) += 4;
-    v9 = *(_DWORD *)v2;
-    *(_DWORD *)v2 = v8;
-    LODWORD(v2) = v2 + 4;
-    *(_DWORD *)(HIDWORD(v2) - 4) = v9;
-  }
-  v10 = a2 & 3;
-  if ( (a2 & 3) == 0 )
-    return v21;
-  do
-  {
-    v11 = *(_BYTE *)HIDWORD(v2);
-    ++HIDWORD(v2);
-    v12 = *(_BYTE *)v2;
-    *(_BYTE *)v2 = v11;
-    LODWORD(v2) = v2 + 1;
-    *(_BYTE *)(HIDWORD(v2) - 1) = v12;
-    --v10;
-  }
-  while ( v10 );
-  return v21;
 }
-// 1277DE: could not find valid save-restore pair for edi
-// 1277DE: could not find valid save-restore pair for esi
 
 
 //----- (00127880) --------------------------------------------------------

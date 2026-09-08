@@ -263,8 +263,7 @@ void sub_7226A( int a1)
   if ( v2 > 3 )
     LOWORD(v2) = 3;
   word_199962 = sub_71198(v2);
-  sub_711E6(a1);
-  word_193018 = v3;
+  word_193018 = sub_711E6(a1);   /* vlna 161: asm `mov word_18B018, ax` */
 }
 // 72294: variable 'v3' is possibly undefined
 // 193018: using guessed type int16_t word_193018;
@@ -389,6 +388,7 @@ void sub_72346( int a1)
 //----- (000724CF) --------------------------------------------------------
 _BOOL1 sub_724CF( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return sub_8A16A(a1) && !byte_199F33;
 }
 // 199F33: using guessed type char byte_199F33;
@@ -488,6 +488,7 @@ _BOOL1 sub_72617()
 //----- (00072651) --------------------------------------------------------
 _BOOL1 sub_72651( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return (uint16_t)sub_77FE9(*(int16_t *)((char *)&word_197FC3 + 9 * a1)) == (uint16_t)word_19999C;
 }
 // 197FC3: using guessed type int16_t word_197FC3;
@@ -652,7 +653,7 @@ int64_t sub_7267D(
 //----- (00072A65) --------------------------------------------------------
 int sub_72A65()
 {
-  dword_192B24 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3250);
+  /* vlna 154: adresa z alokatoru, ne int - drive `(int)` orezavalo na x64 */  dword_192B24 = (intptr_t)sub_110D3C((PoolMemType*)dword_192ED4, 3250);
   dword_192B68 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 250);
   dword_192B6C = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 500);
   dword_193188 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 134);
@@ -670,9 +671,9 @@ int sub_72A65()
 
 
 //----- (00072AE4) --------------------------------------------------------
-int16_t sub_72AE4(int a1, _WORD *a2)
+int16_t sub_72AE4(intptr_t a1, _WORD *a2)
 {
-  int v2; // esi
+  intptr_t v2; // esi   /* vlna 154: drzi ukazatel na buffer */
   int16_t i; // bx
 
   v2 = a1;
@@ -739,7 +740,7 @@ char sub_72B33(int a1, int a2, int a3)
   memset(v35, 0, 50);
   v4 = *(char *)(a1 + 99);
   v37 = 0;
-  sub_5709F(v4);
+  v5 = sub_5709F(v4);   /* vlna 150: asm `movsx edx, ax; cmp edx, -1` */
   v6 = 0;
   if ( v5 > -1 && v5 < 6 )
   {
@@ -968,7 +969,7 @@ int sub_72F92( int a1)
   void (*v1)(); // edx
   int v2; // ebx
   int16_t v3; // cx
-  int v4; // eax
+  intptr_t v4; // eax   /* vlna 154 */
   char v5; // cl
   int v6; // ebx
   int result; // eax
@@ -1799,7 +1800,7 @@ LABEL_53:
     }
     if ( (_WORD)v91 == v92 )
     {
-      sub_72AE4((int)&v41, &v84);
+      sub_72AE4((intptr_t)&v41, &v84);   /* vlna 154 */
       v25 = v84;
       v24 = (int)&v41;
       LOBYTE(v24) = sub_74AFE(
@@ -2612,7 +2613,7 @@ int sub_74E4A()
 {
   int v0; // edx
   int16_t i; // bx
-  int v2; // eax
+  intptr_t v2; // eax   /* vlna 154 */
   char v3; // cl
 
   v0 = 0;
@@ -2651,7 +2652,7 @@ int sub_74ED8()
 {
   int v0; // edx
   int16_t i; // bx
-  int v2; // eax
+  intptr_t v2; // eax   /* vlna 154 */
 
   v0 = -1;
   for ( i = 0; i < word_19992E && (int16_t)v0 == -1; ++i )
@@ -3014,7 +3015,7 @@ void sub_7545C( int a1)
   int v3; // eax
   int16_t v4; // ax
   int v5; // edi
-  int v6; // edx
+  intptr_t v6; // edx   /* vlna 154 */
   int16_t v7; // [esp+4h] [ebp-20h]
   int16_t v8; // [esp+Ch] [ebp-18h]
   int16_t v9; // [esp+1Ch] [ebp-8h]
@@ -3127,7 +3128,7 @@ int16_t sub_7563F( int a1)
       v13[v5] = *(_WORD *)(v14 + dword_192B24 + 11);
     }
   }
-  memset(dword_192B24, 0, 3250);
+  memset((void *)dword_192B24, 0, 3250);   /* vlna 154 */
   v6 = 0;
   do
   {
@@ -3208,7 +3209,7 @@ int sub_7585D()
   int v0; // edx
   int16_t v1; // cx
   int16_t v2; // si
-  int v3; // eax
+  intptr_t v3; // eax   /* vlna 154 */
   _WORD *v4; // ebx
   int v6; // [esp+0h] [ebp-8h]
   int16_t v7; // [esp+4h] [ebp-4h]
@@ -3267,10 +3268,10 @@ void sub_758D9( int a1)
 int sub_75943( int a1)
 {
   int v1; // ecx
-  int result; // eax
+  intptr_t result; // eax   /* vlna 154 */
 
   v1 = 13 * a1;
-  memset(v1 + dword_192B24, -1, 13);
+  memset((void *)(v1 + dword_192B24), -1, 13);   /* vlna 154 */
   result = dword_192B24;
   *(_BYTE *)(v1 + dword_192B24 + 4) = 0;
   return result;
@@ -3409,6 +3410,7 @@ int sub_75B5F( int a1, int a2, int a3, int16_t *a4, int a5)
 {
   int v5; // eax
 
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   sub_585E0(a1, a2);
   byte_199EFA = 1;
   sub_124D41();
@@ -3588,7 +3590,7 @@ char sub_75F79(_WORD *a1, _WORD *a2)
 {
   int16_t v3; // di
   int16_t v4; // si
-  int v5; // eax
+  intptr_t v5; // eax   /* vlna 154 */
   int16_t v7; // [esp+4h] [ebp-4h]
 
   v3 = 0;
@@ -4257,9 +4259,9 @@ void sub_7670E( int a1)
         sub_6EFF8(*(_BYTE *)(v45 + 32), v68);
         v46 = v44 + v70 + dword_197F9C;
         if ( *(_BYTE *)(v46 + 30) == 1 )
-          v47 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v46 + 28));
+          v47 = (char *)*(off_17F803 + *(int16_t *)(v46 + 28));
         else
-          v47 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v46 + 28));
+          v47 = (char *)*(off_17F807 + *(int16_t *)(v46 + 28));
         sprintf(v60, "%d %s (%s)", *(uint8_t *)(dword_197F9C + 129 * v59 + 8 * v42 + 30), v47, v68);
         sub_1212B3(v75, v43 + v82, (int)v60);
         v48 = sub_122259();
@@ -4331,7 +4333,7 @@ int sub_76F22( int a1, int a2, int16_t *a3, int16_t *a4)
   int16_t v4; // dx
   int v5; // esi
   int16_t i; // ax
-  int v7; // edx
+  intptr_t v7; // edx   /* vlna 154 */
   int16_t j; // ax
   int16_t v12; // [esp+8h] [ebp-Ch]
   int16_t v13; // [esp+Ch] [ebp-8h]
@@ -5247,6 +5249,7 @@ _BOOL1 sub_77EED()
 //----- (00077F5D) --------------------------------------------------------
 char sub_77F5D( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return byte_1975D8[5 * *(int16_t *)((char *)&word_197FC3 + 9 * a1)];
 }
 // 197FC3: using guessed type int16_t word_197FC3;
@@ -5292,6 +5295,7 @@ int sub_77F73( int a1)
 //----- (00077FE9) --------------------------------------------------------
 int sub_77FE9( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return sub_77FF5(*(int16_t *)((char *)&word_1975D4 + 5 * a1));
 }
 // 77FF5: using guessed type int sub_77FF5(_DWORD);
@@ -5347,6 +5351,7 @@ int16_t sub_77FF5( int a1)
 //----- (00078013) --------------------------------------------------------
 int16_t sub_78013( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return *(int16_t *)((char *)&word_1975D4 + 5 * *(int16_t *)((char *)&word_197FC3 + 9 * a1));
 }
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -5369,7 +5374,7 @@ int sub_7802A(int a1, int a2)
   for ( i = 0; i < 500 && !v9; ++i )
   {
     v8 = *(int16_t *)((char *)&word_1975D4 + 5 * i);
-    sub_169169((int)byte_1975D8, i);
+    sub_169169(byte_1975D8, i);   /* vlna 160: ukazatel, ne (int) */
     if ( !v5 )
     {
       v6 = (int16_t)v3++;
@@ -5549,20 +5554,21 @@ int sub_7832B( int a1, int a2)
 
 
 //----- (0007836A) --------------------------------------------------------
-void sub_7836A( int a1)
+/* vlna 158: VRACI hodnotu v eax - port ji mel jako `void` a vsech patnact
+   volajicich cetlo neinicializovanou promennou. Pozor na `jz sub_789D4`:
+   je to KONCOVY SKOK, takze se vraci navratova hodnota sub_789D4. */
+int16_t sub_7836A( int a1)
 {
-  if ( word_199A02 )
+  if ( !word_199A02 )
+    return 0;   /* asm `xor eax, eax` */
+  if ( (int16_t)a1 > word_199A02 )
   {
-    if ( a1 <= word_199A02 )
-    {
-      if ( a1 == word_199A02 )
-        sub_789D4();
-    }
-    else
-    {
-      sub_91A40();
-    }
+    sub_91A40();
+    return 0;
   }
+  if ( (int16_t)a1 == word_199A02 )
+    return sub_789D4();   /* asm `jz sub_789D4` - koncovy skok */
+  return word_192248[(int16_t)a1];   /* asm `mov ax, word_18A248[eax*2]` */
 }
 // 199A02: using guessed type int16_t word_199A02;
 
@@ -5952,6 +5958,7 @@ int sub_78800( int a1)
 //----- (00078879) --------------------------------------------------------
 int sub_78879( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return sub_77FE9(word_1906C2[6 * a1]);
 }
 // 1906C2: using guessed type int16_t word_1906C2[];
@@ -5962,6 +5969,7 @@ int16_t sub_78889( int a1)
 {
   int16_t v1; // ax
 
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   v1 = word_1906C2[6 * a1];
   if ( (uint16_t)v1 < 0x1F4u )
     return sub_788A2(v1);
@@ -5974,6 +5982,7 @@ int16_t sub_78889( int a1)
 //----- (000788A2) --------------------------------------------------------
 int16_t sub_788A2( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return *(int16_t *)((char *)&word_1975D4 + 5 * a1);
 }
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -5989,7 +5998,10 @@ void sub_788AE()
 
 
 //----- (000789D4) --------------------------------------------------------
-void sub_789D4()
+/* vlna 158: VRACI edi. Portu chybel jak vysledek (`mov edi, esi` na zacatku,
+   `mov edi, edx` ve smycce a `mov edi, esi` v zaveru), tak samotny navrat
+   (`mov eax, edi` pred skokem na epilog). */
+int16_t sub_789D4()
 {
   int16_t v0; // si
   int16_t v1; // bx
@@ -5998,10 +6010,12 @@ void sub_789D4()
   int16_t v4; // [esp+4h] [ebp-Ch]
   _BOOL1 v5; // [esp+8h] [ebp-8h]
   char v6; // [esp+Ch] [ebp-4h]
+  int16_t v7; // edi - vlna 158: vysledek
 
   v0 = -1;
   v6 = 0;
   v1 = 0;
+  v7 = -1;   /* vlna 158: asm `mov edi, esi` */
   v5 = word_199A02 < 1;
   while ( !v6 && !v5 && v1 < 500 )
   {
@@ -6015,13 +6029,19 @@ void sub_789D4()
         if ( v0 == -1 && sub_77FF5(v3) == v4 )
           v0 = v2;
         if ( v3 == v1 )
+        {
           v6 = 1;
+          v7 = v2;   /* vlna 158: asm `mov edi, edx` */
+        }
         ++v2;
       }
     }
     ++v1;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x785E5 je epilog funkce */
+  /* vlna 158: asm loc_78AA3 - tenhle zaver v portu chybel cely */
+  if ( !v6 && v0 > -1 )
+    v7 = v0;
+  return v7;   /* asm `mov eax, edi` */
 }
 // 78AB5: control flows out of bounds to 785E5
 // 192248: using guessed type int16_t word_192248[500];
@@ -7031,6 +7051,7 @@ char sub_7987A( int a1)
 //----- (000798C4) --------------------------------------------------------
 _BOOL1 sub_798C4( int a1)
 {
+  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
   return (int16_t)sub_79E8D(a1) != -1;
 }
 

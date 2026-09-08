@@ -3110,12 +3110,16 @@ int sub_16915C(int result, int a2)
 
 
 //----- (00169169) --------------------------------------------------------
-int sub_169169(int a1, int a2)
+/* vlna 160: a1 je UKAZATEL (volajici predava byte_1975D8), ne int - na x64
+   se adresa orezavala. A `*(_DWORD *)(a1 + 2500)` spolehalo na to, ze hned
+   za blokem blk_1975D4 lezi `dword_197F9C` (0x1975D4 + 4 + 2500 = 0x197F9C);
+   v portu jsou to samostatne objekty, takze se cetla smetim. */
+int sub_169169(char *a1, int a2)
 {
   int v3; // [esp-8h] [ebp-Ch]
 
   v3 = 5 * a2;
-  if ( *(_BYTE *)(*(_DWORD *)(a1 + 2500) + 129 * *(int16_t *)(a1 + v3 - 4) + 100) == 5 )
+  if ( *(_BYTE *)(dword_197F9C + 129 * *(int16_t *)(a1 + v3 - 4) + 100) == 5 )   /* vlna 160 */
     *(_BYTE *)(v3 + a1) = 0;
   return 5 * a2;
 }

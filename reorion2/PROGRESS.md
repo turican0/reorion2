@@ -15323,3 +15323,866 @@ bitu (0x01, 0x02, 0x04, 0x08, 0x10) = domovske soustavy jednotlivych ras.
   `sub_79D68`/`sub_79DEA` ukazuji, ze sourozenec lisici se jednim offsetem
   byva uz implementovany vedle.
 
+
+---
+
+### Vlna 149: sub_FF593 - dvojity JUMPOUT thunk v testu "na dosah"
+
+`sub_FF593` byla v portu `void` se dvema `JUMPOUT` skoky, tedy NO-OP.
+V asm drzi vysledek v `ch` a vraci ho SDILENYM epilogem sousedni `sub_FF4E9`:
+
+```
+cseg01:000FF59F  xor  ch, ch          ; vysledek = 0
+                 ...
+loc_FF58A:       mov  ch, 1
+loc_FF58C:       mov  al, ch          ; <<< NAVRATOVA HODNOTA
+                 leave / pop edi / pop esi / pop ecx / retn
+```
+
+A volajici `sub_FF5F8` obe navratove hodnoty zahazovala a vetvila se na
+neinicializovanych lokalkach (`variable 'v4' is possibly undefined`,
+`'v6'`), zatimco asm dvakrat dela `call sub_FF593 / test al, al`.
+
+Oprava obojiho. **Sama o sobe symptom neodstranila** - viz vlna 150.
+
+---
+
+### Vlna 150: sub_5709F - prazdny thunk, ktery davel hraci nesmyslny DOSAH
+
+Hlaseni: po prokliknuti nove hry pres menu jsou na galakticke mape videt
+jmena vsech domovskych soustav souperu.
+
+#### Nejdriv spravna reprodukce
+
+Merit se to dalo az po zjisteni, ze klavesa `C` v hlavnim menu je
+**CONTINUE**, tedy NACTENA hra. Pod ni port ukazuje jedine jmeno a
+s originalem se shoduje - proto vlna 145 uzavrela, ze chyba neni v portu.
+Chyba je videt jen na skutecne NOVE hre (`REORION2_STATE=13` + prokliknuti
+dialogu). Tam port ukazal pet jmen, presne jako na snimku uzivatele.
+
+#### Retez podminky
+
+Jmeno hvezdy nekresli `sub_83741` (ta kresli jen ikony), ale
+
+```
+sub_88CB7 -> sub_85C8A (sestavi text) -> sub_87768 (vykresli)
+```
+
+a podminka v `sub_85C8A` (cseg01:00085CEA az 00085D0D) zni:
+
+```c
+v8 = *(char *)(hvezda + 20);                          // vlastnik, -1 = nicí
+if ( sub_79E06(...) || v8 > -1 && v8 < 8 && sub_78F4B(hvezda) )
+```
+
+`sub_78F4B` -> `sub_78FB8(hrac, rasa)` = `hrac[3753*hrac + 1412 + rasa]`,
+tedy tabulka kontaktu. Zmereno v portu:
+
+```
+KONTAKT hrac=0 ras=5 p40=100 bajty= 01 01 01 01 01 00 00 00
+KONTAKT hrac=1 ras=5 p40=4   bajty= 01 01 01 01 01 00 00 00
+... totez pro vsech pet
+```
+
+Cela matice jednickova - kazdy zna kazdeho v prvnim tahu. Spravne ma byt
+jednicka jen na diagonale.
+
+#### Jak se nasel viník: hardwarovy watchpoint
+
+Sondy u vsech peti mist, ktera do +1412 zapisuji, **nehlasily nic** (byly
+umistene spatne). Rozhodl az `PortDebug_WatchWrite` na `hrac0[1413]`,
+armovany hned po alokaci pole hracu v `sub_10CB5`:
+
+```
+WATCHPOINT: hlidam zapis na 00000000185520A1 (1 B, DR0)
+  #1 memset <- sub_127776 <- sub_CD435          (nulovani pri nove hre)
+  #2 memset <- sub_EB192+0xe6                   (nulovani radku pred prepoctem)
+  #3 sub_EB192+0x3e5                            (<<< nastaveni kontaktu)
+```
+
+Takze `sub_EB192` kontakt opravdu navazuje, a rozhoduje o tom vzdalenost
+proti **dosahu** `hrac[804]`:
+
+```
+sub_EB192 -> sub_FF68A / sub_FF666 -> sub_FF5F8 -> sub_FF593 -> sub_FF4E9
+                                       porovnava s  900 * dosah * dosah
+```
+
+#### Pricina
+
+`hrac[804]` se plni v `sub_12983` (cseg01:00012D05):
+
+```
+call  sub_5709F
+movsx esi, ax          ; <<< NAVRATOVA HODNOTA (index 0..5)
+imul  esi, 0Ah
+...
+mov   bx, word_177FEA[esi]
+mov   [eax+324h], bx   ; 324h = 804 = dosah
+```
+
+Port mel `sub_5709F(n); v2 = 10 * v35;` a `v35` se nikde nepriradilo (IDA
+sama hlasi *"12D0A: variable 'v35' is possibly undefined"*). Index do
+tabulky dosahu byl tedy smeti ze zasobniku.
+
+A `sub_5709F` sama je **prazdny JUMPOUT thunk**: drzi vysledek v `ebx`
+(`xor ebx, ebx`, pri lepsim nalezu `mov ebx, edx`) a vraci ho sdilenym
+epilogem `loc_56D16: mov eax, ebx / leave / retn`.
+
+**Pozor:** vraci se INDEX polozky (0..5), ne nalezeny dosah - ten je v asm
+jen `var_4` a slouzi k porovnavani. Volajici si dosah dohleda sam jako
+`word_17FFEA[5 * index]`.
+
+Vsech pet volajicich navratovou hodnotu pouziva:
+
+| asm | jak spotrebuje eax | v portu |
+|---|---|---|
+| 0x12D05 | `movsx esi, ax; imul esi, 0Ah` | part_01:2608 → `v35` |
+| 0x6A8CF | `mov ebx, eax` → `[dword_1927A8+47]` | part_05:5205 → `v9` |
+| 0x6B2A8 | `mov edx, eax` | part_05:5749 → `v4` |
+| 0x6B63D | `mov edx, eax` | part_05:5962 → `v9` |
+| 0x72B74 | `movsx edx, ax; cmp edx, -1` | part_06:742 → `v5` |
+
+#### Vysledek
+
+```
+pred:  hrac0[1412..] = 01 01 01 01 01 00 00 00   (5 jmen na mape)
+po:    hrac0[1412..] = 01 00 00 00 00 00 00 00   (jen vlastni Sol)
+```
+
+Overeno i obrazem: po opravě je na cerstve mape pojmenovana jedina hvezda -
+domovska soustava hrace.
+
+---
+
+### Klik na vlastni soustavu: zmereno, kde se to rozhoduje
+
+Klik dopada spravne (sonda: `hvezda=29 [Trilar] typ=1`), rozcestnik je
+v `sub_86188`:
+
+```c
+v26 = -1;
+if ( byte_199BE3 && star[22] != 6 )
+    v26 = sub_7819E(v73, word_19999C);   // ma tam hrac kolonii?
+if ( v26 == -1 )
+    sub_83669(v73);                      // jen vyber hvezdy
+else
+    sub_8310E((char *)v26, &v74);        // pohled na soustavu
+```
+
+Rozhoduje **`byte_199BE3`**, ne `byte_199BE0` (ta je uvnitr `sub_83669`).
+Obe jsou v portu 0 - a `byte_199BE0` je nula **i v originale**:
+
+```
+MEM prepinace addr=003AFBDC size=16 bytes=01010100000101000101000100000000
+MEM be0       addr=003AFBE0 size=1  bytes=00
+```
+
+Obe skupinu plni `sub_7F14C` z bloku nastaveni `dword_19C038 + 144..166`,
+takze jsou to prepinace zobrazeni. Dalsi krok je zmerit `byte_199BE3`
+v originale ve chvili kliknuti (ne jen pri kresleni mapy) a najit, kdo ji
+v originale nastavuje na 1.
+
+#### Poznamka k padu pri kliku na flotilu
+
+`sub_788AE` je dalsi prazdny JUMPOUT thunk (v asm vraci
+`*(int16_t*)(dword_197F9C + 129*lod + 101)`, tedy pozici lodi). **Neni to
+ale pricina padu** - obe jeji volani (`sub_A0A5C+11`, `sub_A0FA8+A7`)
+navratovou hodnotu zahazuji uz v originale (`imul eax, ecx, 0Ch`,
+resp. `xor ebx, ebx`), takze NO-OP tam nic nemeni.
+
+Pad se skriptovanym klikem zatim nereprodukoval.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- zadne docasne sondy v pracovnim strome.
+
+
+---
+
+### Vlna 151: pad pri DVOJKLIKU na flotilu - useknuty buffer v sub_A0FA8
+
+Hlaseni: klik/dvojklik na lod konci "porusenim pristupu pro cteni"
+v `sub_831B1`, ladici okno ukazuje `v16 = 0x30`.
+
+#### Padajici instrukce vytazena z prelozeneho exe
+
+Mapa: `sub_831B1 = 0x714e80`, image base `0x400000`, tedy zacatek na
+rva `0x314E80`; pad hlasi `rva=0x315005`, cili **+0x185**. Bajty ze
+souboru na te adrese:
+
+```
+rva 00315005  0F BF 45 30  8B C8  E8 A4 E7 ED FF  66 89 05 5B CA 36 00
+              movsx eax, word ptr [rbp+30h]   ; (int16_t)v16
+              mov   ecx, eax
+              call  sub_78ABA
+              mov   word_1999B8, ax
+```
+
+Pada se na adrese **PRESNE 0x30**, takze `rbp == 0` - rozbity je RAMEC,
+ne `v16` (sonda ukazala `v16 = 0`) ani `a4`.
+
+Original ma na temze miste tutez dvojici, jen v jinem poradi:
+
+```
+cseg01:00083283  movsx eax, word ptr [ebp+var_10]
+cseg01:00083287  mov   word_18B016, 1
+cseg01:00083290  call  sub_78ABA
+```
+
+Kod portu je tedy verny; nekdo mu znicil zasobnik.
+
+#### Kde ramec umira
+
+`&v16` se preklada na `lea`, ne na cteni - da se vypsat i s nulovym `rbp`
+a rovnou ho prozradi:
+
+```
+SONDA-RBP 1_vstup:      &v16=000000000135EB60     (prvni klik)
+SONDA-RBP 2_po_A0FA8:   &v16=000000000135EB60
+SONDA-RBP 4_pred_78ABA: &v16=000000000135EB60
+SONDA-RBP 1_vstup:      &v16=000000000135EB60     (druhy klik)
+SONDA-RBP 2_po_A0FA8:   &v16=0000000000000030     <<< uz je mrtvy
+SONDA-RBP 4_pred_78ABA: &v16=0000000000000030
+```
+
+Jediny rozdil druheho kliku: `sub_831B1` se vola s `a2 = 1`, takze se
+provede vetev
+
+```c
+if ( (_BYTE)a3 )
+    if ( (uint16_t)sub_A0FA8((int16_t *)&v16, (int16_t)v7, v8) )
+        byte_199F28 = 1;
+```
+
+**Proto to padalo az na DVOJKLIK** - prvni klik jde s `a2 = 0` a vetev
+preskoci. (Tip na dvojklik prisel od uzivatele; jednim klikem se pad
+skriptovane nereprodukoval.)
+
+#### Pricina: useknuty lokalni buffer (trida poskozeni 1)
+
+```
+cseg01:000A0FA8  enter 78h, 0                      ; 120 B lokalek
+                 var_78 = ... [ebp-78h]            ; 100bajtovy BUFFER
+                 sub_127678(&var_78, 64h, 0)       ; vynuluj 100 B
+cseg01:000A10EC  movsx eax, word ptr [esi+ebp-78h] ; cte se jako POLE SLOV
+```
+
+IDA z toho bufferu pojmenovala jen prvni dva sloty a zbylych 88 bajtu
+nechala bez jmena, takze port mel
+
+```c
+int64_t v17;        // [ebp-78h]   8 B
+unsigned int v18;   // [ebp-70h]   4 B
+```
+
+dohromady 12 bajtu - a `sub_127678((char *)&v17, 0x64u, 0)` do nich zapsal
+**100**. Prepsal tim zbytek ramce `sub_A0FA8` vcetne ULOZENEHO RBP
+volajiciho; po navratu mela `sub_831B1` `rbp = 0`.
+
+Opraveno na `int16_t v17[50]`; `v18` lezel uvnitr bufferu (+8 B), takze se
+z nej cte primo.
+
+#### Na samostatnou vlnu
+
+`sub_1277DE` se v asm vola s DVEMA UKAZATELI do `word_1906C0` a delkou 12,
+tedy je to prohozeni dvou zaznamu:
+
+```
+imul edx, 0Ch / add edx, offset word_1886C0
+imul eax, 0Ch / add eax, offset word_1886C0
+mov  ebx, 0Ch / call sub_1277DE
+```
+
+Port ma `sub_1277DE(v17, v18)`, coz je neco jineho. S padem to nesouvisi,
+takze to zustava beze zmeny a jen se to zaznamenava.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **dvojklik na flotilu uz nepada** (drive `SEH 0xC0000005` hned pri druhem kliku);
+- **regresni brana 600/600 matched, 0 diverged**;
+- zadne docasne sondy v pracovnim strome.
+
+---
+
+### Kdo v originale nastavuje byte_199BE3 na 1: NIKDO, je to volba hrace
+
+Doplneni k vlne 150. Do `byte_191BE3` zapisuji v celem originale jen ctyri
+mista:
+
+| adresa | co dela |
+|---|---|
+| `0x00012825` | inicializace na 0 |
+| `0x0007F1A0` | `sub_7F14C` - nacteni z bloku nastaveni (`dword_19C038 + 156`) |
+| `0x000876DE`, `0x00087724` | `sub_876DB` a jeji dvojce - **nuluji** ji a pak volaji `sub_83669` |
+| `0x0008A33F` | `sub_8A216` case 6 - **PREPINAC**: `cmp byte_191BE3, 0 / setz al / mov byte_191BE3, al` |
+
+Jednicka tam tedy vznika **jedine tim, ze si volbu hrac zapne** v herni
+nabidce (case 6, popisek `sub_7A990(0xAC)`), a pak se drzi v bloku
+nastaveni, odkud ji `sub_7F14C` pri nacteni hry zase natahne. Port ten
+prepinac ma implementovany shodne (`orion_part_08.c:1305`, vcetne
+`if (byte_199BE3) sub_78507();`).
+
+Zmereno i za behu originalu (klik na domovskou hvezdu, CONTINUE):
+
+```
+klik_na_hvezdu (sub_83669)   1x   <- klik dopadl na hvezdu
+soustava       (sub_8310E)   0x   <- pohled na soustavu se NEOTEVREL
+be3zmena       (changed)     0x   <- byte_191BE3 se ani jednou nezmenila
+```
+
+**Original se chova stejne jako port**: klik i dvojklik hvezdu jen vyberou,
+protoze volba je vypnuta v obou.
+
+
+---
+
+### Vlna 152: sub_1277DE - dva UKAZATELE slepene do jednoho int64
+
+Odlozeno z vlny 151, ted opraveno.
+
+#### Co ta funkce je
+
+asm (cseg01:001277DE) ma tri registrove argumenty
+
+```
+eax = prvni ukazatel, edx = druhy ukazatel, ebx = pocet bajtu
+```
+
+a telo
+
+```
+mov  esi, edx / mov edi, eax
+...
+lodsb                  ; al = [esi]     (druhy buffer)
+mov  ah, [edi]         ; ah = [edi]     (prvni buffer)
+stosb                  ; [edi] = al
+mov  [esi-1], ah       ; [esi] = ah
+loop
+```
+
+tedy **prohozeni `ebx` bajtu** mezi dvema buffery. Vetve navic jen
+zarovnavaji na slova a dvojslova, vysledek je stejny. `pusha` na zacatku
+znamena, ze funkce nic nevraci.
+
+IDA z obou ukazatelu udelala JEDNU promennou `int64_t a1` (dolni pulka =
+eax, horni = edx) - **trida poskozeni 10**. Na x64 se dva ukazatele do
+64 bitu nevejdou, takze funkce cetla a zapisovala na nesmyslne adresy.
+
+#### Jediny volajici: sub_A0FA8 (cseg01:000A10E1)
+
+```
+lea   esi, [eax+eax]                  ; esi = 2 * i
+movsx edx, word ptr [esi+ebp-76h]     ; b = buf[i+1]
+imul  edx, 0Ch
+movsx eax, word ptr [esi+ebp-78h]     ; a = buf[i]
+imul  eax, 0Ch
+mov   ebx, 0Ch                        ; 12 bajtu
+add   edx, offset word_1886C0
+add   eax, offset word_1886C0
+call  sub_1277DE                      ; prohod zaznamy flotil a a b
+... a hned nato prohozeni word_192248[a] <-> word_192248[b]
+```
+
+Je to razeni: v kazde iteraci se prohodi **12bajtovy zaznam flotily**
+v `word_1906C0` a k nemu prislusne slovo v `word_192248`. Port mel
+`sub_1277DE(v17, v18)`, tedy uplne jinou vec - posilal prvnich osm bajtu
+razeneho bufferu a hodnotu z jeho +8, takze se zaznam flotily neprohodil
+vubec.
+
+Opraveno:
+
+```c
+void sub_1277DE(void *a1, void *a2, unsigned int a3)   /* prohodi a3 bajtu */
+...
+sub_1277DE((char *)word_1906C0 + 12 * v14, (char *)word_1906C0 + 12 * v13, 12);
+```
+
+Cteni `v13`/`v14` je presunute PRED volani (v asm je az za nim). Je to
+bezpecne - prohazuje se `word_1906C0` a `word_192248`, nikoli buffer
+`v17`, ze ktereho se ctou.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- dvojklik na flotilu nepada a galakticka mapa se po nem kresli cista
+  (kontrolni snimek: hvezdy, pojmenovana vlastni domovina, zadne smeti).
+
+
+---
+
+### Vlna 153: off_17F803/off_17F807 - tabulka ukazatelu schovana za jediny slot
+
+Nalezeno pri pokusu rozdelit flotilu na dve: kliknuti na lod v obrazovce
+FLEET OPERATIONS spadlo v `sprintf`.
+
+```
+SEH 0xC0000005 av_read=0x18BC (ucrtbased)
+  #10 sprintf
+  #11 sub_7670E+0xc6b   (orion_part_06.c:4263)
+  #12 sub_72F92 / #13 sub_73980 / #14 sub_1049B
+```
+
+Radek 4263 je `sprintf(v60, "%d %s (%s)", ..., v47, v68);` a `v47` se bere z
+
+```c
+v47 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v46 + 28));
+```
+
+#### Co je v originale
+
+```
+cseg01:0002E703  movsx eax, word ptr [esi+52h]
+cseg01:0002E707  imul  eax, 1Ch              ; KROK 28 BAJTU
+cseg01:0002E70D  mov   esi, off_177803[eax]
+
+dseg02:00177803  off_177803  dd offset unk_170A04
+dseg02:00177807  off_177807  dd offset unk_170A04
+dseg02:0017781F              dd offset unk_170A04   ; +28 = dalsi zaznam
+dseg02:00177823              dd offset unk_170A04
+```
+
+Je to POLE ZAZNAMU po 28 bajtech se dvema ukazateli na zacatku (+0 a +4).
+IDA pojmenovala jen ty dva sloty prvniho zaznamu a zbytek rozsekala na
+jednotlive `word_...`/`byte_...` symboly - **trida poskozeni 8**.
+
+Port mel `_UNKNOWN *off_17F803` jako jediny ukazatel, takze
+`*(&off_17F803 + 7 * i)` cetlo 7*i ukazatelu za nim (na x64 navic po osmi
+bajtech misto ctyr). Odtud smeti v `%s`.
+
+#### Oprava
+
+Sousedni symboly uz drivejsi vlny prevedly na pole indexovana cislem
+zaznamu (`dword_17F7E7[322]`, `word_17F819[1024]`) - jdeme stejnou cestou.
+**Vsech 34 polozek** v te oblasti ukazuje na tentyz `unk_170A04` (nulovy
+bajt = prazdny retezec) a **nikdo do tabulky nezapisuje** (v `.lst` jsou u
+obou symbolu jen ctecí xrefy), takze staci vyplnit jim cele pole:
+
+```c
+_UNKNOWN *off_17F803[256] = { ... vse &unk_178A04 ... };
+```
+
+a 16 mist cteni se meni z `*(&off_17F803 + 7 * X)` na `*(off_17F803 + X)`,
+coz je u pole presne prvek X - tyz zaznam jako v originale.
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- kliknuti na lod ve FLEET OPERATIONS uz nepada a panel spravne vypisuje
+  `Frigate 1 / Green Crew (0 EP) / Beam OCV: +0 / Weapons: 1 (360)`.
+
+---
+
+### Poradi flotil: zmereno co slo, ale razeni se nepodarilo vyvolat
+
+Kontrola vlny 152 (`sub_1277DE`). Na spolecne ceste (CONTINUE, tataz
+ulozena pozice) v okamziku kresleni mapy:
+
+| | port | original |
+|---|---|---|
+| pocet flotil `word_1999F8` | 1 | `bytes=0100` -> 1 |
+| `word_1906C0[0]` (12 B) | `-1 12 29 0 69 29` | `FFFF 0C00 1D00 0000 4500 1D00` |
+| `word_192248[0]` | 12 | `0C00` -> 12 |
+
+Shodne bajt po bajtu. Posledni dve slova zaznamu jsou obrazove souradnice
+ikony - sonda na `sub_A0A5C` dala `x=69 y=29`, coz sedi.
+
+**Razeni v `sub_A0FA8` se ale nikdy nespusti**: bezi
+`while (v23 < v8 - 1)`, kde `v8` je pocet flotil v okoli kliknuti, a
+flotila je vsude jen jedna - v ulozene pozici, po ctyrech tazich i v NOVE
+hre (vsechny startovni lode jsou jeden stack). `sub_1277DE` se za cely
+test ani jednou nezavolala; v dosboxu take ne (eip 0x002C5142 se neprovedl).
+
+Oprava vlny 152 tedy zustava overena proti asm, **ne za behu**.
+
+#### Dalsi krok: rozdelit flotilu
+
+FLEET OPERATIONS -> vyber lod -> RELOCATE ("From?") -> hvezda na minimape.
+Tam se ale narazi na dalsi chybu (nize).
+
+---
+
+### Nalezeno, NEOPRAVENO: dword_192B24 je `int` misto ukazatele
+
+Pri kliku na minimapu behem RELOCATE:
+
+```
+SEH 0xC0000005 av_read=0x45B48121
+  #0 sub_734A9+0x34  (orion_part_06.c:1199)
+  #1 sub_732D6 / #2 sub_72F92 / #3 sub_1192D1 ...
+```
+
+Radek 1199 je `v2 = *(_WORD *)(dword_192B24 + v1 + 5);` a `dword_192B24`
+je v `orion_data.c` deklarovany jako
+
+```c
+int dword_192B24; // weak
+```
+
+pritom drzi UKAZATEL:
+
+```c
+dword_192B24 = (int)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 3250);
+```
+
+Na x64 se tim adresa orizne na 32 bitu a vsechna nasledna cteni jdou mimo.
+Je to tataz trida jako `sub_FE8DA` ve vlne 83 nebo `sub_FE92D` ve vlne 82.
+
+Sousedni pointerove globaly uz port ma spravne (`uint8_t* dword_192B18`,
+`uint8_t* dword_1930D4`), takze oprava je stejna - jenze `dword_192B24` ma
+**62 mist pouziti** a nektera prirazuji vysledek do `int` promennych
+(`a1 = dword_192B24 + 13 * i;`), takze to chce projit jedno po druhem.
+Necham na samostatnou vlnu.
+
+
+---
+
+### Vlna 154: dword_192B24 drzel UKAZATEL v `int` - na x64 se adresa orizla
+
+Pad pri kliku na hvezdu v minimape behem RELOCATE (rozdelovani flotily):
+
+```
+SEH 0xC0000005 av_read=0x45B48121
+  #0 sub_734A9+0x34  (orion_part_06.c:1199)
+  #1 sub_732D6 / #2 sub_72F92 / #3 sub_1192D1 ...
+```
+
+Radek 1199 je `v2 = *(_WORD *)(dword_192B24 + v1 + 5);` a globala byla
+
+```c
+int dword_192B24;                                     // orion_data.c
+dword_192B24 = (int)(_DWORD*)sub_110D3C(..., 3250);   // orion_part_06.c
+```
+
+tedy 64bitova adresa z alokatoru orezana na 32 bitu; vsechna nasledna cteni
+sla mimo. Tataz trida jako vlny 82 a 83.
+
+**Priznak v padovem logu:** `av_read` na velke, nahodne vypadajici adrese
+(0x45B48121). NULL by dal malou - velke smeti znamena orezany ukazatel.
+
+#### Oprava
+
+Postup jako u vlny 23b (`dword_1ACEFC` a spol.): globala se rozsiri na
+`intptr_t`, cimz vsechna `dword_X + N` a `(T*)dword_X` zustanou beze zmeny.
+**Nestaci to ale sama o sobe** - musi se rozsirit kazda promenna, ktera si
+adresu uklada, jinak se orez jen presune o kus dal. Celkem 12 lokalek:
+
+| soubor | funkce | promenne |
+|---|---|---|
+| orion_part_06.c | sub_72F92, sub_74E4A, sub_74ED8, sub_7545C | v4, v2, v2, v6 |
+| orion_part_06.c | sub_7585D, sub_75943, sub_75F79, sub_76F22 | v3, result, v5, v7 |
+| orion_part_09.c | sub_94C1D, sub_97041 | v19, v7, v8, v10 |
+
+#### A jeste sub_72AE4: ukazatel uz v PARAMETRU
+
+```
+cseg01:000740B5  lea eax, [ebp+var_6C4]   ; a1 = ukazatel na buffer
+cseg01:000740B2  lea edx, [ebp+var_30]    ; a2 = ukazatel
+cseg01:000740C0  call sub_72AE4
+```
+
+Port ji mel jako `int16_t sub_72AE4(int a1, _WORD *a2)` a jediny volajici
+predaval `(int)&v41` - orezanou adresu zasobniku. Uvnitr se `a1` navic
+pouziva i jako HODNOTA (`LOWORD(a1) = ...`, `return a1`), takze `intptr_t`
+sedi presne: zapis do `_WORD` lvalue i navrat do `int16_t` orezou stejne
+jako original.
+
+Doplneny take dva chybejici `(void *)` u `memset` (drive se tam predaval
+`int`).
+
+#### Overeno
+
+- `-t:Build` bez chyb;
+- **regresni brana 600/600 matched, 0 diverged**;
+- klik na hvezdu v minimape uz `sub_734A9` neshodi - RELOCATE pokracuje dal;
+- obrazovka FLEET OPERATIONS s vybranou lodi se kresli beze zmeny
+  (`Frigate 1 / Green Crew (0 EP) / Beam OCV: +0 / Weapons: 1 (360)`).
+
+#### Nalezeno, NEOPRAVENO: dalsi pad v tomze retezci
+
+Po vlne 154 dojde RELOCATE o kus dal a spadne jinde:
+
+```
+SEH 0xC0000005 av_read=0xFFFFFFFFFFFFFFFF
+  #11 sub_7670E+0xc63  (orion_part_06.c:4263)
+  #12 sub_72F92+0x114  (orion_part_06.c:995)
+```
+
+Radek 995 je
+
+```c
+sub_7670E(*(_WORD *)(dword_192B24 + 13 * word_19991C + 11));
+```
+
+Strazi ho `word_19991C > -1 && word_19991C < 250 && word_199A08 == 4`, takze
+index je v rozsahu - ale POLOZKA v seznamu muze byt -1 (prazdny radek), a
+`sub_7670E(-1)` pak pocita `v70 = 129 * -1` a cte pred polem lodi. Odtud
+smeti v indexu zbrane a rozbity `%s` v `sprintf` na radku 4263.
+
+Dalsi krok je zjistit, co `word_19991C` pri RELOCATE ukazuje a jestli
+original na tom miste nema dalsi podminku.
+
+---
+
+### Poradi flotil: porad nezmereno
+
+Rozdeleni flotily se nedokoncilo (viz pad vyse), takze razeni v `sub_A0FA8`
+se stale nespustilo a oprava vlny 152 zustava overena jen proti asm.
+
+
+---
+
+### Vlna 155: pad pri QUIT - dword_19BEE0/EE4 jsou PRVKY pole dword_19BEDC
+
+Hlaseni: QUIT primo ze hry konci
+
+```
+sub_12B753(int a1, int a2) radek 134
+"Porusenie pristupu v miste cteni 0xFFFFFFFFFFFF0004"
+zasobnik: sub_12B753 <- sub_778E4:4822 <- sub_77658:4759 <- sub_7E59A:4310
+```
+
+Radek 4822 je `sub_12B753(dword_19BEE0, 0);` a `sub_12B753` hned dela
+`*(int *)(a1 + 4)`. Adresa padu 0xFFFF0004 znamena, ze `dword_19BEE0`
+obsahovala 0xFFFF0000 - nikdy se nenaplnila.
+
+#### Co je v originale
+
+```
+dseg02:00193EDC   ; int dword_193EDC[]        <<< POLE
+dseg02:00193EDC  dword_193EDC  dd ?   ; XREF: sub_7743A+3F w, +14B w
+dseg02:00193EE0  dword_193EE0  dd ?   ; XREF: sub_778E4+2  r, +2D r
+dseg02:00193EE4  dword_193EE4  dd ?   ; XREF: sub_778E4+E  r, +46 r
+```
+
+`dword_193EE0` a `dword_193EE4` jsou PRVKY [1] a [2] toho pole - IDA jim
+jen dala vlastni jmena, protoze se ctou zvlast (u obou jsou pouze ctecí
+xrefy). Trida poskozeni 8.
+
+#### Co s tim delal port
+
+```c
+orion_data.c:16979   int dword_19BEDC[];   // pole BEZ ROZMERU
+link_stubs.c:183     int dword_19BEDC;     // a jeste jednou jako skalar
+orion_data.c:16980   int dword_19BEE0;     // samostatne
+orion_data.c:16981   int dword_19BEE4;
+```
+
+`int x[];` je v C neuplny typ a dokonci se na JEDEN prvek. Zapisy
+
+```c
+dword_19BEDC[v1] = sub_127C27((int)aConfirmLbx, v1, dword_193174);  // v1 = 0..2
+```
+
+tedy pro v1 = 1 a 2 sly mimo objekt a oba sousedni globaly zustaly
+nenaplnene. `sub_778E4` je pak precetla a predala do `sub_12B753`.
+
+#### Oprava
+
+Pole dostalo skutecny rozmer a oba symboly jsou z nej aliasy - stejny vzor,
+jaky port uz pouziva u `word_1906C2`:
+
+```c
+int dword_19BEDC[4];
+#define dword_19BEE0  (dword_19BEDC[1])
+#define dword_19BEE4  (dword_19BEDC[2])
+```
+
+Duplicitni definice v `link_stubs.c` odstranena.
+
+#### Overeno
+
+- `-t:Build` bez chyb, **regresni brana 600/600 matched, 0 diverged**;
+- **beh QUIT overeny nebyl** - skriptovanym klikem se do herni nabidky
+  nedostanu (klik na horni listu "GAME" nic neotevre, viz nize). Diagnoza
+  je ale jednoznacna: objekt mel 4 bajty, zapisy na [1] a [2] sly mimo.
+
+---
+
+### KLICOVY NALEZ: klik na flotilu ma otevrit panel, port ho nekresli
+
+Uzivatel hlasi, ze klik ani dvojklik na soustavu/flotilu nic nedela.
+Zmereno dosboxovym DUMPFRAME - **original po temze kliku na flotilu
+(75,34) otevre panel**:
+
+```
+Trilarian Fleet
+[3 ikony lodi]   ALL   Orbiting Trilar
+CLOSE
+COLONIZE PLANET
+```
+
+Port neukaze nic, prestoze klik do kodu dojde (sonda: `sub_A0FA8`
+i `sub_831B1` se zavolaji).
+
+#### Kde se to zastavi
+
+Panel kresli vetev v `sub_84555`:
+
+```c
+if ( sub_124075() == 1 && sub_918D5(2) && sub_72651(0) && sub_91B0B() )
+```
+
+Sonda po kliku na flotilu:
+
+```
+PANEL 124075=0 918D5(2)=0 72651(0)=0 91B0B=0  192FDE[28]=0 1992C0[2]=0  1999B8=0
+```
+
+`sub_918D5(a1)` je `word_192FDE[14 * a1] > word_1992C0[a1]`, takze zasobnik
+panelu 2 je PRAZDNY - nikdo do nej nic nevlozil.
+
+#### Proc: sub_89183 ma v portu 27 argumentu misto ramce
+
+V asm ma `word_18AFDE` (= `word_192FDE`) **sest** zapisu:
+
+```
+0x7940B  word_18AFDE[ebx], dx     -> port ma (orion_part_06.c:6685)
+0x797C3  word_18AFDE[eax], dx     -> port ma (orion_part_06.c:6967)
+0x82730  word_18AFDE, ax          -> port ma (orion_part_07.c:7718)
+0x83685  word_18AFDE, si          -> port ma (orion_part_07.c:8642)
+0x88EBA  word_18AFDE, dx          -> CHYBI  (sub_88E5A)
+0x89219  word_18AFDE[eax], dx     -> CHYBI  (sub_89183)
+```
+
+A `sub_89183` je pritom volana primo z obsluhy mapy (`sub_86188+993`).
+Jeji prolog:
+
+```
+00089185  enter 5ECh, 0
+0008918D  sub   ebp, 66Ah        ; <<< posun ramce
+00089193  mov   [ebp+arg_64E], 0
+```
+
+`sub ebp, 66Ah` je watcomovsky trik - lokalky se pak adresuji KLADNYMI
+offsety, a IDA je proto povazovala za ARGUMENTY. Port ma
+
+```c
+void sub_89183(int a1, ..., int a27)     // dvacet sedm argumentu
+```
+
+a volajici jich dvacet sedm posila. Cely 0x5EC bajtu velky ramec te
+funkce je tim rozbity, vcetne pushe do `word_192FDE`, ktery panel otevira.
+
+**To je pricina toho, ze klik na flotilu (a nejspis i ostatni panely) nic
+nedela.** Oprava je rekonstrukce ramce `sub_89183` - samostatna vlna, je to
+velka funkce.
+
+Stejny podezrely tvar ma i `sub_88E5A` (druhy chybejici zapis).
+
+
+---
+
+## Vlny 156-160: panel flotily se konecne otevira
+
+Vychozi stav: klik na flotilu v portu "nic nedelal", v originale otevre
+panel `Trilarian Fleet / CLOSE / COLONIZE PLANET`. Cesta kresleni panelu
+v portu NIKDY NEBEZELA, takze v ni byly nakupene vsechny latentni vady
+najednou - kazda oprava posunula beh o kus dal a odhalila dalsi.
+
+### Vlna 156: blok 0x192FDC (5 zaznamu po 28 B) rozsekany na 37 globalu
+
+Panel kresli vetev v `sub_84555`:
+
+```c
+if ( sub_124075() == 1 && sub_918D5(2) && sub_72651(0) && sub_91B0B() )
+```
+
+Sonda po kliku:
+
+```
+PANEL 124075=0 918D5(2)=0 72651(0)=0 91B0B=0  192FDE[28]=0 1992C0[2]=0
+```
+
+`sub_918D5(a1)` je `word_192FDE[14 * a1] > word_1992C0[a1]`, takze pro
+panel 2 se cte `word_192FDE[28]`, coz je adresa
+
+    0x192FDE + 2*28 = 0x193016   ->  symbol `word_193016`
+
+a tu `sub_831B1` nastavuje na 1. **Jenze `word_193016` byla v portu
+samostatna promenna**, ne tataz pamet - zapis se do `word_192FDE[28]`
+nikdy nepromitl.
+
+Vlna 88 uz blok scelila do `word_192FDC[70]`, ale 37 poli zustalo
+samostatnych. Ted jsou z nich makra:
+
+  index 0..13   -> pole:   `#define X  (word_192FDC + N)`
+  index >= 14   -> skalar: `#define X  (word_192FDC[N])`
+
+Rozdeleni je jednoznacne: u prvnich ctrnacti je vetsina pouziti
+indexovana (`[14 * i]`), u zbytku NULA. Deset duplicitnich definic
+v `link_stubs.c` zruseno.
+
+### Vlna 157: struktura posuvniku 0x199ED0 (11 globalu)
+
+Pote spadlo deleni nulou:
+
+```
+SEH 0xC0000094
+  #0 sub_A00F1+0x9d  (orion_part_10.c:690)
+  #1 sub_70875       (orion_part_05.c:10429)
+```
+
+`sub_A00F1(a1)` deli `a1[4]`. Volajici ji tesne predtim nastavuje
+(`word_199ED8 = v6;`), jenze `word_199ED8` a spol. byly samostatne
+globaly, ne pole struktury na `&word_199ED0`. V originale je 0x191ED0
+zacatek struktury (XREF `sub_6FF08+278 o` bere jeji adresu).
+
+Opraveno na `word_199ED0_blok[15]` + makra.
+
+### Vlna 158: sub_7836A a sub_789D4 zahazovaly navratovou hodnotu
+
+```
+mov edi, esi              ; sub_789D4: vysledek = -1      <- CHYBELO
+loc_78A82: mov edi, edx   ; vysledek = v2                 <- CHYBELO
+loc_78AA3: mov edi, esi   ; vysledek = v0                 <- CHYBELO
+loc_78AB3: mov eax, edi   ; return                        <- CHYBELO
+```
+
+`sub_7836A` navic konci `jz sub_789D4`, coz je KONCOVY SKOK - vraci
+navratovou hodnotu `sub_789D4`. Opraveno vcetne vsech 15 + 5 volajicich.
+
+### Vlna 159: blok 0x197FBC (500 zaznamu po 9 B)
+
+`sub_7229E` cte `*(int16_t *)((char *)&word_197FC3 + 9 * i)`. Port sam
+prozrazuje velikost: `memset(&unk_197FBC, 0, 4500)` = 500 * 9. IDA
+pojmenovala jen pet poli prvniho zaznamu. Opraveno na `blk_197FBC[4500]`
++ makra - stejny vzor jako `blk_1975D4` z vlny 86.
+
+### Vlna 160: sub_169169 - ukazatel v `int` a sousedstvi symbolu
+
+```c
+if ( *(_BYTE *)(*(_DWORD *)(a1 + 2500) + 129 * *(int16_t *)(a1 + v3 - 4) + 100) == 5 )
+```
+
+Dve chyby najednou:
+
+1. `a1` je UKAZATEL (`sub_169169((int)byte_1975D8, i)`), ale parametr byl
+   `int` - na x64 se adresa orizla.
+2. `*(_DWORD *)(a1 + 2500)` spolehalo na to, ze hned za `blk_1975D4`
+   (2500 B) lezi `dword_197F9C` (0x1975D4 + 4 + 2500 = 0x197F9C).
+   V portu jsou to samostatne objekty - a `_DWORD` navic cte jen ctyri
+   bajty z 64bitoveho ukazatele.
+
+### Vysledek
+
+Panel se **otevre**. Jeste neni uplny - proti originalu chybi horni cast
+(`Trilarian Fleet` + ikony lodi + `ALL` + `Orbiting Trilar`) a navic je
+tam tlacitko `ATTACK ANTARES`. Kresleni tri tlacitek uz ale sedi.
+
+#### Overeno
+
+- `-t:Build` bez chyb, **regresni brana 600/600 matched, 0 diverged**
+  (po kazde z peti vln);
+- obrazovka FLEET OPERATIONS s vybranou lodi se kresli beze zmeny.
+
+#### Dalsi krok
+
+Doresit chybejici horni cast panelu - postupovat stejne: kliknout,
+precist padovy/kreslici retez a porovnat s dosboxovym snimkem.
+

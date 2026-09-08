@@ -3592,8 +3592,18 @@ int16_t word_17F6B5[6] = { 0, 0, 0, 0, 0, 0 }; // weak
 int16_t word_17F6C1 = 0; // weak
 int dword_17F7E7[322] = { 2560 }; // weak - vlna 59: index az 321
 int dword_17F7EB[322] = { 0 }; // weak - vlna 59: index az 321
-_UNKNOWN *off_17F803 = &unk_178A04; // weak
-_UNKNOWN *off_17F807 = &unk_178A04; // weak
+/* vlna 153: v originale je tohle POLE ZAZNAMU po 28 bajtech
+   (asm `imul eax, 1Ch` + `mov esi, off_177803[eax]`), ne jediny ukazatel.
+   IDA pojmenovala jen dva sloty prvniho zaznamu, takze port mel jen dva
+   ukazatele a cteni `*(&off_17F803 + 7 * i)` slo mimo ne. Vsech 34 polozek
+   v te oblasti ukazuje na tentyz prazdny retezec (`unk_170A04` = nulovy
+   bajt) a nikdo do tabulky nezapisuje, takze staci vyplnit jim cele pole. */
+#define OFF_PRAZDNY8   &unk_178A04, &unk_178A04, &unk_178A04, &unk_178A04, \
+                       &unk_178A04, &unk_178A04, &unk_178A04, &unk_178A04
+#define OFF_PRAZDNY64  OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, \
+                       OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8
+_UNKNOWN *off_17F803[256] = { OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64 }; // weak
+_UNKNOWN *off_17F807[256] = { OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64 }; // weak
 int16_t word_17F80B[] = { 0 }; // weak
 int16_t word_17F80D[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 char byte_17F80F[] = { '\0' }; // weak
@@ -15782,7 +15792,11 @@ int dword_192B14; // weak
 uint8_t* dword_192B18; // weak
 int dword_192B1C; // weak
 int dword_192B20; // weak
-int dword_192B24; // weak
+/* vlna 154: drzi UKAZATEL z alokatoru (asm cseg01:00072A7B `mov dword_18AB24, eax`),
+   ne cislo. Jako `int` se na x64 adresa orizla na 32 bitu a vsechna cteni
+   `*(_WORD *)(dword_192B24 + 13 * i + N)` sla mimo - pad pri RELOCATE.
+   Rozsireno na intptr_t stejne jako dword_1ACEFC a spol. ve vlne 23b. */
+intptr_t dword_192B24; // weak
 int dword_192B28; // weak
 int dword_192B2C; // weak
 int dword_192B30; // weak
@@ -15969,45 +15983,45 @@ int dword_192FD8; // weak
 // (0x88B8 = 35000, po prepsani 0xFFFF88B8 = -30536).
 int16_t word_192FDC[70]; // weak - 140 B
 /* vlna 88: makro do word_192FDC (+2 B) - viz vyse */
-int16_t word_192FE0[]; // weak
-int16_t word_192FE2[]; // weak
+/* vlna 156: prvek 2 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 3 bloku word_192FDC - makro v orion_common.h */
 /* vlna 85: pole +6 tehoz zaznamu - makro do word_192FDE (viz orion_common.h) */
 /* vlna 85: pole +8 tehoz zaznamu - makro do word_192FDE */
-int16_t word_192FE8[]; // weak
-int16_t word_192FEA[]; // weak
-int16_t word_192FEC[]; // weak
-int16_t word_192FEE[]; // weak
-int16_t word_192FF0[]; // weak
-int16_t word_192FF2[]; // weak
-int16_t word_192FF4[]; // weak
-int16_t word_192FF6[]; // weak
-int16_t word_192FF8; // weak
-int16_t word_192FFC; // weak
-int16_t word_192FFE; // weak
-int16_t word_193014; // weak
-int16_t word_193016; // weak
-int16_t word_193018; // weak
-int16_t word_19301A; // weak
-int16_t word_19301C; // weak
-int16_t word_19301E; // weak
-int16_t word_193022; // weak
-int16_t word_193024; // weak
-int16_t word_193026; // weak
-int16_t word_193028; // weak
-int16_t word_19302A; // weak
-int16_t word_19302C; // weak
-int16_t word_19302E; // weak
-int16_t word_193030; // weak
-int16_t word_193038; // weak
-int16_t word_19303A; // weak
-int16_t word_19303E; // weak
-int16_t word_193040; // weak
-int16_t word_193042; // weak
-int16_t word_193044; // weak
-int16_t word_193046; // weak
-int16_t word_193048; // weak
-int16_t word_19304A; // weak
-int16_t word_19304C; // weak
+/* vlna 156: prvek 6 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 7 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 8 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 9 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 10 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 11 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 12 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 13 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 14 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 16 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 17 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 28 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 29 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 30 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 31 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 32 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 33 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 35 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 36 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 37 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 38 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 39 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 40 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 41 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 42 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 46 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 47 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 49 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 50 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 51 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 52 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 53 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 54 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 55 bloku word_192FDC - makro v orion_common.h */
+/* vlna 156: prvek 56 bloku word_192FDC - makro v orion_common.h */
 uint8_t* dword_193068; // weak
 uint8_t* dword_19306C; // weak
 int dword_193070; // weak
@@ -16129,11 +16143,13 @@ uint8_t blk_1975D4[2500]; // weak
 uint8_t* dword_197F98; // weak
 uint8_t* dword_197F9C; // weak
 int dword_197FA0[7]; // weak (vlna 91: souvisly blok, viz orion_common.h)
-_UNKNOWN unk_197FBC; // weak
-int16_t word_197FBD; // weak
-int16_t word_197FBF; // weak
-int16_t word_197FC1; // weak
-int16_t word_197FC3; // weak
+// PORT (vlna 159): 500 ZAZNAMU PO 9 B (0x197FBC..), zaznam je
+// bajt + ctyri int16. Port sam to prozrazuje: `memset(&unk_197FBC, 0, 4500)`
+// v orion_part_05.c. Kod indexuje pres `(char *)&word_197FC3 + 9 * i`.
+// IDA pojmenovala jen pet poli PRVNIHO zaznamu a zbytek nechala jako
+// nepojmenovane bajty, takze cteni pro i > 0 slo mimo - pad v sub_77FF5
+// pri otevirani panelu flotily. Stejny vzor jako blk_1975D4 (vlna 86).
+uint8_t blk_197FBC[4500]; // weak - 500 * 9 B
 int dword_199150[7]; // weak (vlna 91: souvisly blok, viz orion_common.h)
 PoolMemHeader* dword_19916C; // weak
 int dword_199170; // weak
@@ -16485,17 +16501,18 @@ char byte_199EC2[5];
    planety -> pad v sub_147F3E pri kresleni LEADERS).
    word_199EC7/EC9/ECB/ECD a byte_199ECF jsou ted pohledy do nej. */
 char blok_199EC7[9];
-int16_t word_199ED0; // weak
-int16_t word_199ED2; // weak
-int16_t word_199ED6; // weak
-int16_t word_199ED8; // weak
-int16_t word_199EDA; // weak
-int16_t word_199EDC; // weak
-int16_t word_199EDE; // weak
-int16_t word_199EE0; // weak
-int16_t word_199EE2; // weak
-char byte_199EE8; // weak
-char byte_199EEA; // weak
+/* vlna 157: 0x199ED0 je ZACATEK STRUKTURY posuvniku (v originale si jeji adresu bere sub_6FF08 a sub_A00F1 z ni cte az +27), ne skalar. */
+int16_t word_199ED0_blok[15]; // weak - 30 B, makra viz orion_common.h
+/* vlna 157: bajt 2 struktury word_199ED0_blok */
+/* vlna 157: bajt 6 struktury word_199ED0_blok */
+/* vlna 157: bajt 8 struktury word_199ED0_blok */
+/* vlna 157: bajt 10 struktury word_199ED0_blok */
+/* vlna 157: bajt 12 struktury word_199ED0_blok */
+/* vlna 157: bajt 14 struktury word_199ED0_blok */
+/* vlna 157: bajt 16 struktury word_199ED0_blok */
+/* vlna 157: bajt 18 struktury word_199ED0_blok */
+/* vlna 157: bajt 24 struktury word_199ED0_blok */
+/* vlna 157: bajt 26 struktury word_199ED0_blok */
 char byte_199EED; // weak
 char byte_199EEF; // weak
 char byte_199EF1; // weak
@@ -16962,9 +16979,14 @@ char byte_19BED0; // weak
 char byte_19BED1; // weak
 int dword_19BED4; // weak
 int (*dword_19BED8)(void); // weak
-int dword_19BEDC[]; // weak
-int dword_19BEE0; // weak
-int dword_19BEE4; // weak
+/* vlna 155: v originale je tohle POLE (`; int dword_193EDC[]`, zapisuje do nej
+   sub_7743A) a `dword_193EE0` / `dword_193EE4` jsou jeho prvky [1] a [2] -
+   IDA jim jen dala vlastni jmena, protoze se ctou zvlast (u obou jsou pouze
+   cteci xrefy). Port mel `int dword_19BEDC[];`, coz je v C NEUPLNY TYP a
+   dokonci se na JEDEN prvek, takze zapisy `dword_19BEDC[1]` a `[2]` sly mimo
+   a oba sousedni globaly zustaly nenaplnene -> pad v sub_12B753 pri QUIT.
+   Aliasy jsou udelane stejne jako u `word_1906C2` v orion_common.h. */
+int dword_19BEDC[4]; // weak - vlna 155: prvky [1] a [2] = dword_19BEE0/EE4
 _UNKNOWN unk_19BEE8; // weak
 int16_t word_19BEFA; // weak
 int16_t word_19BEFC; // weak

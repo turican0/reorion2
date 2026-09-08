@@ -875,3 +875,262 @@ ZMIZI (a bash hlasi "movsx: command not found"). Patchovaci skripty piš
 pres nastroj Write, nebo se zpetnym apostrofum v generovanem textu vyhni -
 je to tataz trida jako zakaz heredocu kvuli zpetnym lomitkum.
 
+
+### Hardwarovy watchpoint porazi sondy u zapisu
+
+Vlna 150: cela matice kontaktu byla jednickova, ale sondy u **vsech peti**
+mist, ktera do ni v asm zapisuji, nehlasily nic. Zavér "zapisuje to nekdo
+jiny" byl spatny - sondy byly umistene vedle.
+
+`PortDebug_WatchWrite(&hrac0[1413], 1)` armovany hned po alokaci pole
+najde zapisovatele primo a s backtracem, bez hadani, kam sondu dat.
+Strop hlaseni je v `reorion2.cpp` (`s_hits < 8`) - pro delsi beh ho
+docasne zvedni.
+
+### `C` v hlavnim menu je CONTINUE, ne nova hra
+
+Vlny 145 a 147 merily pres `REORION2_SENDKEY=67` ('C'), coz **nacte
+ulozenou pozici**. Chyby, ktere vznikaji pri generovani nove hry, se na te
+ceste vubec neprojevi - proto vlna 145 uzavrela "port je verny" tam, kde
+chyba byla.
+
+Novou hru pousti `REORION2_STATE=13` a pak prokliknuti dialogu:
+
+```
+REORION2_CLICK="484,402@9000:400;410,351@15000:400;320,236@22000:400;382,190@28000:400;320,236@35000:400"
+```
+(ACCEPT nove hry, Humans, ACCEPT jmena vladce, zeleny prapor, ACCEPT jmena
+domovske hvezdy; mapa je nahore kolem 40. sekundy.)
+
+**Galaxie je pri kazde nove hre jina** - `mox.set` semeno nepripne, takze
+pevne souradnice hvezdy z predchoziho behu miji. Pro opakovatelne kliky
+pouzij CONTINUE: nacte tutez pozici, domovska hvezda Trilar je stabilne
+na (61,44).
+
+### `mox.set` je runtime stav, ne zdroj
+
+Meni se v nem jen ctverice bajtu na offsetu 0xDA a pri kazdem commitu je
+jina (`718a698` nuly, `17e7120` 329fa7c5, `fadfe41` 4acc996a) - je to
+semeno generatoru, ktere si hra uklada pri ukonceni. Do commitu nepatri;
+stejne tak `SAVE*.GAM`, ktere nadelaji testovaci behy.
+
+### Sourozenci a sdilene epilogy: uz ctvrty pripad
+
+`sub_79CF9`/`sub_79D50` (vlna 146), `sub_79D68`/`sub_79DEA` (148),
+`sub_FF593` u `sub_FF4E9` (149), `sub_5709F` u `loc_56D16` (150).
+Vzor je vzdy stejny: funkce konci `jmp` do konce SOUSEDNI funkce, kde je
+`mov eax, <registr>` + `leave/retn`. IDA z toho udela `JUMPOUT`, coz je
+v portu NO-OP.
+
+**Ktery registr se vraci, se pozna az v cili skoku.** U `sub_5709F` je to
+`ebx` = INDEX polozky, ne `var_4` = nalezena hodnota, kterou by clovek cekal
+podle tela funkce. Prepsat telo bez pohledu na cil skoku znamena vratit
+spatnou vec.
+
+
+### Kdyz pada na male adrese, podivej se na RAMEC, ne na argumenty
+
+Vlna 151: pad hlasil cteni z adresy `0x30` a sonda ukazala `a4 = 0x22`,
+tedy nesmyslny ukazatel v argumentu - vypadalo to jako jasna stopa.
+Byla to slepa ulicka: `a4` neni ukazatel ani v originale (edi se v
+`sub_86188` prepisuje na `0x869DD` a uz se neobnovuje).
+
+Skutecna odpoved byla az v PADAJICI INSTRUKCI vytazene z exe:
+
+```
+0F BF 45 30    movsx eax, word ptr [rbp+30h]
+```
+
+Cte se `[rbp+0x30]` a pada na adrese `0x30` -> `rbp == 0`. Kdyz adresa
+padu presne odpovida DISPLACEMENTU instrukce, neni rozbity operand, ale
+BAZOVY REGISTR - typicky ramec znicený pretecenim v callee.
+
+### Jak vytahnout padajici instrukci z exe
+
+1. Z `.map` zjisti VA funkce (`sub_831B1 = 0x714e80`) a image base
+   (`0x400000`) -> rva zacatku.
+2. Pad v logu hlasi `rva=...`; rozdil je offset ve funkci.
+3. PE hlavicka: najdi sekci, ktera rva obsahuje, a preved
+   `offset = rawptr + (rva - vaddr)`.
+4. Vypis bajty a dekoduj. Neni potreba disassembler na cely soubor.
+
+### `&promenna` je bezpecna sonda na rozbity rbp
+
+`&v16` se prelozi na `lea`, ne na cteni - vypise se i tehdy, kdyz je `rbp`
+nula, a rovnou ho prozradi (vyjde `0x30` misto skutecne adresy). Diky tomu
+sla bisekci najit presna funkce, ktera ramec nici, bez debuggeru.
+
+### Nahrazuj PRIMO v bajtech, kdyz je soubor s michanymi konci radku
+
+Patchovaci skript, ktery soubor rozdeli na radky a zase spoji s jednim
+zvolenym koncem radku, prepise konce radku V CELEM SOUBORU - `git diff`
+pak ukaze 12 tisic zmenenych radku misto patnacti. Bezpecne je hledat a
+nahrazovat primo v `bytes` obsahu souboru (`d.replace(stary, novy)`),
+s vzorem zkusenym v LF i CRLF podobe.
+
+
+### Trida 10 na UKAZATELICH: `int64_t a1` = dva 32bitove registry
+
+Vlna 152: `sub_1277DE` ma v asm tri registrove argumenty (eax, edx, ebx),
+ale IDA z prvnich dvou udelala jednu promennou `int64_t a1` - dolni pulka
+je eax, horni edx. U hodnot to jeste projde, u UKAZATELU ne: v 32bitovem
+originale se dva ukazatele do 64 bitu vejdou, na x64 uz ne.
+
+**Priznak:** dekompilovane telo pouziva `HIDWORD(a1)` a `LODWORD(a1)` jako
+dve nezavisle adresy (`*(_BYTE *)HIDWORD(a1)`), a volajici predava mene
+argumentu, nez kolik jich asm nacita do registru.
+
+**Postup:** rozdel promennou zpatky na dva parametry podle registru
+(eax = a1, edx = a2, ebx = a3) a oprav vsechny volajici podle toho, co do
+tech registru asm skutecne dava - typicky to je vidno par instrukci pred
+`call`.
+
+
+### Tabulka schovana za jediny pojmenovany slot (trida 8) - jak ji poznat
+
+Vlna 153: `off_17F803` byl v portu jeden ukazatel, ale kod ho cetl jako
+`*(&off_17F803 + 7 * i)`. **Uz ten vyraz je priznak**: nasobek v indexu
+(tady 7) rika, jak velky je zaznam v POLOZKACH, a v asm mu odpovida
+`imul eax, 1Ch` (28 bajtu = 7 ctyrbajtovych slotu).
+
+Postup:
+1. Najdi v `.lst` definici symbolu a podivej se, co je o `krok` dal
+   (`dseg02:0017781F dd offset ...` = dalsi zaznam po 28 bajtech).
+2. Spocitej polozky v oblasti a over, jestli nejsou vsechny stejne -
+   pak staci pole vyplnit jednou hodnotou.
+3. Zkontroluj, jestli do tabulky nekdo ZAPISUJE. V `.lst` maji xrefy
+   priznak `r`/`w`; kdyz jsou vsechny `r`, je to staticka data a
+   inicializace v `orion_data.c` staci.
+4. Cteni preved z `*(&sym + N * i)` na `*(sym + i)` a symbol udelej polem.
+   Nemen to na `sym[N * i]` - index je cislo ZAZNAMU, ne bajtovy offset.
+
+### Ukazatel v `int` globalu: na x64 se adresa orizne
+
+Vlny 82, 83 a ted nalez u `dword_192B24`:
+
+```c
+int dword_192B24;                                    // ale drzi ukazatel
+dword_192B24 = (int)(_DWORD*)sub_110D3C(...);        // orez na 32 bitu
+v2 = *(_WORD *)(dword_192B24 + 13 * a1 + 5);         // cteni mimo
+```
+
+**Priznak v padovem logu:** `av_read` na velke, nahodne vypadajici adrese
+(0x45B48121), zatimco NULL by dal malou. Konvence portu je mit takove
+globaly jako `uint8_t*` (viz `dword_192B18`, `dword_1930D4`).
+
+Pozor: prepnuti typu neni jednoradkove - vsechna mista, ktera vysledek
+ukladaji do `int` promenne, se musi projit taky, jinak se orez jen
+presune o kus dal.
+
+
+### Ukazatel v `int` globalu: rozsirit se musi i vsechny lokalky
+
+Vlna 154 doplnuje poznamku z vlny 153. Zmena globaly z `int` na `intptr_t`
+je jen prvni krok - kazde misto tvaru
+
+```c
+v7 = dword_192B24 + 13 * i;    // v7 je `int` -> orez se presune sem
+```
+
+se musi rozsirit taky, jinak se nic nezmeni. Hledaji se snadno: jsou to
+prirazeni, kde globala stoji jako HODNOTA (ne uvnitr `*(T *)(...)`).
+
+U `dword_192B24` jich bylo 12 ve dvou souborech, plus jeden PARAMETR
+(`sub_72AE4`), kteremu volajici predaval `(int)&lokalka`.
+
+`intptr_t` je pro tyhle promenne lepsi nez `uint8_t *`, kdyz se registr
+v originale pouziva i jako hodnota - `LOWORD(a1) = ...` a `return a1`
+zustanou platne a orezou presne tak jako original.
+
+### Pozor: patch skript, ktery meni radky, nesmi menit konce radku
+
+Nahrazuj radek NA MISTE a zachovej jeho vlastni `\r`:
+
+```python
+mel_cr = lines[i].endswith(b'\r')
+lines[i] = novy.encode('ascii') + (b'\r' if mel_cr else b'')
+```
+
+Kdyz se misto toho spoji cely soubor jednim zvolenym koncem radku,
+`git diff` ukaze 12 tisic zmenenych radku misto patnacti (stalo se ve
+vlne 151).
+
+
+### `sub ebp, N` po `enter`: IDA z lokalek udela ARGUMENTY
+
+`sub_89183` (vlna 155):
+
+```
+enter 5ECh, 0
+sub   ebp, 66Ah
+mov   [ebp+arg_64E], 0
+```
+
+Watcom posune `ebp` pod ramec, takze se lokalky adresuji KLADNYMI offsety.
+IDA je pak vypise jako `arg_...` a dekompilator z nich udela parametry -
+`sub_89183` ma v portu **27 argumentu**, ktere volajici poslusne vyplnuje.
+
+**Priznak:** funkce s absurdnim poctem argumentu, ktere v asm nikdo
+nenastavuje pred `call` (tady se pred volanim plni jen eax/edx/ebx/ecx),
+a v prologu je `sub ebp, <velke cislo>` hned za `enter`.
+
+**Postup:** cely blok `arg_*` je ve skutecnosti ramec; prepsat na lokalky
+a volani zredukovat na skutecne registrove argumenty.
+
+### Kdyz "klik nic nedela", porovnej SNIMEK originalu po temze kliku
+
+Vlna 155: klik na flotilu v portu dosel az do `sub_831B1` (sonda to
+potvrdila), takze to vypadalo, ze se chova jako original. Dosboxovy
+`DUMPFRAME` po temze kliku ale ukazal PANEL, ktery port nekresli.
+
+Bez toho snimku se snadno uzavre "port je verny" tam, kde jen chybi
+kresleni. Postup:
+
+1. Klikni tamtez v dosboxu a nech si dumpnout snimky
+   (`DUMPFRAME cond=eip:0x00349814 framebuf=0x452044 ...`).
+2. Vezmi POSLEDNI snimek - panel se objevi az par snimku po kliku.
+3. Teprve kdyz je snimek stejny, ma smysl rikat, ze se port chova verne.
+
+
+### Cesta, ktera nikdy nebezela, ma nakupene VSECHNY vady najednou
+
+Vlny 156-160: klik na flotilu nedelal nic. Kazda oprava posunula beh
+o kus dal a odhalila dalsi vadu - pet vln za sebou, vzdy jina trida:
+
+| vlna | co to bylo |
+|---|---|
+| 156 | blok 5 zaznamu po 28 B rozsekany na 37 globalu (trida 8) |
+| 157 | struktura posuvniku rozsekana na 11 globalu (trida 8) |
+| 158 | dve funkce zahazovaly navratovou hodnotu (trida 4) |
+| 159 | blok 500 zaznamu po 9 B rozsekany (trida 8) |
+| 160 | ukazatel v `int` + spolehnuti na sousedstvi symbolu |
+
+**Ponauceni:** kdyz nejaka obrazovka "nic nedela", necekej jednu chybu.
+Pocitej s tim, ze na te ceste je jich pet az deset, a jed je jednu po
+druhe - kazdy beh po opravě rekne, kde je ta dalsi.
+
+### Jak poznat rozsekany blok podle jedineho vyrazu
+
+Priznaky, ktere vsechny znamenaji "tohle je zaznam v poli, ne skalar":
+
+```c
+*(int16_t *)((char *)&word_X + 9 * i)     // krok 9 B
+word_X[14 * i]                            // krok 14 slov
+memset(&unk_X, 0, 4500);                  // velikost celeho bloku!
+sub_F((int)&word_X, ...)                  // bere se adresa -> je to zacatek
+```
+
+Ten `memset` je nejcennejsi - rekne velikost bloku primo, bez hadani
+z `.lst`. A v `.lst` se zacatek bloku pozna podle xref s priznakem `o`
+(bere se adresa), zatimco pole uvnitr maji jen `r`/`w`.
+
+### Spolehnuti na SOUSEDSTVI dvou symbolu
+
+Vlna 160: `*(_DWORD *)(a1 + 2500)` cetlo ukazatel, ktery v originale lezi
+hned za polem. V portu je kazdy symbol vlastni objekt, takze takovy pristup
+cte, co dal linker.
+
+**Postup:** spocitej cilovou adresu (`0x1975D4 + 4 + 2500 = 0x197F9C`),
+najdi symbol na ni a napis ho primo. Zaroven zkontroluj sirku - `_DWORD`
+na 64bitovem ukazateli je druha chyba ve stejnem vyrazu.
+
