@@ -794,7 +794,7 @@ void sub_B1458()
 //----- (000B16F0) --------------------------------------------------------
 int sub_B16F0( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   switch ( a1 )
   {
     case -12:
@@ -8718,7 +8718,7 @@ char *sub_BB3DB( int a1)
    po `imul eax, 13h`). Jako `int` se na x64 orezaval. */
 char *sub_BB40D( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return TECHNAME_AT(19 * a1);
 }
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;

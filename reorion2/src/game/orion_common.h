@@ -2178,8 +2178,8 @@ extern int sub_702C5();
 extern void sub_702EA();
 // plna signatura: int16_t sub_704A6(int a1, int a2, int a3, int a4, int a5, int16_t *a6);
 int16_t sub_704A6(int a1, int a2, int a3, int a4, int a5, int16_t *a6);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6);
-void sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int16_t sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6);
+int16_t sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6);   /* wave 164: the shared tail returns a height; wave 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_7078B(int a1, int a2, int a3, int a4);
 extern int sub_7078B();
 // plna signatura: void sub_70875();
@@ -2190,8 +2190,8 @@ extern void sub_70F02();
 extern int sub_7109B();
 // plna signatura: int16_t sub_71198( unsigned int a1);
 extern int16_t sub_71198();
-// plna signatura: int16_t sub_711E6( int a1);   /* vlna 161 */
-extern int16_t sub_711E6();   /* vlna 161: vraci vysku panelu */
+// plna signatura: int16_t sub_711E6( int a1);   /* wave 161 */
+extern int16_t sub_711E6();   /* wave 161: returns the panel height */
 // plna signatura: int16_t sub_712D8();
 extern int16_t sub_712D8();
 // plna signatura: int sub_712E1();
@@ -2220,13 +2220,13 @@ extern char sub_71B1C();
 extern int sub_71B91();
 // plna signatura: int16_t sub_71C01();
 extern int16_t sub_71C01();
-// plna signatura: char sub_71CE7();   /* vlna 163 */
+// plna signatura: char sub_71CE7();   /* wave 163 */
 extern char sub_71CE7();
-// plna signatura: char sub_71DD8( int a1);   /* vlna 163 */
+// plna signatura: char sub_71DD8( int a1);   /* wave 163 */
 extern char sub_71DD8();
-// plna signatura: char sub_71F35( int a1);   /* vlna 163 */
+// plna signatura: char sub_71F35( int a1);   /* wave 163 */
 extern char sub_71F35();
-// plna signatura: char sub_7209D( int a1);   /* vlna 163 */
+// plna signatura: char sub_7209D( int a1);   /* wave 163 */
 extern char sub_7209D();
 // plna signatura: int16_t sub_721EB();
 extern int16_t sub_721EB();
@@ -2234,7 +2234,7 @@ extern int16_t sub_721EB();
 extern void sub_7226A();
 // plna signatura: void sub_7229E( int a1, int a2);
 extern void sub_7229E();
-// plna signatura: char sub_72346( int a1);   /* vlna 163 */
+// plna signatura: char sub_72346( int a1);   /* wave 163 */
 extern char sub_72346();
 // plna signatura: _BOOL1 sub_724CF( int a1);
 extern _BOOL1 sub_724CF();
@@ -11441,13 +11441,13 @@ int sub_702C5();
 int sub_702E5();
 void sub_702EA(int16_t a1, int a2, int a3, int a4, int16_t a5, int16_t a6);
 int16_t sub_704A6(int a1, int a2, int a3, int a4, int a5, int16_t *a6);
-void sub_70602(int a1, int16_t a2, int a3, int16_t a4, int16_t a5, int16_t *a6);
+int16_t sub_70602(int a1, int16_t a2, int a3, int16_t a4, int16_t a5, int16_t *a6);   /* wave 164 */
 int sub_7078B(int a1, int a2, int a3, int a4);
 void sub_70875();
 void sub_70F02(int16_t a1, int16_t a2);
 int sub_7109B();
 int16_t sub_71198(uint16_t a1);
-int16_t sub_711E6(int a1);   /* vlna 161 */
+int16_t sub_711E6(int a1);   /* wave 161 */
 int16_t sub_712D8();
 int sub_712E1();
 int16_t sub_71315(int16_t a1, int16_t *a2, int16_t *a3, _WORD *a4);
@@ -11462,14 +11462,14 @@ int sub_71B0E(int16_t a1, int a2);
 char sub_71B1C();
 int sub_71B91();
 int16_t sub_71C01();
-char sub_71CE7();   /* vlna 163 */
-char sub_71DD8(int16_t a1);   /* vlna 163 */
-char sub_71F35(int16_t a1);   /* vlna 163 */
-char sub_7209D(int16_t a1);   /* vlna 163 */
+char sub_71CE7();   /* wave 163 */
+char sub_71DD8(int16_t a1);   /* wave 163 */
+char sub_71F35(int16_t a1);   /* wave 163 */
+char sub_7209D(int16_t a1);   /* wave 163 */
 int16_t sub_721EB();
 void sub_7226A(int16_t a1);
 void sub_7229E(int16_t a1, char a2);
-char sub_72346(int16_t a1);   /* vlna 163 */
+char sub_72346(int16_t a1);   /* wave 163 */
 _BOOL1 sub_724CF(int16_t a1);
 int sub_724E8(int a1, int16_t a2);
 char sub_7252F(int16_t a1);

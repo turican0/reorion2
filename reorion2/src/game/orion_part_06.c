@@ -3,11 +3,12 @@
 /* Adresni rozsah: 0x71CE7 - 0x79E06  (200 funkci) */
 
 //----- (00071CE7) --------------------------------------------------------
-/* vlna 163: VRACI CH - asm `xor ch,ch` na vstupu, `mov ch, al` po
-   sub_79D40 a `mov al, ch` pred skokem na sdileny epilog 0x7086E. */
+/* wave 163: RETURNS CH - asm `xor ch,ch` on entry, `mov ch, al` after
+   sub_79D40 and `mov al, ch` before the jump to the shared epilogue
+   at 0x7086E. */
 char sub_71CE7()
 {
-  char vysledek; // ch
+  char result; // ch
   _BOOL1 v0; // cl
   int16_t i; // bx
   int v2; // esi
@@ -15,7 +16,7 @@ char sub_71CE7()
   int16_t v4; // [esp+0h] [ebp-8h]
   int16_t v5; // [esp+4h] [ebp-4h]
 
-  vysledek = 0;   /* asm `xor ch, ch` */
+  result = 0;   /* asm `xor ch, ch` */
   if ( word_1999B8 != -1 )
   {
     v5 = *(int16_t *)((char *)&word_1975D4 + 5 * word_192248[word_1999B8]);
@@ -37,10 +38,10 @@ char sub_71CE7()
         }
       }
       if ( v0 )
-        vysledek = sub_79D40(113 * v4 + dword_19306C);   /* asm `mov ch, al` */
+        result = sub_79D40(113 * v4 + dword_19306C);   /* asm `mov ch, al` */
     }
   }
-  return vysledek;   /* vlna 163: asm `mov al, ch` na loc_71DD1 */
+  return result;   /* wave 163: asm `mov al, ch` at loc_71DD1 */
 }
 // 71DD3: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -53,8 +54,8 @@ char sub_71CE7()
 
 
 //----- (00071DD8) --------------------------------------------------------
-/* vlna 163: VRACI [ebp+var_4] (= v12), pri `word_1999B8 == -1` nulu
-   (asm `xor al,al` na 0x71DEE). */
+/* wave 163: RETURNS [ebp+var_4] (= v12), or zero when `word_1999B8 == -1`
+   (asm `xor al,al` at 0x71DEE). */
 char sub_71DD8( int a1)
 {
   int16_t v1; // bx
@@ -69,7 +70,7 @@ char sub_71DD8( int a1)
   char v11; // [esp+Ch] [ebp-8h]
   char v12; // [esp+10h] [ebp-4h]
 
-  v12 = 0;   /* asm `xor al, al` na ranne vetvi 0x71DEE */
+  v12 = 0;   /* asm `xor al, al` on the early branch at 0x71DEE */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -102,7 +103,7 @@ char sub_71DD8( int a1)
       }
     }
   }
-  return v12;   /* vlna 163: asm `mov al, [ebp+var_4]` na loc_71F2D */
+  return v12;   /* wave 163: asm `mov al, [ebp+var_4]` at loc_71F2D */
 }
 // 71DF0: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -115,8 +116,8 @@ char sub_71DD8( int a1)
 
 
 //----- (00071F35) --------------------------------------------------------
-/* vlna 163: VRACI [ebp+var_8] (= v13), pri `word_1999B8 == -1` nulu
-   (asm `xor dl,dl` na 0x71F4B, pak `mov al, dl`). */
+/* wave 163: RETURNS [ebp+var_8] (= v13), or zero when `word_1999B8 == -1`
+   (asm `xor dl,dl` at 0x71F4B, then `mov al, dl`). */
 char sub_71F35( int a1)
 {
   int16_t v1; // bx
@@ -132,7 +133,7 @@ char sub_71F35( int a1)
   char v12; // [esp+8h] [ebp-Ch]
   char v13; // [esp+Ch] [ebp-8h]
 
-  v13 = 0;   /* asm `xor dl, dl` na ranne vetvi 0x71F4B */
+  v13 = 0;   /* asm `xor dl, dl` on the early branch at 0x71F4B */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -167,7 +168,7 @@ char sub_71F35( int a1)
       }
     }
   }
-  return v13;   /* vlna 163: asm `mov dl, [ebp+var_8]` na loc_72093 */
+  return v13;   /* wave 163: asm `mov dl, [ebp+var_8]` at loc_72093 */
 }
 // 72098: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -180,12 +181,12 @@ char sub_71F35( int a1)
 
 
 //----- (0007209D) --------------------------------------------------------
-/* vlna 163: VRACI [ebp+var_8]. Portu chybel navic CELY zaverecny blok
-   (0x721BD - 0x721DF) a navratova hodnota sub_7A3E3 (asm `mov edx, eax`
-   na 0x72140). */
+/* wave 163: RETURNS [ebp+var_8]. The port was also missing the WHOLE
+   trailing block (0x721BD - 0x721DF) and the return value of sub_7A3E3
+   (asm `mov edx, eax` at 0x72140). */
 char sub_7209D( int a1)
 {
-  char vysledek; // [ebp-8h]
+  char result; // [ebp-8h]
   _BOOL1 v1; // bl
   int16_t v2; // cx
   int16_t v3; // si
@@ -200,14 +201,14 @@ char sub_7209D( int a1)
   _BOOL1 v13; // [esp+Ch] [ebp-4h]
 
   v1 = 0;
-  vysledek = 0;   /* asm `xor al,al` na ranne vetvi 0x720B5 */
+  result = 0;   /* asm `xor al,al` on the early branch at 0x720B5 */
   if ( word_1999B8 != -1 )
   {
     v2 = word_192248[word_1999B8];
     v3 = *(int16_t *)((char *)&word_1975D4 + 5 * v2);
     v4 = sub_77FF5(v3);
     v5 = *(_WORD *)(dword_197F9C + 129 * v3 + 101);
-    vysledek = v1;   /* asm `mov [ebp+var_8], bl` na 0x720F1 */
+    result = v1;   /* asm `mov [ebp+var_8], bl` at 0x720F1 */
     v6 = v5 > -1 && v5 < 500;
     v7 = v6;
     v8 = v5 > 1000 && v5 < 1072;
@@ -224,12 +225,12 @@ char sub_7209D( int a1)
           v1 = sub_77FF5(v10) == word_19999C;
         v2 = *(int16_t *)((char *)&word_1975D6 + 5 * v2);
       }
-      /* vlna 163: chybejici blok 0x721BD - 0x721DF */
+      /* wave 163: block 0x721BD - 0x721DF that the port was missing */
       if ( v1 && ((*(uint8_t *)(dword_19306C + 113 * v5 + 54) >> word_19999C) & 1) != 0 )
-        vysledek = 1;
+        result = 1;
     }
   }
-  return vysledek;   /* vlna 163: asm `mov al, [ebp+var_8]` na loc_721E3 */
+  return result;   /* wave 163: asm `mov al, [ebp+var_8]` at loc_721E3 */
 }
 // 720B7: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -282,7 +283,7 @@ void sub_7226A( int a1)
   if ( v2 > 3 )
     LOWORD(v2) = 3;
   word_199962 = sub_71198(v2);
-  word_193018 = sub_711E6(a1);   /* vlna 161: asm `mov word_18B018, ax` */
+  word_193018 = sub_711E6(a1);   /* wave 161: asm `mov word_18B018, ax` */
 }
 // 72294: variable 'v3' is possibly undefined
 // 193018: using guessed type int16_t word_193018;
@@ -336,8 +337,8 @@ LABEL_12:
 
 
 //----- (00072346) --------------------------------------------------------
-/* vlna 163: VRACI [ebp+var_C] (= v13), pri `word_1999B8 == -1` nulu
-   (asm `xor al,al` na 0x7235C). */
+/* wave 163: RETURNS [ebp+var_C] (= v13), or zero when `word_1999B8 == -1`
+   (asm `xor al,al` at 0x7235C). */
 char sub_72346( int a1)
 {
   int16_t v1; // cx
@@ -354,7 +355,7 @@ char sub_72346( int a1)
   _BOOL1 v14; // [esp+Ch] [ebp-8h]
   char v15; // [esp+10h] [ebp-4h]
 
-  v13 = 0;   /* asm `xor al, al` na ranne vetvi 0x7235C */
+  v13 = 0;   /* asm `xor al, al` on the early branch at 0x7235C */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -393,7 +394,7 @@ char sub_72346( int a1)
       }
     }
   }
-  return v13;   /* vlna 163: asm `mov al, [ebp+var_C]` na loc_724C7 */
+  return v13;   /* wave 163: asm `mov al, [ebp+var_C]` at loc_724C7 */
 }
 // 7235E: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -410,7 +411,7 @@ char sub_72346( int a1)
 //----- (000724CF) --------------------------------------------------------
 _BOOL1 sub_724CF( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return sub_8A16A(a1) && !byte_199F33;
 }
 // 199F33: using guessed type char byte_199F33;
@@ -510,7 +511,7 @@ _BOOL1 sub_72617()
 //----- (00072651) --------------------------------------------------------
 _BOOL1 sub_72651( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (uint16_t)sub_77FE9(*(int16_t *)((char *)&word_197FC3 + 9 * a1)) == (uint16_t)word_19999C;
 }
 // 197FC3: using guessed type int16_t word_197FC3;
@@ -3432,7 +3433,7 @@ int sub_75B5F( int a1, int a2, int a3, int16_t *a4, int a5)
 {
   int v5; // eax
 
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   sub_585E0(a1, a2);
   byte_199EFA = 1;
   sub_124D41();
@@ -5271,7 +5272,7 @@ _BOOL1 sub_77EED()
 //----- (00077F5D) --------------------------------------------------------
 char sub_77F5D( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return byte_1975D8[5 * *(int16_t *)((char *)&word_197FC3 + 9 * a1)];
 }
 // 197FC3: using guessed type int16_t word_197FC3;
@@ -5317,7 +5318,7 @@ int sub_77F73( int a1)
 //----- (00077FE9) --------------------------------------------------------
 int sub_77FE9( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return sub_77FF5(*(int16_t *)((char *)&word_1975D4 + 5 * a1));
 }
 // 77FF5: using guessed type int sub_77FF5(_DWORD);
@@ -5373,7 +5374,7 @@ int16_t sub_77FF5( int a1)
 //----- (00078013) --------------------------------------------------------
 int16_t sub_78013( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return *(int16_t *)((char *)&word_1975D4 + 5 * *(int16_t *)((char *)&word_197FC3 + 9 * a1));
 }
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -5980,7 +5981,7 @@ int sub_78800( int a1)
 //----- (00078879) --------------------------------------------------------
 int sub_78879( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return sub_77FE9(word_1906C2[6 * a1]);
 }
 // 1906C2: using guessed type int16_t word_1906C2[];
@@ -5991,7 +5992,7 @@ int16_t sub_78889( int a1)
 {
   int16_t v1; // ax
 
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   v1 = word_1906C2[6 * a1];
   if ( (uint16_t)v1 < 0x1F4u )
     return sub_788A2(v1);
@@ -6004,7 +6005,7 @@ int16_t sub_78889( int a1)
 //----- (000788A2) --------------------------------------------------------
 int16_t sub_788A2( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return *(int16_t *)((char *)&word_1975D4 + 5 * a1);
 }
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -7073,7 +7074,7 @@ char sub_7987A( int a1)
 //----- (000798C4) --------------------------------------------------------
 _BOOL1 sub_798C4( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (int16_t)sub_79E8D(a1) != -1;
 }
 

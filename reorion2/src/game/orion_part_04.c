@@ -3842,7 +3842,7 @@ int16_t sub_57617( int a1, int a2)
 //----- (00057651) --------------------------------------------------------
 int16_t sub_57651( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return word_180030[18 * a1];
 }
 // 180030: using guessed type int16_t word_180030[];
@@ -3851,7 +3851,7 @@ int16_t sub_57651( int a1)
 //----- (0005765D) --------------------------------------------------------
 int16_t sub_5765D( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return word_180032[18 * a1];
 }
 // 180032: using guessed type int16_t word_180032[];

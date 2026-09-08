@@ -4789,7 +4789,7 @@ void sub_EBE79( int a1, int a2, int a3, int a4)
   unsigned int v4; // ebx
   int i; // eax
 
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   v4 = (a1 - a3) * (a1 - a3) + (a2 - a4) * (a2 - a4);
   for ( i = sub_134C92(v4 / 0x384); 900 * i * i < v4; ++i )
     ;
@@ -6478,7 +6478,7 @@ _BOOL1 sub_EDAE2( int a1)
 //----- (000EDB1D) --------------------------------------------------------
 _BOOL1 sub_EDB1D( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return *(int16_t *)((char *)&word_17EB49 + 19 * a1) > 0;
 }
 // 17EB49: using guessed type int16_t word_17EB49;
@@ -7235,7 +7235,7 @@ int sub_EEB3A()
 //----- (000EEBF8) --------------------------------------------------------
 int16_t sub_EEBF8( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (uint8_t)byte_1AA40C[a1];
 }
 
@@ -7243,7 +7243,7 @@ int16_t sub_EEBF8( int a1)
 //----- (000EEC02) --------------------------------------------------------
 int16_t sub_EEC02( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (uint8_t)byte_1AAB1C[a1];
 }
 

@@ -3047,7 +3047,7 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
   }
   /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
   /*SONDA-PTR*/   static int n_r = 0;
-  /*SONDA-PTR*/   if ( n_r < 40 ) { ++n_r;
+  /*SONDA-PTR*/   if ( n_r < 20 && a3 && ((const char *)a3)[9] != 0 ) { ++n_r;
   /*SONDA-PTR*/     PortDebug_CrashLog("PTR kresli a1=%d a2=%d rezim=%d barva0=%02X 1845D8=%d [%.24s]",
   /*SONDA-PTR*/       a1, a2, (int)v9, (unsigned char)byte_1B3E7C[0], (int)word_1845D8,
   /*SONDA-PTR*/       (const char *)a3); } }

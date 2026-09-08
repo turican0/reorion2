@@ -8295,7 +8295,7 @@ int sub_91999( int a1)
 {
   int v1; // eax
 
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   v1 = 3 * a1;
   LOBYTE(v1) = byte_199BCF[v1];
   return nullsub_5(v1);

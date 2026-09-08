@@ -993,7 +993,7 @@ int16_t sub_65288(_WORD *a1, _WORD *a2)
 //----- (000654DD) --------------------------------------------------------
 int16_t sub_654DD( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (uint8_t)byte_17E085[13 * a1];
 }
 
@@ -8834,7 +8834,7 @@ int sub_6EC74( int a1, int a2, int a3, unsigned int a4, int a5)
 //----- (0006EDAE) --------------------------------------------------------
 _BOOL2 sub_6EDAE( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return byte_17F80F[28 * a1] == 1;
 }
 
@@ -8978,7 +8978,7 @@ int sub_6EE8E(int a1, int a2, int a3, int a4, unsigned int a5, int a6)
 //----- (0006EFEB) --------------------------------------------------------
 int16_t sub_6EFEB( int a1)
 {
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   return (uint8_t)byte_17F80F[28 * a1];
 }
 
@@ -10215,8 +10215,10 @@ int16_t sub_704A6(int a1, int a2, int a3, int a4, int a5, int16_t *a6)
 
 
 //----- (00070602) --------------------------------------------------------
-void sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6)
+int16_t sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6)
 {
+  int v24; // ecx - wave 164: sprite 56 from the shared tail loc_705D4
+  int16_t result; // ax
   int v6; // eax
   int v7; // eax
   int16_t v8; // di
@@ -10277,9 +10279,18 @@ void sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6)
   dword_1932BC = sub_127C27((int)aBuffer0Lbx_0, 54, dword_193174);
   sub_12A478(v14, *a6, dword_1932BC);
   sub_8FD56(v16);
-  JUMPOUT(0x705D4);
+  /* wave 164: shared tail loc_705D4 - the bottom frame of the panel. The
+     asm loads index 56 into EDX back at 0x70779, i.e. BEFORE calling
+     sub_8FD56, which is why the tail itself shows no index. */
+  *a6 += (int16_t)v23;   /* asm `mov eax, [ebp+var_4]` + `add [esi], ax` */
+  v24 = sub_127C27((int)aBuffer0Lbx_0, 56, dword_193174);
+  sub_12A478(v14, *a6, v24);
+  result = *(_WORD *)(v24 + 2);
+  *a6 += result;
+  return result;
 }
-// 70786: control flows out of bounds to 705D4
+// 70786: PORT (wave 164): the JUMPOUT to 705D4 is the SHARED TAIL with
+//        sub_704A6, not a no-op - inlined into the body above.
 // 193174: using guessed type int dword_193174;
 // 1932BC: using guessed type int dword_1932BC;
 // 199BB2: using guessed type int16_t word_199BB2;
@@ -10829,21 +10840,22 @@ int16_t sub_71198( unsigned int a1)
 
 
 //----- (000711E6) --------------------------------------------------------
-/* vlna 161: VRACI VYSKU panelu. Portu chybela nejen navratova hodnota, ale
-   i cely vypocet - asm scita ctyri veci:
+/* wave 161: RETURNS THE PANEL HEIGHT. The port was missing not only the
+   return value but the whole computation - the asm adds up four things:
        000712C7  call sub_71198
-       000712CC  add  eax, ecx          ; vyska prvniho spritu
-       000712CE  add  eax, edi          ; vyska druheho spritu
-       000712D0  add  eax, [ebp+var_4]  ; vyska dword_193278
-   Bez toho zustala `word_199BB0` (vyska) smetim a s ni i `word_199BAE`
-   (y panelu) - horni cast panelu flotily padala na tlacitka. */
+       000712CC  add  eax, ecx          ; height of the first sprite
+       000712CE  add  eax, edi          ; height of the second sprite
+       000712D0  add  eax, [ebp+var_4]  ; height of dword_193278
+   Without it `word_199BB0` (the height) stayed garbage, and so did
+   `word_199BAE` (the panel y) - the top of the fleet panel landed on
+   top of the buttons. */
 int16_t sub_711E6( int a1)
 {
   int v2; // eax
   int v3; // eax
-  int v_ecx; // ecx - vyska prvniho spritu
-  int v_edi; // edi - vyska druheho spritu
-  int var_4; // [ebp-4h] - vyska dword_193278
+  int v_ecx; // ecx - height of the first sprite
+  int v_edi; // edi - height of the second sprite
+  int var_4; // [ebp-4h] - height of dword_193278
 
   var_4 = *(int16_t *)(dword_193278 + 2);   /* asm `mov ax, [eax+2]` */
   if ( byte_199BC6 )
@@ -10863,7 +10875,7 @@ int16_t sub_711E6( int a1)
     dword_1932CC = v2;
   }
   dword_199BC2 = v2;
-  v_edi = *(int16_t *)(v2 + 2);   /* asm `mov di, [eax+2]` na loc_71282 */
+  v_edi = *(int16_t *)(v2 + 2);   /* asm `mov di, [eax+2]` at loc_71282 */
   if ( a1 <= 9 )
   {
     v3 = (a1 - 1) / 3 + 1;
@@ -11418,7 +11430,7 @@ int16_t sub_71A37( int a1)
     word_199BAC = word_19301C;
     word_199BAE = word_19301E;
     word_199BB2 = *(_WORD *)dword_199BBE;
-    word_199BB0 = sub_711E6(a1);   /* vlna 161: asm `mov word_191BB0, ax` */
+    word_199BB0 = sub_711E6(a1);   /* wave 161: asm `mov word_191BB0, ax` */
     word_199BB4 = word_199962;
     v5 = word_199962 + *(_WORD *)(dword_199BBE + 2);
   }
@@ -11432,7 +11444,7 @@ int16_t sub_71A37( int a1)
     word_199BAC = word_19301C;
     word_199BB2 = *(_WORD *)dword_193298;
     word_199BAE = word_19301E;
-    word_199BB0 = sub_711E6(a1);   /* vlna 161: asm 0x71ADA */
+    word_199BB0 = sub_711E6(a1);   /* wave 161: asm 0x71ADA */
     dword_1932D4 = sub_127C27((int)aBuffer0Lbx_0, 53, dword_193174);
     word_199BB4 = *(_WORD *)(dword_1932D4 + 2);
     v5 = word_199BB4 + *(_WORD *)(dword_199BBE + 2);
@@ -11477,7 +11489,7 @@ int sub_71B0E( int a1, int a2)
 {
   int result; // eax
 
-  a1 = (int16_t)a1;   /* vlna 162: asm zacina `cwde` - funkce se diva jen na AX */
+  a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   result = sub_585E0(a1, a2);
   byte_199F1D = 2;
   return result;
@@ -11562,7 +11574,7 @@ int16_t sub_71C01()
   char v5; // al
 
   byte_19BEBC = 1;
-  v1 = sub_71F35(word_199BB8);   /* vlna 163: asm `mov byte_191BCA, al` */
+  v1 = sub_71F35(word_199BB8);   /* wave 163: asm `mov byte_191BCA, al` */
   v0 = 0;
   byte_199BCA = v1;
   if ( v1 )
@@ -11570,28 +11582,28 @@ int16_t sub_71C01()
     ++byte_19BEBC;
     v0 = *(_WORD *)(dword_1932A0 + 2);
   }
-  v2 = sub_72346(word_199BB8);   /* vlna 163 */
+  v2 = sub_72346(word_199BB8);   /* wave 163 */
   byte_199BCB = v2;
   if ( v2 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_193290 + 2);
   }
-  v3 = sub_71DD8(word_199BB8);   /* vlna 163 */
+  v3 = sub_71DD8(word_199BB8);   /* wave 163 */
   byte_199BCC = v3;
   if ( v3 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_1932B4 + 2);
   }
-  v4 = sub_7209D(word_199BB8);   /* vlna 163 */
+  v4 = sub_7209D(word_199BB8);   /* wave 163 */
   byte_199BC9 = v4;
   if ( v4 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_1932C0 + 2);
   }
-  v5 = sub_71CE7();   /* vlna 163 */
+  v5 = sub_71CE7();   /* wave 163 */
   byte_199BC8 = v5;
   if ( v5 )
   {
