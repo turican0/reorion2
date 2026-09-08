@@ -10460,16 +10460,6 @@ void sub_70875()
   v50 = v8;
   LOWORD(v8) = word_199BB2;
   v54 = v8;
-  /*SONDA-Y*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-Y*/   static int n_y = 0;
-  /*SONDA-Y*/   if ( n_y < 3 ) { ++n_y;
-  /*SONDA-Y*/     PortDebug_CrashLog("Y  BAC=%d BAE=%d BB0=%d BB2=%d BB8=%d"
-  /*SONDA-Y*/       "  v51=%d v50=%d v54=%d v47=%d v48=%d  F23=%d BC6=%d",
-  /*SONDA-Y*/       (int)word_199BAC, (int)word_199BAE, (int)word_199BB0,
-  /*SONDA-Y*/       (int)word_199BB2, (int)word_199BB8,
-  /*SONDA-Y*/       (int)(int16_t)v51, (int)(int16_t)v50, (int)(int16_t)v54,
-  /*SONDA-Y*/       (int)(int16_t)v47, (int)(int16_t)v48,
-  /*SONDA-Y*/       (int)(unsigned char)byte_199F23, (int)(unsigned char)byte_199BC6); } }
   if ( !byte_199F23 )
   {
     if ( byte_199BC6 )
@@ -10496,33 +10486,6 @@ void sub_70875()
       sub_120DED(2, 1);
       sub_120E8C(1);
     }
-    /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-    /*SONDA-TXT*/   static int n_t = 0;
-    /*SONDA-TXT*/   if ( n_t < 3 ) { ++n_t;
-    /*SONDA-TXT*/     PortDebug_CrashLog("TXT titulek x=%d y=%d v40=%d [%.40s]",
-    /*SONDA-TXT*/       (int)(int16_t)(v51 + v47 + (int16_t)v54 / 2),
-    /*SONDA-TXT*/       (int)(int16_t)(v48 + v50 + 14), (int)(int16_t)v40, v35); } }
-    /*SONDA-BARVA*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-    /*SONDA-BARVA*/   static int n_b = 0;
-    /*SONDA-BARVA*/   if ( n_b < 3 ) { ++n_b;
-    /*SONDA-BARVA*/     PortDebug_CrashLog("BARVA rampa= %02X %02X %02X %02X %02X %02X %02X %02X"
-    /*SONDA-BARVA*/       "  1B3E88= %02X %02X %02X %02X  1B3E7C= %02X %02X %02X %02X"
-    /*SONDA-BARVA*/       "  1B61D8= %02X %02X %02X %02X  1B3E86=%d",
-    /*SONDA-BARVA*/       (unsigned char)v37[0],(unsigned char)v37[1],(unsigned char)v37[2],(unsigned char)v37[3],
-    /*SONDA-BARVA*/       (unsigned char)v37[4],(unsigned char)v37[5],(unsigned char)v37[6],(unsigned char)v37[7],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B3E88[0],(unsigned char)byte_1B3E88[1],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B3E88[2],(unsigned char)byte_1B3E88[3],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B3E7C[0],(unsigned char)byte_1B3E7C[1],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B3E7C[2],(unsigned char)byte_1B3E7C[3],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B61D8[0],(unsigned char)byte_1B61D8[1],
-    /*SONDA-BARVA*/       (unsigned char)byte_1B61D8[2],(unsigned char)byte_1B61D8[3],
-    /*SONDA-BARVA*/       (int)word_1B3E86); } }
-    /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-    /*SONDA-PTR*/   static int n_p = 0;
-    /*SONDA-PTR*/   if ( n_p < 3 ) { ++n_p;
-    /*SONDA-PTR*/     PortDebug_CrashLog("PTR volajici v35=%016llX  (int)v35=%08X  [%.24s]",
-    /*SONDA-PTR*/       (unsigned long long)(size_t)(void *)v35,
-    /*SONDA-PTR*/       (unsigned)(int)v35, v35); } }
     sub_1210FD(v51 + v47 + (int16_t)v54 / 2, v48 + v50 + 14, (int)v35);
   }
   if ( word_199A06 != (_WORD)v46 || word_199A06 == -1 )
@@ -10888,15 +10851,6 @@ int16_t sub_711E6( int a1)
     dword_1932D4 = sub_127C27((int)aBuffer0Lbx_0, 53, dword_193174);
     v3 = v_ecx + *(int16_t *)(dword_1932D4 + 2);   /* asm `add cx, [eax+2]` */
   }
-  /*SONDA-VYSKA*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-VYSKA*/   static int n_h = 0;
-  /*SONDA-VYSKA*/   if ( n_h < 6 ) { ++n_h;
-  /*SONDA-VYSKA*/     PortDebug_CrashLog("VYSKA a1=%d BC6=%d  var_4=%d ecx=%d edi=%d v3=%d"
-  /*SONDA-VYSKA*/       "  -> %d   p193278=%p pBBE=%p pBC2=%p",
-  /*SONDA-VYSKA*/       a1, (int)(unsigned char)byte_199BC6,
-  /*SONDA-VYSKA*/       var_4, v_ecx, v_edi, v3, (int)(int16_t)(v3 + v_edi + var_4),
-  /*SONDA-VYSKA*/       (void *)(size_t)dword_193278, (void *)(size_t)dword_199BBE,
-  /*SONDA-VYSKA*/       (void *)(size_t)dword_199BC2); } }
   return (int16_t)(v3 + v_edi + var_4);   /* asm loc_712CE */
 }
 // 712D3: control flows out of bounds to 7086E
@@ -11114,12 +11068,6 @@ void sub_71506()
   v0 = sub_78013(0);
   v33 = 9;
   v2 = sub_72617();
-  /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-TXT*/   static int n_u = 0;
-  /*SONDA-TXT*/   if ( n_u < 3 ) { ++n_u;
-  /*SONDA-TXT*/     PortDebug_CrashLog("TXT 72617=%d 19995C=%d 1999CA=%d 19C186=%d v0=%d",
-  /*SONDA-TXT*/       (int)sub_72617(), (int)word_19995C, (int)word_1999CA,
-  /*SONDA-TXT*/       (int)word_19C186, (int)v0); } }
   if ( byte_199BC6 )
     v3 = 56;
   else
@@ -11200,11 +11148,6 @@ LABEL_59:
           sprintf(v28, v12, v22, v25);
         }
 LABEL_71:
-        /*SONDA-TXT*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-        /*SONDA-TXT*/   static int n_v = 0;
-        /*SONDA-TXT*/   if ( n_v < 3 ) { ++n_v;
-        /*SONDA-TXT*/     PortDebug_CrashLog("TXT stav v33=%d v31=%d v32=%d [%.40s]",
-        /*SONDA-TXT*/       (int)(int16_t)v33, (int)(int16_t)v31, (int)(int16_t)v32, v28); } }
         if ( v28[0] )
         {
           sub_8FDA1((int)v28, (int)v29, v36, v34, 0, v38, 1);

@@ -2859,28 +2859,27 @@ int sub_12102B(int a1, int a2, int a3, int a4)
 
 
 //----- (001210B7) --------------------------------------------------------
+/* wave 165: x/y are 16-bit - the asm reloads the saved arguments as
+   words (0x1210E6 `movsx edx, word ptr [ebp+var_8]`, 0x1210F0 `cwde`). */
 int sub_1210B7( int a1, int a2, int a3)
 {
   int16_t v3; // ax
 
   v3 = sub_12066F(a3);
-  return sub_1212B3(a1 - (v3 - 1), a2, a3);
+  return sub_1212B3((int16_t)(a1 - (v3 - 1)), (int16_t)a2, a3);
 }
 // 1210B7: could not find valid save-restore pair for ebx
 
 
 //----- (001210FD) --------------------------------------------------------
+/* wave 165: x/y are 16-bit - the asm reloads the saved arguments as
+   words (0x12112B and 0x12113C `movsx ..., word ptr [ebp+var_N]`). */
 int sub_1210FD( int a1, int a2, int a3)
 {
   int16_t v3; // ax
 
-  /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-PTR*/   static int n_q = 0;
-  /*SONDA-PTR*/   if ( n_q < 6 ) { ++n_q;
-  /*SONDA-PTR*/     PortDebug_CrashLog("PTR volany a1=%d a2=%d a3=%016llX",
-  /*SONDA-PTR*/       a1, a2, (unsigned long long)(size_t)a3); } }
   v3 = sub_12066F(a3);
-  return sub_1212B3(a1 - v3 / 2, a2, a3);
+  return sub_1212B3((int16_t)((int16_t)a1 - v3 / 2), (int16_t)a2, a3);
 }
 // 1210FD: could not find valid save-restore pair for ebx
 
@@ -2927,7 +2926,8 @@ int sub_12126B( int a1, int a2, int a3, int a4)
   v5 = a4;
   if ( a4 < 0 )
     v5 = 0;
-  return sub_1212EB(a1, a2, a3, v5);
+  /* wave 165: 0x1212A0 / 0x1212A4 `movsx ..., word ptr [ebp+var_N]` */
+  return sub_1212EB((int16_t)a1, (int16_t)a2, a3, v5);
 }
 // 12126B: could not find valid save-restore pair for ebx
 
@@ -2935,7 +2935,8 @@ int sub_12126B( int a1, int a2, int a3, int a4)
 //----- (001212B3) --------------------------------------------------------
 int sub_1212B3( int a1, int a2, int a3)
 {
-  return sub_1212EB(a1, a2, a3, 0);
+  /* wave 165: 0x1212D7 / 0x1212DB `movsx ..., word ptr [ebp+var_N]` */
+  return sub_1212EB((int16_t)a1, (int16_t)a2, a3, 0);
 }
 
 
@@ -2956,11 +2957,6 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
 
   v9 = *(int *)((char *)&dword_1B3E82 + 2) >> 16;
   v7 = 0;
-  /*SONDA-V9*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-V9*/   static int n9 = 0;
-  /*SONDA-V9*/   if ( n9 < 6 && a3 && ((const char *)a3)[0] == 84 ) { ++n9;
-  /*SONDA-V9*/     PortDebug_CrashLog("V9 rezim=%d 1B3EA0=%d 1B3E86=%d [%.24s]",
-  /*SONDA-V9*/       (int)v9, (int)word_1B3EA0, (int)word_1B3E86, (const char *)a3); } }
   if ( *(int *)((char *)&dword_1B3E82 + 2) >> 16 )
   {
     for ( i = 1; i < 8; ++i )
@@ -3045,12 +3041,6 @@ int sub_1212EB( int a1, int a2, int a3, int a4)
     for ( j = 0; j < 8; ++j )
       byte_1B3E7C[j] = byte_1B3E88[j];
   }
-  /*SONDA-PTR*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-PTR*/   static int n_r = 0;
-  /*SONDA-PTR*/   if ( n_r < 20 && a3 && ((const char *)a3)[9] != 0 ) { ++n_r;
-  /*SONDA-PTR*/     PortDebug_CrashLog("PTR kresli a1=%d a2=%d rezim=%d barva0=%02X 1845D8=%d [%.24s]",
-  /*SONDA-PTR*/       a1, a2, (int)v9, (unsigned char)byte_1B3E7C[0], (int)word_1845D8,
-  /*SONDA-PTR*/       (const char *)a3); } }
   LOWORD(dword_184510) = 0;
   if ( word_1845D8 == 1 )
     sub_122309(a1, a2, a3, 1, a4);
