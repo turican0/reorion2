@@ -2220,22 +2220,22 @@ extern char sub_71B1C();
 extern int sub_71B91();
 // plna signatura: int16_t sub_71C01();
 extern int16_t sub_71C01();
-// plna signatura: void sub_71CE7();
-extern void sub_71CE7();
-// plna signatura: void sub_71DD8( int a1);
-extern void sub_71DD8();
-// plna signatura: void sub_71F35( int a1);
-extern void sub_71F35();
-// plna signatura: void sub_7209D( int a1);
-extern void sub_7209D();
+// plna signatura: char sub_71CE7();   /* vlna 163 */
+extern char sub_71CE7();
+// plna signatura: char sub_71DD8( int a1);   /* vlna 163 */
+extern char sub_71DD8();
+// plna signatura: char sub_71F35( int a1);   /* vlna 163 */
+extern char sub_71F35();
+// plna signatura: char sub_7209D( int a1);   /* vlna 163 */
+extern char sub_7209D();
 // plna signatura: int16_t sub_721EB();
 extern int16_t sub_721EB();
 // plna signatura: void sub_7226A( int a1);
 extern void sub_7226A();
 // plna signatura: void sub_7229E( int a1, int a2);
 extern void sub_7229E();
-// plna signatura: void sub_72346( int a1);
-extern void sub_72346();
+// plna signatura: char sub_72346( int a1);   /* vlna 163 */
+extern char sub_72346();
 // plna signatura: _BOOL1 sub_724CF( int a1);
 extern _BOOL1 sub_724CF();
 // plna signatura: int sub_724E8(int a1, int a2);
@@ -11462,14 +11462,14 @@ int sub_71B0E(int16_t a1, int a2);
 char sub_71B1C();
 int sub_71B91();
 int16_t sub_71C01();
-void sub_71CE7();
-void sub_71DD8(int16_t a1);
-void sub_71F35(int16_t a1);
-void sub_7209D(int16_t a1);
+char sub_71CE7();   /* vlna 163 */
+char sub_71DD8(int16_t a1);   /* vlna 163 */
+char sub_71F35(int16_t a1);   /* vlna 163 */
+char sub_7209D(int16_t a1);   /* vlna 163 */
 int16_t sub_721EB();
 void sub_7226A(int16_t a1);
 void sub_7229E(int16_t a1, char a2);
-void sub_72346(int16_t a1);
+char sub_72346(int16_t a1);   /* vlna 163 */
 _BOOL1 sub_724CF(int16_t a1);
 int sub_724E8(int a1, int16_t a2);
 char sub_7252F(int16_t a1);

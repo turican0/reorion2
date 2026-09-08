@@ -3,8 +3,11 @@
 /* Adresni rozsah: 0x71CE7 - 0x79E06  (200 funkci) */
 
 //----- (00071CE7) --------------------------------------------------------
-void sub_71CE7()
+/* vlna 163: VRACI CH - asm `xor ch,ch` na vstupu, `mov ch, al` po
+   sub_79D40 a `mov al, ch` pred skokem na sdileny epilog 0x7086E. */
+char sub_71CE7()
 {
+  char vysledek; // ch
   _BOOL1 v0; // cl
   int16_t i; // bx
   int v2; // esi
@@ -12,6 +15,7 @@ void sub_71CE7()
   int16_t v4; // [esp+0h] [ebp-8h]
   int16_t v5; // [esp+4h] [ebp-4h]
 
+  vysledek = 0;   /* asm `xor ch, ch` */
   if ( word_1999B8 != -1 )
   {
     v5 = *(int16_t *)((char *)&word_1975D4 + 5 * word_192248[word_1999B8]);
@@ -33,10 +37,10 @@ void sub_71CE7()
         }
       }
       if ( v0 )
-        sub_79D40(113 * v4 + dword_19306C);
+        vysledek = sub_79D40(113 * v4 + dword_19306C);   /* asm `mov ch, al` */
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return vysledek;   /* vlna 163: asm `mov al, ch` na loc_71DD1 */
 }
 // 71DD3: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -49,7 +53,9 @@ void sub_71CE7()
 
 
 //----- (00071DD8) --------------------------------------------------------
-void sub_71DD8( int a1)
+/* vlna 163: VRACI [ebp+var_4] (= v12), pri `word_1999B8 == -1` nulu
+   (asm `xor al,al` na 0x71DEE). */
+char sub_71DD8( int a1)
 {
   int16_t v1; // bx
   int v2; // edx
@@ -63,6 +69,7 @@ void sub_71DD8( int a1)
   char v11; // [esp+Ch] [ebp-8h]
   char v12; // [esp+10h] [ebp-4h]
 
+  v12 = 0;   /* asm `xor al, al` na ranne vetvi 0x71DEE */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -95,7 +102,7 @@ void sub_71DD8( int a1)
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return v12;   /* vlna 163: asm `mov al, [ebp+var_4]` na loc_71F2D */
 }
 // 71DF0: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -108,7 +115,9 @@ void sub_71DD8( int a1)
 
 
 //----- (00071F35) --------------------------------------------------------
-void sub_71F35( int a1)
+/* vlna 163: VRACI [ebp+var_8] (= v13), pri `word_1999B8 == -1` nulu
+   (asm `xor dl,dl` na 0x71F4B, pak `mov al, dl`). */
+char sub_71F35( int a1)
 {
   int16_t v1; // bx
   int v2; // edx
@@ -123,6 +132,7 @@ void sub_71F35( int a1)
   char v12; // [esp+8h] [ebp-Ch]
   char v13; // [esp+Ch] [ebp-8h]
 
+  v13 = 0;   /* asm `xor dl, dl` na ranne vetvi 0x71F4B */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -157,7 +167,7 @@ void sub_71F35( int a1)
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return v13;   /* vlna 163: asm `mov dl, [ebp+var_8]` na loc_72093 */
 }
 // 72098: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -170,8 +180,12 @@ void sub_71F35( int a1)
 
 
 //----- (0007209D) --------------------------------------------------------
-void sub_7209D( int a1)
+/* vlna 163: VRACI [ebp+var_8]. Portu chybel navic CELY zaverecny blok
+   (0x721BD - 0x721DF) a navratova hodnota sub_7A3E3 (asm `mov edx, eax`
+   na 0x72140). */
+char sub_7209D( int a1)
 {
+  char vysledek; // [ebp-8h]
   _BOOL1 v1; // bl
   int16_t v2; // cx
   int16_t v3; // si
@@ -186,18 +200,20 @@ void sub_7209D( int a1)
   _BOOL1 v13; // [esp+Ch] [ebp-4h]
 
   v1 = 0;
+  vysledek = 0;   /* asm `xor al,al` na ranne vetvi 0x720B5 */
   if ( word_1999B8 != -1 )
   {
     v2 = word_192248[word_1999B8];
     v3 = *(int16_t *)((char *)&word_1975D4 + 5 * v2);
     v4 = sub_77FF5(v3);
     v5 = *(_WORD *)(dword_197F9C + 129 * v3 + 101);
+    vysledek = v1;   /* asm `mov [ebp+var_8], bl` na 0x720F1 */
     v6 = v5 > -1 && v5 < 500;
     v7 = v6;
     v8 = v5 > 1000 && v5 < 1072;
     v13 = v8;
     if ( v8 )
-      sub_7A3E3(*(_WORD *)(129 * v3 + dword_197F9C + 103), *(_WORD *)(129 * v3 + dword_197F9C + 105));
+      v5 = sub_7A3E3(*(_WORD *)(129 * v3 + dword_197F9C + 103), *(_WORD *)(129 * v3 + dword_197F9C + 105));   /* asm `mov edx, eax` */
     if ( v4 == word_19999C && (v7 || v13) )
     {
       for ( i = 0; i < a1 && !v1 && v2 > -1; ++i )
@@ -208,9 +224,12 @@ void sub_7209D( int a1)
           v1 = sub_77FF5(v10) == word_19999C;
         v2 = *(int16_t *)((char *)&word_1975D6 + 5 * v2);
       }
+      /* vlna 163: chybejici blok 0x721BD - 0x721DF */
+      if ( v1 && ((*(uint8_t *)(dword_19306C + 113 * v5 + 54) >> word_19999C) & 1) != 0 )
+        vysledek = 1;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return vysledek;   /* vlna 163: asm `mov al, [ebp+var_8]` na loc_721E3 */
 }
 // 720B7: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];
@@ -317,7 +336,9 @@ LABEL_12:
 
 
 //----- (00072346) --------------------------------------------------------
-void sub_72346( int a1)
+/* vlna 163: VRACI [ebp+var_C] (= v13), pri `word_1999B8 == -1` nulu
+   (asm `xor al,al` na 0x7235C). */
+char sub_72346( int a1)
 {
   int16_t v1; // cx
   int16_t v2; // bx
@@ -333,6 +354,7 @@ void sub_72346( int a1)
   _BOOL1 v14; // [esp+Ch] [ebp-8h]
   char v15; // [esp+10h] [ebp-4h]
 
+  v13 = 0;   /* asm `xor al, al` na ranne vetvi 0x7235C */
   if ( word_1999B8 != -1 )
   {
     v1 = word_192248[word_1999B8];
@@ -371,7 +393,7 @@ void sub_72346( int a1)
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7086E je epilog funkce */
+  return v13;   /* vlna 163: asm `mov al, [ebp+var_C]` na loc_724C7 */
 }
 // 7235E: control flows out of bounds to 7086E
 // 192248: using guessed type int16_t word_192248[500];

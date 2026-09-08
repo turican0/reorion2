@@ -10449,6 +10449,16 @@ void sub_70875()
   v50 = v8;
   LOWORD(v8) = word_199BB2;
   v54 = v8;
+  /*SONDA-Y*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-Y*/   static int n_y = 0;
+  /*SONDA-Y*/   if ( n_y < 3 ) { ++n_y;
+  /*SONDA-Y*/     PortDebug_CrashLog("Y  BAC=%d BAE=%d BB0=%d BB2=%d BB8=%d"
+  /*SONDA-Y*/       "  v51=%d v50=%d v54=%d v47=%d v48=%d  F23=%d BC6=%d",
+  /*SONDA-Y*/       (int)word_199BAC, (int)word_199BAE, (int)word_199BB0,
+  /*SONDA-Y*/       (int)word_199BB2, (int)word_199BB8,
+  /*SONDA-Y*/       (int)(int16_t)v51, (int)(int16_t)v50, (int)(int16_t)v54,
+  /*SONDA-Y*/       (int)(int16_t)v47, (int)(int16_t)v48,
+  /*SONDA-Y*/       (int)(unsigned char)byte_199F23, (int)(unsigned char)byte_199BC6); } }
   if ( !byte_199F23 )
   {
     if ( byte_199BC6 )
@@ -10866,6 +10876,15 @@ int16_t sub_711E6( int a1)
     dword_1932D4 = sub_127C27((int)aBuffer0Lbx_0, 53, dword_193174);
     v3 = v_ecx + *(int16_t *)(dword_1932D4 + 2);   /* asm `add cx, [eax+2]` */
   }
+  /*SONDA-VYSKA*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-VYSKA*/   static int n_h = 0;
+  /*SONDA-VYSKA*/   if ( n_h < 6 ) { ++n_h;
+  /*SONDA-VYSKA*/     PortDebug_CrashLog("VYSKA a1=%d BC6=%d  var_4=%d ecx=%d edi=%d v3=%d"
+  /*SONDA-VYSKA*/       "  -> %d   p193278=%p pBBE=%p pBC2=%p",
+  /*SONDA-VYSKA*/       a1, (int)(unsigned char)byte_199BC6,
+  /*SONDA-VYSKA*/       var_4, v_ecx, v_edi, v3, (int)(int16_t)(v3 + v_edi + var_4),
+  /*SONDA-VYSKA*/       (void *)(size_t)dword_193278, (void *)(size_t)dword_199BBE,
+  /*SONDA-VYSKA*/       (void *)(size_t)dword_199BC2); } }
   return (int16_t)(v3 + v_edi + var_4);   /* asm loc_712CE */
 }
 // 712D3: control flows out of bounds to 7086E
@@ -11543,7 +11562,7 @@ int16_t sub_71C01()
   char v5; // al
 
   byte_19BEBC = 1;
-  sub_71F35(word_199BB8);
+  v1 = sub_71F35(word_199BB8);   /* vlna 163: asm `mov byte_191BCA, al` */
   v0 = 0;
   byte_199BCA = v1;
   if ( v1 )
@@ -11551,28 +11570,28 @@ int16_t sub_71C01()
     ++byte_19BEBC;
     v0 = *(_WORD *)(dword_1932A0 + 2);
   }
-  sub_72346(word_199BB8);
+  v2 = sub_72346(word_199BB8);   /* vlna 163 */
   byte_199BCB = v2;
   if ( v2 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_193290 + 2);
   }
-  sub_71DD8(word_199BB8);
+  v3 = sub_71DD8(word_199BB8);   /* vlna 163 */
   byte_199BCC = v3;
   if ( v3 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_1932B4 + 2);
   }
-  sub_7209D(word_199BB8);
+  v4 = sub_7209D(word_199BB8);   /* vlna 163 */
   byte_199BC9 = v4;
   if ( v4 )
   {
     ++byte_19BEBC;
     v0 += *(_WORD *)(dword_1932C0 + 2);
   }
-  sub_71CE7();
+  v5 = sub_71CE7();   /* vlna 163 */
   byte_199BC8 = v5;
   if ( v5 )
   {
