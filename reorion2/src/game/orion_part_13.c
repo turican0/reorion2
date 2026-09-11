@@ -1685,11 +1685,18 @@ LABEL_40:
 
 
 //----- (000C7F2F) --------------------------------------------------------
-void sub_C7F2F()
+/* wave 171: `jmp loc_C839B` - the tail of sub_C836E. */
+unsigned int sub_C7F2F()
 {
-  JUMPOUT(0xC839B);
+  _BYTE *v0; // eax
+  unsigned int result; // eax
+
+  v0 = (_BYTE *)sub_CDF5C(12);
+  result = sub_11438B(0, 0, 639, 479, v0, 0);
+  word_1A11C4 = result;
+  return result;
 }
-// C7F32: control flows out of bounds to C839B
+// C7F32: PORT (wave 171): the JUMPOUT to C839B is the tail of sub_C836E.
 
 
 //----- (000C7F37) --------------------------------------------------------
@@ -2067,7 +2074,7 @@ void sub_C8556( int a1, int a2)
         LOWORD(v3) = word_1A123A;
         v5 = word_19999C;
         v10 = word_1A123C;
-        if ( sub_97F8D(&v17, word_19999C, (int)v3) )
+        if ( sub_97F8D(&v17, word_19999C, (int)v3, (int16_t)dword_19F82C) )   /* wave 175: asm 0xC869E `mov eax, ecx` */
         {
           v11 = v17;
           v12 = a1;
@@ -2146,11 +2153,23 @@ _DWORD *sub_C8771(int a1, int a2)
 
 
 //----- (000C87C1) --------------------------------------------------------
-void sub_C87C1()
+/* wave 171: `push offset word_1991C8 / jmp loc_C8373` - the body of
+   sub_C836E with &word_1A11C8 instead of 0 as the last argument of
+   sub_A4F1F. This is the call that loads the system view and allocates
+   dword_193184 for the COLONIZE screen. */
+unsigned int sub_C87C1()
 {
-  JUMPOUT(0xC8373);
+  _BYTE *v0; // eax
+  unsigned int result; // eax
+
+  byte_199F21 = 1;
+  sub_A4F1F(dword_19F82C, word_1A123A, word_1A123C, 13, 47, (_WORD *)&word_1A11C8);
+  v0 = (_BYTE *)sub_CDF5C(12);                          /* loc_C839B */
+  result = sub_11438B(0, 0, 639, 479, v0, 0);
+  word_1A11C4 = result;
+  return result;
 }
-// C87C9: control flows out of bounds to C8373
+// C87C9: PORT (wave 171): the JUMPOUT to C8373 is the body of sub_C836E.
 
 
 //----- (000C87DE) --------------------------------------------------------
@@ -2363,7 +2382,7 @@ int sub_C8BE0(int16_t *a1, int16_t *a2, _WORD *a3)
       byte_1831AE = 0;
       v4 = word_1A123A;
       v5 = word_1A123C;
-      if ( sub_97F8D(&v10, word_19999C, word_1A123C) )
+      if ( sub_97F8D(&v10, word_19999C, word_1A123C, word_1831AC) )   /* wave 175: asm 0xC8C1B */
       {
         v6 = v10;
         v7 = word_1831AC;
@@ -2546,9 +2565,12 @@ int sub_C8DB8( int a1, int a2)
     }
   }
   sub_C7283(v9, v6);
-  JUMPOUT(0xC97B9);
+  /* wave 172: asm 0xC8F15 `mov eax, esi` - esi holds the last sub_C8BE0
+     result (0xC8EC8); locret_C97B9 is only the epilogue. */
+  return (int16_t)v2;
 }
-// C8F17: control flows out of bounds to C97B9
+// C8F17: PORT (wave 172): the JUMPOUT to C97B9 is the epilogue; the
+//        function returns esi = sub_C8BE0 result.
 // C8E94: variable 'v5' is possibly undefined
 // C8EAE: variable 'v7' is possibly undefined
 // C8ECF: variable 'v8' is possibly undefined

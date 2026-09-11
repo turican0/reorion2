@@ -375,7 +375,8 @@ int sub_8139F(void) { return 0; }
 int sub_A162D(void) { return 0; }
 int sub_A5EBC(void) { return 0; }
 int sub_B3E75(void) { return 0; }
-int sub_C5B5F(void) { return 0; }
+/* wave 176: not a stub - asm 0xC5B5F is `jmp sub_77423` (message dialog). */
+int16_t sub_C5B5F(int a1) { return sub_77423(a1); }
 /* PORT (vlna 58): SWORD1..SWORD6 -> makra v decomp_compat.h. SWORD2 tu byl
    DATOVY symbol -> 144 jeho "volani" skakalo do .bss (pad NEW GAME). */
 int unk_178A04;

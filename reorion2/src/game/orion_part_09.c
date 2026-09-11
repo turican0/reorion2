@@ -3861,7 +3861,8 @@ LABEL_30:
 
 
 //----- (00097F8D) --------------------------------------------------------
-char sub_97F8D(int16_t *a1, int a2, int a3)
+/* wave 175: a4 = EAX, spilled by `push eax` into [ebp-10h] (v12). */
+char sub_97F8D(int16_t *a1, int a2, int a3, int16_t a4)
 {
   int16_t v4; // si
   char v5; // bl
@@ -3873,6 +3874,7 @@ char sub_97F8D(int16_t *a1, int a2, int a3)
   int16_t v12; // [esp+0h] [ebp-10h]
   char v14; // [esp+Ch] [ebp-4h]
 
+  v12 = a4;   /* wave 175 */
   v4 = -1;
   v14 = 0;
   v5 = 0;

@@ -375,35 +375,32 @@ int sub_890EF( int a1, int a2, int16_t *a3, int16_t *a4)
 
 
 //----- (00089183) --------------------------------------------------------
-void sub_89183(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int64_t a25,
-        int64_t a26,
-        int a27)
+/* wave 166: real frame. The prologue is
+       push esi / push edi / enter 5ECh,0 / push eax,edx,ebx,ecx / sub ebp,66Ah
+   so the saved register arguments and every local sit at POSITIVE offsets
+   from the shifted EBP; Hex-Rays turned them into 27 arguments, 23 of which
+   do not exist. The real signature is fastcall(eax, edx, ebx, ecx) plus the
+   EDI value that flows in untouched from sub_86188 and is consumed by
+   sub_84555 (`__usercall sub_84555(_DWORD *@<edi>)`).
+
+     a1 = word_199976            (eax, saved as arg_6A)
+     a2 = caller var_C           (edx, saved as arg_66) - the clicked element id
+     a3 = caller var_30          (ebx, saved as arg_62) - the hit coordinate
+     a4 = &caller var_38         (ecx, saved as arg_5E)
+     a5 = caller EDI, for sub_84555 */
+void sub_89183(int a1, int a2, int a3, int16_t *a4, char *a5)
 {
+  /* wave 166: locals that Hex-Rays could not attach to the frame and
+     emitted as the shared DECOMP_STACK_STUB array. Every `STACK[X]` here
+     is `arg_(X - 0x5FC)`, i.e. a local of THIS function. */
+  int16_t panelIndex_64E;   /* arg_64E - the 0..4 loop counter */
+  int hitPlanet_64A;        /* arg_64A */
+  int hitStar_652;          /* arg_652 */
+  int hitObject_656;        /* arg_656 */
+  char textBuf_456[200];    /* arg_456 */
+  char textBuf_51E[200];    /* arg_51E */
+  char textBuf_5E6[100];    /* arg_5E6 */
+  int16_t shipIds_6E[500];  /* arg_6E - 1000 B, matches sub_7802A(..., 500) */
   int v27; // edx
   int v28; // eax
   int v29; // ebx
@@ -416,8 +413,8 @@ void sub_89183(
   unsigned int v36; // eax
   int16_t v37; // ax
   _WORD *v38; // eax
-  unsigned int *v39; // edi
-  unsigned int *v40; // edx
+  char *v39; // edi
+  char *v40; // edx
   char *v41; // esi
   int16_t v42; // bx
   int16_t v43; // ax
@@ -429,25 +426,32 @@ void sub_89183(
   int16_t v49; // bx
   int16_t v50; // ax
   int v51; // [esp-14h] [ebp-600h]
-  unsigned int *v52; // [esp-14h] [ebp-600h]
 
-  STACK[0xC4A] = 0;
+  panelIndex_64E = 0;
   do
   {
-    v27 = SLOWORD(STACK[0xC4A]);
-    if ( !sub_918D5(STACK[0xC4A]) )
+    v27 = panelIndex_64E;
+    if ( !sub_918D5(panelIndex_64E) )
       goto LABEL_67;
-    if ( WORD1(a26) == word_192FEC[14 * v27] && !HIWORD(a26) )
+    /* wave 166: was `WORD1(a26) == ... && !HIWORD(a26)`; the port's HIWORD
+       macro is word index 1, IDA's is word index 3 of the 8-byte operand.
+       asm: `cmp bx, word_18AFEC[eax]` / `cmp [ebp+arg_6A], 0` */
+    if ( (uint16_t)a2 == word_192FEC[14 * v27] && !a1 )
     {
-      if ( !LOWORD(STACK[0xC4A]) )
+      if ( !panelIndex_64E )
       {
         sub_124D41();
-        sub_84555((_DWORD *)a1);
-        sub_1077D(v28, v27, *(int *)((char *)&a26 + 2), (int16_t *)a1);
+        sub_84555((_DWORD *)a5);   /* wave 166: EDI, not a phantom argument */
+        /* wave 166: the original reaches `call sub_1077D` with no register
+           setup at all, so it passes whatever sub_84555 left behind - not
+           reconstructible statically. The port used an undefined local and
+           a phantom pointer; zeros are the safe equivalent (the same call
+           shape already appears as sub_1077D(0, 0, 0, 0) elsewhere). */
+        sub_1077D(0, 0, 0, 0);
         sub_91ABC();
         goto LABEL_67;
       }
-      if ( LOWORD(STACK[0xC4A]) == 2 )
+      if ( panelIndex_64E == 2 )
       {
         sub_77BF1();
         sub_702C5();
@@ -459,16 +463,19 @@ LABEL_9:
       word_192FDE[14 * v27] = word_1992C0[v27];
       goto LABEL_67;
     }
-    if ( !HIWORD(a26) && word_1992E8[0] != LOWORD(STACK[0xC4A]) )
+    if ( !a1 && word_1992E8[0] != (uint16_t)panelIndex_64E )
     {
-      v29 = SLOWORD(STACK[0xC4A]);
-      if ( (uint16_t)sub_90605(STACK[0xC4A], SWORD1(a26)) )
+      v29 = panelIndex_64E;
+      if ( (uint16_t)sub_90605(panelIndex_64E, (int16_t)a2) )
         sub_9128C(word_192FDC[14 * v29]);
     }
-    if ( word_192FDC[14 * SLOWORD(STACK[0xC4A])] == 1 )
+    if ( word_192FDC[14 * panelIndex_64E] == 1 )
     {
-      v30 = sub_890EF(SHIWORD(a25), SWORD1(a26), (int16_t *)&STACK[0xC52], (int16_t *)&STACK[0xC46]);
-      word_199960 = STACK[0xC52];
+      /* wave 166: asm 0x89279-0x8928D - eax=arg_62 (a3), edx=arg_66 (a2),
+         ebx=&arg_656, ecx=&arg_64A. The port read arg_5E instead of arg_62,
+         which is why a click selected the wrong ship. */
+      v30 = sub_890EF((int16_t)a3, (int16_t)a2, (int16_t *)&hitObject_656, (int16_t *)&hitPlanet_64A);
+      word_199960 = hitObject_656;
       if ( (uint16_t)sub_79917() != word_19997C )
       {
         if ( v30 == 2 )
@@ -482,7 +489,7 @@ LABEL_21:
         }
         if ( !v30 )
         {
-          v33 = dword_19306C + 113 * SLOWORD(STACK[0xC46]);
+          v33 = dword_19306C + 113 * (int16_t)hitPlanet_64A;
           v31 = *(_WORD *)(v33 + 17);
           v32 = *(_WORD *)(v33 + 15);
           goto LABEL_21;
@@ -490,17 +497,17 @@ LABEL_21:
       }
     }
 LABEL_22:
-    if ( sub_918D5(2) && word_192FDC[14 * SLOWORD(STACK[0xC4A])] == 2 )
+    if ( sub_918D5(2) && word_192FDC[14 * panelIndex_64E] == 2 )
     {
-      if ( WORD1(a26) == word_19994E )
+      if ( (uint16_t)a2 == word_19994E )
       {
         sub_A01C6(&word_199ED0);
       }
-      else if ( WORD1(a26) == word_199950 )
+      else if ( (uint16_t)a2 == word_199950 )
       {
         sub_A015D(&word_199ED0);
       }
-      if ( WORD1(a26) == word_199982 )
+      if ( (uint16_t)a2 == word_199982 )
       {
         if ( byte_199F08 == 1 || (uint16_t)sub_712E1() == word_199BB8 )
         {
@@ -515,12 +522,13 @@ LABEL_22:
       }
       else
       {
-        v34 = sub_88FDD(SHIWORD(a25), SWORD1(a26), (int16_t *)&STACK[0xC4E], &word_19C186);
-        v35 = SLOWORD(STACK[0xC4E]);
+        /* wave 166: asm 0x893E6-0x893F8 - eax=arg_62 (a3), ebx=&arg_652 */
+        v34 = sub_88FDD((int16_t)a3, (int16_t)a2, (int16_t *)&hitStar_652, &word_19C186);
+        v35 = (int16_t)hitStar_652;
         word_1999CA = -1;
         if ( v35 > -1 )
         {
-          v36 = STACK[0xC4E];
+          v36 = hitStar_652;
           word_19995C = -1;
           word_1999CA = v36;
         }
@@ -532,58 +540,59 @@ LABEL_22:
           sub_6F280();
           byte_199F28 = 1;
         }
-        if ( byte_199BCA && WORD1(a26) == word_1999CE )
+        if ( byte_199BCA && (uint16_t)a2 == word_1999CE )
         {
           word_19995C = -1;
-          v38 = *(_WORD **)((char *)&a25 + 2);
+          v38 = (_WORD *)a4;   /* wave 166: arg_5E = the saved ECX pointer */
           word_199A08 = 30;
 LABEL_40:
           word_199A10 = 0;
           *v38 = 1;
           goto LABEL_67;
         }
-        if ( byte_199BCB && WORD1(a26) == word_1999D6 )
+        if ( byte_199BCB && (uint16_t)a2 == word_1999D6 )
         {
           if ( sub_7020A() )
           {
-            v38 = *(_WORD **)((char *)&a25 + 2);
+            v38 = (_WORD *)a4;   /* wave 166 */
             word_199A08 = 34;
             goto LABEL_40;
           }
-          v39 = &STACK[0xA52];
-          v40 = &STACK[0xA52];
+          v39 = textBuf_456;
+          v40 = textBuf_456;
           v41 = sub_7A990(0x20u);
           v42 = 0;
           goto LABEL_66;
         }
-        if ( byte_199BCC && WORD1(a26) == word_1999CC )
+        if ( byte_199BCC && (uint16_t)a2 == word_1999CC )
         {
-          v38 = *(_WORD **)((char *)&a25 + 2);
+          v38 = (_WORD *)a4;   /* wave 166 */
           word_199A08 = 31;
           goto LABEL_40;
         }
-        if ( byte_199BC9 && WORD1(a26) == word_1999DA )
+        if ( byte_199BC9 && (uint16_t)a2 == word_1999DA )
         {
           v43 = sub_78B93(word_192248[word_1999B8]);
           if ( v43 > -1 && v43 < word_19999A )
             *(_BYTE *)(dword_19306C + 113 * v43 + 54) &= ~(1 << word_19999C);
         }
-        else if ( byte_199BC8 && WORD1(a26) == word_1999D4 && SWORD1(a26) > 0 )
+        else if ( byte_199BC8 && (uint16_t)a2 == word_1999D4 && (int16_t)a2 > 0 )
         {
           if ( !sub_72617() )
           {
-            v39 = &STACK[0xB1A];
+            v39 = textBuf_51E;
             v42 = 3;
             v41 = sub_7A990(0xE6u);
-            v40 = &STACK[0xB1A];
+            v40 = textBuf_51E;
 LABEL_66:
-            v52 = v39;
-            strcpy((char *)v39, v41);
-            a1 = (int)v52;
+            /* wave 166: the asm here is an inline strcpy bracketed by
+               `push edi` / `pop edi` (0x89675-0x8967E); Hex-Rays modelled
+               the save/restore as an assignment to a phantom argument. */
+            strcpy(v39, v41);
             sub_7A25F(&byte_199F28, (int)v40, v42);
             goto LABEL_67;
           }
-          v44 = sub_7802A((int)&a27 + 2, 500);
+          v44 = sub_7802A((int)shipIds_6E, 500);   /* wave 166: arg_6E */
           v45 = sub_78013(0);
           if ( v44 == 1 )
           {
@@ -596,8 +605,8 @@ LABEL_66:
             v46 = 229;
           }
           v47 = sub_7A990(v46);
-          sprintf(&STACK[0xBE2], v47, v51);
-          if ( (uint8_t)sub_7A25F(&byte_199F28, (int)&STACK[0xBE2], 1) )
+          sprintf(textBuf_5E6, v47, v51);
+          if ( (uint8_t)sub_7A25F(&byte_199F28, (int)textBuf_5E6, 1) )
           {
             v48 = sub_A1AFA();
             word_199A06 = -1;
@@ -619,9 +628,9 @@ LABEL_66:
       }
     }
 LABEL_67:
-    ++STACK[0xC4A];
+    ++panelIndex_64E;
   }
-  while ( SLOWORD(STACK[0xC4A]) < 5 );
+  while ( panelIndex_64E < 5 );
 }
 // 891DD: variable 'v28' is possibly undefined
 // 89647: variable 'v50' is possibly undefined
@@ -727,7 +736,11 @@ void sub_896A7( int a1, int a2)
 
 
 //----- (000897CC) --------------------------------------------------------
-int sub_897CC()
+/* wave 167: the two register arguments Hex-Rays dropped. The prologue
+   spills them (`push eax` -> [ebp-46Ch] = v9 = x, `push edx` ->
+   [ebp-470h] = v8 = y) and the call site at 0x82BD1 loads them from the
+   same si/di pair that sub_896A7 gets. */
+int sub_897CC(int a1, int a2)
 {
   int v0; // ecx
   int16_t v1; // dx
@@ -737,8 +750,8 @@ int sub_897CC()
   int v5; // ebx
   int16_t v6; // ax
   int result; // eax
-  int16_t v8; // [esp+0h] [ebp-3EEh]
-  int16_t v9; // [esp+4h] [ebp-3EAh]
+  int16_t v8; // [esp+0h] [ebp-3EEh]  - wave 167: EDX = y
+  int16_t v9; // [esp+4h] [ebp-3EAh]  - wave 167: EAX = x
   int16_t v10[500]; // [esp+8h] [ebp-3E6h] BYREF
   _BYTE v11[80]; // [esp+3F0h] [ebp+2h] BYREF
   _DWORD v12[3]; // [esp+440h] [ebp+52h]
@@ -750,6 +763,8 @@ int sub_897CC()
   char v18; // [esp+468h] [ebp+7Ah]
   char v19; // [esp+46Ch] [ebp+7Eh]
 
+  v9 = a1;   /* wave 167: `push eax` */
+  v8 = a2;   /* wave 167: `push edx` */
   v12[0] = 12;
   v12[1] = dword_81C98[1];
   v12[2] = dword_81C98[2];
@@ -805,8 +820,8 @@ int sub_897CC()
   }
   return result;
 }
-// 89866: variable 'v8' is possibly undefined
-// 89856: variable 'v9' is possibly undefined
+// 89866/89856: PORT (wave 167): v8 and v9 are not undefined, they are the
+//        two register arguments spilled by the prologue - see above.
 // 81C98: using guessed type int dword_81C98[3];
 // 81CA4: using guessed type wchar_t asc_81CA4[3];
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -2149,7 +2164,9 @@ void sub_8B2DE()
   int16_t v11; // [esp+8h] [ebp-Ch]
   char v12; // [esp+Ch] [ebp-8h]
   char v13; // [esp+10h] [ebp-4h]
+  char v14; // [ebp-10h] - wave 173: byte_199BE0 saved on entry
 
+  v14 = byte_199BE0;   /* wave 173: asm 0x8B2E7 `movzx ax, byte_191BE0 / mov [ebp+var_10], ax` */
   v13 = 0;
   LOWORD(v0) = sub_78B93(word_192248[word_1999B8]);
   v1 = v0;
@@ -2169,9 +2186,8 @@ void sub_8B2DE()
   sub_1077D(v4, 0, 639, v1);
   sub_1172FC();
   i = 1;
-  sub_C8DB8((int16_t)v1, 1);
-  v7 = v6;
-  if ( v6 > -1 )
+  v7 = sub_C8DB8((int16_t)v1, 1);   /* wave 172: asm 0x8B3A9 `mov esi, eax` */
+  if ( v7 > -1 )
   {
     LOBYTE(v2) = 0;
     for ( i = 0; (int16_t)i < word_199BB8 && !(_BYTE)v2; ++i )
@@ -2221,7 +2237,13 @@ void sub_8B2DE()
     if ( v10 == -1 )
       sub_91A40();
   }
-  JUMPOUT(0x8AB1C);
+  /* wave 173: tail loc_8AB1C shared with sub_8A97A - restores the game state.
+     Without it word_199A08 stayed 30 and the COLONIZE window reopened. */
+  byte_199BE0 = v14;
+  word_199A08 = word_199A10;
+  sub_11C2F0();
+  sub_119281();
+  sub_A20CD();
 }
 // 8B4C7: control flows out of bounds to 8AB1C
 // 8B30C: variable 'v0' is possibly undefined

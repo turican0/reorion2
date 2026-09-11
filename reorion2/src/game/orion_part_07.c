@@ -7926,7 +7926,7 @@ LABEL_12:
   }
   if ( v0 > 21 && v0 < 527 && v4 > 21 && v4 < 421 && !v2 )
   {
-    sub_897CC();
+    sub_897CC(v0, v4);   /* wave 167: asm 0x82BD1 - same x/y as sub_896A7 */
     sub_896A7(v0, v4);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x83CFF je epilog funkce */
@@ -11219,37 +11219,14 @@ LABEL_115:
         }
       }
     }
-    v5 = (int16_t)v76;
-    v37 = (int16_t)v85;
-    i = (int)&v74;
-    sub_89183(
-      (int)a1,
-      v65[0],
-      v65[1],
-      v65[2],
-      v65[3],
-      v65[4],
-      v65[5],
-      v65[6],
-      v65[7],
-      v65[8],
-      v65[9],
-      v65[10],
-      v65[11],
-      v65[12],
-      v65[13],
-      v65[14],
-      v65[15],
-      v65[16],
-      v65[17],
-      v65[18],
-      v65[19],
-      v65[20],
-      v65[21],
-      v65[22],
-      v66,
-      v67,
-      v68);
+    /* wave 166: the real call is fastcall(eax, edx, ebx, ecx) plus EDI:
+         cseg01:00086B09  movsx ebx, word ptr [ebp+82h+var_30]   ; v76
+         cseg01:00086B0D  movsx edx, word ptr [ebp+82h+var_C]    ; v85
+         cseg01:00086B11  lea   ecx, [ebp+82h+var_38]           ; &v74
+         cseg01:00086B14  movsx eax, word_191976                ; word_199976
+       The port already computed all three into v5/v37/i and then dropped
+       them on the floor, passing 27 phantom arguments instead. */
+    sub_89183(word_199976, (int16_t)v85, (int16_t)v76, (int16_t *)&v74, a1);
     if ( !word_199976 )
     {
       v5 = (int)&v81;

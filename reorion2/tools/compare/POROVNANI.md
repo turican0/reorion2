@@ -1204,3 +1204,110 @@ Watch the palette width: DOSBox-X dumps a 6-bit palette, the port an
 8-bit one. Rendering the original without the `>> 2` conversion makes the
 whole screen look dimmed and invites the wrong conclusion.
 
+
+### `sub ebp, N` after `enter`: locals rendered as arguments
+
+Wave 166. When a Watcom prologue does
+
+```
+enter <locals>, 0
+push eax / push edx / push ebx / push ecx
+sub  ebp, <N>
+```
+
+EBP ends up *below* the frame, so both the spilled register arguments and
+every local sit at positive offsets and Hex-Rays reports them as
+arguments. `sub_89183` got 27; only four were real.
+
+**Recipe:**
+
+1. `ebp_real = ebp + N`. IDA's `arg_K` is at `[ebp + K + 0x10]` when the
+   prologue pushed two registers before `enter` (`[ebp+8]` and `[ebp+0xC]`
+   hold them, so the argument area starts at `+0x10`).
+2. The four slots immediately below `ebp_real - <locals>` are the spilled
+   EAX/EDX/EBX/ECX, in push order.
+3. Read the CALL SITE for the real signature - it is the only place the
+   argument order is visible.
+4. Any `STACK[X]` in the body is the same frame: work out the constant
+   offset from one known pair and the rest follow.
+
+### HIWORD/SHIWORD are size-dependent - the port's macros are not
+
+The port defines `HIWORD(x)` as word index 1. IDA defines it as
+`WORDn(x, HIGH_IND(x,_WORD))`, i.e. **the highest word of the operand's
+own size**. They agree for 32-bit operands and disagree for everything
+else. Hex-Rays emits these macros on `int64_t` pseudo-arguments whenever
+it merges two adjacent stack slots, so on any 8-byte operand:
+
+| expression | IDA means | port computes |
+|---|---|---|
+| `HIWORD(x)` | word 3 | word 1 |
+| `SHIWORD(x)` | word 3 | word 1 |
+| `WORD1(x)` / `SWORD1(x)` | word 1 | word 1 (correct) |
+
+**Check:** `grep` for `HIWORD(` / `SHIWORD(` applied to anything declared
+`int64_t`, `_QWORD` or `__int64`. Every hit is reading the wrong half.
+Fixing the macro globally is not safe - earlier waves may have worked
+around it - so resolve each site against the asm instead.
+
+### An argument-less IDA signature is not evidence of no arguments
+
+Wave 167. `; int sub_897CC()` looked argument-less, but the call site
+loaded EAX and EDX and the prologue spilled both with `push eax /
+push edx`. The tell is in the decompiled body: locals that are read but
+never written, which IDA itself flags as
+`variable 'vN' is possibly undefined`.
+
+**Recipe:** treat every "possibly undefined" local as a candidate lost
+register argument. Resolve its `[ebp-X]` comment through the frame shift
+and compare with what the prologue pushes. Then find the call site to
+learn which register carries what.
+
+### A button that "does nothing" and a button that crashes are the same news
+
+Wave 166 turned COLONIZE PLANET from silent into a crash three screens
+deeper. That is progress, not a regression: the dispatcher now works and
+the failure moved to the next never-executed path. Expect the same
+sequence for every screen the port has not opened yet.
+
+
+### A JUMPOUT thunk can be the entry into ANOTHER function's body
+
+Wave 171. `sub_C87C1` was `push ebx/ecx/edx; push offset X; jmp loc_C8373`
+- a jump into the middle of `sub_C836E`, after that function's own
+`push 0`. The two share everything except one argument. A breakpoint on
+`sub_C836E` never fired in the original; only the return address of the
+next call (`ret=0xC839B`) revealed the path.
+
+**Recipe:** when a callee's return address lands inside a function whose
+entry was never hit, look for `CODE XREF: sub_X+N j` on the labels in that
+body - every such jump is a thunk that must be written out with its own
+prologue pushes.
+
+### sprintf's "int64 return" is a register-tracking artefact
+
+Wave 168. Hex-Rays types `sprintf` as returning `int64` and then uses
+`SWORD2`/`SHIDWORD` of that value wherever EDX survived the call. The
+value is not a result of `sprintf` at all - it is whatever was loaded into
+EDX before the call. Resolve it from the instructions before the call.
+A quick scan finds well over a hundred `SWORD2`/`HIDWORD` uses in the
+port, many of them this pattern, many legitimate; check each against the
+asm rather than bulk-replacing.
+
+### Array macros from a split block keep biting as scalars
+
+Wave 169. Turning a block's leading fields into `(block + N)` macros (wave
+156) was right, but every bare use then silently became an address. MSVC
+only warns (C4047). Scan for the macro names NOT followed by `[` and
+compare each hit with the asm: `mov reg, sym` means value, `offset sym`
+means address.
+
+### Measure where a window opens, not only whether it opens
+
+Waves 168-170 had the panel "open" in memory for three waves while the
+screen showed nothing. The data model (`sub_83669`, the panel record,
+the allocation) matched the original byte for byte; the defects were all
+in the per-frame drawing path (`sub_91099 -> sub_A4FBE -> sub_A31DA`).
+Probe the arguments of the drawing call - a garbage coordinate or size is
+visible immediately.
+

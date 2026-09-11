@@ -16370,3 +16370,292 @@ The single pixel at (517, 392), and the broader question raised by waves
 32-bit values. The `cwde` family was swept completely (25 functions); the
 `movsx word ptr` family was only fixed on the four text entry points.
 
+
+---
+
+## Waves 166-167: the panel renders, now make it respond
+
+The fleet panel matched the original pixel for pixel, but nothing in it
+worked: clicking a ship selected a *different* ship, ALL selected
+nothing, CLOSE did not close, COLONIZE PLANET did nothing, and double
+clicking a star on the map did nothing either.
+
+### Wave 166: sub_89183 - 27 arguments, 23 of them fiction
+
+`sub_89183` is the click dispatcher. Its prologue is
+
+```
+cseg01:00089183   push  esi
+cseg01:00089184   push  edi
+cseg01:00089185   enter 5ECh, 0
+cseg01:00089189   push  eax          ; the four incoming register arguments
+cseg01:0008918A   push  edx
+cseg01:0008918B   push  ebx
+cseg01:0008918C   push  ecx
+cseg01:0008918D   sub   ebp, 66Ah    ; EBP moves BELOW the whole frame
+```
+
+so every local *and* every saved register argument ends up at a positive
+offset from the shifted EBP. Hex-Rays reported them as arguments and
+invented 27 of them. Resolving the frame (`ebp_real = ebp + 0x66A`,
+IDA `arg_N` at `[ebp+N+0x10]`):
+
+| slot | real address | meaning |
+|---|---|---|
+| `arg_5E` | `[ebp_real-0x5FC]` | saved ECX = 4th argument (a pointer) |
+| `arg_62` | `[ebp_real-0x5F8]` | saved EBX = 3rd argument (the hit coordinate) |
+| `arg_66` | `[ebp_real-0x5F4]` | saved EDX = 2nd argument (the clicked element id) |
+| `arg_6A` | `[ebp_real-0x5F0]` | saved EAX = 1st argument |
+| `arg_6E` | `[ebp_real-0x5EC]` | 1000-byte buffer |
+| `arg_456/51E/5E6` | `-0x204 / -0x13C / -0x74` | text buffers |
+| `arg_64A/64E/652/656` | `-0x10 / -0xC / -8 / -4` | hit results and the 0..4 loop counter |
+
+Every `STACK[X]` the port compiled against the shared
+`DECOMP_STACK_STUB` array is `arg_(X - 0x5FC)`, i.e. a local of this
+function.
+
+**The reason the buttons misbehaved** is a macro mismatch.
+`decomp_compat.h` defines
+
+```c
+#define HIWORD(x)   (*((unsigned short*)&(x)+1))
+#define SHIWORD(x)  (*((short*)&(x)+1))
+```
+
+always word index 1, while IDA's own definition is
+`WORDn(x, HIGH_IND(x,_WORD))`, which for an **8-byte** operand is word
+index **3**. Hex-Rays emitted `HIWORD(a26)` and `SHIWORD(a25)` on
+`int64_t` values, so the port read the wrong halves:
+
+| port expression | port read | asm actually reads |
+|---|---|---|
+| `HIWORD(a26)` | `arg_66` | `arg_6A` (1st argument) |
+| `SHIWORD(a25)` | `arg_5E` | `arg_62` (3rd argument) |
+
+`SHIWORD(a25)` is the hit coordinate handed to `sub_890EF` and
+`sub_88FDD` - reading the neighbouring slot is exactly "clicking a ship
+selects a different ship". `HIWORD(a26)` gates the whole button-dispatch
+block, which is why CLOSE, ALL and COLONIZE did nothing.
+
+Verified against both hit-test call sites, e.g.
+
+```
+cseg01:00089279   movsx edx, word ptr [ebp+arg_66]
+cseg01:0008927D   movsx eax, [ebp+arg_62]
+cseg01:00089281   lea   ecx, [ebp+arg_64A]
+cseg01:00089287   lea   ebx, [ebp+arg_656]
+cseg01:0008928D   call  sub_890EF
+```
+
+The call site gives the real signature:
+
+```
+cseg01:00086B09   movsx ebx, word ptr [ebp+82h+var_30]   ; 3rd
+cseg01:00086B0D   movsx edx, word ptr [ebp+82h+var_C]    ; 2nd
+cseg01:00086B11   lea   ecx, [ebp+82h+var_38]            ; 4th
+cseg01:00086B14   movsx eax, word_191976                 ; 1st
+cseg01:00086B1B   call  sub_89183
+```
+
+and the port already computed all three into `v5`, `v37` and `i` right
+before the call, then dropped them and passed 27 phantom arguments.
+EDI is never touched between `sub_86188` and the `call sub_84555` inside
+`sub_89183`, and `sub_84555` is `__usercall sub_84555(_DWORD *@<edi>)`,
+so `sub_86188`'s own `a1` is threaded through as a fifth parameter.
+
+### Wave 167: sub_897CC lost both register arguments
+
+The star hit tests write two slots. Measured in the original with
+`DUMPREGS cond=changed` after a double click on Trilar:
+
+```
+word_199ECD  FF -> 1D   at eip 0x002AD90F = IDA 0x8990F = sub_897CC
+word_199ECB  FF -> 1D   at eip 0x002A6D64 = IDA 0x82D64 = sub_82CB7
+```
+
+`sub_82CB7` works in the port - a probe confirms it:
+
+```
+HIT star29 mouse=(60,43) star=(61,44) r=0 radius=12 stars=36 d2=2
+```
+
+`sub_897CC` never fired, because Hex-Rays declared it argument-less
+(`; int sub_897CC()`) while the call site passes the mouse position in
+registers and the prologue spills it:
+
+```
+cseg01:00082BD1   mov   edx, ecx     ; y
+cseg01:00082BD3   mov   eax, ebx     ; x
+cseg01:00082BD5   call  sub_897CC
+...
+cseg01:000897D0   enter 468h, 0
+cseg01:000897D4   push  eax          ; [ebp-46Ch]
+cseg01:000897D5   push  edx          ; [ebp-470h]
+cseg01:000897D6   sub   ebp, 82h
+```
+
+With the 0x82 shift, the port's `v9 [ebp-3EAh]` is `-0x46C` (EAX = x) and
+`v8 [ebp-3EEh]` is `-0x470` (EDX = y) - both read uninitialised in the
+distance test. IDA flagged them itself
+("variable 'v8' is possibly undefined").
+
+### Result
+
+Measured against DOSBox-X driven through the identical click sequence:
+
+| action | before | after |
+|---|---|---|
+| click a ship slot | selects a different ship | **correct slot, 39 px of 38016 differ (0.10 %)** |
+| ALL | nothing | **all three ships selected** |
+| CLOSE | nothing | **panel closes, back to the map** |
+| COLONIZE PLANET | nothing | **enters state 30, the colonise screen** - and crashes there |
+| double click a star | nothing | still nothing |
+
+The 39 differing pixels are the same animated background sprite phase and
+the single stray pixel documented in wave 165.
+
+#### Verified
+
+- `-t:Build` clean;
+- **regression gate 600/600 matched, 0 diverged**;
+- all temporary probes removed, including one left behind by wave 105 in
+  `sub_A1C74` that had been printing on every run since.
+
+#### Still open
+
+1. **COLONIZE PLANET crashes.** The button now correctly sets
+   `word_199A08 = 30`, the main loop enters state 30 and calls
+   `sub_8B2DE`, which crashes in a screen that has never run before:
+
+   ```
+   SEH 0xC0000005 av_read=0x0
+     #0 sub_A30FD+0x90  (orion_part_10.c:3261)
+     #1 sub_A31DA+0x823 (orion_part_10.c:3532)
+     #2 sub_C87DE+0x1d1 (orion_part_13.c:2201)
+     #3 sub_C8DB8+0x15a (orion_part_13.c:2520)
+     #4 sub_8B2DE+0xfa  (orion_part_08.c:2181)
+   ```
+
+   `dword_193184` is NULL - it is allocated only in `sub_A404E`
+   (`sub_110D3C(dword_19D214, 70)`), which this path never reaches.
+
+2. **Double clicking a star still opens nothing.** Wave 167 is a real fix
+   verified against the asm, but the chain continues: with `a1 == 1`
+   `sub_857F8` only consults `word_199EC7`/`word_199EC9` (both -1), so the
+   `sub_831B1` branch at 0x86B59 is dead in the original too. The panel
+   must come from the other call, `sub_857F8(0, ...)` at 0x866A2
+   (orion_part_07.c:11081), which reads `word_199ECB`/`word_199ECD` - that
+   is the next measurement point.
+
+
+---
+
+## Waves 168-171: the Star System panel and the COLONIZE screen
+
+After waves 166-167 a click on a star reached `sub_83669(29)` exactly like
+the original - the data model opened the panel (`word_192FDE[0] = 29`,
+rect 180/148/347/273, `dword_193184` allocated) - but nothing appeared on
+screen. COLONIZE PLANET entered state 30 and crashed on a NULL
+`dword_193184`. Four more defects, each measured on both sides.
+
+### Wave 168: sub_A4FBE took the panel y from sprintf's return value
+
+```
+cseg01:000A4FFB   mov   dx, word_18AFE6      ; y, loaded BEFORE sprintf_
+cseg01:000A500C   call  sprintf_             ; preserves edx
+cseg01:000A5032   push  eax                  ; = movsx eax, dx
+cseg01:000A503A   call  sub_A31DA
+```
+
+Hex-Rays types `sprintf` as returning `int64` and emitted `SWORD2(v6)` of
+that return value as the fifth argument. Replaced with `word_192FE6[0]`.
+
+### Wave 169: word_192FF4 / word_192FF6 read as addresses
+
+Wave 156 turned the first 14 fields of the 0x192FDC block into array
+macros `(word_192FDC + N)`. Six sites still used `word_192FF4` and
+`word_192FF6` bare, i.e. assigned the low 16 bits of an address:
+
+```
+port probe:  sub_A31DA star=29 x=180 y=148 w=-21736 h=-21734   (0xAB18 / 0xAB1A)
+original:    record 0 has FF4 = FF6 = 0
+```
+
+Every asm use of both loads the value (`mov cx, word_18AFF4`,
+`add dx, word_18AFF4`, ...) - none takes an `offset`. Fixed in
+`sub_A4F58`, `sub_A4FBE` and `sub_A573B`. The five other bare uses of the
+block's array macros are genuine addresses (`fread`/`fwrite`/`memset`,
+`sub_856F7(..., word_192FE4, word_192FE6)`, `sub_A1C74(..., word_192FEA, ...)`)
+and the asm passes `offset` there.
+
+### Wave 170: sub_A30C5 ended in JUMPOUT - the window frame was never drawn
+
+```
+cseg01:000A30C5   ; void __stdcall sub_A30C5(int, int, int)   <- registers not listed
+cseg01:000A30CB   mov   esi, eax              ; x
+cseg01:000A30CD   mov   edi, edx              ; y
+cseg01:000A30CF   mov   [ebp+var_4], ebx      ; w
+cseg01:000A30E2   call  sub_127C27            ; BUFFER0.LBX #73, ecx = h survives
+cseg01:000A30E7   add   esi, [ebp+var_4]
+cseg01:000A30EA   add   ecx, edi
+cseg01:000A30FB   jmp   short loc_A30BA       ; shared with sub_A3025: call sub_12A478
+cseg01:000A30C2   retn  0Ch
+```
+
+The port had only `dword_193070 = sub_127C27(...); JUMPOUT(0xA30BA);`, and
+its three callers in `sub_A31DA` passed only the stack arguments. All three
+load `(a4, a5, a6, a7)` into eax/edx/ebx/ecx and push `(a8, a9, flag)`.
+
+Result for a click on Trilar, measured against DOSBox-X:
+**panel 0.71 % (676 of 94731 px), whole screen 0.36 %.**
+
+| after wave | panel differs |
+|---|---|
+| 167 | 97.85 % (nothing drawn) |
+| 168 | 97.85 % |
+| 169 | 89.28 % (orbits, title, CLOSE) |
+| **170** | **0.71 %** (frame and background) |
+
+### Wave 171: sub_C87C1 and sub_C7F2F were empty thunks into sub_C836E
+
+The COLONIZE crash needed the call chain of the original, measured with
+return addresses:
+
+```
+sub_C8DB8 -> sub_C87C1 -> [loc_C8373 inside sub_C836E] -> sub_A4F1F
+          -> sub_A3FE6 -> sub_A404E   (dword_193184 allocated at cycle 168.04M)
+```
+
+`sub_C836E`'s own entry never fires - `sub_C87C1` jumps into its body:
+
+```
+cseg01:000C87C1   push ebx / push ecx / push edx
+cseg01:000C87C4   push offset word_1991C8     ; sub_C836E pushes 0 here
+cseg01:000C87C9   jmp  loc_C8373
+
+cseg01:000C7F2F   push ebx / push ecx / push edx
+cseg01:000C7F32   jmp  loc_C839B               ; the tail only
+```
+
+Both were `JUMPOUT` in the port. Written out mirroring `sub_C836E`.
+
+Result: COLONIZE PLANET opens "Select planet for Colony Ship in Trilar
+system" - **window 0.76 % (701 of 91770 px), whole screen 0.37 %**, no
+crash.
+
+#### Verified
+
+- `-t:Build` clean;
+- **regression gate 600/600 matched, 0 diverged**;
+- no temporary probes left.
+
+#### Still open
+
+- Interacting inside the COLONIZE window (choosing a planet) is untested.
+- `sub_91099`, panel type 1, calls `sub_90C4F` with the wrong first three
+  arguments: the asm loads `dword_193070[20*i]` / `dword_193074[20*i]` into
+  eax/edx and `word_192FE4` into ebx, the port passes `word_192FE6`,
+  `word_192FE4`, `word_192FE4`. That panel type has not been exercised.
+- The remaining sub-percent differences on both screens have not been
+  broken down pixel by pixel yet.
+

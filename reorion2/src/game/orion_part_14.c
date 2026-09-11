@@ -1037,7 +1037,7 @@ void sub_D7439()
     {
       v7 = *(char *)(v6 + 40) - 80;
       if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v7 + 40) != 100 )
-        sub_97F8D(&v10, v7, v1);
+        sub_97F8D(&v10, v7, v1, (int16_t)(((intptr_t)v6 - (intptr_t)dword_19306C) / 113));   /* wave 175: asm 0xD760A-0xD7620 */
     }
   }
   v8 = word_199998;
