@@ -4556,6 +4556,16 @@ void sub_106CAC( int a1)
 
   dword_192BD8 = 3753 * word_19999C + (uint8_t*)dword_197F98;
   sub_107AF(&v32);
+  /*SONDA-CACHE*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
+  /*SONDA-CACHE*/   extern void PortDebug_WatchEnable(int on); extern void PortDebug_WatchWrite(void* addr, int len);
+  /*SONDA-CACHE*/   PortDebug_CrashLog("CACHE enter INFO: 193174=%08X 1BC288=%08X 1BC284=%08X hdr=%08X",
+  /*SONDA-CACHE*/     (unsigned)dword_193174, (unsigned)dword_1BC288, (unsigned)dword_1BC284,
+  /*SONDA-CACHE*/     (unsigned)*(int *)(intptr_t)(dword_193174 - 8));
+  /*SONDA-CACHE*/   PortDebug_WatchEnable(1);
+  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_1BC288, 4);
+  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_1BC284, 4);
+  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_193174, 4);
+  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)(intptr_t)(dword_193174 - 8), 4); }
   sub_131970();
   sub_11C2F0();
   sub_C5BB9();
@@ -4659,11 +4669,11 @@ void sub_106CAC( int a1)
       case 3:
         sub_1039EE();
         v18 = (int16_t)v17;
-        sub_108F98((int)(intptr_t)v24, (int16_t)v17);
+        v20 = sub_108F98((int)(intptr_t)v24, (int16_t)v17);   /* wave 178: asm 0x106FD7 `mov edi, eax` */
         goto LABEL_17;
       case 4:
         v18 = (int16_t)v17;
-        sub_109331((int)(intptr_t)v24, (int16_t)v17);   /* vlna 123: druhy argument */
+        v20 = sub_109331((int)(intptr_t)v24, (int16_t)v17);   /* wave 123: second argument; wave 178: result */
 LABEL_17:
         a1 = v20;
         break;
@@ -6497,7 +6507,9 @@ int sub_108F81(int a1, int a2)
 
 
 //----- (00108F98) --------------------------------------------------------
-void sub_108F98(int a1, int a2)
+/* wave 178: returns the clicked id (tail loc_108E55 `mov eax, edx`), 0 on
+   the quit flag (0x10915D `xor eax, eax`). */
+int16_t sub_108F98(int a1, int a2)
 {
   int16_t *v3; // eax
   int16_t *v4; // edi
@@ -6608,8 +6620,7 @@ LABEL_3:
         }
       }
       if ( (_WORD)v12 && (int16_t)v12 < (int16_t)v21 )
-LABEL_28:
-        JUMPOUT(0x108E55);
+        return (int16_t)v12;   /* wave 178: asm 0x1092B8 -> loc_108E55 */
     }
   }
   else
@@ -6631,10 +6642,10 @@ LABEL_28:
       sub_1077D(v8, (int)v5, (int)v5, v4);
       v7 = sub_12C2C6(2);
       if ( (_WORD)v5 )
-        goto LABEL_28;
+        return (int16_t)(intptr_t)v5;   /* wave 178: asm 0x10917D -> loc_108E55 */
     }
   }
-  JUMPOUT(0x108E57);
+  return 0;   /* wave 178: asm 0x10915D `xor eax, eax` */
 }
 // 10915F: control flows out of bounds to 108E57
 // 10917D: control flows out of bounds to 108E55
@@ -6685,7 +6696,9 @@ void sub_1092BD()
 /* PORT (vlna 123): asm `mov esi, eax / mov edi, edx` - funkce ma DVA registrove
    argumenty a oba predava dal (`movsx edx, di / mov eax, esi`). IDA druhy
    zahodila. */
-void sub_109331(int a1, int a2)
+/* wave 178: returns what the selected sub-page returns (tail locret_108023);
+   byte_1AD207 > 2 goes to loc_107FEE `xor eax, eax`. */
+int16_t sub_109331(int a1, int a2)
 {
   char v2[40]; // [esp+0h] [ebp-28h] BYREF
 
@@ -6697,22 +6710,15 @@ void sub_109331(int a1, int a2)
     if ( (uint8_t)byte_1AD207 <= 1u )
     {
       sub_1039B9();
-      sub_10988E(a1);
+      return sub_10988E(a1);
     }
-    else
-    {
-      if ( byte_1AD207 != 2 )
-        JUMPOUT(0x107FEE);
-      sub_1039C8();
-      sub_109762(a1);
-    }
+    if ( byte_1AD207 != 2 )
+      return 0;   /* asm 0x109384 -> loc_107FEE */
+    sub_1039C8();
+    return sub_109762(a1);
   }
-  else
-  {
-    sub_103990();
-    sub_1093CD(a1, (int16_t)a2);
-  }
-  JUMPOUT(0x108023);
+  sub_103990();
+  return sub_1093CD(a1, (int16_t)a2);
 }
 // 109384: control flows out of bounds to 107FEE
 // 1093A0: control flows out of bounds to 108023
@@ -6725,7 +6731,8 @@ void sub_109331(int a1, int a2)
    undefined`) a vstupni smycka pak porovnavala `v16 >= v20` proti smetim:
    misto ukonceni si vybrala nahodnou polozku a `dword_192C08[word_1AD1F8]`
    ukazovalo na nulu -> pad ve `strcpy`. */
-void sub_1093CD(int a1, int a2)
+/* wave 178: returns the clicked id (loc_108E55) or 0 (loc_10964D). */
+int16_t sub_1093CD(int a1, int a2)
 {
   int16_t *v0; // edx
   int v1; // ecx
@@ -6878,7 +6885,7 @@ void sub_1093CD(int a1, int a2)
       v16 = sub_12C2C6(2);
     }
     if ( (_WORD)v14 && (int16_t)v14 < v20 )
-      JUMPOUT(0x108E55);
+      return (int16_t)(intptr_t)v14;   /* wave 178: asm 0x1096D4 -> loc_108E55 */
   }
   if ( (int16_t)v16 < word_1AD1F4 )
   {
@@ -6892,7 +6899,7 @@ void sub_1093CD(int a1, int a2)
   }
   word_1AD1F8 = v17;
 LABEL_31:
-  JUMPOUT(0x108E57);
+  return 0;   /* wave 178: asm 0x10969E -> loc_10964D `xor eax, eax` */
 }
 // 10964F: control flows out of bounds to 108E57
 // 1096D4: control flows out of bounds to 108E55
@@ -6951,7 +6958,8 @@ LABEL_6:
 
 
 //----- (00109762) --------------------------------------------------------
-void sub_109762(int a1)
+/* wave 178: returns the clicked id (tail loc_108021 `mov eax, edx`). */
+int16_t sub_109762(int a1)
 {
   int16_t *v1; // edx
   char *v2; // esi
@@ -7001,7 +7009,7 @@ void sub_109762(int a1)
       break;
     v6 = sub_1077D(v7, v7, (int)&unk_17A28B, v9);
   }
-  JUMPOUT(0x108021);
+  return (int16_t)v7;   /* wave 178: loc_108021 `mov eax, edx` */
 }
 // 109873: control flows out of bounds to 108021
 // 109869: variable 'v6' is possibly undefined
@@ -7018,7 +7026,8 @@ void sub_109762(int a1)
 //----- (0010988E) --------------------------------------------------------
 /* PORT (vlna 123): `enter 2680h, 0` + `push eax` - var_2684 (= v25) je
    SPILLNUTY registrovy argument (`variable 'v25' is possibly undefined`). */
-void sub_10988E(int a1)
+/* wave 178: returns the clicked id (loc_108E55) or 0 (0x109CBE). */
+int16_t sub_10988E(int a1)
 {
   char *v0; // edi
   int v1; // eax
@@ -7182,7 +7191,7 @@ void sub_10988E(int a1)
       v23 = sub_1171AB(v21, v19, v16, (int)v13);
       v19 = v23;
       if ( word_19994C )
-        JUMPOUT(0x108E57);
+        return 0;   /* wave 178: asm 0x109CBE `xor eax, eax` */
       if ( (_WORD)v23 == (_WORD)v38 && sub_10A527((int)&unk_183EE7)
         || (_WORD)v19 == (_WORD)v12 && sub_10A540((int)&unk_183EE7) )
       {
@@ -7191,7 +7200,7 @@ void sub_10988E(int a1)
       if ( (_WORD)v19 )
       {
         if ( (int16_t)v19 <= (int16_t)v33 )
-          JUMPOUT(0x108E55);
+          return (int16_t)v19;   /* wave 178: asm 0x109D20 -> loc_108E55 */
       }
       else
       {

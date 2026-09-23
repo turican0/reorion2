@@ -6,6 +6,24 @@
 #include <string.h> /* memcpy - realny qmemcpy, wave 20 */
 #include <SDL3/SDL.h> /* SDL_GetTicks - realny AIL_ms_count nahrada, viz sub_149B10/149B30 nize (vlna 25) */
 
+/* waves 176-177: link_stubs.c does not include orion_common.h, so the
+   real functions the former stubs forward to need explicit prototypes -
+   otherwise C assumes an int return and misreads int16_t results. */
+extern char byte_19BF08;
+extern int16_t sub_77423(int a1);
+extern void sub_154D80(void);
+extern void sub_154D8D(void);
+extern unsigned int sub_1553B4(void);
+extern int sub_155536(void);
+extern int sub_77BF1(void);
+extern int sub_12C7CC(void);
+extern int16_t sub_7743A(int a1);
+extern int16_t sub_772C4(int a1);
+extern int16_t sub_A5EBF(int a1, int a2, int a3);
+extern int sub_B3E7A(void);
+extern int16_t sub_11C2F0(void);
+
+
 int __CS__;
 int __DS__;
 int __ES__;
@@ -301,27 +319,31 @@ int nfree(unsigned int a) {
     return PortMemory_Free((void*)(size_t)a);
 };
 int nosound(void) { return 0; }
-int nullsub_1(void) { return 0; }
-int nullsub_10(void) { return 0; }
-int nullsub_11(void) { return 0; }
-int nullsub_12(void) { return 0; }
-int nullsub_13(void) { return 0; }
-int nullsub_14(void) { return 0; }
-int nullsub_15(void) { return 0; }
-int nullsub_16(void) { return 0; }
-int nullsub_17(void) { return 0; }
-int nullsub_18(void) { return 0; }
-int nullsub_19(void) { return 0; }
-int nullsub_2(void) { return 0; }
-int nullsub_21(void) { return 0; }
-int nullsub_22(void) { return 0; }
-int nullsub_3(void) { return 0; }
-int nullsub_4(void) { return 0; }
-int nullsub_5(void) { return 0; }
-int nullsub_6(void) { return 0; }
-int nullsub_7(void) { return 0; }
-int nullsub_8(void) { return 0; }
-int nullsub_9(void) { return 0; }
+/* wave 178: a nullsub is a bare `retn` in the original - it returns EAX
+   unchanged, i.e. its first argument. Hex-Rays writes `return nullsub_N(x)`
+   where IDA split the final `retn` of a function off as a separate
+   "function"; returning 0 here made those functions always return 0. */
+int nullsub_1(int a1) { return a1; }
+int nullsub_10(int a1) { return a1; }
+int nullsub_11(int a1) { return a1; }
+int nullsub_12(int a1) { return a1; }
+int nullsub_13(int a1) { return a1; }
+int nullsub_14(int a1) { return a1; }
+int nullsub_15(int a1) { return a1; }
+int nullsub_16(int a1) { return a1; }
+int nullsub_17(int a1) { return a1; }
+int nullsub_18(int a1) { return a1; }
+int nullsub_19(int a1) { return a1; }
+int nullsub_2(int a1) { return a1; }
+int nullsub_21(int a1) { return a1; }
+int nullsub_22(int a1) { return a1; }
+int nullsub_3(int a1) { return a1; }
+int nullsub_4(int a1) { return a1; }
+int nullsub_5(int a1) { return a1; }
+int nullsub_6(int a1) { return a1; }
+int nullsub_7(int a1) { return a1; }
+int nullsub_8(int a1) { return a1; }
+int nullsub_9(int a1) { return a1; }
 /* printf viz poznamka u fprintf vyse - nestubovat, je to realna CRT funkce. */
 /* qmemcpy is Hex-Rays' name for a plain memcpy (rep movsd/movsb). It was a
    no-op stub returning 0, which SILENTLY dropped every graphics blit that
@@ -337,10 +359,10 @@ int sound(void) { return 0; }
 // PORT (wave 23b): real constant, not a stub - see orion_common.h comment.
 const int sub_10000 = 0x10000;
 int sub_1279A(void) { return 0; }
-int sub_13F949(void) { return 0; }
-int sub_13F94E(void) { return 0; }
-int sub_13FBB5(void) { return 0; }
-int sub_13FD4B(void) { return 0; }
+int sub_13F949(void) { sub_154D80(); return 0; }   /* wave 177: asm `jmp sub_154D80` */
+int sub_13F94E(void) { sub_154D8D(); return 0; }   /* wave 177: asm `jmp sub_154D8D` */
+int sub_13FBB5(void) { return (int)sub_1553B4(); }   /* wave 177: asm `jmp sub_1553B4` */
+int sub_13FD4B(void) { return sub_155536(); }   /* wave 177: asm `jmp sub_155536` */
 int sub_149950(void) { return 0; }
 int sub_1499C0(void) { return 0; }
 // PORT (wave 25): dword_18A5AC ("int (*)(_DWORD)") is the Miles Sound System
@@ -367,14 +389,23 @@ int sub_1655B0(void) { return 0; }
 /* PORT (wave 25q): real implementation now lives in orion_part_26.c */
 /* PORT (wave 25q): real implementation now lives in orion_part_26.c */
 /* PORT (wave 25q): real implementation now lives in orion_part_26.c */
-int sub_702E5(void) { return 0; }
-int sub_772BF(void) { return 0; }
-int sub_77433(void) { return 0; }
-int sub_8139F(void) { return 0; }
+int sub_702E5(void) { return sub_77BF1(); }   /* wave 177: asm `jmp sub_77BF1` */
+/* wave 177: asm `mov eax, 1` and no retn - falls into sub_772C4(al). */
+int sub_772BF(int a1, int a2, int a3, int a4) { return sub_772C4(1); }
+/* wave 177: asm `mov byte_193F08, 1` and no retn - falls into sub_7743A(eax). */
+int sub_77433(int a1) { byte_19BF08 = 1; return sub_7743A(a1); }
+int sub_8139F(void) { return sub_12C7CC(); }   /* wave 177: asm `jmp sub_12C7CC` */
 /* vlna 81: sub_8CF09 uz neni pahyl - rekonstruovano v orion_part_08.c */
-int sub_A162D(void) { return 0; }
-int sub_A5EBC(void) { return 0; }
-int sub_B3E75(void) { return 0; }
+/* wave 177: qsort comparator of the fleet table - descending by the word
+   at +6 (asm `movsx edx,[edx+6] / movsx eax,[eax+6] / sub edx,eax`). */
+int sub_A162D(const void *a, const void *b)
+{
+  return *(const int16_t *)((const char *)b + 6) - *(const int16_t *)((const char *)a + 6);
+}
+/* wave 177: asm `movsx ebx, bx` and no retn - falls into sub_A5EBF. */
+int sub_A5EBC(int a1, int a2, int a3) { return sub_A5EBF(a1, a2, (int16_t)a3); }
+/* wave 177: asm `call sub_11C2F0` and no retn - falls into sub_B3E7A. */
+int sub_B3E75(int a1) { sub_11C2F0(); return sub_B3E7A(); }
 /* wave 176: not a stub - asm 0xC5B5F is `jmp sub_77423` (message dialog). */
 int16_t sub_C5B5F(int a1) { return sub_77423(a1); }
 /* PORT (vlna 58): SWORD1..SWORD6 -> makra v decomp_compat.h. SWORD2 tu byl

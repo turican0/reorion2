@@ -1,0 +1,36 @@
+seznam nalezenych chyb:
+-když dam hned po startu quit - tak to spadne
+-v hall of time se pokazde vykresluji jiné rasy - prover to aby to bylo 1:1
+-když dam ve hre zoom - tak se nezobrazuji v zoomovanem pohledu hvezdy
+-když kliknu na vyzkoum, tak to pada
+-když kliknu na turn, tak to pada
+-těsně před videem otevírajícího se menu(po skončení hlavního videa) jsou nahoře vidět artefakty
+COLONIES
+-když presunu vedce kdelnikum, tak to pada
+-když kliknu na jmeno planety, tak to pada
+PLANETS
+-když klknu na minerals/size tak to pada
+FLEES
+-když najedu na lod vykresluji se spatne informace
+-když oznacim lod a dam relocate a kliknu na jinou lod, tak to spadne
+-když oznacim lod a dam scrap, tak to spadne
+LEADERS
+-když najednu na ikonku lodi v rohu, tak to spadne
+-když prejistim po planetách, tak se to spatne vykresluje
+RACES
+-když jdu na races, a vratim se, tak to spadne
+INFO
+-když preklikavam - history / tech review / race statistic - tak se nic nedeje
+-když mysi prejizdim po prave casti, tak se to zobrazuje spatne
+-return nefunguje
+GAME
+-když dam new game - tak to spadne
+-když dam save a cancel - tak to spadne
+-když v save kliknu na jiny slot, tak to spadne
+-při psani jmena v save nefunguje backspace(ale nevim zda fungovala v originalu)
+-když dam quit - texty se zobrazi spatne
+-když dam quit a potvrdim to, tak to spadne
+soustava - klikz na ni kliknu
+-když prejizdim po planetách spatne se to vykresluje
+-když najedu na ikonku lodi vlevo dole, spadne to
+

@@ -1311,3 +1311,32 @@ in the per-frame drawing path (`sub_91099 -> sub_A4FBE -> sub_A31DA`).
 Probe the arguments of the drawing call - a garbage coordinate or size is
 visible immediately.
 
+
+### A link stub returning 0 can hide a whole feature
+
+Wave 176. `sub_C5B5F` - every in-game message box - was
+`int sub_C5B5F(void) { return 0; }` in `link_stubs.c`. Nothing crashed;
+the messages simply never appeared. The probe showed the port reaching the
+right decision (message id 566) - the only missing piece was the one-line
+thunk `jmp sub_77423`.
+
+**Scan:** for every trivial stub in `link_stubs.c`, look up the `proc` in
+the listing and count its instructions. Anything that is not a bare
+`retn` / `xor eax,eax; retn` is real code. The first scan found 19.
+
+### A return value can decide which screen comes next
+
+Wave 172. A dropped return value normally shows up as a wrong number.
+Here it chose a *branch*: with garbage the port walked into a code path
+the original never runs and died three calls deeper on an LBX error that
+had nothing to do with the cause. Measuring which functions the original
+enters after the click (DUMPREGS on their entries) located the fork at
+once.
+
+### The same broken frame keeps coming back
+
+Waves 166 and 174: `enter N,0 / push eax,edx,ebx,ecx / sub ebp,M`. Wherever
+Hex-Rays produced more than a dozen `aN` arguments, some of them `int64`
+or `int128`, check the prologue for `sub ebp`. The recipe from wave 166
+applies unchanged; `retn K` gives the number of stack arguments (K / 4).
+

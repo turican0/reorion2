@@ -16659,3 +16659,120 @@ crash.
 - The remaining sub-percent differences on both screens have not been
   broken down pixel by pixel yet.
 
+
+---
+
+## Waves 172-176: inside the COLONIZE window
+
+After wave 171 the COLONIZE window opened, but every action inside it
+failed: CLOSE ended with a fatal "PLANETS.LBX [entry 0] exceeds number of
+LBX entries", picking a planet crashed (write to 0x136), and the message
+the original shows ("You cannot build there.") never appeared.
+
+### Wave 172: sub_C8DB8 dropped its return value
+
+```
+cseg01:0008B3A4   call  sub_C8DB8
+cseg01:0008B3A9   mov   esi, eax           ; decides the whole branch
+cseg01:0008B3AC   cmp   eax, 0FFFFFFFFh
+cseg01:0008B3AF   jle   loc_8B444
+```
+
+`sub_C8DB8` returns `esi` = the last `sub_C8BE0` result (0xC8EC8, 0xC8F15);
+the port ended in `JUMPOUT(0xC97B9)` (the epilogue) and `sub_8B2DE` read an
+uninitialised `v6`. With garbage it entered the `sub_B9802` branch - which
+the original never takes (measured: no hit on `sub_B9802`, `sub_BF55A` or
+`sub_BBA8E` after CLOSE) - and died on the LBX error.
+
+### Wave 173: sub_8B2DE ended in JUMPOUT(0x8AB1C) - a shared tail
+
+```
+cseg01:0008B2E7   movzx ax, byte_191BE0
+cseg01:0008B2F6   mov   [ebp+var_10], ax
+cseg01:0008B4C4   mov   al, byte ptr [ebp+var_10]
+cseg01:0008B4C7   jmp   loc_8AB1C          ; inside sub_8A97A
+cseg01:0008AB1C   mov   byte_191BE0, al
+cseg01:0008AB21   mov   ax, word_191A10
+cseg01:0008AB27   mov   word_191A08, ax    ; leave state 30
+cseg01:0008AB2D   call  sub_11C2F0 / sub_119281 / sub_A20CD
+```
+
+Without it `word_199A08` stayed 30 and the COLONIZE window reopened right
+after CLOSE. The sibling `sub_8A97A` already had the tail written out.
+
+### Wave 174: sub_A2123 - the same broken frame as sub_89183
+
+```
+push esi / push edi / enter 0B8h,0 / push eax,edx,ebx,ecx / sub ebp,6Ah
+...
+retn 18h
+```
+
+Four register arguments plus six stack arguments; Hex-Rays produced 25
+phantom arguments (two of them `int128`). Inside the body the byte offsets
+were self-consistent, but the callers put the real stack arguments into
+register positions, so the body wrote through a garbage pointer
+(`*a8 = 0` -> write to 0x136). Rebuilt the signature
+`sub_A2123(a1..a4, int16_t a5, a6, a7, int16_t *a8, int16_t *a9, char a10)`,
+turned the phantom slots into named locals (`arg_2E` .. `arg_56`) and fixed
+both callers against 0xA38C6-0xA38E0 and 0xA390A-0xA393B.
+
+`HIWORD(a14)` / `SHIWORD(a14)` on the 16-byte phantom meant IDA word 7 =
+`arg_42` (the text x); the port macro reads word 1. Also the height passed
+to `sub_8F055` is narrowed to 16 bits (0xA38E5 `movsx ecx, ax`).
+
+### Wave 175: two more lost values
+
+- `sub_A58CE` returns its line counter (0xA5999 `mov eax, [ebp+var_4]`);
+  `sub_A2123` stores it into `arg_46`.
+- `sub_97F8D` spills EAX with `push eax` into `[ebp-10h]` - the port's `v12`,
+  compared but never assigned. All three asm callers load EAX
+  (`word_17B1AC`, `dword_19782C`, the planet index); added as `a4`.
+
+### Wave 176: sub_C5B5F was a link stub returning 0
+
+```
+cseg01:000C5B5F   sub_C5B5F   proc near
+cseg01:000C5B5F               jmp  sub_77423     ; the message dialog
+```
+
+`link_stubs.c` had `int sub_C5B5F(void) { return 0; }`, so every message
+routed through it - about 22 call sites - was silently dropped. The port
+probe showed the correct decision (`message id=566`), just no dialog.
+
+A scan of all trivial stubs in `link_stubs.c` against the listing found
+**18 more that are real code** in the original (thunks like
+`jmp sub_154D80`, or bodies of 3-34 instructions): `sub_1279A`,
+`sub_13F949`, `sub_13F94E`, `sub_13FBB5`, `sub_13FD4B`, `sub_149950`,
+`sub_1499C0`, `sub_149BB0`, `sub_149C40`, `sub_15C7F0`, `sub_164DA0`,
+`sub_1655B0`, `sub_702E5`, `sub_772BF`, `sub_77433`, `sub_8139F`,
+`sub_A162D`, `sub_A5EBC`, `sub_B3E75`. Not fixed yet.
+
+### Result
+
+Measured against DOSBox-X driven through the same clicks:
+
+| action | before | after |
+|---|---|---|
+| CLOSE in the COLONIZE window | fatal LBX error | **back to the fleet panel: 0.04 % of the panel, 0.30 % of the screen** |
+| click a planet | crash | **"You cannot build there.": 0.00 % of the dialog, 0.26 % of the screen** |
+| CLOSE the dialog | - | back to the COLONIZE window: 0.65 % of the dialog area, 3.21 % of the window |
+| Star System panel (regression check) | 0.71 % | 0.68 % |
+
+The 3.21 % after closing the dialog is the hover box "Asteroid
+(uninhabitable)" that the original shows under the mouse and the port does
+not - not investigated yet.
+
+#### Verified
+
+- `-t:Build` clean;
+- **regression gate 600/600 matched, 0 diverged**;
+- no temporary probes left.
+
+#### Still open
+
+- the hover info box after closing the message dialog;
+- the 18 link stubs listed above;
+- `sub_91099`, panel type 1, calls `sub_90C4F` with wrong first arguments;
+- colonising a valid planet is untested.
+

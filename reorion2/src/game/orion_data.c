@@ -16995,6 +16995,7 @@ int16_t word_19BF00; // weak
 int16_t word_19BF02; // weak
 int16_t word_19BF04; // weak
 int16_t word_19BF06; // weak
+char byte_19BF08; // wave 177: write-only flag, only xref is sub_77433
 _UNKNOWN unk_19BF0C; // weak
 int16_t word_19BFC0; // weak
 char byte_19BFC4; // weak
@@ -18496,7 +18497,7 @@ int dword_1BC380; // weak
 int dword_1BC384; // weak
 int dword_1BC388; // weak
 char byte_1BC38C; // weak
-_UNKNOWN unk_1BC390; // weak
+_UNKNOWN unk_1BC390[0x400]; // weak (wave 179: palette backup, 0x1BC390..0x1BC790; sub_131970 copies 0x400 bytes)
 int dword_1BC790; // weak
 int dword_1BC794; // weak
 int dword_1BC798; // weak

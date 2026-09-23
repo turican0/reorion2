@@ -6942,19 +6942,19 @@ extern int sub_108EC3();
 // plna signatura: int sub_108F81(int a1, int a2);
 extern int sub_108F81();
 // plna signatura: void sub_108F98(int a1, int a2);
-extern void sub_108F98();
+extern int16_t sub_108F98();   /* wave 178 */
 // plna signatura: void sub_1092BD();
 extern void sub_1092BD();
 // plna signatura: void sub_109331(int a1, int a2);   /* vlna 123 */
-extern void sub_109331(int a1, int a2);
+extern int16_t sub_109331(int a1, int a2);   /* wave 178 */
 // plna signatura: void sub_1093CD(int a1, int a2);   /* vlna 123 */
-extern void sub_1093CD(int a1, int a2);   /* vlna 123 */
+extern int16_t sub_1093CD(int a1, int a2);   /* wave 178 */   /* vlna 123 */
 // plna signatura: void sub_1096D9();
 extern void sub_1096D9();
 // plna signatura: void sub_109762(int a1);
-extern void sub_109762();
+extern int16_t sub_109762();   /* wave 178 */
 // plna signatura: void sub_10988E(int a1);   /* vlna 123 */
-extern void sub_10988E(int a1);   /* vlna 123 */
+extern int16_t sub_10988E(int a1);   /* wave 178 */   /* vlna 123 */
 // plna signatura: void sub_109D25();
 extern void sub_109D25();
 // plna signatura: void sub_109DB5(int a1, int16_t *a2);
@@ -19477,6 +19477,7 @@ extern int16_t word_19BF00;
 extern int16_t word_19BF02;
 extern int16_t word_19BF04;
 extern int16_t word_19BF06;
+extern char byte_19BF08;   /* wave 177 */
 extern _UNKNOWN unk_19BF0C;
 extern int16_t word_19BFC0;
 extern char byte_19BFC4;
@@ -20931,7 +20932,7 @@ extern int dword_1BC380;
 extern int dword_1BC384;
 extern int dword_1BC388;
 extern char byte_1BC38C;
-extern _UNKNOWN unk_1BC390;
+extern _UNKNOWN unk_1BC390[0x400];   /* wave 179 */
 extern int dword_1BC790;
 extern int dword_1BC794;
 extern int dword_1BC798;
