@@ -6511,7 +6511,7 @@ int sub_A7364( int a1, int a2, int a3, int a4, int a5, int a6)
 
   v7 = (a6 << 6) + (a4 << 7) + 4 * a3;
   sub_12B753(*(int *)((char *)&dword_19D410 + v7), a5 % 3);
-  return sub_C5CFF(a1, a2, *(int16_t **)((char *)&dword_19D410 + v7));
+  return sub_C5CFF(a1, a2, ((int16_t *)(intptr_t)*(int *)((char *)&dword_19D410 + v7)));
 }
 // 19D410: using guessed type int dword_19D410;
 

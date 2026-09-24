@@ -340,14 +340,14 @@ int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4)
         do
           ++v8;
         while ( *v8 );
-        strcpy(v8, *(char **)((char *)&off_17FD0F + 15 * v7));
+        strcpy(v8, ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * v7)));
         v9 = asc_179D88;
         v10 = v19;
       }
       else
       {
         v10 = v18;
-        v9 = *(char **)((char *)&off_17FD0F + 15 * v7);
+        v9 = ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * v7));
       }
       v11 = v10 - 1;
       do
@@ -611,7 +611,7 @@ char sub_B0CF6(uint8_t* a1, int a2, int a3)
       }
       else
       {
-        v42 = *(char **)((char *)&off_17EEE0 + 47 * v38);
+        v42 = ((char *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * v38));
         ++v67;
         strcpy(v71, v42);
         v71 += 200;

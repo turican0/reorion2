@@ -6452,9 +6452,11 @@ LABEL_13:
   // though the loop itself completed correctly. Dropped; the loop bound (0x32C)
   // is the real overflow guard now that dword_1A6578 is sized to match it.
   result = sub_CE0E5();
+  /* wave 180: v6 = the VALUE of dword_1A6B38 (asm 0xCE05F mov edi, dword_19EB38) -
+     entry 368 of the table filled above; the file name goes into that string. */
   if ( byte_199CAE == 1 )
   {
-    v6 = (_DWORD *)dword_1A6B38;
+    v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
     v7 = aMaingermLbx;
   }
   else if ( byte_199CAE )
@@ -6462,19 +6464,19 @@ LABEL_13:
     switch ( byte_199CAE )
     {
       case 2:
-        v6 = (_DWORD *)dword_1A6B38;
+        v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
         v7 = aMainfrenLbx;
         break;
       case 3:
-        v6 = (_DWORD *)dword_1A6B38;
+        v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
         v7 = aMainspanLbx;
         break;
       case 4:
-        v6 = (_DWORD *)dword_1A6B38;
+        v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
         v7 = aMainitalLbx;
         break;
       case 5:
-        v6 = (_DWORD *)dword_1A6B38;
+        v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
         v7 = aMainpoliLbx;
         break;
       default:
@@ -6483,7 +6485,7 @@ LABEL_13:
   }
   else
   {
-    v6 = (_DWORD *)dword_1A6B38;
+    v6 = (_DWORD *)(intptr_t)*(int *)dword_1A6B38;
     v7 = aMaintextLbx;
   }
   *v6 = *(_DWORD *)v7;

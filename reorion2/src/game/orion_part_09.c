@@ -257,7 +257,7 @@ void sub_9402B( int a1)
         if ( (*(_DWORD *)(dword_1930DC + 59 * v7 + 42) & *(int *)((char *)dword_17D219 + 18 * v3)) != 0 )
         {
           v6 = sub_94BB2((int16_t)v11, v9, v3);
-          sprintf(v8, *(char **)((char *)&off_17D226 + 18 * v3), v6);
+          sprintf(v8, ((char *)(intptr_t)*(int *)((char *)&off_17D226 + 18 * v3)), v6);
           v5 = sub_12066F((int)v8);
           if ( v5 > v2 )
             goto LABEL_10;
@@ -270,7 +270,7 @@ void sub_9402B( int a1)
       if ( (*(_DWORD *)(dword_1930DC + 59 * v7 + 38) & *(int *)((char *)dword_17D219 + 18 * v3)) != 0 )
       {
         v4 = sub_94BB2((int16_t)v11, v10, v3);
-        sprintf(v8, *(char **)((char *)&off_17D226 + 18 * v3), v4);
+        sprintf(v8, ((char *)(intptr_t)*(int *)((char *)&off_17D226 + 18 * v3)), v4);
         v5 = sub_12066F((int)v8);
         if ( v5 > v2 )
 LABEL_10:
@@ -2060,7 +2060,7 @@ LABEL_66:
     {
       v57 = v33;
       sub_12A478(v71, v79 - 4, dword_190358[v33 / 2]);
-      v48 = *(char **)((char *)&dword_17D222 + 18 * v33);
+      v48 = ((char *)(intptr_t)*(int *)((char *)&dword_17D222 + 18 * v33));
       v37 = v79;
       v71 += 22;
       v38 = sprintf(v50, "%s ", v48);
@@ -2069,7 +2069,7 @@ LABEL_66:
       v39 = v57;
       sub_12066F((int)v50);
       LOWORD(v38) = sub_94BB2(word_19999C, SWORD2(v38), v39);
-      sprintf(v50, *(char **)((char *)&off_17D226 + 18 * v33), (int16_t)v38);
+      sprintf(v50, ((char *)(intptr_t)*(int *)((char *)&off_17D226 + 18 * v33)), (int16_t)v38);
       if ( word_199A08 == 29 )
         v40 = v73;
       else
@@ -2094,7 +2094,7 @@ LABEL_66:
       v42 = v77;
       v43 = 18 * (int16_t)v77;
       sub_12A478(v76, v79 - 4, dword_190358[(int16_t)v77 / 2]);
-      v49 = *(char **)((char *)&dword_17D222 + v43);
+      v49 = ((char *)(intptr_t)*(int *)((char *)&dword_17D222 + v43));
       v44 = v79;
       v76 += 22;
       v45 = sprintf(v50, "%s ", v49);
@@ -2102,7 +2102,7 @@ LABEL_66:
       WORD2(v45) = v78;
       sub_12066F((int)v50);
       LOWORD(v45) = sub_94BB2(word_19999C, SWORD2(v45), v42);
-      sprintf(v50, *(char **)((char *)&off_17D226 + v43), (int16_t)v45);
+      sprintf(v50, ((char *)(intptr_t)*(int *)((char *)&off_17D226 + v43)), (int16_t)v45);
       if ( word_199A08 == 29 )
         v46 = v67;
       else

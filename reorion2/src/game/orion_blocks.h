@@ -5,14 +5,9 @@
 #ifndef ORION_BLOCKS_H
 #define ORION_BLOCKS_H
 
-void InitDataBlocks(void);
 
-extern int16_t unk_183DA7[17];
-extern int16_t off_183DC9[17];
-extern int16_t unk_183DEB[17];
 
 /* block_183E15 (0x183E15..0x183F28): INFO page descriptors: three 0x40-byte scroll/list descriptors (fields +8/+12/+16/+22/+26/+34/+40 are 32-bit pointers) and their coordinate tables */
-extern uint8_t block_183E15[0x113];
 #define unk_183E15 (*(_UNKNOWN *)(block_183E15 + 0x0))
 #define word_183E55 (*(int16_t *)(block_183E15 + 0x40))
 #define word_183E57 ((int16_t *)(block_183E15 + 0x42))
@@ -25,13 +20,11 @@ extern uint8_t block_183E15[0x113];
 #define dword_183EFD (*(int *)(block_183E15 + 0xE8))
 
 /* block_184306 (0x184306..0x184364): second INFO list descriptor (unk_184324) and its coordinate table */
-extern uint8_t block_184306[0x5E];
 #define unk_184324 (*(_UNKNOWN *)(block_184306 + 0x1E))
 #define dword_18433A (*(int *)(block_184306 + 0x34))
 #define off_184350 ((uint32_t *)(block_184306 + 0x4A))   /* 32-bit pointer slots */
 
 /* block_181768 (0x181768..0x181862): table of 10-byte button records; sub_6F280 writes records 15 and 16 through unk_1817FE..unk_181810 */
-extern uint8_t block_181768[0xFA];
 #define unk_181768 (*(_UNKNOWN *)(block_181768 + 0x0))
 #define unk_1817FE (*(int16_t *)(block_181768 + 0x96))
 #define unk_181800 (*(int16_t *)(block_181768 + 0x98))
@@ -45,7 +38,6 @@ extern uint8_t block_181768[0xFA];
 #define unk_181810 (*(int16_t *)(block_181768 + 0xA8))
 
 /* block_19BAD4 (0x19BAD4..0x19BC14): table of 10-byte button records filled by a 0x140-byte copy */
-extern uint8_t block_19BAD4[0x140];
 #define unk_19BAD4 (*(_UNKNOWN *)(block_19BAD4 + 0x0))
 #define unk_19BB4C (*(int16_t *)(block_19BAD4 + 0x78))
 #define unk_19BB4E (*(int16_t *)(block_19BAD4 + 0x7A))
@@ -54,7 +46,6 @@ extern uint8_t block_19BAD4[0x140];
 #define unk_19BB54 (*(int16_t *)(block_19BAD4 + 0x80))
 
 /* block_19BC90 (0x19BC90..0x19BDDA): table of 10-byte button records filled by a 0x14A-byte copy */
-extern uint8_t block_19BC90[0x14A];
 #define unk_19BC90 (*(_UNKNOWN *)(block_19BC90 + 0x0))
 #define word_19BC94 ((int16_t *)(block_19BC90 + 0x4))
 #define unk_19BD44 (*(int16_t *)(block_19BC90 + 0xB4))
@@ -64,7 +55,6 @@ extern uint8_t block_19BC90[0x14A];
 #define unk_19BD4C (*(int16_t *)(block_19BC90 + 0xBC))
 
 /* block_19BE34 (0x19BE34..0x19BEB6): table filled by a 0x82-byte copy from off_1818F8 */
-extern uint8_t block_19BE34[0x82];
 #define unk_19BE34 (*(_UNKNOWN *)(block_19BE34 + 0x0))
 #define word_19BE74 (*(int16_t *)(block_19BE34 + 0x40))
 #define word_19BE78 (*(int16_t *)(block_19BE34 + 0x44))
@@ -72,7 +62,6 @@ extern uint8_t block_19BE34[0x82];
 #define word_19BE82 (*(int16_t *)(block_19BE34 + 0x4E))
 
 /* block_19E564 (0x19E564..0x19EAF4): structure cleared by a 1421-byte memset */
-extern uint8_t block_19E564[0x590];
 #define unk_19E564 (*(_UNKNOWN *)(block_19E564 + 0x0))
 #define word_19E574 ((int16_t *)(block_19E564 + 0x10))
 #define byte_19E57C ((char *)(block_19E564 + 0x18))
@@ -82,14 +71,12 @@ extern uint8_t block_19E564[0x590];
 #define byte_19E580 ((char *)(block_19E564 + 0x1C))
 
 /* block_1BB598 (0x1BB598..0x1BB619): palette block written 0x40 bytes at a time (stride 4, like byte_1BB358) */
-extern uint8_t block_1BB598[0x81];
 #define unk_1BB598 (*(_UNKNOWN *)(block_1BB598 + 0x0))
 #define byte_1BB599 ((char *)(block_1BB598 + 0x1))
 #define byte_1BB59A ((char *)(block_1BB598 + 0x2))
 #define byte_1BB59B ((char *)(block_1BB598 + 0x3))
 
 /* block_1C9C4C (0x1C9C4C..0x1C9C4E): 16-bit bit accumulator; byte_1C9C4D is its high byte */
-extern uint8_t block_1C9C4C[0x2];
 #define unk_1C9C4C (*(uint16_t *)(block_1C9C4C + 0x0))
 #define byte_1C9C4D (*(char *)(block_1C9C4C + 0x1))
 

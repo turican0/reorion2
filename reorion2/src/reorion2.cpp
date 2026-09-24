@@ -24,8 +24,8 @@ extern "C" void PortDebug_Symbolize(const char* tag, void* addr);
 extern "C" void PortDebug_CrashLog(const char* fmt, ...);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
 extern "C" void PortDebug_WatchEnable(int on);
-extern "C" void PortCtl_Init();
-extern "C" void InitDataBlocks(void);   /* wave 179: pointer slots in the data blocks (orion_data.c) */   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
+extern "C" void PortCtl_Init();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
+extern "C" void InitDataSegment(void);   /* wave 180: pointer slots of the data segment (orion_dseg.c) */
 
 // PORT (vlna 133): spinac vypisu hardwaroveho watchpointu (PortDebug_WatchWrite).
 // Registr zustava nastaveny, jen se hlaseni potlaci - hodi se, kdyz se
@@ -453,7 +453,7 @@ int main(int argc, char* argv[])
     // Treti parametr dekompilovaneho vstupu (a3) neni ve standardnim main
     // dostupny, puvodni volajici (DOS startup kod) do nej pravdepodobne
     // predaval PSP/env blok - zatim nullptr, viz DECOMP_TODO v port_dos.h.
-    InitDataBlocks();
+    InitDataSegment();
     GameMain_10057(argc, argv, nullptr);
 
     // GameMain_10057 je (interne kdyz nekonci hru, zavola exit()

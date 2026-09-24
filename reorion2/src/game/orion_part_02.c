@@ -9141,7 +9141,7 @@ LABEL_28:
       else
       {
         v31 = v139;
-        v32 = *(char **)((char *)&off_17F638 + 15 * (uint8_t)byte_199A45);
+        v32 = ((char *)(intptr_t)*(int *)((char *)&off_17F638 + 15 * (uint8_t)byte_199A45));
         v33 = v152;
       }
       sub_1212B3(v33, v31, (int)v32);
@@ -9617,7 +9617,7 @@ LABEL_190:
                   ++v93;
                 strcpy(v93, ", ");
               }
-              v94 = *(char **)((char *)&off_17FD0F + 15 * i);
+              v94 = ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * i));
               /* vlna 73: puvodne `v104 = v105; v95 = (char *)&v104 + 3;` -
                  v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
                  v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
@@ -14093,7 +14093,7 @@ void sub_37308( int a1,
           do
             ++v68;
           while ( *v68 );
-          strcpy(v68, *(char **)((char *)&off_17EEE0 + 47 * v67));
+          strcpy(v68, ((char *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * v67)));
           v69 = &v95;
           do
             ++v69;

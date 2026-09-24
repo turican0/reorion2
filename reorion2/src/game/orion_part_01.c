@@ -13984,7 +13984,7 @@ LABEL_17:
         v34 = v69;
 LABEL_24:
         v28 = *(char **)((char *)&a25 + 2);
-        v29 = *(char **)((char *)&off_17D904 + 23 * v34);
+        v29 = ((char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * v34));
         goto LABEL_34;
       case 0x88:
         *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;

@@ -609,7 +609,7 @@ int16_t sub_10D31C(
               do
                 ++v46;
               while ( *v46 );
-              strcpy(v46, *(char **)((char *)&off_17FD0B + 15 * v44));
+              strcpy(v46, ((char *)(intptr_t)*(int *)((char *)&off_17FD0B + 15 * v44)));
               v47 = (char *)v61 - 1;   /* vlna 124: cil je sousedni buffer v61, ne &v60 */
               do
                 ++v47;
@@ -2136,7 +2136,7 @@ void sub_10F62F(int a1, int a2)
 char *sub_10F772( int a1)
 {
   if ( a1 < 75 )
-    return *(char **)((char *)&off_17D904 + 23 * a1);
+    return ((char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * a1));
   strcpy(byte_17D640, (char *)dword_199170);
   return byte_17D640;
 }

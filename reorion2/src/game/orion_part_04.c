@@ -10113,7 +10113,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
   }
   ServiceAudioTick_FE8BE((int)v9, v6, (int)v5, a3);
   /* vlna 89d: ukazatel do postranniho pole, viz TECHNAME_AT v orion_common.h */
-  for ( j = 0; j != 931; techName_17EB2A[j / 19] = v11 )
+  /* wave 180: asm 0x5DFB3 mov dword_176B2A[eax], esi - the slot in the table as well */
+  for ( j = 0; j != 931; techName_17EB2A[j / 19] = v11, *(uint32_t *)(dseg + 0x6B2A + j) = (uint32_t)(uintptr_t)v11 )
   {
     while ( 1 )
     {
@@ -10130,7 +10131,7 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     j += 19;
   }
   ServiceAudioTick_FE8BE(931, v6, (int)v5, a3);
-  for ( k = 0; k != 1880; *(_UNKNOWN **)((char *)&off_17EEB1 + k) = v13 )
+  for ( k = 0; k != 1880; *(uint32_t *)((char *)&off_17EEB1 + k) = (uint32_t)(uintptr_t)(v13))
   {
     while ( 1 )
     {
@@ -10164,7 +10165,7 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     m += 15;
   }
   ServiceAudioTick_FE8BE((int)v15, v6, (int)v5, a3);
-  for ( n = 0; n != 354; *(_UNKNOWN **)((char *)&off_17F665 + n + 1) = v17 )
+  for ( n = 0; n != 354; *(uint32_t *)((char *)&off_17F665 + n + 1) = (uint32_t)(uintptr_t)(v17))
   {
     while ( 1 )
     {
@@ -10247,7 +10248,7 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
     mm += 3;
   }
   ServiceAudioTick_FE8BE(48, v6, (int)v5, a3);
-  for ( nn = 0; nn != 60; *(_UNKNOWN **)((char *)&off_17FFD6 + nn + 2) = v27 )
+  for ( nn = 0; nn != 60; *(uint32_t *)((char *)&off_17FFD6 + nn + 2) = (uint32_t)(uintptr_t)(v27))
   {
     while ( 1 )
     {
@@ -10315,7 +10316,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
   }
   ServiceAudioTick_FE8BE((int)v33, v6, (int)v5, a3);
   // vlna 81: puvodne 8bajtovy zapis do 36bajtoveho zaznamu - viz orion_data.c
-  for ( i4 = 0; i4 != 324; shipSizeNameA_18003A[i4 / 36 - 1] = v35 )
+  /* wave 180: asm 0x5E1A7 mov (off_178014+2)[eax], esi - the slot in the table as well */
+  for ( i4 = 0; i4 != 324; shipSizeNameA_18003A[i4 / 36 - 1] = v35, *(uint32_t *)(dseg + 0x8016 + i4) = (uint32_t)(uintptr_t)v35 )
   {
     while ( 1 )
     {
@@ -10333,7 +10335,8 @@ int sub_5DF0A(int a1, int a2, int16_t *a3)
   }
   ServiceAudioTick_FE8BE(324, v6, (int)v5, a3);
   // vlna 81: totez pro druhy ukazatel zaznamu (+4)
-  for ( result = 0; result != 81; shipSizeNameB_18003E[result / 9 - 1] = v37 )
+  /* wave 180: asm 0x5E1D2 mov dword_17801A[eax], esi (eax = 4 * result) - the slot as well */
+  for ( result = 0; result != 81; shipSizeNameB_18003E[result / 9 - 1] = v37, *(uint32_t *)(dseg + 0x801A + 4 * result) = (uint32_t)(uintptr_t)v37 )
   {
     while ( 1 )
     {

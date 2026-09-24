@@ -1146,7 +1146,7 @@ char sub_6558C( int a1, int a2, int a3, int a4)
     {
       v11 = 59 * v8;
       sub_6FBEA(v14, *(int16_t *)((char *)&word_17F6A7 + v11));
-      v12 = *(char **)((char *)&off_17F6A1 + v11);
+      v12 = ((char *)(intptr_t)*(int *)((char *)&off_17F6A1 + v11));
     }
     else
     {
@@ -1159,7 +1159,7 @@ LABEL_42:
       }
       v13 = 11 * v8;
       sub_6FBEA(v14, word_17FDF2[v13]);
-      v12 = *(char **)((char *)&off_17FDEC + v13 * 2);
+      v12 = ((char *)(intptr_t)*(int *)((char *)&off_17FDEC + v13 * 2));
     }
     strcpy(v15, v12);
     goto LABEL_42;
@@ -2784,7 +2784,7 @@ void sub_6767F()
         {
           sub_68D3D(v9, &v31, (int16_t *)&v30, (int)v4);
           strcpy(v22, (char *)dword_19269C[word_18B0E0[(int16_t)v9]]);
-          strcpy(v23, *(char **)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9]));
+          strcpy(v23, ((char *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9])));
           v4 = v23;
           if ( word_199856 <= -1 || (v10 = dword_1927A8 + 2 * word_199856, *(int16_t *)(v10 + 181) <= 0) )
             v11 = v30;
@@ -2942,7 +2942,7 @@ void sub_67CCF( int a1)
       sprintf(
         v12,
         v13,
-        *(_UNKNOWN **)((char *)&off_17FD0B + v3),
+        ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17FD0B + v3)),
         *(_DWORD *)(dword_1927A8 + 237) + v5 - *(_DWORD *)(dword_1927A8 + 233));
       break;
     case 1:
@@ -2960,7 +2960,7 @@ void sub_67CCF( int a1)
         v13,
         v8 - (int16_t)v14,
         (_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * v6),
-        *(_UNKNOWN **)((char *)&off_17FD0B + 15 * a1));
+        ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17FD0B + 15 * a1)));
       break;
     case 2:
       v10 = 61;
@@ -2976,7 +2976,7 @@ LABEL_8:
     case 5:
       v11 = *(_WORD *)(dword_192694 + 6 * word_19B972);
       sub_8F6DF(0x40u, v13);
-      sprintf(v12, v13, *(_UNKNOWN **)((char *)&off_17FD0B + v3), *(off_17F803 + v11));
+      sprintf(v12, v13, ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17FD0B + v3)), *(off_17F803 + v11));
       break;
     default:
       break;
@@ -3641,7 +3641,7 @@ int16_t sub_68755(int16_t *a1)
             && *(_WORD *)(dword_1927A8 + 2 * word_199856 + 181) != word_18B0E0[(int16_t)v9] )
           {
             sub_8F6DF(0x41u, v33);
-            sprintf(v34, v33, *(_UNKNOWN **)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9]));
+            sprintf(v34, v33, ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9])));
 LABEL_20:
             v39 = 1;
             sub_77433(v34);
@@ -3658,22 +3658,22 @@ LABEL_20:
           {
             v4 = 2 * (int16_t)v9;
             if ( !strcmp(
-                    *(_UNKNOWN **)((char *)&off_17EEE0 + 47 * *(int16_t *)((char *)word_18B0E0 + v4)),
-                    *(_UNKNOWN **)((char *)&off_17EEE0 + 47 * v43)) )
+                    ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * *(int16_t *)((char *)word_18B0E0 + v4))),
+                    ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * v43))) )
             {
               sub_8F6DF(0x42u, v32);
-              sprintf(v34, v32, *(_UNKNOWN **)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9]));
+              sprintf(v34, v32, ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9])));
             }
             else
             {
               sub_8F6DF(0x43u, v31);
-              v29 = *(uint8_t **)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9]);
+              v29 = ((uint8_t *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * word_18B0E0[(int16_t)v9]));
               if ( sub_8F8DC(*v29) )
                 v20 = aAn_0;
               else
                 v20 = aA_2;
               v28 = v20;
-              v27 = *(uint8_t **)((char *)&off_17EEE0 + 47 * v43);
+              v27 = ((uint8_t *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * v43));
               if ( sub_8F8DC(*v27) )
                 v21 = aAn_0;
               else
@@ -7686,7 +7686,7 @@ void sub_6D29C()
     sub_6E240(3, 1);
   if ( *(_WORD *)(dword_1927A8 + 17) )
   {
-    strcpy(v65, *(char **)((char *)&off_17F6A1 + 59 * *(int16_t *)(dword_1927A8 + 17)));
+    strcpy(v65, ((char *)(intptr_t)*(int *)((char *)&off_17F6A1 + 59 * *(int16_t *)(dword_1927A8 + 17))));
     sub_1212B3(437, 56, (int)v65);
     sub_12066F((int)v65);
     sub_120BB5(2, (int)v70);
@@ -9052,7 +9052,7 @@ int sub_6F07F( int a1, char *a2)
       do
         ++v5;
       while ( *v5 );
-      strcpy(v5, *(char **)((char *)&off_17FD0F + 15 * v4));
+      strcpy(v5, ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * v4)));
       v6 = v10 - 1;
       do
         ++v6;

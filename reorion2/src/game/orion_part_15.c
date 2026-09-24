@@ -7016,6 +7016,8 @@ void sub_EE0B0(int a1, int a2)
 //----- (000EE4A1) --------------------------------------------------------
 unsigned int sub_EE4A1(char *a1)
 {
+  /* wave 180: the entries the decompiler typed as arrays (NAME[0]) are read back
+     as NAME[0] - `(char *)NAME` was the address of the table, not the string. */
   dword_1AAC50 = (int)a1;
   dword_1AAC28 = (int)&a1[strlen(a1) + 1];
   dword_1AABFC = strlen((char *)dword_1AAC28) + 1 + dword_1AAC28;
@@ -7024,7 +7026,7 @@ unsigned int sub_EE4A1(char *a1)
   dword_1AABF8 = strlen((char *)dword_1AAC24) + 1 + dword_1AAC24;
   dword_1AAC40 = strlen((char *)dword_1AABF8) + 1 + dword_1AABF8;
   dword_1AA404[0] = strlen((char *)dword_1AAC40) + 1 + dword_1AAC40;
-  dword_1AA408 = strlen((char *)dword_1AA404) + 1 + dword_1AA404;
+  dword_1AA408 = strlen((char *)(intptr_t)dword_1AA404[0]) + 1 + dword_1AA404[0];
   dword_1AAC34 = strlen((char *)dword_1AA408) + 1 + dword_1AA408;
   dword_1AAC0C = strlen((char *)dword_1AAC34) + 1 + dword_1AAC34;
   dword_1AAC44 = strlen((char *)dword_1AAC0C) + 1 + dword_1AAC0C;
@@ -7076,7 +7078,7 @@ unsigned int sub_EE4A1(char *a1)
   dword_1AAB88 = strlen((char *)dword_1AAB6C) + 1 + dword_1AAB6C;
   dword_1AAB7C = strlen((char *)dword_1AAB88) + 1 + dword_1AAB88;
   dword_1AAB48[0] = strlen((char *)dword_1AAB7C) + 1 + dword_1AAB7C;
-  dword_1AAB4C = strlen((char *)dword_1AAB48) + 1 + dword_1AAB48;
+  dword_1AAB4C = strlen((char *)(intptr_t)dword_1AAB48[0]) + 1 + dword_1AAB48[0];
   dword_1AAB50 = strlen((char *)dword_1AAB4C) + 1 + dword_1AAB4C;
   dword_1AAB54 = strlen((char *)dword_1AAB50) + 1 + dword_1AAB50;
   dword_1AAB58 = strlen((char *)dword_1AAB54) + 1 + dword_1AAB54;
@@ -7086,14 +7088,14 @@ unsigned int sub_EE4A1(char *a1)
   dword_1AAB2C = strlen((char *)dword_1AAB40) + 1 + dword_1AAB40;
   dword_1AAB44 = strlen((char *)dword_1AAB2C) + 1 + dword_1AAB2C;
   dword_1AAB5C[0] = strlen((char *)dword_1AAB44) + 1 + dword_1AAB44;
-  dword_1AAB60 = strlen((char *)dword_1AAB5C) + 1 + dword_1AAB5C;
+  dword_1AAB60 = strlen((char *)(intptr_t)dword_1AAB5C[0]) + 1 + dword_1AAB5C[0];
   dword_1AAB64 = strlen((char *)dword_1AAB60) + 1 + dword_1AAB60;
   dword_1AAB68 = strlen((char *)dword_1AAB64) + 1 + dword_1AAB64;
   dword_1AAB70[0] = strlen((char *)dword_1AAB68) + 1 + dword_1AAB68;
-  dword_1AAB74 = strlen((char *)dword_1AAB70) + 1 + dword_1AAB70;
+  dword_1AAB74 = strlen((char *)(intptr_t)dword_1AAB70[0]) + 1 + dword_1AAB70[0];
   dword_1AAB78 = strlen((char *)dword_1AAB74) + 1 + dword_1AAB74;
   dword_1AA3F4[0] = strlen((char *)dword_1AAB78) + 1 + dword_1AAB78;
-  dword_1AA3F8 = strlen((char *)dword_1AA3F4) + 1 + dword_1AA3F4;
+  dword_1AA3F8 = strlen((char *)(intptr_t)dword_1AA3F4[0]) + 1 + dword_1AA3F4[0];
   dword_1AA3FC = strlen((char *)dword_1AA3F8) + 1 + dword_1AA3F8;
   dword_1AA400 = strlen((char *)dword_1AA3FC) + 1 + dword_1AA3FC;
   return dword_1AA400 + strlen((char *)dword_1AA400) + 1;

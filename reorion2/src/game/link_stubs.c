@@ -9,7 +9,8 @@
 /* waves 176-177: link_stubs.c does not include orion_common.h, so the
    real functions the former stubs forward to need explicit prototypes -
    otherwise C assumes an int return and misreads int16_t results. */
-extern char byte_19BF08;
+extern uint8_t dseg[];   /* wave 180: data symbols live in dseg (orion_dseg.h) */
+#define byte_19BF08 (*(char *)(dseg + 0x23F08))
 extern int16_t sub_77423(int a1);
 extern void sub_154D80(void);
 extern void sub_154D8D(void);
@@ -520,3 +521,7 @@ int word_1BD356;
 int word_1BD358;
 int word_1BDF52;
 int word_1BDF54;
+
+/*SONDA-DSEG*/ #include <stdio.h>
+/*SONDA-DSEG*/ void SondaDsegDump(void) { const char *dp = getenv("REORION2_DSEG_DUMP"); if ( dp ) { FILE *df = fopen(dp, "wb");
+/*SONDA-DSEG*/   if ( df ) { fwrite(dseg, 1, 0x5DCD0, df); fclose(df); } } }

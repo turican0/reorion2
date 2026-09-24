@@ -4558,6 +4558,7 @@ void sub_106CAC( int a1)
   int v35; // [esp+D8h] [ebp+7Ah]
   int v36; // [esp+DCh] [ebp+7Eh]
 
+  /*SONDA-DSEG*/ { extern void SondaDsegDump(void); SondaDsegDump(); }
   dword_192BD8 = 3753 * word_19999C + (uint8_t*)dword_197F98;
   sub_107AF(&v32);
   sub_131970();
