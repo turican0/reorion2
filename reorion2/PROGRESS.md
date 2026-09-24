@@ -16898,3 +16898,82 @@ Measured against DOSBox-X after the same clicks (CONTINUE, ACCEPT, INFO, page):
   128 uses). They need the block treatment with verified bytes.
 - the 15 arrays with doubtful pointer slots;
 - Turn Summary and Reference pages not compared yet; "right side hover".
+
+
+## Wave 180: the data object as one array
+
+`scan_stride.py` (wave 179) listed 254 one-element arrays that the code
+indexes with a stride - interleaved game tables (ships 28 B, buildings 18 B,
+techs 13/19/23/47 B ...) that IDA split into labels and the port into
+unrelated variables. Instead of fixing them one by one, the whole data
+object is now one array laid out like the original.
+
+### How
+
+- `le_fixups.py` parses the LE relocation table of Orion2.exe: 1062 32-bit
+  pointer slots in the data object. It is the ground truth - IDA's
+  `dd offset` also appears on plain numbers (wave 179: `off_183DC9`).
+  Note: the EXE is a bound DOS4GW executable; LE offsets are relative to the
+  embedded module (MZ at 0x26654), not to the start of the file.
+- `gen_dseg.py` (one-shot) produced
+  - `orion_dseg.c`: `uint8_t dseg[0x5DCD0]` (C 0x178000..0x1D5CD0) with the
+    EXE pages, and `InitDataSegment()` (called from `main`) that fills the
+    relocated slots with 32-bit port addresses (756 data, 268 code targets;
+    38 targets are labels inside functions and stay 0);
+  - `orion_dseg.h`: 4526 data symbols as macros,
+    `#define name (*(T (*)[N])(dseg + off))` for arrays and
+    `(*(T *)(dseg + off))` for scalars - `[]`, `&` and `sizeof` keep working;
+  - removed their declarations from `orion_data.c` and their externs from
+    `orion_common.h` (4514) and `orion_blocks.h` (12).
+- Kept as separate variables: real port pointers (`REAL_POINTERS`: heap and
+  pool pointers, the port's own name arrays), `intptr_t`, `int64_t`, `double`,
+  `float`, port structs, the fake INI names of wave 26 and the strings
+  `a1`..`a5` (the same names as the decompiler's parameters). Every other
+  pointer-typed label is a 32-bit table field and became a `uint32_t` slot.
+- 22 port initializers differed from the EXE; all were decompiler damage
+  (string terminators written over the next object, `"s"` for `"%s"`), so the
+  EXE bytes are used.
+
+### Fixes found by comparing dseg with DOSBox memory
+
+`dseg_vs_mem.py` compares the port's dseg with a DOSBox `DUMPMEM` of the
+data object (C 0x178000 = runtime 0x38E000) at the same moment (entry of
+`sub_106CAC`), pointers compared by target, heap pointers hidden.
+
+- **8-byte pointer accesses** (`fix_ptr32.py`, 33 sites):
+  `*(char **)((char *)&off_17EEE0 + 47 * i)` read 8 bytes of a 4-byte slot;
+  the writes in `sub_5DF0A` (`*(_UNKNOWN **)((char *)&off_17EEB1 + k) = v`)
+  zeroed the next 4 bytes of every record - that was the whole difference in
+  the 47-byte table 0x17EF0C. Reads are `(T *)(intptr_t)*(int *)ADDR`, writes
+  `*(uint32_t *)ADDR = (uint32_t)(uintptr_t)(v)`.
+- `sub_5DF0A` also fills the name slots of the tech (0x17EB3D + 19 k) and
+  ship size tables (0x18003A / 0x18003E + 36 k) in dseg, like the original;
+  the port's name arrays stay (all readers use them).
+- `sub_EE4A1` builds a string table as `next = strlen(prev) + 1 + prev`.
+  Five entries are arrays in the port (`dword_1AAB48[0] = ...`), and the
+  next line took `(char *)dword_1AAB48` - the table's address - so every
+  later pointer pointed into the table. Now `NAME[0]`.
+- `sub_CDF65` copies the LBX file name through the VALUE of `dword_1A6B38`
+  (0xCE05F `mov edi, dword_19EB38`) - entry 368 of the string table filled
+  just before. Wave 23 had made it a 16-byte buffer (the table was split and
+  the entry was 0); writing at its address overwrote entries 368..371.
+
+After the fixes the initialized part of dseg equals the original except
+runtime values (music track, library and driver state). The BSS still
+differs in some game values (0x1992F2, 0x199BF0, 0x19C096, 0x1AE0F8, ...) -
+not examined yet; they may come from timing.
+
+### Result
+
+| check | result |
+|---|---|
+| History Graph / Tech Review / Race Statistics vs DOSBox | **0.00 %** each (History: 3 pixels before, 0 now) |
+| regression gate | **600/600** |
+| initialized data vs DOSBox memory | equal except run-time values |
+
+#### Still open
+
+- the BSS differences listed above;
+- `link_stubs.c` still defines old duplicate data stubs (`int byte_199A66;`
+  ...) - nothing refers to them any more, they can go;
+- many comments in `orion_data.c` describe declarations that moved to dseg.

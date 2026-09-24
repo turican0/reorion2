@@ -1376,3 +1376,35 @@ holds a relocated address, a fake one the raw value.
 The caller passed a pointer whose low byte had been replaced by the
 character (`LOBYTE(v3) = *(_BYTE *)v3`), so `a1 == 32` never held and word
 wrap broke mid-word. Mirror the prologue: `a1 = (uint8_t)a1;`.
+
+
+### Compare the whole data segment with the running original
+
+Wave 180. With every data symbol in `dseg`, one `DUMPMEM` of the data
+object (runtime 0x38E000, 0x5DCD0 bytes) and one dump of `dseg` from the
+port at the same function entry show every divergence at once:
+
+```
+DUMPMEM cond=eip:<function + 0x224000> addr=0x0038E000 size=384208 label=dseg
+python tools/compare/dseg_vs_mem.py port_dseg.bin dosbox.txt dseg [--init]
+```
+
+The port side needs a temporary probe that writes `dseg` to a file
+(`fwrite(dseg, 1, 0x5DCD0, f)` from a file that includes `stdio.h`).
+`dseg_vs_mem.py` compares pointers by target (the port base changes with
+ASLR - it is derived from the relocated slots) and hides heap pointers. The
+first run found three bugs no screen had shown yet.
+
+### Every pointer in the data object is 32 bits
+
+`*(char **)` / `*(_UNKNOWN **)` on an address inside `dseg` reads or writes
+8 bytes of a 4-byte slot. A write zeroes the next field of the record.
+`tools/compare/fix_ptr32.py` rewrites them; run it again when new code
+touches table fields.
+
+### `(char *)NAME` where the decompiler made NAME an array
+
+If Hex-Rays typed a dword as an array (`dword_1AAB48[0] = ...`), a later
+`(char *)dword_1AAB48` is the address of the table, not the pointer stored
+in it. The asm tells: `mov reg, NAME` is the value, `offset NAME` the
+address (wave 180: sub_EE4A1, sub_CDF65).

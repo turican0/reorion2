@@ -521,7 +521,3 @@ int word_1BD356;
 int word_1BD358;
 int word_1BDF52;
 int word_1BDF54;
-
-/*SONDA-DSEG*/ #include <stdio.h>
-/*SONDA-DSEG*/ void SondaDsegDump(void) { const char *dp = getenv("REORION2_DSEG_DUMP"); if ( dp ) { FILE *df = fopen(dp, "wb");
-/*SONDA-DSEG*/   if ( df ) { fwrite(dseg, 1, 0x5DCD0, df); fclose(df); } } }

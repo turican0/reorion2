@@ -13,14 +13,19 @@ laid out exactly like the original.
                   "%s"); deliberate port changes are in KEEP_NAMES
     pointers      the 1062 fixups of the LE relocation table are filled at
                   start-up by InitDataSegment() with 32-bit port addresses
-    kept apart    pointer-typed variables (8 bytes in the port), intptr_t,
-                  int64_t, double, float and port structs - their dseg bytes
-                  are only a shadow
+    kept apart    port pointer variables (REAL_POINTERS), intptr_t, int64_t,
+                  double, float, port structs, KEEP_NAMES and the strings
+                  a1..a5 (same names as parameters) - their dseg bytes are
+                  only a shadow; every other pointer-typed label is a 32-bit
+                  table field and becomes a uint32_t slot
 
 Outputs: src/game/orion_dseg.c, src/game/orion_dseg.h, edits orion_data.c,
 orion_common.h, orion_blocks.h, link_stubs.c; report to argv[1].
 
 usage: python tools/compare/gen_dseg.py <report.txt>
+
+One-shot: its input are the declarations of orion_data.c BEFORE wave 180
+(git history); on the current tree there is nothing left to convert.
 """
 import glob
 import re
