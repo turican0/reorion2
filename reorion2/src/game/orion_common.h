@@ -6787,8 +6787,8 @@ extern int sub_103D53();
 extern int sub_103F5D();
 // plna signatura: int sub_104141( int a1);
 extern int sub_104141();
-// plna signatura: void sub_1041BB();
-extern void sub_1041BB();
+// full signature: char sub_1041BB();
+extern char sub_1041BB();
 // plna signatura: int sub_104292( int a1);
 extern int sub_104292();
 // plna signatura: char sub_1043B0( unsigned int a1, int a2, int a3, int a4);
@@ -6929,11 +6929,11 @@ extern int sub_108073();
 extern char sub_10852A();
 // plna signatura: void sub_108611(int a1, int a2, int a3);
 extern void sub_108611();
-// plna signatura: void sub_1086D6( unsigned int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int64_t a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, hr_int128_t a27);
+// full signature: void sub_1086D6(int a1, int a2, int a3, int a4);
 extern void sub_1086D6();
 // plna signatura: char sub_1088A0( int a1, int a2, unsigned int a3);
 extern char sub_1088A0();
-// plna signatura: int sub_1089C6();
+// full signature: int sub_1089C6(int a1, int a2);
 extern int sub_1089C6();
 // plna signatura: int sub_108E63(int result, int a2, unsigned int a3);
 extern int sub_108E63();
@@ -13761,7 +13761,7 @@ int16_t sub_103D0C();
 int sub_103D53(uint16_t a1, uint16_t a2, int16_t a3, int a4, char a5, int a6, char a7);
 // int sub_103F5D(int a1);
 int sub_104141(char a1);
-void sub_1041BB();
+char sub_1041BB();
 int sub_104292(char a1);
 // char sub_1043B0(uint8_t a1, int16_t a2, int a3, int a4);
 char sub_10465A();
@@ -16738,14 +16738,13 @@ extern uint8_t techBlk_17E06C[2769];
 #define byte_17E082   ((char *)(techBlk_17E06C + 0x016))
 #define byte_17E084   ((char *)(techBlk_17E06C + 0x018))
 #define byte_17E085   ((char *)(techBlk_17E06C + 0x019))
-// Ukazatel na nazev (+0) zustava mimo blok: v originale ma 4 B, na x64 ma 8 B
-// a do 13bajtoveho zaznamu se nevejde. Cteni `*(char **)((char *)&off_17E079
-// + 13 * i)` je proto porad rozbite STEJNE jako pred touhle vlnou - vyresi se
-// az prevodem na samostatne pole nazvu (viz PROGRESS.md, vlna 80).
-extern _UNKNOWN *off_17E079;
-extern _UNKNOWN *off_17E0EE;
-extern _UNKNOWN *off_17E7F0;
-extern _UNKNOWN *off_17EA60;
+// wave 179: the name pointer (+0) of every record is a 32-bit address that
+// sub_5DF0A writes through dword_17E06C. IDA named the +0 field of records
+// 0, 9, 147 and 195; the code reads it as `*(int *)((char *)&off_17E079 + 13 * i)`.
+#define off_17E079  (*(uint32_t *)(techBlk_17E06C + 0x00D))
+#define off_17E0EE  (*(uint32_t *)(techBlk_17E06C + 0x082))
+#define off_17E7F0  (*(uint32_t *)(techBlk_17E06C + 0x784))
+#define off_17EA60  (*(uint32_t *)(techBlk_17E06C + 0x9F4))
 extern int dword_17EB2A[240];
 // VLNA 89d: ukazatele na nazvy technologii mimo 19bajtovy blok, viz orion_data.c.
 // TECHNAME_AT(off) bere BAJTOVY offset od &off_17EB3D (tedy tak, jak ho psal
@@ -17414,7 +17413,7 @@ extern int16_t word_1838F9[10];
 extern char byte_18390D[8];
 extern char byte_183915[9];
 extern char byte_18391E[26];
-extern _UNKNOWN *off_183B0E;
+extern uint8_t *off_183B0E[4];   /* wave 179 */
 extern char unk_183B1E[8];   /* vlna 122: barevna rampa */
 extern char byte_183B24;
 extern char unk_183B26[8];   /* vlna 122: barevna rampa */
@@ -17425,8 +17424,8 @@ extern char *off_183BCB[7];   /* vlna 122: sedm ukazatelu, ne jeden */
 extern _UNKNOWN unk_183BE7[64];   /* wave 179 */
 extern char byte_183C27[10];
 #define byte_183C28 (byte_183C27 + 1)   /* vlna 129: tataz tabulka, posunuta o bajt */
-extern int16_t word_183C31[];
-extern int16_t word_183C33[7];
+extern int16_t word_183C31[8];
+#define word_183C33 (word_183C31 + 1)   /* wave 179: y of the (x, y) pairs */
 extern _UNKNOWN unk_183C41[34];   /* wave 179 */
 extern int16_t word_183C63[34];
 extern int16_t word_183CA7[34];
@@ -21150,7 +21149,10 @@ extern _UNKNOWN loc_A0020;
 extern _UNKNOWN loc_E0000;
 extern _UNKNOWN loc_E40C7;
 extern _UNKNOWN unk_178A04;
-extern _UNKNOWN unk_183938;
+extern uint8_t unk_183938[0x74];   /* wave 179 */
+extern uint8_t unk_1839AC[0x6A];   /* wave 179 */
+extern uint8_t unk_183A16[0x58];   /* wave 179 */
+extern uint8_t unk_183A6E[0xA0];   /* wave 179 */
 extern char unk_183B46[7];   /* vlna 122: prevodni tabulka barev */
 extern char unk_183B3E[8];   /* vlna 122 */
 extern char unk_183B4D[7];   /* vlna 122 */

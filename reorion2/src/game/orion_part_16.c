@@ -6986,7 +6986,7 @@ char sub_FD69F(int64_t a1)
                        v1,
                        (char *)dword_1AB13C,
                        (uint8_t*)dword_197F98 + 3753 * *(int16_t *)(HIDWORD(a1) + 4) + 21,
-                       *(_UNKNOWN **)((char *)&off_17E079 + 13 * *(int16_t *)(HIDWORD(a1) + 6)));
+                       (_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(int16_t *)(HIDWORD(a1) + 6)));
       }
     }
     return a1;
@@ -6997,7 +6997,7 @@ char sub_FD69F(int64_t a1)
     a1 = sprintf(
            v1,
            (char *)dword_1AB12C,
-           *(_UNKNOWN **)((char *)&off_17E079 + 13 * *(int16_t *)(HIDWORD(a1) + 6)),
+           (_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(int16_t *)(HIDWORD(a1) + 6)),
            3753 * (unsigned int)*(uint8_t *)(HIDWORD(a1) + 5) + (uint8_t*)dword_197F98 + 21);
 LABEL_10:
     v1 += a1;

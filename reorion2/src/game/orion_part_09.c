@@ -4056,7 +4056,7 @@ char sub_981D1(char *a1, int a2, int a3)
     do
       ++v10;
     while ( *v10 );
-    strcpy(v10, *(char **)((char *)&off_17E079 + 13 * *(int16_t *)(a2 + 2 * v7++)));
+    strcpy(v10, (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(int16_t *)(a2 + 2 * v7++)));
     v11 = v12 - 1;
     do
       ++v11;

@@ -858,7 +858,7 @@ char sub_72B33(int a1, int a2, int a3)
           ++v26;
         while ( *v26 );
         strcpy(v26, "^ ");
-        v27 = *(char **)((char *)&off_17E079 + v24);
+        v27 = (char *)(intptr_t)*(int *)((char *)&off_17E079 + v24);
         v31 = (int16_t *)v32;
         v28 = (char *)v32 - 1;   /* vlna 124: cil je sousedni buffer v32, ne &v31 */
         do

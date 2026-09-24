@@ -411,7 +411,6 @@ int16_t sub_C5B5F(int a1) { return sub_77423(a1); }
 /* PORT (vlna 58): SWORD1..SWORD6 -> makra v decomp_compat.h. SWORD2 tu byl
    DATOVY symbol -> 144 jeho "volani" skakalo do .bss (pad NEW GAME). */
 int unk_178A04;
-int unk_183938;
 /* vlna 58: unk_19C6F8 a unk_19C7C6 jsou druha jmena IDA pro byte_19C6F8
    resp. byte_19C7C6 - ted makra v orion_common.h; pahyly by z nich zase
    udelaly samostatne objekty a cetlo by se prazdno. */

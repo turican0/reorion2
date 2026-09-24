@@ -1689,7 +1689,7 @@ LABEL_12:
       {
         if ( (_BYTE)v3 != 32 && (_BYTE)v3 != 9 )
         {
-          sub_1041BB();
+          v9 = sub_1041BB();   /* wave 179: asm test al, al */
           if ( v9 && *(_BYTE *)(dword_1ACF0C + 20) )
             *(_BYTE *)(dword_1ACF10 + 7) = 45;
           --*(_DWORD *)(dword_1ACF14 + 2);
@@ -1752,6 +1752,7 @@ int sub_104141( int a1)
   _BYTE *v4; // edx
   int result; // eax
 
+  a1 = (uint8_t)a1;   /* wave 179: asm 0x104144 mov cl, al - only the character */
   v2 = dword_1ACF10;
   v3 = (_WORD *)dword_1ACF14;
   *(_BYTE *)(dword_1ACF10 + 7) = a1;
@@ -1780,7 +1781,8 @@ int sub_104141( int a1)
 
 
 //----- (001041BB) --------------------------------------------------------
-void sub_1041BB()
+/* wave 179: returns AL - 1 = saved word break restored, 0 = none. */
+char sub_1041BB()
 {
   int v0; // eax
   int v1; // ebx
@@ -1814,8 +1816,9 @@ void sub_1041BB()
     {
       dword_1ACF10 = dword_1ACEFC + 8 * *(int16_t *)(dword_1ACF08 + 12) - 8;
     }
+    return 1;   /* wave 179: asm 0x104284 mov al, 1 */
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x104386 je epilog funkce */
+  return 0;   /* wave 179: asm 0x10428B xor al, al (then the shared epilogue 0x104386) */
 }
 // 104286: control flows out of bounds to 104386
 // 1ACEFC: using guessed type int dword_1ACEFC;
@@ -1834,6 +1837,7 @@ int sub_104292( int a1)
   int v4; // edx
   int16_t v5; // [esp+0h] [ebp-4h]
 
+  a1 = (uint8_t)a1;   /* wave 179: asm 0x10429B mov cl, al - only the character */
   result = dword_1ACF08;
   if ( !*(_BYTE *)(dword_1ACF08 + 25) && a1 )
   {
@@ -4556,16 +4560,6 @@ void sub_106CAC( int a1)
 
   dword_192BD8 = 3753 * word_19999C + (uint8_t*)dword_197F98;
   sub_107AF(&v32);
-  /*SONDA-CACHE*/ { extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-CACHE*/   extern void PortDebug_WatchEnable(int on); extern void PortDebug_WatchWrite(void* addr, int len);
-  /*SONDA-CACHE*/   PortDebug_CrashLog("CACHE enter INFO: 193174=%08X 1BC288=%08X 1BC284=%08X hdr=%08X",
-  /*SONDA-CACHE*/     (unsigned)dword_193174, (unsigned)dword_1BC288, (unsigned)dword_1BC284,
-  /*SONDA-CACHE*/     (unsigned)*(int *)(intptr_t)(dword_193174 - 8));
-  /*SONDA-CACHE*/   PortDebug_WatchEnable(1);
-  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_1BC288, 4);
-  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_1BC284, 4);
-  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)&dword_193174, 4);
-  /*SONDA-CACHE*/   PortDebug_WatchWrite((void *)(intptr_t)(dword_193174 - 8), 4); }
   sub_131970();
   sub_11C2F0();
   sub_C5BB9();
@@ -4664,7 +4658,7 @@ void sub_106CAC( int a1)
       case 2:
         sub_1039FD();
         v18 = (int16_t)v17;
-        v20 = sub_1089C6();
+        v20 = sub_1089C6((int)(intptr_t)v24, v17);   /* wave 179: asm 0x107007 eax = &var_E0, edx = si */
         goto LABEL_17;
       case 3:
         sub_1039EE();
@@ -5561,7 +5555,8 @@ int sub_107E95(int a1, int a2, int a3)
   sub_1191CA((int)nullsub_16, 2);
   do
   {
-    for ( i = (int16_t *)&unk_183C41; i < word_183C63; i = (int16_t *)((char *)i + 17) )
+    /* wave 179: the original ends at word_183C63, the next table - here the end of unk_183C41 (2 records) */
+    for ( i = (int16_t *)&unk_183C41; (char *)i < (char *)unk_183C41 + sizeof(unk_183C41); i = (int16_t *)((char *)i + 17) )
       sub_109E01(i);
     sub_107DEA();
     sub_10766E();
@@ -5704,7 +5699,8 @@ int sub_108073(int a1, int a2, int a3)
   v13 = (int16_t *)sub_1151B0(410, 395, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 12), asc_17A289, 40);
   sub_249F9(aBilltextLbx, 6, v35, 40);
   sub_1210FD(416, 31, (int)v35);
-  for ( i = word_183C63; i < word_183CA7; i = (int16_t *)((char *)i + 17) )
+  /* wave 179: the original ends at word_183CA7 - here the end of word_183C63 (4 records) */
+  for ( i = word_183C63; (char *)i < (char *)word_183C63 + sizeof(word_183C63); i = (int16_t *)((char *)i + 17) )
     sub_109E01(i);
   v15 = 253;
   sub_128C32(433, 115, 612, 253, 0);
@@ -5879,8 +5875,9 @@ void sub_108611(int a1, int a2, int a3)
   int v8; // [esp+0h] [ebp-8h]
   char *v9; // [esp+4h] [ebp-4h]
 
+  v8 = a1;   /* wave 179: asm 0x108619 push eax = var_8 */
   v3 = (_BYTE *)(intptr_t)*(uint32_t *)(a1 + 22);
-  v4 = (uint8_t *)*(&off_183B0E + (int16_t)a2);
+  v4 = off_183B0E[(int16_t)a2];   /* wave 179: asm 0x108620 off_17BB0E[edi*4] */
   v3[73] = 0;
   *(_BYTE *)(a1 + 21) = 1;
   v9 = v3 + 7;
@@ -5931,33 +5928,11 @@ void sub_108611(int a1, int a2, int a3)
 
 
 //----- (001086D6) --------------------------------------------------------
-void sub_1086D6( unsigned int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int64_t a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int a26,
-        hr_int128_t a27)
+/* wave 179: register arguments - asm 0x1086DC push eax (x), push edx (y),
+   push ecx (bitmap), 0x1086EC movzx eax, bx (player). Hex-Rays had turned the
+   locals arg_2A/arg_6A/arg_6E of the enter frame into stack arguments a2..a27
+   and left x, y and the bitmap uninitialized. */
+void sub_1086D6(int a1, int a2, int a3, int a4)
 {
   char v27; // dl
   char *v28; // esi
@@ -5970,59 +5945,64 @@ void sub_1086D6( unsigned int a1,
   int16_t v35; // ax
   int v36; // ecx
   char *v37; // ebx
-  int v38; // [esp+76h] [ebp-12h]
-  int16_t v39; // [esp+7Ah] [ebp-Eh]
-  int16_t v40; // [esp+7Eh] [ebp-Ah]
-  char v41; // [esp+81h] [ebp-7h] BYREF
-  char v42[6]; // [esp+82h] [ebp-6h] BYREF
+  int v38; // [ebp-12h] = ecx
+  int16_t v39; // [ebp-Eh] = edx
+  int16_t v40; // [ebp-Ah] = eax
+  char v42[64]; // [ebp-6h] .. [ebp+3Ah]: sprintf target
+  char v43[64]; // [ebp+3Ah] arg_2A
+  uint8_t *v44; // [ebp+7Ah] arg_6A
+  uint32_t v45; // [ebp+7Eh] arg_6E
 
-  if ( a1 >= word_199998 )
+  v40 = (int16_t)a1;
+  v39 = (int16_t)a2;
+  v38 = a4;
+  if ( (uint16_t)a3 >= word_199998 )
 LABEL_40:
     return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x1075A1 je epilog funkce */
-  *(_DWORD *)((char *)&a27 + 6) = 0;
-  *(_DWORD *)((char *)&a27 + 2) = 3753 * a1 + (uint8_t*)dword_197F98 + 2207;
+  v45 = 0;
+  v44 = 3753 * (uint16_t)a3 + (uint8_t*)dword_197F98 + 2207;
   while ( 1 )
   {
-    v27 = *(_BYTE *)(*(_DWORD *)((char *)&a27 + 2) + WORD3(a27));
-    if ( !v27 && WORD3(a27) )
+    v27 = v44[(uint16_t)v45];
+    if ( !v27 && (uint16_t)v45 )
       goto LABEL_39;
-    strcpy((char *)&a12 + 2, "^ ");
-    if ( WORD3(a27) )
+    strcpy(v43, "^ ");
+    if ( (uint16_t)v45 )
     {
-      if ( WORD3(a27) == 15 )
+      if ( (uint16_t)v45 == 15 )
       {
         if ( v27 >= 0 )
-          v28 = (char *)dword_192190[WORD3(a27)];
+          v28 = (char *)dword_192190[(uint16_t)v45];
         else
           v28 = (char *)dword_19220C;
       }
       else
       {
-        v28 = (char *)dword_192190[WORD3(a27)];
+        v28 = (char *)dword_192190[(uint16_t)v45];
       }
     }
     else
     {
       v28 = (char *)dword_192228[v27];
     }
-    v29 = (char *)&a12 + 1;
+    v29 = v43 - 1;
     do
       ++v29;
     while ( *v29 );
     strcpy(v29, v28);
-    if ( !WORD3(a27) || WORD3(a27) >= 0xAu )
+    if ( !(uint16_t)v45 || (uint16_t)v45 >= 0xAu )
     {
       v34 = v39;
       v35 = v40;
       v36 = v38;
-      v37 = (char *)&a12 + 2;
+      v37 = v43;
       goto LABEL_38;
     }
-    if ( WORD3(a27) >= 2u )
+    if ( (uint16_t)v45 >= 2u )
     {
-      if ( WORD3(a27) <= 2u )
+      if ( (uint16_t)v45 <= 2u )
       {
-        strcpy(v42, (char *)&a12 + 2);
+        strcpy(v42, v43);
         if ( v27 >= 0 )
         {
           if ( v27 == 2 )
@@ -6042,9 +6022,9 @@ LABEL_26:
         strcpy(v33, v32);
         goto LABEL_36;
       }
-      if ( WORD3(a27) == 5 )
+      if ( (uint16_t)v45 == 5 )
       {
-        strcpy(v42, (char *)&a12 + 2);
+        strcpy(v42, v43);
         if ( v27 >= 0 )
           v30 = asc_17A2DA;
         else
@@ -6061,7 +6041,7 @@ LABEL_26:
         goto LABEL_26;
       }
     }
-    sprintf(v42, "%s%+i", (char *)&a12 + 2, v27);
+    sprintf(v42, "%s%+i", v43, v27);
 LABEL_36:
     v34 = v39;
     v35 = v40;
@@ -6071,8 +6051,8 @@ LABEL_38:
     sub_122A6E(v35, v34, (int)v37, v36);
     v39 += word_1B3EA2;
 LABEL_39:
-    ++*(_DWORD *)((char *)&a27 + 6);
-    if ( WORD3(a27) >= 0x1Fu )
+    ++v45;
+    if ( (uint16_t)v45 >= 0x1Fu )
       goto LABEL_40;
   }
 }
@@ -6168,7 +6148,9 @@ LABEL_14:
 
 
 //----- (001089C6) --------------------------------------------------------
-int sub_1089C6()
+/* wave 179: two register arguments - asm 0x1089CE push eax (var_108 = v25),
+   0x1089CF push edx (var_10C = v24). */
+int sub_1089C6(int a1, int a2)
 {
   int v0; // eax
   _DWORD *v1; // ecx
@@ -6212,6 +6194,8 @@ int sub_1089C6()
   int v40; // [esp+104h] [ebp+7Ah]
   int v41; // [esp+108h] [ebp+7Eh]
 
+  v25 = a1;
+  v24 = a2;
   sub_249F9(aBilltextLbx, 14, (char *)v26, 40);
   sub_249F9(aBilltextLbx, 15, (char *)v29, 40);
   sub_249F9(aBilltextLbx, 16, (char *)v28, 40);
@@ -6252,33 +6236,7 @@ int sub_1089C6()
       sub_1229C5(91, 0, (int)v32, *(_DWORD *)&v32[v6 + 32]);
       v7 = v36;
       sub_120BB5(2, dword_1ACFC0[v36]);
-      sub_1086D6(
-        v7,
-        v24,
-        v25,
-        v26[0],
-        v26[1],
-        v26[2],
-        v26[3],
-        v26[4],
-        v26[5],
-        v26[6],
-        v26[7],
-        v27,
-        v28[0],
-        v28[1],
-        v28[2],
-        v28[3],
-        v28[4],
-        v28[5],
-        v28[6],
-        v28[7],
-        v28[8],
-        v28[9],
-        v29[0],
-        v29[1],
-        v29[2],
-        v29[3],(int)LODWORD(v30));
+      sub_1086D6(0, 22, v7, *(_DWORD *)&v32[v6 + 32]);   /* wave 179: asm 0x108B90 */
     }
     ++v40;
   }
@@ -6287,7 +6245,8 @@ int sub_1089C6()
     sub_1151B0(385, 427, (int)&unk_17A28B, *(_WORD **)(v25 + 80), &unk_17A28B, 40);
   sub_1191CA((int)nullsub_17, 2);
   v9 = (int)&unk_183CEB;
-  v35 = (int16_t *)&unk_183CEB;
+  /* wave 179: the original ends at unk_183CEB - here the end of word_183CA7 (4 records) */
+  v35 = (int16_t *)((char *)word_183CA7 + sizeof(word_183CA7));
   do
   {
     word_1AD1FA = 0;

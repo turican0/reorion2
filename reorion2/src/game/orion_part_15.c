@@ -7685,13 +7685,13 @@ LABEL_67:
         sprintf(
           v30,
           "%s %s %s",
-          *(char **)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 3)),
+          (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 3)),
           v32,
-          *(char **)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 4)));
+          (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 4)));
       }
       else
       {
-        sprintf(v30, "%s", *(char **)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 3)));
+        sprintf(v30, "%s", (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(uint8_t *)(HIDWORD(a1) + 3)));
       }
       LOBYTE(a1) = sprintf(
                      v29,

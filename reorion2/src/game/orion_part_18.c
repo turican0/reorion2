@@ -1629,7 +1629,7 @@ void sub_10ED00(int a1)
         && (v9 == 1
          || !stricmp(
                v7 + (v3 << 6),
-               *(_UNKNOWN **)((char *)&off_17E079 + 13 * *(uint8_t *)(dword_192BD8 + 802)))) )
+               (_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * *(uint8_t *)(dword_192BD8 + 802)))) )
       {
         v4 = &unk_1AD5B4;
       }
@@ -2153,9 +2153,9 @@ char *sub_10F7A1( int a1, int a2)
   unsigned int v6; // kr04_4
 
   if ( a1 < 204 )
-    return *(char **)((char *)&off_17E079 + 13 * a1);
+    return (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * a1);
   v3 = *(uint8_t *)(a1 + (uint8_t*)dword_197F98 + 3753 * a2 + 336);
-  strcpy(byte_17D640, *(char **)((char *)&off_17E079 + 13 * a1));
+  strcpy(byte_17D640, (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * a1));
   v4 = &byte_17D640[-1];
   do
     ++v4;

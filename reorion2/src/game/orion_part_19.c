@@ -6696,11 +6696,6 @@ int sub_127C27(int a1, int a2, int a3)
   uint8_t v10; // [esp+18h] [ebp-8h]
   char v11; // [esp+1Ch] [ebp-4h]
 
-  /*SONDA-CACHE*/ if ( a3 != dword_1BC288 || *(_DWORD *)(a3 - 12 + 4) != dword_1BC284 ) {
-  /*SONDA-CACHE*/   extern void PortDebug_CrashLog(const char* fmt, ...);
-  /*SONDA-CACHE*/   PortDebug_CrashLog("CACHE check FAILED a1=%s a2=%d a3=%08X 1BC288=%08X hdr=%08X 1BC284=%08X",
-  /*SONDA-CACHE*/     (const char *)(intptr_t)a1, a2, (unsigned)a3, (unsigned)dword_1BC288,
-  /*SONDA-CACHE*/     (unsigned)*(_DWORD *)(a3 - 8), (unsigned)dword_1BC284); }
   v6 = a2;
   if ( a3 != dword_1BC288 )
     sub_126487(aErrorCacheCorr, a2);

@@ -16776,3 +16776,125 @@ not - not investigated yet.
 - `sub_91099`, panel type 1, calls `sub_90C4F` with wrong first arguments;
 - colonising a valid planet is untested.
 
+
+## Waves 177-179: the INFO screen
+
+User bug list: "INFO - History / Tech Review / Race Statistics do nothing,
+RETURN does not work". After these waves all three pages match DOSBox-X
+pixel for pixel and RETURN goes back to the map.
+
+### Wave 177: 11 of the 18 link stubs are real code
+
+The stubs found in wave 176, compared with the listing one by one:
+
+| stub | original |
+|---|---|
+| `sub_13F949`, `sub_13F94E`, `sub_13FBB5`, `sub_13FD4B`, `sub_702E5`, `sub_8139F` | `jmp` thunks to `sub_154D80`, `sub_154D8D`, `sub_1553B4`, `sub_155536`, `sub_77BF1`, `sub_12C7CC` |
+| `sub_77433` | `mov byte_19BF08, 1` + fall-through into `sub_7743A` |
+| `sub_772BF` | `mov eax, 1` + fall-through into `sub_772C4` |
+| `sub_A5EBC` | `movsx ebx, bx` + fall-through into `sub_A5EBF` |
+| `sub_B3E75` | `call sub_11C2F0` + fall-through into `sub_B3E7A` |
+| `sub_A162D` | qsort comparator: `b[+6] - a[+6]` (int16) |
+
+`link_stubs.c` does not include `orion_common.h`, so it got its own prototype
+block. Still stubs: `sub_1279A` and the audio/video routines `sub_149950`,
+`sub_1499C0`, `sub_149BB0`, `sub_149C40`, `sub_15C7F0`, `sub_164DA0`,
+`sub_1655B0`.
+
+### Wave 178: the INFO pages lost their return value
+
+`sub_106CAC` (state 9) compares what the page function returns with the
+RETURN button id (0x107042 `cmp di, word_1A5204`). Every page hands clicks it
+does not own back through a shared tail (`loc_108E55: mov eax, edx`).
+
+- `nullsub_16` / `nullsub_17` are the bare `retn` after an epilogue that IDA
+  split off. A bare `retn` returns EAX, i.e. the first argument - all 21
+  nullsubs in `link_stubs.c` returned 0 and now return `a1`.
+- `sub_108F98`, `sub_109331`, `sub_1093CD`, `sub_10988E`, `sub_109762` were
+  `void` with `JUMPOUT` into the tails; they now return the clicked id or 0.
+- `sub_106CAC` did not assign the result of pages 3 and 4.
+
+### Wave 179: data objects that are larger in the original
+
+Leaving INFO ended in "ERROR: Cache Corrupted!". A hardware watchpoint on the
+cache handle (`dword_1BC288`) caught
+`sub_106CAC -> sub_131970 -> sub_1276AE -> qmemcpy`: a 0x400-byte palette
+backup copied into `unk_1BC390`, which the port declared as ONE byte
+(`_UNKNOWN unk_1BC390;`). The linker had put the cache globals right after it.
+
+That is a whole class. IDA types an object it cannot size as one byte
+(`_UNKNOWN unk_X`) or as an array of unknown size with only the first element
+(`T name[] = { first }`). In the original it runs to the next label.
+
+Tools (in `tools/compare/`):
+
+- `lst_block.py` - bytes, labels and `dd offset` slots of a data region
+  straight from the listing; `next_label()` gives an object's size;
+- `lst_labels.py` - labels of a region next to the port's declarations;
+- `lst_vs_mem.py` - compares a region with a DOSBox `DUMPMEM`;
+- `unknown_lst.py` - every used one-byte `_UNKNOWN` with its real size;
+- `scan_stride.py` - one-element arrays the code indexes with a stride.
+
+Fixes:
+
+1. **9 data blocks** (`orion_blocks.h`, pattern of `stateBlock_199BDC`):
+   regions the original treats as one object but IDA split into several
+   labels. One byte block with the original bytes; the labels become macros;
+   32-bit pointer slots are filled at start-up by `InitDataBlocks()` (called
+   from `main`). Blocks: the INFO descriptors 0x183E15 and 0x184306, button
+   tables 0x181768 / 0x19BAD4 / 0x19BC90 / 0x19BE34, 0x19E564 (1421-byte
+   memset), palette block 0x1BB598, bit accumulator 0x1C9C4C.
+   The INFO region was checked with `DUMPMEM` at the entry of `sub_106CAC`:
+   identical except one slot - IDA shows the first dword of `off_183DC9` as
+   `dd offset unk_1B8000`, the game holds 0x001B0000 (the words 0 and 27).
+2. **121 `_UNKNOWN unk_X`** resized to their size with the original bytes;
+   `unk_1ACFA8/AC/B0` became `uint32_t`.
+3. **89 arrays `T name[] = { first }`** extended to the next label (e.g.
+   `word_183D9F` = x of the four History Graph buttons: 233/323/404/457).
+   15 arrays whose listing shows "pointers" inside word tables were left alone
+   (the `off_183DC9` case says such offsets can be fake).
+4. Wrong-width reads: `(int)unk_X >> 16` is Hex-Rays for
+   `mov r, dword ptr unk_X; sar r, 10h` = the signed word at X+2
+   (`word_1844A6`, `word_1BBA62`, `word_1C0E34`); `v59 = unk_178CEA` is a
+   `movsw` of "\x1A2".
+5. Technology name pointers (open since wave 80): `off_17E079` / `off_17E0EE`
+   / `off_17E7F0` / `off_17EA60` are the +0 field of records 0/9/147/195 of
+   `techBlk_17E06C`, where `sub_5DF0A` already writes the names. Now macros
+   into the block; 18 reads of `*(char **)` (8 bytes out of a 13-byte stride)
+   read 32 bits.
+6. Tech Review category lists: `off_183B0E` is a table of four pointers to
+   (id, flags) lists; the port had one pointer to `int unk_183938` (a link
+   stub).
+7. `word_183C31` / `word_183C33` are one table of (x, y) pairs.
+8. Loops that end at the address of the next table (`i < word_183C63`,
+   `&unk_183CEB`) ran through unrelated memory in the port - the stripes over
+   STAR DATE on Race Statistics. They end at their own table now (as in
+   wave 123).
+
+Code:
+
+- `sub_1089C6(a1, a2)` and `sub_1086D6(x, y, player, bitmap)` - register
+  arguments behind `enter`/`push`, the second had 27 phantom stack arguments;
+  Race Statistics crashed reading `[a1+4]` from an uninitialized local.
+- `sub_108611`: `var_8` (= EAX) was never set.
+- Word wrap: `sub_104141` / `sub_104292` compare only AL (`mov cl, al`) but
+  got a pointer with the character in the low byte; `sub_1041BB` returns AL.
+
+### Result
+
+Measured against DOSBox-X after the same clicks (CONTINUE, ACCEPT, INFO, page):
+
+| page | before | after |
+|---|---|---|
+| History Graph | buttons scattered, race name black | **0.00 %** (3 pixels) |
+| Tech Review | fatal "billtex2.lbx [entry 0]" | **0.00 %**, palette index 191 differs |
+| Race Statistics | crash in `sub_109FBA` | **0.00 %** |
+| RETURN | "Cache Corrupted!" | back to the map |
+
+#### Still open
+
+- `scan_stride.py` lists 254 one-element arrays that the code indexes with a
+  stride - interleaved game tables (e.g. `byte_17F80F`, 28-byte records,
+  128 uses). They need the block treatment with verified bytes.
+- the 15 arrays with doubtful pointer slots;
+- Turn Summary and Reference pages not compared yet; "right side hover".

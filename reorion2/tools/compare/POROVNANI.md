@@ -1340,3 +1340,39 @@ Hex-Rays produced more than a dozen `aN` arguments, some of them `int64`
 or `int128`, check the prologue for `sub ebp`. The recipe from wave 166
 applies unchanged; `retn K` gives the number of stack arguments (K / 4).
 
+
+### A data object IDA could not size is ONE byte in the port
+
+Wave 179. `_UNKNOWN unk_X;` and `T name[] = { first };` are Hex-Rays for
+"size unknown". The port turns them into one byte / one element, the
+original runs to the next label. Symptoms are far from the cause: a block
+copy into `unk_1BC390` (0x400 bytes) overwrote the LBX cache handle and the
+game reported "Cache Corrupted!" two screens later.
+
+- a hardware watchpoint (`PortDebug_WatchWrite`) on the damaged global
+  names the writer in one run;
+- `unknown_lst.py` / `lst_block.next_label()` give the real size,
+  `lst_block.region()` the bytes;
+- `scan_stride.py` lists one-element arrays indexed with a stride
+  (`word_183C31[2 * i]`) - interleaved tables split into several labels.
+
+### A loop that ends at the NEXT table's address
+
+`for (i = word_183C63; i < word_183CA7; i += 17)` is fine in the original,
+where the tables are adjacent. In the port they are separate objects and
+the loop walks through unrelated memory. End it at the table's own end
+(`(char *)t + sizeof(t)`), or put both tables into one block.
+
+### `dd offset` in a data table is not always a pointer
+
+IDA printed `dd offset unk_1B8000` inside a table of words; the game holds
+0x001B0000 there (the words 0 and 27). Before filling pointer slots at run
+time, compare the region with `DUMPMEM` (`lst_vs_mem.py`): a real slot
+holds a relocated address, a fake one the raw value.
+
+### `mov cl, al` - the function takes a character, not an int
+
+`sub_104141` / `sub_104292` begin with `mov cl, al` and compare only `cl`.
+The caller passed a pointer whose low byte had been replaced by the
+character (`LOBYTE(v3) = *(_BYTE *)v3`), so `a1 == 32` never held and word
+wrap broke mid-word. Mirror the prologue: `a1 = (uint8_t)a1;`.

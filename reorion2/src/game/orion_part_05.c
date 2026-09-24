@@ -2959,7 +2959,7 @@ void sub_67CCF( int a1)
         v12,
         v13,
         v8 - (int16_t)v14,
-        *(_UNKNOWN **)((char *)&off_17E079 + 13 * v6),
+        (_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * v6),
         *(_UNKNOWN **)((char *)&off_17FD0B + 15 * a1));
       break;
     case 2:

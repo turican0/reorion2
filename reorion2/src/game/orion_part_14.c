@@ -6787,11 +6787,11 @@ LABEL_31:
       if ( v22 )
         v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v22, (char *)off_17ECDF);
       if ( v23 )
-        v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v23, (char *)off_17E7F0);
+        v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v23, (char *)(intptr_t)off_17E7F0);
       if ( v17 )
         v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v17, (char *)off_17ECB9);
       if ( v24 )
-        v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v24, (char *)off_17EA60);
+        v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v24, (char *)(intptr_t)off_17EA60);
       if ( v19 )
         v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v19, (char *)off_17ED8A);
       if ( v25 )
@@ -7420,7 +7420,7 @@ char sub_DE664(int a1, char *a2)
           v9 -= 2;
           v10 -= 13;
           if ( *(_WORD *)&v36[v9] )
-            v5 += sprintf(v5, "\t%+d\t%s\r", *(int16_t *)&v36[v9] / 2, *(char **)((char *)&off_17E079 + v10));
+            v5 += sprintf(v5, "\t%+d\t%s\r", *(int16_t *)&v36[v9] / 2, (char *)(intptr_t)*(int *)((char *)&off_17E079 + v10));
         }
         while ( v9 );
         v11 = 98;
@@ -7930,7 +7930,7 @@ char sub_DEE1B(char *a1, char *a2)
           v19 -= 2;
           v20 -= 13;
           if ( *(_WORD *)&v45[v19] )
-            v16 += sprintf(v16, "\t%+d\t%s\r", *(int16_t *)&v45[v19], *(char **)((char *)&off_17E079 + v20));
+            v16 += sprintf(v16, "\t%+d\t%s\r", *(int16_t *)&v45[v19], (char *)(intptr_t)*(int *)((char *)&off_17E079 + v20));
         }
         while ( v19 );
         v21 = 98;
@@ -8762,7 +8762,7 @@ void sub_DFF74(int a1, char *a2)
               v14 -= 2;
               v15 -= 13;
               if ( *(_WORD *)&v36[v14] )
-                v11 += sprintf(v11, "\t%+d\t%s\r", *(int16_t *)&v36[v14], *(char **)((char *)&off_17E079 + v15));
+                v11 += sprintf(v11, "\t%+d\t%s\r", *(int16_t *)&v36[v14], (char *)(intptr_t)*(int *)((char *)&off_17E079 + v15));
               if ( !v14 )
               {
                 v16 = 98;
@@ -10524,7 +10524,7 @@ void sub_E2000(int a1, int a2)
       v13 += v16;
     }
     if ( v40 )
-      v13 += sprintf(v13, "%d : %s\n", v40, *(char **)((char *)&off_17E079 + 13 * v45));
+      v13 += sprintf(v13, "%d : %s\n", v40, (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * v45));
     if ( v41 )
       v13 += sprintf(v13, "%d : %s\n", v41, (char *)(59 * v42 + dword_1930DC));
     if ( v44 )

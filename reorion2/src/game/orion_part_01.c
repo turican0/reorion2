@@ -14026,7 +14026,7 @@ LABEL_27:
         v37 = SHIWORD(a24);
 LABEL_33:
         v28 = *(char **)((char *)&a25 + 2);
-        v29 = *(char **)((char *)&off_17E079 + 13 * v37);
+        v29 = (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * v37);
 LABEL_34:
         v65 = v28;
         v38 = (char *)(v28 - 1);

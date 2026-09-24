@@ -3316,7 +3316,11 @@ int16_t word_17D867[9] = { 0, 0, -10, -20, -30, -40, -50, -60, -65 }; // weak
 char unk_17D879[8] = { 0x81, 0x89, 0x89, 0x89, 0x89, 0x89, 0x89, 0x89 };   /* vlna 122: barevna rampa z obrazu hry */
 int16_t word_17D881[] = { 12 }; // weak
 char aLanguageIni[13] = "language.ini"; // weak
-int16_t word_17D8AC[] = { 41 }; // weak
+int16_t word_17D8AC[32] = {
+  41, 8, 40, 21, 22, 15, 7, 20, 37, 4, 31, 33,
+  34, 39, 2, 12, 13, 32, 35, 10, 43, 16, 28, 25,
+  18, 19, 24, 26, 47, 27, 6, 5
+}; // weak (wave 179: 64 bytes in the original)
 // PORT (vlna 59): pole nazvu v tabulce zaznamu po 23 bajtech. sub_5DF0A do
 // nej pise ukazatele na retezce z TECHNAME.LBX vyrazem
 // `*(int *)((char *)&dword_17D8ED + v4) = v7` pro v4 = 46, 69, ... 1909,
@@ -3536,10 +3540,8 @@ uint8_t techBlk_17E06C[2769] = {
 };
 // vlna 80: ukazatele na nazvy technologii zustavaji MIMO `techBlk_17E06C`
 // (na x64 maji 8 B, do 13bajtoveho zaznamu se nevejdou).
-_UNKNOWN *off_17E079 = &unk_178A04; // weak
-_UNKNOWN *off_17E0EE = &unk_178A04; // weak
-_UNKNOWN *off_17E7F0 = &unk_178A04; // weak
-_UNKNOWN *off_17EA60 = &unk_178A04; // weak
+// wave 179: off_17E079 / off_17E0EE / off_17E7F0 / off_17EA60 are macros into
+// techBlk_17E06C (orion_common.h).
 int dword_17EB2A[240] = { 2686976 }; // weak - vlna 59: zapis az na +931
 // VLNA 89d: 0x17EB2A je zacatek tabulky 19bajtovych zaznamu technologii;
 // na +0 kazdeho zaznamu je CTYRBAJTOVY ukazatel na nazev, ktery za behu plni
@@ -3605,7 +3607,7 @@ _UNKNOWN *off_17EEBA = &unk_178A04; // weak
 _UNKNOWN *off_17EEE0 = &unk_178A04; // weak
 int16_t word_17EEE6[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
 int16_t word_17EEE8[6] = { 0, 0, 0, 0, 0, 0 }; // weak
-int16_t word_17EEF4[] = { 0 }; // weak
+int16_t word_17EEF4[6]; // weak (wave 179: 12 bytes in the original)
 int16_t word_17EF00 = 0; // weak
 char byte_17EF0C[] = { '\0' }; // weak
 int16_t word_17EF0D = 0; // weak
@@ -3706,14 +3708,14 @@ int16_t word_17FDDA = 300; // weak
 int16_t word_17FDE9 = 50; // weak
 _UNKNOWN *off_17FDEC = &unk_178A04; // weak
 int16_t word_17FDF2[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
-int16_t word_17FDF4[] = { 0 }; // weak
+int16_t word_17FDF4[6]; // weak (wave 179: 12 bytes in the original)
 int16_t word_17FE00[] = { 0 }; // weak
 char unk_17FE42[352]; // weak - vlna 59: zapis az na +322
 _UNKNOWN *off_17FE70 = &unk_178A04; // weak
 int16_t word_17FE76[1024] = { 0 }; // weak (see word_17EB43 comment - wave 23)
-int16_t word_17FE78[] = { 0 }; // weak
-int16_t word_17FE84[] = { 0 }; // weak
-char byte_17FE90[] = { '\0' }; // weak
+int16_t word_17FE78[6]; // weak (wave 179: 12 bytes in the original)
+int16_t word_17FE84[6]; // weak (wave 179: 12 bytes in the original)
+char byte_17FE90[2]; // weak (wave 179: 2 bytes in the original)
 char byte_17FE92[4] = { '\0', '\0', '\0', '\0' }; // weak
 char byte_17FE96[6] = { '\0', '\0', '\0', '\0', '\0', '\0' }; // weak
 int16_t word_17FE9C[] = { 0 }; // weak
@@ -3728,7 +3730,9 @@ char off_180014[352]; // weak - vlna 59: zapis az na +326
 int dword_18001A[] = { 16711864 }; // weak
 int16_t word_18001E[] = { 20 }; // weak
 int16_t word_180020[] = { 25 }; // weak
-char byte_180022[] = { '\x05' }; // weak
+char byte_180022[2] = {
+  '\x05', '\x00'
+}; // weak (wave 179: 2 bytes in the original)
 int16_t word_180024[] = { 4 }; // weak
 int16_t word_180026[] = { 4 }; // weak
 int16_t word_180028[] = { 1 }; // weak
@@ -7026,11 +7030,17 @@ _UNKNOWN unk_181258[76] = {
 }; // weak (wave 179: 76 bytes in the original)
 int16_t word_1812A4[6] = { 1, 2, 3, 5, 7, 10 }; // weak
 int16_t word_1812B0[] = { -1 }; // weak
-int16_t word_1812B2[] = { -1 }; // weak
-int16_t word_1812B6[] = { 15 }; // weak
+int16_t word_1812B2[2] = {
+  -1, -1
+}; // weak (wave 179: 4 bytes in the original)
+int16_t word_1812B6[4] = {
+  15, -1, -1, -1
+}; // weak (wave 179: 8 bytes in the original)
 int16_t word_1812BE[] = { -1 }; // weak
 int16_t word_1812C0[] = { -1 }; // weak
-int16_t word_1812C2[] = { 85 }; // weak
+int16_t word_1812C2[2] = {
+  85, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_1812C6[61] =
 {
   0,
@@ -7095,11 +7105,19 @@ int16_t word_1812C6[61] =
   -1,
   15
 }; // weak
-int16_t word_181340[] = { -1 }; // weak
-int16_t word_181346[] = { 15 }; // weak
-int16_t word_18134C[] = { 45 }; // weak
+int16_t word_181340[3] = {
+  -1, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_181346[3] = {
+  15, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_18134C[2] = {
+  45, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_181350[] = { -1 }; // weak
-int16_t word_181352[] = { 40 }; // weak
+int16_t word_181352[2] = {
+  40, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_181356[61] =
 {
   0,
@@ -7164,11 +7182,17 @@ int16_t word_181356[61] =
   -1,
   10
 }; // weak
-int16_t word_1813D0[] = { -1 }; // weak
-int16_t word_1813D6[] = { 15 }; // weak
+int16_t word_1813D0[3] = {
+  -1, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_1813D6[4] = {
+  15, -1, -1, -1
+}; // weak (wave 179: 8 bytes in the original)
 int16_t word_1813DE[] = { 45 }; // weak
 int16_t word_1813E0[] = { -1 }; // weak
-int16_t word_1813E2[] = { 40 }; // weak
+int16_t word_1813E2[2] = {
+  40, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_1813E6[61] =
 {
   0,
@@ -7233,10 +7257,16 @@ int16_t word_1813E6[61] =
   -1,
   10
 }; // weak
-int16_t word_181460[] = { -1 }; // weak
+int16_t word_181460[2] = {
+  -1, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_181464[] = { -1 }; // weak
-int16_t word_181466[] = { 15 }; // weak
-int16_t word_18146E[] = { 85 }; // weak
+int16_t word_181466[4] = {
+  15, -1, -1, -1
+}; // weak (wave 179: 8 bytes in the original)
+int16_t word_18146E[2] = {
+  85, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_181472[] = { -1 }; // weak
 int16_t word_181474[] = { 0 }; // weak
 int16_t word_181476[61] =
@@ -7303,9 +7333,15 @@ int16_t word_181476[61] =
   10,
   10
 }; // weak
-int16_t word_1814F0[] = { -1 }; // weak
-int16_t word_1814F6[] = { 15 }; // weak
-int16_t word_1814FC[] = { 85 }; // weak
+int16_t word_1814F0[3] = {
+  -1, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_1814F6[3] = {
+  15, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_1814FC[3] = {
+  85, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
 int16_t word_181502[] = { -1 }; // weak
 int16_t word_181504[] = { 0 }; // weak
 int16_t word_181506[61] =
@@ -7372,11 +7408,19 @@ int16_t word_181506[61] =
   5,
   10
 }; // weak
-int16_t word_181580[] = { -1 }; // weak
-int16_t word_181586[] = { 15 }; // weak
-int16_t word_18158A[] = { 50 }; // weak
+int16_t word_181580[3] = {
+  -1, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
+int16_t word_181586[2] = {
+  15, -1
+}; // weak (wave 179: 4 bytes in the original)
+int16_t word_18158A[3] = {
+  50, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
 int16_t word_181590[] = { -1 }; // weak
-int16_t word_181592[] = { 35 }; // weak
+int16_t word_181592[2] = {
+  35, -1
+}; // weak (wave 179: 4 bytes in the original)
 int16_t word_181596[61] =
 {
   0,
@@ -7441,9 +7485,13 @@ int16_t word_181596[61] =
   -1,
   10
 }; // weak
-int16_t word_181610[] = { -1 }; // weak
+int16_t word_181610[3] = {
+  -1, -1, -1
+}; // weak (wave 179: 6 bytes in the original)
 int16_t word_181616[] = { 15 }; // weak
-int16_t word_181618[] = { 60 }; // weak
+int16_t word_181618[4] = {
+  60, -1, -1, -1
+}; // weak (wave 179: 8 bytes in the original)
 int16_t word_181620[] = { -1 }; // weak
 int16_t word_181622[] = { 25 }; // weak
 int16_t word_181624[] = { 0 }; // weak
@@ -7587,7 +7635,9 @@ int16_t word_181626[135] =
 }; // weak
 char byte_181734[9] = { '\x02', '\x05', '\f', '\x1E', 'K', '\0', '\0', '\0', '\0' }; // weak
 char byte_18173D[9] = { '\x04', '\x04', '\x03', '\x02', '\x02', '\0', '\0', '\0', '\0' }; // weak
-char byte_181746[] = { '\0' }; // weak
+char byte_181746[10] = {
+  '\x00', '\x00', '\x03', '\x02', '\x07', '\x00', '\x00', '\x00', '\x00', '\x00'
+}; // weak (wave 179: 10 bytes in the original)
 char byte_181750 = '\x01'; // weak
 char byte_181751 = '\x01'; // weak
 char byte_181752 = '\x01'; // weak
@@ -7823,13 +7873,45 @@ int16_t word_182489 = 0; // weak
 int16_t word_18248B = 0; // weak
 char byte_18248D = '\0'; // weak
 int16_t word_18248E = 0; // weak
-int dword_182490[] = { 7 }; // weak
-int dword_1824E0[] = { 80 }; // weak
-int dword_182530[] = { 110 }; // weak
-int dword_1825D0[] = { 90 }; // weak
-int dword_182620[] = { 115 }; // weak
-int dword_1826C0[] = { 95 }; // weak
-int dword_182710[] = { 150 }; // weak
+int dword_182490[20] = {
+  7, 25, 35, 45, 55, 70, 89, 100,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
+}; // weak (wave 179: 80 bytes in the original)
+int dword_1824E0[20] = {
+  80, 60, 40, 20, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
+}; // weak (wave 179: 80 bytes in the original)
+int dword_182530[40] = {
+  110, 125, 155, 250, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 7, 25, 35, 45,
+  55, 70, 89, 100, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0
+}; // weak (wave 179: 160 bytes in the original)
+int dword_1825D0[20] = {
+  90, 80, 60, 40, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
+}; // weak (wave 179: 80 bytes in the original)
+int dword_182620[40] = {
+  115, 140, 200, 250, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 7, 25, 35, 45,
+  55, 70, 89, 100, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0
+}; // weak (wave 179: 160 bytes in the original)
+int dword_1826C0[20] = {
+  95, 85, 70, 50, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
+}; // weak (wave 179: 80 bytes in the original)
+int dword_182710[20] = {
+  150, 200, 300, 300, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
+}; // weak (wave 179: 80 bytes in the original)
 int dword_182760 = 0; // weak
 _UNKNOWN unk_182765[48] = { 18, 0, 0, 0, (char)0xC7, 0, 68, 1, (char)0xD1, 1, (char)0xD8, 1, 16, 0, 0, 0, (char)0xDC, 1, 10, 0, 120, 2, 50, 1, 16, 0, 0, 0, 10, 0, 10, 0, (char)0xBC, 0, (char)0xD7, 1, 1, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
 _UNKNOWN unk_182795[12] = { 16, 0, 0, 0, 0, 0, 0, 0, 127, 2, (char)0xDF, 1 }; // weak
@@ -8039,8 +8121,28 @@ char unk_182C56[64] = { 0xEC, 0xEE, 0xED, 0, 0, 0, 0, 0,
   0x9A, 0x9C, 0x9B, 0, 0, 0, 0, 0 };
 int dword_182C96 = -1; // weak
 int16_t word_182C9A = -1; // weak
-int16_t word_182C9C[] = { 316 }; // weak
-int dword_182E24[] = { 316 }; // weak
+int16_t word_182C9C[196] = {
+  316, 0, 492, 0, 225, 0, 461, 0, 153, 0, 428, 0,
+  96, 0, 401, 0, 50, 0, 379, 0, 10, 0, 361, 0,
+  -21, -1, 348, 0, 406, 0, 461, 0, 316, 0, 430, 0,
+  242, 0, 404, 0, 182, 0, 381, 0, 130, 0, 363, 0,
+  88, 0, 346, 0, 53, 0, 333, 0, 480, 0, 430, 0,
+  391, 0, 403, 0, 317, 0, 381, 0, 255, 0, 362, 0,
+  204, 0, 348, 0, 158, 0, 334, 0, 121, 0, 322, 0,
+  539, 0, 403, 0, 454, 0, 382, 0, 380, 0, 363, 0,
+  319, 0, 348, 0, 264, 0, 335, 0, 219, 0, 322, 0,
+  180, 0, 312, 0, 587, 0, 382, 0, 505, 0, 363, 0,
+  434, 0, 348, 0, 372, 0, 334, 0, 318, 0, 323, 0,
+  271, 0, 312, 0, 232, 0, 303, 0, 629, 0, 364, 0,
+  549, 0, 349, 0, 479, 0, 335, 0, 419, 0, 323, 0,
+  367, 0, 314, 0, 318, 0, 303, 0, 277, 0, 295, 0,
+  666, 0, 351, 0, 586, 0, 336, 0, 517, 0, 324, 0,
+  459, 0, 313, 0, 409, 0, 304, 0, 360, 0, 295, 0,
+  320, 0, 288, 0
+}; // weak (wave 179: 392 bytes in the original)
+int dword_182E24[2] = {
+  316, 492
+}; // weak (wave 179: 8 bytes in the original)
 int dword_182E2C[96] =
 {
   225,
@@ -8421,7 +8523,48 @@ char byte_18391E[26] =
   '\0',
   '\0'
 }; // weak
-_UNKNOWN *off_183B0E = &unk_183938; // weak
+// wave 179: Tech Review category lists (id, flags: 04 heading in billtex2.lbx,
+// 02 technology, 08 end) and the table off_183B0E that sub_108611 indexes.
+uint8_t unk_183938[0x74] = {
+  0x01, 0x04, 0x37, 0x02, 0x10, 0x02, 0xBA, 0x02, 0xBD, 0x02, 0x6D, 0x02, 0x45, 0x02, 0x29, 0x02,
+  0x28, 0x02, 0x02, 0x04, 0x2B, 0x02, 0xAD, 0x02, 0x93, 0x02, 0xB6, 0x02, 0x72, 0x02, 0xA6, 0x02,
+  0x03, 0x04, 0xAA, 0x02, 0x63, 0x02, 0xC3, 0x02, 0x1D, 0x02, 0x08, 0x02, 0x07, 0x02, 0x06, 0x02,
+  0x03, 0x02, 0x71, 0x02, 0x6C, 0x02, 0xC1, 0x02, 0x6B, 0x02, 0x05, 0x04, 0x59, 0x02, 0x2E, 0x02,
+  0x3B, 0x02, 0x04, 0x02, 0xB3, 0x02, 0x04, 0x04, 0x18, 0x02, 0x90, 0x02, 0x7C, 0x02, 0x09, 0x02,
+  0x8A, 0x02, 0x80, 0x02, 0x49, 0x02, 0x65, 0x02, 0x91, 0x02, 0x00, 0x04, 0x5B, 0x02, 0xB0, 0x02,
+  0xB4, 0x02, 0x5C, 0x02, 0x4D, 0x02, 0x41, 0x02, 0x2A, 0x02, 0xC8, 0x02, 0x54, 0x02, 0x3E, 0x02,
+  0x20, 0x02, 0x00, 0x08
+};
+uint8_t unk_1839AC[0x6A] = {
+  0x06, 0x04, 0xC6, 0x02, 0x44, 0x02, 0xA2, 0x02, 0x57, 0x02, 0x4A, 0x02, 0xB2, 0x02, 0xB7, 0x02,
+  0x07, 0x04, 0x32, 0x02, 0x13, 0x02, 0x8E, 0x02, 0x09, 0x04, 0x31, 0x02, 0x9A, 0x02, 0x98, 0x02,
+  0x9C, 0x02, 0x16, 0x02, 0x0B, 0x04, 0x4C, 0x02, 0x88, 0x02, 0x15, 0x02, 0x9B, 0x02, 0x0C, 0x04,
+  0x4B, 0x02, 0x87, 0x02, 0xA4, 0x02, 0x0A, 0x04, 0x0F, 0x02, 0x81, 0x02, 0x82, 0x02, 0x86, 0x02,
+  0xA9, 0x02, 0x1B, 0x02, 0xA8, 0x02, 0x85, 0x02, 0x84, 0x02, 0x43, 0x02, 0x0E, 0x02, 0x67, 0x02,
+  0x08, 0x04, 0x8D, 0x02, 0x56, 0x02, 0x00, 0x04, 0x3D, 0x02, 0xC5, 0x02, 0x34, 0x02, 0x05, 0x02,
+  0x83, 0x02, 0x27, 0x02, 0xA3, 0x02, 0x12, 0x02, 0x00, 0x08
+};
+uint8_t unk_183A16[0x58] = {
+  0x0D, 0x04, 0xAE, 0x02, 0x2F, 0x02, 0x7B, 0x02, 0x69, 0x02, 0x36, 0x02, 0x89, 0x02, 0x4F, 0x02,
+  0x7F, 0x02, 0x61, 0x02, 0x73, 0x02, 0x4E, 0x02, 0x46, 0x02, 0x68, 0x02, 0x64, 0x02, 0x0E, 0x04,
+  0x8B, 0x02, 0x92, 0x02, 0x0C, 0x02, 0xCA, 0x02, 0x95, 0x02, 0x6A, 0x02, 0x79, 0x02, 0x0F, 0x04,
+  0x1C, 0x02, 0x30, 0x02, 0x76, 0x02, 0x0A, 0x02, 0x47, 0x02, 0x77, 0x02, 0x10, 0x04, 0x53, 0x02,
+  0x1F, 0x02, 0x42, 0x02, 0x11, 0x02, 0x11, 0x04, 0xA5, 0x02, 0x1E, 0x02, 0xAB, 0x02, 0x94, 0x02,
+  0x8C, 0x02, 0x50, 0x02, 0x0D, 0x02, 0x00, 0x08
+};
+uint8_t unk_183A6E[0xA0] = {
+  0x12, 0x04, 0x51, 0x02, 0x70, 0x02, 0xA1, 0x02, 0x25, 0x02, 0x24, 0x02, 0x23, 0x02, 0x22, 0x02,
+  0x21, 0x02, 0x13, 0x04, 0x38, 0x02, 0x52, 0x02, 0xC9, 0x02, 0x02, 0x02, 0x75, 0x02, 0xCB, 0x02,
+  0xBF, 0x02, 0xBB, 0x02, 0x14, 0x04, 0x14, 0x02, 0x5F, 0x02, 0x58, 0x02, 0x0B, 0x02, 0x60, 0x02,
+  0x48, 0x02, 0x78, 0x02, 0x16, 0x04, 0x3F, 0x02, 0xB8, 0x02, 0xC2, 0x02, 0x62, 0x02, 0x33, 0x02,
+  0xA7, 0x02, 0x15, 0x04, 0x6E, 0x02, 0x2C, 0x02, 0x8F, 0x02, 0x7A, 0x02, 0x3A, 0x02, 0x18, 0x04,
+  0xA0, 0x02, 0x74, 0x02, 0xB5, 0x02, 0x9D, 0x02, 0x17, 0x04, 0x2D, 0x02, 0x99, 0x02, 0x3C, 0x02,
+  0x35, 0x02, 0x66, 0x02, 0x7E, 0x02, 0x26, 0x02, 0x5D, 0x02, 0x5E, 0x02, 0xC7, 0x02, 0x6F, 0x02,
+  0x39, 0x02, 0x19, 0x04, 0x01, 0x02, 0xAF, 0x02, 0x55, 0x02, 0x97, 0x02, 0x1A, 0x02, 0x00, 0x04,
+  0x96, 0x02, 0x7D, 0x02, 0xB9, 0x02, 0x5A, 0x02, 0xB1, 0x02, 0xBE, 0x02, 0xBC, 0x02, 0x17, 0x02,
+  0xAC, 0x02, 0x9F, 0x02, 0x40, 0x02, 0xC4, 0x02, 0x9E, 0x02, 0x19, 0x02, 0xC0, 0x02, 0x00, 0x08
+};
+uint8_t *off_183B0E[4] = { unk_183938, unk_1839AC, unk_183A16, unk_183A6E }; // weak
 /* PORT (vlna 122): datovy blok obrazovky INFO. V portu z nej byly same
    jednobajtove/ctyrbajtove pahyly:
      - `unk_183B1E/26/2E/3E` jsou OSMIBAJTOVE BAREVNE RAMPY (jdou do
@@ -8470,8 +8613,9 @@ _UNKNOWN unk_183BE7[64] = {
    misto petkrat 21. byte_183C28 je proto uz jen makro na +1 (orion_common.h).
    Hranici dava dalsi symbol word_183C31 na +10 (v obraze D8 00 = 216). */
 char byte_183C27[10] = { 21, 50, 21, 77, 21, 102, 21, 128, 21, 154 };
-int16_t word_183C31[] = { 216 }; // weak
-int16_t word_183C33[7] = { 427, 318, 427, 373, 427, 438, 427 }; // weak
+// wave 179: one table of (x, y) pairs for the Tech Review buttons;
+// word_183C33 is a macro for word_183C31 + 1 (orion_common.h).
+int16_t word_183C31[8] = { 216, 427, 318, 427, 373, 427, 438, 427 }; // weak
 _UNKNOWN unk_183C41[34] = {
   0xDC, 0x00, 0x3C, 0x00, 0x61, 0x02, 0x7A, 0x00, 0xB3, 0xB1, 0xB1, 0xB4, 0xB2, 0xB2, 0xB2, 0xB0,
   0xB0, 0xDC, 0x00, 0x84, 0x00, 0x61, 0x02, 0x9D, 0x01, 0xB3, 0xB1, 0xB1, 0xB4, 0xB2, 0xB2, 0xB2,
@@ -8588,7 +8732,9 @@ char unk_183D73[34] = {
   0xDA, 0x00, 0x5D, 0x00, 0x9E, 0x01, 0x9D, 0x01, 0xB3, 0xB1, 0xB1, 0xB4, 0xB2, 0xB2, 0xB2, 0xB0, 0xB0,
   0xA2, 0x01, 0x5D, 0x00, 0x65, 0x02, 0x9D, 0x01, 0xB3, 0xB1, 0xB1, 0xB4, 0xB2, 0xB2, 0xB2, 0xB0, 0xB0 };
 char byte_183D95[10] = { '\a', '\x03', '\x03', '\x03', '\x03', '\x05', '\x03', '\x03', '\x03', '\x03' }; // weak
-int16_t word_183D9F[] = { 233 }; // weak
+int16_t word_183D9F[4] = {
+  233, 323, 404, 457
+}; // weak (wave 179: 8 bytes in the original)
 int16_t word_183E0D[4] = { 9164, 8374, 6952, 12640 }; // weak
 // wave 179: row tables of the first INFO descriptor (block_183E15 +8/+12/+16),
 // measured with DUMPMEM at the entry of sub_106CAC. IDA shows the first dword
@@ -8845,7 +8991,10 @@ int16_t word_1844E0 = 0; // weak
 int16_t word_1844E2 = 0; // weak
 int16_t word_1844E4 = 1; // weak
 int dword_1844E6 = 1; // weak
-char byte_1844EC[] = { '\0' }; // weak
+char byte_1844EC[30] = {
+  '\x00', '\x00', '\x01', '\x00', '\x02', '\x00', '\x03', '\x00', '\x04', '\x00', '\x05', '\x00', '\x06', '\x00', '\x07', '\x00',
+  '\x08', '\x00', '\x09', '\x00', '\x0A', '\x00', '\x0B', '\x00', '\x0C', '\x00', '\x0D', '\x00', '\x0E', '\x00'
+}; // weak (wave 179: 30 bytes in the original)
 int16_t word_18450C = 0; // weak
 int16_t word_18450E = 0; // weak
 int dword_184510 = 1; // weak
@@ -14198,14 +14347,14 @@ int dword_18985C = 1; // weak
 int dword_189860 = 0; // weak
 int (*off_189864)(_DWORD) = &nmalloc; // weak
 int (*off_189868)(_DWORD) = &nfree; // weak
-int dword_18986C[] = { 0 }; // weak
-int dword_1898AC[] = { 0 }; // weak
+int dword_18986C[16]; // weak (wave 179: 64 bytes in the original)
+int dword_1898AC[15]; // weak (wave 179: 60 bytes in the original)
 int dword_1898E8 = 0; // weak
-int dword_1898EC[] = { 0 }; // weak
-int dword_18992C[] = { 0 }; // weak
-int dword_18996C[] = { 0 }; // weak
+int dword_1898EC[16]; // weak (wave 179: 64 bytes in the original)
+int dword_18992C[16]; // weak (wave 179: 64 bytes in the original)
+int dword_18996C[15]; // weak (wave 179: 60 bytes in the original)
 int dword_1899A8 = 0; // weak
-int dword_1899AC[] = { 0 }; // weak
+int dword_1899AC[16]; // weak (wave 179: 64 bytes in the original)
 int dword_1899EC = 0; // weak
 int16_t word_1899F0 = 0; // weak
 int dword_1899F2 = 0; // weak
@@ -14972,14 +15121,14 @@ int dword_18B130[40] =
   0,
   0
 }; // weak
-int16_t word_18B1D0[] = { 0 }; // weak
-int16_t word_18B1E0[] = { 0 }; // weak
-int16_t word_18B1F0[] = { 0 }; // weak
-int16_t word_18B200[] = { 0 }; // weak
-int16_t word_18B210[] = { 0 }; // weak
-int16_t word_18B220[] = { 0 }; // weak
+int16_t word_18B1D0[8]; // weak (wave 179: 16 bytes in the original)
+int16_t word_18B1E0[8]; // weak (wave 179: 16 bytes in the original)
+int16_t word_18B1F0[8]; // weak (wave 179: 16 bytes in the original)
+int16_t word_18B200[8]; // weak (wave 179: 16 bytes in the original)
+int16_t word_18B210[8]; // weak (wave 179: 16 bytes in the original)
+int16_t word_18B220[8]; // weak (wave 179: 16 bytes in the original)
 int dword_18B230[6] = { 0, 0, 0, 0, 0, 0 }; // weak
-int dword_18B248[] = { 0 }; // weak
+int dword_18B248[6]; // weak (wave 179: 24 bytes in the original)
 int dword_18B260[] = { 0 }; // weak
 int dword_18B264 = 0; // weak
 int dword_18B268 = 0; // weak
@@ -15863,8 +16012,8 @@ int dword_18F4B0[]; // weak
 int dword_18F4B4; // weak
 int dword_18F4B8; // weak
 int dword_18F4BC; // weak
-int dword_18F4C0[]; // weak
-int16_t word_18F500[]; // weak
+int dword_18F4C0[16]; // weak (wave 179: 64 bytes in the original)
+int16_t word_18F500[8]; // weak (wave 179: 16 bytes in the original)
 int16_t word_18F510[300]; // weak
 int dword_18F768[112]; // weak
 int dword_18F928[8]; // weak
@@ -15906,12 +16055,12 @@ int16_t word_19046A; // weak
 int16_t word_19046C; // weak
 int16_t word_19046E; // weak
 int dword_190470[6]; // weak
-char byte_190488[]; // weak
+char byte_190488[8]; // weak (wave 179: 8 bytes in the original)
 int16_t word_190490[3]; // weak
 int16_t word_190496; // weak
-int dword_190498[]; // weak
+int dword_190498[2]; // weak (wave 179: 8 bytes in the original)
 int dword_1904A0; // weak
-int dword_1904C8[]; // weak
+int dword_1904C8[2]; // weak (wave 179: 8 bytes in the original)
 int dword_1904D0; // weak
 int dword_1904D8[8]; // weak
 int dword_1904F8[8]; // weak
@@ -15920,7 +16069,7 @@ int dword_190598[24]; // weak
 int dword_1905F8[32]; // weak
 int dword_190678[4]; // weak
 int dword_190688[10]; // weak
-int dword_1906B0[]; // weak
+int dword_1906B0[4]; // weak (wave 179: 16 bytes in the original)
 // PORT (vlna 103): CELY blok zaznamu o 12 B zacina uz na 0x1906C0, ne az na
 // 0x1906C8. Vlna 85 srovnala jen `word_1906C8`/`word_1906CA`, ale kod
 // indexuje `6 * i` i u prvnich ctyr poli (`word_1906C2[6 * v0]` = id lodi,
@@ -16213,13 +16362,13 @@ int16_t word_192E00; // weak
 int16_t word_192E02; // weak
 int16_t word_192E04; // weak
 int dword_192E7C; // weak
-char byte_192E80[]; // weak
+char byte_192E80[4]; // weak (wave 179: 4 bytes in the original)
 int dword_192E84; // weak
 int dword_192E88; // weak
 int dword_192E8C; // weak
 int dword_192E90; // weak
 int dword_192EC4; // weak
-char byte_192ECC[]; // weak
+char byte_192ECC[4]; // weak (wave 179: 4 bytes in the original)
 int dword_192ED0; // weak
 int dword_192ED4; // weak
 int dword_192ED8; // weak
@@ -16376,7 +16525,7 @@ int dword_1932E0[11]; // weak
 int dword_19330C[57]; // weak
 int dword_1933F0; // weak
 int dword_1933F4; // weak
-int dword_1933F8[]; // weak
+int dword_1933F8[5]; // weak (wave 179: 20 bytes in the original)
 int dword_19340C; // weak
 int dword_193410; // weak
 int dword_193414; // weak
@@ -16850,12 +16999,12 @@ int dword_19A018; // weak
 int16_t word_19A01C; // weak
 int16_t word_19A01E; // weak
 int16_t word_19A020[]; // weak
-int16_t word_19A022[]; // weak
+int16_t word_19A022[7]; // weak (wave 179: 14 bytes in the original)
 char byte_19A030[40]; // weak
 int dword_19A058[]; // weak
 int dword_19A05C; // weak
-int dword_19A060[]; // weak
-int dword_19A080[]; // weak
+int dword_19A060[8]; // weak (wave 179: 32 bytes in the original)
+int dword_19A080[8]; // weak (wave 179: 32 bytes in the original)
 char byte_19A0A0[20]; // weak
 int16_t word_19A0B4; // weak
 int16_t word_19A0B6; // weak
@@ -16982,7 +17131,7 @@ int16_t word_19A5B4[]; // weak
 int16_t word_19A5B6[]; // weak
 int16_t word_19A5B8[]; // weak
 int16_t word_19A5BA[]; // weak
-int16_t word_19A5BC[]; // weak
+int16_t word_19A5BC[71]; // weak (wave 179: 142 bytes in the original)
 char byte_19A64A; // weak
 char byte_19A744[50]; // weak
 char byte_19A776[50]; // weak
@@ -17353,9 +17502,9 @@ int16_t word_19C0E0[]; // weak
 int16_t word_19C0E2[]; // weak
 int16_t word_19C0E4[]; // weak
 int16_t word_19C0E6[29]; // weak
-char byte_19C120[]; // weak
+char byte_19C120[8]; // weak (wave 179: 8 bytes in the original)
 int dword_19C128[8]; // weak
-char byte_19C148[]; // weak
+char byte_19C148[8]; // weak (wave 179: 8 bytes in the original)
 int dword_19C150; // weak
 int16_t word_19C154; // weak
 int16_t word_19C158; // weak
@@ -17608,7 +17757,7 @@ char byte_19DECA[]; // weak
 int16_t word_19DECB; // weak
 char byte_19DECD[]; // weak
 char byte_19DECE[370]; // weak
-int16_t word_19E040[]; // weak
+int16_t word_19E040[2]; // weak (wave 179: 4 bytes in the original)
 int16_t word_19E044[]; // weak
 int16_t word_19E046[]; // weak
 int16_t word_19E048[632]; // weak
@@ -17752,12 +17901,12 @@ int16_t word_19EB96[]; // weak
 char byte_19EB99[]; // weak
 char byte_19EB9A[]; // weak
 char byte_19EB9B[]; // weak
-char byte_19EB9C[]; // weak
+char byte_19EB9C[4]; // weak (wave 179: 4 bytes in the original)
 char byte_19EBA0[]; // weak
 int dword_19EBA1; // weak
 char byte_19EF81[]; // weak
-char byte_19EF82[]; // weak
-char byte_19EF84[]; // weak
+char byte_19EF82[2]; // weak (wave 179: 2 bytes in the original)
+char byte_19EF84[4]; // weak (wave 179: 4 bytes in the original)
 char byte_19EF88[988]; // weak
 int dword_19F364; // weak
 int dword_19F368; // weak
@@ -17793,12 +17942,12 @@ int16_t word_19F984[12]; // weak
 int16_t word_19F99C[]; // weak
 int16_t word_19F99E[8]; // weak
 int16_t word_19F9AE; // weak
-int16_t word_19F9BA[]; // weak
+int16_t word_19F9BA[3]; // weak (wave 179: 6 bytes in the original)
 int16_t word_19F9C0[5]; // weak
 int16_t word_19F9CA[5]; // weak
 _WORD word_19F9D4[3]; // weak
 int16_t word_19F9DA[3]; // weak
-int16_t word_19F9E0[]; // weak
+int16_t word_19F9E0[4]; // weak (wave 179: 8 bytes in the original)
 int16_t word_19F9E8; // weak
 int16_t word_19F9EA[2]; // weak
 int16_t word_19F9EE; // weak
@@ -17880,7 +18029,7 @@ uint8_t *dword_1A08B0; // weak  /* vlna 89: skutecny ukazatel, viz orion_common.
 int16_t word_1A08B4[6]; // weak
 int16_t word_1A08C0[12]; // weak
 _WORD word_1A08D8[6]; // weak
-int16_t word_1A08E4[]; // weak
+int16_t word_1A08E4[6]; // weak (wave 179: 12 bytes in the original)
 int (*dword_1A08F0)(void); // weak
 _DWORD dword_1A08F4; // weak
 int dword_1A08F8; // weak
@@ -17898,7 +18047,7 @@ int dword_1A090A; // weak
 // (`memset(&word_1A09FE, 0, 575)` = 25 zaznamu * 23 B). Jmena poli jsou ted
 // prekryvova makra nad timhle blokem - viz orion_common.h.
 char winRecs_1A09FE[578]; // weak (0x1A0C40 - 0x1A09FE)
-int dword_1A0C40[]; // weak
+int dword_1A0C40[8]; // weak (wave 179: 32 bytes in the original)
 int dword_1A0C60; // weak
 int16_t word_1A0C64[]; // weak
 int16_t word_1A0C66[]; // weak
@@ -18069,12 +18218,12 @@ char byte_1A7234[]; // weak
 char byte_1A7235[]; // weak
 char byte_1A7236[22]; // weak
 char byte_1A724C[8]; // weak
-int dword_1A7254[]; // weak
+int dword_1A7254[8]; // weak (wave 179: 32 bytes in the original)
 char byte_1A7274[]; // weak
 char byte_1A7275[15]; // weak
 char byte_1A7284[]; // weak
 char byte_1A7285[15]; // weak
-int dword_1A7294[]; // weak
+int dword_1A7294[9]; // weak (wave 179: 36 bytes in the original)
 int dword_1A72B8[]; // weak
 int dword_1A72BC; // weak
 int dword_1A72C0[]; // weak
@@ -18323,7 +18472,7 @@ char byte_1AAF58; // weak
 int dword_1AAF59; // weak
 char byte_1AAF5D; // weak
 int16_t word_1AAF5E; // weak
-char byte_1AAF60[]; // weak
+char byte_1AAF60[8]; // weak (wave 179: 8 bytes in the original)
 int16_t word_1AAF68; // weak
 int dword_1AAF6A; // weak
 int16_t word_1AAF6E; // weak
@@ -18427,7 +18576,7 @@ int dword_1AB144; // weak
 int dword_1AB148; // weak
 char byte_1AB14C[]; // weak
 int16_t word_1AB14D; // weak
-char byte_1AB14F[]; // weak
+char byte_1AB14F[2]; // weak (wave 179: 2 bytes in the original)
 char byte_1AB358[426]; // weak
 int16_t word_1AB502; // weak
 _UNKNOWN unk_1AB504[9]; // weak (wave 179: 9 bytes in the original)
@@ -18437,11 +18586,11 @@ char byte_1AB50F; // weak
 char byte_1AB510[6500]; // weak
 char byte_1ACE74; // weak
 int16_t word_1ACE78[]; // weak
-int16_t word_1ACE7A[]; // weak
+int16_t word_1ACE7A[15]; // weak (wave 179: 30 bytes in the original)
 _BYTE byte_1ACE98[32]; // weak
 int16_t word_1ACEB8; // weak
 int16_t word_1ACEBA; // weak
-int dword_1ACEBC[]; // weak
+int dword_1ACEBC[16]; // weak (wave 179: 64 bytes in the original)
 // PORT (wave 23b, x64 fix): these six hold ADDRESSES of local stack buffers
 // from sub_104C31's "edit field" parser context (orion_part_17.c ~1300-1353:
 // dword_1ACF14=&v19, dword_1ACF08=v15, dword_1ACF00=v16, dword_1ACEFC/1ACF04
@@ -18464,7 +18613,7 @@ int16_t word_1ACF1A; // weak
 int16_t word_1ACF1C; // weak
 int16_t word_1ACF1E; // weak
 int dword_1ACF20[16]; // weak
-char byte_1ACF60[]; // weak
+char byte_1ACF60[16]; // weak (wave 179: 16 bytes in the original)
 int (*dword_1ACF70)(_DWORD, _DWORD, _DWORD); // weak
 char byte_1ACF74; // weak
 char byte_1ACF75; // weak
@@ -18480,7 +18629,7 @@ int16_t word_1ACFB5; // weak
 int dword_1ACFB7; // weak
 char byte_1ACFBB; // weak
 char byte_1ACFBC; // weak
-int dword_1ACFC0[]; // weak
+int dword_1ACFC0[8]; // weak (wave 179: 32 bytes in the original)
 int dword_1ACFE0; // weak
 int dword_1ACFE4; // weak
 int dword_1ACFE8; // weak
@@ -18488,7 +18637,7 @@ int16_t word_1ACFEC[]; // weak
 int16_t word_1ACFEE[]; // weak
 int16_t word_1ACFF0[]; // weak
 int16_t word_1ACFF2[]; // weak
-int16_t word_1ACFF4[]; // weak
+int16_t word_1ACFF4[246]; // weak (wave 179: 492 bytes in the original)
 int dword_1AD1E0; // weak
 int dword_1AD1E4; // weak
 int dword_1AD1E8; // weak
@@ -18686,7 +18835,7 @@ int dword_1B3E78; // weak
 char fontBlock_1B3E7C[9052]; // weak
 // unk_1B5030/unk_1B5418 ODSTRANENO (vlna 10): IDA false-positive z konstant
 // 1790000/1791000 (velikost zvukoveho bufferu + prah) - viz orion_part_01.c.
-char byte_1B61D8[]; // weak
+char byte_1B61D8[8]; // weak (wave 179: 8 bytes in the original)
 int dword_1B61E0; // weak
 int dword_1B61E4; // weak
 int dword_1B61E8; // weak
@@ -18904,7 +19053,7 @@ char byte_1BC89B[]; // weak
 char byte_1BC89C[]; // weak
 char byte_1BC89D[2047]; // weak
 int dword_1BD09C; // weak
-char byte_1BD0A0[]; // weak
+char byte_1BD0A0[10]; // weak (wave 179: 10 bytes in the original)
 char byte_1BD0AA[166]; // weak
 int dword_1BD150; // weak
 char byte_1BD154[510]; // weak
@@ -19019,7 +19168,7 @@ char byte_1C40EE; // weak
 _UNKNOWN unk_1C40F0[16170]; // weak (wave 179: 16170 bytes in the original)
 char byte_1C8358[100]; // weak
 int dword_1C83BC; // weak
-int dword_1C9400[]; // weak
+int dword_1C9400[16]; // weak (wave 179: 64 bytes in the original)
 char byte_1C9440; // weak
 int dword_1C9540[]; // weak
 int dword_1C9544; // weak
