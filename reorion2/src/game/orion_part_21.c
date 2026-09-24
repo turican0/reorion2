@@ -357,10 +357,10 @@ int sub_13E47F(int a1, uint8_t *a2, int a3, int a4)
         --v18;
       if ( v22 == -1 )
       {
-        *((_WORD *)&dword_1C0BDA + ((int)unk_1C0E32 >> 16) + 1) = v23;
-        *((_WORD *)&dword_1C0D6A + ((int)unk_1C0E32 >> 16) + 1) = v15;
-        *((_WORD *)&dword_1C0B12 + ((int)unk_1C0E32 >> 16) + 1) = (_WORD)a2;
-        *((_WORD *)&dword_1C0CA2 + ((int)unk_1C0E32 >> 16) + 1) = v13;
+        *((_WORD *)&dword_1C0BDA + (int)word_1C0E34 + 1) = v23;
+        *((_WORD *)&dword_1C0D6A + (int)word_1C0E34 + 1) = v15;
+        *((_WORD *)&dword_1C0B12 + (int)word_1C0E34 + 1) = (_WORD)a2;
+        *((_WORD *)&dword_1C0CA2 + (int)word_1C0E34 + 1) = v13;
         ++word_1C0E34;
         if ( (int16_t)v17 != -1 )
         {
@@ -370,10 +370,10 @@ int sub_13E47F(int a1, uint8_t *a2, int a3, int a4)
       }
       else
       {
-        *((_WORD *)&dword_1C0BDA + ((int)unk_1C0E32 >> 16) + 1) = v23;
-        *((_WORD *)&dword_1C0D6A + ((int)unk_1C0E32 >> 16) + 1) = v15;
-        *((_WORD *)&dword_1C0B12 + ((int)unk_1C0E32 >> 16) + 1) = (_WORD)a2;
-        *((_WORD *)&dword_1C0CA2 + ((int)unk_1C0E32 >> 16) + 1) = v13;
+        *((_WORD *)&dword_1C0BDA + (int)word_1C0E34 + 1) = v23;
+        *((_WORD *)&dword_1C0D6A + (int)word_1C0E34 + 1) = v15;
+        *((_WORD *)&dword_1C0B12 + (int)word_1C0E34 + 1) = (_WORD)a2;
+        *((_WORD *)&dword_1C0CA2 + (int)word_1C0E34 + 1) = v13;
         ++word_1C0E34;
         if ( v22 == 25 )
         {

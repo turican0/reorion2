@@ -14345,7 +14345,7 @@ void sub_37DA8( int a1,
     sub_103C5B(5, (int)&a22 + 6);
     sub_103C5B(6, (int)v64);
     sub_103C5B(7, (int)&a7 + 2);
-    v59 = unk_178CEA;
+    v59 = *(int16_t *)unk_178CEA;   /* wave 179: asm 0x38027 movsw from unk_170CEA */
     v60 = unk_178CEC;
     sub_58F1E(92, v61, 80);
     v37 = &v58;

@@ -1743,7 +1743,7 @@ LABEL_234:
     sub_123C48();
     sub_123C84();
   }
-  if ( *(int *)((char *)off_184480 + 55 * ((int)unk_1844A4 >> 16) + 6) >> 16 == 6 )
+  if ( *(int *)((char *)off_184480 + 55 * (int)word_1844A6 /* wave 179: sar of dword unk_17C4A4 */ + 6) >> 16 == 6 )
     sub_1192D1();
   word_1844A6 = 0;
   if ( (_WORD)v47 )
@@ -4970,7 +4970,7 @@ int16_t sub_1248AB( int a1)
   PortDebug_Checkpoint("1248AB.fb_ptr_as_int", dword_1BB910[0]); // musi byt != 0
   PortDebug_Checkpoint("1248AB.before_12542A", 0);
   word_1BBA62 = sub_12542A();
-  LOWORD(dword_1BBA4A) = (int)unk_1BBA60 >> 16 >= (2 * dword_18453C
+  LOWORD(dword_1BBA4A) = (int)word_1BBA62 /* wave 179: asm 0x124A13 sar of dword unk_1B3A60 */ >= (2 * dword_18453C
                                                  - (__CFSHL__((2 * dword_18453C) >> 31, 10)
                                                   + ((2 * dword_18453C) >> 31 << 10))) >> 10;
   word_1BBA56 = sub_1254C0();

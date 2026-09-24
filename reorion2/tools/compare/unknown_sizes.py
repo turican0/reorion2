@@ -12,16 +12,17 @@ import sys
 
 MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 2
 src = open('src/game/orion_data.c', encoding='latin-1').read()
-decl = re.compile(r'^[A-Za-z_][\w \*]*?\b(?:unk|byte|word|dword|qword|off|stru|asc|a[A-Z]\w*?)_([0-9A-F]{5,6})\b', re.M)
 syms = []
 for m in re.finditer(r'^[^/\n#][^\n;(]*?\b([A-Za-z]+_([0-9A-F]{5,6}))\b[^\n;(]*;', src, re.M):
     syms.append((int(m.group(2), 16), m.group(1), m.group(0)))
 syms.sort()
-code = {}
+uselines = {}
 for p in glob.glob('src/game/*.c'):
     if p.endswith('orion_data.c'):
         continue
-    code[p] = open(p, encoding='latin-1').read()
+    for line in open(p, encoding='latin-1'):
+        for n in set(re.findall(r'\bunk_[0-9A-F]{5,6}\b', line)):
+            uselines.setdefault(n, []).append(line.strip()[:110])
 for i, (a, name, line) in enumerate(syms):
     if not re.match(r'_UNKNOWN\s+unk_[0-9A-F]+\s*;', line):
         continue
@@ -29,10 +30,7 @@ for i, (a, name, line) in enumerate(syms):
     size = nxt - a
     if size < MIN:
         continue
-    uses = []
-    for p, t in code.items():
-        for u in re.finditer(r'[^\n]*\b' + name + r'\b[^\n]*', t):
-            uses.append(u.group(0).strip()[:110])
+    uses = uselines.get(name, [])
     print('%s size=0x%X uses=%d' % (name, size, len(uses)))
     for u in uses[:6]:
         print('    ' + u)

@@ -6676,13 +6676,13 @@ void sub_1092BD()
 {
   int16_t v0; // ax
 
-  off_183ECF = &unk_183B26;
+  off_183ECF = (uint32_t)(uintptr_t)&unk_183B26;   /* wave 179: 32-bit pointer slot */
   v0 = (uint16_t)sub_114177();
   if ( v0 >= word_1AD1FC && v0 <= word_1AD200 )
     sub_10A5E3((int)&unk_183EA3, v0);
   dword_1ACFE8 = sub_10A659((int)&unk_183EA3);
   sub_10A3AD((int)&unk_183EA3, dword_1ACFE8);
-  off_183ECF = &unk_183B1E;
+  off_183ECF = (uint32_t)(uintptr_t)&unk_183B1E;   /* wave 179: 32-bit pointer slot */
   JUMPOUT(0x108608);
 }
 // 10932C: control flows out of bounds to 108608

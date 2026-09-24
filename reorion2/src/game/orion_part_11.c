@@ -4334,12 +4334,12 @@ uint8_t sub_B5FBE()
       {
         if ( i == 6 && result || j == 6 && !result || result > 1u && (j == 6 || i == 6) )
         {
-          *(int16_t *)((char *)&word_19E574 + 203 * i + 29 * j + 2 * result) = -1;
+          *(int16_t *)((char *)word_19E574 + 203 * i + 29 * j + 2 * result) = -1;
           byte_19E57C[203 * i + 29 * j + result] = 0;
         }
         else
         {
-          *(int16_t *)((char *)&word_19E574 + 203 * i + 29 * j + 2 * result) = v0++;
+          *(int16_t *)((char *)word_19E574 + 203 * i + 29 * j + 2 * result) = v0++;
           byte_19E57C[203 * i + 29 * j + result] = 0;
         }
       }

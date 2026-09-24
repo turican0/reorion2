@@ -2357,13 +2357,13 @@ void sub_10FAAC()
 {
   int16_t v0; // ax
 
-  off_184350[0] = &aNrqqqrrsnutstt[8];
+  off_184350[0] = (uint32_t)(uintptr_t)&aNrqqqrrsnutstt[8];   /* wave 179: 32-bit pointer slot */
   v0 = (uint16_t)sub_114177();
   if ( v0 >= word_1AD1FC && v0 <= word_1AD200 )
     sub_10A5E3((int)&unk_184324, v0);
   dword_1AD6BC = sub_10A659((int)&unk_184324);
   sub_10A3AD((int)&unk_184324, dword_1AD6BC);
-  off_184350[0] = aNrqqqrrsnutstt;
+  off_184350[0] = (uint32_t)(uintptr_t)aNrqqqrrsnutstt;   /* wave 179: 32-bit pointer slot */
 }
 // 184350: using guessed type char *off_184350[5];
 // 1AD1FC: using guessed type int16_t word_1AD1FC;
@@ -7404,7 +7404,7 @@ int16_t sub_119861()
   dword_1B0828 = word_1B3E0E;
   dword_1B0830 = dword_1B3E10 >> 16;
   dword_1B0834 = dword_18448E >> 16;
-  dword_1B0820 = (int)unk_1844A4 >> 16;
+  dword_1B0820 = word_1844A6;   /* wave 179: asm 0x1198A0 `mov eax, dword ptr unk_17C4A4; sar eax, 10h` */
   dword_1B082C = *(int *)((char *)&dword_1844C6 + 2) >> 16;
   dword_1B0824 = dword_1844CE >> 16;
   off_184480 = (_UNKNOWN *)((char *)off_184480 + 55 * word_1B3E0E);

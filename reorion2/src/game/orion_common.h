@@ -15973,8 +15973,8 @@ extern char asc_178C54[3];
 extern char asc_178C57[3];
 extern char a360[4];
 extern char asc_178C5E[2];
-extern _UNKNOWN unk_178C80;
-extern _UNKNOWN unk_178C83;
+extern _UNKNOWN unk_178C80[3];   /* wave 179 */
+extern _UNKNOWN unk_178C83[2];   /* wave 179 */
 extern char aCombatLbx[11];
 extern char aFlticonsLbx[13];
 extern _UNKNOWN unk_178CA0;
@@ -15993,7 +15993,7 @@ extern char asc_178CD5[2];
 extern char asc_178CD8[11];
 extern char asc_178CE3[3];
 extern _UNKNOWN *off_178CE6;
-extern _UNKNOWN unk_178CEA;
+extern _UNKNOWN unk_178CEA[2];   /* wave 179 */
 extern _UNKNOWN unk_178CEC;
 extern char byte_178CED[10];
 extern char byte_178CF7[47];
@@ -16136,7 +16136,7 @@ extern char aConfirmLbx[12];
 extern char aY[2];
 extern char aN[2];
 extern int16_t word_179354;
-extern _UNKNOWN unk_179356;
+extern _UNKNOWN unk_179356[2];   /* wave 179 */
 extern char aRelateGameCond[53];
 extern char aBuffer0Lbx_1[12];
 extern char aRt_0[3];
@@ -16158,7 +16158,7 @@ extern char aStarnameLbx[13];
 extern char asc_17957D[2];
 extern char aRaceoptLbx_1[12];
 extern char asc_179595[2];
-extern _UNKNOWN unk_179597;
+extern _UNKNOWN unk_179597[13];   /* wave 179 */
 extern wchar_t aNsqoA[6];
 extern char aInvalid[12];
 extern char aD_0[2];
@@ -16259,7 +16259,7 @@ extern char unk_179B92[2];   /* vlna 140: znacka u hvezdy */
 extern char aScoreLbx[10];
 extern char asc_179BAA[2];
 extern int16_t word_179BCB;
-extern _UNKNOWN unk_179BCD;
+extern _UNKNOWN unk_179BCD[3];   /* wave 179 */
 extern char aHofM2[7];
 extern char aWb_2[3];
 extern _UNKNOWN unk_179BDA;
@@ -16293,12 +16293,12 @@ extern char aFreHelpLbx[13];
 extern char aItaHelpLbx[13];
 extern char aSpaHelpLbx[13];
 extern char asc_179D88[2];
-extern _UNKNOWN unk_179D8A;
-extern _UNKNOWN unk_179D8D;
-extern _UNKNOWN unk_179D90;
+extern _UNKNOWN unk_179D8A[3];   /* wave 179 */
+extern _UNKNOWN unk_179D8D[3];   /* wave 179 */
+extern _UNKNOWN unk_179D90[2];   /* wave 179 */
 extern _BYTE byte_179D92[2];
-extern _UNKNOWN unk_179DC3;
-extern _UNKNOWN unk_179DC6;
+extern _UNKNOWN unk_179DC3[3];   /* wave 179 */
+extern _UNKNOWN unk_179DC6[6];   /* wave 179 */
 extern char aGstarLbx_0[10];
 extern char aBuffer0Lbx_5[12];
 extern char aWho[4];
@@ -16316,8 +16316,8 @@ extern _UNKNOWN unk_179E17;
 extern char a2_0[3];
 extern char asc_179E1C[3];
 extern char aBuffer0Lbx_6[12];
-extern _UNKNOWN unk_179E6B;
-extern _UNKNOWN unk_179E6E;
+extern _UNKNOWN unk_179E6B[3];   /* wave 179 */
+extern _UNKNOWN unk_179E6E[3];   /* wave 179 */
 extern char aPiccola[8];
 extern char aMedia[6];
 extern char aEstringsLbx[13];
@@ -16333,8 +16333,8 @@ extern char aMainfrenLbx[13];
 extern char aMainspanLbx[13];
 extern char aMainitalLbx[13];
 extern char aMainpoliLbx[13];
-extern _UNKNOWN unk_179F40;
-extern _UNKNOWN unk_179F43;
+extern _UNKNOWN unk_179F40[3];   /* wave 179 */
+extern _UNKNOWN unk_179F43[3];   /* wave 179 */
 extern _BYTE byte_179F46[2];
 extern char aAiTradeGoods[15];
 extern _UNKNOWN unk_179F5F;
@@ -16393,7 +16393,7 @@ extern char aRacerprtLbx[13];
 extern char asc_17A31B[2];
 extern char aBilltextLbx_1[13];
 extern char asc_17A32A[2];
-extern _UNKNOWN unk_17A32C;
+extern _UNKNOWN unk_17A32C[4];   /* wave 179 */
 extern char aBilltextLbx_0[13];
 extern char aBilltex2Lbx_0[13];
 extern char aRacesLbx[10];
@@ -16511,7 +16511,7 @@ extern char aConnect[8];
 extern char aUnableToSend[16];
 extern char aLownetLog[11];
 extern char aLownetLogError[19];
-extern _UNKNOWN unk_17B145;
+extern _UNKNOWN unk_17B145[2];   /* wave 179 */
 extern char aAilDebug[10];
 extern char aAilSysDebug[14];
 extern char aWT[4];
@@ -16537,10 +16537,10 @@ extern char aNullBuffer[13];
 extern char aLbx_0[5];
 extern char aWb_7[3];
 extern int dword_17C21C;
-extern _UNKNOWN unk_17C220;
+extern _UNKNOWN unk_17C220[4];   /* wave 179 */
 extern int dword_17C238;
-extern _UNKNOWN unk_17C240;
-extern _UNKNOWN unk_17C244;
+extern _UNKNOWN unk_17C240[4];   /* wave 179 */
+extern _UNKNOWN unk_17C244[4];   /* wave 179 */
 extern char aAtc[4];
 extern char aAte[4];
 extern char aAtf[4];
@@ -16549,9 +16549,9 @@ extern char aAtm[4];
 extern char aAtq[4];
 extern char aAtx[4];
 extern char aAtv[4];
-extern _UNKNOWN unk_17C26C;
+extern _UNKNOWN unk_17C26C[4];   /* wave 179 */
 extern char byte_17C270[4];
-extern _UNKNOWN unk_17C274;
+extern _UNKNOWN unk_17C274[4];   /* wave 179 */
 extern char byte_17C278[];
 extern char aDriver[7];
 extern char aDevice[7];
@@ -16575,7 +16575,7 @@ extern char aAtcrbrn[8];
 extern char aNotevnt[8];
 extern char aFailureAllocat[30];
 extern char aPortDumpNotSup[40];
-extern _UNKNOWN unk_17C8CC;
+extern _UNKNOWN unk_17C8CC[4];   /* wave 179 */
 extern char byte_17C8D0[];
 extern char aD_15[2];
 extern char aVecportTypeGre[30];
@@ -16955,7 +16955,7 @@ extern char byte_180A27[];
 extern char byte_180A28[648];
 extern _UNKNOWN unk_180CB0[];
 extern char unk_180CBC[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_180CC4;
+extern _UNKNOWN unk_180CC4[8];   /* wave 179 */
 extern int16_t word_180CCC[6];
 extern int16_t word_180CD8;
 extern int16_t word_180CDC[];
@@ -16966,14 +16966,14 @@ extern int16_t word_180DB8[10];
 extern char unk_180DCC[8];   /* vlna 122: barevna rampa */
 extern char unk_180DD4[8];   /* vlna 122: barevna rampa */
 extern char unk_180DDC[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_180DE4;
-extern _UNKNOWN unk_180DF6;
-extern _UNKNOWN unk_180E0C;
-extern _UNKNOWN unk_180E16;
-extern _UNKNOWN unk_180E22;
-extern _UNKNOWN unk_180E30;
-extern _UNKNOWN unk_180E3E;
-extern _UNKNOWN unk_180E54;
+extern _UNKNOWN unk_180DE4[18];   /* wave 179 */
+extern _UNKNOWN unk_180DF6[22];   /* wave 179 */
+extern _UNKNOWN unk_180E0C[10];   /* wave 179 */
+extern _UNKNOWN unk_180E16[12];   /* wave 179 */
+extern _UNKNOWN unk_180E22[14];   /* wave 179 */
+extern _UNKNOWN unk_180E30[14];   /* wave 179 */
+extern _UNKNOWN unk_180E3E[22];   /* wave 179 */
+extern _UNKNOWN unk_180E54[14];   /* wave 179 */
 extern _UNKNOWN unk_180E62[];
 extern char unk_180E7C[8];   /* vlna 122: barevna rampa */
 extern char byte_180E84[36];
@@ -16990,20 +16990,20 @@ extern int16_t word_181070[];
 extern int16_t word_181080[8];
 extern char byte_181090[140];
 extern int16_t word_18111C[6];
-extern _UNKNOWN unk_181128;
-extern _UNKNOWN unk_18113C;
-extern _UNKNOWN unk_181150;
-extern _UNKNOWN unk_18115C;
-extern _UNKNOWN unk_18116C;
-extern _UNKNOWN unk_18118C;
-extern _UNKNOWN unk_181198;
-extern _UNKNOWN unk_1811A4;
-extern _UNKNOWN unk_1811C0;
+extern _UNKNOWN unk_181128[20];   /* wave 179 */
+extern _UNKNOWN unk_18113C[20];   /* wave 179 */
+extern _UNKNOWN unk_181150[12];   /* wave 179 */
+extern _UNKNOWN unk_18115C[16];   /* wave 179 */
+extern _UNKNOWN unk_18116C[32];   /* wave 179 */
+extern _UNKNOWN unk_18118C[12];   /* wave 179 */
+extern _UNKNOWN unk_181198[12];   /* wave 179 */
+extern _UNKNOWN unk_1811A4[28];   /* wave 179 */
+extern _UNKNOWN unk_1811C0[8];   /* wave 179 */
 extern _UNKNOWN *off_1811C8;
 extern int16_t word_1811DC[];
 extern int16_t word_1811DE[];
-extern _UNKNOWN unk_18120C;
-extern _UNKNOWN unk_181258;
+extern _UNKNOWN unk_18120C[76];   /* wave 179 */
+extern _UNKNOWN unk_181258[76];   /* wave 179 */
 extern int16_t word_1812A4[6];
 extern int16_t word_1812B0[];
 extern int16_t word_1812B2[];
@@ -17059,31 +17059,20 @@ extern char byte_181752;
 extern char byte_181753;
 extern char *off_18175C;
 extern int16_t word_181760;
-extern _UNKNOWN unk_181768;
-extern _UNKNOWN unk_1817FE;
-extern _UNKNOWN unk_181800;
-extern _UNKNOWN unk_181802;
-extern _UNKNOWN unk_181804;
-extern _UNKNOWN unk_181806;
-extern _UNKNOWN unk_181808;
-extern _UNKNOWN unk_18180A;
-extern _UNKNOWN unk_18180C;
-extern _UNKNOWN unk_18180E;
-extern _UNKNOWN unk_181810;
-extern _UNKNOWN unk_181862;
+extern _UNKNOWN unk_181862[150];   /* wave 179 */
 extern _UNKNOWN *off_1818F8;
-extern _UNKNOWN unk_181B3C;
+extern _UNKNOWN unk_181B3C[320];   /* wave 179 */
 extern _UNKNOWN *off_181C7C;
 extern _UNKNOWN *off_181D1C;
-extern _UNKNOWN unk_181F06;
-extern _UNKNOWN unk_181F60;
+extern _UNKNOWN unk_181F06[90];   /* wave 179 */
+extern _UNKNOWN unk_181F60[40];   /* wave 179 */
 extern char *off_181FE4;
 extern _UNKNOWN unk_181FE8[];
 extern _UNKNOWN unk_182018[];
-extern _UNKNOWN unk_182048;
+extern _UNKNOWN unk_182048[48];   /* wave 179 */
 extern char byte_182078[8];
-extern _UNKNOWN unk_182080;
-extern _UNKNOWN unk_182088;
+extern _UNKNOWN unk_182080[8];   /* wave 179 */
+extern _UNKNOWN unk_182088[16];   /* wave 179 */
 extern char unk_182098[8];   /* vlna 122: barevna rampa */
 extern char *off_1820B4;
 extern char byte_1820B8;
@@ -17094,8 +17083,8 @@ extern char aMoola[6];
 extern char aMenlo[6];
 extern char aIseeall[8];
 extern char aScore[6];
-extern _UNKNOWN unk_182135;
-extern _UNKNOWN unk_18213D;
+extern _UNKNOWN unk_182135[8];   /* wave 179 */
+extern _UNKNOWN unk_18213D[8];   /* wave 179 */
 extern char byte_182145;
 extern char byte_182146;
 extern int16_t word_182153;
@@ -17108,13 +17097,13 @@ extern int16_t word_18215F;
 extern int16_t word_182163;
 extern _UNKNOWN unk_182175[];
 extern _UNKNOWN unk_1821B1[];
-extern _UNKNOWN unk_1821CC;
-extern _UNKNOWN unk_182208;
+extern _UNKNOWN unk_1821CC[60];   /* wave 179 */
+extern _UNKNOWN unk_182208[60];   /* wave 179 */
 extern char byte_182244;
 extern char byte_182245;
 extern char byte_182246;
 extern char byte_182247;
-extern _UNKNOWN unk_182248;
+extern _UNKNOWN unk_182248[48];   /* wave 179 */
 extern char *off_182278;
 extern char unk_18227C[8];   /* vlna 122: barevna rampa */
 extern char unk_182284[8];   /* vlna 136: barevna rampa fontu */
@@ -17184,7 +17173,7 @@ extern _UNKNOWN unk_182765[];
 extern _UNKNOWN unk_182795[];
 extern _UNKNOWN unk_1827A1[];
 extern char unk_1827AD[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_1827B5;
+extern _UNKNOWN unk_1827B5[8];   /* wave 179 */
 extern char byte_1827BD;
 extern char byte_1827BE;
 extern char byte_1827BF;
@@ -17192,7 +17181,7 @@ extern int16_t word_1827C0[6];
 extern int16_t word_1827CC;
 extern int16_t word_1827CE[];
 extern int16_t word_1827D0;
-extern _UNKNOWN unk_1827D2;
+extern _UNKNOWN unk_1827D2[104];   /* wave 179 */
 extern int16_t word_18283A;
 extern int16_t word_18283C[54];
 extern int16_t word_1828A8;
@@ -17209,9 +17198,9 @@ extern char byte_1828CE;
 extern char byte_1828CF;
 extern char byte_1828D0;
 extern int16_t word_1828D1;
-extern _UNKNOWN unk_1828D3;
-extern _UNKNOWN unk_182913;
-extern _UNKNOWN unk_182953;
+extern _UNKNOWN unk_1828D3[64];   /* wave 179 */
+extern _UNKNOWN unk_182913[64];   /* wave 179 */
+extern _UNKNOWN unk_182953[33];   /* wave 179 */
 extern int16_t word_182974;
 extern char byte_182976;
 extern char byte_182978;
@@ -17383,7 +17372,7 @@ extern int dword_1831E0;
 extern int dword_1831E4;
 extern int dword_1831E8;
 extern int dword_1831EC;
-extern _UNKNOWN unk_1831F0;
+extern _UNKNOWN unk_1831F0[170];   /* wave 179 */
 extern int16_t word_18348E;
 extern int dword_183550;
 extern _UNKNOWN *off_183554;
@@ -17397,7 +17386,7 @@ extern int dword_183572;
 extern char byte_183576;
 extern char byte_183578;
 extern char byte_183579;
-extern _UNKNOWN unk_183580;
+extern _UNKNOWN unk_183580[64];   /* wave 179 */
 extern char a1200[5];
 extern char byte_183608;
 extern char byte_183609;
@@ -17414,8 +17403,8 @@ extern char unk_183704[10];
 extern char unk_18370E[10];
 extern char unk_1836C8[10];   /* vlna 123 */
 extern char unk_1836F0[10];   /* vlna 123 */
-extern _UNKNOWN unk_18386C;
-extern _UNKNOWN unk_18386E;
+extern _UNKNOWN unk_18386C[2];   /* wave 179 */
+extern _UNKNOWN unk_18386E[3];   /* wave 179 */
 extern char *off_183871[21];
 extern char *off_183899[11];
 extern char aFrtxyshvpimoc[16];
@@ -17433,12 +17422,12 @@ extern char unk_183B2E[8];   /* vlna 122: barevna rampa */
 extern char byte_183B36;
 extern char *off_183B77[7];   /* vlna 122: sedm ukazatelu, ne jeden */
 extern char *off_183BCB[7];   /* vlna 122: sedm ukazatelu, ne jeden */
-extern _UNKNOWN unk_183BE7;
+extern _UNKNOWN unk_183BE7[64];   /* wave 179 */
 extern char byte_183C27[10];
 #define byte_183C28 (byte_183C27 + 1)   /* vlna 129: tataz tabulka, posunuta o bajt */
 extern int16_t word_183C31[];
 extern int16_t word_183C33[7];
-extern _UNKNOWN unk_183C41;
+extern _UNKNOWN unk_183C41[34];   /* wave 179 */
 extern int16_t word_183C63[34];
 extern int16_t word_183CA7[34];
 extern int16_t word_183CEB[8];
@@ -17449,22 +17438,12 @@ extern char unk_183D73[34];   /* vlna 123 */
 extern char byte_183D95[10];
 extern int16_t word_183D9F[];
 extern int16_t word_183E0D[4];
-extern _UNKNOWN unk_183E15;
-extern int16_t word_183E55;
-extern int16_t word_183E57[];
-extern int16_t word_183E5F[];
-extern _UNKNOWN unk_183EA3;
-extern int dword_183EB9;
-extern _UNKNOWN *off_183ECF;
-extern _UNKNOWN unk_183EE7;
-extern char byte_183EFC;
-extern int dword_183EFD;
 extern char unk_183F3A[8];   /* vlna 122: barevna rampa */
 extern char byte_183F42;
-extern _UNKNOWN unk_183F43;
+extern _UNKNOWN unk_183F43[17];   /* wave 179 */
 extern char byte_183F64[26];
 extern char byte_183F7E[17];
-extern _UNKNOWN unk_183F8F;
+extern _UNKNOWN unk_183F8F[98];   /* wave 179 */
 extern int16_t word_183FF1[14];
 #define word_183FF3 (word_183FF1 + 1)   /* vlna 130: tataz tabulka, posunuta o slovo */
 extern int16_t word_18400D[14];
@@ -17512,15 +17491,12 @@ extern int16_t word_18420F[8];
 extern int16_t word_18421F[];
 extern int16_t word_184221[15];
 extern char byte_18423F[8];
-extern _UNKNOWN unk_184247;
-extern _UNKNOWN unk_18426F;
+extern _UNKNOWN unk_184247[40];   /* wave 179 */
+extern _UNKNOWN unk_18426F[40];   /* wave 179 */
 extern int16_t word_184297;
 extern int dword_1842AD;
 extern char byte_1842BE;
 extern char aNrqqqrrsnutstt[17];
-extern _UNKNOWN unk_184324;
-extern int dword_18433A;
-extern char *off_184350[5];
 extern int16_t flagMemPoolReady_184374;
 extern int dword_184378;
 extern int dword_184380;
@@ -17568,7 +17544,7 @@ extern int dword_18448E;
 extern int dword_184492;
 extern _UNKNOWN *off_184496;
 extern _UNKNOWN unk_18449A[];
-extern _UNKNOWN unk_1844A4;
+extern _UNKNOWN unk_1844A4[2];   /* wave 179 */
 extern int16_t word_1844A6;
 extern int16_t word_1844A8;
 extern int16_t word_1844B0;
@@ -17792,7 +17768,7 @@ extern int16_t word_189A06;
 extern int dword_189A08;
 extern int dword_189A0C;
 extern int dword_189A10;
-extern _UNKNOWN unk_189A14;
+extern _UNKNOWN unk_189A14[2560];   /* wave 179 */
 extern int16_t word_18A414;
 extern int dword_18A418;
 extern int dword_18A41C;
@@ -17947,14 +17923,14 @@ extern int dword_18AD68;
 extern int dword_18AD6C;
 extern int dword_18AD70;
 extern int16_t word_18ADA8;
-extern _UNKNOWN unk_18ADB4;
+extern _UNKNOWN unk_18ADB4[10];   /* wave 179 */
 extern double dbl_18ADBE;
 extern float flt_18ADC6;
 extern char byte_18AFD0;
 extern _UNKNOWN *off_18B018;
 extern char byte_18B040[6];
 extern _UNKNOWN *off_18B04A;
-extern _UNKNOWN unk_18B072;
+extern _UNKNOWN unk_18B072[2];   /* wave 179 */
 extern int16_t word_18B074;
 extern int16_t word_18B090[40];
 extern int16_t word_18B0E0[40];
@@ -18798,7 +18774,7 @@ extern int16_t word_19992E;
 extern int16_t word_199930;
 extern int16_t word_199932;
 extern int16_t word_199934;
-extern _UNKNOWN unk_19994A;
+extern _UNKNOWN unk_19994A[2];   /* wave 179 */
 extern int16_t word_19994C;
 extern int16_t word_19994E;
 extern int16_t word_199950;
@@ -18844,10 +18820,10 @@ extern int16_t word_1999A6;
 extern int16_t word_1999A8;
 extern int16_t word_1999AA;
 extern int16_t word_1999AC;
-extern _UNKNOWN unk_1999AE;
-extern _UNKNOWN unk_1999B0;
+extern _UNKNOWN unk_1999AE[2];   /* wave 179 */
+extern _UNKNOWN unk_1999B0[2];   /* wave 179 */
 extern int16_t word_1999B2;
-extern _UNKNOWN unk_1999B6;
+extern _UNKNOWN unk_1999B6[2];   /* wave 179 */
 extern int16_t word_1999B8;
 extern int16_t word_1999BA;
 extern int16_t word_1999BC;
@@ -18875,7 +18851,7 @@ extern int16_t word_1999E8;
 extern int16_t word_1999EA;
 extern int16_t word_1999EC;
 extern int16_t word_1999EE;
-extern _UNKNOWN unk_1999F0;
+extern _UNKNOWN unk_1999F0[2];   /* wave 179 */
 extern int16_t word_1999F2;
 extern int16_t word_1999F4;
 extern int16_t word_1999F6;
@@ -19233,7 +19209,7 @@ extern char byte_19AA68;
 extern char byte_19AA69;
 extern int dword_19AA6C;
 extern int dword_19AA70;
-extern _UNKNOWN unk_19AA74;
+extern _UNKNOWN unk_19AA74[300];   /* wave 179 */
 extern int dword_19ABA0;
 extern char byte_19ABA4[];
 extern char byte_19ABA5[];
@@ -19420,7 +19396,7 @@ extern int16_t word_19B9B6;
 extern char byte_19B9B8;
 extern char byte_19B9B9;
 extern char byte_19B9BA;
-extern _UNKNOWN unk_19B9BC;
+extern _UNKNOWN unk_19B9BC[40];   /* wave 179 */
 /* PORT (vlna 107): SOUVISLY BLOK 160 B od 0x19BA34. `sub_6F95F` do nej dela
    `qmemcpy(&unk_19BA34, &off_181C7C, 0xA0u)` - tedy 160 bajtu - a hned potom
    pise `word_19BA38[5*i+15]`, coz je tentyz blok od offsetu 4. V portu byl
@@ -19430,27 +19406,9 @@ extern _UNKNOWN unk_19B9BC;
 extern uint8_t blk_19BA34[160];
 #define unk_19BA34   (*(uint8_t *)(blk_19BA34 + 0))
 #define word_19BA38  ((int16_t *)(blk_19BA34 + 4))
-extern _UNKNOWN unk_19BAD4;
-extern _UNKNOWN unk_19BB4C;
-extern _UNKNOWN unk_19BB4E;
-extern _UNKNOWN unk_19BB50;
-extern _UNKNOWN unk_19BB52;
-extern _UNKNOWN unk_19BB54;
 extern _WORD word_19BC14[60];
 extern int dword_19BC8C;
-extern _UNKNOWN unk_19BC90;
-extern int16_t word_19BC94[163];
-extern _UNKNOWN unk_19BD44;
-extern _UNKNOWN unk_19BD46;
-extern _UNKNOWN unk_19BD48;
-extern _UNKNOWN unk_19BD4A;
-extern _UNKNOWN unk_19BD4C;
-extern _UNKNOWN unk_19BDDA;
-extern _UNKNOWN unk_19BE34;
-extern int16_t word_19BE74;
-extern int16_t word_19BE78;
-extern int16_t word_19BE7E;
-extern int16_t word_19BE82;
+extern _UNKNOWN unk_19BDDA[90];   /* wave 179 */
 extern int16_t word_19BEB6;
 extern int16_t word_19BEB8;
 extern char byte_19BEBC;
@@ -19469,7 +19427,7 @@ extern int dword_19BEDC[4];   /* vlna 155: pole, ne jeden prvek */
    a 0x193EE4 = dword_193EDC + 4 a + 8), ne samostatne globaly. */
 #define dword_19BEE0  (dword_19BEDC[1])
 #define dword_19BEE4  (dword_19BEDC[2])
-extern _UNKNOWN unk_19BEE8;
+extern _UNKNOWN unk_19BEE8[18];   /* wave 179 */
 extern int16_t word_19BEFA;
 extern int16_t word_19BEFC;
 extern int16_t word_19BEFE;
@@ -19478,7 +19436,7 @@ extern int16_t word_19BF02;
 extern int16_t word_19BF04;
 extern int16_t word_19BF06;
 extern char byte_19BF08;   /* wave 177 */
-extern _UNKNOWN unk_19BF0C;
+extern _UNKNOWN unk_19BF0C[180];   /* wave 179 */
 extern int16_t word_19BFC0;
 extern char byte_19BFC4;
 extern int16_t word_19BFC8[8];
@@ -19595,7 +19553,7 @@ extern int dword_19C2C0;
 extern int dword_19C2C4;
 extern int dword_19C2CC;
 extern int dword_19C2D0;
-extern _UNKNOWN unk_19C2D4;
+extern _UNKNOWN unk_19C2D4[12];   /* wave 179 */
 extern int dword_19C2E0;
 extern int dword_19C2E4;
 extern int dword_19C2E8;
@@ -19713,7 +19671,7 @@ extern char byte_19D228[260];
 extern char byte_19D32C;
 extern char byte_19D32D;
 extern char byte_19D32F;
-extern _UNKNOWN unk_19D330;
+extern _UNKNOWN unk_19D330[36];   /* wave 179 */
 extern int dword_19D354;
 extern int (*dword_19D358)(void);
 extern int16_t word_19D35C;
@@ -19787,15 +19745,8 @@ extern int16_t word_19E040[];
 extern int16_t word_19E044[];
 extern int16_t word_19E046[];
 extern int16_t word_19E048[632];
-extern _UNKNOWN unk_19E538;
-extern _UNKNOWN unk_19E562;
-extern _UNKNOWN unk_19E564;
-extern int16_t word_19E574[4];
-extern char byte_19E57C[];
-extern char byte_19E57D[];
-extern char byte_19E57E[];
-extern char byte_19E57F[];
-extern char byte_19E580[1396];
+extern _UNKNOWN unk_19E538[42];   /* wave 179 */
+extern _UNKNOWN unk_19E562[2];   /* wave 179 */
 extern int dword_19EAF4[];
 extern int dword_19EAF8[];
 extern int dword_19EAFC[];
@@ -19877,7 +19828,7 @@ extern int dword_19F7CC;
 extern int16_t word_19F7D4[42];
 extern int dword_19F828;
 extern int dword_19F82C;
-extern _UNKNOWN unk_19F888;
+extern _UNKNOWN unk_19F888[252];   /* wave 179 */
 extern int16_t word_19F984[12];
 extern int16_t word_19F99C[];
 extern int16_t word_19F99E[8];
@@ -19942,16 +19893,16 @@ extern int dword_19FAAC;
 extern int dword_19FAB0;
 extern int dword_19FAB4;
 extern int dword_19FAB8;
-extern _UNKNOWN unk_19FABC;
+extern _UNKNOWN unk_19FABC[2520];   /* wave 179 */
 extern int16_t word_1A0494[10];
-extern _UNKNOWN unk_1A04A8;
+extern _UNKNOWN unk_1A04A8[60];   /* wave 179 */
 extern int16_t word_1A04E4[10];
 extern int16_t word_1A04F8[30];
 // VLNA 89e: deset prvku; word_1A0546 je prvek 9 tehoz pole (viz orion_data.c)
 extern int16_t word_1A0534[10];
 #define word_1A0546 (word_1A0534[9])
 extern int16_t word_1A0548[10];
-extern _UNKNOWN unk_1A055C;
+extern _UNKNOWN unk_1A055C[60];   /* wave 179 */
 extern int16_t word_1A0598[10];
 extern int16_t word_1A05AC;
 extern int16_t word_1A0694[8];
@@ -19959,7 +19910,7 @@ extern int16_t word_1A06A4;
 extern int16_t word_1A06A6;
 extern int16_t word_1A06A8;
 extern int16_t word_1A06AA;
-extern _UNKNOWN unk_1A06AC;
+extern _UNKNOWN unk_1A06AC[504];   /* wave 179 */
 extern _WORD word_1A08A4[6];
 extern uint8_t *dword_1A08B0;  /* vlna 89: v originale 4bajtovy slot s ukazatelem na zasobnikovy buffer seznamu; jako int se na x64 orezaval */
 extern int16_t word_1A08B4[6];
@@ -20064,7 +20015,7 @@ extern int16_t word_1A11F0;
 extern int16_t word_1A11F2;
 extern int16_t word_1A11F4;
 extern int16_t word_1A11F6;
-extern _UNKNOWN unk_1A11F8;
+extern _UNKNOWN unk_1A11F8[54];   /* wave 179 */
 extern int16_t word_1A122E;
 extern int16_t word_1A1230;
 extern int16_t word_1A1232;
@@ -20181,7 +20132,7 @@ extern int dword_1A72C8[99];
 extern int dword_1A7454[];
 extern int dword_1A7458[];
 extern int dword_1A745C[22];
-extern _UNKNOWN unk_1A8B34;
+extern _UNKNOWN unk_1A8B34[5760];   /* wave 179 */
 extern int dword_1AA1B4;
 extern int dword_1AA1B8;
 extern int dword_1AA1BC;
@@ -20286,7 +20237,7 @@ extern int dword_1AA338;
 extern int dword_1AA33C;
 extern int dword_1AA340;
 extern char byte_1AA344;
-extern _UNKNOWN unk_1AA345;
+extern _UNKNOWN unk_1AA345[19];   /* wave 179 */
 extern char byte_1AA358[10];
 extern char byte_1AA362[10];
 extern char byte_1AA36C[12];
@@ -20399,7 +20350,7 @@ extern int dword_1AAC48;
 extern int dword_1AAC4C;
 extern int dword_1AAC50;
 extern char byte_1AAC54;
-extern _UNKNOWN unk_1AACB4;
+extern _UNKNOWN unk_1AACB4[491];   /* wave 179 */
 extern char byte_1AAE9F;
 extern int dword_1AAEA4;
 extern int dword_1AAEA8;
@@ -20413,9 +20364,9 @@ extern int dword_1AAEC4;
 extern int dword_1AAEC8;
 extern char byte_1AAECC;
 extern char byte_1AAED5[30];
-extern _UNKNOWN unk_1AAEF3;
-extern _UNKNOWN unk_1AAF11;
-extern _UNKNOWN unk_1AAF2F;
+extern _UNKNOWN unk_1AAEF3[30];   /* wave 179 */
+extern _UNKNOWN unk_1AAF11[30];   /* wave 179 */
+extern _UNKNOWN unk_1AAF2F[40];   /* wave 179 */
 extern char byte_1AAF57;
 extern char byte_1AAF58;
 extern int dword_1AAF59;
@@ -20469,7 +20420,7 @@ extern char byte_1AB072[8];
 extern char byte_1AB07A[8];
 extern int16_t byte_1AB082[2];
 extern char byte_1AB087;
-extern _UNKNOWN unk_1AB089;
+extern _UNKNOWN unk_1AB089[2];   /* wave 179 */
 extern char byte_1AB08B[8];
 extern char byte_1AB093;
 extern char byte_1AB094[8];
@@ -20528,7 +20479,7 @@ extern int16_t word_1AB14D;
 extern char byte_1AB14F[];
 extern char byte_1AB358[426];
 extern int16_t word_1AB502;
-extern _UNKNOWN unk_1AB504;
+extern _UNKNOWN unk_1AB504[9];   /* wave 179 */
 extern char byte_1AB50D;
 extern char byte_1AB50E;
 extern char byte_1AB50F;
@@ -20557,12 +20508,12 @@ extern int (*dword_1ACF70)(_DWORD, _DWORD, _DWORD);
 extern char byte_1ACF74;
 extern char byte_1ACF75;
 extern int16_t word_1ACF76;
-extern _UNKNOWN unk_1ACF78;
+extern _UNKNOWN unk_1ACF78[31];   /* wave 179 */
 extern char byte_1ACF97[];
 extern char byte_1ACF98[16];
-extern _UNKNOWN unk_1ACFA8;
-extern _UNKNOWN unk_1ACFAC;
-extern _UNKNOWN unk_1ACFB0;
+extern uint32_t unk_1ACFA8;   /* wave 179 */
+extern uint32_t unk_1ACFAC;   /* wave 179 */
+extern uint32_t unk_1ACFB0;   /* wave 179 */
 extern _UNKNOWN unk_1ACFB4;
 extern int16_t word_1ACFB5;
 extern int dword_1ACFB7;
@@ -20638,7 +20589,7 @@ extern int dword_1AD598;
 extern char byte_1AD59C[8];
 extern char unk_1AD5A4[8];   /* vlna 122: barevna rampa */
 extern char unk_1AD5AC[8];   /* vlna 122: barevna rampa */
-extern _UNKNOWN unk_1AD5B4;
+extern _UNKNOWN unk_1AD5B4[8];   /* wave 179 */
 extern char byte_1AD5CC[20];
 extern char byte_1AD5E0[20];
 extern char byte_1AD5F4[20];
@@ -20652,7 +20603,7 @@ extern char byte_1AD680[20];
 extern int dword_1AD694;
 extern int dword_1AD698;
 extern int dword_1AD69C;
-extern _UNKNOWN unk_1AD6A0;
+extern _UNKNOWN unk_1AD6A0[18];   /* wave 179 */
 extern int16_t word_1AD6B2;
 extern int16_t word_1AD6B4;
 extern int16_t word_1AD6B6;
@@ -20775,8 +20726,8 @@ extern int16_t word_1B9226;
 extern int16_t word_1B9228;
 extern char byte_1B922A;
 extern int dword_1B9E34;
-extern _UNKNOWN unk_1B9E38;
-extern _UNKNOWN unk_1BA0A8;
+extern _UNKNOWN unk_1B9E38[624];   /* wave 179 */
+extern _UNKNOWN unk_1BA0A8[624];   /* wave 179 */
 // VLNA 89: 0x1BA318..0x1BA357 je jeden souvisly blok 16 zaznamu po 4 B.
 // Makra jsou lvalue, takze `byte_1BA319[4 * j]` funguje dal beze zmeny.
 extern char byte_1BA318[64];
@@ -20795,10 +20746,6 @@ extern char* byte_1BB35B;
 extern char byte_1BB499[];
 extern char byte_1BB49A[];
 extern char byte_1BB49B[253];
-extern _UNKNOWN unk_1BB598;
-extern char byte_1BB599[];
-extern char byte_1BB59A[];
-extern char byte_1BB59B[126];
 extern char byte_1BB619[];
 extern char byte_1BB61A[];
 extern char byte_1BB61B[61];
@@ -20873,7 +20820,7 @@ extern int16_t word_1BBA56;
 extern int16_t word_1BBA58;
 extern int16_t word_1BBA5C;
 extern int16_t word_1BBA5E;
-extern _UNKNOWN unk_1BBA60;
+extern _UNKNOWN unk_1BBA60[2];   /* wave 179 */
 extern int16_t word_1BBA62;
 extern int dword_1BBA64;
 extern int16_t word_1BBA68;
@@ -20896,8 +20843,8 @@ extern int16_t word_1BC290;
 extern int16_t word_1BC294;
 extern int dword_1BC296;
 extern int16_t word_1BC29A;
-extern _UNKNOWN unk_1BC29C;
-extern _UNKNOWN unk_1BC2A0;
+extern _UNKNOWN unk_1BC29C[4];   /* wave 179 */
+extern _UNKNOWN unk_1BC2A0[4];   /* wave 179 */
 extern int dword_1BC2A4;
 extern int dword_1BC2A8;
 extern int dword_1BC2AC[10];
@@ -20982,7 +20929,7 @@ extern int dword_1BF35C;
 extern int (*dword_1BF388)(_DWORD, _DWORD, _DWORD, _DWORD);
 extern char byte_1BF38C;
 extern _DWORD dword_1BF390[3];
-extern _UNKNOWN unk_1BF39C;
+extern _UNKNOWN unk_1BF39C[500];   /* wave 179 */
 extern char byte_1BF590[2698];
 extern char byte_1C0590[256];
 extern int dword_1C0690[128];
@@ -20990,18 +20937,18 @@ extern char byte_1C0890[128];
 extern char byte_1C0910[128];
 extern int (*dword_1C0990)(_DWORD, _DWORD, _DWORD, _DWORD);
 extern _DWORD dword_1C0994[3];
-extern _UNKNOWN unk_1C09A0;
+extern _UNKNOWN unk_1C09A0[340];   /* wave 179 */
 extern int16_t word_1C0AF4[4];
 extern int16_t word_1C0AFC[3];
-extern _UNKNOWN unk_1C0B02;
+extern _UNKNOWN unk_1C0B02[2];   /* wave 179 */
 extern int16_t word_1C0B04[3];
-extern _UNKNOWN unk_1C0B0A;
+extern _UNKNOWN unk_1C0B0A[2];   /* wave 179 */
 extern int16_t word_1C0B0C[3];
 extern int dword_1C0B12;
 extern int dword_1C0BDA;
 extern int dword_1C0CA2;
 extern int dword_1C0D6A;
-extern _UNKNOWN unk_1C0E32;
+extern _UNKNOWN unk_1C0E32[2];   /* wave 179 */
 extern int16_t word_1C0E34;
 extern int dword_1C0E38;
 extern int dword_1C0E3C;
@@ -21014,7 +20961,7 @@ extern int dword_1C0E54;
 extern int dword_1C0E58;
 extern char byte_1C0E5C[24];
 extern char byte_1C0E74;
-extern _UNKNOWN unk_1C0E7C;
+extern _UNKNOWN unk_1C0E7C[11516];   /* wave 179 */
 extern int dword_1C3C10;
 extern int dword_1C3C18;
 extern int dword_1C3C1C;
@@ -21027,7 +20974,7 @@ extern int dword_1C3C48;
 extern int dword_1C3C4C;
 extern int dword_1C3C50;
 extern int dword_1C3C54;
-extern _UNKNOWN unk_1C3C58;
+extern _UNKNOWN unk_1C3C58[4];   /* wave 179 */
 extern int dword_1C3C5C;
 extern int (*dword_1C3C68)(_DWORD, _DWORD, _DWORD);
 extern int dword_1C3C6C;
@@ -21063,7 +21010,7 @@ extern int dword_1C40E4;
 extern int16_t word_1C40E8;
 extern int dword_1C40EA;
 extern char byte_1C40EE;
-extern _UNKNOWN unk_1C40F0;
+extern _UNKNOWN unk_1C40F0[16170];   /* wave 179 */
 extern char byte_1C8358[100];
 extern int dword_1C83BC;
 extern int dword_1C9400[];
@@ -21086,9 +21033,9 @@ extern int dword_1C9578;
 extern int dword_1C957C;
 extern int dword_1C9580;
 extern int dword_1C9584;
-extern _UNKNOWN unk_1C9588;
+extern _UNKNOWN unk_1C9588[24];   /* wave 179 */
 extern int dword_1C95A0;
-extern _UNKNOWN unk_1C95A4;
+extern _UNKNOWN unk_1C95A4[24];   /* wave 179 */
 extern _WORD word_1C95D8[2];
 extern int16_t word_1C95DC;
 extern int16_t word_1C95DE;
@@ -21109,7 +21056,7 @@ extern int dword_1C9618;
 extern int dword_1C961C;
 extern int dword_1C9620;
 extern int dword_1C9624;
-extern _UNKNOWN unk_1C9628;
+extern _UNKNOWN unk_1C9628[4];   /* wave 179 */
 extern _UNKNOWN unk_1C962C;
 extern uint8_t byte_1C962D[515];
 extern int (*dword_1C9830)(_DWORD);
@@ -21119,8 +21066,6 @@ extern int dword_1C9844[256];
 extern int dword_1C9C44;
 extern int16_t word_1C9C48;
 extern int16_t word_1C9C4A;
-extern _UNKNOWN unk_1C9C4C;
-extern char byte_1C9C4D;
 extern int dword_1C9C70;
 extern int dword_1C9C74;
 extern int dword_1C9CAC;
@@ -21269,6 +21214,8 @@ extern _UNKNOWN word_1B9E2F;
 extern void* nmalloc(unsigned int);
 extern int nfree(unsigned int);
 extern void _no_support_loaded(void);
+
+#include "orion_blocks.h"   /* wave 179 */
 
 #ifdef __cplusplus
 }

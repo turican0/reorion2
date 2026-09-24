@@ -213,6 +213,7 @@
   <ItemGroup>
     <ClInclude Include="src\game\decomp_compat.h" />
     <ClInclude Include="src\game\orion_common.h" />
+    <ClInclude Include="src\game\orion_blocks.h" />
     <ClInclude Include="src\port\port_dos.h" />
     <ClInclude Include="src\port\port_memory.h" />
     <ClInclude Include="src\port\port_vga.h" />
