@@ -145,7 +145,7 @@ int sub_10D041( int a1)
   sub_249F9(aBilltextLbx_2, 2, (char *)v5, 256);
   sub_24E73(256);
   HIDWORD(v2) = 1;
-  sub_1034CB();
+  v2 = sub_1034CB();
   sub_10D31C(
     v2,
     a1,
@@ -176,7 +176,6 @@ int sub_10D041( int a1)
   sub_C0AF4();
   return sub_2484F();
 }
-// 10D0B1: variable 'v2' is possibly undefined
 // 10D0B1: variable 'v4' is possibly undefined
 // 192ED4: using guessed type int dword_192ED4;
 // 19999C: using guessed type int16_t word_19999C;
@@ -737,6 +736,7 @@ void sub_10DB17(int a1, int a2, unsigned int a3)
   char v6; // [esp+3h] [ebp-51h] BYREF
   int16_t v7[40]; // [esp+4h] [ebp-50h] BYREF
 
+  v5 = a1;   /* wave 181: v5 saved by the prologue (push eax) */
   v7[0] = word_17A3A0;
   v3 = sub_10F7A1(a3, word_19999C);
   v4 = (char *)v7 - 1;   /* vlna 124: cil je sousedni buffer v7, ne &v6 */
@@ -1342,6 +1342,7 @@ int16_t *sub_10E6C7(int a1, int a2, int a3, int16_t *a4)
   int v57; // [esp+D0h] [ebp+7Ah]
   char v58; // [esp+D4h] [ebp+7Eh]
 
+  v40 = a1;   /* wave 181: v40 saved by the prologue (push eax) */
   v58 = a2;
   ServiceAudioTick_FE8BE(a1, a2, a3, a4);
   sub_249F9(aBilltextLbx_3, 63, v41, 80);
@@ -1991,6 +1992,7 @@ void sub_10F49B(int a1, unsigned int a2)
   uint8_t v14; // [esp+18h] [ebp-8h]
   char v15; // [esp+1Ch] [ebp-4h]
 
+  v10 = a1;   /* wave 181: v10 saved by the prologue (push eax) */
   v3 = *(_DWORD *)(v10 + 22);
   v4 = (uint8_t)byte_17CF18[a2];
   v13 = 0;
@@ -2310,6 +2312,7 @@ void sub_10F9E0( int a1, int a2)
 {
   int v3; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   while ( 1 )
   {
     v3 = a2 + 2 * a1;
@@ -2348,6 +2351,7 @@ int sub_10FA35(int result, int a2, unsigned int a3)
 //----- (0010FA95) --------------------------------------------------------
 int sub_10FA95(int a1, int a2)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   return sub_108EC3(a1, a2, 4, 10);
 }
 

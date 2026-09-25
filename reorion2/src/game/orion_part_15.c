@@ -91,6 +91,9 @@ int sub_E5BE3( int a1, int a2,
   _BYTE v41[2]; // [esp+88h] [ebp-60h]
   _BYTE v42[94]; // [esp+8Ah] [ebp-5Eh] BYREF
 
+  v40 = a1;   /* wave 181: v40 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v28 = sub_E5CD4(a1, a2, (int)&a10 + 2);
   v29 = v28;
   v30 = -1;
@@ -156,6 +159,7 @@ int sub_E5CD4( int a1, int a2, int a3)
   int16_t v16; // [esp+18h] [ebp-8h]
   int16_t v17; // [esp+1Ch] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v17 = *(_WORD *)((uint8_t*)dword_197F98 + 3753 * a2 + 804);
   v16 = 0;
   v3 = 0;
@@ -225,7 +229,7 @@ int sub_E5DE8(int a1)
 
 
 //----- (000E5E09) --------------------------------------------------------
-void sub_E5E09(int a1)
+int sub_E5E09(int a1)
 {
   int v1; // edi
   int v2; // esi
@@ -257,7 +261,7 @@ void sub_E5E09(int a1)
         v2 = v7;
     }
   }
-  JUMPOUT(0xE1F95);
+  return v2;   /* wave 181: tail loc_E1F95 `mov     eax, esi` */
 }
 // E5EAE: control flows out of bounds to E1F95
 // 1930DC: using guessed type int dword_1930DC;
@@ -278,6 +282,8 @@ void sub_E5EB3( int a1, int a2, int a3)
   int16_t v12; // [esp+0h] [ebp-18h]
   char v13; // [esp+14h] [ebp-4h]
 
+  v12 = a1;   /* wave 181: v12 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v13 = 0;
   v4 = (uint8_t *)((uint8_t*)dword_1930D4 + 17 * a1);
   if ( a3 || (v5 = *(int16_t *)v4, v5 == -1) )
@@ -352,6 +358,8 @@ void sub_E5EB3( int a1, int a2, int a3)
 //----- (000E6071) --------------------------------------------------------
 void sub_E6071( int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   sub_E5EB3(a1, a2, 0);
 }
 
@@ -846,6 +854,7 @@ void **sub_E691A(void **result, int a2)
   void *v2; // esi
   void *v3; // esi
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 == -1 )
     v2 = (void *)dword_1AA3E0;
   else
@@ -874,6 +883,7 @@ void **sub_E6979(void **result, int a2)
   void *v4; // esi
   void *v5; // edi
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 == -1 )
   {
     v3 = (void *)dword_1AA3E0;
@@ -1099,6 +1109,7 @@ unsigned int sub_E6CAA( int a1, int a2, int a3)
   unsigned int v13; // eax
   int16_t v14; // bx
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   if ( a3 == -1 && *(_BYTE *)(dword_1AA3E0 + 11 * a2 + 7) || *(_BYTE *)(dword_1AA3E0 + 11 * a2 + 7) >= 2u )
   {
     v4 = 0;
@@ -1508,6 +1519,7 @@ int16_t sub_E76B2(int a1, unsigned int *a2, int a3, int a4, int a5)
   int v23; // [esp+1Ch] [ebp-8h]
   int v24; // [esp+20h] [ebp-4h]
 
+  v17 = a1;   /* wave 181: v17 saved by the prologue (push eax) */
   v20 = a3;
   v24 = a4;
   memset(a1, 0, 60);
@@ -1534,7 +1546,7 @@ int16_t sub_E76B2(int a1, unsigned int *a2, int a3, int a4, int a5)
             if ( *(_BYTE *)(v8 + 6) || *(_BYTE *)(v8 + 7) )
             {
               v23 = 129;
-              sub_5EF17((int)(v6 - dword_197F9C) / 129, v7);
+              v9 = (uint16_t)sub_5EF17((int)(v6 - dword_197F9C) / 129, v7);   /* wave 181: movzx eax, ax */
               a2[v7] += v9;
             }
           }
@@ -1550,7 +1562,7 @@ int16_t sub_E76B2(int a1, unsigned int *a2, int a3, int a4, int a5)
             v23 = 2 * v19;
             if ( (((int)*(uint16_t *)(2 * v19 + dword_1AA3AC) >> i) & 1) == 0 )
             {
-              sub_5EF17(v21, i);
+              v11 = (uint16_t)sub_5EF17(v21, i);   /* wave 181: movzx eax, ax */
               a2[i] += v11;
             }
           }
@@ -1568,7 +1580,7 @@ int16_t sub_E76B2(int a1, unsigned int *a2, int a3, int a4, int a5)
       {
         v23 = 129;
         v13 = (_DWORD *)(v17 + 4 * (char)v6[99]);
-        sub_5EF17((int)(v6 - dword_197F9C) / 129, a5);
+        v5 = sub_5EF17((int)(v6 - dword_197F9C) / 129, a5);   /* wave 181: movzx eax, ax */
         *v13 += (uint16_t)v5;
       }
     }
@@ -1908,6 +1920,8 @@ unsigned int sub_E7DCA(int a1, int a2, _WORD *a3, _WORD *a4, _BYTE *a5)
   int v32; // [esp+B8h] [ebp+76h]
   char v33; // [esp+BCh] [ebp+7Ah]
 
+  v17 = a2;   /* wave 181: v17 saved by the prologue (push edx) */
+  v18 = a1;   /* wave 181: v18 saved by the prologue (push eax) */
   *a5 = 0;
   *a4 = -1;
   result = v18;
@@ -2434,6 +2448,7 @@ char sub_E86A0(int a1, int a2)
   int v5; // esi
   int16_t v6; // ax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = a2;
   v3 = (int16_t *)(2 * a2 + a1);
   while ( 1 )
@@ -3177,7 +3192,7 @@ void sub_E9D62(int a1, int16_t *a2)
             {
               if ( *(_BYTE *)(3753 * v12 + (uint8_t*)dword_197F98 + 40) == 100 )
               {
-                sub_CC735(v12, i, (int *)v12, v11);
+                v13 = sub_CC735(v12, i, (int *)v12, v11);
                 v14 = v13;
               }
               else
@@ -3271,7 +3286,6 @@ LABEL_22:
   }
 }
 // EA275: control flows out of bounds to EA8C4
-// EA133: variable 'v13' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 183578: using guessed type char byte_183578;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -3523,7 +3537,7 @@ LABEL_35:
         sub_F3E42(0);
         goto LABEL_43;
       case 16:
-        sub_CC735(word_19999C, byte_1AB040, (int *)v2, a1);
+        v21 = sub_CC735(word_19999C, byte_1AB040, (int *)v2, a1);
         v32 = v21;
         sub_F3E42(0);
         if ( v32 == -1 )
@@ -3569,7 +3583,6 @@ LABEL_43:
 // EA54E: variable 'v8' is possibly undefined
 // EA5C6: variable 'v12' is possibly undefined
 // EA7E6: variable 'v18' is possibly undefined
-// EA81D: variable 'v21' is possibly undefined
 // EA27A: using guessed type int16_t word_EA27A;
 // FE8D4: using guessed type int nullsub_15(_DWORD, _DWORD);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -3634,6 +3647,7 @@ void sub_EA91B(int a1)
   int v12; // [esp+6D8h] [ebp-8h]
   int v13; // [esp+6DCh] [ebp-4h]
 
+  v6 = a1;   /* wave 181: v6 saved by the prologue (push eax) */
   v11 = 12 * a1;
   v13 = byte_1AAF94[12 * a1];
   v12 = byte_1AAF8C[12 * a1];
@@ -4368,6 +4382,7 @@ char sub_EB7FD(int a1, int a2, int a3, int a4)
   int v10; // [esp+98h] [ebp+7Ah]
   char v11; // [esp+9Ch] [ebp+7Eh]
 
+  v7 = a1;   /* wave 181: v7 saved by the prologue (push eax) */
   v9 = a3;
   v10 = a4;
   v4 = sub_EB7C5((int)v8);
@@ -4411,6 +4426,7 @@ int16_t sub_EB87D(int a1)
   int v15; // [esp+A8h] [ebp+7Ah]
   int v16; // [esp+ACh] [ebp+7Eh]
 
+  v8 = a1;   /* wave 181: v8 saved by the prologue (push eax) */
   v8 = (int16_t)a1;   /* vlna 79: spillnute eax */
   v0 = sub_EB7C5((int)v9);
   v1 = 0;
@@ -4488,6 +4504,8 @@ _BOOL1 sub_EB9C8( int a1, int a2, int a3)
   int v8; // edx
   _BOOL1 result; // al
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v3 = a3;
   v4 = (int16_t *)(dword_193068 + 5 * a3);
   v5 = (a1 - *v4) / 3;
@@ -4789,6 +4807,9 @@ void sub_EBE79( int a1, int a2, int a3, int a4)
   unsigned int v4; // ebx
   int i; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   a1 = (int16_t)a1;   /* wave 162: asm starts with `cwde` - only AX is used */
   v4 = (a1 - a3) * (a1 - a3) + (a2 - a4) * (a2 - a4);
   for ( i = sub_134C92(v4 / 0x384); 900 * i * i < v4; ++i )
@@ -4801,6 +4822,7 @@ void sub_EBE79( int a1, int a2, int a3, int a4)
 //----- (000EBEB7) --------------------------------------------------------
 void sub_EBEB7( int a1, int a2)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   sub_EBE79(
     *(_WORD *)(dword_19306C + 113 * a1 + 15),
     *(_WORD *)(dword_19306C + 113 * a1 + 17),
@@ -4861,6 +4883,7 @@ void sub_EBFCB(int a1, int a2)
   int16_t v12; // [esp+Ch] [ebp-10h]
   unsigned int v13; // [esp+14h] [ebp-8h]
 
+  v9 = a1;   /* wave 181: v9 saved by the prologue (push eax) */
   if ( a1 || a2 )
   {
     v13 = -1;
@@ -4868,8 +4891,8 @@ void sub_EBFCB(int a1, int a2)
     v3 = 14;
     do
     {
-      v10 = *(int16_t *)((char *)&loc_EB4BD + v3 * 2);
-      v12 = sub_1384B9(*(int16_t *)((char *)&loc_EB4BF + v3 * 2) * v9, -a2 * v10);
+      v10 = csegTable_EB4C1[v3 - 2];   /* wave 181: 0xEB4BD + 2 * v3, data in the code segment */
+      v12 = sub_1384B9(csegTable_EB4C1[v3 - 1] * v9, -a2 * v10);   /* wave 181: 0xEB4BF + 2 * v3 */
       v3 -= 2;
       v4 = sub_138776(v12, v10) + 5;
       --v2;
@@ -4979,15 +5002,15 @@ char sub_EC15C(int a1, _BYTE *a2, int a3)
       a2[3] = 10;
       a2[4] = 1;
     }
-    sub_DC323((int)v5);
+    v6 = sub_DC323((int)v5);
     v6 *= 15;
     a2[5] = *((_BYTE *)&word_17F63E + v6);
     a2[6] = byte_17F641[v6];
-    sub_DC416((int)v5);
+    v7 = sub_DC416((int)v5);
     v7 *= 3;
     a2[9] = *((_BYTE *)&word_14A88 + v7);
     a2[10] = byte_14A8A[v7];
-    sub_DC449((int)v5);
+    v8 = sub_DC449((int)v5);
     v8 *= 3;
     a2[7] = *((_BYTE *)&word_14A9A + v8);
     a2[8] = byte_14A9C[v8];
@@ -5010,9 +5033,6 @@ char sub_EC15C(int a1, _BYTE *a2, int a3)
   a2[15] = result;
   return result;
 }
-// EC1C2: variable 'v6' is possibly undefined
-// EC1DE: variable 'v7' is possibly undefined
-// EC1FA: variable 'v8' is possibly undefined
 // 14A88: using guessed type int16_t word_14A88;
 // 14A9A: using guessed type int16_t word_14A9A;
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -5804,6 +5824,7 @@ int16_t sub_ECF41(char *a1, int a2, int a3, int a4)
   unsigned int v35; // [esp+1E0h] [ebp-8h]
   int v36; // [esp+1E4h] [ebp-4h]
 
+  v21 = a1;   /* wave 181: v21 saved by the prologue (push eax) */
   v24 = a3;
   v31 = *a1;
   *(_WORD *)((uint8_t*)dword_197F98 + 3753 * v31 + 2 * a2 + 1791) += 10;
@@ -5942,6 +5963,7 @@ void sub_ED260(int a1)
   unsigned int v17; // [esp+94h] [ebp+7Ah]
   int v18; // [esp+98h] [ebp+7Eh]
 
+  v7 = a1;   /* wave 181: v7 saved by the prologue (push eax) */
   if ( *(_BYTE *)(a1 + 303) != 4 )
   {
     memset(v15, 0, sizeof(v15));
@@ -6078,6 +6100,7 @@ int sub_ED48B(
   int16_t _7E; // [esp+7Eh] [ebp+Ah] OVERLAPPED
   _UNKNOWN *retaddr; // [esp+80h] [ebp+Ch] BYREF
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v29 = a1;
   v28 = a2;
   v27 = a4;
@@ -6709,6 +6732,7 @@ int sub_EDDF7(int a1, int a2, int a3, int a4)
   char v24; // [esp+24h] [ebp-8h]
   char v25; // [esp+28h] [ebp-4h]
 
+  v15 = a1;   /* wave 181: v15 saved by the prologue (push eax) */
   v24 = a2;
   v25 = a3;
   v21 = a4;
@@ -6956,7 +6980,7 @@ void sub_EE0B0(int a1, int a2)
             if ( v18[--v14] )
             {
               v25 = dword_1AA3F0 + v19;
-              sub_5EF17(v12, v14);
+              v15 = (uint16_t)sub_5EF17(v12, v14);   /* wave 181: movzx eax, ax */
               *(_DWORD *)v25 += v15;
             }
           }
@@ -7285,6 +7309,7 @@ char sub_EEC98(int64_t a1)
   char v31[52]; // [esp+CCh] [ebp+7Eh] BYREF
   char v32[20]; // [esp+100h] [ebp+B2h] BYREF
 
+  v29 = a1;   /* wave 181: v29 saved by the prologue (push eax) */
   v1 = HIDWORD(a1);
   LOBYTE(a1) = *(_BYTE *)HIDWORD(a1);
   switch ( *(_BYTE *)HIDWORD(a1) )
@@ -10051,6 +10076,7 @@ int sub_F2742( int a1)
   int v2; // ecx
   int v3; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = *(int16_t *)(dword_192680 + 243) + 40 + 294 * (a1 % 2);
   v2 = *(int16_t *)(dword_192680 + 245) + 36 * (a1 / 2) + 65;
   v3 = sub_127C27((int)aMultigmLbx, 45, dword_193174);
@@ -10078,6 +10104,7 @@ int sub_F27B7( int a1, int a2, int a3)
   int v16; // [esp+0h] [ebp-8h]
   int16_t v17; // [esp+4h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v4 = a1;
   v5 = 3753 * a1;
   v6 = *(uint8_t *)((uint8_t*)dword_197F98 + v5 + 38);
@@ -10426,6 +10453,7 @@ char sub_F30B9( int a1, char *a2, _BYTE *a3, _BYTE *a4)
   char result; // al
   int16_t v6; // si
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v4 = 3753 * a1;
   result = (uint8_t*)dword_197F98;
   v6 = *(uint8_t *)(v4 + (uint8_t*)dword_197F98 + 38);
@@ -11079,6 +11107,7 @@ int sub_F3E09( int a1)
   _BYTE *v1; // eax
   int v2; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = (_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1);
   v2 = 0;
   if ( v1[40] == 100 && !v1[36] )

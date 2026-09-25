@@ -6304,8 +6304,8 @@ int sub_1387B2( int a1, int *a2, int *a3)
       {
         v9 = -(uint16_t)word_138405[360 - v13] * *a2;
         v8 = -(uint16_t)word_138405[360 - v13] * *a3;
-        v11 = *(uint16_t *)((char *)&loc_1381E8 + 2 * v13 + 1) * *a2;
-        result = *(uint16_t *)((char *)&loc_1381E8 + 2 * v13 + 1) * *a3;
+        v11 = word_138405[v13 - 270] * *a2;
+        result = word_138405[v13 - 270] * *a3;
         v12 = result;
       }
     }
@@ -6342,8 +6342,8 @@ int sub_1387B2( int a1, int *a2, int *a3)
       {
         v9 = (uint16_t)word_138405[180 - v13] * *a2;
         v8 = (uint16_t)word_138405[180 - v13] * *a3;
-        v11 = -*(uint16_t *)((char *)&loc_138350 + 2 * v13 + 1) * *a2;
-        result = -*(uint16_t *)((char *)&loc_138350 + 2 * v13 + 1) * *a3;
+        v11 = -word_138405[v13 - 90] * *a2;
+        result = -word_138405[v13 - 90] * *a3;
         v12 = result;
       }
     }

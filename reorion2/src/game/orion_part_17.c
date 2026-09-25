@@ -8,6 +8,8 @@ int sub_10278D( int a1, int a2, int a3)
   int v3; // ecx
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v3 = (uint8_t*)dword_197F98 + 3753 * a1;
   result = a2;
   *(_BYTE *)(v3 + a2 + 3671) &= 0xC0u;
@@ -20,6 +22,8 @@ int sub_10278D( int a1, int a2, int a3)
 //----- (001027B5) --------------------------------------------------------
 void sub_1027B5( int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   *(_BYTE *)(a2 + 3753 * a1 + (uint8_t*)dword_197F98 + 3671) &= 0x3Fu;
   JUMPOUT(0x1027AC);
 }
@@ -32,6 +36,7 @@ int sub_1027D9( int a1, int a2)
 {
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   result = 3753 * word_19999C + (uint8_t*)dword_197F98 + a1;
   *(_BYTE *)(result + 3671) &= 0xC0u;
   *(_BYTE *)(result + 3671) |= a2 & 0x3F;
@@ -46,6 +51,7 @@ void sub_10280D( int a1)
 {
   int v1; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = 3753 * word_19999C + (uint8_t*)dword_197F98 + a1;
   *(_BYTE *)(v1 + 3671) &= 0x3Fu;
   JUMPOUT(0x102804);
@@ -88,6 +94,8 @@ int sub_1028A2( int a1, int a2)
 {
   int v2; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = a2 + (uint8_t*)dword_197F98 + 3753 * a1;
   if ( (*(_BYTE *)(v2 + 3671) & 0x3F) == 0 )
     return 0;
@@ -102,6 +110,7 @@ int sub_1028D5( int a1)
 {
   int v1; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = (uint8_t*)dword_197F98 + 3753 * word_19999C + a1;
   if ( (*(_BYTE *)(v1 + 3671) & 0x3F) == 0 )
     return 0;
@@ -133,6 +142,8 @@ int sub_10294B( int a1, int a2)
   int v2; // eax
   int v3; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = 3753 * a1 + (uint8_t*)dword_197F98 + (int16_t)a2;
   LOWORD(a2) = *(_BYTE *)(v2 + 3671) & 0x3F;
   v3 = a2 + 1;
@@ -476,6 +487,9 @@ void sub_102DAB( int a1, int a2, int a3, int a4, int a5, unsigned int a6, int a7
 //----- (00102F10) --------------------------------------------------------
 void sub_102F10( int a1, int a2, int a3, int a4)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   sub_102DAB(a1, a2, a3, a4, 0, 0, 1);
 }
 
@@ -483,6 +497,8 @@ void sub_102F10( int a1, int a2, int a3, int a4)
 //----- (00102F4F) --------------------------------------------------------
 void sub_102F4F( int a1, int a2, int a3, int a4)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   sub_102DAB(a1 - a4 / 2, a2, a3, a4, 0, 2u, 1);
 }
 
@@ -490,6 +506,8 @@ void sub_102F4F( int a1, int a2, int a3, int a4)
 //----- (00102F78) --------------------------------------------------------
 void sub_102F78( int a1, int a2, int a3, int a4, int a5)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   sub_102DAB(a1 - a4 / 2, a2, a3, a4, a5, 2u, 1);
 }
 
@@ -756,6 +774,7 @@ int sub_103313(int a1)
   int v14; // [esp+108Ch] [ebp+7Ah]
   int v15; // [esp+1090h] [ebp+7Eh]
 
+  v10 = a1;   /* wave 181: v10 saved by the prologue (push eax) */
       // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v14 = fopen(a1, aRb);
       // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
@@ -830,14 +849,14 @@ _BYTE *sub_103421()
 
 
 //----- (001034CB) --------------------------------------------------------
-void sub_1034CB()
+int sub_1034CB()
 {
   _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
 
   sprintf(byte_1ACE98, "SR_R%x_SP.LBX", *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));
   if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
     JUMPOUT(0x103472);
-  JUMPOUT(0x1034BB);
+  return (int)(intptr_t)&byte_1ACE98;   /* wave 181: tail loc_1034BB `mov     eax, offset byte_1A4E98` */
 }
 // 10351C: control flows out of bounds to 103472
 // 103512: control flows out of bounds to 1034BB
@@ -848,14 +867,14 @@ void sub_1034CB()
 
 
 //----- (00103521) --------------------------------------------------------
-void sub_103521()
+int sub_103521()
 {
   _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
 
   sprintf(byte_1ACE98, "SR_R%x_TR.LBX", *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));
   if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
     JUMPOUT(0x103472);
-  JUMPOUT(0x1034BB);
+  return (int)(intptr_t)&byte_1ACE98;   /* wave 181: tail loc_1034BB `mov     eax, offset byte_1A4E98` */
 }
 // 103576: control flows out of bounds to 103472
 // 103568: control flows out of bounds to 1034BB
@@ -981,6 +1000,8 @@ int sub_10370A(
   int v54; // [esp+146h] [ebp+6Eh]
   int v55; // [esp+14Ah] [ebp+72h]
 
+  v47 = a4;   /* wave 181: v47 saved by the prologue (push ebx) */
+  v49 = result;   /* wave 181: v49 saved by the prologue (push eax) */
   if ( a4 < 10 || a4 > 640 || (uint16_t)result >= 0x280u || a2 >= 0x1E0u || !a3 )
     return result;
   // PORT (vlna 61): v46/v47/v48/v49 nechala IDA NEINICIALIZOVANE - jsou to
@@ -1112,6 +1133,7 @@ LABEL_25:
 // Sesterska sub_103933 se lisi jen tim, ze misto 0 posila svuj druhy parametr.
 int sub_103915(int a1, int x, int y, int str, int w)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   return sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)w, (int16_t)a1, 1, 0);
 }
 
@@ -1143,6 +1165,7 @@ _DWORD sub_103933( int _p0, _DWORD _p1)
 // Sesterska sub_103CAF ma tutez signaturu (a1 = sirka, a2 = retezec).
 int sub_103952(int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sub_10370A(0, 0, a2, (int16_t)a1, 0, 0, 0);
   return (int16_t)word_1ACEB8;
 }
@@ -1315,6 +1338,9 @@ int sub_103BB3(int a1, int a2)
 //----- (00103BC4) --------------------------------------------------------
 int sub_103BC4( unsigned int a1, unsigned int a2, int a3, int a4, int a5)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   return sub_103D53(a1, a2, a3, a4, a5, 0, 1);
 }
 
@@ -1322,6 +1348,9 @@ int sub_103BC4( unsigned int a1, unsigned int a2, int a3, int a4, int a5)
 //----- (00103BE2) --------------------------------------------------------
 int sub_103BE2( unsigned int a1, unsigned int a2, int a3, int a4, int a5, int a6)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   return sub_103D53(a1, a2, a3, a4, a5, a6, 1);
 }
 
@@ -1424,6 +1453,7 @@ int sub_103CAF( int a1, int a2)
 {
   int v2; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v2 = sub_103D53(0, 0, a1, a2, 0, 0, 0);
   LOWORD(v2) = word_1ACF1E - word_1ACF1A;
   return v2 + 1;
@@ -1437,6 +1467,8 @@ int sub_103CD6( int a1, int a2, int a3)
 {
   int v3; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v3 = sub_103D53(0, 0, a1, a2, a3, 0, 0);
   LOWORD(v3) = word_1ACF1C - word_1ACF18;
   return v3 + 1;
@@ -3774,7 +3806,7 @@ char sub_105DEF(int a1, int a2, int a3, int a4, int a5)
 
 
 //----- (00105E99) --------------------------------------------------------
-void sub_105E99(int a1, int a2, int a3, int a4, int a5)
+char sub_105E99(int a1, int a2, int a3, int a4, int a5)
 {
   int v5; // ebx
 
@@ -3787,7 +3819,7 @@ void sub_105E99(int a1, int a2, int a3, int a4, int a5)
       LOWORD(a2) = *(_WORD *)(dword_1ACF14 + 37);
     *(_WORD *)(dword_1ACF14 + 33) = a2;
   }
-  JUMPOUT(0x105DE8);
+  return 0;   /* wave 181: tail loc_105DE8 `xor     al, al` */
 }
 // 105ED7: control flows out of bounds to 105DE8
 // 1ACF14: using guessed type int dword_1ACF14;
@@ -5616,6 +5648,7 @@ int sub_108029( unsigned int a1, unsigned int a2, unsigned int a3)
 //----- (00108057) --------------------------------------------------------
 int sub_108057(int a1, int a2)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   byte_183F42 = 1;
   return sub_108073(a1 + 48, a2, word_19999C);
 }
@@ -5875,6 +5908,7 @@ void sub_108611(int a1, int a2, int a3)
   int v8; // [esp+0h] [ebp-8h]
   char *v9; // [esp+4h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v8 = a1;   /* wave 179: asm 0x108619 push eax = var_8 */
   v3 = (_BYTE *)(intptr_t)*(uint32_t *)(a1 + 22);
   v4 = off_183B0E[(int16_t)a2];   /* wave 179: asm 0x108620 off_17BB0E[edi*4] */
@@ -6459,6 +6493,7 @@ int sub_108F81(int a1, int a2)
 {
   int v2; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = sub_108EC3(a1, a2, 4, 10);
   return nullsub_18(v2);
 }
@@ -6728,6 +6763,7 @@ int16_t sub_1093CD(int a1, int a2)
   int v32; // [esp+6C0h] [ebp+7Ah]
   int v33; // [esp+6C4h] [ebp+7Eh]
 
+  v20 = a2;   /* wave 181: v20 saved by the prologue (push edx) */
   v20 = (int16_t)a2;
   (void)a1;   /* eax se v teto funkci nepouziva (v asm se nespilluje) */
   v0 = (int16_t *)unk_183CFC;
@@ -7883,6 +7919,8 @@ int sub_10A6C0( int a1, int a2, char *a3)
   int v48; // [esp+324h] [ebp+7Ah]
   int v49; // [esp+328h] [ebp+7Eh]
 
+  v34 = a1;   /* wave 181: v34 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v3 = 3753 * a1 + (uint8_t*)dword_197F98;
   dword_192BD8 = v3;
   if ( *(_BYTE *)(v3 + 40) == 100 )
@@ -8348,7 +8386,7 @@ LABEL_88:
       v44 = v43;
       v87 = v43;
       ServiceAudioTick_FE8BE(v43, (int)&v93, (int)&v86, v70);
-      sub_10C670((int)v76, v44);
+      v47 = sub_10C670((int)v76, v44);
       v28 = 639;
       v45 = 479;
       v97 = sub_11438B(0, 0, 639, 479, asc_17A354, 0);
@@ -8448,7 +8486,7 @@ LABEL_37:
       v91 = 0;
       v95 = 0;
       v88 = 0;
-      sub_10C670((int)v76, v51);
+      v31 = sub_10C670((int)v76, v51);
       v28 = 639;
       v29 = 0;
       v99 = 0;
@@ -8717,8 +8755,6 @@ LABEL_86:
 // 10B160: variable 'v39' is possibly undefined
 // 10B177: variable 'v40' is possibly undefined
 // 10B189: variable 'v41' is possibly undefined
-// 10B21D: variable 'v47' is possibly undefined
-// 10B248: variable 'v31' is possibly undefined
 // 10B28F: variable 'v50' is possibly undefined
 // 10B687: variable 'v56' is possibly undefined
 // 10B72B: variable 'v59' is possibly undefined
@@ -9213,6 +9249,7 @@ int sub_10C4E9(
   int v18; // eax
   _WORD *v20; // [esp+0h] [ebp-8h]
 
+  v20 = a1;   /* wave 181: v20 saved by the prologue (push eax) */
   /* PORT (vlna 122): dalsi spillnuty registrovy argument - asm ma
      `enter 4, 0` + `push eax`, takze var_8 je prvni registrovy argument.
      `mov ebx, [ebp+var_8] / mov [ebx], ax` = zapis navratove hodnoty pres
@@ -9261,7 +9298,7 @@ int sub_10C4E9(
 
 
 //----- (0010C670) --------------------------------------------------------
-void sub_10C670(int a1, int a2)
+char sub_10C670(int a1, int a2)
 {
   int v3; // esi
   int16_t v4; // [esp+0h] [ebp-10h]
@@ -9301,7 +9338,7 @@ void sub_10C670(int a1, int a2)
                               &byte_17A356,
                               0);
     }
-    JUMPOUT(0x10C885);
+    return 1;   /* wave 181: tail loc_10C885 `mov     al, 1` */
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10C887 je epilog funkce */
 }

@@ -8358,7 +8358,7 @@ int sub_153800(int a1, int a2, int a3, int a4, unsigned int a5, int a6)
       v11 = 0;
     else
       v11 = 160;
-    LOWORD(v10) = &loc_16845A - (_UNKNOWN *)&byte_168130;
+    LOWORD(v10) = 0x32A;   /* wave 181: loc_16845A - byte_168130, the size of a code block */
     LOBYTE(v9) = v19 % 8;
     return sub_15E3F0(v19, (int)sub_168577, v10, v9, a5, a6, 0, 32, v11, 1 << v9);
   }

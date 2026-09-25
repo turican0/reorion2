@@ -271,6 +271,9 @@ _UNKNOWN loc_E0002; // weak
 _UNKNOWN loc_E1000; // weak
 int16_t word_EA27A = 8739; // weak
 _UNKNOWN loc_EB4BD; // weak
+/* wave 181: seven (x, y) pairs that follow the retn at 0xEB4C0 in the code
+   segment; sub_EBFCB reads them as 0xEB4BD + 2 * v and 0xEB4BF + 2 * v. */
+int16_t csegTable_EB4C1[14] = { 225, 118, 464, 242, 704, 372, 949, 502, 1199, 632, 1423, 751, 1650, 873 };
 _UNKNOWN loc_EB4BF; // weak
 int16_t word_EB4C3[] = { 118 }; // weak
 /* vlna 131: polomery sesti obeznych drah, (x, y) po dvojicich. V obraze je to

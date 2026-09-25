@@ -3261,7 +3261,7 @@ int sub_1693B6()
   if ( (*((_BYTE *)GetGameFlagsTable_F4B81() + 2) & 1) != 0 )
   {
     v1 = (char *)GetGameFlagsTable_F4B81();
-    *(_WORD *)((char *)&loc_2152F + (_DWORD)v1) = 1011;
+    *(_WORD *)(v1 + 136495) = 1011;   /* wave 181: offset 0x2152F, not loc_2152F */
     *(_WORD *)(v1 + 136493) = 800;
     *(_WORD *)(v1 + 136373) = 15;
     *(_WORD *)(v1 + 136387) = 20;

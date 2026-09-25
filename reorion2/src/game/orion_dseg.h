@@ -4534,4 +4534,17 @@ void InitDataSegment(void);
 #define dword_1C9CCE (*(int *)(dseg + 0x51CCE))
 #define byte_1C9CD2 (*(char *)(dseg + 0x51CD2))
 
+
+/* wave 181: former data stubs of link_stubs.c */
+#define unk_178A04 (*(_UNKNOWN *)(dseg + 0x00A04))
+#define unk_1A74B4 (*(_UNKNOWN *)(dseg + 0x2F4B4))
+#define unk_1B000D (*(_UNKNOWN *)(dseg + 0x3800D))
+#define unk_1B0020 (*(_UNKNOWN *)(dseg + 0x38020))
+#define unk_1B002B (*(_UNKNOWN *)(dseg + 0x3802B))
+#define unk_1B0041 (*(_UNKNOWN *)(dseg + 0x38041))
+#define unk_1B0043 (*(_UNKNOWN *)(dseg + 0x38043))
+#define unk_1B004F (*(_UNKNOWN *)(dseg + 0x3804F))
+#define unk_1B0057 (*(_UNKNOWN *)(dseg + 0x38057))
+#define unk_1B0848 (*(char (*)[13750])(dseg + 0x38848))
+
 #endif
