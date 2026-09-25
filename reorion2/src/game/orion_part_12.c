@@ -2020,9 +2020,34 @@ void sub_BE271( int a1, int a2, unsigned int a3)
 
 
 //----- (000BE306) --------------------------------------------------------
-void sub_BE306()
+/* wave 182: rewritten from the asm - 0xBE361 jumps into sub_BBB9F
+   (COLONY.LBX, entry + 9). */
+int sub_BE306(int a1)
 {
-  JUMPOUT(0xBBBAF);
+  int v1; // edx
+
+  switch ( (uint16_t)a1 )
+  {
+    case 3u:
+      v1 = 7;
+      break;
+    case 8u:
+      v1 = 1;
+      break;
+    case 0xEu:
+      v1 = 3;
+      break;
+    case 0x28u:
+      v1 = 2;
+      break;
+    case 0x29u:
+      v1 = 0;
+      break;
+    default:
+      v1 = -1;
+      break;
+  }
+  return sub_127C27((int)aColonyLbx, (int16_t)v1 + 9, dword_193174);
 }
 // BE361: control flows out of bounds to BBBAF
 
@@ -2052,8 +2077,7 @@ void sub_BE366()
         }
         else
         {
-          sub_BE306();
-          v3 = v2;
+          v3 = sub_BE306(word_19F99C[i]);   /* wave 182: 0xBE3FC */
           if ( i % 2 )
             v4 = -1;
           else
@@ -3975,9 +3999,10 @@ int16_t sub_C058A(int a1, int16_t *a2)
 
 
 //----- (000C0965) --------------------------------------------------------
-void sub_C0965()
+/* wave 182: 0xC0975 jumps into the tail of sub_BBB9F (sub_127C27) */
+int sub_C0965(int a1)
 {
-  JUMPOUT(0xBBBB2);
+  return sub_127C27((int)aPlanetsLbx, (int16_t)a1, dword_193174);
 }
 // C0975: control flows out of bounds to BBBB2
 
@@ -4204,10 +4229,20 @@ int sub_C0B87()
 
 
 //----- (000C0DBC) --------------------------------------------------------
-void sub_C0DBC()
+/* wave 182: rewritten from the asm - picture of a planet (file name
+   string 222, entry = type + 5 * owner colour); 0xC0E18 jumps into the tail
+   of sub_BBB9F (sub_127C27). */
+int sub_C0DBC(int a1)
 {
-  sub_CDF5C(222);
-  JUMPOUT(0xBBBB2);
+  uint8_t *v1; // eax
+  uint8_t v2; // bl
+
+  v1 = (uint8_t *)dword_1930D4 + 17 * (int16_t)a1;
+  if ( *(int16_t *)v1 == -1 )
+    v2 = v1[8];
+  else
+    v2 = *((uint8_t *)dword_192B18 + 361 * *(int16_t *)v1 + 226);
+  return sub_127C27(sub_CDF5C(222), (int16_t)(v1[5] + 5 * v2), dword_193174);
 }
 // C0E18: control flows out of bounds to BBBB2
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -4227,16 +4262,14 @@ void sub_C0E1D( int a1, int a2, int a3)
   v8 = a3;
   sub_120CCB(1, (int)&unk_182C2E);
   sub_128C32((int16_t)(a1 + 5), (int16_t)(a2 + 2), (int16_t)(a1 + 176), (int16_t)(a2 + 195), 233);
-  sub_C0DBC();
-  sub_133C9C(v4, a2);
+  v4 = sub_C0DBC(a3);   /* wave 182: 0xC0E73 */
+  sub_133C9C(v4, (int16_t)a2);
   v7 = a1;
   v5 = sub_BBA8E(14);
   sub_12A478(a1, a2, v5);
   sub_CA16D(a3, (int)v6);
-  /* vlna 95: asm 0xC0ECA pocita x/y/sirku z registru, ktere dekompilat ztratil
-     (esi/edi); ecx=08Ch je vyska. Do doplneni zbytku se to chova jako dosud,
-     tedy nevykresli nic - TODO dohledat esi/edi v sub_C0E1D. */
-  sub_1031AA(0, 0, 0, 140, (int)v6, 0);
+  /* wave 182: 0xC0ECA - esi = a1, edi = a2 */
+  sub_1031AA((int16_t)(a1 + 14), (int16_t)(a2 + 45), 154, 140, (int)v6, 0);
 }
 // C0E78: variable 'v4' is possibly undefined
 
@@ -7349,7 +7382,7 @@ int sub_C49C9(int a1, int a2)
 LABEL_13:
     sub_BB04E(1u);
     sub_C4B98((int)v15, v4, 1);
-    SUB_103915_TODO(0);
+    sub_103915(0, (int16_t)v19, (int16_t)v20, (int)v15, (int16_t)v18);   /* wave 182: 0xC4B43 */
 LABEL_14:
     v11 = (int16_t *)sub_127C27((int)aColsysdiLbx, 65, dword_193174);
     v20 += 24;
@@ -8347,8 +8380,9 @@ int sub_C5E2D(int a1, int a2, int a3, int a4)
 int sub_C5ED3(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
-  sub_103952(a3, a5, a3);
-  return SUB_103915_TODO(a6);
+  /* wave 182: text a5 centred vertically on a2 + a4 / 2 */
+  a2 = a2 + (uint16_t)a4 / 2 - (int16_t)sub_103952(a3, a5, a3) / 2;
+  return sub_103915((int16_t)a6, (int16_t)a1, (int16_t)a2, a5, a3);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 103952: using guessed type int sub_103952(_DWORD, _DWORD, _DWORD);
@@ -8358,8 +8392,9 @@ int sub_C5ED3(int a1, int a2, int a3, int a4, int a5, int a6)
 int sub_C5F14(int a1, int a2, int a3, int a4, int a5)
 {
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
-  sub_103952(a3, a5, a3);
-  return SUB_103915_TODO(2);
+  /* wave 182: text a5 centred vertically on a2 + a4 / 2 */
+  a2 = a2 + (uint16_t)a4 / 2 - (int16_t)sub_103952(a3, a5, a3) / 2;
+  return sub_103915(2, (int16_t)a1, (int16_t)a2, a5, a3);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 103952: using guessed type int sub_103952(_DWORD, _DWORD, _DWORD);

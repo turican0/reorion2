@@ -393,6 +393,39 @@ namespace Port::Vga {
             std::string base =
                 dir ? dir : ".";
 
+            // TOOL (wave 182): REORION2_DUMP_EVERY_MS=N writes one frame every
+            // N ms as t_<ms>.raw - shows when a screen is ready for a click.
+            static int s_everyMs = -2;
+            static Uint64 s_nextEvery = 0;
+
+            if (s_everyMs == -2) {
+                const char* env =
+                    std::getenv("REORION2_DUMP_EVERY_MS");
+
+                s_everyMs = env ? std::atoi(env) : -1;
+            }
+
+            if (s_everyMs > 0 &&
+                SDL_GetTicks() >= s_nextEvery) {
+
+                char name[64];
+
+                std::snprintf(
+                    name,
+                    sizeof(name),
+                    "/t_%06llu.raw",
+                    static_cast<unsigned long long>(SDL_GetTicks()));
+
+                DumpRawFrame(
+                    base + name,
+                    framebuffer,
+                    palette,
+                    width,
+                    height);
+
+                s_nextEvery = SDL_GetTicks() + s_everyMs;
+            }
+
             static int s_rangeStart = -2;
             static int s_rangeCount = 0;
 

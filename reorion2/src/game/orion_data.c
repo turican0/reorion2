@@ -18,61 +18,25 @@
    `db 49h` / `db 62h, 6Eh, 20h` / `dd 552D943Eh`), za nim uz zacina kod
    funkce main_ na 0x10018, takze pole ma prave 8 polozek.
    Kontrola: rasa 6 -> 0x2D = 45 -> rampa 46/51, presne jako dosbox. */
-char byte_10010[8] = { 0x49, 0x62, 0x6E, 0x20, 0x3E, 0x94, 0x2D, 0x55 }; // weak
 _UNKNOWN loc_1193F; // weak
 _UNKNOWN loc_12C00; // weak
-char byte_13A3A[] = { '\x03' }; // weak
-int16_t word_14A88 = 0; // weak
-char byte_14A8A[] = { '\0' }; // weak
-int16_t word_14A9A = 0; // weak
-char byte_14A9C[] = { '\0' }; // weak
 _UNKNOWN loc_14C05; // weak
 // loc_16085 ODSTRANENO (vlna 10): nebyl to symbol, ale IDA false-positive
 // z konstanty 90250 (0x1608A = "&loc_16085 + 5") - viz orion_part_01.c.
 _UNKNOWN loc_186A0; // weak
 _UNKNOWN loc_1D4BC; // weak
-int16_t word_1DE96 = 1013; // weak
 _UNKNOWN loc_20000; // weak
 _UNKNOWN loc_2152F; // weak
 _UNKNOWN loc_28800; // weak
 _UNKNOWN loc_2D000; // weak
 _UNKNOWN loc_30D40; // weak
-int16_t word_3B83D = 0; // weak
-int16_t word_3B83F = -12; // weak
-int16_t word_3B841[] = { 8 }; // weak
-int16_t word_3B843[] = { -6 }; // weak
-int16_t word_3B845[] = { 15 }; // weak
-int16_t word_3B847[] = { 0 }; // weak
-int16_t word_3B849[] = { 8 }; // weak
-int16_t word_3B84B[] = { 6 }; // weak
-int16_t word_3B851[] = { -8 }; // weak
-int16_t word_3B853[] = { 6 }; // weak
-int16_t word_3B855[] = { -15 }; // weak
-int16_t word_3B857[] = { 0 }; // weak
-int16_t word_3B859[] = { -8 }; // weak
-int16_t word_3B85B[] = { -6 }; // weak
-int16_t word_3BA3D[] = { 12 }; // weak
-int16_t word_3BA3F[] = { -12 }; // weak
-int16_t word_3BA41[] = { 12 }; // weak
-int16_t word_3BA43[] = { 12 }; // weak
-int16_t word_3BA45[] = { -12 }; // weak
-int16_t word_3BA47[] = { 12 }; // weak
-int16_t word_3BA49[] = { -12 }; // weak
-int16_t word_3BA4B[] = { -12 }; // weak
 // loc_3E7FB/loc_40F0D ODSTRANENO (vlna 10): IDA false-positive z konstant
 // 256000/266000 ("&loc_3E7FB + 5" / "&loc_40F0D + 3") - viz orion_part_01.c.
 _UNKNOWN loc_61A80; // weak
 //_UNKNOWN loc_63FFB; // weak
-int dword_649E0[2] = { 167773440, 335548160 }; // weak
-int dword_649F4[2] = { 167773440, 335548160 }; // weak
 _UNKNOWN loc_70002; // weak
 _UNKNOWN loc_7C830; // weak
 _UNKNOWN loc_80000; // weak
-int dword_80ACC[2] = { -707471917, -707406379 }; // weak
-int dword_80AD4[2] = { -589636395, -589505316 }; // weak
-int dword_80ADC[2] = { -640165420, -640034343 }; // weak
-wchar_t asc_81BFC[3] = L"'!!"; // weak
-int dword_81C04[15] = { 12, 10, 8, 2162727, 1572897, 1701736270, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // weak
 // VLNA 89c: NENI to retezec, ale tabulka CTYR int16_t (velikost hvezdneho
 // spritu podle urovne priblizeni, index = sub_79917()). asm 0x81C68:
 //   text "UTF-16LE", 27h,'!!'   -> 27 00 21 00 21 00
@@ -81,237 +45,50 @@ int dword_81C04[15] = { 12, 10, 8, 2162727, 1572897, 1701736270, 0, 0, 0, 0, 0, 
 // sub_83BF9 kopiruje pres `movsd movsd` do lokalky. Jako wchar_t[3] mel port
 // jen SEST bajtu, takze ctvrta polozka (nejvetsi priblizeni) cetla mimo pole
 // a hvezdy se na te urovni centrovaly podle smeti.
-int16_t asc_81C68[4] = { 0x27, 0x21, 0x21, 0x18 }; // weak
-int dword_81C78[2] = { 235670016, 370414096 }; // weak
-int dword_81C88[4] = { 746093440, 2122555270, 235670016, 370414096 }; // weak
-int dword_81C98[3] = { 12, 10, 8 }; // weak
-wchar_t asc_81CA4[3] = L"'!!"; // weak
 _UNKNOWN loc_81CAC; // weak
 _UNKNOWN loc_81CB0; // weak
-int dword_8BB3C[3] = { 286659602, 336535060, 85203233 }; // weak
-wchar_t asc_8BB48[3] = L"'!!"; // weak
 _UNKNOWN loc_925A6; // weak
 _UNKNOWN loc_925AA; // weak
 _UNKNOWN loc_9FFFD; // weak
-int dword_A1C68[3] = { 524328, 1769498, 3080234 }; // weak
-char byte_A659F = '\xB0'; // weak
-int16_t word_A65BA = -13120; // weak
-char byte_A65D5[3] = { 'P', 'W', 'W' }; // weak
-int dword_A65F4[2] = { 131073, 196611 }; // weak
 void (__noreturn *off_A6606)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
-int16_t word_A6646 = 210; // weak
-int16_t word_A6672 = 210; // weak
-int16_t word_A669E = 210; // weak
-int16_t word_A66CA = 210; // weak
-int16_t word_A66F6 = 148; // weak
-int16_t word_A6722 = 148; // weak
-int16_t word_A674E = 89; // weak
-int16_t word_A677A = 89; // weak
-int16_t word_A67A6 = 200; // weak
-int16_t word_A67D2 = 200; // weak
-int16_t word_A67FE = 94; // weak
-int16_t word_A682A = 94; // weak
-int16_t word_A6856 = 68; // weak
-int16_t word_A6882 = 68; // weak
-int16_t word_A68AE = 146; // weak
-int16_t word_A68DA = 146; // weak
-int16_t word_A6906 = 169; // weak
-int16_t word_A6932 = 169; // weak
-int16_t word_A695E = 107; // weak
-int16_t word_A698A = 201; // weak
-int16_t word_A69B6 = 210; // weak
-int16_t word_A69E2 = 210; // weak
-int16_t word_AB756 = 0; // weak
-int dword_B4D48[4] = { 16777216, 50332160, 83887104, 117442048 }; // weak
-char byte_B4D5B = '\x06'; // weak
-int dword_B4DC4[9] =
-{
-  16908287,
-  16843007,
-  -65536,
-  33554432,
-  -16580609,
-  -16776448,
-  3,
-  65536,
-  16711935
-}; // weak
-_UNKNOWN unk_B4E01; // weak
-int dword_B6CB0[2] = { 28180941, 24969620 }; // weak
-int dword_B6CC4[3] = { 1, 0, 0 }; // weak
-int dword_B6CD0[2] = { 1, 0 }; // weak
-char byte_BA6FB = 'Q'; // weak
-int16_t word_BA71A = 21073; // weak
-int dword_BA71C[24] =
-{
-  1448432723,
-  1515804759,
-  1583176795,
-  1650548831,
-  1717920867,
-  1785292903,
-  1852664939,
-  1397903727,
-  1465275732,
-  1532647768,
-  1600019804,
-  1667391840,
-  1734763876,
-  1802135912,
-  1869507948,
-  201982219,
-  370410005,
-  503516447,
-  404824087,
-  69799466,
-  741024296,
-  874057523,
-  839197493,
-  3616054
-}; // weak
-int dword_BA784[18] =
-{
-  67437829,
-  50660612,
-  67372291,
-  84017669,
-  67306244,
-  83951877,
-  67240452,
-  328451,
-  17040640,
-  50463745,
-  262659,
-  16974848,
-  33686273,
-  50331651,
-  33620226,
-  33554434,
-  65793,
-  256
-}; // weak
-int dword_BA7CC[36] =
-{
-  67437829,
-  50660612,
-  67372291,
-  84017669,
-  67306244,
-  83951877,
-  67240452,
-  328451,
-  17040640,
-  50463745,
-  262659,
-  16974848,
-  33686273,
-  50331651,
-  33620226,
-  33554434,
-  65793,
-  256,
-  -993606464,
-  -1179142720,
-  1599124919,
-  97,
-  251658240,
-  17,
-  1364197376,
-  1431589714,
-  1498961750,
-  1566333786,
-  1633705822,
-  1701077858,
-  1768449894,
-  1835821930,
-  1364422510,
-  80238422,
-  -1047986176,
-  -768485751
-}; // weak
 _UNKNOWN loc_BCD8B; // weak
 _UNKNOWN loc_BFFF4; // weak
-int dword_C2220[4] = { 1459771138, 1459771138, 1459771138, 1459771138 }; // weak
-int dword_C2234[7] =
-{
-  1610629376,
-  -1627357184,
-  -587153920,
-  453049088,
-  -402572799,
-  -353637655,
-  -1179142679
-}; // weak
-int16_t word_C5102 = -1; // weak
-int dword_C6E40[3] = { 41633, -1600192512, 41633 }; // weak
-char byte_CF38F[] = { '\x01' }; // weak
-char byte_D575C[] = { '\x02' }; // weak
 /* PORT (vlna 126): tabulka "produkce na delnika podle bohatosti nerostu".
    V obraze hry (cseg01:000DD4B5) je `db 1 / dw 302h / db 5, 8`, tedy PET
    polozek { 1, 2, 3, 5, 8 } = Ultra Poor, Poor, Abundant, Rich, Ultra Rich.
    V portu byla jednoprvkova, takze `byte_DD4B5[2]` (Abundant) a `[3]` (Rich)
    cetly mimo pole - na PLANETS vychazelo 8 a 0 misto 3 a 5.
    Indexuje se na ctyrech mistech (sub_9A2BA, sub_D27A7, sub_D2CAE). */
-char byte_DD4B5[5] = { 1, 2, 3, 5, 8 };
-int16_t word_DD4BA = 6450; // weak
-char byte_DD4C4[] = { '\xFC' }; // weak
-char byte_DD4CC[] = { '\xF6' }; // weak
-char byte_DD4CF[] = { '\x04' }; // weak
-char byte_DD4D7[] = { '\xF6' }; // weak
-char byte_DD4DC[] = { '\x05' }; // weak
 /* PORT (vlna 126): tabulky v kodovem segmentu, ktere IDA zkratila.
    Obsah nacten primo z obrazu hry: tools/compare/dumpdata.py 0xDD4E1 32
    (mapovani soubor = cseg01 + 0x85654). Vsechny se INDEXUJI, takze
    zkraceni znamenalo cteni mimo pole. */
-char byte_DD4E1[5] = { 2, 4, 6, 8, 10 };   /* velikost planety -> pocet (sub_DEE1B) */
-char byte_DD4E6[5] = { 0, 0, 1, 2, 3 };   /* obtiznost -> bonus (sub_E03F1, index byte_199CB0) */
-char byte_DD4EB[10] = { 25, 25, 25, 25, 25, 25, 40, 60, 80, 100 };   /* klima -> obyvatelnost v % (sub_E0A18, index 0..9) */
-char byte_DD4F5[8] = { 30, 60, 30, 60, 60, 120, 12, 16 };   /* sub_E3456 */
+   /* velikost planety -> pocet (sub_DEE1B) */
+   /* obtiznost -> bonus (sub_E03F1, index byte_199CB0) */
+   /* klima -> obyvatelnost v % (sub_E0A18, index 0..9) */
+   /* sub_E3456 */
 _UNKNOWN loc_E0002; // weak
 _UNKNOWN loc_E1000; // weak
-int16_t word_EA27A = 8739; // weak
 _UNKNOWN loc_EB4BD; // weak
 /* wave 181: seven (x, y) pairs that follow the retn at 0xEB4C0 in the code
    segment; sub_EBFCB reads them as 0xEB4BD + 2 * v and 0xEB4BF + 2 * v. */
 int16_t csegTable_EB4C1[14] = { 225, 118, 464, 242, 704, 372, 949, 502, 1199, 632, 1423, 751, 1650, 873 };
 _UNKNOWN loc_EB4BF; // weak
-int16_t word_EB4C3[] = { 118 }; // weak
 /* vlna 131: polomery sesti obeznych drah, (x, y) po dvojicich. V obraze je to
    souvislych 12 slov (0xEB4C5..0xEB4DD, dal uz je kod - `56 57` = push esi/edi);
    IDA pojmenovala jen prvni dve a zbytek nechala jako `db`/`dd` bez jmena,
    takze `word_EB4C5[2*a2]` cetlo pro drahy 1-5 mimo pole a planety se
    v pohledu na soustavu shlukly do stredu. word_EB4C7 je pohled na +1. */
-int16_t word_EB4C5[12] = { 464, 242, 704, 372, 949, 502, 1199, 632, 1423, 751, 1650, 873 };
 _UNKNOWN locret_ED903; // weak
 _UNKNOWN *off_EDB2D = &loc_93D66; // weak
 // loc_F4240 ODSTRANENO (vlna 12): IDA false-positive z konstanty 1000000
 // (0xF4240 - AIL mikrosekundy), viz orion_part_18.c/orion_part_23.c.
-int dword_F594C[16] =
-{
-  1111704676,
-  1044332609,
-  976960573,
-  909588537,
-  842216501,
-  774844465,
-  707472429,
-  606414375,
-  539042339,
-  454827295,
-  387455258,
-  320083222,
-  252711186,
-  185339150,
-  117967114,
-  50595078
-}; // weak
 _UNKNOWN loc_FFFF8; // weak
 _UNKNOWN loc_100000; // weak
 /* vlna 130: bonus spionaze podle typu vlady. V obraze osm bajtu
    (0x100A36..0x100A3D, dalsi symbol je sub_100A3E): 00 00 0A 0F F6 F6 0F 0F.
    IDA vypsala jen prvni `db 0` a zbytek schovala do `align 4` + `dd` + `dup`,
    takze v portu byla tabulka jednoprvkova a "AGENT: 10%" vychazelo 0 %. */
-char byte_100A36[8] = { 0, 0, 10, 15, -10, -10, 15, 15 };
 _UNKNOWN loc_103428; // weak
 // PORT (vlna 65): NENI to jeden bajt, ale TABULKA 9 kodu zarovnani, kterou
 // `sub_1035AF` prohledava (`v12 = byte_10357B; ... *(_WORD *)v12 == v10`) a
@@ -323,7 +100,6 @@ _UNKNOWN loc_103428; // weak
 // S jednim bajtem se hledalo ve smeti, nikdy to nesedlo a switch skoncil na
 // `case 0` = NEKRESLI NIC. Proto zustavaly popisky v rameccich NEW GAME
 // prazdne - styl 0x0002 (vycentrovany text) je v tabulce az sesty.
-char byte_10357B[16] = { 3, 8, 2, 8, 1, 8, 0, 8, 3, 0, 2, 0, 1, 0, 0, 0 }; // weak
 // extern _UNKNOWN _GETDS; weak
 /* strstr: FLIRT rozpoznal jako staticky linkovanou CRT funkci, Hex-Rays ji ale nedekompiloval jako kod - pouziva se realna deklarace z <string.h> misto vlastni extern deklarace. */
  // weak
@@ -332,34 +108,11 @@ char byte_10357B[16] = { 3, 8, 2, 8, 1, 8, 0, 8, 3, 0, 2, 0, 1, 0, 0, 0 }; // we
 _UNKNOWN loc_1310FD; // weak
 _UNKNOWN loc_1381E8; // weak
 _UNKNOWN loc_138350; // weak
-char byte_138385[] = { '\0' }; // weak
 /* vlna 131: sinus s pevnou radovou carkou, sin(deg) * 65536 pro 0..89 stupnu
    (0x138405..0x1384B9; hodnota pro 90, 180 a 270 se v sub_138615 resi zvlast).
    IDA vypsala jen prvni nulu, takze vsechny uhly krome nuly davaly 0 a planety
    na obrazovce LEADERS se nakupily do stredu misto na sve obezne drahy.
    Typ je uint16_t - kod hodnoty stejne cte pres `(uint16_t)`. */
-uint16_t word_138405[90] =
-{
-  0, 1144, 2287, 3430, 4572, 5712, 6850, 7987, 9121, 10252,
-  11380, 12505, 13626, 14742, 15855, 16962, 18064, 19161, 20252, 21336,
-  22415, 23486, 24550, 25607, 26656, 27697, 28729, 29753, 30767, 31772,
-  32768, 33754, 34729, 35693, 36647, 37590, 38521, 39441, 40348, 41243,
-  42126, 42995, 43852, 44695, 45525, 46341, 47143, 47930, 48703, 49461,
-  50203, 50931, 51643, 52339, 53020, 53684, 54332, 54963, 55578, 56175,
-  56756, 57319, 57865, 58393, 58903, 59396, 59870, 60326, 60764, 61183,
-  61584, 61966, 62328, 62672, 62997, 63303, 63589, 63856, 64104, 64332,
-  64540, 64729, 64898, 65048, 65177, 65287, 65376, 65446, 65496, 65526,
-};
-int dword_138CAC = 0; // weak
-char byte_138F31[3] = { 'M', 'O', 'O' }; // weak
-int dword_155104 = 1397753374; // weak
-int16_t word_15510B = -26215; // weak
-int16_t word_15511A = -26215; // weak
-int dword_155120 = -1717986919; // weak
-int16_t word_155136 = -26215; // weak
-int16_t word_155140 = -26215; // weak
-int16_t word_155147 = -26215; // weak
-int dword_15B614[] = { 8 }; // weak
 _UNKNOWN *off_15C810 = (_UNKNOWN *)0x46CB8; // weak
 _UNKNOWN *off_15EEFC = &loc_E40C7; // weak
 // VLNA 26: IDA tyto dve tabulky orizla na 2 a 4 polozky, ale indexuji se
@@ -442,617 +195,7 @@ _UNKNOWN loc_166540; // weak
 _UNKNOWN loc_166880; // weak
 _UNKNOWN loc_167084; // weak
 _UNKNOWN loc_1671E0; // weak
-char byte_168130 = '\0'; // weak
-char byte_168131[3] = { '\0', '\0', '\0' }; // weak
 _UNKNOWN loc_16845A; // weak
-int dword_16853C = 0; // weak
-char byte_168540 = '\0'; // weak
-int dword_168694[603] =
-{
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
-}; // weak
 char aMay222006_1[12] = "May 22 2006"; // weak
 char aNowh[6] = "/nowh"; // weak
 char aNobh[6] = "/nobh"; // weak

@@ -11945,7 +11945,7 @@ void sub_34EC8()
   v0 = sub_127C27((int)aCombatLbx_3, 36, dword_193174);
   sub_12A478(150, 100, v0);
   v1 = dword_19B554;
-  SUB_103915_TODO(2);
+  sub_103915(2, 165, 153, dword_19B554, 261);   /* wave 182: 0x34F18 */
   sub_121199(182, 231, word_19B570, v1);
   sub_121199(296, 231, word_19B56E, v1);
   sub_121199(408, 231, word_19B56C, v1);

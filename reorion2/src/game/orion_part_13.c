@@ -1180,7 +1180,7 @@ int sub_C7318( int a1, int a2, int a3, int a4, int a5)
   sub_12A478(a1 + 4, a2 + 4, a3);
   sub_120BB5(1, (int)v7);
   sub_1210FD(a1 + 222, a2 + 10, a4);
-  return SUB_103915_TODO(2);
+  return sub_103915(2, (int16_t)(a1 + 120), (int16_t)(a2 + 23), a5, 205);   /* wave 182: 0xC73DA */
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 1A1114: using guessed type int dword_1A1114;

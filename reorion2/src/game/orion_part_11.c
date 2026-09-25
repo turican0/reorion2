@@ -290,10 +290,25 @@ void sub_B0A9C( int a1)
 
 
 //----- (000B0AE3) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=51)) - nutno dohledat rucne v IDA @ 0xB0BA4 */
-int sub_B0AE3(_DWORD _p0)
+/* wave 182: rewritten from the asm (Hex-Rays: "call analysis failed"); the
+   jmp to 0xB065D is the shared epilogue of sub_B3328. */
+void sub_B0AE3(int a1)
 {
-  DECOMP_TODO("call analysis failed (funcsize=51)");
+  int v1; // [ebp-4h]
+
+  if ( byte_17EB4B[19 * (int16_t)a1] == 7 )
+    sub_C5CFF(244, 56, (int16_t *)(intptr_t)sub_BE306(a1));
+  else
+    sub_B0A9C(a1);
+  if ( (int16_t)a1 == -1 )
+    return;
+  sub_120CCB(4, (int)&unk_1827AD);
+  v1 = 0;
+  sub_102F10(306, (int16_t)(13 * v1 + 21), (int)(intptr_t)sub_BB40D((int16_t)a1), 156);
+  v1 = 2;
+  sub_120CCB(3, (int)&unk_1827AD);
+  sub_B3B56((int16_t)dword_19F7A8, a1, (_WORD *)&v1);
+  sub_AFB0D(209, 119, 248, *(int16_t *)((char *)word_17EB43 + 19 * (int16_t)a1));
 }
 
 
@@ -2356,35 +2371,7 @@ void sub_B3328()
       ++v70;
       sub_120CCB(3, (int)&unk_1827AD);
       sub_B3B56(dword_19F7A8, v0, &v70);
-      sub_AFB0D(
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69);
+      sub_AFB0D(209, 119, 248, 109);   /* wave 182: text id = ecx */
       v30 = 46;
       goto LABEL_17;
     case -16:
@@ -2403,35 +2390,7 @@ void sub_B3328()
       ++v70;
       sub_120CCB(3, (int)&unk_1827AD);
       sub_B3B56(dword_19F7A8, v0, &v70);
-      sub_AFB0D(
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69);
+      sub_AFB0D(209, 119, 248, 69);   /* wave 182: text id = ecx */
       v30 = 48;
       goto LABEL_17;
     case -13:
@@ -2447,35 +2406,7 @@ void sub_B3328()
       ++v70;
       sub_120CCB(3, (int)&unk_1827AD);
       sub_B3B56(dword_19F7A8, v0, &v70);
-      sub_AFB0D(
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69);
+      sub_AFB0D(209, 119, 248, 41);   /* wave 182: text id = ecx */
       v30 = 45;
 LABEL_17:
       sub_BABA4(244, 56, v30);
@@ -2533,36 +2464,8 @@ LABEL_17:
       sub_1212B3(306, 13 * v70 + 21, (int)v17);
       v70 += 2;
       sub_B3B56(dword_19F7A8, v0, &v70);
-      sub_AFB0D(
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69);
-      sub_BB382();
+      sub_AFB0D(209, 119, 248, 166);   /* wave 182: text id = ecx */
+      v18 = (int16_t *)(intptr_t)sub_BB382(*(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));   /* wave 182 */
       sub_C5CFF(244, 56, v18);
       break;
     case -6:
@@ -2578,35 +2481,7 @@ LABEL_17:
       v16 = (int16_t *)sub_BB54D(0, 4u, *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));
       sub_C5CFF(244, 56, v16);
 LABEL_10:
-      sub_AFB0D(
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69);
+      sub_AFB0D(209, 119, 248, v0 == -11 ? 189 : v0 == -6 ? 7 : v0 == -5 ? 8 : 6);   /* wave 182: text id = ecx */
       break;
     case -3:
       v6 = v0;
@@ -3953,7 +3828,7 @@ int sub_B53CC( int a1, int a2, int a3, int a4, int a5)
     v20 = v7 - abs16(*(char *)(v16 + (uint8_t*)dword_192B18 + 7) / 2);
   if ( !a5 )
   {
-    sub_BBB8A();
+    v8 = sub_BBB8A(*(char *)((uint8_t*)dword_197F98 + 3753 * *(char *)(v16 + (uint8_t*)dword_192B18) + 2207));   /* wave 182 */
     v6 = a2 + 30;
     sub_12A478(a2, a3 - 1, v8);
   }
@@ -7280,7 +7155,7 @@ LABEL_7:
   v17 = (char *)sub_CDF5C(45);
   sprintf(v27, v17, v19, v23);
 LABEL_10:
-  SUB_103915_TODO(0);
+  sub_103915(0, 20, 60, (int)v27, 619);   /* wave 182: 0xB96E6 (esi = 1) */
   v12 = 17 * a1;
   sub_E0B4F((int16_t *)(v12 + (uint8_t*)dword_1930D4), word_19999C);
   v24 = v13;
@@ -7299,7 +7174,7 @@ LABEL_10:
     v26 = dword_18F9B8[*(char *)(result + 15)];
     v16 = (char *)sub_CDF5C(70);
     sprintf(v27, v16, (char *)(intptr_t)v26);
-    return SUB_103915_TODO(0);
+    return sub_103915(0, 20, 140, (int)v27, 619);   /* wave 182: 0xB97F0 (esi = 5) */
   }
   return result;
 }
@@ -8704,9 +8579,10 @@ int sub_BB2CB(int a1)
 
 
 //----- (000BB382) --------------------------------------------------------
-void sub_BB382()
+/* wave 182: 0xBB39A jumps into the tail of sub_BBB9F (sub_127C27) */
+int sub_BB382(int a1)
 {
-  JUMPOUT(0xBBBB2);
+  return sub_127C27((int)aRaceiconLbx, (int16_t)(13 * a1 + 11), dword_193174);
 }
 // BB39A: control flows out of bounds to BBBB2
 
@@ -9280,9 +9156,10 @@ LABEL_21:
 
 
 //----- (000BBB8A) --------------------------------------------------------
-void sub_BBB8A()
+/* wave 182: 0xBBB9D jumps into the tail of sub_BBB9F (sub_127C27) */
+int sub_BBB8A(int a1)
 {
-  JUMPOUT(0xBBBB2);
+  return sub_127C27((int)aColony2Lbx, (int16_t)a1 + 19, dword_193174);
 }
 // BBB9D: control flows out of bounds to BBBB2
 

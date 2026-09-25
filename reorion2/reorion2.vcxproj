@@ -170,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\game\orion_data.c" />
+    <ClCompile Include="src\game\orion_cseg.c" />
     <ClCompile Include="src\game\orion_dseg.c" />
     <ClCompile Include="src\game\link_stubs.c" />
     <ClCompile Include="src\game\orion_part_01.c" />
@@ -215,6 +216,7 @@
     <ClInclude Include="src\game\decomp_compat.h" />
     <ClInclude Include="src\game\orion_common.h" />
     <ClInclude Include="src\game\orion_blocks.h" />
+    <ClInclude Include="src\game\orion_cseg.h" />
     <ClInclude Include="src\game\orion_dseg.h" />
     <ClInclude Include="src\port\port_dos.h" />
     <ClInclude Include="src\port\port_memory.h" />

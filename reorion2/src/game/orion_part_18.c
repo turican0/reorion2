@@ -1086,16 +1086,16 @@ LABEL_19:
           HIDWORD(v30) = dword_1AD698 + 3136;
           do
           {
-            if ( *(_BYTE *)(v30 + 6) )
+            if ( *(_BYTE *)((uint32_t)v30 + 6) )   /* wave 182: eax only */
               goto LABEL_43;
             LODWORD(v30) = v30 + 392;
           }
           while ( (_DWORD)v30 != HIDWORD(v30) );
           LODWORD(v30) = HIDWORD(v30) ^ v30;
 LABEL_43:
-          HIDWORD(v30) = *(uint16_t *)(v30 + 7);
+          HIDWORD(v30) = *(uint16_t *)((uint32_t)v30 + 7);   /* wave 182: eax only */
           dword_1AD69C = v30;
-          WORD2(v30) = *(_WORD *)(v30 + 2 * HIDWORD(v30) + 382);
+          WORD2(v30) = *(_WORD *)((uint32_t)v30 + 2 * HIDWORD(v30) + 382);   /* wave 182: eax only */
           if ( WORD2(v30) )
           {
             sub_10EE6F(v30);
@@ -1158,7 +1158,7 @@ LABEL_53:
       LODWORD(v30) = dword_1AD69C;
       v35 = dword_192BD8;
       *(_BYTE *)(dword_192BD8 + 801) = *(_BYTE *)(dword_1AD69C + 81);
-      LOBYTE(v30) = *(_BYTE *)(v30 + 2 * *(uint16_t *)(v30 + 7) + 382);
+      LOBYTE(v30) = *(_BYTE *)((uint32_t)v30 + 2 * *(uint16_t *)((uint32_t)v30 + 7) + 382);   /* wave 182: eax only */
       HIDWORD(v30) = v24;
       *(_BYTE *)(v35 + 802) = v30;
     }

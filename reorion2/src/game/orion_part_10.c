@@ -4551,7 +4551,7 @@ LABEL_24:
   v23 = v21;
   sub_122259();
   sub_8F055(v32, v22, (int16_t)(v20 + 12), v23 + 5, 0x3Fu);
-  SUB_103915_TODO(0);
+  sub_103915(0, (int16_t)(v32 + 7), (int16_t)(v31 + 5), (int)v28, v19);   /* wave 182: 0xA4C05 */
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA2C08 je epilog funkce */
 }
 // A4C0A: control flows out of bounds to A2C08
@@ -12198,7 +12198,7 @@ int sub_AFA5C(int a1, int a2, int a3, int a4)
   sub_120E8C(1);
   sub_120E60(2);
   sub_AFAB9((int)byte_19DA6C, a4);
-  SUB_103915_TODO(3);
+  sub_103915(3, (int16_t)a1, (int16_t)a2, (int)byte_19DA6C, (int16_t)a3);   /* wave 182: 0xAFAA2 */
   return sub_120CCB(3, (int)&unk_1827AD);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
@@ -12225,49 +12225,24 @@ void sub_AFAB9(int a1, int a2)
 
 
 //----- (000AFB0D) --------------------------------------------------------
-int sub_AFB0D(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int a26,
-        int a27,
-        int a28)
+/* wave 182: rewritten from the asm - text a4 of the help file at
+   (a1, a2), width a3 (Hex-Rays saw 28 stack arguments). */
+int sub_AFB0D(int a1, int a2, int a3, int a4)
 {
-  int16_t v28; // cx
+  char v5[1332]; // [ebp-548h]
+  char v6[20]; // [ebp-14h]
 
-  sub_A6547((char *)&STACK[0xAFA]);
+  sub_A6547(v6);
   sub_120CCB(3, (int)&unk_1827AD);
   sub_120E8C(1);
   sub_120E60(2);
-  if ( v28 != word_1828BA )
+  if ( (int16_t)a4 != word_1828BA )
   {
-    word_1828BA = v28;
-    dword_19DD94 = (int)sub_126BDD((int)&STACK[0xAFA], 0, dword_19DE8C, v28, 1u, 1403);
+    word_1828BA = a4;
+    dword_19DD94 = (int)sub_126BDD((int)v6, 0, dword_19DE8C, (int16_t)a4, 1u, 1403);
   }
-  strcpy((char *)&a28 + 2, (char *)(dword_19DD94 + 103));
-  SUB_103915_TODO(3);
+  strcpy(v5, (char *)(intptr_t)(dword_19DD94 + 103));
+  sub_103915(3, (int16_t)a1, (int16_t)a2, (int)v5, (int16_t)a3);
   return sub_120CCB(3, (int)&unk_1827AD);
 }
 // AFB51: variable 'v28' is possibly undefined
