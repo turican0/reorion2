@@ -2143,14 +2143,17 @@ int sub_E8029(int result, int a2, _WORD *a3, _WORD *a4)
 
 
 //----- (000E8194) --------------------------------------------------------
-void sub_E8194( int a1)
+/* wave 181: rewritten from the asm - returns a random set bit of the
+   mask (esi), -1 when the mask is empty. */
+int sub_E8194( int a1)
 {
   _WORD *v2; // eax
   int v3; // edx
-  int j; // ebx
   int i; // ebx
+  int v4; // esi
 
-  v2 = (_WORD *)(2 * a1 + dword_1AA3AC);
+  v4 = -1;
+  v2 = (_WORD *)(2 * (int16_t)a1 + dword_1AA3AC);
   if ( *v2 )
   {
     v3 = 0;
@@ -2158,20 +2161,20 @@ void sub_E8194( int a1)
     {
       for ( i = 0; i < word_199998; ++i )
       {
-        if ( (((int)*(uint16_t *)(dword_1AA3AC + 2 * a1) >> i) & 1) != 0 )
-          sub_1247A0(++v3);
+        if ( (((int)*(uint16_t *)(dword_1AA3AC + 2 * (int16_t)a1) >> i) & 1) != 0 && sub_1247A0(++v3) == 1 )
+          v4 = i;
       }
     }
     else
     {
-      for ( j = 8; j < 15; ++j )
+      for ( i = 8; i < 15; ++i )
       {
-        if ( (((int)*(uint16_t *)(dword_1AA3AC + 2 * a1) >> j) & 1) != 0 )
-          sub_1247A0(++v3);
+        if ( (((int)*(uint16_t *)(dword_1AA3AC + 2 * (int16_t)a1) >> i) & 1) != 0 && sub_1247A0(++v3) == 1 )
+          v4 = i;
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xEA8C4 je epilog funkce */
+  return v4;
 }
 // E822C: control flows out of bounds to EA8C4
 // 199998: using guessed type int16_t word_199998;
@@ -2350,7 +2353,7 @@ void sub_E84A5(int16_t *a1, int16_t *a2, int a3)
     {
       do
       {
-        sub_E8194(*a1);
+        v6 = sub_E8194(*a1);   /* wave 181 */
         *a2 = v6;
         if ( v6 == -1 )
         {

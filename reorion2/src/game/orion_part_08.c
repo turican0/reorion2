@@ -2110,7 +2110,7 @@ void sub_8B17B(char *a1, int a2, int16_t *a3)
       sub_A20EC();
       sub_A20CD();
       sub_82348();
-      sub_FE785(a3);
+      v5 = sub_FE785(a3, word_19999C);   /* wave 182 */
       byte_199F17 = v5;
       v6 = v5 == 2 || v5 == 5 || v5 == 6 || v5 == 7 && byte_199BE5;
       if ( word_199A0E == 1 )

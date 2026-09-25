@@ -16977,3 +16977,75 @@ not examined yet; they may come from timing.
 - `link_stubs.c` still defines old duplicate data stubs (`int byte_199A66;`
   ...) - nothing refers to them any more, they can go;
 - many comments in `orion_data.c` describe declarations that moved to dseg.
+
+
+## Wave 181: TURN
+
+User bug list: "TURN crashes". Clicking TURN now runs the whole turn: the
+star date goes to 3500.1 and income to 58 BC (+10). Found crash by crash
+(cdb: `cdbX64.exe -lines -y x64\Debug -c "g; .lastevent; kn 30; q"`), then
+fixed as classes.
+
+### Classes, each with a tool in tools/compare/
+
+| class | tool | fixed |
+|---|---|---|
+| register argument saved by the prologue (`enter N / push eax`) and never assigned in the port | `phantom_args.py` | 155 |
+| parameter the original reads only as 16 bits (`movsx r, dx` first) - callers pass garbage in the high word | `int16_params.py` | 646 |
+| `JUMPOUT(tail)` where the tail only moves a value into EAX (`mov eax, edx / pop / retn`) | `jumpout_values.py` | 36 + 72 callers |
+| result dropped by the caller (`// variable 'vN' is possibly undefined`) | `capture_returns.py` | 87 |
+| `savedregs[k]` - a local array addressed from the saved registers | by hand | 5 functions |
+| IDA code labels used as numbers or data (`memset(p, 0, &loc_2D000)`) | by hand, LE fixups | 11 sites |
+
+The register of every parameter comes from the prototypes Hex-Rays wrote into
+`Orion2.exe.c` (`protos.py`: `sub_E36DF(char *a1@<eax>, int a2@<edi>)`); the
+Watcom order eax, edx, ebx, ecx holds only for `__fastcall`.
+`verify_regmap.py` checks the inserted lines against them - the first run of
+`phantom_args.py` assumed Watcom order and 45 insertions were wrong (removed).
+
+Still open, reported by the tools:
+
+- `lost_returns.py`: functions that are void in the port but whose result the
+  original uses (204 at the start of the wave);
+- `phantom_args.py`: 73 registers saved by a prologue that the IDA
+  prototype does not list as parameters (hidden arguments - the function
+  and its callers need a new parameter, like sub_D7B48);
+- `jumpout_tails.py`: 27 value tails that need a human, 338 `code` tails
+  (real shared code the port skips).
+
+### Functions fixed by hand
+
+- `sub_643A0` - "%2d " loops with the counter merged into sprintf's result
+  never ended (word_18FF78 overflow, __fastfail); returns al.
+- `sub_22F5C`, `sub_6478D`, `sub_63E73`, `sub_63EDD`, `sub_63FCB`,
+  `sub_63D92` - lost results and a skipped tail call (`sub_63FF0`).
+- `sub_5EF4B` / `sub_5EF17` / `sub_5EF09` - ship strength, min(v, 0xFA00);
+  10 callers read uninitialized locals.
+- `sub_DDFD3` and the qsort comparators `sub_D6315`, `sub_D63A6`,
+  `sub_D68CB` - rewritten from the asm.
+- `sub_D896F` / `sub_D87BB` / `sub_D7B48` - v20 = a1, a second list that
+  grows down from the end of v21[500], a word compare, a hidden EAX argument.
+- `sub_E8194` - random set bit (reservoir sampling); the dropped result made
+  `sub_E84A5` loop forever.
+- `sub_DFE77` - both tails (`add word ptr [var_4], dx`, `movsx ax, byte`).
+- `sub_136B3` - `sub_E4F49` was called too early (asm order).
+- `sub_FF799` - a2 is 16-bit.
+- data stubs of link_stubs.c inside the data object are dseg macros now
+  (`off_183558` pointed at a 4-byte `int unk_1A74B4` and TURN cleared 5760
+  bytes through it; `off_184480` used a private copy of 0x1B0848).
+- code-segment data: the (x, y) table at 0xEB4C1 (`csegTable_EB4C1`), the
+  sine table reached through other bases (`word_138405[v - 270]`).
+
+#### Verified
+
+- regression gate 600/600 after every group;
+- INFO pages still 0.00 %.
+
+#### Next
+
+After TURN the original opens SELECT NEW RESEARCH (research is "none"); the
+port returns to the map. The start-of-turn event chain `sub_FE785 ->
+sub_FE63E -> sub_FD911 -> sub_10DB69` never runs for the player: `sub_FE63E`
+and `sub_FE785` take the player in EAX (hidden argument), and the chain
+around it (`sub_FD95A`, `sub_FE359`, `sub_FE408`, `sub_FE0EA`, `sub_10D041`,
+`sub_FD69F`) has lost results and wrong arguments.

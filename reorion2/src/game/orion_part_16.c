@@ -7944,12 +7944,13 @@ char sub_FE552( int a1, int16_t *a2)
 
 
 //----- (000FE63E) --------------------------------------------------------
-void sub_FE63E( int a1, int16_t *a2)
+char sub_FE63E( int a1, int16_t *a2, int a3)
 {
   char v2; // al
   char v3; // bh
   int16_t v4; // [esp+0h] [ebp-8h]
 
+  v4 = (int16_t)a3;   /* wave 182: player in eax (0xFE644 push eax) */
   if ( (((int)(uint8_t)byte_1AB50D >> v4) & 1) == 0 && dword_192FD8 != 35000 )
   {
     v2 = sub_FE552(a1, a2);
@@ -8018,7 +8019,9 @@ void sub_FE63E( int a1, int16_t *a2)
     }
     if ( !v2 )
       byte_1AB50D |= 1 << v4;
+    return v2;
   }
+  return 0;
 }
 // FE658: variable 'v4' is possibly undefined
 // FE724: variable 'v2' is possibly undefined
@@ -8028,9 +8031,10 @@ void sub_FE63E( int a1, int16_t *a2)
 
 
 //----- (000FE785) --------------------------------------------------------
-void sub_FE785(int16_t *a1)
+/* wave 182: player in eax (cwde), returns al */
+char sub_FE785(int16_t *a1, int a2)
 {
-  sub_FE63E(1, a1);
+  return sub_FE63E(1, a1, (int16_t)a2);
 }
 
 
@@ -8097,8 +8101,7 @@ char sub_FE86B(int a1, int16_t *a2)
   v5 = (uint8_t*)dword_197F98;
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + v4 + 40) == 100 )
   {
-    sub_FE63E(0, a2);
-    v5 = v6;
+    v5 = (uint8_t)sub_FE63E(0, a2, v3);   /* wave 182 */
   }
   else
   {

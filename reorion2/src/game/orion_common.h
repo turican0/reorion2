@@ -5481,7 +5481,7 @@ void sub_D7764(int a1, int16_t *a2);   /* vlna 105: skutecny prototyp (ukazatelo
 // plna signatura: int sub_D7923(int16_t *a1, int a2, _WORD *a3, int16_t *a4);
 int sub_D7923(int16_t *a1, int a2, _WORD *a3, int16_t *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int16_t sub_D7B48(_WORD *a1, int a2, int a3);
-int16_t sub_D7B48(_WORD *a1, int a2, int a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int16_t sub_D7B48(_WORD *a1, int a2, int a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty); wave 181: a4 = EAX */
 // plna signatura: _DWORD *sub_D7C04( int a1, _DWORD *a2, _DWORD *a3);
 _DWORD *sub_D7C04( int a1, _DWORD *a2, _DWORD *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_D7D53( int a1, int a2);
@@ -5900,8 +5900,8 @@ void sub_E7CDB(int16_t *a1, int a2, _WORD *a3, _WORD *a4);   /* vlna 105: skutec
 unsigned int sub_E7DCA(int a1, int a2, _WORD *a3, _WORD *a4, _BYTE *a5);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_E8029(int result, int a2, _WORD *a3, _WORD *a4);
 int sub_E8029(int result, int a2, _WORD *a3, _WORD *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_E8194( int a1);
-extern void sub_E8194();
+// plna signatura: int sub_E8194( int a1);
+extern int sub_E8194();
 // plna signatura: _BOOL1 sub_E8231(int a1, int a2);
 extern _BOOL1 sub_E8231();
 // plna signatura: void sub_E82B4( int a1, int a2);
@@ -6457,9 +6457,9 @@ extern char sub_FE514();
 // plna signatura: char sub_FE552( int a1, int16_t *a2);
 char sub_FE552( int a1, int16_t *a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_FE63E( int a1, int16_t *a2);
-void sub_FE63E( int a1, int16_t *a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+char sub_FE63E( int a1, int16_t *a2, int a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_FE785(int16_t *a1);
-void sub_FE785(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+char sub_FE785(int16_t *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char sub_FE793(int a1);
 extern char sub_FE793();
 // plna signatura: char sub_FE86B(int a1, int16_t *a2);
@@ -13315,7 +13315,7 @@ void sub_E7B79(int a1, int a2);
 void sub_E7CDB(int16_t *a1, int16_t a2, _WORD *a3, _WORD *a4);
 unsigned int sub_E7DCA(int a1, int a2, _WORD *a3, _WORD *a4, _BYTE *a5);
 int sub_E8029(int result, int16_t a2, _WORD *a3, _WORD *a4);
-void sub_E8194(int16_t a1);
+int sub_E8194(int16_t a1);
 _BOOL1 sub_E8231(int a1, int a2);
 void sub_E82B4(int16_t a1, int16_t a2);
 char sub_E841A(int16_t a1);

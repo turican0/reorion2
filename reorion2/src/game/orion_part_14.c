@@ -1385,7 +1385,9 @@ LABEL_22:
 
 
 //----- (000D7B48) --------------------------------------------------------
-int16_t sub_D7B48(_WORD *a1, int a2, int a3)
+/* wave 181: a4 is EAX (0xD7B51 push eax = var_30 = v6) - the caller passes
+   lea eax, var_4AC, the ship list v21 of sub_D896F; IDA missed it. */
+int16_t sub_D7B48(_WORD *a1, int a2, int a3, int a4)
 {
   int16_t result; // ax
   int16_t *v4; // ecx
@@ -1400,6 +1402,7 @@ int16_t sub_D7B48(_WORD *a1, int a2, int a3)
   int v13; // [esp+28h] [ebp-8h]
   int v14; // [esp+2Ch] [ebp-4h]
 
+  v6 = a4;
   v13 = a2;
   v10 = 0x7FFF;
   v14 = -1;
@@ -2232,7 +2235,7 @@ char sub_D896F(int a1, int16_t *a2)
            || byte_199CB0 && *(_BYTE *)(dword_1AA248 + 40) == 2
            || (v6 = (int)*(uint8_t *)((int16_t)v31 + dword_1AA214) >> word_1AA24C, (v6 & 1) != 0) )
     {
-      LOBYTE(v6) = sub_D7B48(&v27, (int16_t)v31, (int)a2);
+      LOBYTE(v6) = sub_D7B48(&v27, (int16_t)v31, (int)a2, (int)(intptr_t)v21);
     }
     --*a2;
   }

@@ -1408,3 +1408,36 @@ If Hex-Rays typed a dword as an array (`dword_1AAB48[0] = ...`), a later
 `(char *)dword_1AAB48` is the address of the table, not the pointer stored
 in it. The asm tells: `mov reg, NAME` is the value, `offset NAME` the
 address (wave 180: sub_EE4A1, sub_CDF65).
+
+
+### Fix a crash chain as classes, not one by one
+
+Wave 181. TURN crashed in a new function after every fix, but each crash
+belonged to one of a few classes that the listing detects mechanically.
+Fixing a whole class (tools/compare/phantom_args.py, int16_params.py,
+jumpout_values.py, capture_returns.py) moved the turn several phases at once.
+Run the gate after every class - these tools touch hundreds of functions.
+
+### The register of a parameter is in Orion2.exe.c, not in the Watcom order
+
+`sub_E36DF(char *a1@<eax>, int a2@<edi>)` - IDA's prototypes name the
+register of every parameter. The Watcom order eax, edx, ebx, ecx holds only
+for `__fastcall`; anything that maps a register to `aK` must use
+`tools/compare/protos.py`. A register the prologue saves but the prototype
+does not list is a hidden argument: the function and all its callers need a
+new parameter (read the caller's `lea eax, ...` / `movsx eax, ...` before the
+call).
+
+### A process that "hangs" may be looping on an uninitialized result
+
+Wave 181: `sub_E84A5` looped on `*a2 = v6` where `v6` was the dropped result
+of `sub_E8194`. `cdb` shows where it is when it is stopped; if a loop
+condition reads a variable Hex-Rays marked "possibly undefined", that is the
+cause.
+
+### cdb is available
+
+`%LOCALAPPDATA%\Microsoft\WindowsApps\cdbX64.exe -lines -y x64\Debug -c
+"g; .lastevent; kn 30; q" x64\Debug\reorion2.exe` catches `__fastfail`
+(0xC0000409), which the port's vectored handler never sees; `dv /t name`
+and `.frame N` show locals.

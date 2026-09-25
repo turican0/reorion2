@@ -3167,7 +3167,6 @@ int16_t sub_136B3(
   sub_101E77();
   sub_FFEEA();
   sub_10192B();
-  sub_E4F49(a5);
   sub_E3FDC((uint16_t)a5);
   sub_E4DC9();
   sub_D574D(v9, a1);
@@ -3177,6 +3176,7 @@ int16_t sub_136B3(
   sub_206A2((uint16_t)a5);
   sub_ED8BF((uint16_t)a5);
   sub_E2B31(v10, (uint16_t)a5);
+  sub_E4F49(a5);   /* wave 181: asm order - after sub_E2B31, not after sub_10192B */
   sub_E5097();
   v11 = sub_FF212();
   sub_E2B31(v11, (uint16_t)a5);
