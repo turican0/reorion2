@@ -37,6 +37,7 @@ int16_t sub_10CEBE(int a1, int a2, unsigned int a3)
 {
   int16_t result; // ax
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   result = a2;
   if ( a3 > *(_WORD *)(a1 + 12) )
     a3 = *(_WORD *)(a1 + 12);
@@ -2137,6 +2138,7 @@ void sub_10F62F(int a1, int a2)
 //----- (0010F772) --------------------------------------------------------
 char *sub_10F772( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 < 75 )
     return ((char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * a1));
   strcpy(byte_17D640, (char *)dword_199170);
@@ -2534,7 +2536,7 @@ int16_t sub_10FE41(int a1)
   *(_WORD *)(a1 + 8) = word_1844CA;
   *(_WORD *)(a1 + 10) = HIWORD(dword_1844CE);
   *(_WORD *)(a1 + 12) = word_18447E;
-  *(_DWORD *)(a1 + 14) = off_184480;
+  *(_DWORD *)(a1 + 14) = (uint32_t)(uintptr_t)off_184480;   /* wave 182: 32-bit slot, read back by sub_10FEC1 */
   off_184480 = (_UNKNOWN *)((char *)off_184480 + 55 * word_1B3E0E);
   word_18447E -= word_1B3E0E;
   return sub_11C2F0();
@@ -2561,7 +2563,7 @@ int16_t sub_10FEC1(int a1)
   word_1844A6 = *(_WORD *)(a1 + 6);
   word_1844CA = *(_WORD *)(a1 + 8);
   HIWORD(dword_1844CE) = *(_WORD *)(a1 + 10);
-  v1 = *(void **)(a1 + 14);
+  v1 = (void *)(uintptr_t)*(uint32_t *)(a1 + 14) /* wave 182: 32-bit slot */;
   result = *(_WORD *)(a1 + 12);
   off_184480 = v1;
   word_18447E = result;
@@ -6824,7 +6826,7 @@ LABEL_46:
               HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5 + 2)),
               v1 + HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v5)) + 1,
               *(int *)((char *)off_184480 + 55 * v5 + 14) >> 16,
-              *(uint8_t **)((char *)off_184480 + 55 * v5 + 36),
+              ((uint8_t *)(uintptr_t)*(uint32_t *)((char *)off_184480 + 55 * v5 + 36)),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 40),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 44),
               *(_DWORD *)((char *)off_184480 + 55 * v5 + 48));

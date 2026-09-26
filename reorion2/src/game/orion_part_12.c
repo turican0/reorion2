@@ -838,9 +838,22 @@ int sub_BCACF( int a1, int a2)
 
 
 //----- (000BCB07) --------------------------------------------------------
-void sub_BCB07()
+/* wave 182: jumps into the tail of sub_BCB4B - sub_B4EF6 with ebx = 0 */
+int sub_BCB07(int a1)
 {
-  JUMPOUT(0xBCB90);
+  a1 = (int16_t)a1;
+  return sub_B4EF6(
+           (int16_t)dword_19F7A8,
+           a1,
+           0,
+           310,
+           (int16_t)(30 * a1 + 62),
+           510,
+           1,
+           (int)&unk_19F888 + 84 * a1,
+           &word_19F9D4[a1],
+           &word_19F9DA[a1],
+           &word_19F9E0[a1]);
 }
 // BCB49: control flows out of bounds to BCB90
 
@@ -868,18 +881,44 @@ int sub_BCB4B( int a1)
 
 
 //----- (000BCBA0) --------------------------------------------------------
-void sub_BCBA0()
+/* wave 182: jumps into the tail of sub_BCB4B - sub_B4EF6 with ebx = 3 */
+int sub_BCBA0(int a1)
 {
-  JUMPOUT(0xBCB8F);
+  a1 = (int16_t)a1;
+  return sub_B4EF6(
+           (int16_t)dword_19F7A8,
+           a1,
+           3,
+           310,
+           (int16_t)(30 * a1 + 62),
+           510,
+           1,
+           (int)&unk_19F888 + 84 * a1,
+           &word_19F9D4[a1],
+           &word_19F9DA[a1],
+           &word_19F9E0[a1]);
 }
 // BCBE4: control flows out of bounds to BCB8F
 
 
 //----- (000BCBE6) --------------------------------------------------------
-void sub_BCBE6()
+/* wave 182: jumps into the tail of sub_BCB4B - sub_B4EF6 with ebx = 4 */
+int sub_BCBE6(int a1)
 {
+  a1 = (int16_t)a1;
   word_182AB7 = dword_19F7A8;
-  JUMPOUT(0xBCB8F);
+  return sub_B4EF6(
+           (int16_t)dword_19F7A8,
+           a1,
+           4,
+           310,
+           (int16_t)(30 * a1 + 62),
+           510,
+           1,
+           (int)&unk_19F888 + 84 * a1,
+           &word_19F9D4[a1],
+           &word_19F9DA[a1],
+           &word_19F9E0[a1]);
 }
 // BCC38: control flows out of bounds to BCB8F
 // 182AB7: using guessed type int16_t word_182AB7;
@@ -926,8 +965,11 @@ int sub_BCC6D( int a1)
 
 
 //----- (000BCD70) --------------------------------------------------------
-int sub_BCD70(int a1)
+/* wave 182: loc_BCD8B (0xBCD8B) - text of the selected worker; sub_BD840
+   calls it directly, so it is a function of its own. */
+int sub_BCD8B(void)
 {
+  char v10[500]; // [ebp-1F4h]
   int16_t v1; // ax
   char *v2; // eax
   int result; // eax
@@ -938,9 +980,6 @@ int sub_BCD70(int a1)
   int v8; // [esp-208h] [ebp-208h]
   int v9; // [esp-204h] [ebp-204h]
 
-  sub_BCB07();
-  sub_BCB07();
-  sub_BCB07();
   result = word_182ABC;
   if ( word_182ABC != -1 )
   {
@@ -962,12 +1001,22 @@ int sub_BCD70(int a1)
     }
     v6 = v5;
     v2 = (char *)sub_CDF5C(76);
-    sprintf(a1 - 500, v2, (char *)(intptr_t)v6, (char *)(intptr_t)v7, (char *)(intptr_t)v8, (char *)(intptr_t)v9);
+    sprintf(v10, v2, (char *)(intptr_t)v6, (char *)(intptr_t)v7, (char *)(intptr_t)v8, (char *)(intptr_t)v9);
     sub_120DED(80, 80);
     sub_BB04E(3u);
-    return sub_BD727(a1 - 500);
+    return sub_BD727((int)v10);
   }
   return result;
+}
+
+
+//----- (000BCD70) --------------------------------------------------------
+int sub_BCD70(void)
+{
+  sub_BCB07(0);
+  sub_BCB07(1);
+  sub_BCB07(2);
+  return sub_BCD8B();
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182ABC: using guessed type int16_t word_182ABC;
@@ -1057,7 +1106,7 @@ int sub_BCEA2(int a1, int a2, int a3, unsigned int a4)
       sub_12A478(a2 * (30 - word_182AB9), 479 - *(_WORD *)(v12 + 2), v11);
       v13 = (char *)sub_CDF5C(124);
       v14 = sprintf(v23, v13, v6);
-      sub_120DED(SWORD2(v14), SHIDWORD(v14));
+      sub_120DED(80, 80);   /* wave 182: 0xBD039 edx = 50h, sprintf_ keeps it */
       sub_120CCB(3, (int)&unk_182C2E);
       sub_120EB9((int)&unk_182C26);
       sub_120F07((int)&unk_182C46);
@@ -1069,12 +1118,10 @@ int sub_BCEA2(int a1, int a2, int a3, unsigned int a4)
   else
   {
     v28 = 0;
-    v7 = v25;
     v27 = a2;
     while ( 1 )
     {
-      v10 = v7;
-      v7 = (int16_t)v28;
+      v10 = v25;   /* wave 182: 0xBCF3E switches on a4 in every pass */
       if ( (int16_t)v28 >= v6 )
         break;
       if ( v25 <= 3 )
@@ -1316,7 +1363,7 @@ int sub_BD434()
     v16 = sub_BC8DF(dword_19F7A8);
     v2 = (char *)sub_CDF5C(97);
     v3 = sprintf(v19, v2, (char *)(intptr_t)v16, v17);
-    sub_120DED(SWORD2(v3), SHIDWORD(v3));
+    sub_120DED((int16_t)(80), 80);
     sub_120CCB(4, (int)&unk_182C2E);
     sub_120EB9((int)&unk_182C26);
     sub_120F07((int)&unk_182C46);
@@ -1384,7 +1431,7 @@ LABEL_11:
   v12 = sub_BC972(dword_19F7A8, -1, -1, -1, -1, -1);
   v13 = (char *)sub_CDF5C(424);
   v14 = sprintf(v19, v13, v12 + v0 / 1000, v0 % 1000, v1);
-  sub_120CCB(2, SHIDWORD(v14));
+  sub_120CCB(2, (int)&unk_182C2E);
   sub_1210B7(638, 3, (int)v19);
   sub_120DED(80, 80);
   return sub_BB04E(3u);
@@ -1488,10 +1535,10 @@ int sub_BD840()
   sub_BCE7E(0);
   sub_BCE7E(1);
   sub_BCE7E(2);
-  sub_BCB07();
-  sub_BCB07();
-  sub_BCB07();
-  ((void (*)(void))loc_BCD8B)();
+  sub_BCB07(0);
+  sub_BCB07(1);
+  sub_BCB07(2);
+  sub_BCD8B();   /* wave 182: call loc_BCD8B */
   sub_B53B6(dword_19F7A8, 310, 33, 510);
   sub_BD434();
   sub_BDD2F();
@@ -1733,7 +1780,7 @@ int sub_BDCD8()
   sub_120CCB(0, (int)&unk_182C2E);
   v1 = (char *)sub_CDF5C(32);
   v2 = sprintf(v4, v1, v0);
-  return sub_1210B7(624, SWORD2(v2), (int)v4);
+  return sub_1210B7(624, (int16_t)(103), (int)v4);
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 19F7A8: using guessed type int dword_19F7A8;
@@ -2026,6 +2073,7 @@ int sub_BE306(int a1)
 {
   int v1; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   switch ( (uint16_t)a1 )
   {
     case 3u:
@@ -2596,7 +2644,7 @@ char sub_BED21(int a1, int a2)
     sub_BD1FB();
     sub_BD26C();
     sub_BCE5E();
-    sub_BCD70(a1);
+    sub_BCD70();
     sub_BD3C1();
     sub_BD434();
     sub_BDD2F();
@@ -3061,7 +3109,7 @@ void sub_BF627(int16_t *a1, _WORD *a2)
       v4 = *a1;
       if ( *a1 == word_19F9E0[j] )
       {
-        sub_BCBA0();
+        v5 = (int16_t)sub_BCBA0(j);   /* wave 182: 0xBF66D */
         if ( v5 != -1 )
         {
           byte_182ABB = 1;
@@ -3073,8 +3121,7 @@ void sub_BF627(int16_t *a1, _WORD *a2)
       }
       if ( *a2 == word_19F9E0[j] )
       {
-        sub_BCBE6();
-        word_182ABC = v6;
+        word_182ABC = sub_BCBE6(j);   /* wave 182: 0xBF6B7 */
       }
     }
   }
@@ -4002,6 +4049,7 @@ int16_t sub_C058A(int a1, int16_t *a2)
 /* wave 182: 0xC0975 jumps into the tail of sub_BBB9F (sub_127C27) */
 int sub_C0965(int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   return sub_127C27((int)aPlanetsLbx, (int16_t)a1, dword_193174);
 }
 // C0975: control flows out of bounds to BBBB2
@@ -4091,10 +4139,15 @@ void sub_C0ABC()
 
 
 //----- (000C0AF4) --------------------------------------------------------
-void sub_C0AF4()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0xBB218 */
+int sub_C0AF4(void)
 {
-  sub_123E6C((int)unk_17CF00, 1);
-  JUMPOUT(0xBB218);
+  int r1;
+
+  r1 = sub_123E6C((int)(intptr_t)&unk_17CF00, 1);
+  sub_1172FC();
+  return 0 /* eax after void sub_1172FC */;
 }
 // C0B04: control flows out of bounds to BB218
 
@@ -4810,9 +4863,24 @@ int sub_C187B(int16_t *a1)
 
 
 //----- (000C19BA) --------------------------------------------------------
-void sub_C19BA()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0xC0EE3 */
+int sub_C19BA(void)
 {
-  JUMPOUT(0xC0EE3);
+  int r1;
+  int r2;
+  int r3;
+  int r4;
+
+  r1 = sub_126B42((int)(intptr_t)&aRefitpupLbx, 4, (int)(intptr_t)dword_192ED4);
+  dword_1830D2 = r1;
+  r2 = sub_126B42((int)(intptr_t)&aRefitpupLbx, 1, (int)(intptr_t)dword_192ED4);
+  dword_1830DA = r2;
+  r3 = sub_126B42((int)(intptr_t)&aRefitpupLbx, 2, (int)(intptr_t)dword_192ED4);
+  dword_1830D6 = r3;
+  r4 = sub_126B42((int)(intptr_t)&aRefitpupLbx, 3, (int)(intptr_t)dword_192ED4);
+  dword_1830DE = r4;
+  return r4;
 }
 // C19CC: control flows out of bounds to C0EE3
 
@@ -6130,6 +6198,7 @@ LABEL_26:
 //----- (000C34DD) --------------------------------------------------------
 int sub_C34DD( int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 >= a2 )
     return a1 > a2;
   else
@@ -7486,8 +7555,7 @@ int sub_C4B98(int a1, int a2, int a3)
       v9 = 361 * v5;
       v10 = *(char *)(v9 + (uint8_t*)dword_192B18);
       v31 = 17 * a2;
-      sub_E0B4F((int16_t *)(v31 + (uint8_t*)dword_1930D4), v10);
-      v25 = v11;
+      v25 = (int16_t)sub_E0B4F((int16_t *)(v31 + (uint8_t*)dword_1930D4), v10);   /* wave 182: 0xC4D74 cwde / push eax */
       v23 = *(uint8_t *)(v9 + (uint8_t*)dword_192B18 + 10);
       v12 = (char *)sub_CDF5C(8);
       sprintf(v27, v12, v23, v25);
@@ -8135,6 +8203,7 @@ char sub_C5AC8(char *a1, int a2, const char *a3, ...)
 //----- (000C5B64) --------------------------------------------------------
 void sub_C5B64( unsigned int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 < 2u )
   {
     if ( !a1 )
@@ -8303,9 +8372,11 @@ int sub_C5CFF( int a1, int a2, int16_t *a3)
 
 
 //----- (000C5D55) --------------------------------------------------------
-void sub_C5D55()
+/* wave 182: 0xC5D73 jumps into the tail of sub_C5CFF - sprite a3 with its
+   bottom centre at (a1, a2) */
+int sub_C5D55(int a1, int a2, int16_t *a3)
 {
-  JUMPOUT(0xC5D22);
+  return sub_12A478((int16_t)(a1 - *a3 / 2), (int16_t)(a2 - a3[1]), (int)(intptr_t)a3);
 }
 // C5D73: control flows out of bounds to C5D22
 

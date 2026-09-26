@@ -6841,6 +6841,7 @@ void sub_163D80( int a1, double *a2, double a3)
 {
   _BOOL1 v3; // zf
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 != -9734 && a1 != -9743 )
   {
     v3 = a1 == -9736;

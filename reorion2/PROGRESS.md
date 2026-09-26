@@ -10618,7 +10618,8 @@ opravuje.
 
 Obrazovku kolonie skriptovane klikani spolehlive nedosahne, takze poslednim
 padem (ten necitelny, "vykonani na 0xFFFFFFFFFFFFFFFF") si nejsem jisty. Ted
-uz ale staci poslat `x64\Debugeorion2_crash.log`.
+uz ale staci poslat `x64\Debug
+eorion2_crash.log`.
 
 ### Vlna 96: rozsekany souvisly blok NA ZASOBNIKU - `sub_103D53`
 
@@ -17049,3 +17050,153 @@ sub_FE63E -> sub_FD911 -> sub_10DB69` never runs for the player: `sub_FE63E`
 and `sub_FE785` take the player in EAX (hidden argument), and the chain
 around it (`sub_FD95A`, `sub_FE359`, `sub_FE408`, `sub_FE0EA`, `sub_10D041`,
 `sub_FD69F`) has lost results and wrong arguments.
+
+
+## Wave 182: research selection and the colony screen
+
+User bug list: "Clicking research crashes". After TURN the port now opens
+SELECT NEW RESEARCH (0.07 % vs DOSBox, only the palette-cycled bottom bar),
+a click on a research opens the colony screen like the original, and the
+colony screen matches DOSBox to 0.08 % (mouse cursor and a few pixels).
+
+### Fixed by hand
+
+- `sub_FE63E` / `sub_FE785` - the player comes in EAX (hidden argument),
+  both return al; callers `sub_8B17B`, `sub_FE86B`.
+- `sub_10DC12` (TECHSEL) - `v30` is an edx:eax pair; pointer uses of it
+  took garbage from the high half (`(uint32_t)v30`).
+- `sub_BCEA2` - the switch is on a4 in every pass; `sub_120DED(80, 80)`
+  after sprintf (edx = 50h is kept by `sprintf_`).
+- `sub_BCB07`, `sub_BCBA0`, `sub_BCBE6` - worker rows (tail of `sub_BCB4B`,
+  `sub_B4EF6` with mode 0 / 3 / 4); `loc_BCD8B` became `sub_BCD8B`
+  (`sub_BD840` called it through a data symbol).
+- `sub_B4E64` - a3 is 16-bit (`cmp bx, 1`); the coin row overlapped.
+- `sub_C4B98` - "(8/15)": dropped result of `sub_E0B4F`.
+- `sub_B6B95` / `sub_C5D55` - the first pass over the colony plants drew
+  nothing (tail of `sub_C5CFF`, bitmap dropped); 2 more callers.
+- `sub_B67E4` / `sub_B6860` - a 12-byte local table split into
+  `int` + `int64_t` (x64 does not keep them adjacent).
+- `sub_BBB8A`, `sub_BB382`, `sub_BE306`, `sub_C0965`, `sub_C0DBC`,
+  `sub_B0AE3`, `sub_AFB0D` - picture getters and the help text box.
+- `sub_2A239` - Hex-Rays mapped a1 = edx, a2 = ebx, a3 = eax; the saved eax
+  (`v16`) was never set.
+- `sub_8354E` returns edi (the chosen button).
+
+### Classes, each with a tool in tools/compare/
+
+| class | tool | fixed |
+|---|---|---|
+| tables between functions in the code object declared as one scalar (`char byte_B4D5B = 6` for 0x62 bytes) | `gen_cseg.py` (one-shot) -> `orion_cseg.c/.h`, `csegdata[]` + macros | 123 labels |
+| `SUB_103915_TODO` - text boxes drawn with a null string | by hand from the asm | 13 sites |
+| parameter read only as 16 bits by `cmp r16` / `test r16` (no later full read) | `int16_params.py` (extended) | 106 |
+| `HIDWORD(vN)` of `vN = sprintf(...)` - the caller's edx, which `sprintf_` keeps | `sprintf_edx.py` | 19 of 77 |
+| dropped result: the instruction before the "possibly undefined" address is `call sub_X` | `capture_auto.py` | 36 |
+| function that is only `JUMPOUT(tail)` - did nothing | `jumpout_gen.py` (symbolic evaluator of the asm) | 56 of 91 |
+| callers of those functions without arguments | `fix_callers.py` + by hand | 41 |
+
+`cseg_labels.py` lists the code-object labels, `empty_jumpouts.py` the
+empty functions, `split_locals.py` local tables split into scalars (28
+sites, reviewed: `sub_B67E4`, `sub_B6860` fixed; `sub_B6352` is dead code),
+`cropcmp.py` crops and zooms the same region of two frames.
+
+Port tool: `REORION2_DUMP_EVERY_MS=N` writes one frame every N ms
+(`t_<ms>.raw`) - it shows when a screen is ready for the next click.
+Test timing: `REORION2_SENDKEY=67:3000`, clicks ACCEPT @7000, TURN @9000,
+research @15000; the colony screen is up at 17 s.
+
+#### Verified
+
+- regression gate 600/600;
+- SELECT NEW RESEARCH 0.07 %, colony screen 0.08 % vs DOSBox.
+
+#### Next
+
+- `lost_returns` / `capture_auto.py`: 144 dropped results whose callee is
+  void in the port (the callee needs a return value first);
+- `jumpout_gen.py`: 35 empty functions it cannot evaluate (stack
+  arguments, `repne movsb`, `idiv`, conditional code);
+- `sprintf_edx.py`: 58 sites where edx is `edx + eax` chains or arguments;
+- `split_locals.py`: the remaining 25 split tables;
+- the rest of the user's bug list.
+
+## Wave 182, part 2: the rest of the bug list
+
+User bug list, continued. Every item was checked against my DOSBox
+(`tools/compare/dbx_clicks.py`) with the same clicks in the port.
+
+### Verified 1:1 (DOSBox frame vs port frame)
+
+| screen | result |
+|---|---|
+| PLANETS (sorting by minerals / size) | identical order; no crash |
+| FLEETS hover, relocate, scrap | identical (only the blinking marker) |
+| RACES + RETURN | identical |
+| GAME: SAVE (typing, backspace, save file) | SAVE3.GAM identical except one MOX.SET byte the game decrements at start |
+| GAME: SAVE -> CANCEL -> LOAD | 0.125 % (black-hole animation) |
+| GAME: NEW GAME / QUIT dialogs, NEW GAME -> YES | 0.13 % / 0 px |
+| GAME: QUIT -> YES, main menu QUIT | clean `exit(1)` like 0x1264B9 |
+| ZOOM in, click into the zoom frame | 632 px (black-hole animation) |
+| star system: planet hover, fleet hover | 0.2-0.4 % (animation) |
+| HALL OF FAME | cursor only |
+| start with SKIPINTRO | black before the menu video like the original |
+| regression gate | 600/600 |
+
+### Fixed by hand
+
+- Watcom `qsort_` ported (`src/port/port_qsort.c`, 0x133EF4): gap insertion
+  sort below 16 elements, median of three / ninther, three-way partition -
+  equal keys come out in the original order ("Frigate 1" vs "Frigate 0").
+- FLEETS: `sub_54D80` reads the record bytes, `sub_35F4D`..`sub_367DF`
+  return the design bonuses (12 callers wired), `WEAPON_NAME(o, i)` reads the
+  dseg records at 0x7803/0x7807 + 28 i, `sub_74AFE` (scrap) rewritten,
+  `sub_10FE41`/`sub_10FEC1` 32-bit pointer slots.
+- PLANETS: the comparators `sub_9CCFF` / `sub_9CD17` / `sub_9CD0C` and
+  `sub_62BE1`.
+- Save slots: `saveSlotInfo_199699` is indexed from slot 1 (+1 fixed in
+  `sub_10E2F`, `sub_1160B`, `sub_7D061`); `sub_10E2F` reads 553 bytes as one
+  buffer, the seed is at +218.
+- Save headers: all four `fseek` of the wave-07 guess were wrong.
+  `sub_11E56` seeks 0x29 and returns the dword, `sub_11FCC` seeks 0x2D and
+  returns the byte (5 callers took garbage), `sub_11EAE`/`sub_11F11` seek
+  0x2E; `sub_11F11` opens SET.TMP "wb" and the original writes to the
+  closed read handle (nothing written). A valid empty slot was shown as
+  "* INVALID *".
+- Signed compares that were unsigned (`*(_DWORD *) <= 0`): `sub_7D036`,
+  `sub_80556` (stardate -1 = empty slot, so the "current slot" 2 from
+  MOX.SET was never reset - the save name got the  edit marker and the
+  typed text replaced "... empty slot ..."), `sub_EDFE0` / `sub_EE0B0`
+  (negative treasury), `sub_69E62` (two sites).
+- ZOOM: `sub_7927F` (galaxy scale) had lost its argument at 24 call sites
+  and the results were dropped; the zoomed map had no stars and no
+  nebulae. `sub_8238B`, `sub_89DF9` (rewritten), `sub_86188` (zoom-in clamp,
+  click into the zoom frame, centring), `sub_8CFFF`, `sub_A1762` (the
+  clamped values were dropped as well).
+- Max population: 9 dropped results of `sub_E0B4F` ("196 max pop" instead
+  of "12 max pop" in the star system, colony and AI code).
+- Fleet hover: `sub_A432F` compares 16-bit words (the caller passes y with
+  the high half of a pointer, so no ship ever matched); `sub_120BB5` gets
+  the colour ramp, not `SHIDWORD(sprintf)`.
+- HALL OF FAME: `sub_9F4AD` returns al = loaded; both callers tested an
+  unrelated register and rebuilt the default table every time.
+- "Loading Master of Orion II" is drawn with the ramp `sub_8E5C5(4, 0xD3,
+  0xDC)` (edx/ebx set before `sub_124B65`), not (4, 0, 0) - those were the
+  dots on a black screen before the menu video.
+
+### Test harness
+
+- `REORION2_SENDKEY` takes a list `code:ms;code:ms` (key = scan << 8 |
+  ascii: 'a' 0x1E61, backspace 0x0E08, 'h' 0x2368, 'q' 0x1071).
+- My DOSBox: `SENDKEY` knows a-z and backspace.
+- `dbx_clicks.py`: `x,y@M:0` = hover, `key@M` = key, `DBX_MENU_KEY=h`
+  picks another main-menu key than `c`.
+- Save tests run the port with cwd = a scratch directory holding a copy of
+  `MOX.SET`. `PortFile_Open` falls back to the exe directory before the
+  game directory, so old port files in `x64/Debug` (SAVE1.GAM, HOF.M2)
+  change what the port shows - keep that directory clean.
+
+### Next
+
+- LEADERS hover (needs a save with leaders);
+- `sub_D2CAE` (AI colony evaluation) is decompiled only in part;
+- the remaining classes of wave 182 part 1 (dropped results with void
+  callees, empty JUMPOUTs, `sprintf_edx` chains, split locals).

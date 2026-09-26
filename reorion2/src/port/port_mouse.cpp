@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <cstdlib> /* getenv - REORION2_SENDKEY, vlna 58 */
 #include <cstdio>  /* sscanf - dtto */
+#include <cstring> /* strchr - key list, wave 182 */
 
 namespace Port::Mouse {
 
@@ -164,6 +165,46 @@ extern "C" int PortInput_PollKeyPress(void)
     // Bez periody se klavesa vlozi JEDNOU; s periodou se opakuje - to se hodi
     // na obrazovky, ktere po prvni klavese cekaji na dalsi (napr. cekani
     // sub_6497C na chybove ceste CONTINUE).
+    // Wave 182: several keys "code:ms;code:ms;..." (typing a save name,
+    // backspace) - each is sent once at its time.
+    {
+        static int s_listInit = 0;
+        static int s_listCode[64];
+        static unsigned s_listMs[64];
+        static bool s_listDone[64];
+        static int s_listN = 0;
+        if (!s_listInit) {
+            s_listInit = 1;
+            const char* e = std::getenv("REORION2_SENDKEY");
+            if (e && std::strchr(e, ';')) {
+                const char* p = e;
+                while (*p && s_listN < 64) {
+                    int c = 0, ms = 0, used = 0;
+                    if (std::sscanf(p, "%i:%d%n", &c, &ms, &used) == 2 && c > 0) {
+                        s_listCode[s_listN] = c;
+                        s_listMs[s_listN] = (unsigned)ms;
+                        s_listDone[s_listN] = false;
+                        ++s_listN;
+                        p += used;
+                    } else {
+                        ++p;
+                    }
+                    while (*p == ';' || *p == ' ')
+                        ++p;
+                }
+            }
+        }
+        if (s_listN) {
+            const Uint64 now = SDL_GetTicks();
+            for (int i = 0; i < s_listN; ++i) {
+                if (!s_listDone[i] && now >= (Uint64)s_listMs[i]) {
+                    s_listDone[i] = true;
+                    SDL_Log("Port: REORION2_SENDKEY vklada kod 0x%X", s_listCode[i]);
+                    return s_listCode[i];
+                }
+            }
+        }
+    }
     {
         static int s_code = -1;
         static unsigned s_atMs = 6000;
@@ -172,7 +213,8 @@ extern "C" int PortInput_PollKeyPress(void)
         static bool s_done = false;
         if (s_code == -1) {
             s_code = 0;
-            if (const char* e = std::getenv("REORION2_SENDKEY")) {
+            const char* e = std::getenv("REORION2_SENDKEY");
+            if (e && !std::strchr(e, ';')) {
                 int c = 0, ms = 6000, period = 0;
                 // %i => prijme i hex ("0x2348"). Kod klavesy ma stejny tvar
                 // jako z realneho stisku: (scancode << 8) | ascii, tedy napr.

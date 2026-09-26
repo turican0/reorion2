@@ -160,7 +160,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     PortDebug_Checkpoint("tail.after_124B65", 0);
     byte_199F34 = 0x75;                       // 0101DF
     PortDebug_Checkpoint("tail.before_8E5C5", 0);
-    resBuf = (_BYTE *)sub_8E5C5(4, 0, 0);     // 0101E6 (a1=4) - vrati buffer barvy
+    resBuf = (_BYTE *)sub_8E5C5(4, 0xD3, 0xDC);   // 0101E6 (eax=4; edx=0xD3, ebx=0xDC set at 0x101C3 before sub_124B65) - colour ramp
     sub_120BB5(4, (int)resBuf);               // 0101F9 (cte 8 bajtu z bufferu)
     sub_124D41();                             // 0101FE
     PortDebug_Checkpoint("tail.before_switch1", (uint8_t)byte_199CAE);
@@ -1026,8 +1026,7 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
   int ii; // eax
   int16_t v48; // [esp+0h] [ebp-64Ah]
   _BYTE v49[1000]; // [esp+4h] [ebp-646h] BYREF
-  _BYTE v50[218]; // [esp+3ECh] [ebp-25Eh] BYREF
-  int v51; // [esp+4C6h] [ebp-184h]
+  _BYTE v50[553]; // [esp+3ECh] [ebp-25Eh] BYREF - wave 182: fread 553 bytes (v51 was its dword at 218)
   _BYTE v52[120]; // [esp+618h] [ebp-32h] BYREF
   char v53[19]; // [esp+690h] [ebp+46h] BYREF
   char v54; // [esp+6A3h] [ebp+59h] BYREF
@@ -1110,7 +1109,7 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
     v12 = 9;
   else
     v12 = v59;
-  fread(&saveSlotInfo_199699[v12], sizeof(TypeSaveSlotInfo_199699), 1, v9);
+  fread(&saveSlotInfo_199699[1 + v12],   /* wave 182: byte_1916BE + 37 * i (0x10FB3) */ sizeof(TypeSaveSlotInfo_199699), 1, v9);
   fread(&dword_192FD8, 4, 1, v10);
   fread(&byte_199F3A, 1, 1, v10);
   fread(v50, 553, 1, v10);
@@ -1223,7 +1222,7 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
   byte_199CB3 = v50[215];
   byte_199CB4 = v50[216];
   byte_199CB5 = v50[217];
-  dword_199CB6 = v51;
+  dword_199CB6 = *(int *)&v50[218];   /* wave 182: 0x11551 mov eax, [var_206] - the seed is in the same block */
   byte_199BDE = v50[2];
   v39 = 0;
   sub_78E67();
@@ -1384,7 +1383,7 @@ void sub_1160B(int a1, int a2, int a3, int a4)
       v11 = 9;
     else
       v11 = v34;
-    fwrite(&saveSlotInfo_199699[v11], sizeof(TypeSaveSlotInfo_199699), 1, v7);
+    fwrite(&saveSlotInfo_199699[1 + v11],   /* wave 182: byte_1916BE + 37 * i (0x1172C) */ sizeof(TypeSaveSlotInfo_199699), 1, v7);
     fwrite(&dword_192FD8, 4, 1, v7);
     fwrite(&byte_199F3A, 1, 1, v7);
     v12 = fwrite(&byte_199BDC, 553, 1, v7);
@@ -1685,7 +1684,7 @@ char sub_11E04(int a1)
 
 
 //----- (00011E56) --------------------------------------------------------
-void sub_11E56(int a1)
+int sub_11E56(int a1)
 {
   int v1; // ecx
   int v2; // [esp+0h] [ebp-4h] BYREF
@@ -1694,16 +1693,11 @@ void sub_11E56(int a1)
   v1 = fopen(a1, aRb);
   if ( v1 )
   {
-    // DECOMP_TODO (vyreseno ve vlne 07): fseek melo jen 1 (nesouvisejici)
-    // parametr - stejny Hex-Rays artefakt jako u fopen (vlna 06). Vzor je
-    // ve vsech 4 fseek volanich v tomto souboru identicky: seek na zacatek
-    // souboru hned po fopen(), pred fread() se stejnym handle - takze zde
-    // fseek(v1, 0, SEEK_SET).
-    if ( !fseek(v1, 0, SEEK_SET) )
+    if ( !fseek(v1, 41, SEEK_SET) )   /* wave 182: 0x11E77 mov edx, 29h */
       fread(&v2, 4, 1, v1);
     fclose(v1);
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x11E50 je epilog funkce */
+  return v2;   /* wave 182: 0x11EA0 mov eax, [ebp+var_4] */
 }
 // 11EA3: control flows out of bounds to 11E50
 // 12685D: using guessed type int fopen(_DWORD, _DWORD);
@@ -1725,10 +1719,7 @@ int sub_11EAE( int a1, int a2)
   v3 = v2;
   if ( v2 )
   {
-    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor jako vyse - seek na
-    // zacatek pred cteni 553bajtove struktury nastaveni (srovnej s
-    // sub_11F11 nize, ktery cte stejnych 553 bajtu stejnym zpusobem).
-    fseek(v3, 0, SEEK_SET);
+    fseek(v3, 46, SEEK_SET);   /* wave 182: 0x11EDF mov edx, 2Eh */
     fread(a2, 553, 1, v3);
     v2 = fclose(v3);
     LOBYTE(v2) = 1;
@@ -1765,17 +1756,15 @@ int sub_11F11( int a1, int a2)
     v4 = fopen(v9, aRb);
   if ( v4 )
   {
-    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor - seek na zacatek
-    // pred cteni 553bajtove struktury nastaveni.
-    fseek(v4, 0, SEEK_SET);
+    fseek(v4, 46, SEEK_SET);   /* wave 182: 0x11F62 mov edx, 2Eh */
     fread(v8, 553, 1, v4);
     fclose(v4);
-        // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    v6 = fopen(a2, aRb);
+    v6 = fopen(a2, aWb);   /* wave 182: 0x11F87 mov edx, offset aWb */
     v7 = v6;
     if ( v6 )
     {
-      fwrite(v8, 553, 1, v4);
+      /* wave 182: 0x11FAE mov ecx, esi - the original writes to the closed
+         read handle, Watcom fwrite fails on it and SET.TMP stays empty. */
       v6 = fclose(v7);
     }
     else
@@ -1803,7 +1792,7 @@ int sub_11F11( int a1, int a2)
 
 
 //----- (00011FCC) --------------------------------------------------------
-void sub_11FCC( int a1)
+int8_t sub_11FCC( int a1)
 {
   int v1; // ecx
   _DWORD v2[4]; // [esp+0h] [ebp-14h] BYREF
@@ -1815,13 +1804,11 @@ void sub_11FCC( int a1)
   v1 = fopen(v2, aRb);
   if ( v1 )
   {
-    // DECOMP_TODO (vyreseno ve vlne 07): stejny vzor - seek na zacatek
-    // pred cteni 1 bajtu.
-    if ( !fseek(v1, 0, SEEK_SET) )
+    if ( !fseek(v1, 45, SEEK_SET) )   /* wave 182: 0x12005 mov edx, 2Dh */
       fread(v3, 1, 1, v1);
-    JUMPOUT(0x11E46);
+    fclose(v1);   /* wave 182: 0x11E46 */
   }
-  JUMPOUT(0x11E4D);
+  return v3[0];   /* wave 182: 0x11E4D mov al, [ebp+var_4] */
 }
 // 12028: control flows out of bounds to 11E46
 // 11FFF: control flows out of bounds to 11E4D
@@ -4488,6 +4475,7 @@ int16_t sub_15085( int a1)
   int16_t v3; // dx
   _BOOL1 v4; // zf
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 == 3 )
   {
     result = sub_C5BB0();
@@ -4755,7 +4743,7 @@ void sub_15421()
   while ( (int16_t)v20 < 2 );
   v3 = sprintf(v14, "%d %s", word_19A0D6, (char *)dword_19A0D0);
   v4 = 0;
-  v5 = sub_1210FD(320, SWORD2(v3), (int)v14);
+  v5 = sub_1210FD(320, (int16_t)(30), (int)v14);
   while ( v4 < (uint8_t)byte_19A0DB )
   {
     if ( (byte_19A0DE == 2 || byte_19A0DE == 3) && byte_19A0DA == (uint8_t)byte_19A030[v4] )
@@ -6437,7 +6425,7 @@ int sub_179F4(int16_t *a1)
       if ( byte_199F3A == 1 )
       {
         sub_1B881(v6);
-        sub_18596();
+        sub_18596((int16_t)v6);
         sub_19919(a1);
         sub_1B881(v5);
       }
@@ -6871,9 +6859,15 @@ void sub_18560()
 
 
 //----- (00018596) --------------------------------------------------------
-void sub_18596()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x18575 */
+int sub_18596(int a1)
 {
-  JUMPOUT(0x18575);
+  int r1;
+
+  r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 14, (int)(intptr_t)&byte_19A64A, 250);
+  sub_24D30();
+  return 0 /* eax after void sub_24D30 */;
 }
 // 185AB: control flows out of bounds to 18575
 
@@ -6919,6 +6913,7 @@ void sub_186D3( int a1, int a2, int a3)
   int v5; // ebx
   int v6; // edx
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a3 )
   {
     case 0:
@@ -6973,6 +6968,7 @@ void sub_1883A(int a1, unsigned int a2)
 {
   int v2; // edx
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 >= 7u )
   {
     if ( a2 <= 7u )
@@ -7016,6 +7012,7 @@ char sub_188E0(int a1, int a2, unsigned int a3, int a4)
   int v4; // edx
   char result; // al
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   if ( a3 >= 7u )
   {
     if ( a3 <= 7u )
@@ -7072,6 +7069,7 @@ char sub_189EC( unsigned int a1)
 {
   int v1; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 >= 3u )
   {
     if ( a1 <= 3u )
@@ -7131,17 +7129,27 @@ int sub_18AE2()
 
 
 //----- (00018B27) --------------------------------------------------------
-void sub_18B27()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x18A89 */
+int sub_18B27(void)
 {
-  JUMPOUT(0x18A89);
+  int r1;
+
+  r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 49, (int)(intptr_t)&byte_19A64A, 250);
+  return r1;
 }
 // 18B39: control flows out of bounds to 18A89
 
 
 //----- (00018B3E) --------------------------------------------------------
-void sub_18B3E()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x18A89 */
+int sub_18B3E(void)
 {
-  JUMPOUT(0x18A89);
+  int r1;
+
+  r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 50, (int)(intptr_t)&byte_19A64A, 250);
+  return r1;
 }
 // 18B50: control flows out of bounds to 18A89
 
@@ -8032,6 +8040,7 @@ int sub_19DE8( int a1, int a2, int a3, int a4)
   _BYTE v14[16]; // [esp+Ch] [ebp-14h] BYREF
   int v15; // [esp+1Ch] [ebp-4h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v13 = a1;
   if ( a1 > 8 )
     v13 = 8;
@@ -8938,6 +8947,7 @@ int sub_1B06B( int a1, int a2, unsigned int a3, int16_t *a4)
   int v5; // eax
   int v6; // eax
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   if ( a3 < 3u )
   {
     if ( a3 )
@@ -8979,7 +8989,7 @@ int sub_1B06B( int a1, int a2, unsigned int a3, int16_t *a4)
     word_19A194 = 1000;
     v6 = sub_F6816(v5, 2000, (int)&byte_19A190, 8u);
     ServiceAudioTick_FE8BE(v6, 2000, (int)&byte_19A190, a4);
-    sub_1F34B();
+    sub_1F34B((int16_t)a2);
     word_19A196 = -1;
     do
     {
@@ -9121,6 +9131,7 @@ int sub_1B3B5( int a1, int a2, int a3, int a4)
   char v7[360]; // [esp+28h] [ebp-190h] BYREF
   char v8[40]; // [esp+190h] [ebp-28h] BYREF
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v4 = 0;
   if ( a3 != 7 )
   {
@@ -9148,6 +9159,7 @@ void sub_1B487( int a1, int a2, int a3, int a4, int a5)
   int16_t v9; // si
   char v10; // bl
 
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a4 )
   {
     case 0:
@@ -9196,6 +9208,7 @@ void sub_1B5B8( int a1, int a2, int a3, int a4,
   int v8; // eax
   int v9; // eax
 
+  a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a4 )
   {
     case 0:
@@ -9237,7 +9250,7 @@ void sub_1B5B8( int a1, int a2, int a3, int a4,
     word_19A194 = 1005;
     v9 = sub_F6816(v8, 2000, (int)&byte_19A190, 8u);
     ServiceAudioTick_FE8BE(v9, 2000, (int)&byte_19A190, (int16_t *)a5);
-    sub_1F34B();
+    sub_1F34B((int16_t)a2);
     word_19A196 = -1;
     do
       sub_1EDE9(a2, a1, 8, (unsigned int)&byte_19A190, (int16_t *)a5);
@@ -9682,7 +9695,7 @@ void sub_1BD5B( int a1, int a2)
           word_19A194 = 1007;
           v10 = sub_F6816(v9, 2000, (int)&byte_19A190, 8u);
           ServiceAudioTick_FE8BE(v10, 2000, (int)&byte_19A190, (int16_t *)v6);
-          sub_1F34B();
+          sub_1F34B((int16_t)v30);
           word_19A196 = -1;
           do
             sub_1EDE9(v30, v32, 8, (unsigned int)&byte_19A190, (int16_t *)v6);
@@ -9739,7 +9752,7 @@ void sub_1BD5B( int a1, int a2)
           v20 = sub_F6816(v19, 2000, (int)&byte_19A190, 8u);
           ServiceAudioTick_FE8BE(v20, 2000, (int)&byte_19A190, (int16_t *)v16);
           word_19A196 = -1;
-          sub_1F34B();
+          sub_1F34B((int16_t)v30);
           do
             sub_1EDE9(v30, v32, 8, (unsigned int)&byte_19A190, (int16_t *)v16);
           while ( word_19A196 == -1 && !word_19AA48 );
@@ -9784,7 +9797,7 @@ void sub_1BD5B( int a1, int a2)
           v27 = sub_F6816(v26, 2000, (int)&byte_19A190, 8u);
           ServiceAudioTick_FE8BE(v27, 2000, (int)&byte_19A190, (int16_t *)v21);
           word_19A196 = -1;
-          sub_1F34B();
+          sub_1F34B(v40);
           do
             sub_1EDE9(v31, v33, 8, (unsigned int)&byte_19A190, (int16_t *)v21);
           while ( word_19A196 == -1 && !word_19AA48 );
@@ -9874,6 +9887,7 @@ int sub_1C479( int a1, int a2, int a3)
   unsigned int v24; // [esp+24h] [ebp-8h]
   int v25; // [esp+28h] [ebp-4h]
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v19 = dword_192ED0;
   word_199A08 = 6;
   dword_192ED0 = dword_19A2B4;
@@ -10350,7 +10364,7 @@ void sub_1CB4D(int a1, int a2)
       word_19A196 = 0;
       v14 = sub_F6816(v13, 2000, (int)&byte_19A190, 8u);
       ServiceAudioTick_FE8BE(v14, 2000, (int)&byte_19A190, (int16_t *)v8);
-      sub_1F34B();
+      sub_1F34B(v7);
       word_19A196 = -2;
       do
         sub_1EDE9(v22, v24, 8, (unsigned int)&byte_19A190, (int16_t *)v8);
@@ -11184,7 +11198,7 @@ void sub_1DEF8(int16_t *a1)
   word_19AA40 = 0;
   if ( (uint8_t)byte_19AA67 == word_19999C )
   {
-    sub_1F34B();
+    sub_1F34B((uint8_t)byte_19AA68);
     byte_19A190 = byte_19AA68;
     v1 = 8;
     byte_19A191 = byte_19AA67;
@@ -11200,7 +11214,7 @@ void sub_1DEF8(int16_t *a1)
   }
   else
   {
-    sub_1F34B();
+    sub_1F34B((uint8_t)byte_19AA67);
     byte_19A190 = byte_19AA67;
     v1 = 8;
     byte_19A191 = byte_19AA68;
@@ -11219,7 +11233,7 @@ void sub_1DEF8(int16_t *a1)
   byte_19A64A = byte_178A64;
   word_19AA40 = 0;
   if ( (uint8_t)byte_19AA67 != word_19999C )
-    sub_1F34B();
+    sub_1F34B((uint8_t)byte_19AA67);
   sub_117174(1);
   while ( !(_WORD)v48 && !word_19AA48 )
   {
@@ -11331,7 +11345,7 @@ void sub_1DEF8(int16_t *a1)
             break;
           case 8u:
             sub_1ED17(a1);
-            sub_1F34B();
+            sub_1F34B((uint8_t)byte_19AA67);
             break;
           default:
             break;
@@ -11418,7 +11432,7 @@ void sub_1DEF8(int16_t *a1)
             }
             goto LABEL_56;
           case 4:
-            sub_18596();
+            sub_18596((int16_t)((uint8_t)byte_19AA67));
             word_19AA40 = 0;
             word_19AA36 = 0;
             sub_51078((uint8_t)byte_19AA67, (uint8_t)byte_19AA68);
@@ -11490,7 +11504,7 @@ void sub_1DEF8(int16_t *a1)
             word_19AA40 = word_19AA36;
             if ( (int16_t)sub_1A1FD(word_19A192, (uint8_t)byte_19AA67, (uint8_t)byte_19AA68, 0) == -1 )
             {
-              sub_1F34B();
+              sub_1F34B((uint8_t)byte_19AA67);
               v18 = 0;
             }
             else
@@ -11513,7 +11527,7 @@ void sub_1DEF8(int16_t *a1)
             sub_249F9(aJimtext2Lbx, 9, v44, 40);
             if ( (int16_t)sub_19DE8(1, (int)v42, 1, (int)v44) == -1 )
             {
-              sub_1F34B();
+              sub_1F34B((uint8_t)byte_19AA67);
               v23 = 0;
             }
             else
@@ -11574,7 +11588,7 @@ LABEL_86:
             v29 = sub_F6816(v28, 2000, (int)&byte_19A190, 8u);
             ServiceAudioTick_FE8BE(v29, 2000, (int)&byte_19A190, a1);
 LABEL_87:
-            sub_1F34B();
+            sub_1F34B((uint8_t)byte_19AA67);
             continue;
           case 11:
             word_19AA40 = 0;
@@ -11602,7 +11616,7 @@ LABEL_87:
             sub_249F9(aJimtext2Lbx, 9, v44, 40);
             if ( (int16_t)sub_19DE8(1, (int)v42, 1, (int)v44) == -1 )
             {
-              sub_1F34B();
+              sub_1F34B((uint8_t)byte_19AA67);
               v25 = 0;
             }
             else
@@ -11958,6 +11972,7 @@ char sub_1F230(int a1, unsigned int a2, int a3, int a4)
 {
   char result; // al
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 >= 0x7D0u && a2 < 0xBB8u )
   {
     if ( a2 == 2000 )
@@ -12024,11 +12039,17 @@ char sub_1F230(int a1, unsigned int a2, int a3, int a4)
 
 
 //----- (0001F34B) --------------------------------------------------------
-void sub_1F34B()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x1857A */
+int sub_1F34B(int a1)
 {
+  int r1;
+
   word_19AA40 = 0;
   word_19AA36 = 0;
-  JUMPOUT(0x1857A);
+  r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 12, (int)(intptr_t)&byte_19A64A, 250);
+  sub_24D30();
+  return 0 /* eax after void sub_24D30 */;
 }
 // 1F377: control flows out of bounds to 1857A
 // 19AA36: using guessed type int16_t word_19AA36;
@@ -12532,13 +12553,13 @@ void sub_1FEF5()
             switch ( *(_BYTE *)(v3 + 1575) )
             {
               case 1:
-                sub_EF817();
+                sub_EF817(i, v1);
                 break;
               case 2:
-                sub_EF80F();
+                sub_EF80F(i, v1);
                 break;
               case 3:
-                sub_EF807();
+                sub_EF807(i, v1);
                 break;
               case 4:
               case 5:
@@ -12649,6 +12670,7 @@ char sub_200C3(int16_t *a1, int a2, int a3, int a4)
 //----- (00020162) --------------------------------------------------------
 _BOOL1 sub_20162( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   return a1 >= 83 && a1 <= 85
       || a1 >= 97 && a1 <= 104
       || a1 == 125
@@ -14537,8 +14559,8 @@ LABEL_99:
       LOWORD(v19) = *(uint8_t *)(v20 + 10);
       v21 = 17 * *(int16_t *)(v20 + 2);
       v61 = v19;
-      sub_E0B4F((int16_t *)((uint8_t*)dword_1930D4 + v21), v59);
-      if ( v22 == (_WORD)v61 )
+      v22 = sub_E0B4F((int16_t *)((uint8_t*)dword_1930D4 + v21), v59);   /* wave 182: 0x22785 cmp ax, [ebp+var_8] */
+      if ( (_WORD)v22 == (_WORD)v61 )
 LABEL_108:
         v7 = -1;
     }

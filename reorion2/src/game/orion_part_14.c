@@ -9550,6 +9550,7 @@ int sub_E0DD6(char *a1, int a2)
   int v8; // [esp+4h] [ebp-8h] BYREF
   int v9; // [esp+8h] [ebp-4h] BYREF
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = 0;
   if ( a2 <= 0 || a2 >= 49 )
   {
@@ -10324,6 +10325,7 @@ int sub_E1E96(int a1, int a2)
 {
   int result; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   result = 0;
   if ( a2 > 0 )
   {
@@ -11688,7 +11690,7 @@ _BOOL1 sub_E36B7(char *a1)
   int16_t v2; // ax
 
   v1 = (uint8_t)a1[10];
-  sub_E0B4F((int16_t *)(17 * *((int16_t *)a1 + 1) + (uint8_t*)dword_1930D4), *a1);
+  v2 = sub_E0B4F((int16_t *)(17 * *((int16_t *)a1 + 1) + (uint8_t*)dword_1930D4), *a1);   /* wave 182: 0xE36D0 cmp cx, ax */
   return v1 == v2;
 }
 // E36D8: variable 'v2' is possibly undefined
@@ -11776,7 +11778,7 @@ void sub_E36DF(char *a1, int a2)
     if ( v4 <= 0xFFFDu )
     {
       v5 = (uint8_t)v41[10];
-      sub_E0B4F((int16_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)v41 + 1)), *v41);
+      v6 = sub_E0B4F((int16_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)v41 + 1)), *v41);   /* wave 182: 0xE379C cmp cx, ax */
       if ( v5 == v6 )
       {
         v7 = v41;

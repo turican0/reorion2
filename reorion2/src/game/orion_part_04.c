@@ -1640,70 +1640,46 @@ int sub_54D4D( int a1, int a2)
 
 
 //----- (00054D80) --------------------------------------------------------
-int16_t *sub_54D80(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24, unsigned int a25,
-        int16_t *a26,
-        _WORD *a27,
-        int16_t *a28)
+/* wave 182: the original gets the 99-byte ship record by value (25 stack
+   dwords, fields at &a6 + 3 = byte 23 ...); on x64 the arguments are not one
+   block, so the port passes the record's address. */
+int16_t *sub_54D80(const uint8_t *a1, int16_t *a26, _WORD *a27, int16_t *a28)
 {
   int16_t v28; // si
   int16_t v29; // bx
   int16_t v30; // cx
   int16_t v31; // cx
-  int16_t *result; // eax
+  int v32; // flag bits at +23
 
-  v28 = word_17FE00[11 * BYTE1(a6)];
+  v32 = (int)(intptr_t)(a1 + 23);
+  v28 = word_17FE00[11 * a1[21]];
   v29 = 0;
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 5u) )
+  if ( (uint16_t)sub_1276F0(v32, 5u) )
     v28 += 50;
-  v30 = a25;
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 2u) )
+  v30 = a1[96];   /* 0x54DB4 movzx cx, byte [ebp+arg_60] */
+  if ( (uint16_t)sub_1276F0(v32, 2u) )
     v30 += 5;
   v31 = 5 * v30;
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 9u) )
+  if ( (uint16_t)sub_1276F0(v32, 9u) )
     v29 = 70;
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 0x11u) )
+  if ( (uint16_t)sub_1276F0(v32, 0x11u) )
   {
     v31 += 100;
     v29 += 50;
   }
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 0x12u) )
+  if ( (uint16_t)sub_1276F0(v32, 0x12u) )
   {
     v31 += 50;
     v29 += 25;
   }
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 0x15u) )
+  if ( (uint16_t)sub_1276F0(v32, 0x15u) )
     v29 += 100;
-  if ( (uint16_t)sub_1276F0((int)&a6 + 3, 0x26u) )
+  if ( (uint16_t)sub_1276F0(v32, 0x26u) )
     v29 += 130;
   *a27 = v31;
   *a28 = v29;
-  result = a26;
   *a26 = v28;
-  return result;
+  return a26;
 }
 // 17FE00: using guessed type int16_t word_17FE00[];
 
@@ -1738,42 +1714,14 @@ int sub_54E5B(int a1, _WORD *a2, _WORD *a3, _WORD *a4)
   v18 = 0;
   v19 = 0;
   qmemcpy(v12, (void *)(v4 + dword_197F9C), 0x63u);
-  sub_54D80(
-    v12[0],
-    v12[1],
-    v12[2],
-    v12[3],
-    v12[4],
-    v12[5],
-    v12[6],
-    v12[7],
-    v12[8],
-    v12[9],
-    v12[10],
-    v12[11],
-    v12[12],
-    v12[13],
-    v12[14],
-    v12[15],
-    v12[16],
-    v12[17],
-    v12[18],
-    v12[19],
-    v12[20],
-    v12[21],
-    v12[22],
-    v12[23],
-    v12[24],
-    (int16_t *)&v19,
-    &v17,
-    (int16_t *)&v18);
+  sub_54D80((const uint8_t *)v12, (int16_t *)&v19, (_WORD *)&v17, (int16_t *)&v18);   /* wave 182 */
   v5 = *(int16_t *)(v4 + dword_197F9C + 116);
   if ( v5 > -1 )
   {
-    sub_3677D(v5);
+    v6 = sub_3677D(v5);
     v17 += v6;
     v18 = (int16_t)v6 / 2 + (int16_t)v18;
-    sub_367AE(*(_WORD *)(v4 + dword_197F9C + 116));
+    v7 = sub_367AE(*(_WORD *)(v4 + dword_197F9C + 116));
     v19 += v7;
   }
   v8 = 129 * (int16_t)v16 + dword_197F9C;
@@ -1799,8 +1747,6 @@ int sub_54E5B(int a1, _WORD *a2, _WORD *a3, _WORD *a4)
   return result;
 }
 // 54E5B: could not find valid save-restore pair for ebx
-// 54EBC: variable 'v6' is possibly undefined
-// 54EDF: variable 'v7' is possibly undefined
 // 17D170: using guessed type int16_t word_17D170[];
 // 17D172: using guessed type int16_t word_17D172[];
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -1883,6 +1829,7 @@ char sub_5514C(int a1, int a2)
   unsigned int v8; // edx
   unsigned int v9; // edx
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a2 )
   {
     case 0:
@@ -2878,7 +2825,7 @@ char sub_564CD( int a1, int a2)
   *(_BYTE *)(a2 + 18) = 0;
   *(_BYTE *)(a2 + 19) = sub_56726(a1);
   *(_BYTE *)(a2 + 21) = 0;
-  sub_5685F(a1);
+  v4 = sub_5685F(a1);
   v5 = v4;
   if ( v4 > 1 )
     v5 = v4 - 1;
@@ -2892,7 +2839,6 @@ char sub_564CD( int a1, int a2)
   *(_BYTE *)(a2 + 96) = result;
   return result;
 }
-// 5652D: variable 'v4' is possibly undefined
 // 17FE9C: using guessed type int16_t word_17FE9C[];
 // 199CAE: using guessed type char byte_199CAE;
 
@@ -2911,7 +2857,7 @@ void sub_56586( int a1, int a2)
   *(_BYTE *)(a2 + 18) = 0;
   *(_BYTE *)(a2 + 19) = sub_56726(a1);
   *(_BYTE *)(a2 + 21) = 0;
-  sub_5685F(a1);
+  v4 = sub_5685F(a1);
   v5 = v4;
   if ( v4 > 1 )
     v5 = v4 - 1;
@@ -2925,7 +2871,6 @@ void sub_56586( int a1, int a2)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x56580 je epilog funkce */
 }
 // 56639: control flows out of bounds to 56580
-// 565E6: variable 'v4' is possibly undefined
 // 17FE9C: using guessed type int16_t word_17FE9C[];
 // 199CAE: using guessed type char byte_199CAE;
 
@@ -2949,7 +2894,7 @@ int sub_5663E( int a1, int a2)
   *(_BYTE *)(a2 + 18) = 0;
   *(_BYTE *)(a2 + 19) = sub_56726(a1);
   *(_BYTE *)(a2 + 21) = 0;
-  sub_5685F(a1);
+  v3 = sub_5685F(a1);
   v4 = v3;
   if ( v3 > 1 )
     v4 = v3 - 1;
@@ -2977,7 +2922,6 @@ int sub_5663E( int a1, int a2)
   *(_WORD *)(a2 + 94) = result;
   return result;
 }
-// 56695: variable 'v3' is possibly undefined
 // 17FE9C: using guessed type int16_t word_17FE9C[];
 // 199CAE: using guessed type char byte_199CAE;
 
@@ -3117,6 +3061,7 @@ int16_t sub_5685F(int a1)
   int16_t result = 1;
   int16_t i;
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( (int16_t)a1 < 8 )
   {
     for ( i = 2; i < 7; ++i )
@@ -3227,6 +3172,7 @@ void sub_56A78( int a1)
   int16_t v7; // [esp+8h] [ebp-4h]
 
   v6 = a1;   /* wave 181: v6 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v7 = 0;
   if ( a1 < 8 )
   {
@@ -3637,7 +3583,7 @@ void sub_57197( int a1)
 
   if ( !*(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 36) )
   {
-    sub_5685F(a1);
+    v3 = sub_5685F(a1);
     v10 = v3;
     v4 = 0;
     v11 = sub_56726(a1);
@@ -3665,7 +3611,6 @@ void sub_57197( int a1)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x56A34 je epilog funkce */
 }
 // 572A6: control flows out of bounds to 56A34
-// 571C2: variable 'v3' is possibly undefined
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 197F9C: using guessed type int dword_197F9C;
 // 199994: using guessed type int16_t word_199994;
@@ -3686,7 +3631,7 @@ void sub_572AB( int a1)
   uint8_t v12; // [esp+14h] [ebp-8h]
   int16_t v13; // [esp+18h] [ebp-4h]
 
-  sub_5685F(a1);
+  v3 = sub_5685F(a1);
   v12 = v3;
   v4 = 0;
   v13 = sub_56726(a1);
@@ -3712,7 +3657,6 @@ void sub_572AB( int a1)
   }
 }
 // 573C2: control flows out of bounds to 56A34
-// 572C0: variable 'v3' is possibly undefined
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
@@ -3993,7 +3937,7 @@ int16_t sub_57871( int a1, int a2, int a3)
   *(_BYTE *)(a3 + 19) = sub_56726(a1);
   *(_BYTE *)(a3 + 18) = sub_5679E(a1);
   *(_BYTE *)(a3 + 21) = sub_5680D(a1);
-  sub_5685F(a1);
+  v3 = sub_5685F(a1);
   *(_BYTE *)(a3 + 22) = v3;
   v7 = 3 * word_18001E[18 * *(uint8_t *)(99 * a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 806 + 16)] / 2;
   sub_6E1A0(a1, &v7);
@@ -4010,7 +3954,6 @@ int16_t sub_57871( int a1, int a2, int a3)
   *(_WORD *)(a3 + 97) = dword_192FD8;
   return result;
 }
-// 578C3: variable 'v3' is possibly undefined
 // 18001E: using guessed type int16_t word_18001E[];
 // 18003A: using guessed type _UNKNOWN *off_18003A;
 // 192FD8: using guessed type int dword_192FD8;
@@ -4040,7 +3983,7 @@ void sub_5794B( int a1)
       *(_BYTE *)(v1 + dword_197F9C + 20) = sub_575D6(v2, v3);
       *(_BYTE *)(v1 + dword_197F9C + 18) = sub_5679E(v2);
       *(_BYTE *)(v1 + dword_197F9C + 21) = sub_5680D(v2);
-      sub_5685F(v2);
+      v4 = sub_5685F(v2);
       v5 = v4;
       v6 = v1 + dword_197F9C;
       v7 = *(uint8_t *)(v1 + dword_197F9C + 16);
@@ -4049,7 +3992,6 @@ void sub_5794B( int a1)
     }
   }
 }
-// 579E6: variable 'v4' is possibly undefined
 // 197F9C: using guessed type int dword_197F9C;
 // 199CB4: using guessed type char byte_199CB4;
 
@@ -4652,14 +4594,13 @@ int sub_58330( int a1, int a2, int a3)
   int result; // eax
 
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
-  sub_5685F(a3);
+  v4 = sub_5685F(a3);
   v5 = word_180026[18 * a1];
   result = v5 + v5 * *(int16_t *)((char *)&word_17F642 + 15 * v4) / 100;
   if ( a2 )
     result *= 3;
   return result;
 }
-// 5833E: variable 'v4' is possibly undefined
 // 17F642: using guessed type int16_t word_17F642;
 // 180026: using guessed type int16_t word_180026[];
 
@@ -4835,6 +4776,7 @@ int sub_585E0( int a1, int a2)
   int v3; // ebx
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 >= 8 )
   {
     switch ( a1 )
@@ -4906,6 +4848,7 @@ int sub_5869B( int a1, int a2)
   uint8_t v2; // al
   int v3; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 < 8 )
     v2 = *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 38);
   else
@@ -8483,6 +8426,7 @@ char sub_5C20E(int16_t *a1, int a2, int a3)
   char *v4; // edi
   char v6[80]; // [esp+0h] [ebp-50h] BYREF
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 == ++*a1 )
   {
     if ( a2 <= 1 )
@@ -11055,6 +10999,7 @@ unsigned int sub_5EE27( unsigned int a1, int a2)
 //----- (0005EED4) --------------------------------------------------------
 int sub_5EED4( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 > 100 )
     return ((a1 - 100 - (__CFSHL__((a1 - 100) >> 31, 2) + 4 * ((a1 - 100) >> 31))) >> 2) + 100;
   else
@@ -11586,6 +11531,7 @@ int sub_5F871( int a1, int a2)
 {
   int v2; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 >= 8 )
   {
     if ( (uint16_t)a1 < 9u )
@@ -13179,7 +13125,7 @@ int16_t sub_616A5( int a1, int a2, int a3)
   *(_BYTE *)(a2 + 19) = v5;
   *(_BYTE *)(a2 + 20) = sub_575D6(a1, v5);
   *(_BYTE *)(a2 + 21) = sub_5680D(a1);
-  sub_5685F(a1);
+  v6 = sub_5685F(a1);
   *(_BYTE *)(a2 + 22) = v6;
   LOWORD(v7) = word_180020[18 * a3];
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 304) == 3 )
@@ -13520,7 +13466,6 @@ LABEL_41:
   return result;
 }
 // 616B9: variable 'v4' is possibly undefined
-// 61820: variable 'v6' is possibly undefined
 // 618E8: variable 'v12' is possibly undefined
 // 17F0ED: using guessed type int16_t word_17F0ED;
 // 180020: using guessed type int16_t word_180020[];
@@ -13819,7 +13764,7 @@ LABEL_17:
     {
       word_19999C = v21;
       /* vlna 69: asm sub_628E2 predava alokovany zaznam (0EA9h = 3753 B) */
-      sub_5C510((int)(intptr_t)v4, a1);
+      v9 = sub_5C510((int)(intptr_t)v4, a1);
       v10 = v9;
       sub_6FB88();
       if ( v10 )
@@ -13853,7 +13798,6 @@ LABEL_17:
 // 62AFF: conditional instruction was optimized away because bx.2==0
 // 629CA: variable 'v6' is possibly undefined
 // 62A7A: variable 'v4' is possibly undefined
-// 62ABB: variable 'v9' is possibly undefined
 // 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 192EE8: using guessed type int (uint8_t*)dword_192EE8;
@@ -13880,6 +13824,14 @@ int sub_62BB7()
 }
 // 199998: using guessed type int16_t word_199998;
 // 19999A: using guessed type int16_t word_19999A;
+
+
+//----- (00062BE1) --------------------------------------------------------
+/* wave 182: loc_62BE1 - qsort comparator of sub_63156 (dword at +3) */
+int sub_62BE1(const void *a1, const void *a2)
+{
+  return *(const int *)((const char *)a2 + 3) - *(const int *)((const char *)a1 + 3);
+}
 
 
 //----- (00062BEA) --------------------------------------------------------
@@ -14195,7 +14147,7 @@ void sub_63156()
     // vlna 84: komparator je v asm navesti `loc_62BE1` UVNITR jine funkce
     // (IDA ho nepojmenovala jako proc), takze v portu zatim neexistuje -
     // toto volani zustava bez komparatoru a musi se dodelat rucne.
-    qsort(v5, 360, 10);
+    qsort(v5, 360, 10, sub_62BE1);   /* wave 182: ecx = offset loc_62BE1 */
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x62C69 je epilog funkce */
 }
@@ -14933,10 +14885,9 @@ int16_t sub_63E9E()
     v0 += v2;
   }
   while ( (int16_t)v1 < 9 );
-  sub_63E73();
+  v3 = sub_63E73();
   return word_199178 + word_199176 + v0 + v3;
 }
-// 63EC9: variable 'v3' is possibly undefined
 // 199176: using guessed type int16_t word_199176;
 // 199178: using guessed type int16_t word_199178;
 // 19917A: using guessed type int16_t word_19917A[4];

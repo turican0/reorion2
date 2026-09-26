@@ -98,6 +98,18 @@ int    PortFile_Scanf(int handle, const char* fmt, ...);
 #define SEEK_END 2
 #endif
 
+/* Wave 182: the original's qsort_ (Watcom) - equal keys must come out in the
+   same order as in the original; see src/port/port_qsort.c. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int PortWatcom_Qsort(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *));
+#ifdef __cplusplus
+}
+#endif
+#define qsort(b, n, s, c) \
+    PortWatcom_Qsort((void *)(intptr_t)(b), (size_t)(n), (size_t)(s), (int (*)(const void *, const void *))(c))
+
 #define fopen(path, mode)          PortFile_Open((path), (mode))
 #define fclose(stream)             PortFile_Close(stream)
 #define fread(buf, sz, cnt, str)   PortFile_Read((buf), (sz), (cnt), (str))

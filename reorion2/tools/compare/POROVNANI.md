@@ -1441,3 +1441,62 @@ cause.
 "g; .lastevent; kn 30; q" x64\Debug\reorion2.exe` catches `__fastfail`
 (0xC0000409), which the port's vectored handler never sees; `dv /t name`
 and `.frame N` show locals.
+
+
+### Data between functions is also data
+
+Wave 182. IDA names in the code object keep their address (`byte_B4D5B`
+is at 0xB4D5B) and Hex-Rays declared them like the one-byte `_UNKNOWN`s of
+the data segment. `tools/compare/cseg_labels.py` lists them with their
+span; they now live in `csegdata[]` (copy of the EXE bytes around them).
+
+### An empty function is worse than a crash
+
+`void sub_X() { JUMPOUT(0x...); }` compiles and does nothing: the colony
+screen lost its worker portraits, the plants and the help areas without any
+error. `tools/compare/empty_jumpouts.py` lists them; `jumpout_gen.py`
+rewrites the simple ones from the asm. After changing a signature, the
+compiler's C2198 list is the list of callers to fix (`fix_callers.py`).
+
+### Hex-Rays' int64 pairs
+
+`v30` typed `uint64_t` is edx:eax. A pointer made from it carries the
+high half (`*(_BYTE *)(v30 + 6)` crashed in TECHSEL), and `HIDWORD(v) =
+sprintf(...)` is really the value the caller put into edx before the call.
+
+### Locals split into scalars
+
+`*((uint8_t *)&v9 + i)` with `int v9; int64_t v10;` was one table in the
+original; on x64 the two need not be adjacent. Use a real array
+(`split_locals.py` lists the candidates).
+
+### Compare with the smallest crop that shows it
+
+`tools/compare/cropcmp.py dbx.raw port.raw x0 y0 x1 y1 scale out.png` puts
+the same region of both frames above each other, scaled up - a 2.9 %
+difference turned out to be six separate bugs, each visible at a glance.
+
+### `_DWORD` is unsigned
+
+Wave 182. `*(_DWORD *)x <= 0` is `== 0` and `*(_DWORD *)x + int16 >= 0`
+is always true; the asm had `jle` / `jge`. Look for the jump before
+trusting a compare against 0 (empty save slots, negative treasury).
+
+### A lost argument can hide behind an old prototype
+
+`extern int sub_7927F();` accepts `sub_7927F()` without a warning. Giving
+the callee its full prototype turns every such call into C2198, and
+`fix_callers.py` traces most of them - but check the order: Hex-Rays
+reorders blocks, and the k-th call in C is not always the k-th in the asm.
+
+### Files the port finds and the original does not
+
+`PortFile_Open` looks into the exe directory before the game directory.
+An old HOF.M2 or SAVE1.GAM there changes HALL OF FAME and the save list;
+compare runs need a clean `x64/Debug` and a scratch cwd.
+
+### Tools for comparing screens
+
+`dbx_clicks.py` (DOSBox side, `x,y@M:0` hover, `key@M`, `DBX_MENU_KEY`) and
+`REORION2_CLICK` / `REORION2_SENDKEY` / `REORION2_DUMP_EVERY_MS` (port side).
+Compare the palettes in 6 bits (the port stores 6-bit << 2).

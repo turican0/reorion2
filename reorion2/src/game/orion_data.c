@@ -648,8 +648,8 @@ char *techName_17EB2A[64]; // weak
                        &unk_178A04, &unk_178A04, &unk_178A04, &unk_178A04
 #define OFF_PRAZDNY64  OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, \
                        OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8, OFF_PRAZDNY8
-_UNKNOWN *off_17F803[256] = { OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64 }; // weak
-_UNKNOWN *off_17F807[256] = { OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64, OFF_PRAZDNY64 }; // weak
+/* wave 182: the arrays are gone - the names are read from dseg
+   (WEAPON_NAME in orion_common.h); sub_5DF0A does write them. */
 // PORT (vlna 81): NAZVY VELIKOSTI LODI. V originale jsou to dva 4bajtove
 // ukazatele UVNITR 36bajtoveho zaznamu (+0 a +4, zaznamy 1..9), ktere za behu
 // plni `sub_5DF0A` z retezcoveho blobu. Na x64 ma ukazatel 8 B, takze

@@ -1235,7 +1235,7 @@ int16_t sub_A0A5C( int a1, _WORD *a2, int16_t *a3)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v3 = a2;
   v4 = a1;
-  sub_788AE();
+  sub_788AE(a1);   /* wave 182: 0xA0A6B */
   v11 = 12 * v4;
   v12 = 129 * *(int16_t *)((char *)&word_1975D4 + 5 * word_1906C2[6 * v4]);
   LOWORD(a2) = *(char *)(v12 + dword_197F9C + 99);
@@ -1522,7 +1522,7 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
     v20 = 0;
     sub_127678((char *)v17, 0x64u, 0);
     v8 = 0;
-    sub_788AE();
+    sub_788AE(*a1);   /* wave 182: 0xA104A movsx eax, word ptr [ecx] */
     for ( i = 0; i < word_1999F8 && !(_WORD)v20; ++i )
     {
       v10 = word_1906C8[6 * i] - word_1906C8[6 * *a1];
@@ -2037,18 +2037,22 @@ LABEL_21:
   }
   v12 = v5 + v19;
   v13 = (int16_t)(v20 + v21);
-  if ( v13 >= word_19996E / 2 + 22 && v13 > (int16_t)sub_7926C(word_199A0C) - word_19996E / 2 )
-    sub_7926C(word_199A0C);
-  if ( v12 >= word_199954 / 2 + 22 && v12 > (int16_t)sub_7926C(word_199A0A) - word_199954 )
-    sub_7926C(word_199A0A);
-  sub_7927F();
+  /* wave 182: the clamped values were dropped and sub_7927F lost its
+     arguments (0xA1966..0xA1A07) */
+  if ( v13 < word_19996E / 2 + 22 )
+    v13 = word_19996E / 2 + 22;
+  else if ( v13 > (int16_t)sub_7926C(word_199A0C) - word_19996E / 2 )
+    v13 = (int16_t)((int16_t)sub_7926C(word_199A0C) - word_19996E / 2);
+  if ( v12 < word_199954 / 2 + 22 )
+    v12 = word_199954 / 2 + 22;
+  else if ( v12 > (int16_t)sub_7926C(word_199A0A) - word_199954 )
+    v12 = (int16_t)sub_7926C(word_199A0A) - word_199954;
+  v14 = sub_7927F((int16_t)v13);
   v9 = v14;
-  sub_7927F();
+  v15 = sub_7927F(v12);
   v10 = v15;
   return sub_100010(a2, a3, v9, v10);
 }
-// A19FD: variable 'v14' is possibly undefined
-// A1A07: variable 'v15' is possibly undefined
 // 19306C: using guessed type int dword_19306C;
 // 199954: using guessed type int16_t word_199954;
 // 19996E: using guessed type int16_t word_19996E;
@@ -2601,7 +2605,7 @@ LABEL_12:
       ++v36;
     while ( *v36 );
     strcpy(v36, var4E);
-    if ( *(_BYTE *)(v35 + (uint8_t*)dword_192B18 + 6) )
+    if ( *(_BYTE *)((uint32_t)v35 + (uint8_t*)dword_192B18 + 6) )
       v37 = sub_7A990(0x161u);
     else
       v37 = asc_179C33;
@@ -2643,8 +2647,7 @@ LABEL_12:
     if ( v43 > *v42 )
       *v42 = v43;
   }
-  sub_E0B4F((int16_t *)(17 * a5 + (uint8_t*)dword_1930D4), word_19999C);
-  v57 = v44;
+  v57 = (int16_t)sub_E0B4F((int16_t *)(17 * a5 + (uint8_t*)dword_1930D4), word_19999C);   /* wave 182: 0xA24AD/0xA24F4 cwde / push eax */
   if ( v26 <= -1 )
   {
     v47 = sub_7A990(0x162u);
@@ -2898,7 +2901,7 @@ int16_t sub_A26E3(int a1, int a2, int a3, int a4, int a5, int16_t *a6, int16_t *
     v46 = (uint8_t*)dword_197F98 + 3753 * (int16_t)v64 + 21;
     v22 = sub_7A990(0x163u);
     v23 = sprintf(v49, v22, v46);
-    sub_120BB5((int16_t)v61, SHIDWORD(v23));
+    sub_120BB5((int16_t)v61, (int)v52);   /* wave 182: 0xA2967 lea edx, [var_3C] survives sprintf */
     sub_120E8C(v63);
     if ( a8 )
     {
@@ -4131,10 +4134,12 @@ void sub_A432F( int a1, int a2, int a3, _WORD *a4, _WORD *a5, _WORD *a6, _WORD *
   {
     if ( i >= word_199994 )
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA301F je epilog funkce */
-    if ( sub_77FF5(i) == a3 )
+    /* wave 182: 0xA437B/0xA43A0/0xA43AE compare 16-bit words; the caller
+       passes a2 with the upper half of a pointer (sub_A26E3 v57) */
+    if ( (uint16_t)sub_77FF5(i) == (uint16_t)a3 )
     {
       v9 = 129 * i + dword_197F9C;
-      if ( *(char *)(v9 + 100) < 3 && *(_WORD *)(v9 + 103) == a1 && *(_WORD *)(v9 + 105) == a2 )
+      if ( *(char *)(v9 + 100) < 3 && *(_WORD *)(v9 + 103) == (uint16_t)a1 && *(_WORD *)(v9 + 105) == (uint16_t)a2 )
         break;
     }
 LABEL_19:
@@ -4311,7 +4316,7 @@ void sub_A453F( int16_t a1)
     ++v3;
   while ( *v3 );
   strcpy(v3, (char *)&off_179C5D);
-  sub_E0B4F((int16_t *)(v0 + (uint8_t*)dword_1930D4), word_19999C);
+  v4 = (int16_t)sub_E0B4F((int16_t *)(v0 + (uint8_t*)dword_1930D4), word_19999C);   /* wave 182: 0xA4615 */
   sprintf(v34, v36, v4);
   if ( v45 )
   {
@@ -5829,6 +5834,7 @@ int16_t sub_A644D( int a1, int a2, int a3, int a4)
   int v4; // eax
   int16_t result; // ax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 )
   {
     sub_120486(a1);
@@ -5867,6 +5873,7 @@ char sub_A64AB( unsigned int a1, _BYTE *a2, _BYTE *a3)
   char v6; // cl
   char result; // al
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( !a1 )
     goto LABEL_4;
   if ( a1 <= 1u )
@@ -7933,6 +7940,7 @@ int sub_A97F7( int a1, int a2, int a3, int a4)
   int v6; // eax
   int v8; // ecx
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 >= 4 )
   {
     v4 = 5 * (a2 - 4);
@@ -12210,6 +12218,7 @@ void sub_AFAB9(int a1, int a2)
   int v2; // ebx
   int v3; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 != word_1828BC )
   {
     word_1828BA = -1;
@@ -12371,11 +12380,11 @@ void sub_AFD42()
   {
     v9 = 3753 * v7 + (uint8_t*)dword_197F98;
     LODWORD(v1) = SWORD2(v1) + v9;
-    if ( *(_BYTE *)(v1 + 279) == 3 )
+    if ( *(_BYTE *)((uint32_t)v1 + 279) == 3 )
     {
       v6 = *(_BYTE *)(v9 + *(int16_t *)((char *)&word_17EB43 + 19 * SWORD2(v1)) + 279) == 3;
       v4 = *(int *)((char *)&off_17E079 + 13 * SWORD2(v1));
-      v3 = *(uint8_t *)(v1 + 279);
+      v3 = *(uint8_t *)((uint32_t)v1 + 279);
       v2 = (char *)sub_CDF5C(15);
       v1 = sprintf(v8, v2, v3, (char *)(intptr_t)v4, v6);
       v5 = (int16_t)v0++;

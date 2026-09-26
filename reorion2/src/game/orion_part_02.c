@@ -4240,6 +4240,7 @@ void sub_28EAE( int a1, int a2, int a3, int a4)
   int16_t v4; // [esp+0h] [ebp-14h]
 
   v4 = a1;   /* wave 181: v4 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 )
     sub_4B0D3(v4, 13);
   else
@@ -4602,6 +4603,7 @@ void sub_29790( int a1)
   char *v7; // [esp-4h] [ebp-54h] BYREF
   char v8[80]; // [esp+0h] [ebp-50h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 )
   {
     v2 = 313 * a1;
@@ -4957,6 +4959,7 @@ int sub_29F1B( int a1, int a2, int a3)
   int16_t v16; // [esp+10h] [ebp-8h]
   int v17; // [esp+14h] [ebp-4h]
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v4 = 0;
   if ( a3 <= 0 )
   {
@@ -5107,7 +5110,8 @@ int sub_2A239( int a1, int a2, int a3)
 
   v17 = 0;
   v22 = 0;
-  sub_2BB06(a1, a3);
+  v16 = (int16_t)a3;   /* wave 182: eax (push eax at 0x2A240) */
+  sub_2BB06((int16_t)a1, (int16_t)a1);   /* wave 182: 0x2A246 eax = edx = (int16)dx */
   v21 = v4;
   if ( sub_3E563(a1) )
     return -20000;
@@ -5183,7 +5187,7 @@ LABEL_28:
     v8 -= 1000;
   if ( !(_WORD)v22 )
     v8 -= 2000;
-  sub_388CE();
+  sub_388CE((int16_t)a1);
   if ( v14 )
     v8 -= 5000;
   return v8;
@@ -5363,6 +5367,7 @@ int sub_2A77D(
 {
   int16_t v9; // si
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   if ( a3 )
   {
     if ( a3 <= 1u )
@@ -5872,6 +5877,7 @@ int sub_2B191( int a1, int a2)
 {
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a1 )
   {
     case 0:
@@ -6357,6 +6363,7 @@ void sub_2BB06( int a1, int a2)
   int16_t v6; // si
   int16_t i; // ax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v2 = 0;
   if ( a1 )
   {
@@ -6365,7 +6372,7 @@ void sub_2BB06( int a1, int a2)
   }
   else
   {
-    sub_5685F(*(uint8_t *)(dword_192864 + 32));
+    v4 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
     v5 = 100 * (*(int16_t *)((char *)&word_17F642 + 15 * v4) + 100) / 100;
     v6 = sub_3A142(100, a2);
     for ( i = 0; i < 4; ++i )
@@ -6377,7 +6384,6 @@ void sub_2BB06( int a1, int a2)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x2BB00 je epilog funkce */
 }
 // 2BB9C: control flows out of bounds to 2BB00
-// 2BB5A: variable 'v4' is possibly undefined
 // 17F642: using guessed type int16_t word_17F642;
 // 192864: using guessed type int dword_192864;
 
@@ -6412,6 +6418,7 @@ void sub_2BBA1( int a1, int a2, int a3, int a4)
   int v28; // [esp+1CCh] [ebp-4h]
 
   v17 = a1;   /* wave 181: v17 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v27 = 0;
   v23 = 0;
   v21 = 0;
@@ -6646,7 +6653,7 @@ int sub_2C129( int a1, int a2)
       goto LABEL_21;
     if ( *(_BYTE *)(v37 + dword_192864 + 64) == 4 )
       goto LABEL_21;
-    sub_388A2();
+    sub_388A2(v33);
     if ( v10 )
       goto LABEL_21;
     if ( !a2 )
@@ -6687,7 +6694,7 @@ LABEL_21:
       if ( word_19988E > 8 )
         return 0;
       v35 = a1;
-      sub_388A2();
+      sub_388A2(v35);
       if ( v14 )
       {
         return 0;
@@ -7089,7 +7096,7 @@ int16_t sub_2CBCC( int a1, int a2, int a3)
     v8 = *(int16_t *)(dword_192864 + 192);
     v9 = sub_127C27((int)aCombatLbx_0, 88, dword_193174);
     sub_12A478(v46, v44, v9);
-    sub_5685F(*(uint8_t *)(dword_192864 + 32));
+    v10 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
     v39 = (int16_t)(88 * v8 / (100 * (*(int16_t *)((char *)&word_17F642 + 15 * v10) + 100) / 0x64u)) / 2;
     sub_128AB6(0, 0, v39 + v42, 479);
     sub_12B634();
@@ -7206,7 +7213,6 @@ LABEL_27:
   }
   return result;
 }
-// 2CCDB: variable 'v10' is possibly undefined
 // 17F642: using guessed type int16_t word_17F642;
 // 180024: using guessed type int16_t word_180024[];
 // 192864: using guessed type int dword_192864;
@@ -7273,6 +7279,7 @@ int sub_2D1ED( int a1, int a2, int a3, int a4)
 
   v38 = a2;   /* wave 181: v38 saved by the prologue (push edx) */
   v39 = a1;   /* wave 181: v39 saved by the prologue (push eax) */
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 >= 20 )
   {
     if ( a1 <= 380 )
@@ -7905,9 +7912,9 @@ LABEL_43:
 LABEL_49:
     v24 = 11 * (int16_t)v51 + 313 * word_1998F8 + dword_192864;
     if ( *(_BYTE *)(v24 + 91) == 1 )
-      v25 = (char *)*(off_17F803 + *(int16_t *)(v24 + 82));
+      v25 = (char *)WEAPON_NAME(0x7803, *(int16_t *)(v24 + 82));
     else
-      v25 = (char *)*(off_17F807 + *(int16_t *)(v24 + 82));
+      v25 = (char *)WEAPON_NAME(0x7807, *(int16_t *)(v24 + 82));
     v26 = (char *)v44 - 1;   /* vlna 124: cil je sousedni buffer v44, ne &v43 */
     do
       ++v26;
@@ -9204,7 +9211,7 @@ LABEL_28:
       v39 = v152 + 3;
       if ( v150 )
       {
-        sub_5685F(*(uint8_t *)(dword_192864 + 32));
+        v41 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
         itoa((int16_t)(100 * (*(int16_t *)((char *)&word_17F642 + 15 * v41) + 100) / 100), v109, 10, v39);
         strcpy(v105, "^ ");
         /* vlna 73: puvodne `v104 = v105; v42 = (char *)&v104 + 3;` -
@@ -9489,9 +9496,9 @@ LABEL_28:
           ++v76;
         strcpy(v76, asc_178C52);
         if ( byte_199A66[v75] == 1 )
-          v77 = (char *)*(off_17F803 + *(int16_t *)((char *)&word_199A64 + v75));
+          v77 = (char *)WEAPON_NAME(0x7803, *(int16_t *)((char *)&word_199A64 + v75));
         else
-          v77 = (char *)*(off_17F807 + *(int16_t *)((char *)&word_199A64 + v75));
+          v77 = (char *)WEAPON_NAME(0x7807, *(int16_t *)((char *)&word_199A64 + v75));
         /* vlna 73: puvodne `v104 = v105; v78 = (char *)&v104 + 3;` -
            v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
            v105[0] a smycka hleda konec retezce (strcat). Na x64 ma ukazatel
@@ -9721,7 +9728,6 @@ LABEL_204:
   goto LABEL_28;
 }
 // 31F20: control flows out of bounds to 33AFF
-// 311CC: variable 'v41' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;
@@ -11086,6 +11092,7 @@ int16_t *sub_33CFA( int a1)
 {
   char v2[80]; // [esp+0h] [ebp-50h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   LOBYTE(word_18FF78) = 0;
   switch ( a1 )
   {
@@ -11517,6 +11524,7 @@ char sub_34454( int a1, _WORD *a2, _WORD *a3)
   int16_t v5; // si
   unsigned int v6; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   *a2 = 0;
   *a3 = 0;
   if ( a1 )
@@ -11779,7 +11787,7 @@ void sub_34AB6()
   if ( word_1998F8 )
   {
     if ( *(int16_t *)(313 * word_1998F8 + dword_192864 + 61) > 0
-      || (sub_4B0D3(word_1998F8, 33) || sub_4B0D3(word_1998F8, 22)) && (sub_38876(), !v0) )
+      || (sub_4B0D3(word_1998F8, 33) || sub_4B0D3(word_1998F8, 22)) && (sub_38876((int16_t)word_1998F8), !v0) )
     {
       v1 = *(_BYTE *)(dword_192864 + 313 * word_1998F8 + 37);
       if ( v1 )
@@ -12129,6 +12137,7 @@ int16_t sub_35251( int a1, int16_t *a2, int a3, int a4, int a5)
   int16_t v59; // [esp+34h] [ebp-8h]
   int16_t v60; // [esp+38h] [ebp-4h]
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   if ( a3 == 7 )
   {
     v7 = dword_192864 + 313 * a1;
@@ -12634,7 +12643,7 @@ int sub_35E0C( int a1)
       v5 = *(int16_t *)(v4 + 173);
       if ( v5 > -1 )
       {
-        sub_3607A(v5);
+        v6 = sub_3607A(v5);   /* wave 182 */
         if ( (int16_t)v6 > (int16_t)v2 )
           v2 = v6;
       }
@@ -12720,15 +12729,19 @@ int sub_35F0A()
 
 
 //----- (00035F4D) --------------------------------------------------------
-void sub_35F4D( int a1)
+/* wave 182: rewritten from the asm (0x35F5F) - it jumps into the tail of
+   sub_35E6A; bits of the design record at +43 */
+int sub_35F4D( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(59 * a1 + dword_1930DC + 43) & 4) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x35E93);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 43);
+  if ( (v1 & 0x4) != 0 )
+    return 5 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x8) != 0 )
+    return 15 * ((int16_t)sub_94951(a1) + 1) / 2;
+  return 0;
 }
 // 35F70: control flows out of bounds to 35EA8
 // 35F79: control flows out of bounds to 35E93
@@ -12753,7 +12766,7 @@ int sub_35F7E( int a1)
       v5 = *(int16_t *)(v4 + 173);
       if ( v5 > -1 )
       {
-        sub_35F4D(v5);
+        v6 = sub_35F4D(v5);   /* wave 182 */
         if ( v6 > v2 )
           v2 = v6;
       }
@@ -12817,15 +12830,19 @@ void sub_36036( int a1)
 
 
 //----- (0003607A) --------------------------------------------------------
-void sub_3607A( int a1)
+/* wave 182: rewritten from the asm (0x3608D) - it jumps into the tail of
+   sub_36036; bits of the design record at +42 */
+int sub_3607A( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(dword_1930DC + 59 * a1 + 42) & 1) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x36064);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 42);
+  if ( (v1 & 0x1) != 0 )
+    return 2 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x2) != 0 )
+    return 3 * (sub_94951(a1) + 1);
+  return 0;
 }
 // 3609F: control flows out of bounds to 35EA8
 // 360A8: control flows out of bounds to 36064
@@ -12850,7 +12867,7 @@ int sub_360AA( int a1)
       v5 = *(int16_t *)(v4 + 173);
       if ( v5 > -1 )
       {
-        sub_36106(v5);
+        v6 = sub_36106(v5);   /* wave 182 */
         if ( v6 > v2 )
           v2 = v6;
       }
@@ -12865,15 +12882,19 @@ int sub_360AA( int a1)
 
 
 //----- (00036106) --------------------------------------------------------
-void sub_36106( int a1)
+/* wave 182: rewritten from the asm (0x36119) - it jumps into the tail of
+   sub_36036; bits of the design record at +43 */
+int sub_36106( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(dword_1930DC + 59 * a1 + 43) & 0x10) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x36064);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 43);
+  if ( (v1 & 0x10) != 0 )
+    return 2 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x20) != 0 )
+    return 3 * (sub_94951(a1) + 1);
+  return 0;
 }
 // 3612B: control flows out of bounds to 35EA8
 // 36134: control flows out of bounds to 36064
@@ -12893,6 +12914,7 @@ int sub_36139( int a1, int a2, int16_t *a3)
   int v11; // eax
   int16_t v12; // ax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v3 = 0;
   if ( a2 == 1 )
   {
@@ -12906,7 +12928,7 @@ int sub_36139( int a1, int a2, int16_t *a3)
         v11 = *(int16_t *)(dword_192864 + 313 * i + 173);
         if ( v11 > -1 )
         {
-          sub_3677D(v11);
+          v12 = sub_3677D(v11);   /* wave 182 */
           if ( v12 > (int16_t)v3 )
             LOWORD(v3) = v12;
         }
@@ -12924,7 +12946,7 @@ int sub_36139( int a1, int a2, int16_t *a3)
         v6 = *(int16_t *)(v5 + 173);
         if ( v6 > -1 )
         {
-          sub_3677D(v6);
+          v7 = sub_3677D(v6);   /* wave 182 */
           if ( (int16_t)v7 > (int16_t)v3 )
             v3 = v7;
         }
@@ -12989,12 +13011,12 @@ int sub_36266()
       if ( *(int16_t *)(v12 + dword_192864 + 173) > -1 )
       {
         v7 = *(_WORD *)(v12 + dword_192864 + 173);
-        sub_367AE(v7);
+        v8 = sub_367AE(v7);   /* wave 182 */
         if ( (int16_t)v8 > (int16_t)v0 )
           v0 = v8;
         if ( v14 )
         {
-          sub_367DF(v7);
+          v9 = sub_367DF(v7);   /* wave 182 */
           if ( (int16_t)v9 > (int16_t)v2 )
             v2 = v9;
         }
@@ -13143,15 +13165,19 @@ void sub_366DD( int a1)
 
 
 //----- (0003677D) --------------------------------------------------------
-void sub_3677D( int a1)
+/* wave 182: rewritten from the asm (0x3678F) - it jumps into the tail of
+   sub_35E6A; bits of the design record at +42 */
+int sub_3677D( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(59 * a1 + dword_1930DC + 42) & 0x40) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x35E93);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 42);
+  if ( (v1 & 0x40) != 0 )
+    return 5 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x80) != 0 )
+    return 15 * ((int16_t)sub_94951(a1) + 1) / 2;
+  return 0;
 }
 // 367A0: control flows out of bounds to 35EA8
 // 367A9: control flows out of bounds to 35E93
@@ -13159,15 +13185,19 @@ void sub_3677D( int a1)
 
 
 //----- (000367AE) --------------------------------------------------------
-void sub_367AE( int a1)
+/* wave 182: rewritten from the asm (0x367C0) - it jumps into the tail of
+   sub_35E6A; bits of the design record at +43 */
+int sub_367AE( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(59 * a1 + dword_1930DC + 43) & 0x40) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x35E93);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 43);
+  if ( (v1 & 0x40) != 0 )
+    return 5 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x80) != 0 )
+    return 15 * ((int16_t)sub_94951(a1) + 1) / 2;
+  return 0;
 }
 // 367D1: control flows out of bounds to 35EA8
 // 367DA: control flows out of bounds to 35E93
@@ -13175,15 +13205,19 @@ void sub_367AE( int a1)
 
 
 //----- (000367DF) --------------------------------------------------------
-void sub_367DF( int a1)
+/* wave 182: rewritten from the asm (0x367F1) - it jumps into the tail of
+   sub_35E6A; bits of the design record at +42 */
+int sub_367DF( int a1)
 {
-  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  if ( (*(_BYTE *)(59 * a1 + dword_1930DC + 42) & 0x10) != 0 )
-  {
-    sub_94951(a1);
-    JUMPOUT(0x35EA8);
-  }
-  JUMPOUT(0x35E93);
+  uint8_t v1; // flags
+
+  a1 = (int16_t)a1;
+  v1 = *(uint8_t *)(59 * a1 + dword_1930DC + 42);
+  if ( (v1 & 0x10) != 0 )
+    return 5 * (sub_94951(a1) + 1);
+  if ( (v1 & 0x20) != 0 )
+    return 15 * ((int16_t)sub_94951(a1) + 1) / 2;
+  return 0;
 }
 // 36802: control flows out of bounds to 35EA8
 // 3680B: control flows out of bounds to 35E93
@@ -14096,9 +14130,9 @@ void sub_37308( int a1,
           strcpy(v58, (char *)&off_178CE6);
           v59 = 11 * *(_DWORD *)((char *)&a14 + 14);
           if ( *(int16_t *)((char *)&a3 + v56) <= 1 )
-            v60 = (char *)*(off_17F803 + *(int16_t *)(v59 + 313 * v93 + dword_192864 + 82));
+            v60 = (char *)WEAPON_NAME(0x7803, *(int16_t *)(v59 + 313 * v93 + dword_192864 + 82));
           else
-            v60 = (char *)*(off_17F807 + *(int16_t *)(v59 + dword_192864 + 313 * v93 + 82));
+            v60 = (char *)WEAPON_NAME(0x7807, *(int16_t *)(v59 + dword_192864 + 313 * v93 + 82));
           v61 = &v95;
           do
             ++v61;

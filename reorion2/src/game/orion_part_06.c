@@ -948,7 +948,7 @@ int sub_72EDF(int a1)
 
   v1 = sub_7A990(0x75u);
   v2 = sprintf(v5, v1, a1);
-  result = sub_7A25F(&byte_199EFE, SHIDWORD(v2), 0);
+  result = sub_7A25F(&byte_199EFE, (int)(intptr_t)v5, 0);
   word_19BECC = -1;
   return result;
 }
@@ -1143,6 +1143,7 @@ int sub_732D6( int a1, int a2, int a3)
   int16_t v22; // [esp+28h] [ebp-8h] BYREF
   char v23; // [esp+2Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v23 = 0;
   v3 = 0;
   if ( a1 == 29 )
@@ -1266,6 +1267,7 @@ void sub_734F1( int a1)
   int v21; // [esp+3Ch] [ebp-8h]
   int v22; // [esp+40h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v17 = 0;
   v12 = -1;
   qmemcpy(v9, &unk_182135, sizeof(v9));
@@ -1508,33 +1510,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
   int v38; // eax
   int v39; // [esp-4h] [ebp-646h]
   int v40; // [esp-4h] [ebp-646h]
-  int v41; // [esp+0h] [ebp-642h] BYREF
-  int v42; // [esp+4h] [ebp-63Eh]
-  int v43; // [esp+8h] [ebp-63Ah]
-  int v44; // [esp+Ch] [ebp-636h]
-  int v45; // [esp+10h] [ebp-632h]
-  int v46; // [esp+14h] [ebp-62Eh]
-  int v47; // [esp+18h] [ebp-62Ah]
-  int v48; // [esp+1Ch] [ebp-626h]
-  int v49; // [esp+20h] [ebp-622h]
-  int v50; // [esp+24h] [ebp-61Eh]
-  int v51; // [esp+28h] [ebp-61Ah]
-  int v52; // [esp+2Ch] [ebp-616h]
-  int v53; // [esp+30h] [ebp-612h]
-  int v54; // [esp+34h] [ebp-60Eh]
-  int v55; // [esp+38h] [ebp-60Ah]
-  int v56; // [esp+3Ch] [ebp-606h]
-  int v57; // [esp+40h] [ebp-602h]
-  int v58; // [esp+44h] [ebp-5FEh]
-  int v59; // [esp+48h] [ebp-5FAh]
-  int v60; // [esp+4Ch] [ebp-5F6h]
-  int v61; // [esp+50h] [ebp-5F2h]
-  int v62; // [esp+54h] [ebp-5EEh]
-  int v63; // [esp+58h] [ebp-5EAh]
-  int v64; // [esp+5Ch] [ebp-5E6h]
-  int v65; // [esp+60h] [ebp-5E2h]
-  int64_t v66; // [esp+64h] [ebp-5DEh]
-  int v67; // [esp+6Ch] [ebp-5D6h]
+  int16_t v41[500]; // [esp+0h] [ebp-642h] BYREF - wave 182: ship list, 1000 bytes up to v68
   _BYTE v68[200]; // [esp+3E8h] [ebp-25Ah] BYREF
   _BYTE v69[200]; // [esp+4B0h] [ebp-192h] BYREF
   _BYTE v70[80]; // [esp+578h] [ebp-CAh] BYREF
@@ -1827,36 +1803,7 @@ LABEL_53:
       sub_72AE4((intptr_t)&v41, &v84);   /* vlna 154 */
       v25 = v84;
       v24 = (int)&v41;
-      LOBYTE(v24) = sub_74AFE(
-                      (int16_t *)&v41,
-                      1,
-                      v41,
-                      v42,
-                      v43,
-                      v44,
-                      v45,
-                      v46,
-                      v47,
-                      v48,
-                      v49,
-                      v50,
-                      v51,
-                      v52,
-                      v53,
-                      v54,
-                      v55,
-                      v56,
-                      v57,
-                      v58,
-                      v59,
-                      v60,
-                      v61,
-                      v62,
-                      v63,
-                      v64,
-                      v65,
-                      v66,
-                      v67);
+      LOBYTE(v24) = sub_74AFE(word_19999C, v41, v84, 1);   /* wave 182: 0x740D6 */
       v27 = sub_75398();
       word_1999BE = -1;
       byte_199EFE = 1;
@@ -2434,169 +2381,100 @@ char sub_74AB4(int a1, int a2, int a3)
 
 
 //----- (00074AFE) --------------------------------------------------------
-char sub_74AFE(
-        int16_t *a1, int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25,
-        int a26,
-        int a27,
-        int64_t a28,
-        int a29)
+/* wave 182: rewritten from the asm - scrap the selected ships (FLEETS).
+   After `enter 2C4h / push eax, edx, ebx / sub ebp, 342h` IDA took the saved
+   registers and the function's own locals for stack arguments of the caller
+   (STACK[0x602], a27, a28) and SCRAP crashed.
+   a1 = player (eax), a2 = ship list (edx), a3 = count (ebx), a4 = ask (cl). */
+char sub_74AFE(int a1, int16_t *a2, int a3, int a4)
 {
-  int v29; // eax
-  int16_t v30; // dx
-  int v31; // edx
-  char v32; // ch
-  int v33; // edx
-  uint16_t v34; // ax
-  int v35; // edx
-  char *v36; // eax
-  int v38; // ebx
-  char *v39; // eax
-  int64_t v40; // rax
-  int v41; // eax
-  int v42; // edi
-  uint16_t v43; // ax
-  char *v44; // eax
-  int16_t i; // bx
-  int v46; // edx
-  int v47; // eax
-  int16_t j; // dx
-  int16_t v49; // ax
-  int v50; // [esp-14h] [ebp-2D8h]
-  int v51; // [esp-10h] [ebp-2D4h]
-  int v52; // [esp-10h] [ebp-2D4h]
+  char v5[300]; // [ebp+7Eh] message
+  char v6[200]; // [ebp+1AAh]
+  char v7[200]; // [ebp+272h] officer name
+  int16_t i; // [ebp+33Ah]
+  char v8; // [ebp+33Eh] the fleet is not at a friendly colony
+  char v9; // ch - some ship has an officer
+  uint8_t *v10;
+  int v11;
+  int16_t v12; // edi
+  int v13; // edi at the sub_A163A calls
+  char *v14;
+  int v15;
 
-  v29 = 129 * *a1 + dword_197F9C;
-  v30 = *(_WORD *)(v29 + 105);
-  LOWORD(v29) = *(_WORD *)(v29 + 103);
-  LOBYTE(STACK[0x602]) = 1;
-  v31 = (int16_t)sub_7A3E3(v29, v30);
-  v32 = 0;
-  if ( v31 == -1 || !sub_79D1C(SHIWORD(a28), v31) )
+  a1 = (int16_t)a1;
+  a3 = (int16_t)a3;
+  v9 = 0;
+  v10 = (uint8_t *)dword_197F9C + 129 * a2[0];
+  v8 = 1;
+  v11 = (int16_t)sub_7A3E3(*(int16_t *)(v10 + 103), *(int16_t *)(v10 + 105));
+  if ( v11 == -1 || !sub_79D1C(a1, v11) )
   {
-    LOBYTE(STACK[0x602]) = 0;
-    if ( a2 )
+    v8 = 0;
+    if ( (char)a4 )
     {
-      if ( HIWORD(a27) == 1 )
-      {
-        v33 = 3753 * SHIWORD(a28);
-        if ( sub_8F8DC(*(_BYTE *)(v33 + (uint8_t*)dword_197F98 + 21)) )
-        {
-          v51 = v33 + (uint8_t*)dword_197F98 + 21;
-          v34 = 123;
-        }
-        else
-        {
-          v51 = v33 + (uint8_t*)dword_197F98 + 21;
-          v34 = 122;
-        }
-      }
+      v14 = (char *)((uint8_t *)dword_197F98 + 3753 * a1 + 21);
+      if ( a3 == 1 )
+        v15 = sub_8F8DC(*(uint8_t *)v14) ? 0x7B : 0x7A;
       else
+        v15 = sub_8F8DC(*(uint8_t *)v14) ? 0x7D : 0x7C;
+      sprintf(v5, sub_7A990(v15), v14);
+      if ( !(char)sub_7A25F((_BYTE *)&byte_199EFE, (int)(intptr_t)v5, 1) )
+        goto LABEL_NO;
+    }
+  }
+  for ( i = 0; i < a3; ++i )
+  {
+    v10 = (uint8_t *)dword_197F9C + 129 * a2[i];
+    if ( *(int16_t *)(v10 + 116) > -1 )
+    {
+      if ( (char)a4 )
       {
-        v35 = 3753 * SHIWORD(a28);
-        if ( sub_8F8DC(*(_BYTE *)(v35 + (uint8_t*)dword_197F98 + 21)) )
-        {
-          v51 = v35 + (uint8_t*)dword_197F98 + 21;
-          v34 = 125;
-        }
-        else
-        {
-          v51 = (uint8_t*)dword_197F98 + v35 + 21;
-          v34 = 124;
-        }
+        strcpy(v7, (char *)sub_97588(*(int16_t *)(v10 + 116), 1));
+        sprintf(v5, sub_7A990(0x7Eu), (char *)v10, v7);
+        if ( !(char)sub_7A25F((_BYTE *)&byte_199EFE, (int)(intptr_t)v5, 1) )
+          goto LABEL_NO;
       }
-      v36 = sub_7A990(v34);
-      sprintf((char *)&a29 + 2, v36, v51);
-      if ( !(uint8_t)sub_7A25F(&byte_199EFE, (int)&a29 + 2, 1) )
-        goto LABEL_12;
+      v9 = 1;
     }
   }
-  for ( STACK[0x5FE] = 0; (int16_t)STACK[0x5FE] < SHIWORD(a27); ++STACK[0x5FE] )
+  v12 = (int16_t)sub_72E61();
+  v13 = v12;
+  if ( (char)a4 && v12 > 0 )
   {
-    v38 = 129 * *(int16_t *)(*(_DWORD *)((char *)&a28 + 2) + 2 * (int16_t)STACK[0x5FE]);
-    if ( *(int16_t *)(v38 + dword_197F9C + 116) > -1 )
+    sprintf(v5, sub_7A990(a3 == 1 ? 0x80u : 0x81u), (int)v12);
+    if ( !(char)sub_7A25F((_BYTE *)&byte_199EFE, (int)(intptr_t)v5, 1) )
+      goto LABEL_NO;
+    if ( v8 )
     {
-      if ( a2 )
+      *(int *)((uint8_t *)dword_197F98 + 3753 * a1 + 50) += v12;
+      sub_74AB4((int)(intptr_t)a2, a3, (uint8_t)a4);
+    }
+  }
+  if ( v9 )
+  {
+    for ( i = 0; i < a3; ++i )
+    {
+      v10 = (uint8_t *)dword_197F9C + 129 * a2[i];
+      if ( *(int16_t *)(v10 + 116) > -1 )
       {
-        strcpy((char *)&STACK[0x536], (char *)sub_97588(*(_WORD *)(v38 + dword_197F9C + 116), 1));
-        v50 = v38 + dword_197F9C;
-        v39 = sub_7A990(0x7Eu);
-        v40 = sprintf((char *)&a29 + 2, v39, v50, &STACK[0x536]);
-        if ( !(uint8_t)sub_7A25F(&byte_199EFE, SHIDWORD(v40), 1) )
-          goto LABEL_12;
-      }
-      v32 = 1;
-    }
-  }
-  v41 = sub_72E61();
-  v42 = v41;
-  if ( a2 && (int16_t)v41 > 0 )
-  {
-    v52 = (int16_t)v41;
-    if ( HIWORD(a27) == 1 )
-      v43 = 128;
-    else
-      v43 = 129;
-    v44 = sub_7A990(v43);
-    sprintf((char *)&a29 + 2, v44, v52);
-    if ( !(uint8_t)sub_7A25F(&byte_199EFE, (int)&a29 + 2, 1) )
-    {
-LABEL_12:
-      strcpy((char *)&STACK[0x46E], sub_7A990(0x7Fu));
-      sub_7A25F(&byte_199EFE, (int)&STACK[0x46E], 3);
-      return 0;
-    }
-    if ( LOBYTE(STACK[0x602]) )
-    {
-      *(_DWORD *)((uint8_t*)dword_197F98 + 3753 * SHIWORD(a28) + 50) += (int16_t)v42;
-      sub_74AB4(*(int *)((char *)&a28 + 2), SHIWORD(a27), a2);
-    }
-  }
-  if ( v32 )
-  {
-    for ( i = 0; i < SHIWORD(a27); ++i )
-    {
-      v46 = dword_197F9C + 129 * *(int16_t *)(*(_DWORD *)((char *)&a28 + 2) + 2 * i);
-      if ( *(int16_t *)(v46 + 116) > -1 )
-      {
-        v47 = 59 * *(int16_t *)(v46 + 116);
-        v42 = dword_1930DC;
-        *(_BYTE *)(dword_1930DC + v47 + 57) = 0;
-        *(_WORD *)(v42 + v47 + 53) = -1;
-        *(_BYTE *)(v42 + v47 + 55) = 0;
-        *(_WORD *)(v46 + 116) = -1;
+        v11 = 59 * *(int16_t *)(v10 + 116);
+        v13 = dword_1930DC;
+        *(_BYTE *)(dword_1930DC + v11 + 57) = 0;
+        *(int16_t *)(dword_1930DC + v11 + 53) = -1;
+        *(_BYTE *)(dword_1930DC + v11 + 55) = 0;
+        *(int16_t *)(v10 + 116) = -1;
       }
     }
   }
-  for ( j = 0; j < SHIWORD(a27); ++j )
-  {
-    v49 = *(_WORD *)(*(_DWORD *)((char *)&a28 + 2) + 2 * j);
-    sub_A163A(v49, v42);
-  }
-  sub_E2D72(SHIWORD(a28), v42);
+  for ( i = 0; i < a3; ++i )
+    sub_A163A(a2[i], v13);
+  sub_E2D72(a1, i);
   return 1;
+
+LABEL_NO:
+  strcpy(v6, sub_7A990(0x7Fu));
+  sub_7A25F((_BYTE *)&byte_199EFE, (int)(intptr_t)v6, 3);
+  return 0;
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1930DC: using guessed type int dword_1930DC;
@@ -2771,7 +2649,7 @@ char sub_74FAA( int a1, int a2)
       v5 = sub_7A990(0x82u);
       v6 = sprintf(v10, v5, v8, v9);
       v3 = 0;
-      sub_7A25F(&byte_199EFE, SHIDWORD(v6), 3);
+      sub_7A25F(&byte_199EFE, (int)(intptr_t)v10, 3);
     }
   }
   return v3;
@@ -2938,6 +2816,7 @@ void sub_7527A( int a1)
   int v16; // [esp+34h] [ebp-8h] BYREF
   int16_t v17; // [esp+38h] [ebp-4h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v4[0] = 134678278;
   v4[1] = 168364296;
   if ( a1 == 4 )
@@ -3326,6 +3205,7 @@ int sub_75970( int a1, int a2)
 //----- (00075999) --------------------------------------------------------
 int sub_75999( int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 < 20 )
     return 0;
   if ( a1 < 60 )
@@ -3401,7 +3281,7 @@ char sub_759D9( int a1)
   if ( v25 )
   {
     v15 = 4 * v2;
-    v6 = *(_WORD **)(v15 + dword_193108);
+    v6 = ((_WORD *)(uintptr_t)*(uint32_t *)(v15 + dword_193108));
     LOWORD(v4) = *v6;
     v18 = v4;
     LOWORD(v6) = v6[1];
@@ -4299,9 +4179,9 @@ void sub_7670E( int a1)
         sub_6EFF8(*(_BYTE *)(v45 + 32), v68);
         v46 = v44 + v70 + dword_197F9C;
         if ( *(_BYTE *)(v46 + 30) == 1 )
-          v47 = (char *)*(off_17F803 + *(int16_t *)(v46 + 28));
+          v47 = (char *)WEAPON_NAME(0x7803, *(int16_t *)(v46 + 28));
         else
-          v47 = (char *)*(off_17F807 + *(int16_t *)(v46 + 28));
+          v47 = (char *)WEAPON_NAME(0x7807, *(int16_t *)(v46 + 28));
         sprintf(v60, "%d %s (%s)", *(uint8_t *)(dword_197F9C + 129 * v59 + 8 * v42 + 30), v47, v68);
         sub_1212B3(v75, v43 + v82, (int)v60);
         v48 = sub_122259();
@@ -5734,6 +5614,7 @@ char sub_784A0( int a1, char *a2)
   char *v3; // esi
   char result; // al
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   strcpy(a2, "Human");
   if ( a1 >= 8 )
   {
@@ -6080,9 +5961,18 @@ int16_t sub_788A2( int a1)
 
 
 //----- (000788AE) --------------------------------------------------------
-void sub_788AE()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x78BAB */
+int sub_788AE(int a1)
 {
-  JUMPOUT(0x78BAB);
+  int t1;
+  int t2;
+  int t3;
+
+  t1 = ((((int16_t)(a1) * 12) & ~0xFFFF) | (uint16_t)(*(int16_t *)(intptr_t)((int)(intptr_t)(dseg + 0x186C2) /* word_1906C2 */ + ((int16_t)(a1) * 12))));
+  t2 = ((((int16_t)(t1) + (int16_t)(t1) * 4) & ~0xFFFF) | (uint16_t)(*(int16_t *)(intptr_t)((int)(intptr_t)(dseg + 0x1F5D4) /* word_1975D4 */ + ((int16_t)(t1) + (int16_t)(t1) * 4))));
+  t3 = ((((int16_t)(t2) * 129) & ~0xFFFF) | (uint16_t)(*(int *)(intptr_t)((int)(intptr_t)dword_197F9C + ((int16_t)(t2) * 129) + 101)));
+  return t3;
 }
 // 788D2: control flows out of bounds to 78BAB
 // 197F9C: using guessed type int dword_197F9C;
@@ -6273,6 +6163,7 @@ int sub_78BEC( int a1)
 //----- (00078C5B) --------------------------------------------------------
 _BOOL1 sub_78C5B( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   return a1 == 4 || a1 == 5 || a1 == 6 || a1 == 7 || a1 == 10;
 }
 
@@ -6503,6 +6394,7 @@ _BOOL1 sub_78F4B( int a1)
 //----- (00078FB8) --------------------------------------------------------
 char sub_78FB8( int a1, int a2)
 {
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 >= 0 && a2 < word_199998 )
     return *(_BYTE *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1412);
   else
@@ -6570,6 +6462,7 @@ int sub_790A4( int a1)
 {
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 )
   {
     if ( a1 == 1 )

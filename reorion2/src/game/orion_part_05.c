@@ -2406,7 +2406,7 @@ LABEL_14:
     if ( (int16_t)v48 <= 0 )
       strcpy(v30, sub_7A990(0x32u));
     else
-      sprintf(v30, "%s (%d)", (char *)*(off_17F803 + (int16_t)v48), (int16_t)v17);
+      sprintf(v30, "%s (%d)", (char *)WEAPON_NAME(0x7803, (int16_t)v48), (int16_t)v17);
     v18 = v43;
     sub_120E8C(1);
     v19 = v47;
@@ -2944,7 +2944,7 @@ LABEL_8:
     case 5:
       v11 = *(_WORD *)(dword_192694 + 6 * word_19B972);
       sub_8F6DF(0x40u, v13);
-      sprintf(v12, v13, ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17FD0B + v3)), *(off_17F803 + v11));
+      sprintf(v12, v13, ((_UNKNOWN *)(intptr_t)*(int *)((char *)&off_17FD0B + v3)), WEAPON_NAME(0x7803, v11));
       break;
     default:
       break;
@@ -3272,6 +3272,7 @@ int16_t sub_6831F( int a1, int a2, int a3)
   int16_t v11; // ax
   int16_t result; // ax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 > 0 )
   {
     v3 = 14 * a1;
@@ -3449,6 +3450,7 @@ int sub_686CB(int a1, int a2)
   int16_t v4; // ax
   int result; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v2 = *(_WORD *)(dword_19275C + 2);
   v3 = *(_WORD *)(dword_19277C + 2);
   if ( a2 <= 10 )
@@ -3846,6 +3848,7 @@ int16_t sub_68E78(int a1, int a2, int a3)
 
   v16 = a1;   /* wave 181: v16 saved by the prologue (push eax) */
   v15 = a3;   /* wave 181: v15 saved by the prologue (push ebx) */
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v18[0] = 327682;
   v18[1] = 983050;
   v19 = *(_WORD *)((char *)&dword_649F4[1] + 3);
@@ -4436,7 +4439,7 @@ LABEL_24:
         {
           v8 = 28 * v20;
           sub_6FBEA(v25, *(int16_t *)((char *)word_17F80D + v8));
-          sub_A5EB2(*(int *)((char *)&off_17F803 + v8), (int)v25);
+          sub_A5EB2(*(int *)(dseg + 0x7803 + (v8)), (int)v25);
         }
       }
     }
@@ -4521,7 +4524,7 @@ LABEL_80:
       {
         sub_8F6DF(0x4Fu, v28);
         v21 = sub_69529(word_19B972);
-        v9 = sprintf(v34, v28, *(off_17F803 + v21));
+        v9 = sprintf(v34, v28, WEAPON_NAME(0x7803, v21));
         LODWORD(v9) = v34;
         goto LABEL_80;
       }
@@ -4798,7 +4801,7 @@ unsigned int sub_69E62()
               *(uint8_t *)(dword_1927A8 + v8 + 173),
               *(_WORD *)(dword_1927A8 + v23 + 93));
       if ( *(int16_t *)(v23 + dword_1927A8 + 53) <= 0
-        || *(_DWORD *)(dword_1927A8 + 233) - (*(_DWORD *)(dword_1927A8 + 237) + v11 - (int16_t)v29) < 0 )
+        || *(int32_t *)(dword_1927A8 + 233) - (*(int32_t *)(dword_1927A8 + 237) + v11 - (int16_t)v29) < 0 )   /* wave 182: 0x6A070 jl */
       {
         word_18B1E0[v5] = -1000;
         if ( *(int16_t *)(dword_1927A8 + 2 * v8 + 53) > 0 )
@@ -4867,7 +4870,7 @@ unsigned int sub_69E62()
   word_19B9B2 = sub_11438B(437, 97, 627, 123, &byte_1791EB, 41);
   word_199864 = (uint16_t)sub_1151B0(461, 443, (int)&byte_1791EB, (_WORD *)dword_1927F0, aLb, 40);
   word_19984C = (uint16_t)sub_1151B0(374, 443, (int)&byte_1791EB, (_WORD *)dword_1927E8, &aLb[1], 40);
-  if ( *(_DWORD *)(dword_1927A8 + 233) < *(_DWORD *)(dword_1927A8 + 237) )
+  if ( *(int32_t *)(dword_1927A8 + 233) < *(int32_t *)(dword_1927A8 + 237) )   /* wave 182: 0x6A36D jl */
     word_19984E = -1000;
   else
     word_19984E = (uint16_t)sub_1151B0(547, 443, (int)&byte_1791EB, (_WORD *)dword_1927E4, &aLb[2], 40);
@@ -5683,7 +5686,7 @@ void sub_6B0EF( int a1, int a2, _WORD *a3)
       {
         v12 = 14 * v11;
         sub_6FBEA(v14, word_17F80D[v12]);
-        sub_A5EB2(*(int *)((char *)&off_17F803 + v12 * 2), (int)v14);
+        sub_A5EB2(*(int *)(dseg + 0x7803 + (v12 * 2)), (int)v14);
       }
     }
   }
@@ -5866,6 +5869,7 @@ int sub_6B519( int a1, int a2)
   int16_t v3; // ax
   int result; // eax
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a2 )
   {
     case 0:
@@ -7434,6 +7438,7 @@ int sub_6D1B4( int a1, int a2, unsigned int a3, int a4)
   int16_t v16; // [esp+8h] [ebp-8h]
   int16_t v17; // [esp+Ch] [ebp-4h] BYREF
 
+  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v16 = a2;
   v6 = 14 * a1;
   v7 = 0;
@@ -7587,35 +7592,7 @@ void sub_6D29C()
 
   sub_6A6A1((int)v64);
   qmemcpy(v61, v64, 0x63u);
-  sub_54D80(
-    v61[0],
-    v61[1],
-    v61[2],
-    v61[3],
-    v61[4],
-    v61[5],
-    v61[6],
-    v61[7],
-    v61[8],
-    v61[9],
-    v61[10],
-    v61[11],
-    v61[12],
-    v61[13],
-    v61[14],
-    v61[15],
-    v61[16],
-    v61[17],
-    v61[18],
-    v61[19],
-    v61[20],
-    v61[21],
-    v61[22],
-    v61[23],
-    v61[24],
-    &v75,
-    &v78,
-    &v80);
+  sub_54D80((const uint8_t *)v61, &v75, &v78, &v80);   /* wave 182 */
   sub_128BE7();
   sub_12B65C();
   sub_120DED(0, 0);
@@ -7724,7 +7701,7 @@ void sub_6D29C()
   v19 = sub_7A990(0x5Du);
   sub_1212B3(437, 137, (int)v19);
   v20 = sprintf(v65, "%d%%", v80);
-  /* vlna 89c: souradnice Y byla `SWORD2(v20)`, tedy horni pulka navratove
+  /* vlna 89c: souradnice Y byla `(int16_t)(137)`, tedy horni pulka navratove
      hodnoty sprintf. asm ma `mov edx, 89h` (=137) PRED volanim sprintf_ a EDX
      prezije az k `mov eax, 26Ah / call sub_1210B7`, takze jde o y = 137 -
      tentyz radek jako popisek `sub_1212B3(437, 137, ...)` o kus vyse.
@@ -7777,9 +7754,9 @@ void sub_6D29C()
       sub_6EFF8(*(_BYTE *)(v23 + dword_1927A8 + 85), v72);
       v24 = dword_1927A8 + v22;
       if ( *(int16_t *)(v24 + 69) <= 1 )
-        v25 = (char *)*(off_17F803 + *(int16_t *)(v24 + 53));
+        v25 = (char *)WEAPON_NAME(0x7803, *(int16_t *)(v24 + 53));
       else
-        v25 = (char *)*(off_17F807 + *(int16_t *)(v24 + 53));
+        v25 = (char *)WEAPON_NAME(0x7807, *(int16_t *)(v24 + 53));
       v62 = v63;
       strcpy(v63, v25);
       v26 = (int16_t)v84;
@@ -8401,6 +8378,7 @@ int sub_6E69E( int a1, unsigned int a2)
   int i; // edx
   int j; // edx
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   result = -1;
   if ( a2 >= 3u )
   {
@@ -9110,6 +9088,7 @@ int sub_6F1CC( unsigned int a1)
 {
   int v1; // edx
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = 0;
   if ( a1 >= 0xAu )
   {
@@ -9335,6 +9314,7 @@ void sub_6F544( int a1, int a2)
   int v4; // ebx
   int16_t v5; // ax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   qmemcpy(&unk_19BE34, &off_1818F8, 0x82u);
   if ( a1 > 0 )
   {
@@ -9449,46 +9429,81 @@ int sub_6F5C1( int a1, int a2, int a3, int a4)
 
 
 //----- (0006F826) --------------------------------------------------------
-void sub_6F826()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6F826(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x0997A) /* unk_18197A */;
+  r2 = sub_1196B8(t1, 12);
+  return r2;
 }
 // 6F836: control flows out of bounds to 6F53D
 
 
 //----- (0006F83B) --------------------------------------------------------
-void sub_6F83B()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6F83B(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x099F2) /* unk_1819F2 */;
+  r2 = sub_1196B8(t1, 1);
+  return r2;
 }
 // 6F84B: control flows out of bounds to 6F53D
 
 
 //----- (0006F850) --------------------------------------------------------
-void sub_6F850()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6F850(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x099FC) /* unk_1819FC */;
+  r2 = sub_1196B8(t1, 7);
+  return r2;
 }
 // 6F860: control flows out of bounds to 6F53D
 
 
 //----- (0006F865) --------------------------------------------------------
-void sub_6F865()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6F865(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x09A42) /* unk_181A42 */;
+  r2 = sub_1196B8(t1, 7);
+  return r2;
 }
 // 6F875: control flows out of bounds to 6F53D
 
 
 //----- (0006F87A) --------------------------------------------------------
-void sub_6F87A()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6F87A(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x09A88) /* unk_181A88 */;
+  r2 = sub_1196B8(t1, 18);
+  return r2;
 }
 // 6F88A: control flows out of bounds to 6F53D
 
@@ -9502,6 +9517,7 @@ void sub_6F88F( int a1)
   int v4; // [esp+0h] [ebp-8h]
   int v5; // [esp+4h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = 12;
   qmemcpy(&unk_19BAD4, &unk_181B3C, 0x140u);
   if ( a1 )
@@ -9628,19 +9644,33 @@ void sub_6F9BD(int a1, int a2)
 
 
 //----- (0006FAC0) --------------------------------------------------------
-void sub_6FAC0()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6FAC0(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x09E66) /* unk_181E66 */;
+  r2 = sub_1196B8(t1, 6);
+  return r2;
 }
 // 6FAD0: control flows out of bounds to 6F53D
 
 
 //----- (0006FAD5) --------------------------------------------------------
-void sub_6FAD5()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6FAD5(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x09EA2) /* unk_181EA2 */;
+  r2 = sub_1196B8(t1, 10);
+  return r2;
 }
 // 6FAE5: control flows out of bounds to 6F53D
 
@@ -9671,10 +9701,17 @@ int sub_6FB1F( int a1, int a2)
 
 
 //----- (0006FB5E) --------------------------------------------------------
-void sub_6FB5E()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x6F53D */
+int sub_6FB5E(void)
 {
+  int t1;
+  int r2;
+
   sub_1196F7();
-  JUMPOUT(0x6F53D);
+  t1 = (int)(intptr_t)(dseg + 0x09F88) /* unk_181F88 */;
+  r2 = sub_1196B8(t1, 1);
+  return r2;
 }
 // 6FB6E: control flows out of bounds to 6F53D
 

@@ -2148,7 +2148,7 @@ LABEL_46:
                 HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v12 + 2)),
                 v1 + HIWORD(*(_DWORD *)((char *)off_184480 + 55 * v12)) + 1,
                 *(int *)((char *)off_184480 + 55 * v12 + 14) >> 16,
-                *(uint8_t **)((char *)off_184480 + 55 * v12 + 36),
+                ((uint8_t *)(uintptr_t)*(uint32_t *)((char *)off_184480 + 55 * v12 + 36)),
                 *(_DWORD *)((char *)off_184480 + 55 * v12 + 40),
                 *(_DWORD *)((char *)off_184480 + 55 * v12 + 44),
                 *(_DWORD *)((char *)off_184480 + 55 * v12 + 48));
@@ -6882,7 +6882,7 @@ _DWORD *sub_12816C(int a1, int a2, int a3, int *a4)
       if ( v17 != 1000 )
       {
         a4 = (int *)(dword_1BC28C + 4530 * v15);
-        sub_12779E(*(_BYTE **)((char *)a4 + 11 * v16 + 23), *(_BYTE **)(4530 * v17 + dword_1BC28C + 11 * v18 + 23), v20);
+        sub_12779E(((_BYTE *)(uintptr_t)*(uint32_t *)((char *)a4 + 11 * v16 + 23)), ((_BYTE *)(uintptr_t)*(uint32_t *)(4530 * v17 + dword_1BC28C + 11 * v18 + 23)), v20);
         for ( i = 0; (int16_t)word_1BC290 > i; ++i )
         {
           for ( j = 0; j < *(_DWORD *)(dword_1BC28C + 4530 * i + 4526); ++j )

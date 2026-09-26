@@ -1043,45 +1043,29 @@ LABEL_66:
 //----- (00089DF9) --------------------------------------------------------
 void sub_89DF9( int a1, int a2)
 {
-  int16_t v3; // ax
   int16_t v4; // si
-  int v5; // eax
-  int16_t *v6; // edi
-  int16_t v7; // ax
-  int16_t v8; // ax
-  int16_t v9; // ax
-  int v10; // eax
+  int16_t v6; // di
   int16_t v11; // ax
-  int v12; // eax
   int16_t v13; // [esp+4h] [ebp-10h]
   int16_t v14; // [esp+8h] [ebp-Ch]
   int16_t v15; // [esp+Ch] [ebp-8h]
   int16_t v16; // [esp+10h] [ebp-4h]
 
-  sub_7927F();
-  v4 = a1 - v3;
-  sub_7927F();
-  v6 = (int16_t *)(a2 - v5);
+  /* wave 182: the sub_7927F arguments (0x89E03..0x89E79) were lost and the
+     results dropped; the edi value was a pointer-typed int16. */
+  v4 = a1 - sub_7927F(253);
+  v6 = a2 - sub_7927F(200);
   if ( v4 < 0 )
     v4 = 0;
-  sub_7927F();
-  if ( v4 > word_199A0C - v7 )
-  {
-    sub_7927F();
-    v4 = word_199A0C - v8;
-  }
-  if ( (int16_t)v6 < 0 )
+  if ( v4 > word_199A0C - (int16_t)sub_7927F(506) )
+    v4 = word_199A0C - sub_7927F(506);
+  if ( v6 < 0 )
     v6 = 0;
-  sub_7927F();
-  if ( (int16_t)v6 > word_199A0A - v9 )
-  {
-    sub_7927F();
-    LOWORD(v6) = word_199A0A;
-    v6 = (int16_t *)((char *)v6 - v10);
-  }
+  if ( v6 > word_199A0A - (int16_t)sub_7927F(400) )
+    v6 = word_199A0A - sub_7927F(400);
   v15 = v4 - word_19998C;
-  v16 = (_WORD)v6 - word_199990;
-  v11 = sub_134637(word_19998C, word_199990, v4, (int16_t)v6);
+  v16 = v6 - word_199990;
+  v11 = sub_134637(word_19998C, word_199990, v4, v6);
   if ( v11 > 50 && (v15 || v16) )
   {
     v13 = 0;
@@ -1089,14 +1073,14 @@ void sub_89DF9( int a1, int a2)
     sub_124B65();
     while ( v13 < v14 )
     {
-      sub_8590A(v4, (int16_t)v6, v14);
-      sub_13432D(&word_19998C, &word_199990, v4, (int16_t)v6, 50);
+      sub_8590A(v4, v6, v14);
+      sub_13432D(&word_19998C, &word_199990, v4, v6, 50);
       word_199988 = -1;
       sub_124D41();
       ++v13;
       sub_84A95(0);
-      sub_84555(v6);
-      sub_1077D(v12, (int)&word_199990, v4, v6);
+      sub_84555((_DWORD *)(intptr_t)v6);   /* 0x89F32: edi = y */
+      sub_1077D(0, (int)&word_199990, v4, (int16_t *)(intptr_t)v6);
     }
     word_199988 = -1;
     sub_124D41();
@@ -1108,13 +1092,11 @@ void sub_89DF9( int a1, int a2)
     word_199988 = -1;
     byte_199F28 = 1;
     word_19998C = v4;
-    word_199990 = (int16_t)v6;
+    word_199990 = v6;
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x82ABB je epilog funkce */
 }
 // 89F62: control flows out of bounds to 82ABB
-// 89E0D: variable 'v3' is possibly undefined
-// 89E1B: variable 'v5' is possibly undefined
 // 89E35: variable 'v7' is possibly undefined
 // 89E50: variable 'v8' is possibly undefined
 // 89E6A: variable 'v9' is possibly undefined
@@ -1292,6 +1274,7 @@ int sub_8A216( int a1, int a2)
   _BYTE v5[100]; // [esp+0h] [ebp+1Ah] BYREF
   char v6[32]; // [esp+64h] [ebp+7Eh] BYREF
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   switch ( a1 )
   {
     case 0:
@@ -1767,7 +1750,7 @@ int sub_8A97A(int16_t *a1)
     }
     if ( (_BYTE)v1 )
     {
-      sub_E607F();
+      sub_E607F((int16_t)(intptr_t)v4, word_19999C);
       i = dword_197F9C;
       *(_BYTE *)(dword_197F9C + 129 * v9 + 100) = 5;
       if ( word_199BB8 == 1 )
@@ -2353,7 +2336,7 @@ void sub_8B519()
       v20 = sub_7A990(v10);
       v11 = sub_7A990(0xEFu);
       v12 = sprintf(v21, v11, v5, v20);
-      sub_7A25F(&byte_199F28, SHIDWORD(v12), 0);
+      sub_7A25F(&byte_199F28, (int)(intptr_t)v21, 0);
       v13 = *(int16_t *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 54) - v5;
       if ( v13 <= 0 )
         LOWORD(v13) = 0;
@@ -4103,11 +4086,11 @@ LABEL_25:
               ServiceAudioTick_FE8BE(v28, v6, v5, v7);
               v29 = sub_1247A0(0x189u) + 20;
               v41 = sub_1247A0(0x155u) + 20;
-              sub_7927F();
+              v31 = sub_7927F((int16_t)v29);   /* wave 182: 0x8D3B8 */
               v39 = (int16_t)i;
               v30 = 113 * (int16_t)i;
               *(_WORD *)(v30 + dword_19306C + 15) = v31;
-              sub_7927F();
+              v32 = sub_7927F((int16_t)v41);   /* wave 182: 0x8D3D7 */
               *(_WORD *)(v30 + dword_19306C + 17) = v32;
               v5 = (int16_t)v42;
               v6 = (int16_t)v7;
@@ -5552,6 +5535,7 @@ int16_t sub_8E98D( int a1)
 //----- (0008E9EB) --------------------------------------------------------
 char sub_8E9EB( int a1, int a2, int16_t *a3, char *a4, int a5)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( (uint16_t)a1 < 0x280u && a1 + *a3 <= 639 && (uint16_t)a2 < 0x1E0u && a2 + a3[1] <= 479 )
     return sub_12A478(a1, a2, (int)a3);
   _wcpp_1_unwind_leave(0, 0, "XY: (%d,%d) [seg len: (%d,%d)]  out of range in %s (#%d)", a1, a2, *a3, a3[1], a4, a5);
@@ -6570,6 +6554,7 @@ int sub_8FACF( int a1, int a2)
 //----- (0008FAF6) --------------------------------------------------------
 _BOOL1 sub_8FAF6( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
 {
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   return (a1 >= a5 && a1 <= a7 || a3 >= a5 && a3 <= a7 || a1 <= a5 && a3 >= a5 || a1 <= a7 && a3 >= a7)
       && (a2 >= a6 && a2 <= a8 || a4 >= a6 && a4 <= a8 || a2 <= a6 && a4 >= a6 || a2 <= a8 && a4 >= a8);
 }
@@ -7210,6 +7195,7 @@ int16_t sub_904FD( int a1)
   int16_t v2; // si
   int16_t result; // ax
 
+  a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = word_193038;
   v2 = word_19303A;
   if ( a1 )
@@ -7269,6 +7255,7 @@ int sub_90605( int a1, int a2)
   int v3; // eax
   int v4; // ebx
 
+  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v3 = 14 * a1;
   v4 = 0;
   if ( a2 == word_192FEA[v3]
@@ -9028,10 +9015,19 @@ int sub_923D6()
 
 
 //----- (0009241D) --------------------------------------------------------
-void sub_9241D()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x9240D */
+int sub_9241D(void)
 {
-  dword_193070 = sub_127C27((int)aBuffer0Lbx_7, 73, dword_193174);
-  JUMPOUT(0x9240D);
+  int r1;
+  int t2;
+  int t3;
+
+  r1 = sub_127C27((int)(intptr_t)&aBuffer0Lbx_7, 73, (int)(intptr_t)dword_193174);
+  dword_193070 = r1;
+  t2 = ((r1 & ~0xFFFF) | (uint16_t)(*(int *)(intptr_t)(r1 + 2)));
+  t3 = ((int16_t)((240 - ((int16_t)(t2)) / 2)) + (((int16_t)(t2) - 150)) / 2);
+  return t3;
 }
 // 92455: control flows out of bounds to 9240D
 // 193070: using guessed type int dword_193070;
@@ -10228,7 +10224,7 @@ void sub_93A1E()
     v6 = *(int16_t *)(dword_193188 + 2 * i);
     if ( v6 > -1 )
     {
-      v1 = *(int16_t **)(6 * i + dword_19C458);
+      v1 = ((int16_t *)(uintptr_t)*(uint32_t *)(6 * i + dword_19C458));
       v2 = (75 - *v1) / 2 + 12;
       v3 = (90 - v1[1]) / 2 + 37 + 109 * i;
       v4 = dword_1930DC + 59 * v6;
@@ -10272,9 +10268,14 @@ int sub_93B65()
 
 
 //----- (00093B7F) --------------------------------------------------------
-void sub_93B7F()
+/* wave 182: generated by tools/compare/jumpout_gen.py - the original
+   jumps into the tail at 0x93B77 */
+int sub_93B7F(void)
 {
-  JUMPOUT(0x93B77);
+  int r1;
+
+  r1 = sub_12A478(300, 12, (int)(intptr_t)dword_193124);
+  return r1;
 }
 // 93B91: control flows out of bounds to 93B77
 

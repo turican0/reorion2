@@ -62,6 +62,30 @@ def first_use(body, full, word, byte, idx):
         dst = parts[0]
         if op == 'movsx' and src in (word,):
             return 'int16'
+        # wave 182: `cmp bx, 1` / `test dx, dx` as the first read (sub_B4E64),
+        # when no later instruction reads the full register before it is
+        # written again
+        if op in ('cmp', 'test') and dst == word:
+            k = body.index(ins)
+            for later in body[k + 1:]:
+                mm = re.match(r'^(\w+)\s+(.*)$', later)
+                if not mm:
+                    if idx == 1 and later == 'cwde':
+                        return 'int16'
+                    continue
+                lop = mm.group(1)
+                lparts = [x.strip() for x in mm.group(2).split(',', 1)]
+                ldst = lparts[0]
+                lsrc = lparts[1] if len(lparts) == 2 else ''
+                if lop in ('mov', 'movsx', 'movzx', 'lea') and ldst == full and not re.search(r'\b%s\b' % full, lsrc):
+                    return 'int16'
+                if lop == 'xor' and ldst == full and lsrc == full:
+                    return 'int16'
+                if lop == 'call' and idx == 1:
+                    return 'int16'      # eax is the result register
+                if re.search(r'\b%s\b' % full, mm.group(2)) or (idx == 1 and later in ('cdq',)):
+                    return None         # the full register is read later
+            return 'int16'
         if re.search(r'\b(%s|%s|%s|%s)\b' % (full, word, byte, full[1:] + 'h' if full != 'eax' else 'ah'), src) \
                 or (op not in ('mov', 'movsx', 'movzx', 'lea') and re.search(r'\b(%s|%s|%s)\b' % (full, word, byte), dst)):
             return None       # read in another way first
