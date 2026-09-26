@@ -3341,7 +3341,7 @@ _BOOL1 sub_9773F( int a1)
 
 
 //----- (0009776C) --------------------------------------------------------
-void sub_9776C( int a1)
+int16_t sub_9776C( int a1)
 {
   int v2; // ebx
   int16_t v3; // dx
@@ -3352,10 +3352,11 @@ void sub_9776C( int a1)
   while ( 1 )
   {
     v4 = dword_1930DC + 59 * v3;
-    if ( a1 == *(char *)(v4 + 58) && !*(_BYTE *)(v4 + 35) && sub_9773F(v3) )
+    /* wave 182: 0x9778A cmp di, cx - 16-bit owner */
+    if ( (int16_t)a1 == *(char *)(v4 + 58) && !*(_BYTE *)(v4 + 35) && sub_9773F(v3) )
       ++v2;
     if ( ++v3 >= 67 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94801 je epilog funkce */
+      return (int16_t)v2;   /* wave 182: 0x977A8 mov eax, ebx */
   }
 }
 // 977AA: control flows out of bounds to 94801
@@ -3363,7 +3364,7 @@ void sub_9776C( int a1)
 
 
 //----- (000977AF) --------------------------------------------------------
-void sub_977AF( int a1)
+int16_t sub_977AF( int a1)
 {
   int v2; // edx
   int16_t v3; // bx
@@ -3374,10 +3375,10 @@ void sub_977AF( int a1)
   while ( 1 )
   {
     v4 = 59 * v3 + dword_1930DC;
-    if ( a1 == *(char *)(v4 + 58) && *(_BYTE *)(v4 + 35) == 1 && sub_9773F(v3) )
+    if ( (int16_t)a1 == *(char *)(v4 + 58) && *(_BYTE *)(v4 + 35) == 1 && sub_9773F(v3) )
       ++v2;
     if ( ++v3 >= 67 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94800 je epilog funkce */
+      return (int16_t)v2;   /* wave 182: 0x977F2 mov eax, edx */
   }
 }
 // 977F4: control flows out of bounds to 94800
@@ -3392,9 +3393,9 @@ _BOOL1 sub_977F9( int a1)
   int16_t v4; // ax
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  sub_9776C(a1);
+  v2 = sub_9776C(a1);   /* wave 182: 0x97800 */
   v3 = v2;
-  sub_977AF(a1);
+  v4 = sub_977AF(a1);
   return v4 + v3 < 8;
 }
 // 97805: variable 'v2' is possibly undefined
@@ -3402,8 +3403,10 @@ _BOOL1 sub_977F9( int a1)
 
 
 //----- (0009781D) --------------------------------------------------------
-void sub_9781D( int a1)
+int sub_9781D( int a1)
 {
+  int16_t v12; // [ebp-0Ch]
+  int16_t v13; // [ebp-8h]
   int v3; // eax
   int16_t v4; // bx
   int v5; // ebx
@@ -3414,9 +3417,10 @@ void sub_9781D( int a1)
   int v10; // eax
   int v11; // [esp+4h] [ebp-10h]
 
-  sub_9776C(a1);
-  sub_977AF(a1);
-  if ( sub_64395() >= 5 )
+  v12 = sub_9776C(a1);   /* wave 182: 0x9782D, results were dropped */
+  v13 = sub_977AF(a1);
+  if ( sub_64395() < 5 )
+    return 0;   /* 0x97850 */
   {
     v3 = (uint8_t*)dword_197F98 + 3753 * a1;
     if ( *(_WORD *)(v3 + 3690) )
@@ -3457,7 +3461,13 @@ void sub_9781D( int a1)
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94800 je epilog funkce */
+  {
+    /* wave 182: 0x97980..0x97999 - divided by the leaders already hired */
+    int v14 = v12 + 1 + v13;
+    if ( v14 <= 1 )
+      v14 = 1;
+    return (int16_t)v5 / v14;
+  }
 }
 // 97852: control flows out of bounds to 94800
 // 17D2CD: using guessed type int dword_17D2CD;
@@ -3533,11 +3543,11 @@ void sub_97A66( int a1)
   int16_t v7; // ax
   _BOOL1 v8; // [esp+0h] [ebp-4h]
 
-  sub_9781D(a1);
+  v3 = sub_9781D(a1);   /* wave 182: 0x97A75 */
   v4 = v3;
-  sub_9776C(a1);
+  v5 = sub_9776C(a1);
   v6 = v5;
-  sub_977AF(a1);
+  v7 = sub_977AF(a1);
   v8 = 0;
   if ( v6 + v7 < 8 )
   {
@@ -3567,7 +3577,7 @@ int sub_97AD4( int a1)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v7 = a1;
   v1 = a1;
-  sub_97B2D(a1);
+  v2 = sub_97B2D(a1);   /* wave 182: 0x97AE0 */
   v3 = v2;
   v4 = v2;
   v5 = (uint8_t*)dword_197F98 + 3753 * v1;
@@ -3586,8 +3596,9 @@ int sub_97AD4( int a1)
 
 
 //----- (00097B2D) --------------------------------------------------------
-void sub_97B2D( int a1)
+int sub_97B2D( int a1)
 {
+  int v14; // ecx
   int v1; // ebx
   int16_t v2; // ax
   int16_t v3; // ax
@@ -3604,9 +3615,9 @@ void sub_97B2D( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = a1;
-  sub_9776C(a1);
+  v2 = sub_9776C(a1);   /* wave 182: 0x97B3B */
   v13 = v2;
-  sub_977AF(v1);
+  v3 = sub_977AF(v1);
   v12 = v3;
   v4 = word_199998 + sub_64395() / 5 + 10;
   v5 = 0;
@@ -3625,6 +3636,7 @@ void sub_97B2D( int a1)
   else
     v8 = v4;
   v11 = v8;
+  v14 = -1;   /* 0x97B63 mov ecx, 0FFFFFFFFh */
   while ( 1 )
   {
     v9 = sub_1247A0(v11) - 1;
@@ -3632,11 +3644,16 @@ void sub_97B2D( int a1)
     if ( !*(_BYTE *)(59 * v9 + dword_1930DC + 35) && v13 < 4 || *(_BYTE *)(59 * v9 + dword_1930DC + 35) == 1 && v12 < 4 )
       v10 = 1;
     if ( v10 && sub_97C2D(v9) )
+    {
       v7 = 1;
+      v14 = v9;   /* 0x97C15 mov ecx, edx */
+    }
     if ( (int16_t)++v5 > 100 )
       v7 = 1;
+    /* wave 182: JUMPOUT(0x947FE) is `mov eax, ecx` + epilogue; as a no-op
+       it made this loop endless (the port hung on the third TURN) */
     if ( v7 )
-      JUMPOUT(0x947FE);
+      return v14;
   }
 }
 // 97C28: control flows out of bounds to 947FE
@@ -3915,9 +3932,9 @@ char sub_97F8D(int16_t *a1, int a2, int a3, int16_t a4)
       if ( (_WORD)a3 == v12 )
       {
         if ( *(_BYTE *)(v7 + 35) )
-          sub_977AF(a2);
+          v8 = sub_977AF(a2);   /* wave 182: 0x97FE7 */
         else
-          sub_9776C(a2);
+          v8 = sub_9776C(a2);   /* 0x97FDC */
         v5 = 1;
         *a1 = i;
         if ( v8 >= 4 )
@@ -4007,10 +4024,10 @@ int sub_980DB( int a1, int a2, _WORD *a3)
   int v11; // eax
   _BOOL1 v13; // [esp+0h] [ebp-4h]
 
-  sub_983B8();
+  v5 = sub_983B8((int16_t)a1);   /* wave 182: 0x980E6 cwde / call */
   v6 = v5;
   v13 = v5 == -1;
-  sub_9776C(a1);
+  v7 = sub_9776C(a1);   /* 0x980FF */
   if ( v7 >= 4 )
     v13 = 1;
   if ( v13 )
@@ -4178,7 +4195,7 @@ char sub_98363( int a1, int a2, int16_t *a3)
 
 
 //----- (000983B8) --------------------------------------------------------
-void sub_983B8()
+int sub_983B8( int a1)
 {
   int i; // ecx
   char v1; // [esp+0h] [ebp-72h]
@@ -4187,6 +4204,7 @@ void sub_983B8()
   int v4; // [esp+ECh] [ebp+7Ah]
   int v5; // [esp+F0h] [ebp+7Eh]
 
+  v1 = a1;   /* wave 182: 0x983C1 push eax - var_F4, stored as the owner below */
   v5 = -1;
   for ( i = 0; (int16_t)i < word_199994 && (int16_t)v5 == -1; ++i )
   {
@@ -4208,7 +4226,7 @@ void sub_983B8()
     LOBYTE(v2[50]) = 0;
     qmemcpy((void *)(129 * v4 + dword_197F9C), v2, 0x81u);
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x92E66 je epilog funkce */
+  return v5;   /* wave 182: 0x98481 mov eax, [var_4] */
 }
 // 98484: control flows out of bounds to 92E66
 // 98448: variable 'v1' is possibly undefined
@@ -4971,7 +4989,7 @@ LABEL_5:
       }
       if ( *(_BYTE *)(v5 + 35) == 1 )
       {
-        sub_977AF(word_19999C);
+        v8 = sub_977AF(word_19999C);   /* wave 182: 0x990D7 */
         if ( v8 == 4 )
         {
           v6 = 286;
@@ -4980,7 +4998,7 @@ LABEL_5:
       }
       else
       {
-        sub_9776C(word_19999C);
+        v9 = sub_9776C(word_19999C);   /* wave 182: 0x990F0 */
         if ( v9 == 4 )
         {
           v6 = 287;
