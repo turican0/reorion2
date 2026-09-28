@@ -10,10 +10,12 @@ void sub_23780( int a1)
   int16_t v4; // dx
   unsigned int v5; // esi
   int v6; // edx
-  _BYTE v7[3]; // [esp+0h] [ebp-4Ch] BYREF
-  int16_t v8; // [esp+3h] [ebp-49h]
-  char v9; // [esp+5h] [ebp-47h]
-  int16_t v10; // [esp+6h] [ebp-46h]
+  /* wave 182: v7..v10 are one 73-byte record in the frame (ebp-4Ch) */
+  _BYTE blk23780_v7[73];
+#define v7 ((_BYTE *)(blk23780_v7 + 0))
+#define v8 (*(int16_t *)(blk23780_v7 + 3))
+#define v9 (*(char *)(blk23780_v7 + 5))
+#define v10 (*(int16_t *)(blk23780_v7 + 6))
 
   memset(v7, 0, 73);
   v7[0] = -1;
@@ -34,6 +36,10 @@ void sub_23780( int a1)
   v10 = 0;
   v8 = v6;
   sub_DD2F2((int)v7);
+#undef v7
+#undef v8
+#undef v9
+#undef v10
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -44,10 +50,12 @@ void sub_23833( int a1)
 {
   int v2; // ebx
   unsigned int v3; // edx
-  _BYTE v4[3]; // [esp+0h] [ebp-4Ch] BYREF
-  int16_t v5; // [esp+3h] [ebp-49h]
-  char v6; // [esp+5h] [ebp-47h]
-  int16_t v7; // [esp+6h] [ebp-46h]
+  /* wave 182: v4..v7 are one 73-byte record in the frame (ebp-4Ch) */
+  _BYTE blk23833_v4[73];
+#define v4 ((_BYTE *)(blk23833_v4 + 0))
+#define v5 (*(int16_t *)(blk23833_v4 + 3))
+#define v6 (*(char *)(blk23833_v4 + 5))
+#define v7 (*(int16_t *)(blk23833_v4 + 6))
 
   memset(v4, 0, 73);
   v4[0] = -1;
@@ -59,6 +67,10 @@ void sub_23833( int a1)
   v3 = sub_1247A0(3u);
   v7 = (int)(v2 * (v3 + sub_1247A0(3u))) / 10;
   sub_DD2F2((int)v4);
+#undef v4
+#undef v5
+#undef v6
+#undef v7
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -73,12 +85,14 @@ int sub_238A8( int a1, _WORD *a2, _WORD *a3)
   unsigned int v7; // edi
   int v8; // edx
   int result; // eax
-  _BYTE v11[3]; // [esp+4h] [ebp-50h] BYREF
-  int16_t v12; // [esp+7h] [ebp-4Dh]
-  char v13; // [esp+9h] [ebp-4Bh]
-  int16_t v14; // [esp+Ah] [ebp-4Ah]
-  int16_t v15; // [esp+10h] [ebp-44h]
-  _BYTE v16[62]; // [esp+12h] [ebp-42h]
+  /* wave 182: v11..v16 are one 73-byte record in the frame (ebp-50h) */
+  _BYTE blk238A8_v11[73];
+#define v11 ((_BYTE *)(blk238A8_v11 + 0))
+#define v12 (*(int16_t *)(blk238A8_v11 + 3))
+#define v13 (*(char *)(blk238A8_v11 + 5))
+#define v14 (*(int16_t *)(blk238A8_v11 + 6))
+#define v15 (*(int16_t *)(blk238A8_v11 + 12))
+#define v16 ((_BYTE *)(blk238A8_v11 + 14))
   int v17; // [esp+50h] [ebp-4h]
 
   memset(v11, 0, 73);
@@ -112,6 +126,12 @@ int sub_238A8( int a1, _WORD *a2, _WORD *a3)
   }
   while ( (int16_t)result < 49 );
   return result;
+#undef v11
+#undef v12
+#undef v13
+#undef v14
+#undef v15
+#undef v16
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -2679,7 +2699,7 @@ void sub_26D19( int a1, int a2, int16_t *a3, int a4, int a5)
   {
     if ( *(_BYTE *)(v25 + (uint8_t*)dword_197F98 + 3753 * a1 + 279) == 3 && sub_E412B((uint8_t*)dword_197F98 + 3753 * a2, v25) == 1 )
     {
-      sub_FC845(a2, v25);
+      v10 = sub_FC845(a2, v25);   /* wave 182: 0x26D9D */
       if ( v10 )
       {
         v9 += 5;
@@ -2709,7 +2729,7 @@ void sub_26D19( int a1, int a2, int16_t *a3, int a4, int a5)
   {
     if ( *(_BYTE *)(v27 + (uint8_t*)dword_197F98 + 3753 * a2 + 279) == 3 && sub_E412B((uint8_t*)dword_197F98 + 3753 * a1, v27) == 1 )
     {
-      sub_FC845(a1, v27);
+      v14 = sub_FC845(a1, v27);   /* wave 182: 0x26E6C */
       if ( v14 )
       {
         if ( v14 <= v7 * v23 / v7 )
@@ -2805,7 +2825,7 @@ _DWORD *sub_27094( int a1, int a2,
   {
     if ( *(_BYTE *)(i + 3753 * a2 + (uint8_t*)dword_197F98 + 279) == 3 )
     {
-      sub_FC845(a1, i);
+      v10 = sub_FC845(a1, i);   /* wave 182: 0x270DD */
       v11 = v10;
       if ( i == 42 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 2207) )
         v11 = 0;
@@ -2889,7 +2909,7 @@ char *sub_2720F( int a1, int a2)
       result = (char *)(v19 + (uint8_t*)dword_197F98);
       if ( *(_BYTE *)(v6 + v19 + (uint8_t*)dword_197F98 + 279) == 3 )
       {
-        sub_FC845(a1, v6);
+        v8 = sub_FC845(a1, v6);   /* wave 182: 0x2729C add eax, eax */
         result = (char *)(2 * v8);
         if ( result )
         {

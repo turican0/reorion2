@@ -1345,8 +1345,10 @@ void sub_1160B(int a1, int a2, int a3, int a4)
   int v23; // eax
   int v24; // eax
   int16_t v25; // [esp+0h] [ebp-41Ah]
-  _BYTE v26[999]; // [esp+4h] [ebp-416h] BYREF
-  char v27; // [esp+3EBh] [ebp-2Fh] BYREF
+  /* wave 182: v26..v27 are one 1000-byte record in the frame (ebp-416h) */
+  _BYTE blk1160B_v26[1000];
+#define v26 ((_BYTE *)(blk1160B_v26 + 0))
+#define v27 (*(char *)(blk1160B_v26 + 999))
   char v28[119]; // [esp+3ECh] [ebp-2Eh] BYREF
   char v29; // [esp+463h] [ebp+49h] BYREF
   char v30[20]; // [esp+464h] [ebp+4Ah] BYREF
@@ -1464,6 +1466,8 @@ void sub_1160B(int a1, int a2, int a3, int a4)
     sub_77423((int)v28);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x115FE je epilog funkce */
+#undef v26
+#undef v27
 }
 // 116E4: control flows out of bounds to 115FE
 // 11789: bad sp value at call
@@ -3128,6 +3132,7 @@ int16_t sub_136B3(
   int i; // edx
   int16_t result; // ax
 
+  g_rngLogArmed = 1;   /* TOOL (wave 182): REORION2_RNG_LOG starts at the first turn */
   if ( (uint8_t)byte_199F3A <= 1u )
   {
     a1 = 1;
@@ -3463,7 +3468,7 @@ int64_t sub_13A3D( int a1, int a2, int a3)
       v35 = 1;
       goto LABEL_56;
     }
-    sub_E11BC((char *)(v31 + (uint8_t*)dword_192B18), v20);
+    v21 = sub_E11BC((char *)(v31 + (uint8_t*)dword_192B18), v20);   /* wave 182: result in al */
     if ( v21 )
     {
       v22 = 1;

@@ -1654,7 +1654,7 @@ void sub_7B631()
       {
         if ( (_WORD)v4 != (_WORD)v21 )
         {
-          sub_EBEB7(v21, v4);
+          v5 = sub_EBEB7(v21, v4);   /* wave 182: result was dropped */
           if ( (int16_t)v5 < (int16_t)v17 )
           {
             v17 = v5;
@@ -2034,7 +2034,7 @@ void sub_7BD87()
       if ( !v11[j] && !sub_798C4(j) && !sub_7C396(j) )
       {
         v12 = 113 * j;
-        sub_EBE79(*(_WORD *)(v12 + dword_19306C + 15), *(_WORD *)(v12 + dword_19306C + 17), v18, v16);
+        v2 = sub_EBE79(*(_WORD *)(v12 + dword_19306C + 15), *(_WORD *)(v12 + dword_19306C + 17), v18, v16);   /* wave 182: result was dropped */
         if ( v2 < (int16_t)v13 )
         {
           v3 = v2;
@@ -2207,7 +2207,7 @@ void sub_7C107( int a1, int a2, int a3)
     {
       v7 = 4 * i;
       *(_WORD *)(dword_19BFE4 + v7 + 2) = i;
-      sub_EBEB7(a1, i);
+      v8 = sub_EBEB7(a1, i);   /* wave 182: result was dropped */
       *(_WORD *)(dword_19BFE4 + v7) = v8;
       if ( sub_7C8E6(i) && *(int16_t *)(v7 + dword_19BFE4) <= a2 )
         v31 = 1;
@@ -2296,7 +2296,7 @@ void sub_7C107( int a1, int a2, int a3)
         v23 = 113 * v12 + dword_19306C;
         *(_WORD *)(v23 + 15) += v29;
         *(_WORD *)(v23 + 17) += v30;
-        sub_EBEB7(a1, v12);
+        v24 = sub_EBEB7(a1, v12);   /* wave 182: result was dropped */
       }
       while ( v24 > a2 );
     }
@@ -2716,13 +2716,17 @@ char sub_7C9EE(uint8_t *a1, int a2)
   uint16_t v9; // ax
   uint16_t v10; // ax
   _WORD v12[10]; // [esp+0h] [ebp-30h] BYREF
-  _BYTE v13[4]; // [esp+14h] [ebp-1Ch] BYREF
-  int16_t v14; // [esp+18h] [ebp-18h]
-  int16_t v15; // [esp+1Ah] [ebp-16h]
-  int16_t v16; // [esp+1Ch] [ebp-14h]
-  _BYTE v17[6]; // [esp+20h] [ebp-10h] BYREF
-  int16_t v18; // [esp+26h] [ebp-Ah]
-  int16_t v19; // [esp+28h] [ebp-8h]
+  /* wave 182: v13..v16 are one 10-byte record in the frame (ebp-1Ch) */
+  _BYTE blk7C9EE_v13[10];
+#define v13 ((_BYTE *)(blk7C9EE_v13 + 0))
+#define v14 (*(int16_t *)(blk7C9EE_v13 + 4))
+#define v15 (*(int16_t *)(blk7C9EE_v13 + 6))
+#define v16 (*(int16_t *)(blk7C9EE_v13 + 8))
+  /* wave 182: v17..v19 are one 10-byte record in the frame (ebp-10h) */
+  _BYTE blk7C9EE_v17[10];
+#define v17 ((_BYTE *)(blk7C9EE_v17 + 0))
+#define v18 (*(int16_t *)(blk7C9EE_v17 + 6))
+#define v19 (*(int16_t *)(blk7C9EE_v17 + 8))
   char v20; // [esp+2Ch] [ebp-4h]
 
   memset(v13, 0, 10);
@@ -2799,6 +2803,13 @@ LABEL_3:
   }
   sub_8C6C0(a1[2], (int)((uint8_t*)a1 - (uint8_t*)dword_1930D4) / 17);
   return sub_7CB7C(dword_19306C + 113 * a1[2], a2);
+#undef v13
+#undef v14
+#undef v15
+#undef v16
+#undef v17
+#undef v18
+#undef v19
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
@@ -6000,7 +6011,7 @@ void sub_80658(char *a1)
   if ( *a1 == 3 )
   {
     memmove(a1, a1 + 1, (int16_t)strlen(a1));
-    a1[(int16_t)sub_8FE65(a1)] = 0;
+    a1[(int16_t)sub_8FE65(a1, "\x01")] = 0;   /* wave 182: 0x8068A var_4 = "\1" - cut at the cursor mark */
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7D88C je epilog funkce */
 }
@@ -6014,8 +6025,11 @@ int sub_806A2(char *a1, int a2)
   int16_t v2; // cx
   int result; // eax
   _BYTE *v4; // [esp+0h] [ebp+7Ah]
-  char v5; // [esp+4h] [ebp+7Eh] BYREF
-  _BYTE v6[203]; // [esp+5h] [ebp+7Fh] BYREF
+  /* wave 182: var_D0 is one 204-byte buffer - the 03 prefix and the text must
+     be adjacent (split locals got padding and broke the save name) */
+  _BYTE blk806A2[204];
+#define v5 blk806A2[0]
+#define v6 (blk806A2 + 1)
 
   /* vlna 112: `v4` byla NEINICIALIZOVANA - opet spillnuty registrovy argument
      (asm `enter 0CCh,0` / `push eax` / `sub ebp, 14Ah`, pak
@@ -6035,6 +6049,8 @@ int sub_806A2(char *a1, int a2)
     }
   }
   return result;
+#undef v5
+#undef v6
 }
 // 806E4: variable 'v4' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);

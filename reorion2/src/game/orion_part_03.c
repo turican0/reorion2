@@ -6010,14 +6010,14 @@ int sub_3FDB4( int a1, int a2)
   int16_t v17; // [esp+18h] [ebp-4h]
 
   v3 = 33 * a1;
-  sub_56B26(8);
+  v4 = sub_56B26(8);   /* wave 182: result was dropped */
   v15 = v4;
-  sub_568EB(8);
+  v5 = sub_568EB(8);   /* wave 182: result was dropped */
   v12 = v5;
   v13 = sub_56CA2(8);
   v16 = sub_5679E(8);
   v14 = sub_5EB39(8);
-  sub_5685F(8);
+  v6 = sub_5685F(8);   /* wave 182: result was dropped */
   v17 = *(int16_t *)((char *)&word_17F642 + 15 * v6);
   v7 = sub_56D3A(8, a2);
   v8 = dword_192844 + v3;
@@ -6088,9 +6088,9 @@ int sub_3FEF2()
   *(_BYTE *)(v2 + v3 + 1) = 8;
   *(_BYTE *)(v2 + v3 + 6) = 0;
   *(_WORD *)(v2 + v3 + 4) = -1;
-  sub_56B26(8);
+  v4 = sub_56B26(8);   /* wave 182: result was dropped */
   *(_WORD *)(dword_192844 + 33 * word_1998C0 + 11) = v4;
-  sub_568EB(8);
+  v6 = sub_568EB(8);   /* wave 182: result was dropped */
   v5 = 33 * word_1998C0 + dword_192844;
   *(_WORD *)(v5 + 13) = v6;
   v7 = 1000 * word_180158 / 100;
@@ -7427,9 +7427,9 @@ char *sub_416CF(int16_t *a1, int a2, int a3, int a4, int a5, int a6)
     v7 = *(char *)(dword_197F9C + 129 * *a1 + 99);
   else
     v7 = *(char *)(361 * word_199878 + (uint8_t*)dword_192B18);
-  sub_56B26(v7);
+  v8 = sub_56B26(v7);   /* wave 182: result was dropped */
   v59 = v8;
-  sub_568EB(v7);
+  v9 = sub_568EB(v7);   /* wave 182: result was dropped */
   v10 = v9;
   v57 = sub_56CA2(v7);
   v58 = sub_5679E(v7);
@@ -7438,7 +7438,7 @@ char *sub_416CF(int16_t *a1, int a2, int a3, int a4, int a5, int a6)
   v55 = 10 * (sub_56726(v7) - 1);
   if ( v7 < 8 )
     LOWORD(v55) = *(char *)((uint8_t*)dword_197F98 + 3753 * v7 + 2213) + (_WORD)v55;
-  sub_5685F(v7);
+  v12 = sub_5685F(v7);   /* wave 182: result was dropped */
   v63 = 0;
   v62 = *(int16_t *)((char *)&word_17F642 + 15 * v12);
   while ( v63 < a2 )
@@ -12231,7 +12231,7 @@ LABEL_36:
   }
   if ( word_1998AC <= 8 )
   {
-    sub_5699C(word_1998AC);
+    v65 = sub_5699C(word_1998AC);   /* wave 182: result was dropped */
     v66 = v65;
     v67 = word_1998AC;
     word_199254[word_1998AC] = v66;
@@ -12241,7 +12241,7 @@ LABEL_36:
   }
   if ( word_19988E <= 8 )
   {
-    sub_5699C(word_19988E);
+    v69 = sub_5699C(word_19988E);   /* wave 182: result was dropped */
     v70 = v69;
     v71 = word_19988E;
     word_199254[word_19988E] = v70;
@@ -14349,9 +14349,9 @@ void sub_4AA36( int a1, int a2)
   v18 = 0;
   if ( *(_BYTE *)(v17 + (uint8_t*)dword_192B18 + 337) )
   {
-    sub_568EB(*(char *)(v17 + (uint8_t*)dword_192B18));
+    v19 = sub_568EB(*(char *)(v17 + (uint8_t*)dword_192B18));   /* wave 182: result was dropped */
     v20 = v19;
-    sub_6D048(word_19988E, word_17F80D[14 * v19]);
+    v21 = sub_6D048(word_19988E, word_17F80D[14 * v19]);   /* wave 182: result was dropped */
     v52 = 2;
     if ( v21 >= (uint8_t)byte_17FD41 )
       v52 = 10;
@@ -14372,10 +14372,10 @@ void sub_4AA36( int a1, int a2)
     *(_BYTE *)(v23 + 84) = v22;
     *(_BYTE *)(v23 + 91) = v22;
     *(_WORD *)(v23 + 86) = v53;
-    sub_56A78(*(char *)(361 * a1 + (uint8_t*)dword_192B18));
+    v24 = sub_56A78(*(char *)(361 * a1 + (uint8_t*)dword_192B18));   /* wave 182: result was dropped */
     v25 = v24;
     v54 = 4;
-    sub_6D048(word_19988E, word_17F80D[14 * v24]);
+    v26 = sub_6D048(word_19988E, word_17F80D[14 * v24]);   /* wave 182: result was dropped */
     if ( v26 >= (uint8_t)byte_17FD50 )
       v54 = 20;
     if ( v26 >= (uint8_t)byte_17FD6E )
@@ -14443,10 +14443,10 @@ void sub_4AA36( int a1, int a2)
   v37 = 361 * a1;
   if ( *(_BYTE *)(v37 + (uint8_t*)dword_192B18 + 336) )
   {
-    sub_56BFA(*(char *)(v37 + (uint8_t*)dword_192B18));
+    v38 = sub_56BFA(*(char *)(v37 + (uint8_t*)dword_192B18));   /* wave 182: result was dropped */
     v39 = v38;
     v57 = 0;
-    sub_6D048(word_19988E, word_17F80D[14 * v38]);
+    v40 = sub_6D048(word_19988E, word_17F80D[14 * v38]);   /* wave 182: result was dropped */
     if ( v40 >= (uint8_t)byte_17FDC8 )
       v57 = 4096;
     if ( v40 >= (uint8_t)byte_17FDB9 )
@@ -15300,7 +15300,7 @@ LABEL_40:
         v28 = (_BYTE *)(11 * i + 313 * word_1998C0 + dword_192864 + 82);
         sub_127776(v28, 0xBu);
       }
-      sub_568EB(word_19988E);
+      v30 = sub_568EB(word_19988E);   /* wave 182: result was dropped */
       v29 = dword_192864 + 313 * word_1998C0;
       *(_WORD *)(v29 + 82) = v30;
       *(_BYTE *)(v29 + 90) = 1;
@@ -15315,7 +15315,7 @@ LABEL_40:
       v31 = dword_192864 + 313 * word_1998C0;
       *(_BYTE *)(v31 + 84) = v75;
       *(_BYTE *)(v31 + 91) = v75;
-      sub_568EB(word_19988E);
+      v34 = sub_568EB(word_19988E);   /* wave 182: result was dropped */
       v32 = 1;
       v33 = dword_192864 + 313 * word_1998C0 + 11;
       *(_WORD *)(v33 + 82) = v34;
@@ -15339,7 +15339,7 @@ LABEL_40:
         v38 = 11 * v35;
         *(_BYTE *)(v36 + v37 + 84) = 99;
         *(_BYTE *)(v36 + v37 + 91) = 99;
-        sub_568EB(word_19988E);
+        v39 = sub_568EB(word_19988E);   /* wave 182: result was dropped */
         LOWORD(v36) = v39;
         v40 = dword_192864 + 313 * word_1998C0;
         *(_BYTE *)(v38 + v40 + 90) = 1;
@@ -15352,7 +15352,7 @@ LABEL_40:
       v41 = dword_192864 + 313 * word_1998C0 + 11 * (int16_t)v32;
       *(_BYTE *)(v41 + 84) = v76;
       *(_BYTE *)(v41 + 91) = v76;
-      sub_56A78(word_19988E);
+      v44 = sub_56A78(word_19988E);   /* wave 182: result was dropped */
       v42 = v32 + 1;
       v43 = dword_192864 + 313 * word_1998C0 + 11 * v35;
       *(_WORD *)(v43 + 82) = v44;
@@ -15372,7 +15372,7 @@ LABEL_40:
         v46 = 11 * (int16_t)v42;
         *(_BYTE *)(v46 + v45 + 84) = 99;
         *(_BYTE *)(v46 + v45 + 91) = 99;
-        sub_56A78(word_19988E);
+        v47 = sub_56A78(word_19988E);   /* wave 182: result was dropped */
         LOWORD(v46) = v47;
         v48 = 313 * word_1998C0 + dword_192864;
         v49 = 11 * (int16_t)(v42 + 1);
@@ -15387,11 +15387,11 @@ LABEL_40:
       v50 = 313 * word_1998C0 + dword_192864 + 11 * (int16_t)v42;
       *(_BYTE *)(v50 + 84) = v77;
       *(_BYTE *)(v50 + 91) = v77;
-      sub_56BFA(word_19988E);
+      v51 = sub_56BFA(word_19988E);   /* wave 182: result was dropped */
       v52 = v51;
       v53 = v42 + 1;
       v81 = 0;
-      sub_6D048(word_19988E, word_17F80D[14 * v51]);
+      v54 = sub_6D048(word_19988E, word_17F80D[14 * v51]);   /* wave 182: result was dropped */
       if ( v54 >= (uint8_t)byte_17FDC8 )
         v81 = 4096;
       if ( v54 >= (uint8_t)byte_17FDB9 )

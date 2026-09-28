@@ -92,6 +92,7 @@ extern uint8_t csegdata[0x113F2];
 #define dword_C2234 (*(int (*)[7])(csegdata + 0x08424))   /* 0xC2234 */
 #define word_C5102 (*(int16_t *)(csegdata + 0x08C43))   /* 0xC5102 */
 #define dword_C6E40 (*(int (*)[3])(csegdata + 0x09637))   /* 0xC6E40 */
+#define byte_CF38A (*(char (*)[5])(csegdata + 0x09E40))   /* 0xCF38A */
 #define byte_CF38F (*(char (*)[9])(csegdata + 0x09E45))   /* 0xCF38F */
 #define byte_D575C (*(char (*)[5])(csegdata + 0x0A64E))   /* 0xD575C */
 #define byte_DD4B5 (*(char (*)[5])(csegdata + 0x0AE53))   /* 0xDD4B5 */

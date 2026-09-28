@@ -2709,7 +2709,7 @@ _BOOL1 sub_BEFA8( int a1)
                             + 42,
                               word_19999C) )
     {
-      sub_E1085(361 * v1 + (uint8_t*)dword_192B18);
+      v3 = sub_E1085((int)(361 * v1 + (uint8_t*)dword_192B18));   /* wave 182: 0xBF006 */
       if ( v3 > 0 )
         return 1;
     }
@@ -3391,7 +3391,7 @@ int sub_BFC0B( int a1)
     v13 = 568;
     goto LABEL_12;
   }
-  sub_E1085(v4);
+  v7 = sub_E1085((int)v4);   /* wave 182: 0xBFC89 */
   if ( v7 <= 0 )
   {
     if ( *(int16_t *)(v3 + (uint8_t*)dword_192B18 + 277) == -1 )
@@ -3402,7 +3402,7 @@ int sub_BFC0B( int a1)
   }
   if ( !sub_E10EA(a1) )
   {
-    sub_E1085(v3 + (uint8_t*)dword_192B18);
+    v15 = sub_E1085((int)(v3 + (uint8_t*)dword_192B18));   /* wave 182: 0xBFD2D */
     v19 = (int16_t)(v15 - *(_WORD *)(3753 * *(char *)(v3 + (uint8_t*)dword_192B18) + (uint8_t*)dword_197F98 + 50));
     v16 = (char *)sub_CDF5C(564);
     sprintf(v20, v16, v19);
@@ -3424,7 +3424,7 @@ LABEL_20:
   }
   v8 = *(int16_t *)(v3 + (uint8_t*)dword_192B18 + 293);
   v18 = (int16_t)sub_E0F95(v3 + (uint8_t*)dword_192B18) - v8;
-  sub_E1085(v3 + (uint8_t*)dword_192B18);
+  v9 = sub_E1085((int)(v3 + (uint8_t*)dword_192B18));   /* wave 182: 0xBFCCE */
   v17 = v9;
   v10 = (char *)sub_CDF5C(269);
   v11 = sprintf(v20, v10, v17, v18);
@@ -4538,7 +4538,7 @@ void sub_C132A( int a1, int a2)
   v3 = a1;
   sub_BAAC5(60 * (a2 % 5) + 188, 61 * (a2 / 5) + 77, a1);
   v4 = sub_79C54(word_199830, word_199832);
-  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * *(int16_t *)(17 * v4 + (uint8_t*)dword_1930D4)), -(int16_t)(a1 + 100));
+  v5 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * *(int16_t *)(17 * v4 + (uint8_t*)dword_1930D4)), -(int16_t)(a1 + 100));   /* wave 182: result in al */
   if ( v5 )
   {
     v7 = 129 * v3 + dword_197F9C;
@@ -4696,7 +4696,7 @@ int sub_C1576(_WORD *a1, _WORD *a2)
       {
         v20 = (int16_t)-(int16_t)(v4 + 100);
         v19 = 17 * sub_79C54(word_199830, word_199832);
-        sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * *(int16_t *)(v19 + (uint8_t*)dword_1930D4)), v20);
+        v7 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * *(int16_t *)(v19 + (uint8_t*)dword_1930D4)), v20);   /* wave 182: result in al */
         if ( v7 )
         {
           if ( *(char *)(v5 + dword_197F9C + 93) == word_19999C )

@@ -6860,9 +6860,11 @@ int sub_A8197(
   int v110; // [esp+66h] [ebp-10Ah]
   int v111; // [esp+6Ah] [ebp-106h]
   int16_t v112; // [esp+6Eh] [ebp-102h]
-  _BYTE v113[15]; // [esp+72h] [ebp-FEh] BYREF
-  int16_t v114; // [esp+81h] [ebp-EFh]
-  char v115; // [esp+8Fh] [ebp-E1h]
+  /* wave 182: v113..v115 are one 240-byte record in the frame (ebp-FEh) */
+  _BYTE blkA8197_v113[240];
+#define v113 ((_BYTE *)(blkA8197_v113 + 0))
+#define v114 (*(int16_t *)(blkA8197_v113 + 15))
+#define v115 (*(char *)(blkA8197_v113 + 29))
   int v116; // [esp+162h] [ebp-Eh]
   int v117; // [esp+166h] [ebp-Ah]
   int v118; // [esp+16Ah] [ebp-6h]
@@ -7184,7 +7186,7 @@ LABEL_51:
                 memset(v113, 0, 240);
                 v51 = 15 * (SWORD1(a11) + 1);
                 ++*(_DWORD *)((char *)&a11 + 2);
-                qmemcpy(v113, (void *)(*(_DWORD *)((char *)&a19 + 10) + v51), sizeof(v113));
+                qmemcpy(v113, (void *)(*(_DWORD *)((char *)&a19 + 10) + v51), 15);   /* wave 182: was sizeof(v113) */
                 v115 = 0;
                 v114 = 0;
                 word_18248B = 2;
@@ -7430,6 +7432,9 @@ LABEL_113:
     }
   }
   return result;
+#undef v113
+#undef v114
+#undef v115
 }
 // A8197: variables would overlap: ^1C2.2 and ^1C2.4
 // A83E3: inconsistent variable size for '^1C8.16'
@@ -12512,7 +12517,7 @@ int sub_AFEFC(int a1, int a2, int a3)
   word_18283A = 2;
   do
   {
-    sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), a3);
+    v3 = sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), a3);   /* wave 182: result in al */
     if ( (word_18283A <= 54 && v3 == 1 || byte_182ACB) && a3 != 11 )
     {
       v4 = word_18283A++;
@@ -12570,7 +12575,7 @@ void sub_AFF9E()
   v2 = sub_AFDE9(11);
   if ( v1 > v2 )
   {
-    sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), 11);
+    v3 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), 11);   /* wave 182: result in al */
     if ( v3 )
     {
       v4 = word_1828A8++;
@@ -12579,7 +12584,7 @@ void sub_AFF9E()
   }
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 348) == 3 )
   {
-    sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -15);
+    v5 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -15);   /* wave 182: result in al */
     if ( v5 )
     {
       v6 = word_1828A8++;
@@ -12636,25 +12641,25 @@ void sub_AFF9E()
     v19 = word_1828A8++;
     word_18283C[v19] = -9;
   }
-  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -4);
+  v20 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -4);   /* wave 182: result in al */
   if ( v20 )
   {
     v21 = word_1828A8++;
     word_18283C[v21] = -4;
   }
-  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -5);
+  v22 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -5);   /* wave 182: result in al */
   if ( v22 )
   {
     v23 = word_1828A8++;
     word_18283C[v23] = -5;
   }
-  sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -6);
+  v24 = sub_E11BC((char *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8), -6);   /* wave 182: result in al */
   if ( v24 )
   {
     v25 = word_1828A8++;
     word_18283C[v25] = -6;
   }
-  sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), -7);
+  v26 = sub_E11BC((char *)(361 * dword_19F7A8 + (uint8_t*)dword_192B18), -7);   /* wave 182: result in al */
   if ( v26 )
   {
     v27 = word_1828A8++;

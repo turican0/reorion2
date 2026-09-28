@@ -2185,7 +2185,7 @@ void sub_668FD()
     {
       if ( word_18B0E0[v1] <= 0 )
         goto LABEL_17;
-      sub_6E70A(word_19999C, word_17FDF2[11 * word_18B0E0[v1]]);
+      v12 = sub_6E70A(word_19999C, word_17FDF2[11 * word_18B0E0[v1]]);   /* wave 182: result was dropped */
       v13 = v12;
       v14 = sub_6B4D7(word_18B0E0[v1]);
       v28 = sub_6B519(v14, v13);
@@ -2602,12 +2602,12 @@ void sub_67312()
       if ( word_18B0E0[v1] <= 0 )
         goto LABEL_17;
       sub_1212B3(v30, v17, *(int *)((char *)&off_17F6A1 + 59 * word_18B0E0[v1]));
-      sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * word_18B0E0[v1]));
+      v12 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * word_18B0E0[v1]));   /* wave 182: result was dropped */
       v26 = 59 * word_18B0E0[v1];
       v13 = sub_6B519(*(int16_t *)((char *)&word_17F6B5[*(int16_t *)(dword_1927A8 + 229)] + v26), v12);
       v27 = (int16_t)v19;
       sub_121199((int16_t)(v19 + 220 + (int16_t)v31 / 2), (int16_t)v17, v13, v6);
-      sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * word_18B0E0[v1]));
+      v14 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * word_18B0E0[v1]));   /* wave 182: result was dropped */
       v9 = (int16_t)sub_6E60E(
                       *(int16_t *)((char *)&word_17F6A9 + 59 * word_18B0E0[v1] + 2 * *(int16_t *)(dword_1927A8 + 229)),
                       v14,
@@ -2915,7 +2915,7 @@ void sub_67CCF( int a1)
       break;
     case 1:
       v6 = word_17F80D[14 * *(int16_t *)(6 * word_19B972 + dword_192694)];
-      sub_6D048(word_19999C, v6);
+      v7 = sub_6D048(word_19999C, v6);   /* wave 182: result was dropped */
       v14 = v7;
       v8 = (uint8_t)byte_17FD14[v3];
       if ( (uint8_t)byte_17FD14[v3] - (int16_t)v7 == 1 )
@@ -3279,10 +3279,10 @@ int16_t sub_6831F( int a1, int a2, int a3)
     if ( sub_6EDAE(a1) )
     {
       v4 = sub_6F11C(word_17F80D[v3]);
-      sub_6E70A(word_19999C, word_17F80D[v3]);
+      v5 = sub_6E70A(word_19999C, word_17F80D[v3]);   /* wave 182: result was dropped */
       a3 = sub_6E60E(word_17F811[v3], v5, v4);
       v6 = sub_6F11C(word_17F80D[v3]);
-      sub_6E70A(word_19999C, word_17F80D[v3]);
+      v7 = sub_6E70A(word_19999C, word_17F80D[v3]);   /* wave 182: result was dropped */
       v8 = v7;
       v9 = sub_6F1CC(2u);
       a2 = sub_6E60E(v9, v8, v6);
@@ -3290,7 +3290,7 @@ int16_t sub_6831F( int a1, int a2, int a3)
     else
     {
       v10 = sub_6F11C(word_17F80D[v3]);
-      sub_6E70A(word_19999C, word_17F80D[v3]);
+      v11 = sub_6E70A(word_19999C, word_17F80D[v3]);   /* wave 182: result was dropped */
       a3 = sub_6E60E(word_17F811[v3], v11, v10);
       a2 = 0;
     }
@@ -3375,7 +3375,7 @@ void sub_68413()
       while ( v7 < *(int16_t *)(dword_1975C4 + 8) )
       {
         v9 = sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + 47 * word_18B0E0[v7]));
-        sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * word_18B0E0[v7]));
+        v10 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * word_18B0E0[v7]));   /* wave 182: result was dropped */
         v11 = sub_6E60E(
                 *(int16_t *)((char *)word_17EEE8 + 47 * word_18B0E0[v7] + 2 * *(int16_t *)(dword_1927A8 + 229)),
                 v10,
@@ -3600,7 +3600,7 @@ int16_t sub_68755(int16_t *a1)
             v36 = (uint8_t)sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + 47 * word_18B0E0[(int16_t)v9]));
             v17 = *(int16_t *)((char *)&word_17EEE6 + 47 * word_18B0E0[(int16_t)v9]);
             v35 = word_19999C;
-            sub_6E70A(word_19999C, v17);
+            v18 = sub_6E70A(word_19999C, v17);   /* wave 182: result was dropped */
             sub_6E60E(
               *(int16_t *)((char *)word_17EEE8 + 47 * word_18B0E0[(int16_t)v9] + 2 * *(int16_t *)(dword_1927A8 + 229)),
               v18,
@@ -3784,10 +3784,10 @@ int sub_68D3D( int a1, _WORD *a2, int16_t *a3, int a4)
   }
   else
   {
-    sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));
+    v11 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));   /* wave 182: result was dropped */
     *a2 = sub_6B519(v14, v11);
     v12 = sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + 47 * v6));
-    sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));
+    v13 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));   /* wave 182: result was dropped */
     result = sub_6E60E(v9, v13, v12);
     *a3 = result;
   }
@@ -3966,7 +3966,7 @@ void sub_6908A(int a1)
       }
       else if ( ((word_17F81D[14 * v6] >> v3) & 1) != 0 )
       {
-        sub_6D048(word_19999C, v7);
+        v5 = sub_6D048(word_19999C, v7);   /* wave 182: result was dropped */
         v4 = (_BYTE *)(a1 + v3);
         if ( v5 < (uint8_t)byte_17FD14[15 * v3] )
         {
@@ -4078,10 +4078,10 @@ LABEL_26:
         if ( sub_6EDAE(*(_WORD *)(dword_192694 + 6 * v12)) )
         {
           v15 = sub_6F11C(word_17F80D[v14]);
-          sub_6E70A(word_19999C, word_17F80D[v14]);
+          v16 = sub_6E70A(word_19999C, word_17F80D[v14]);   /* wave 182: result was dropped */
           v25 = sub_6E60E(word_17F811[v14], v16, v15);
           v17 = sub_6F11C(word_17F80D[v14]);
-          sub_6E70A(word_19999C, word_17F80D[v14]);
+          v18 = sub_6E70A(word_19999C, word_17F80D[v14]);   /* wave 182: result was dropped */
           v19 = v18;
           v20 = sub_6F1CC(2u);
           v21 = sub_6E60E(v20, v19, v17);
@@ -4089,7 +4089,7 @@ LABEL_26:
         else
         {
           v22 = sub_6F11C(word_17F80D[v14]);
-          sub_6E70A(word_19999C, word_17F80D[v14]);
+          v23 = sub_6E70A(word_19999C, word_17F80D[v14]);   /* wave 182: result was dropped */
           v25 = sub_6E60E(word_17F811[v14], v23, v22);
           v21 = 0;
         }
@@ -5179,7 +5179,7 @@ int sub_6A7C8( int a1, int a2)
   *(_DWORD *)(dword_1927A8 + 233) = v7;
   *(_WORD *)(dword_1927A8 + 43) = sub_5680D(a1);
   *(_WORD *)(dword_1927A8 + 231) = (uint8_t)sub_77CD5(a1, a2);
-  sub_5685F(a1);
+  v8 = sub_5685F(a1);   /* wave 182: result was dropped */
   *(_WORD *)(dword_1927A8 + 49) = v8;
   v9 = sub_5709F(a1);   /* vlna 150: asm `mov ebx, eax` -> [dword_1927A8+47] */
   *(_WORD *)(dword_1927A8 + 47) = v9;
@@ -5723,7 +5723,7 @@ int sub_6B247()
   *(_WORD *)(dword_1927A8 + 27) = v0;
   *(_WORD *)(v1 + 29) = word_17FE9C[23 * v0];
   *(_WORD *)(dword_1927A8 + 43) = sub_5680D(word_19999C);
-  sub_5685F(word_19999C);
+  v2 = sub_5685F(word_19999C);   /* wave 182: result was dropped */
   *(_WORD *)(dword_1927A8 + 49) = v2;
   v4 = sub_5709F(word_19999C);   /* vlna 150: asm `mov edx, eax` */
   v3 = 0;
@@ -6519,11 +6519,11 @@ void sub_6C087( int a1)
   v3 = *(int16_t *)((char *)&word_17F6B5 + 59 * v2 + 2 * *(int16_t *)(dword_1927A8 + 229));
   if ( v2 > 0 && !v3 )
     v3 = 1;
-  sub_6E70A(a1, *(int16_t *)((char *)&word_17F6A7 + 59 * v2));
+  v4 = sub_6E70A(a1, *(int16_t *)((char *)&word_17F6A7 + 59 * v2));   /* wave 182: result was dropped */
   v5 = sub_6B519(v3, v4);
   v6 = dword_1927A8;
   *(_WORD *)(dword_1927A8 + 19) = v5;
-  sub_6E70A(a1, word_17FE76[23 * *(int16_t *)(v6 + 27)]);
+  v7 = sub_6E70A(a1, word_17FE76[23 * *(int16_t *)(v6 + 27)]);   /* wave 182: result was dropped */
   v8 = sub_6B519(word_17FE84[23 * *(int16_t *)(dword_1927A8 + 27) + *(int16_t *)(dword_1927A8 + 229)], v7);
   v9 = dword_1927A8;
   *(_WORD *)(dword_1927A8 + 31) = v8;
@@ -6559,7 +6559,7 @@ void sub_6C087( int a1)
           }
           else
           {
-            sub_6E70A(a1, *(int16_t *)((char *)&word_17EEE6 + 47 * *(int16_t *)(dword_1927A8 + v19 + 181)));
+            v15 = sub_6E70A(a1, *(int16_t *)((char *)&word_17EEE6 + 47 * *(int16_t *)(dword_1927A8 + v19 + 181)));   /* wave 182: result was dropped */
             *(_WORD *)(v19 + dword_1927A8 + 197) = sub_6B519(v14, v15);
           }
         }
@@ -6569,7 +6569,7 @@ void sub_6C087( int a1)
           v17 = word_17FDF4[11 * v16 + *(int16_t *)(dword_1927A8 + 229)];
           if ( !v17 )
             v17 = v16 > 0;
-          sub_6E70A(a1, word_17FDF2[11 * *(int16_t *)(dword_1927A8 + 43)]);
+          v18 = sub_6E70A(a1, word_17FDF2[11 * *(int16_t *)(dword_1927A8 + 43)]);   /* wave 182: result was dropped */
           *(_WORD *)(dword_1927A8 + 45) = sub_6B519(v17, v18);
           return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6A3DE je epilog funkce */
         }
@@ -6616,7 +6616,7 @@ void sub_6C287( int a1)
   char v17; // [esp+0h] [ebp-10h]
 
   v2 = sub_6F11C(word_17FE76[23 * *(int16_t *)(dword_1927A8 + 27)]);
-  sub_6E70A(a1, word_17FE76[23 * *(int16_t *)(dword_1927A8 + 27)]);
+  v3 = sub_6E70A(a1, word_17FE76[23 * *(int16_t *)(dword_1927A8 + 27)]);   /* wave 182: result was dropped */
   v4 = sub_6E60E(word_17FE78[23 * *(int16_t *)(dword_1927A8 + 27) + *(int16_t *)(dword_1927A8 + 229)], v3, v2);
   v5 = dword_1927A8;
   *(_WORD *)(dword_1927A8 + 41) = 0;
@@ -6638,7 +6638,7 @@ void sub_6C287( int a1)
       v8 = word_19999C;
       v9 = *(_WORD *)(dword_1927A8 + 17);
       v10 = sub_6E369(v9, *(_WORD *)(dword_1927A8 + 229));
-      sub_6E70A(v8, *(int16_t *)((char *)&word_17F6A7 + 59 * v9));
+      v11 = sub_6E70A(v8, *(int16_t *)((char *)&word_17F6A7 + 59 * v9));   /* wave 182: result was dropped */
       v12 = sub_6E60E(v10, v11, 0);
       v13 = 0;
       *(_WORD *)(dword_1927A8 + 21) = v12;
@@ -6657,7 +6657,7 @@ void sub_6C287( int a1)
           else
           {
             v17 = sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + 47 * *(int16_t *)(v15 + 181)));
-            sub_6E70A(a1, *(int16_t *)((char *)&word_17EEE6 + 47 * *(int16_t *)(v14 + dword_1927A8 + 181)));
+            v16 = sub_6E70A(a1, *(int16_t *)((char *)&word_17EEE6 + 47 * *(int16_t *)(v14 + dword_1927A8 + 181)));   /* wave 182: result was dropped */
             *(_WORD *)(v14 + dword_1927A8 + 213) = sub_6E60E(
                                                      *(int16_t *)((char *)&word_17EEE8
                                                                 + 47 * *(int16_t *)(v14 + dword_1927A8 + 181)
@@ -7301,7 +7301,7 @@ void sub_6C98D(int a1, int a2, int a3, int16_t *a4)
 
 
 //----- (0006D048) --------------------------------------------------------
-void sub_6D048( int a1, int a2)
+int16_t sub_6D048( int a1, int a2)
 {
   int v3; // edx
   int16_t v4; // bx
@@ -7318,7 +7318,7 @@ LABEL_2:
   while ( 1 )
   {
     if ( v4 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6AB15 je epilog funkce */
+      return v5;   /* wave 182: 0x6D073 - eax is the count of known prerequisites */
     if ( v6 )
     {
       if ( v6 < 75 )
@@ -8164,7 +8164,7 @@ int sub_6E316( int a1)
   v1 = *(int16_t *)((char *)word_17F6B5 + 59 * a1 + 2 * *(int16_t *)(dword_1927A8 + 229));
   if ( a1 > 0 && !v1 )
     v1 = 1;
-  sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * a1));
+  v2 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17F6A7 + 59 * a1));   /* wave 182: result was dropped */
   return sub_6B519(v1, v2);
 }
 // 6E361: variable 'v2' is possibly undefined
@@ -8199,7 +8199,7 @@ int sub_6E38E( int a1, int a2, int a3)
   v4 = *(int16_t *)((char *)&word_17F6A9 + 59 * a1 + 2 * a2);
   if ( a1 > 0 && !v4 )
     v4 = 1;
-  sub_6E70A(a3, *(int16_t *)((char *)&word_17F6A7 + 59 * a1));
+  v5 = sub_6E70A(a3, *(int16_t *)((char *)&word_17F6A7 + 59 * a1));   /* wave 182: result was dropped */
   return sub_6E60E(v4, v5, 0);
 }
 // 6E3CC: variable 'v5' is possibly undefined
@@ -8257,7 +8257,7 @@ void sub_6E42E()
           {
             v4 = 47 * j;
             v6 = sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + v4));
-            sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + v4));
+            v5 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + v4));   /* wave 182: result was dropped */
             if ( *(_DWORD *)(dword_1927A8 + 237)
                + (int16_t)sub_6E60E(*(int16_t *)((char *)&word_17EEE8[*(int16_t *)(dword_1927A8 + 229)] + v4), v5, v6) <= *(_DWORD *)(dword_1927A8 + 233) )
             {
@@ -8406,7 +8406,7 @@ int sub_6E69E( int a1, unsigned int a2)
 
 
 //----- (0006E70A) --------------------------------------------------------
-void sub_6E70A( int a1, int a2)
+int16_t sub_6E70A( int a1, int a2)
 {
   if ( a1 > -1 && a1 < word_199998 )
   {
@@ -8418,9 +8418,11 @@ void sub_6E70A( int a1, int a2)
     if ( a2 )
     {
       if ( *(_BYTE *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 279) != 1 )
-        sub_6D048(a1, a2);
+        return sub_6D048(a1, a2);   /* wave 182: 0x6E76F tail call */
     }
+    return 0;
   }
+  return 0;   /* 0x6E714 xor eax, eax */
 }
 // FE8D5: using guessed type int _wcpp_1_unwind_leave(_DWORD, _DWORD, char *, ...);
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -8786,7 +8788,7 @@ int sub_6EC74( int a1, int a2, int a3, unsigned int a4, int a5)
   }
   sub_6A406(a5, &v16, &v15);
   v12 = (int16_t)v19 * (v9 * (v16 + v11 + 100) / 100);
-  sub_6E70A(word_19999C, word_17F80D[14 * a1]);
+  v13 = sub_6E70A(word_19999C, word_17F80D[14 * a1]);   /* wave 182: result was dropped */
   return (int16_t)sub_6B519(v12, v13);
 }
 // 6ED9E: variable 'v13' is possibly undefined
@@ -8820,16 +8822,16 @@ int sub_6EDC6( int a1)
   if ( sub_6EFEB(a1) == 1 )
   {
     v3 = sub_6F11C(word_17F80D[v2]);
-    sub_6E70A(word_19999C, word_17F80D[14 * a1]);
+    v4 = sub_6E70A(word_19999C, word_17F80D[14 * a1]);   /* wave 182: result was dropped */
     v5 = sub_6E60E(word_17F811[v2], v4, v3);
     v6 = sub_6F11C(word_17F80D[v2]);
-    sub_6E70A(word_19999C, word_17F80D[v2]);
+    v7 = sub_6E70A(word_19999C, word_17F80D[v2]);   /* wave 182: result was dropped */
     v8 = sub_6E60E(10, v7, v6);
   }
   else
   {
     v9 = sub_6F11C(word_17F80D[v2]);
-    sub_6E70A(word_19999C, word_17F80D[14 * a1]);
+    v10 = sub_6E70A(word_19999C, word_17F80D[14 * a1]);   /* wave 182: result was dropped */
     v5 = sub_6E60E(word_17F811[v2], v10, v9);
     v8 = 0;
   }
@@ -8927,7 +8929,7 @@ int sub_6EE8E(int a1, int a2, int a3, int a4, unsigned int a5, int a6)
   sub_6A406(a6, &v21, &v22);
   v12 = v10 * (v22 + (int16_t)v19 + 100) / 100;
   v13 = sub_6F11C(word_17F80D[14 * a2]);
-  sub_6E70A(v17, word_17F80D[14 * a2]);
+  v14 = sub_6E70A(v17, word_17F80D[14 * a2]);   /* wave 182: result was dropped */
   v15 = a3 * (int16_t)sub_6E60E(v12, v14, v13);
   if ( v15 <= 1 )
     return 1;

@@ -2014,7 +2014,7 @@ void sub_8AF4E(int a1)
         v1 = (int16_t)v12;
         sub_85B93(v12, &v8, &v9);
         sub_85B93(word_199838, &v13, &v10);
-        sub_EBEB7(v1, word_199838);
+        v2 = sub_EBEB7(v1, word_199838);   /* wave 182: result was dropped */
         v3 = v2;
         if ( (uint16_t)sub_1276F0(113 * v1 + dword_19306C + 31, word_199838) )
         {
@@ -4188,7 +4188,7 @@ char sub_8D43D( int a1, int a2, int a3, int a4)
     v10 = v9 - (int16_t)sub_7926C(*(_WORD *)(v15 + dword_19306C + 17));
     if ( *(_BYTE *)(v6 + dword_19306C + 22) == 6 || *(_BYTE *)(v15 + dword_19306C + 22) == 6 )
     {
-      sub_EBEB7(a1, v5);
+      v11 = sub_EBEB7(a1, v5);   /* wave 182: result was dropped */
       if ( v11 < 5 )
         v22 = 1;
     }
@@ -4327,7 +4327,7 @@ int sub_8D6D6( int a1, int a2)
   v3 = 0;
   for ( i = 0; i < word_19999A && !v3; ++i )
   {
-    sub_EBEB7(a1, i);
+    v5 = sub_EBEB7(a1, i);   /* wave 182: result was dropped */
     if ( v5 > (unsigned int)(uint8_t)byte_199CB2 + 3 && !*(_BYTE *)(i + a2) )
     {
       v6 = (_BYTE *)(dword_19306C + 113 * i);
@@ -6818,13 +6818,13 @@ int sub_8FE44(int a1, int a2)
 
 
 //----- (0008FE65) --------------------------------------------------------
-unsigned int sub_8FE65(char *a1)
+unsigned int sub_8FE65(char *a1, const char *a2)
 {
-  int v2; // eax
+  char *v2; // eax
 
-  v2 = ((int (*)(void))strstr)();
+  v2 = strstr(a1, a2);   /* wave 182: 0x8FE6A strstr_(eax = a1, edx = a2) */
   if ( v2 )
-    return v2 - (_DWORD)a1;
+    return (unsigned int)(v2 - a1);
   else
     return strlen(a1);
 }

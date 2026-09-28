@@ -47,7 +47,7 @@ def main():
     env = dict(os.environ, DOSBOX_CTL_FILE=cfg)
     p = subprocess.Popen([DOSBOX, '-conf', CONF], env=env)
     try:
-        p.wait(timeout=600)
+        p.wait(timeout=int(os.environ.get('DBX_TIMEOUT', '600')))   # long plays: DBX_TIMEOUT=1500
     except subprocess.TimeoutExpired:
         p.kill()
         print('killed')

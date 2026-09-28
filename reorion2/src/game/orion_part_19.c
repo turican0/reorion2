@@ -4873,6 +4873,8 @@ int sub_12439D()
 //----- (001247A0) --------------------------------------------------------
 unsigned int sub_1247A0(unsigned int a1)
 {
+  if ( g_rngLogArmed )
+    PortDebug_RngLog(a1, dword_1B9E34, _ReturnAddress());
   do
     dword_1B9E34 = 1103515245 * dword_1B9E34 + 12345;
   while ( a1 * (0xFFFFFFFF / a1) <= dword_1B9E34 );

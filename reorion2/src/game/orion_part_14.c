@@ -1505,7 +1505,7 @@ _DWORD *sub_D7C04( int a1, _DWORD *a2, _DWORD *a3)
 
 
 //----- (000D7D53) --------------------------------------------------------
-void sub_D7D53( int a1, int a2)
+int sub_D7D53( int a1, int a2)
 {
   int v3; // eax
   unsigned int v4; // ebx
@@ -1521,6 +1521,8 @@ void sub_D7D53( int a1, int a2)
   int v14; // [esp+1Ch] [ebp-Ch]
   char v16; // [esp+24h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 182: movsx si */
+  a2 = (int16_t)a2;
   v16 = *(_BYTE *)(dword_19306C + 113 * a2 + 111);
   v3 = word_199998;
   v4 = -1;
@@ -1559,12 +1561,21 @@ void sub_D7D53( int a1, int a2)
   }
   if ( *(_BYTE *)(a2 + dword_1AA23C) )
   {
+    /* wave 182: 0xD7EB7 - the known garrison caps the estimate */
     if ( v16 )
-      sub_5EF09(a1, *(uint8_t *)(a2 + dword_1AA23C));
+      v7 = (uint16_t)sub_5EF09(a1, *(uint8_t *)(a2 + dword_1AA23C));
     else
-      sub_5EF17(a1, *(uint8_t *)(a2 + dword_1AA23C));
+      v7 = (uint16_t)sub_5EF17(a1, *(uint8_t *)(a2 + dword_1AA23C));
+    if ( v7 < v4 )
+      v4 = v7;
+    return v4;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
+  if ( v5 > 0 )   /* 0xD7ECC */
+    return ((v4 + 2) * v5 + v12 - 1) / (unsigned int)(2 * v5);
+  v8 = *(int16_t *)(dword_1AA204 + 58 * word_1AA24C + 12);
+  if ( v8 > 0 )   /* 0xD7EE5 */
+    return ((v11 + 2) * v8 + v10 - 1) / (unsigned int)(2 * v8);
+  return *(uint8_t *)(dword_197F9C + 129 * a1 + 16) + 1;   /* 0xD7F18 */
 }
 // D7F2F: control flows out of bounds to D775E
 // 19306C: using guessed type int dword_19306C;
@@ -1792,7 +1803,7 @@ char sub_D7FF7(int a1, int16_t *a2, int a3, int a4)
           {
             v59 = (int16_t)a3;
             v74 = 129;
-            sub_D7D53((int)(v24 - v61) / 129, a3);
+            v27 = sub_D7D53((int)(v24 - v61) / 129, a3);   /* wave 182: result was dropped */
             v77 += v27;
             v74 = 129;
             ++v23;
@@ -1886,7 +1897,7 @@ LABEL_85:
           {
             v74 = 129;
             ++v69;
-            sub_D7D53((v14 - v60) / 129, a3);
+            v15 = sub_D7D53((v14 - v60) / 129, a3);   /* wave 182: result was dropped */
             ++v13;
             v56 += v15;
           }
@@ -1907,7 +1918,7 @@ LABEL_85:
             if ( *(char *)(v16 + 99) == word_1AA24C && *(_WORD *)(v16 + 101) == (_WORD)v82 )
             {
               v59 = (int16_t)a3;
-              sub_D7D53((v16 - dword_197F9C) / 129, a3);
+              v17 = sub_D7D53((v16 - dword_197F9C) / 129, a3);   /* wave 182: result was dropped */
               v57 += v17;
               ++v81;
               v18 = v66;
@@ -2335,9 +2346,43 @@ int sub_D8C79( int a1)
 
 
 //----- (000D8D11) --------------------------------------------------------
-void sub_D8D11()
+int sub_D8D11(int a1, int a2)
 {
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
+  uint8_t *v2;
+  int v3;
+  int v4;
+  int v5;
+  int v6;
+  uint16_t *v7;
+
+  /* wave 182: rewritten from the asm - Hex-Rays lost the whole body */
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  v2 = (uint8_t *)dword_192B18 + 361 * a1;
+  v3 = *(char *)v2;
+  switch ( *((uint8_t *)dword_197F98 + 3753 * a2 + 1575 + v3) )   /* 0xD8D2F [edx+ebx+627h] */
+  {
+    case 4:
+      v4 = 2;
+      v5 = 4;
+      break;
+    case 6:
+      v4 = 0;
+      v5 = 6;
+      break;
+    default:
+      v4 = 1;
+      v5 = 5;
+      break;
+  }
+  if ( *((uint8_t *)dword_197F98 + 3753 * a2 + 2232) && !*((uint8_t *)dword_197F98 + 3753 * v3 + 2232) )
+  {
+    ++v4;
+    --v5;
+  }
+  v6 = *(int16_t *)(v2 + 2);
+  v7 = (uint16_t *)off_183554;
+  return (v7[360 * v3 + v6] * v5 + v7[360 * a2 + v6] * v4) / 6;
 }
 // D8DDC: control flows out of bounds to D775E
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -2399,7 +2444,7 @@ int sub_D8E52(int a1, int a2, int a3)
     if ( ((v6 >> a2) & 1) != 0 )
     {
       v11 = *(int16_t *)(v10 + (uint8_t*)dword_197F98 + 804);
-      sub_EBEB7(v3, a3);
+      v7 = sub_EBEB7(v3, a3);   /* wave 182: result was dropped */
       if ( v7 <= v11 && !(uint16_t)sub_1276F0(v5 + dword_19306C + 31, a3) )
         ++v4;
     }
@@ -2531,7 +2576,7 @@ int sub_D8ED2( int a1, int a2, int a3, _BYTE *a4, _BYTE *a5, _WORD *a6, int a7)
         {
           if ( *(int16_t *)(-129 * (v19 + 100) + dword_197F9C + 94) > v18 )
           {
-            sub_E1002(v7, v19, v18);
+            v21 = sub_E1002(v7, v19, v18);   /* wave 182: result was dropped */
             v22 = v21;
             if ( v21 <= v43 )
             {
@@ -2566,7 +2611,7 @@ LABEL_67:
         return 0xFFFF;
       return v49;
     }
-    sub_D8D11();
+    v24 = sub_D8D11(a1, word_1AA24C);   /* wave 182: 0xD91DD eax = var_5C, edx = word_1A224C */
     v39 = v24;
     v25 = (uint16_t)sub_5F804(a1);
     v26 = (uint16_t)sub_5F747(a1, word_1AA24C);
@@ -2769,7 +2814,9 @@ void sub_D94B3(
   int16_t v40; // [esp+7Eh] [ebp-6EEh]
   int16_t v41[502]; // [esp+82h] [ebp-6EAh] BYREF
   _BYTE v42[752]; // [esp+46Eh] [ebp-2FEh] BYREF
-  _BYTE v43[14]; // [esp+75Eh] [ebp-Eh] BYREF
+  /* wave 182: v43..v43 are one 72-byte record in the frame (ebp-Eh) */
+  _BYTE blkD94B3_v43[72];
+#define v43 ((_BYTE *)(blkD94B3_v43 + 0))
 
   v37 = a4;   /* wave 181: v37 saved by the prologue (push ecx) */
   v38 = a3;   /* wave 181: v38 saved by the prologue (push ebx) */
@@ -2906,6 +2953,7 @@ LABEL_21:
     *(_DWORD *)((char *)&a25 + 6) = v31;
   }
   goto LABEL_23;
+#undef v43
 }
 // D9701: control flows out of bounds to D87B1
 // D95BC: inconsistent variable size for '^7E0.16'
@@ -3031,7 +3079,7 @@ int sub_D983F(int a1, int *a2, int a3, _DWORD *a4, int a5)
 
 
 //----- (000D99D8) --------------------------------------------------------
-int sub_D99D8(int a1, _DWORD *a2)
+int sub_D99D8(int a1, _DWORD *a2, int a3)
 {
   int result; // eax
   int v3; // ebx
@@ -3042,6 +3090,7 @@ int sub_D99D8(int a1, _DWORD *a2)
   int v8; // [esp+8h] [ebp-4h]
 
   v7 = a1;   /* wave 181: v7 saved by the prologue (push eax) */
+  v6 = a3;   /* wave 182: 0xD99E0 push ebx - the caller's byte table */
   result = word_1AA218;
   *a2 = 0;
   v8 = result;
@@ -3163,7 +3212,7 @@ void sub_D9A7E(int a1, int a2, int a3, int a4)
   v27 = a1;   /* wave 181: v27 saved by the prologue (push eax) */
   v4 = (int16_t *)a2;
   v61 = a4;
-  sub_D99D8((int)v29, &v36);
+  sub_D99D8((int)v29, &v36, a3);   /* wave 182: ebx passes through */
   v5 = (int)v32;
   v59 = 0;
   v6 = sub_D983F(v27, (int *)a2, (int)v32, &v35, a4);
@@ -3436,10 +3485,14 @@ void sub_D9F85(int16_t *a1)
   int v35; // eax
   int v36; // edi
   int v37; // eax
-  _DWORD v38[1134]; // [esp+0h] [ebp-1B9Ah] BYREF
-  _BYTE v39[2520]; // [esp+11B8h] [ebp-9E2h] BYREF
-  _BYTE v40[10]; // [esp+1B90h] [ebp-Ah] BYREF
-  _BYTE v41[62]; // [esp+1B9Ah] [ebp+0h] BYREF
+  /* wave 182: v38..v41 are one block in the frame (ebp-1B9Ah..ebp+3Eh); the
+     code indexes across them (v41[v29 - 7123] is a v38 record, v39[35*s - 40]
+     reaches back into v38), so they must stay adjacent like in the original. */
+  _BYTE blkD9F85[7128];
+#define v38 ((_DWORD *)blkD9F85)
+#define v39 (blkD9F85 + 4536)
+#define v40 (blkD9F85 + 7056)
+#define v41 (blkD9F85 + 7066)
   int v42; // [esp+1BD8h] [ebp+3Eh]
   int v43; // [esp+1BDCh] [ebp+42h] BYREF
   int v44; // [esp+1BE0h] [ebp+46h]
@@ -3460,7 +3513,7 @@ void sub_D9F85(int16_t *a1)
 
   v43 = 0;
   v38[0] = -1;
-  memset(v38, 0, sizeof(v38));
+  memset(v38, 0, 4536);
   memset(v40, -1, 72);
   v1 = word_19999A;
   v42 = 113 * word_19999A;
@@ -3549,7 +3602,7 @@ LABEL_19:
       }
     }
   }
-  memset(v39, 0, sizeof(v39));
+  memset(v39, 0, 2520);
   v18 = 0;
   v19 = 129 * word_199994 + dword_197F9C;
   while ( v19 > dword_197F9C )
@@ -3647,6 +3700,10 @@ LABEL_45:
   if ( v43 > 0 )
     sub_D9A7E((int)v38, (int)&v43, (int)v40, *(_WORD *)(dword_1AA204 + 58 * word_1AA24C + 6) <= 3);
 }
+#undef v38
+#undef v39
+#undef v40
+#undef v41
 // DA298: variable 'v23' is possibly undefined
 // DA31D: variable 'v27' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -3792,7 +3849,7 @@ void sub_DA485()
           v51 = 129;
           v7 = (int16_t)v10;
           v9 *= 5;
-          sub_D7D53((int)(v11 - dword_197F9C) / 129, v10);
+          v10 = sub_D7D53((int)(v11 - dword_197F9C) / 129, v10);   /* wave 182: result was dropped */
           v10 = (int16_t)v10;
           *(_DWORD *)&v34[v9 + 1] += (int16_t)v10;
         }
@@ -3880,7 +3937,7 @@ LABEL_67:
                 v1 = (int)v37;
                 sub_FFD08(v43, v30, v37);
                 v18 = (int16_t)v39;
-                sub_D7D53(v43[0], v39);
+                v32 = sub_D7D53(v43[0], v39);   /* wave 182: result was dropped */
                 --v2;
                 *(_DWORD *)&v34[v31 + 1] += v32;
                 v33[v9] = v33[(int16_t)v2];
@@ -4363,8 +4420,12 @@ void sub_DAFD4()
   int v10; // eax
   int16_t v11; // ax
   int16_t v12; // cx
-  _WORD v13[500]; // [esp+0h] [ebp-436h]
-  _BYTE v14[72]; // [esp+3E8h] [ebp-4Eh] BYREF
+  /* wave 182: var_4B8 (1000 B) is followed directly by var_D0 (72 B). Ships
+     with an order (pos 1000+s) or in flight (500 + pos 500+s) set byte
+     1000+s of the first table - that is var_D0[s], the "star taken" flag. */
+  _BYTE blkDAFD4[1072];
+#define v13 ((_WORD *)blkDAFD4)
+#define v14 (blkDAFD4 + 1000)
   int v15; // [esp+430h] [ebp-6h] BYREF
   _BYTE v16[34]; // [esp+436h] [ebp+0h] BYREF
   _DWORD v17[10]; // [esp+458h] [ebp+22h] BYREF
@@ -4380,7 +4441,7 @@ void sub_DAFD4()
   int v27; // [esp+4B0h] [ebp+7Ah]
   int v28; // [esp+4B4h] [ebp+7Eh]
 
-  memset(v14, 0, sizeof(v14));
+  memset(v14, 0, 72);
   v0 = 0;
   v1 = word_199994;
   v2 = 0;
@@ -4410,7 +4471,7 @@ void sub_DAFD4()
         {
           v2 += 2;
           ++v0;
-          *(_WORD *)&v16[v2 - 1080] = v1;
+          v13[v2 / 2 - 1] = v1;   /* wave 182: 0xDB058 [ebx+ebp-438h] = var_4B8 word list (overlaps the byte table like in the original) */
         }
         v14[*(int16_t *)(v3 + dword_197F9C + 101)] = 1;
       }
@@ -4441,7 +4502,7 @@ void sub_DAFD4()
       v8 = 2 * v0;
       while ( v22 > 0 )
       {
-        v20 = *(int16_t *)&v16[v8 - 1080];
+        v20 = (int16_t)v13[v8 / 2 - 1];   /* wave 182: 0xDB149 */
         --v22;
         v8 -= 2;
         if ( (uint8_t)sub_1276F0(dword_197F9C + 129 * v20 + 23, 0xBu)
@@ -4474,6 +4535,8 @@ void sub_DAFD4()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDA478 je epilog funkce */
 }
+#undef v13
+#undef v14
 // DB252: control flows out of bounds to DA478
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
@@ -4786,7 +4849,7 @@ void sub_DB6D2(int a1, int a2)
         }
         v15 = v24;
         v22[12 * v10] = v10;
-        sub_EBEB7(v15, v10);
+        v16 = sub_EBEB7(v15, v10);   /* wave 182: result was dropped */
         v22[12 * v10 + 1] = v16;
       }
     }
@@ -4838,8 +4901,10 @@ void sub_DB8D8()
   int16_t v13; // [esp-2h] [ebp-C0h] BYREF
   _BYTE v14[100]; // [esp+0h] [ebp-BEh] BYREF
   _BYTE v15[72]; // [esp+64h] [ebp-5Ah] BYREF
-  _BYTE v16[18]; // [esp+ACh] [ebp-12h] BYREF
-  int16_t v17; // [esp+BEh] [ebp+0h] BYREF
+  /* wave 182: v16..v17 are one 72-byte record in the frame (ebp-12h) */
+  _BYTE blkDB8D8_v16[72];
+#define v16 ((_BYTE *)(blkDB8D8_v16 + 0))
+#define v17 (*(int16_t *)(blkDB8D8_v16 + 18))
   int v18; // [esp+F4h] [ebp+36h]
   int v19; // [esp+F8h] [ebp+3Ah]
   int v20; // [esp+FCh] [ebp+3Eh]
@@ -4946,6 +5011,8 @@ void sub_DB8D8()
     }
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDA478 je epilog funkce */
+#undef v16
+#undef v17
 }
 // DBB24: control flows out of bounds to DA478
 // DBAE9: bad sp value at call
@@ -5342,7 +5409,7 @@ LABEL_30:
               v21 = *(uint8_t *)(dword_19306C + 113 * --v14 + 56);
               if ( (~(1 << v19) & v21) != 0 )
               {
-                sub_EBEB7(v12, v14);
+                v15 = sub_EBEB7(v12, v14);   /* wave 182: result was dropped */
                 if ( v15 <= (int16_t)v28 )
                 {
                   v16 = (unsigned int *)(dword_1AA210 + 32 * v12 + 4 * v19);
@@ -6101,11 +6168,13 @@ void sub_DCDAC(char *a1, int a2)
 {
   int16_t v3; // si
   _BYTE *v4; // eax
-  int v5; // [esp+0h] [ebp-18h] BYREF
-  int v6; // [esp+4h] [ebp-14h]
-  int v7; // [esp+8h] [ebp-10h]
-  int v8; // [esp+Ch] [ebp-Ch]
-  int16_t v9; // [esp+10h] [ebp-8h]
+  /* wave 182: v5..v9 are one 18-byte record in the frame (ebp-18h) */
+  _BYTE blkDCDAC_v5[18];
+#define v5 (*(int *)(blkDCDAC_v5 + 0))
+#define v6 (*(int *)(blkDCDAC_v5 + 4))
+#define v7 (*(int *)(blkDCDAC_v5 + 8))
+#define v8 (*(int *)(blkDCDAC_v5 + 12))
+#define v9 (*(int16_t *)(blkDCDAC_v5 + 16))
   int v10; // [esp+14h] [ebp-4h]
 
   v10 = 113 * *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)a1 + 1) + 2) + dword_19306C;
@@ -6130,6 +6199,11 @@ void sub_DCDAC(char *a1, int a2)
   v4 = (_BYTE *)v10;
   *((_WORD *)a1 + 1) = -1;
   sub_E5296(v4);
+#undef v5
+#undef v6
+#undef v7
+#undef v8
+#undef v9
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -7138,19 +7212,21 @@ int sub_DE280(char *a1, int a2, void *a3)
   int v19; // edx
   int v20; // eax
   int v21; // ebx
-  _WORD v23[275]; // [esp+0h] [ebp-4D4h] BYREF
-  int v24; // [esp+226h] [ebp-2AEh]
-  int v25; // [esp+22Ah] [ebp-2AAh]
-  int v26; // [esp+22Eh] [ebp-2A6h]
-  int v27; // [esp+232h] [ebp-2A2h]
-  int v28; // [esp+236h] [ebp-29Eh]
-  int v29; // [esp+23Ah] [ebp-29Ah]
-  int v30; // [esp+23Eh] [ebp-296h]
-  int v31; // [esp+242h] [ebp-292h]
-  int v32; // [esp+246h] [ebp-28Eh]
-  int v33; // [esp+24Ah] [ebp-28Ah]
-  int v34; // [esp+24Eh] [ebp-286h]
-  int v35; // [esp+252h] [ebp-282h]
+  /* wave 182: v23..v35 are one 598-byte record in the frame (ebp-4D4h) */
+  _BYTE blkDE280_v23[598];
+#define v23 ((_WORD *)(blkDE280_v23 + 0))
+#define v24 (*(int *)(blkDE280_v23 + 550))
+#define v25 (*(int *)(blkDE280_v23 + 554))
+#define v26 (*(int *)(blkDE280_v23 + 558))
+#define v27 (*(int *)(blkDE280_v23 + 562))
+#define v28 (*(int *)(blkDE280_v23 + 566))
+#define v29 (*(int *)(blkDE280_v23 + 570))
+#define v30 (*(int *)(blkDE280_v23 + 574))
+#define v31 (*(int *)(blkDE280_v23 + 578))
+#define v32 (*(int *)(blkDE280_v23 + 582))
+#define v33 (*(int *)(blkDE280_v23 + 586))
+#define v34 (*(int *)(blkDE280_v23 + 590))
+#define v35 (*(int *)(blkDE280_v23 + 594))
   _DWORD v36[150]; // [esp+258h] [ebp-27Ch] BYREF
   void *v37; // [esp+4B0h] [ebp-24h]
   char *v38; // [esp+4B4h] [ebp-20h]
@@ -7355,6 +7431,19 @@ LABEL_60:
     v21 = 40;
   }
   return v20 / v21;
+#undef v23
+#undef v24
+#undef v25
+#undef v26
+#undef v27
+#undef v28
+#undef v29
+#undef v30
+#undef v31
+#undef v32
+#undef v33
+#undef v34
+#undef v35
 }
 // DE3FF: variable 'v13' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -7398,17 +7487,19 @@ char sub_DE664(int a1, char *a2)
   char *v30; // [esp-4h] [ebp-264h]
   char *v31; // [esp-4h] [ebp-264h]
   char *v32; // [esp-4h] [ebp-264h]
-  _DWORD v33[5]; // [esp+0h] [ebp-260h] BYREF
-  int16_t v34; // [esp+14h] [ebp-24Ch]
-  int16_t v35; // [esp+16h] [ebp-24Ah]
-  _BYTE v36[522]; // [esp+18h] [ebp-248h]
-  int v37; // [esp+222h] [ebp-3Eh]
-  int v38; // [esp+232h] [ebp-2Eh]
-  int v39; // [esp+236h] [ebp-2Ah]
-  int v40; // [esp+23Eh] [ebp-22h]
-  int v41; // [esp+242h] [ebp-1Eh]
-  int v42; // [esp+246h] [ebp-1Ah]
-  int v43; // [esp+24Ah] [ebp-16h]
+  /* wave 182: v33..v43 are one 598-byte record in the frame (ebp-260h) */
+  _BYTE blkDE664_v33[598];
+#define v33 ((_DWORD *)(blkDE664_v33 + 0))
+#define v34 (*(int16_t *)(blkDE664_v33 + 20))
+#define v35 (*(int16_t *)(blkDE664_v33 + 22))
+#define v36 ((_BYTE *)(blkDE664_v33 + 24))
+#define v37 (*(int *)(blkDE664_v33 + 546))
+#define v38 (*(int *)(blkDE664_v33 + 562))
+#define v39 (*(int *)(blkDE664_v33 + 566))
+#define v40 (*(int *)(blkDE664_v33 + 574))
+#define v41 (*(int *)(blkDE664_v33 + 578))
+#define v42 (*(int *)(blkDE664_v33 + 582))
+#define v43 (*(int *)(blkDE664_v33 + 586))
   int v44; // [esp+258h] [ebp-8h]
   int v45; // [esp+25Ch] [ebp-4h]
 
@@ -7570,6 +7661,17 @@ char sub_DE664(int a1, char *a2)
     *(_WORD *)(a1 + 231) = 0;
   }
   return a1;
+#undef v33
+#undef v34
+#undef v35
+#undef v36
+#undef v37
+#undef v38
+#undef v39
+#undef v40
+#undef v41
+#undef v42
+#undef v43
 }
 // DE831: variable 'v8' is possibly undefined
 // DE941: variable 'v13' is possibly undefined
@@ -9460,7 +9562,7 @@ int sub_E0C6E(int a1, int a2)
 
 
 //----- (000E0C9B) --------------------------------------------------------
-void sub_E0C9B(int a1, int a2)
+int8_t sub_E0C9B(int a1, int a2)
 {
   unsigned int v3; // edi
   int16_t v4; // ax
@@ -9513,7 +9615,7 @@ void sub_E0C9B(int a1, int a2)
         v15 = 1;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDF50C je epilog funkce */
+  return v15 == 0;   /* wave 182: 0xE0D8C setz al */
 }
 // E0D93: control flows out of bounds to DF50C
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -9679,26 +9781,48 @@ int sub_E0FA4(int a1)
 
 
 //----- (000E1002) --------------------------------------------------------
-void sub_E1002(char *a1, unsigned int a2, int a3)
+int sub_E1002(char *a1, unsigned int a2, int a3)
 {
   int v3; // esi
+  int half; // edi
+  int tenth; // eax
+  int result; // ebx
 
+  /* wave 182: the result (ebx) came back through the shared tail
+     0xE0B46 `add ebx, eax` / 0xE0B48 `mov eax, ebx` - the port returned
+     nothing, so every build cost was garbage (AI colony choice, BUY). */
+  result = 0;
   if ( a2 < 0xFFFFFFDA || a2 > 0xFFFFFFDB && a2 < 0xFFFFFFFD )
   {
-    v3 = (int16_t)sub_E0DD6(a1, a2);
-    if ( v3 > a3 && v3 / 2 > a3 && v3 / 10 > a3 )
-      JUMPOUT(0xE0B46);
+    v3 = (int16_t)sub_E0DD6(a1, (int16_t)a2);
+    half = v3 / 2;
+    tenth = v3 / 10;
+    if ( v3 > a3 )
+    {
+      if ( half <= a3 )
+      {
+        result = 2 * (v3 - a3);   /* 0xE1051 */
+      }
+      else
+      {
+        result = 2 * (v3 - half);   /* 0xE105D */
+        if ( tenth <= a3 )
+          result += 5 * (half - a3);   /* 0xE1068 */
+        else
+          result += 5 * (half - tenth) + 10 * (tenth - a3);   /* 0xE1074 */
+      }
+    }
   }
-  JUMPOUT(0xE0B48);
+  return result;
 }
 // E1058: control flows out of bounds to E0B48
 // E1080: control flows out of bounds to E0B46
 
 
 //----- (000E1085) --------------------------------------------------------
-void sub_E1085(int a1)
+int sub_E1085(int a1)
 {
-  sub_E1002((char *)a1, *(int16_t *)(a1 + 277), *(int16_t *)(a1 + 293));
+  return sub_E1002((char *)a1, *(int16_t *)(a1 + 277), *(int16_t *)(a1 + 293));   /* wave 182: eax passes through */
 }
 
 
@@ -9715,7 +9839,7 @@ int sub_E109D( int a1)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = (char *)(361 * a1 + (uint8_t*)dword_192B18);
   v2 = 3753 * *v1 + (uint8_t*)dword_197F98;
-  sub_E1085((int)v1);
+  v3 = sub_E1085((int)v1);   /* wave 182: 0xE10C1 - BUY paid garbage */
   *(_DWORD *)(v2 + 50) -= v3;
   v4 = *(int16_t *)(v1 + 277);
   v5 = sub_E0DD6(v1, v4);
@@ -9811,144 +9935,205 @@ void sub_E116F(int a1)
 
 
 //----- (000E11BC) --------------------------------------------------------
-void sub_E11BC(char *a1, int a2)
+int8_t sub_E11BC(char *a1, int a2)
 {
-  _BYTE *v3; // esi
-  int16_t v4; // si
-  int v5; // eax
-  int16_t *v6; // eax
-  int v7; // esi
-  int v8; // eax
-  int v9; // eax
-  _BYTE *v10; // eax
-  unsigned int i; // eax
-  unsigned int v12; // esi
-  int v13; // edi
-  unsigned int v14; // eax
-  _BOOL1 v15; // zf
-  int v16; // [esp+0h] [ebp-18h]
-  char *v17; // [esp+8h] [ebp-10h]
-  int16_t v18; // [esp+14h] [ebp-4h]
+  /* wave 182: rewritten from the asm (0xE11BC..0xE1834). Can colony a1 build
+     item a2: 0 = no, 1 = yes, 2 = not now (already there / not needed).
+     Hex-Rays had lost the whole decision tree and the result (al). */
+  int16_t id = (int16_t)a2;
+  uint8_t *pl = (uint8_t *)dword_197F98 + 3753 * a1[0];
+  uint8_t *p17 = (uint8_t *)dword_1930D4 + 17 * *(int16_t *)(a1 + 2);
+  uint8_t *star;
+  int8_t r = 0;
+  int i;
 
-  v3 = (_BYTE *)((uint8_t*)dword_197F98 + 3753 * *a1);
-  if ( a2 > 0 && a2 < 49 )
+  if ( id > 0 && id < 49 )
   {
-    if ( v3[*(int16_t *)((char *)&word_17EB43 + 19 * a2) + 279] == 3 && !a1[a2 + 310] )
+    /* 0xE11ED: the technology must be known and the building not built yet */
+    if ( pl[*(int16_t *)((char *)&word_17EB43 + 19 * id) + 0x117] != 3 )
+      return 0;
+    if ( a1[id + 0x136] )
+      return 0;
+    switch ( id )
     {
-      if ( (uint16_t)a2 < 0x14u )
+      case 1:   /* 0xE15F9: all population units of one race */
       {
-        if ( (uint16_t)a2 < 9u )
+        uint32_t *p = (uint32_t *)(a1 + 12) + (uint8_t)a1[10];
+        int first = -1;
+        while ( p > (uint32_t *)(a1 + 12) )
         {
-          if ( (uint16_t)a2 < 3u )
-          {
-            if ( a2 == 1 )
-            {
-              v12 = (unsigned int)&a1[4 * (uint8_t)a1[10] + 12];
-              v13 = -1;
-              while ( v12 > (unsigned int)(a1 + 12) )
-              {
-                v12 -= 4;
-                if ( (*(_BYTE *)(v12 + 1) & 4) != 0 )
-                  break;
-                v14 = *(_DWORD *)v12 & 0xF;
-                if ( v14 < 8 )
-                {
-                  if ( v13 == -1 )
-                  {
-                    v13 = *(_DWORD *)v12 & 0xF;
-                  }
-                  else if ( v13 != v14 && *(char *)((uint8_t*)dword_197F98 + 3753 * *a1 + 2207) / 2 != 3 )
-                  {
-                    break;
-                  }
-                }
-              }
-            }
-          }
-          else if ( (uint16_t)a2 <= 3u )
-          {
-            v16 = dword_19306C + 113 * *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)a1 + 1) + 2);
-            v7 = v16 + 10;
-            do
-            {
-              v8 = *(int16_t *)(v7 + 72);
-              v7 -= 2;
-              if ( v8 != -1 )
-              {
-                v9 = *(int16_t *)((uint8_t*)dword_1930D4 + 17 * v8);
-                v18 = v9;
-                if ( v9 != -1 )
-                {
-                  v10 = (_BYTE *)((uint8_t*)dword_192B18 + 361 * v9);
-                  if ( *v10 == *a1 && !v10[a2 + 310] )
-                    sub_AFE0C(v18, 3);
-                }
-              }
-            }
-            while ( v7 != v16 );
-          }
+          --p;
+          if ( ((uint8_t *)p)[1] & 4 )
+            return 1;
+          if ( (*p & 0xF) >= 8 )
+            continue;
+          if ( first == -1 )
+            first = *p & 0xF;
+          else if ( first != (int)(*p & 0xF)
+                 && *((char *)dword_197F98 + 3753 * a1[0] + 0x89F) / 2 != 3 )
+            return 1;
         }
-        else if ( a2 == 11 )
-        {
-          v4 = 5;
-          while ( v4 > 0 )
-          {
-            v5 = *(int16_t *)(dword_19306C
-                            + 113 * *(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)a1 + 1) + 2)
-                            + 74
-                            + 2 * --v4);
-            if ( v5 != -1 )
-            {
-              v6 = (int16_t *)((uint8_t*)dword_1930D4 + 17 * v5);
-              if ( *((_BYTE *)v6 + 4) == 3 && *v6 == -1 )
-                break;
-            }
-          }
-        }
+        return 2;
       }
-      else if ( (uint16_t)a2 > 0x14u )
+      case 3:   /* 0xE14DE: every own colony in the system has it or can get it */
+        star = (uint8_t *)dword_19306C + 113 * p17[2];
+        r = 1;
+        for ( i = 4; i >= 0; --i )
+        {
+          int16_t slot = *(int16_t *)(star + 0x4A + 2 * i);
+          int16_t col;
+          uint8_t *other;
+          if ( slot == -1 )
+            continue;
+          col = *(int16_t *)((uint8_t *)dword_1930D4 + 17 * slot);
+          if ( col == -1 )
+            continue;
+          other = (uint8_t *)dword_192B18 + 361 * col;
+          if ( other[0] != (uint8_t)a1[0] )
+            continue;
+          if ( other[id + 0x136] || (int16_t)sub_AFE0C(col, 3) >= 1 )
+            r = 2;
+        }
+        return r;
+      case 5:
+      case 32:  /* 0xE14D2 */
+        return a1[0x143] ? 0 : 1;
+      case 8:   /* 0xE14AD */
+        return a1[0x15F] ? 0 : 1;
+      case 9:   /* 0xE1330 */
+        if ( *((char *)dword_197F98 + 3753 * a1[0] + 0x89F) / 2 == 3 )
+          return 0;
+        return *((uint8_t *)dword_192B18 + 361 * *(int16_t *)((uint8_t *)dword_1930D4 + 17 * *(int16_t *)(pl + 0x29)) + 0x13F) ? 0 : 1;
+      case 11:  /* 0xE1394: a free (unowned) orbit in the system */
       {
-        if ( (uint16_t)a2 < 0x20u )
+        int8_t seen = 0;
+        star = (uint8_t *)dword_19306C + 113 * p17[2];
+        for ( i = 4; i >= 0; --i )
         {
-          if ( a2 == 25 )
-          {
-            v17 = a1 + 12;
-            for ( i = (unsigned int)&a1[4 * (uint8_t)a1[10] + 12]; i > (unsigned int)v17; i -= 4 )
-              ;
-          }
+          int16_t slot = *(int16_t *)(star + 0x4A + 2 * i);
+          uint8_t *o;
+          if ( slot == -1 )
+            continue;
+          o = (uint8_t *)dword_1930D4 + 17 * slot;
+          if ( o[4] != 3 )
+            continue;
+          seen = 1;
+          if ( *(int16_t *)o == -1 )
+            return 1;
         }
-        else if ( a2 == 48 )
-        {
-          sub_E112B(*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *((int16_t *)a1 + 1) + 2));
-        }
+        return seen ? 2 : 0;
       }
+      case 17:  /* 0xE1425 */
+        return (uint8_t)a1[0xE2] == 8 ? 1 : 0;
+      case 18:  /* 0xE12E6 */
+        return 0;
+      case 20:
+      case 31:  /* 0xE1477 */
+        return *((char *)dword_197F98 + 3753 * a1[0] + 0x89F) / 2 == 3 ? 0 : 1;
+      case 24:  /* 0xE14C6 */
+        return a1[0x14D] ? 0 : 1;
+      case 25:  /* 0xE156D: a race of the population that needs it */
+      {
+        uint32_t *p = (uint32_t *)(a1 + 12) + (uint8_t)a1[10];
+        uint8_t kind = p17[6];
+        r = 2;
+        while ( p > (uint32_t *)(a1 + 12) )
+        {
+          uint8_t *race;
+          --p;
+          if ( (*p & 0xF) >= 8 )
+            continue;
+          race = (uint8_t *)dword_197F98 + 3753 * (*p & 0xF);
+          if ( kind == 0 && !race[0x8A9] )
+            r = 1;
+          else if ( kind == 1 && race[0x8A9] )
+            r = 1;
+          else if ( kind == 2 && !race[0x8AA] )
+            r = 1;
+        }
+        return r;
+      }
+      case 28:  /* 0xE14B9 */
+        if ( a1[0x14E] )
+          return 0;
+        return a1[0x14D] ? 0 : 1;
+      case 37:  /* 0xE1432 */
+        if ( p17[0x10] & 2 )
+          return 0;
+        return (uint8_t)a1[0xE2] >= 3 && (uint8_t)a1[0xE2] <= 9 ? 1 : 0;
+      case 40:  /* 0xE14A0 */
+        if ( a1[0x13E] )
+          return 0;
+        return a1[0x15F] ? 0 : 1;
+      case 44:  /* 0xE1465 */
+        return (uint8_t)a1[0xE2] >= 2 && (uint8_t)a1[0xE2] <= 7 ? 1 : 0;
+      case 46:  /* 0xE1386 */
+        return a1[0xDD] ? 1 : 2;
+      case 48:  /* 0xE1407 */
+        return sub_E112B(p17[2]);
+      default:  /* 0xE137F */
+        return 1;
     }
-LABEL_62:
-    return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
   }
-  if ( a2 <= -50 || (uint16_t)a2 < 0xFFFAu )
-    goto LABEL_62;
-  if ( (uint16_t)a2 < 0xFFFCu )
+  if ( id <= -50 )
   {
-    if ( (uint16_t)a2 <= 0xFFFAu )
+    /* 0xE1681: ship designs (-100..-51 = player designs, <= -100 = ships) */
+    uint8_t *rec;
+    if ( !*(int16_t *)(pl + 0x324) || !pl[0x5A0] )
+      return 0;
+    if ( id > -100 )
+      rec = pl + 0x326 + -99 * (id + 50);
+    else
+      rec = (uint8_t *)dword_197F9C + -129 * (id + 100);
+    switch ( rec[0x11] )
     {
-      if ( v3[286] != 3 )
-        goto LABEL_62;
-      goto LABEL_61;
+      case 0:   /* 0xE16F0 */
+        if ( rec[0x10] < 2 )
+          return 1;
+        if ( !a1[0x15E] && !a1[0x13E] && !a1[0x15F] )
+          return 0;
+        if ( rec[0x10] == 4 )
+          return pl[0x1D1] == 3;
+        if ( rec[0x10] == 5 )
+          return pl[0x14E] == 3;
+        return 1;
+      case 1:   /* 0xE1757 */
+        return pl[0x140] == 3;
+      case 2:   /* 0xE1760 */
+        return a1[0x14C] && pl[0x1D4] == 3 ? 1 : 0;
+      case 4:   /* 0xE177D */
+        return pl[0x184] == 3;
+      default:
+        return 0;
     }
-    v15 = v3[287] == 3;
   }
-  else
+  /* 0xE1786: special items (unsigned 16-bit compare of the id) */
+  switch ( id )
   {
-    if ( (uint16_t)a2 > 0xFFFCu )
-      goto LABEL_62;
-    v15 = v3[285] == 3;
+    case -38:
+    case -37:
+    case -7:
+    case -3:
+    case -2:
+    case -1:
+      return 1;
+    case -15:  /* 0xE17DF */
+      return pl[0x15C] == 3;
+    case -6:   /* 0xE1813 */
+      if ( pl[0x11E] != 3 )
+        return 0;
+      return sub_E0C9B((int)a1, 8) ? 1 : 2;
+    case -5:   /* 0xE180A */
+      if ( pl[0x11F] != 3 )
+        return 0;
+      return sub_E0C9B((int)a1, 8) ? 1 : 2;
+    case -4:   /* 0xE17EB */
+      if ( pl[0x11D] != 3 )
+        return 0;
+      return sub_E0C9B((int)a1, 8) ? 1 : 2;
+    default:
+      return 0;
   }
-  if ( !v15 )
-    goto LABEL_62;
-LABEL_61:
-  sub_E0C9B((int)a1, 8);
-  goto LABEL_62;
 }
 // E1834: control flows out of bounds to DEB17
 // 17EB43: using guessed type int16_t word_17EB43;
@@ -11229,16 +11414,20 @@ void sub_E2DCA(char *a1)
   _WORD v34[10]; // [esp+0h] [ebp-22h] BYREF
   int16_t v35[9]; // [esp+14h] [ebp-Eh]
   int16_t v36[9]; // [esp+16h] [ebp-Ch] BYREF
-  int v37; // [esp+28h] [ebp+6h] BYREF
-  int v38; // [esp+2Ch] [ebp+Ah]
-  int v39; // [esp+30h] [ebp+Eh]
-  int v40; // [esp+34h] [ebp+12h]
-  int16_t v41; // [esp+38h] [ebp+16h]
-  int v42; // [esp+3Ch] [ebp+1Ah] BYREF
-  int v43; // [esp+40h] [ebp+1Eh]
-  int v44; // [esp+44h] [ebp+22h]
-  int v45; // [esp+48h] [ebp+26h]
-  int16_t v46; // [esp+4Ch] [ebp+2Ah]
+  /* wave 182: v37..v41 are one 18-byte record in the frame (ebp+6h) */
+  _BYTE blkE2DCA_v37[18];
+#define v37 (*(int *)(blkE2DCA_v37 + 0))
+#define v38 (*(int *)(blkE2DCA_v37 + 4))
+#define v39 (*(int *)(blkE2DCA_v37 + 8))
+#define v40 (*(int *)(blkE2DCA_v37 + 12))
+#define v41 (*(int16_t *)(blkE2DCA_v37 + 16))
+  /* wave 182: v42..v46 are one 18-byte record in the frame (ebp+1Ah) */
+  _BYTE blkE2DCA_v42[18];
+#define v42 (*(int *)(blkE2DCA_v42 + 0))
+#define v43 (*(int *)(blkE2DCA_v42 + 4))
+#define v44 (*(int *)(blkE2DCA_v42 + 8))
+#define v45 (*(int *)(blkE2DCA_v42 + 12))
+#define v46 (*(int16_t *)(blkE2DCA_v42 + 16))
   _DWORD v47[3]; // [esp+50h] [ebp+2Eh] BYREF
   _BYTE v48[12]; // [esp+5Ch] [ebp+3Ah] BYREF
   char *v49; // [esp+68h] [ebp+46h]
@@ -11539,6 +11728,16 @@ LABEL_88:
     }
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F98 je epilog funkce */
+#undef v37
+#undef v38
+#undef v39
+#undef v40
+#undef v41
+#undef v42
+#undef v43
+#undef v44
+#undef v45
+#undef v46
 }
 // E3451: control flows out of bounds to E1F98
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -11562,11 +11761,13 @@ void sub_E3456(char *a1)
   char *v10; // eax
   int v11; // eax
   int v12; // edx
-  int v13; // [esp+0h] [ebp-24h] BYREF
-  int v14; // [esp+4h] [ebp-20h]
-  int v15; // [esp+8h] [ebp-1Ch]
-  int v16; // [esp+Ch] [ebp-18h]
-  int16_t v17; // [esp+10h] [ebp-14h]
+  /* wave 182: v13..v17 are one 18-byte record in the frame (ebp-24h) */
+  _BYTE blkE3456_v13[18];
+#define v13 (*(int *)(blkE3456_v13 + 0))
+#define v14 (*(int *)(blkE3456_v13 + 4))
+#define v15 (*(int *)(blkE3456_v13 + 8))
+#define v16 (*(int *)(blkE3456_v13 + 12))
+#define v17 (*(int16_t *)(blkE3456_v13 + 16))
   char *v18; // [esp+14h] [ebp-10h]
   char *v19; // [esp+18h] [ebp-Ch]
   unsigned int v20; // [esp+1Ch] [ebp-8h]
@@ -11636,6 +11837,11 @@ void sub_E3456(char *a1)
     a1[302] = v20;
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
+#undef v13
+#undef v14
+#undef v15
+#undef v16
+#undef v17
 }
 // E3611: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -11740,18 +11946,24 @@ void sub_E36DF(char *a1, int a2)
   _BYTE v39[2]; // [esp-6h] [ebp-6Ah] BYREF
   int v40; // [esp-4h] [ebp-68h]
   char *v41; // [esp+0h] [ebp-64h]
-  int v42[4]; // [esp+4h] [ebp-60h] BYREF
-  int16_t v43; // [esp+14h] [ebp-50h]
-  int v44; // [esp+18h] [ebp-4Ch] BYREF
-  int v45; // [esp+1Ch] [ebp-48h]
-  int v46; // [esp+20h] [ebp-44h]
-  int v47; // [esp+24h] [ebp-40h]
-  int16_t v48; // [esp+28h] [ebp-3Ch]
-  int v49; // [esp+2Ch] [ebp-38h] BYREF
-  int v50; // [esp+30h] [ebp-34h]
-  int v51; // [esp+34h] [ebp-30h]
-  int v52; // [esp+38h] [ebp-2Ch]
-  int16_t v53; // [esp+3Ch] [ebp-28h]
+  /* wave 182: v42..v43 are one 18-byte record in the frame (ebp-60h) */
+  _BYTE blkE36DF_v42[18];
+#define v42 ((int *)(blkE36DF_v42 + 0))
+#define v43 (*(int16_t *)(blkE36DF_v42 + 16))
+  /* wave 182: v44..v48 are one 18-byte record in the frame (ebp-4Ch) */
+  _BYTE blkE36DF_v44[18];
+#define v44 (*(int *)(blkE36DF_v44 + 0))
+#define v45 (*(int *)(blkE36DF_v44 + 4))
+#define v46 (*(int *)(blkE36DF_v44 + 8))
+#define v47 (*(int *)(blkE36DF_v44 + 12))
+#define v48 (*(int16_t *)(blkE36DF_v44 + 16))
+  /* wave 182: v49..v53 are one 18-byte record in the frame (ebp-38h) */
+  _BYTE blkE36DF_v49[18];
+#define v49 (*(int *)(blkE36DF_v49 + 0))
+#define v50 (*(int *)(blkE36DF_v49 + 4))
+#define v51 (*(int *)(blkE36DF_v49 + 8))
+#define v52 (*(int *)(blkE36DF_v49 + 12))
+#define v53 (*(int16_t *)(blkE36DF_v49 + 16))
   char *v54; // [esp+40h] [ebp-24h]
   char *v55; // [esp+44h] [ebp-20h]
   int v56; // [esp+48h] [ebp-1Ch]
@@ -11836,7 +12048,7 @@ LABEL_99:
     if ( !*(_BYTE *)(v11 + (uint8_t*)dword_192B18 + 6) )
       sub_E1E84((char *)(v11 + (uint8_t*)dword_192B18), (int16_t)v10);
     sub_E2710(3753 * *v12 + (uint8_t*)dword_197F98);
-    sub_E11BC(v41, *(_WORD *)(v41 + 277));
+    v13 = sub_E11BC(v41, *(_WORD *)(v41 + 277));   /* wave 182: result in al */
     if ( !v13 )
 LABEL_25:
       *(_WORD *)(v41 + 277) = -1;
@@ -11844,7 +12056,7 @@ LABEL_25:
     {
       if ( v10 <= 0x2C )
       {
-        sub_E11BC(v41, 44);
+        v14 = sub_E11BC(v41, 44);   /* wave 182: result in al */
         if ( !v14 )
           sub_B206F((int)((uint8_t*)v41 - (uint8_t*)dword_192B18) / 361, 44);
       }
@@ -11894,7 +12106,7 @@ LABEL_95:
       v61 = 1;
       if ( v26 > sub_E0C6E((int)v41, 8) )
       {
-        sub_E0C9B((int)v41, 8);
+        v27 = sub_E0C9B((int)v41, 8);   /* wave 182: result in al */
         if ( !v27 )
         {
           v28 = 0;
@@ -12070,6 +12282,18 @@ LABEL_42:
     *(_BYTE *)(v23 + 53) |= 1 << *((_BYTE *)v60 + 99);
   }
   goto LABEL_95;
+#undef v49
+#undef v50
+#undef v51
+#undef v52
+#undef v53
+#undef v44
+#undef v45
+#undef v46
+#undef v47
+#undef v48
+#undef v42
+#undef v43
 }
 // E377A: control flows out of bounds to E1F97
 // E37A9: variable 'v6' is possibly undefined
@@ -13155,11 +13379,13 @@ void sub_E4F49(int16_t *a1)
 {
   int v1; // ecx
   int16_t v2; // [esp-6h] [ebp-22h] BYREF
-  int v3; // [esp+0h] [ebp-1Ch] BYREF
-  int v4; // [esp+4h] [ebp-18h]
-  int v5; // [esp+8h] [ebp-14h]
-  int v6; // [esp+Ch] [ebp-10h]
-  int16_t v7; // [esp+10h] [ebp-Ch]
+  /* wave 182: v3..v7 are one 18-byte record in the frame (ebp-1Ch) */
+  _BYTE blkE4F49_v3[18];
+#define v3 (*(int *)(blkE4F49_v3 + 0))
+#define v4 (*(int *)(blkE4F49_v3 + 4))
+#define v5 (*(int *)(blkE4F49_v3 + 8))
+#define v6 (*(int *)(blkE4F49_v3 + 12))
+#define v7 (*(int16_t *)(blkE4F49_v3 + 16))
   int v8; // [esp+14h] [ebp-8h]
   int v9; // [esp+18h] [ebp-4h]
 
@@ -13192,6 +13418,11 @@ void sub_E4F49(int16_t *a1)
   }
   sub_100828();
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
+#undef v3
+#undef v4
+#undef v5
+#undef v6
+#undef v7
 }
 // E5025: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);

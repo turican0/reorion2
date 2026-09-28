@@ -175,6 +175,10 @@ extern "C" {
 void PortDebug_Checkpoint(const char* name, int value);
 void PortDebug_CheckpointPtr(const char* name, const void* value);
 void PortDebug_Symbolize(const char* tag, void* addr);
+/* TOOL (wave 182): REORION2_RNG_LOG=<file> - one line per sub_1247A0 call
+   (argument, seed before the call, calling function) once armed. */
+extern int g_rngLogArmed;
+void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller);
 /* Cislo z env promenne (vlna 58). V dekompilatu neni <stdlib.h>, takze primy
    `getenv` tam ma implicitni deklaraci vracejici int -> orezany ukazatel. */
 int PortDebug_EnvInt(const char* name, int fallback);

@@ -2599,9 +2599,11 @@ int sub_1101F0(int a1, int a2, int a3, int a4)
   _BYTE v18[54]; // [esp+34Ah] [ebp-D2h] BYREF
   char v19[32]; // [esp+380h] [ebp-9Ch] BYREF
   _BYTE v20[28]; // [esp+3A0h] [ebp-7Ch] BYREF
-  int v21; // [esp+3BCh] [ebp-60h] BYREF
-  int v22; // [esp+3C0h] [ebp-5Ch]
-  int v23; // [esp+3C8h] [ebp-54h]
+  /* wave 182: v21..v23 are one 28-byte record in the frame (ebp-60h) */
+  _BYTE blk1101F0_v21[28];
+#define v21 (*(int *)(blk1101F0_v21 + 0))
+#define v22 (*(int *)(blk1101F0_v21 + 4))
+#define v23 (*(int *)(blk1101F0_v21 + 12))
   _BYTE v24[16]; // [esp+3D8h] [ebp-44h] BYREF
   int v25; // [esp+3E8h] [ebp-34h]
   int j; // [esp+3ECh] [ebp-30h]
@@ -2794,6 +2796,9 @@ int sub_1101F0(int a1, int a2, int a3, int a4)
     byte_1B922A = 0;
   }
   return result;
+#undef v21
+#undef v22
+#undef v23
 }
 // 10000: using guessed type void sub_10000();
 // 12685D: using guessed type int fopen(_DWORD, _DWORD);

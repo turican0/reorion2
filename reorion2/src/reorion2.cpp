@@ -390,6 +390,38 @@ extern "C" void PortDebug_Backtrace(const char* tag, int frames)
     std::fflush(stderr);
 }
 
+extern "C" int g_rngLogArmed = 0;
+
+// TOOL (wave 182): the RNG call sequence of a turn, to compare with DOSBox
+// (DUMPREGS at sub_1247A0 gives eax = argument and the return address).
+extern "C" void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller)
+{
+    static FILE* f = nullptr;
+    static bool tried = false;
+    static bool inited = false;
+    static unsigned n = 0;
+    if (!tried) {
+        tried = true;
+        const char* path = std::getenv("REORION2_RNG_LOG");
+        if (path && *path)
+            f = std::fopen(path, "w");
+    }
+    if (!f)
+        return;
+    HANDLE proc = GetCurrentProcess();
+    if (!inited) { SymSetOptions(SYMOPT_UNDNAME); SymInitialize(proc, nullptr, TRUE); inited = true; }
+    unsigned char buf[sizeof(SYMBOL_INFO) + 256] = {0};
+    auto* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+    sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+    sym->MaxNameLen = 255;
+    DWORD64 disp = 0;
+    if (SymFromAddr(proc, (DWORD64)caller, &disp, sym))
+        std::fprintf(f, "%u %u %08X %s+0x%llx\n", n++, arg, seed, sym->Name, (unsigned long long)disp);
+    else
+        std::fprintf(f, "%u %u %08X %p\n", n++, arg, seed, caller);
+    std::fflush(f);
+}
+
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr)
 {
     static bool inited = false;
