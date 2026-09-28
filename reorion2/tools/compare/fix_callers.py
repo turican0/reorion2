@@ -125,7 +125,7 @@ def trace(fbody, k, reg, locals_, fname, depth=0):
 
 def main():
     log = open(sys.argv[1], encoding='utf-8', errors='replace').read()
-    callees = sorted(set(re.findall(r'error C2198: int (sub_[0-9A-F]+)\(', log)))
+    callees = sorted(set(re.findall(r'error C2198: [\w ]+?\*? ?(sub_[0-9A-F]+)\(', log)))
     byfile = {}
     import glob
     for p in sorted(glob.glob('src/game/orion_part_*.c')):

@@ -9382,7 +9382,7 @@ char sub_92A92( int a1, int a2, int a3, int a4, int a5)
       v8 = 0;
       if ( byte_17D21D[18 * v6] == 2 )
       {
-        sub_9469E();
+        v9 = sub_9469E(word_19999C, a4, v6);   /* wave 182: 0x92B24 */
         if ( v9 )
           v8 = 1;
       }
@@ -9392,7 +9392,7 @@ char sub_92A92( int a1, int a2, int a3, int a4, int a5)
       v8 = 0;
       if ( byte_17D21D[18 * v6] == 1 )
       {
-        sub_9469E();
+        v7 = sub_9469E(word_19999C, a4, v6);   /* wave 182: 0x92AF2 */
         if ( v7 )
           v8 = 1;
       }

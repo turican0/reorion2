@@ -1538,6 +1538,17 @@ extern "C" {
         PortVga_WaitSliced(14);
     }
 
+    // PORT (wave 182): the screen (dword_1BB910[0]) only gets the dirty rows
+    // copied by sub_125814 - measured in DOSBox (DUMPFRAME framebuf=vram), the
+    // original's VRAM keeps the old picture where nothing is dirty, e.g. while
+    // a screen fades in after sub_C5BB9 cleared the back buffer.
+    void PortVga_PresentScreen(void)
+    {
+        Port::Vga::Present();
+
+        PortSound_ServiceTimer();
+    }
+
     void PortVga_BlitBackBuffer(
         const void* backBuffer)
     {

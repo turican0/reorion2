@@ -716,12 +716,12 @@ void sub_D6ED4( int a1, int a2, int16_t *a3)
 {
   int v3; // edx
   int v4; // eax
-  char v5; // [esp+0h] [ebp-CB4h] BYREF
+  char v5[0xCB4]; // [esp+0h] [ebp-CB4h] BYREF - wave 182: enter 0CB4h, the AI work area (was one char)
 
   word_1AA234 = a1;
   v3 = 3753 * a1;
   dword_1AA21C = v3 + (uint8_t*)dword_197F98;
-  dword_1AA22C = (int)&v5;
+  dword_1AA22C = (int)v5;
   sub_D5795();
   if ( byte_199CB0 && (int16_t)sub_D1006(word_1AA234) < 3 )
     sub_D58D4(*(_BYTE *)(dword_1AA21C + 803));

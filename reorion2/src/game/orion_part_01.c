@@ -4134,14 +4134,14 @@ int sub_14915(int a1)
       if ( v4 > -1 && v3 < 8 )
       {
         v9 = 0;
-        sub_9469E();
+        v5 = sub_9469E(v4, i, 22);   /* wave 182: 0x1497C eax = owner, edx = leader */
         if ( v5 )
         {
           v6 = 22;
         }
         else
         {
-          sub_9469E();
+          v7 = sub_9469E(v4, i, 23);   /* 0x14995 */
           if ( !v7 )
             goto LABEL_12;
           v6 = 23;

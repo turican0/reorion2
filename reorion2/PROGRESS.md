@@ -17200,3 +17200,54 @@ User bug list, continued. Every item was checked against my DOSBox
 - `sub_D2CAE` (AI colony evaluation) is decompiled only in part;
 - the remaining classes of wave 182 part 1 (dropped results with void
   callees, empty JUMPOUTs, `sprintf_edx` chains, split locals).
+
+## Wave 182, part 3: leaders and the fade
+
+User: "play a few turns because of the leaders", then "the fade seems
+longer in DOSBox ... unnatural colours for a moment ... the cursor was
+yellow when you opened a planet".
+
+### Playing turns - two hangs
+
+- Third TURN hung: `sub_97B2D` (pick a leader for hire) ended its loop in
+  `JUMPOUT(0x947FE)` = `mov eax, ecx` + epilogue; as a no-op the loop never
+  ended. The whole leader family returned nothing: `sub_9776C` / `sub_977AF`
+  (hired leaders per type), `sub_9781D` (chance of an offer, divided by the
+  hired count + 1), `sub_97B2D` (-1 or the leader), `sub_983B8` (takes the
+  owner in eax, returns the ship slot); 9 callers wired.
+- Fourth TURN crashed returning to 0: `sub_D6ED4` gives the AI a work area
+  on its stack (`enter 0CB4h`, 13 B per planet); the port had one `char`.
+
+### LEADERS
+
+No save has hired leaders, so `tools/compare/mkleaders.py` edits the start save (C:/prenos/reorion2Data/saves/start_SAVE10.GAM -> lead_SAVE10.GAM, listing: `leaders.py`;
+(table at 105115, 67 x 59 B; status 1 + owner 0 + location star 29, like
+the AI's hired Ruola) was loaded in both. Fixed:
+
+- `sub_9469E` was an empty `JUMPOUT(0x94694)`: the second skill word (+2Ah)
+  test. 14 callers passed nothing and dropped the result - every skill was
+  listed. Arguments from the asm (eax = player, edx = leader, ebx = skill).
+- `sub_95BAA`: the y of a skill name was `SWORD2(sprintf)`; it is the edx
+  kept across `sprintf_` (0x961B4 `mov edx, ecx`) - "Tactics Leader" was
+  drawn at the top edge.
+- `fix_callers.py` now accepts any return type in the C2198 message.
+
+LEADERS, a portrait hover and SHIP OFFICERS are 0-0.2 % from DOSBox
+(animation in the system view).
+
+### Fade
+
+`DUMPFRAME framebuf=vram` (new in my DOSBox) records the monitor contents
+at every fade step. TURN -> SELECT NEW RESEARCH and research -> colony are
+identical to the port pixel for pixel, including the cursor: the original
+also fades in over a black screen with only the cursor, which the new
+palette colours yellow/brown (41,24,8) on the colony screen. The fade is
+10 steps of two retrace waits in both; the longer impression in DOSBox is
+the emulated CPU drawing the next screen between fade-out and fade-in.
+
+The original has two VRAM pages (`HIWORD(dword_1BBA64)`, flipped by
+`sub_124ECB`, full copy `sub_1255DF` into banks page*5 + i). The port's
+`sub_125814` additionally copied the whole back buffer to the screen after
+the dirty-row copy (wave 25r-8); now only the dirty rows reach the screen
+(`PortVga_PresentScreen`), like 0x125814. Research and colony screens are
+0 px from the original's VRAM; gate 600/600.

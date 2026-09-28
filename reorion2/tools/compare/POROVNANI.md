@@ -1500,3 +1500,17 @@ compare runs need a clean `x64/Debug` and a scratch cwd.
 `dbx_clicks.py` (DOSBox side, `x,y@M:0` hover, `key@M`, `DBX_MENU_KEY`) and
 `REORION2_CLICK` / `REORION2_SENDKEY` / `REORION2_DUMP_EVERY_MS` (port side).
 Compare the palettes in 6 bits (the port stores 6-bit << 2).
+
+### Compare with the monitor, not only the back buffer
+
+`DUMPFRAME framebuf=vram` in my DOSBox dumps what is displayed (the display
+start is in CRTC units - x4 in 8bpp SVGA). Transitions (fades, page flips)
+can only be judged this way; the gate and `framebuf=0x452044` see the back
+buffer. The port side is `REORION2_DUMP_EVERY_MS=1` (every present) and
+`bright.py` / `dbright.py` / `nzpix.py` in the scratchpad style: brightness
+per frame and the colours of the few pixels left on a black screen.
+
+### Before calling a colour "wrong", measure the original
+
+The "yellow cursor" during a fade-in is in the original too. Measure the
+same moment on both sides before changing code.

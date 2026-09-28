@@ -307,8 +307,8 @@ void sub_9412B(int a1, int a2)
   sub_9718F(a2, a1, 1, a1);
   if ( !*(_BYTE *)(dword_1930DC + 59 * a2 + 35) )
   {
-    sub_9469E();
-    if ( v3 || (sub_9469E(), v4) )
+    /* wave 182: 0x94184 / 0x94196 (eax = player, edx = leader) */
+    if ( sub_9469E((int16_t)a1, a2, 18) || sub_9469E((int16_t)a1, a2, 19) )
       *(_BYTE *)(3753 * (int16_t)a1 + (uint8_t*)dword_197F98 + 3701) = 1;
   }
 }
@@ -644,9 +644,13 @@ _BOOL1 sub_9467D(int a1, int a2, int a3)
 
 
 //----- (0009469E) --------------------------------------------------------
-void sub_9469E()
+_BOOL1 sub_9469E(int a1, int a2, int a3)
 {
-  JUMPOUT(0x94694);
+  /* wave 182: 0x9469E - like sub_9467D, but the second skill word at +2Ah
+     (the empty JUMPOUT(0x94694) returned nothing) */
+  a2 = (int16_t)a2;
+  a3 = (int16_t)a3;
+  return (*(_DWORD *)(dword_1930DC + 59 * a2 + 42) & *(int *)((char *)&dword_17D219 + 18 * a3)) != 0;
 }
 // 946B5: control flows out of bounds to 94694
 // 1930DC: using guessed type int dword_1930DC;
@@ -689,7 +693,7 @@ int sub_946B7( int a1)
         v5 = 18 * i;
         if ( byte_17D21D[v5] == 2 )
         {
-          sub_9469E();
+          v6 = sub_9469E(word_19999C, (int16_t)a1, i);   /* wave 182: 0x94777 */
           if ( (_BYTE)v6 )
           {
 LABEL_19:
@@ -705,7 +709,7 @@ LABEL_19:
       v5 = 18 * i;
       if ( byte_17D21D[v5] == 1 )
       {
-        sub_9469E();
+        v6 = sub_9469E(word_19999C, (int16_t)a1, i);   /* wave 182: 0x94750 */
         if ( (_BYTE)v6 )
           goto LABEL_19;
       }
@@ -2051,7 +2055,7 @@ LABEL_48:
       v35 = 0;
       if ( byte_17D21D[18 * v33] == 2 )
       {
-        sub_9469E();
+        v36 = sub_9469E(word_19999C, (int16_t)v78, v33);   /* wave 182: 0x9614F */
         if ( v36 )
           v35 = 1;
       }
@@ -2061,7 +2065,7 @@ LABEL_48:
       v35 = 0;
       if ( byte_17D21D[18 * v33] == 1 )
       {
-        sub_9469E();
+        v34 = sub_9469E(word_19999C, (int16_t)v78, v33);   /* wave 182: 0x9611D */
         if ( v34 )
           v35 = 1;
       }
@@ -2076,7 +2080,7 @@ LABEL_66:
       v37 = v79;
       v71 += 22;
       v38 = sprintf(v50, "%s ", v48);
-      sub_1212B3(v71, SWORD2(v38), (int)v50);
+      sub_1212B3(v71, (int16_t)v37, (int)v50);   /* wave 182: 0x961B4 mov edx, ecx (y) */
       WORD2(v38) = v78;
       v39 = v57;
       sub_12066F((int)v50);
@@ -2110,7 +2114,7 @@ LABEL_66:
       v44 = v79;
       v76 += 22;
       v45 = sprintf(v50, "%s ", v49);
-      sub_1212B3(v76, SWORD2(v45), (int)v50);
+      sub_1212B3(v76, (int16_t)v44, (int)v50);   /* wave 182: y as in the first loop */
       WORD2(v45) = v78;
       sub_12066F((int)v50);
       LOWORD(v45) = sub_94BB2(word_19999C, SWORD2(v45), v42);
@@ -4388,7 +4392,7 @@ void sub_98633(int a1)
             {
               if ( byte_17D21D[18 * i] != 2 )
                 continue;
-              sub_9469E();
+              v8 = sub_9469E(v4, v2, i);   /* wave 182: 0x98701 */
               if ( !v8 )
                 continue;
             }
@@ -4404,7 +4408,7 @@ void sub_98633(int a1)
           {
             if ( byte_17D21D[18 * j] != 1 )
               continue;
-            sub_9469E();
+            v6 = sub_9469E(v4, v2, j);   /* wave 182: 0x986A7 */
             if ( !v6 )
               continue;
           }
@@ -5105,8 +5109,10 @@ void sub_99223( int a1, int a2)
   }
   if ( !*(_BYTE *)(59 * a1 + dword_1930DC + 35) )
   {
-    sub_9469E();
-    if ( v8 || (sub_9469E(), v9) )
+    /* wave 182: 0x99320 / 0x99332 (eax = player, edx = leader) */
+    v8 = sub_9469E((int16_t)a2, (int16_t)a1, 18);
+    v9 = v8 ? 0 : sub_9469E((int16_t)a2, (int16_t)a1, 19);
+    if ( v8 || v9 )
       *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a2 + 3701) = 1;
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x941B5 je epilog funkce */

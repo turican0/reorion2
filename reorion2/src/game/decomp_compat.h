@@ -198,6 +198,8 @@ void PortVga_CaptureBlit(const void* backBuffer);
 /* PORT (wave 25r-8): mirror the game back buffer into the presented surface -
    in VESA mode 5 that buffer IS the display; see port_vga.cpp. */
 void PortVga_BlitBackBuffer(const void* backBuffer);
+/* PORT (wave 182): show the screen buffer as it is (no back buffer copy). */
+void PortVga_PresentScreen(void);
 /* PORT (vlna 26): nahradni AIL DIG_DRIVER (DIG.INI + SB16.DIG nelze spustit) -
    rozlozeni opsane z originalu, viz port_sound.h/.cpp. */
 int PortSound_CreateDigDriver(void);
