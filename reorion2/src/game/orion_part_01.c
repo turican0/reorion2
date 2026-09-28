@@ -4739,7 +4739,7 @@ void sub_15421()
     else
     {
       strcpy(v14, (char *)dword_19A0B8);
-      sub_24D30();
+      sub_24D30(v14, (uint8_t)byte_19A0D8[v0], 40);
     }
     ++v20;
     sub_1212B3(v17, 30, (int)v14);
@@ -5050,7 +5050,7 @@ void sub_15BE9()
       goto LABEL_3;
     case 1:
       sub_249F9(aJimtextLbx, 16, (char *)dword_19A0C4, 200);
-      sub_24DF0();
+      sub_24DF0((char *)(intptr_t)dword_19A0C4, (uint8_t)byte_19A0D8[0], (uint8_t)byte_19A0D9, 200);
       break;
     case 2:
       sub_249F9(aJimtextLbx, 17, (char *)dword_19A0C4, 200);
@@ -5062,11 +5062,11 @@ void sub_15BE9()
       v1 = word_19A0D4;
       v2 = byte_19A0DA;
 LABEL_6:
-      sub_24D4C(dword_19A0C4, v2, v1, 200);
+      sub_24D4C((char *)(intptr_t)dword_19A0C4, v2, v1, 200);
       break;
     case 4:
       sub_249F9(aJimtextLbx, 19, (char *)dword_19A0C4, 200);
-      sub_24D30();
+      sub_24D30((char *)(intptr_t)dword_19A0C4, (uint8_t)byte_19A0D8[(uint8_t)byte_19A0DD], 200);
       break;
     case 5:
       v0 = 20;
@@ -5078,7 +5078,7 @@ LABEL_3:
       if ( word_19A0E2 == 2 )
       {
         sub_249F9(aJimtextLbx, 22, (char *)v4, 80);
-        sub_24D30();
+        sub_24D30((char *)v4, (uint8_t)byte_19A0DC, 80);
         v4[0] = dword_19A0C4;
         v3 = (char *)(dword_19A0C4 - 1);
         do
@@ -5987,13 +5987,13 @@ int sub_16F00(int a1, int a2, int a3, int a4)
   {
     strcpy((char *)v13, (char *)dword_19A2A0);
     v7 = (int16_t *)v13;
-    sub_24D4C(v13, (uint8_t)byte_19AA66, (int16_t)((uint8_t)byte_19AA66 + 1), 120);
+    sub_24D4C((char *)v13, (uint8_t)byte_19AA66, (int16_t)((uint8_t)byte_19AA66 + 1), 120);
   }
   else
   {
     strcpy((char *)v13, (char *)dword_19A298);
     v7 = (int16_t *)v13;
-    sub_24D30();
+    sub_24D30((char *)v13, (uint8_t)byte_19AA66, 120);
   }
   v8 = (int)v13;
   v9 = 10;
@@ -6855,10 +6855,10 @@ LABEL_26:
 
 
 //----- (00018560) --------------------------------------------------------
-void sub_18560()
+void sub_18560(int a1)
 {
   sub_249F9(aJimtext2Lbx, 13, &byte_19A64A, 250);
-  sub_24D30();
+  sub_24D30(&byte_19A64A, (int16_t)a1, 250);   /* wave 182: 0x18589 edx = a1 */
 }
 // 19A64A: using guessed type char byte_19A64A;
 
@@ -6871,8 +6871,8 @@ int sub_18596(int a1)
   int r1;
 
   r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 14, (int)(intptr_t)&byte_19A64A, 250);
-  sub_24D30();
-  return 0 /* eax after void sub_24D30 */;
+  sub_24D30(&byte_19A64A, (int16_t)a1, 250);
+  return 0;
 }
 // 185AB: control flows out of bounds to 18575
 
@@ -6897,11 +6897,11 @@ LABEL_8:
       break;
     case 3:
       sub_249F9(aJimtext2Lbx, 16, &byte_19A64A, 250);
-      sub_24D83();
+      sub_24D83(&byte_19A64A, (int16_t)a1, (int16_t)a3, 250);
       break;
     case 4:
       sub_249F9(aJimtext2Lbx, 17, &byte_19A64A, 250);
-      sub_24D6A();
+      sub_24D6A(&byte_19A64A, (int16_t)a1, (int16_t)a3, 250);
       break;
     default:
       return;
@@ -6912,7 +6912,7 @@ LABEL_8:
 
 
 //----- (000186D3) --------------------------------------------------------
-void sub_186D3( int a1, int a2, int a3)
+void sub_186D3( int a1, int a2, int a3, int a4)   /* wave 182: a4 = ecx (edi) */
 {
   int v4; // edx
   int v5; // ebx
@@ -6931,7 +6931,7 @@ void sub_186D3( int a1, int a2, int a3)
       v4 = 21;
 LABEL_3:
       sub_249F9(aJimtext2Lbx, v4, &byte_19A64A, 250);
-      sub_24DF0();
+      sub_24DF0(&byte_19A64A, (int16_t)a1, (int16_t)a4, 250);
       return;
     case 3:
       sub_249F9(aJimtext2Lbx, 22, &byte_19A64A, 250);
@@ -6948,17 +6948,17 @@ LABEL_7:
       goto LABEL_13;
     case 6:
       sub_249F9(aJimtext2Lbx, 24, &byte_19A64A, 250);
-      sub_24D83();
+      sub_24D83(&byte_19A64A, (int16_t)a1, (int16_t)a4, 250);
       return;
     case 7:
       sub_249F9(aJimtext2Lbx, 25, &byte_19A64A, 250);
-      sub_24D6A();
+      sub_24D6A(&byte_19A64A, (int16_t)a1, (int16_t)a4, 250);
       return;
     case 8:
       v6 = 26;
 LABEL_13:
       sub_249F9(aJimtext2Lbx, v6, &byte_19A64A, 250);
-      sub_24D30();
+      sub_24D30(&byte_19A64A, (int16_t)a1, 250);
       break;
     default:
       return;
@@ -6992,7 +6992,7 @@ void sub_1883A(int a1, unsigned int a2)
     }
 LABEL_15:
     sub_249F9(aJimtext2Lbx, v2, &byte_19A64A, 250);
-    sub_24D30();
+    sub_24D30(&byte_19A64A, (int16_t)a1, 250);
     return;
   }
   if ( !a2 )
@@ -7114,20 +7114,20 @@ LABEL_17:
 
 
 //----- (00018A97) --------------------------------------------------------
-int sub_18A97(int a1, int a2, int a3)
+int sub_18A97(int a1, int a2, int a3, int a4)
 {
   sub_249F9(aJimtext2Lbx, 47, &byte_19A64A, 250);
-  return sub_24DC5(a3, 250);
+  return sub_24DC5(&byte_19A64A, (int16_t)a1, (int16_t)a2, (int16_t)a4, (int16_t)a3, 250);   /* wave 182: 0x18AD1 */
 }
 // 24DC5: using guessed type _DWORD sub_24DC5(int16_t, int16_t);
 // 19A64A: using guessed type char byte_19A64A;
 
 
 //----- (00018AE2) --------------------------------------------------------
-int sub_18AE2()
+int sub_18AE2(int a1, int a2, int a3)
 {
   sub_249F9(aJimtext2Lbx, 48, &byte_19A64A, 250);
-  return sub_24D9C(250);
+  return sub_24D9C(&byte_19A64A, (int16_t)a1, (int16_t)a2, (int16_t)a3, 250);   /* wave 182: 0x18B1A */
 }
 // 24D9C: using guessed type _DWORD sub_24D9C(int16_t);
 // 19A64A: using guessed type char byte_19A64A;
@@ -8292,7 +8292,7 @@ int sub_1A1FD( int a1, int a2, int a3, int a4)
   sub_24E08((char *)dword_19A2AC, word_19AA42, 30);
   sub_249F9(aJimtext2Lbx, 58, (char *)dword_19A2C8, 35);
   v5 = 0;
-  sub_24E27();
+  sub_24E27((char *)(intptr_t)dword_19A2C8, word_199960, 35);
   do
   {
     v6 = (int16_t)v5++;
@@ -8301,7 +8301,7 @@ int sub_1A1FD( int a1, int a2, int a3, int a4)
   while ( (int16_t)v5 < 10 );
   sub_249F9(aJimtextLbx_0, 75, v8, 40);
   if ( (_WORD)v13 == 1 )
-    sub_186D3(v12, v14, 7);
+    sub_186D3(v12, v14, 7, (int16_t)a1);
   else
     sub_249F9(aJimtextLbx_0, 78, &byte_19A64A, 250);
   sub_249F9(aJimtextLbx_0, 79, byte_19A744, 50);
@@ -9234,7 +9234,7 @@ void sub_1B5B8( int a1, int a2, int a3, int a4,
   if ( byte_199F3A == 1 )
   {
     word_19AA36 = word_19AA40;
-    sub_186D3(a1, a2, a4);
+    sub_186D3(a1, a2, a4, a3);
     sub_1B881(a1);
     v7 = sub_1B3B5(a2, a1, a4, a3);
     word_19AA36 = -1;
@@ -9642,7 +9642,7 @@ void sub_1BD5B( int a1, int a2)
   v45 = -10;
   v44 = -10;
   sub_249F9(aJimtext2Lbx, 51, &byte_19A64A, 250);
-  sub_24D30();
+  sub_24D30(&byte_19A64A, (int16_t)v30, 250);
   v2 = 0;
   sub_1C417(v32, a2);
   if ( v3 == 1 )
@@ -9913,7 +9913,7 @@ int sub_1C479( int a1, int a2, int a3)
     v4 = 55;
   sub_249F9(aJimtext2Lbx, v4, &byte_19A64A, 250);
   v23 = -1;
-  sub_24DF0();
+  sub_24DF0(&byte_19A64A, (int16_t)a2, (int16_t)a1, 250);
   v5 = 0;
   v6 = 0;
   word_19AA34 = -1;
@@ -9965,7 +9965,7 @@ LABEL_19:
       sub_249F9(aJimtext2Lbx, 58, (char *)dword_19A2C8, 35);
       v9 = 35;
       v10 = word_199960;
-      sub_24E27();
+      sub_24E27((char *)(intptr_t)dword_19A2C8, word_199960, 35);
     }
 LABEL_20:
     if ( (_WORD)v12 == (_WORD)v24 || word_19AA48 == 1 )
@@ -10322,7 +10322,7 @@ void sub_1CB4D(int a1, int a2)
       {
         sub_1B881(v8);
         v49 = (int16_t)v52;
-        sub_18AE2();
+        sub_18AE2(v8, v7, v49);
         sub_249F9(aJimtext2Lbx, 4, v47, 40);
         sub_27094(v7, v8, 0, 0xC343CB00, byte_19A2DC, &v25, &word_19AA4C, 1);
         v12 = sub_19F26(
@@ -10355,7 +10355,7 @@ void sub_1CB4D(int a1, int a2)
           goto LABEL_25;
         LOWORD(v12) = (uint8_t)byte_19A2DC[(int16_t)v12];
         v51 = v12;
-        sub_18A97(v7, v8, v49);
+        sub_18A97(v7, v8, v49, v51);
         sub_249F9(aJimtext2Lbx, 5, v47, 40);
         if ( (int16_t)sub_19DE8(2, (int)v46, 0, (int)v47) != -1 )
           goto LABEL_11;
@@ -10382,7 +10382,7 @@ void sub_1CB4D(int a1, int a2)
       LOWORD(v15) = word_19A196;
       v51 = v15;
       v16 = (int16_t *)(3753 * (int16_t)v22);
-      sub_18A97((int16_t)v22, (int16_t)v24, v52);
+      sub_18A97((int16_t)v22, (int16_t)v24, v52, v51);
       sub_249F9(aJimtext2Lbx, 5, v47, 40);
       v17 = sub_19DE8(2, (int)v46, 0, (int)v47);
       byte_19A190 = v24;
@@ -10408,7 +10408,7 @@ LABEL_11:
     {
       LOWORD(v11) = (uint8_t)byte_19A3B0[v10];
       v51 = v11;
-      sub_18A97(v7, v8, v52);
+      sub_18A97(v7, v8, v52, v51);
       sub_249F9(aJimtext2Lbx, 5, v47, 40);
       if ( (int16_t)sub_19DE8(2, (int)v46, 0, (int)v47) != -1 )
         goto LABEL_11;
@@ -10565,7 +10565,7 @@ void sub_1D0F8(int16_t *a1)
       if ( byte_199F3A == 1 )
       {
         sub_1B881(v4);
-        sub_18560();
+        sub_18560(v4);
         sub_19919(a1);
         sub_1B881(v3);
       }
@@ -10990,7 +10990,7 @@ LABEL_80:
           sub_249F9(aJimtext2Lbx, 58, (char *)&STACK[0x2968], 50);
           v45 = a24;
           v46 = (char *)&STACK[0x2968];
-          sub_24E27();
+          sub_24E27((char *)&STACK[0x2968], *(int16_t *)(v54 + 1975), 50);
         }
 LABEL_46:
         v47 = (char *)(v45 - 1);
@@ -11446,7 +11446,7 @@ void sub_1DEF8(int16_t *a1)
             word_19AA40 = 0;
             word_19AA36 = 0;
             v48 = 1;
-            sub_18560();
+            sub_18560((uint8_t)byte_19AA67);
             sub_19919(a1);
             continue;
           case 6:
@@ -11487,7 +11487,7 @@ void sub_1DEF8(int16_t *a1)
           case 7:
             word_19AA40 = 0;
             word_19AA36 = 0;
-            sub_186D3((uint8_t)byte_19AA67, (uint8_t)byte_19AA68, word_19A192);
+            sub_186D3((uint8_t)byte_19AA67, (uint8_t)byte_19AA68, word_19A192, word_19A196);
             v26 = sub_1B3B5((uint8_t)byte_19AA68, (uint8_t)byte_19AA67, word_19A192, word_19A196);
             word_19AA40 = 168;
             v27 = v26;
@@ -11551,7 +11551,7 @@ void sub_1DEF8(int16_t *a1)
           case 10:
             word_19AA40 = 0;
             word_19AA36 = 0;
-            sub_18AE2();
+            sub_18AE2((uint8_t)byte_19AA67, (uint8_t)byte_19AA68, word_19A192);
             word_19AA4A = word_19A192;
             sub_249F9(aJimtext2Lbx, 4, v44, 40);
             sub_27094((uint8_t)byte_19AA68, (uint8_t)byte_19AA67, 0, 0xC343CB00, v43, v33, &v46, 1);
@@ -12053,8 +12053,8 @@ int sub_1F34B(int a1)
   word_19AA40 = 0;
   word_19AA36 = 0;
   r1 = sub_249F9((int)(intptr_t)&aJimtext2Lbx, 12, (int)(intptr_t)&byte_19A64A, 250);
-  sub_24D30();
-  return 0 /* eax after void sub_24D30 */;
+  sub_24D30(&byte_19A64A, (int16_t)a1, 250);
+  return 0;
 }
 // 1F377: control flows out of bounds to 1857A
 // 19AA36: using guessed type int16_t word_19AA36;

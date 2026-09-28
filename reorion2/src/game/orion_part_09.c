@@ -763,7 +763,7 @@ char sub_94877( int a1)
 
 
 //----- (0009488F) --------------------------------------------------------
-void sub_9488F( int a1)
+int16_t sub_9488F( int a1)
 {
   int16_t v2; // di
   int16_t v3; // cx
@@ -772,6 +772,7 @@ void sub_9488F( int a1)
   int16_t v6; // bx
   int16_t v7; // [esp+0h] [ebp-8h]
 
+  a1 = (int16_t)a1;   /* wave 182: cmp dx, si */
   v7 = 0;
   v2 = 0;
   v3 = 0;
@@ -797,7 +798,7 @@ LABEL_9:
       v2 = v7;
 LABEL_11:
     if ( ++v3 >= 67 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94800 je epilog funkce */
+      return v2;   /* wave 182: 0x94921 mov eax, edi */
   }
 }
 // 94924: control flows out of bounds to 94800
@@ -3526,11 +3527,23 @@ int sub_97A29( int a1, int a2)
 //----- (00097A2D) --------------------------------------------------------
 int sub_97A2D( int a1, int a2)
 {
-  sub_93D4B(*(_WORD *)(dword_1930DC + 59 * a2 + 36), 0);
-  sub_9488F(a1);
-  if ( (*(_DWORD *)(59 * a2 + dword_1930DC + 38) & dword_17D411) == 0 )
-    sub_9467D(a1, a2, 29);
-  JUMPOUT(0x941B5);
+  int16_t v2; // ax - level
+  int16_t v3; // cx - cost
+  int16_t v4; // di - discount
+  int16_t v5;
+
+  /* wave 182: rewritten from the asm (0x97A2D + tail 0x94807..0x94872) */
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  v2 = (int16_t)sub_93D4B(*(int16_t *)(dword_1930DC + 59 * a2 + 36), 0);
+  if ( v2 > 5 )
+    v2 = 5;
+  v3 = (int16_t)(*(int16_t *)(dword_1930DC + 59 * a2 + 50) * (10 * ((uint8_t)v2 + 1)));
+  v4 = sub_9488F(a1);
+  if ( (*(_DWORD *)(dword_1930DC + 59 * a2 + 38) & dword_17D411) != 0 || sub_9467D(a1, a2, 29) )
+    v3 *= 2;
+  v5 = v3 - v4;
+  return v5 > 0 ? v5 : 0;
 }
 // 94872: control flows out of bounds to 941B5
 // 17D411: using guessed type int dword_17D411;

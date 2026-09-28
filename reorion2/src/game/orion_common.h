@@ -412,13 +412,13 @@ extern void sub_180D4();
 // plna signatura: void sub_18309( int a1, int a2, unsigned int a3, int16_t *a4);
 void sub_18309( int a1, int a2, unsigned int a3, int16_t *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_18560();
-extern void sub_18560();
+void sub_18560(int a1);   /* wave 182 */
 int sub_18596(int a1);
 extern int sub_18596(int a1);
 // plna signatura: void sub_185BD( int a1, int a2, int a3);
 extern void sub_185BD();
 // plna signatura: void sub_186D3( int a1, int a2, int a3);
-extern void sub_186D3();
+void sub_186D3(int a1, int a2, int a3, int a4);   /* wave 182 */
 // plna signatura: void sub_1883A(int a1, unsigned int a2);
 extern void sub_1883A();
 // plna signatura: char sub_188E0(int a1, int a2, unsigned int a3, int a4);
@@ -426,9 +426,9 @@ extern char sub_188E0();
 // plna signatura: char sub_189EC( unsigned int a1);
 extern char sub_189EC();
 // plna signatura: int sub_18A97(int a1, int a2, int a3);
-extern int sub_18A97();
+int sub_18A97(int a1, int a2, int a3, int a4);   /* wave 182 */
 // plna signatura: int sub_18AE2();
-extern int sub_18AE2();
+int sub_18AE2(int a1, int a2, int a3);   /* wave 182 */
 int sub_18B27(void);
 extern int sub_18B27(void);
 int sub_18B3E(void);
@@ -680,29 +680,29 @@ char sub_249F9(char *a1, int a2, char *a3, int a4);   /* vlna 105: skutecny prot
 // plna signatura: char sub_24ACA( unsigned int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int64_t a29, int a30, int a31, int a32, int a33, int a34, int a35, int a36, int a37);
 char sub_24ACA(char *bufEax, int16_t regEdx, int16_t regEbx, int16_t regEcx, int16_t s1, int16_t s2, int16_t s3, int16_t s4, int16_t s5);   /* vlna 139: skutecna signatura podle asm */
 // plna signatura: void sub_24D30();
-extern void sub_24D30();
+int sub_24D30(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=12)) - nutno dohledat rucne v IDA @ 0x24D64 */ int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=12)) - nutno dohledat rucne v IDA @ 0x24D64 */ int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_24D4C(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: void sub_24D6A();
-extern void sub_24D6A();
+int sub_24D6A(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: void sub_24D83();
-extern void sub_24D83();
+int sub_24D83(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DBB */ _DWORD sub_24D9C( int _p0);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DBB */ _DWORD sub_24D9C( int _p0);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_24D9C(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DE6 */ _DWORD sub_24DC5( int _p0, int _p1);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DE6 */ _DWORD sub_24DC5( int _p0, int _p1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_24DC5(char *a1, int a2, int a3, int a4, int a5, int a6);   /* wave 182: text template thunk */
 // plna signatura: void sub_24DF0();
-extern void sub_24DF0();
+int sub_24DF0(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x24E20 */ int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2);
-int sub_24E08(void *a1, int a2, int a3);   /* vlna 139: thunk do sub_24ACA - dosazeni cisla */
+int sub_24E08(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E27();
-extern void sub_24E27();
+int sub_24E27(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E3E();
-extern void sub_24E3E();
+int sub_24E3E(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=15)) - nutno dohledat rucne v IDA @ 0x24E6B */ int sub_24E54(_DWORD _p0, _DWORD _p1);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=15)) - nutno dohledat rucne v IDA @ 0x24E6B */ int sub_24E54(_DWORD _p0, _DWORD _p1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_24E54(char *a1, int a2);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E73( int a1);
-extern void sub_24E73();
+int sub_24E73(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
 // plna signatura: int16_t sub_24E96(int a1);
 extern int16_t sub_24E96();
 // plna signatura: void sub_24ED3(int16_t *a1);
@@ -3464,7 +3464,7 @@ extern int sub_946B7();
 // plna signatura: char sub_94877( int a1);
 extern char sub_94877();
 // plna signatura: void sub_9488F( int a1);
-extern void sub_9488F();
+extern int16_t sub_9488F();   /* wave 182 */
 // plna signatura: int sub_94951(int a1);
 extern int sub_94951();
 // plna signatura: char sub_949A7( int a1, int a2);
@@ -6707,11 +6707,12 @@ extern int sub_1032FB();
 // plna signatura: int sub_103313(int a1);
 extern int sub_103313();
 // plna signatura: _BYTE *sub_103421();
+char *sub_103428(int a1);
 _BYTE *sub_103421();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_1034CB();
-extern int sub_1034CB();
+char *sub_1034CB();   /* wave 182 */
 // plna signatura: int sub_103521();
-extern int sub_103521();
+char *sub_103521();   /* wave 182 */
 // plna signatura: void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7);
 extern void sub_1035AF();
 // plna signatura: int sub_10370A( int result, unsigned int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int a29, int a30, int a31, int a32, int a33, int a34, int a35, int64_t a36);
@@ -7043,15 +7044,15 @@ int sub_10CEF6(int16_t *a1, int a2, int a3, int a4);   /* vlna 105: skutecny pro
 // plna signatura: void sub_10CFD7(int a1);
 extern void sub_10CFD7();
 // plna signatura: int sub_10D041( int a1);
-extern int sub_10D041();
+int sub_10D041(int a1, int a2);   /* wave 182 */
 // plna signatura: int sub_10D0DA(int64_t a1, int a2);
-extern int sub_10D0DA();
+int sub_10D0DA(int16_t *a1, int a2, int a3);   /* wave 182 */
 // plna signatura: int sub_10D167( int a1, int a2, int a3);
-extern int sub_10D167();
+int sub_10D167(int a1, int a2);   /* wave 182 */
 // plna signatura: void sub_10D1FC( int a1);
 extern void sub_10D1FC();
 // plna signatura: int16_t sub_10D31C( int64_t a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, hr_int128_t a21, int64_t a22, int64_t a23, int a24, int a25);
-extern int16_t sub_10D31C();
+void sub_10D31C(char *a1, int a2, int16_t *a3, char *a4);   /* wave 182 */
 // plna signatura: int sub_10DA98(int a1, int a2, int a3, int a4);
 extern int sub_10DA98();
 // plna signatura: void sub_10DB17(int a1, int a2, unsigned int a3);
@@ -10559,15 +10560,15 @@ int sub_17D1D();
 void sub_17D5B(int16_t a1, int16_t a2);
 void sub_180D4(int16_t a1, int16_t a2);
 // void sub_18309(int16_t a1, int16_t a2, uint16_t a3, int16_t *a4);
-void sub_18560();
+void sub_18560(int a1);   /* wave 182 */
 int sub_18596(int a1);
 void sub_185BD(int16_t a1, int16_t a2, int a3);
-void sub_186D3(int16_t a1, int a2, int16_t a3);
+void sub_186D3(int a1, int a2, int a3, int a4);   /* wave 182 */
 void sub_1883A(int a1, uint16_t a2);
 char sub_188E0(int a1, int a2, uint16_t a3, int16_t a4);
 char sub_189EC(uint16_t a1);
-int sub_18A97(int a1, int a2, int16_t a3);
-int sub_18AE2();
+int sub_18A97(int a1, int a2, int a3, int a4);   /* wave 182 */
+int sub_18AE2(int a1, int a2, int a3);   /* wave 182 */
 int sub_18B27(void);
 int sub_18B3E(void);
 void sub_18B79();
@@ -10693,18 +10694,18 @@ int sub_2484F();
 int sub_2496C();
 char sub_249F9(char *a1, int a2, char *a3, int a4);
 // char sub_24ACA(unsigned int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int64_t a29, int a30, int a31, int a32, int a33, int a34, int a35, int a36, int a37);
-void sub_24D30();
-int sub_24D4C(_DWORD, _DWORD, _DWORD, _DWORD); // weak
-void sub_24D6A();
-void sub_24D83();
-_DWORD sub_24D9C(int16_t); // weak
-_DWORD sub_24DC5(int16_t, int16_t); // weak
-void sub_24DF0();
-int sub_24E08(void *a1, int a2, int a3); // vlna 139
-void sub_24E27();
-void sub_24E3E();
-int sub_24E54(_DWORD, _DWORD); // weak
-void sub_24E73(int16_t a1);
+int sub_24D30(char *a1, int a2, int a3);   /* wave 182: text template thunk */
+int sub_24D4C(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
+int sub_24D6A(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
+int sub_24D83(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
+int sub_24D9C(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
+int sub_24DC5(char *a1, int a2, int a3, int a4, int a5, int a6);   /* wave 182: text template thunk */
+int sub_24DF0(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
+int sub_24E08(char *a1, int a2, int a3);   /* wave 182: text template thunk */
+int sub_24E27(char *a1, int a2, int a3);   /* wave 182: text template thunk */
+int sub_24E3E(char *a1, int a2, int a3);   /* wave 182: text template thunk */
+int sub_24E54(char *a1, int a2);   /* wave 182: text template thunk */
+int sub_24E73(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
 int16_t sub_24E96(int a1);
 // void sub_24ED3(int16_t *a1);
 // void sub_2518F(int a1, int a2, int16_t *a3);
@@ -12093,7 +12094,7 @@ _BOOL1 sub_9467D(int a1, int16_t a2, int16_t a3);
 _BOOL1 sub_9469E(int a1, int a2, int a3);
 int sub_946B7(int16_t a1);
 char sub_94877(int16_t a1);
-void sub_9488F(int16_t a1);
+int16_t sub_9488F(int16_t a1);
 int sub_94951(int a1);
 char sub_949A7(int16_t a1, char a2);
 int sub_94A9D(int16_t a1, int16_t a2);
@@ -12137,7 +12138,7 @@ _BOOL1 sub_977F9(int16_t a1);
 int sub_9781D(int16_t a1);
 void sub_979A0(int16_t a1);
 int sub_97A29(int16_t a1, int16_t a2);
-void sub_97A2D(int16_t a1, int16_t a2);
+int sub_97A2D(int16_t a1, int16_t a2);
 void sub_97A66(int16_t a1);
 int sub_97AD4(int16_t a1);
 int sub_97B2D(int16_t a1);
@@ -13725,8 +13726,8 @@ int sub_1032D8(int a1);
 int sub_1032FB(int result);
 int sub_103313(int a1);
 _BYTE *sub_103421();
-int sub_1034CB();
-int sub_103521();
+char *sub_1034CB();   /* wave 182 */
+char *sub_103521();   /* wave 182 */
 void sub_1035AF(int16_t a1, int16_t a2, int16_t a3, int a4, uint16_t a5, char a6, int a7);
 // int sub_10370A(int result, uint16_t a2, int a3, int16_t a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, int a26, int a27, int a28, int a29, int a30, int a31, int a32, int a33, int a34, int a35, int64_t a36);
 // 103915: vlna 73 - int sub_103915(int a1, int x, int y, int str, int w);
@@ -13895,7 +13896,7 @@ int16_t sub_10CEBE(int a1, int a2, uint16_t a3);
 int sub_10CEF6(int16_t *a1, int16_t a2, int16_t a3, char a4);
 void sub_10CFD7(int a1);
 // int sub_10D041(int16_t a1);
-int sub_10D0DA(int64_t a1, int a2);
+int sub_10D0DA(int16_t *a1, int a2, int a3);   /* wave 182 */
 // int sub_10D167(int16_t a1, int a2, int16_t a3);
 void sub_10D1FC(int16_t a1);
 // int16_t sub_10D31C(int64_t a1, int16_t a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, __int128 a21, int64_t a22, int64_t a23, int a24, int a25);

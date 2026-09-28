@@ -7807,7 +7807,7 @@ void sub_FE359( int a1, int a2)
         if ( !HIBYTE(v4) )
         {
           nullsub_5(v4);
-          sub_10D041(a1);
+          sub_10D041(*(int16_t *)&byte_1AB14C[19 * i + 6], (uint8_t)byte_1AB14C[19 * i + 5]);   /* wave 182: 0xFE3A2 */
           LOBYTE(v4) = 1;
         }
       }

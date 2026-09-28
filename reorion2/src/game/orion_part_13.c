@@ -1683,6 +1683,17 @@ LABEL_24:
 LABEL_40:
     sub_C76FA();
     v10 = sub_1077D(v16, v8, v1, v5);
+    /* PORT (wave 182): the loop has no timing - every pass redraws the galaxy
+       behind the dialog (sub_C7F84) and steps its animation. In DOSBox a pass
+       costs ~6 Mcycles (galaxy loop ~1.7 = 1 tick); natively the black holes
+       spun wildly. Cap it at one BIOS tick like the galaxy loop. */
+    {
+      static unsigned int s_tick;
+      unsigned int now;
+      while ( (now = PortDos_BiosTick()) == s_tick )
+        PortVga_WaitVsyncSlow();
+      s_tick = now;
+    }
   }
   while ( !(_WORD)v27 );
   word_1831B0 = -1;

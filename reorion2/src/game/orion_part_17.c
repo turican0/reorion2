@@ -819,69 +819,49 @@ int sub_103313(int a1)
 
 
 //----- (00103421) --------------------------------------------------------
-_BYTE *sub_103421()
+/* wave 182: common tail loc_103428..loc_1034BB - "SR_R<race>_<kind>.LBX" of
+   a player, falling back to the "SR_R?_<kind>.LBX" name. */
+static char *ScientistLbx_103428(int a1, const char *a2, char *a3)
 {
-  char *v0; // edi
-  char *v2; // [esp-4h] [ebp-6h] BYREF
-  char v3[128]; // [esp+0h] [ebp-2h] BYREF
-  _BYTE v4[52]; // [esp+80h] [ebp+7Eh] BYREF
+  char v3[128]; // [ebp-0B4h]
+  _BYTE v4[52]; // [ebp-34h]
 
-  sprintf(byte_1ACE98, "SR_R%x_SC.LBX", *(uint8_t *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 37));
-  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v4) )
+  sprintf(byte_1ACE98, a2, *(uint8_t *)(3753 * (int16_t)a1 + (uint8_t*)dword_197F98 + 37));
+  if ( !FindMoxSetPath_1114D7((_BYTE *)byte_1ACE98, v4) )
   {
-    if ( FindMoxSetPath_1114D7(aSrRScLbx, v4) )
-      sub_1117BF((int)v4);
+    if ( FindMoxSetPath_1114D7((_BYTE *)a3, v4) )
+      sub_1117BF((int)(intptr_t)v4);
     strcpy(v3, byte_184544);
-    v2 = v3;
-    v0 = (char *)v3 - 1;   /* vlna 124: cil je sousedni buffer v3, ne &v2 */
-    do
-      ++v0;
-    while ( *v0 );
-    strcpy(v0, byte_1ACE98);
-    sub_103313((int)v3);
+    strcat(v3, byte_1ACE98);
+    sub_103313((int)(intptr_t)v3);
   }
   return byte_1ACE98;
 }
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 197F98: using guessed type int (uint8_t*)dword_197F98;
-// 19999C: using guessed type int16_t word_19999C;
-// 1ACE98: using guessed type _BYTE byte_1ACE98[32];
+
+_BYTE *sub_103421()
+{
+  return (_BYTE *)ScientistLbx_103428(word_19999C, "SR_R%x_SC.LBX", aSrRScLbx);
+}
+
+/* wave 182: entry loc_103428 with the player in eax (sub_10D167) */
+char *sub_103428(int a1)
+{
+  return ScientistLbx_103428(a1, "SR_R%x_SC.LBX", aSrRScLbx);
+}
 
 
 //----- (001034CB) --------------------------------------------------------
-int sub_1034CB()
+char *sub_1034CB()
 {
-  _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
-
-  sprintf(byte_1ACE98, "SR_R%x_SP.LBX", *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));
-  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
-    JUMPOUT(0x103472);
-  return (int)(intptr_t)&byte_1ACE98;   /* wave 181: tail loc_1034BB `mov     eax, offset byte_1A4E98` */
+  return ScientistLbx_103428(word_19999C, "SR_R%x_SP.LBX", aSrRSpLbx);
 }
-// 10351C: control flows out of bounds to 103472
-// 103512: control flows out of bounds to 1034BB
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 197F98: using guessed type int (uint8_t*)dword_197F98;
-// 19999C: using guessed type int16_t word_19999C;
-// 1ACE98: using guessed type _BYTE byte_1ACE98[32];
 
 
 //----- (00103521) --------------------------------------------------------
-int sub_103521()
+char *sub_103521()
 {
-  _BYTE v0[52]; // [esp+80h] [ebp+7Eh] BYREF
-
-  sprintf(byte_1ACE98, "SR_R%x_TR.LBX", *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 37));
-  if ( !FindMoxSetPath_1114D7(byte_1ACE98, v0) )
-    JUMPOUT(0x103472);
-  return (int)(intptr_t)&byte_1ACE98;   /* wave 181: tail loc_1034BB `mov     eax, offset byte_1A4E98` */
+  return ScientistLbx_103428(word_19999C, "SR_R%x_TR.LBX", aSrRTrLbx);
 }
-// 103576: control flows out of bounds to 103472
-// 103568: control flows out of bounds to 1034BB
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 197F98: using guessed type int (uint8_t*)dword_197F98;
-// 19999C: using guessed type int16_t word_19999C;
-// 1ACE98: using guessed type _BYTE byte_1ACE98[32];
 
 
 //----- (001035AF) --------------------------------------------------------
@@ -8658,7 +8638,7 @@ LABEL_38:
         strcpy(v77, byte_1AD20C);
         a1 = (int16_t *)v77;
         v29 = *(int16_t *)(v53 + 2);
-        sub_24D30();
+        sub_24D30(v77, v29, v28);   /* wave 182: 0x10B571 */
         sub_77658((int)v77);
         if ( (_WORD)v31 == 1 )
         {
@@ -9543,16 +9523,14 @@ void sub_10C8E0()
     {
       sub_12A478(133, 191, dword_1AD324);
       strcpy(v5, byte_1AD3A0);
-      sub_FA5C6();
-      sub_24D30();
+      sub_24D30(v5, (int16_t)sub_FA5C6(), 100);   /* wave 182: 0x10CB72 */
       sub_103BC4(0x8Fu, 0xDAu, 350, (int)v5, 2);
     }
     else if ( byte_1AD593 == 2 )
     {
       sub_12A478(133, 191, dword_1AD324);
       strcpy(v5, byte_1AD334);
-      sub_FA5C6();
-      sub_24D30();
+      sub_24D30(v5, (int16_t)sub_FA5C6(), 100);   /* wave 182: 0x10CB72 */
       sub_103BC4(0x8Fu, 0xD1u, 350, (int)v5, 2);
     }
   }

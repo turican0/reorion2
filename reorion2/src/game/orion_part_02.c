@@ -1195,59 +1195,66 @@ LABEL_12:
 
 
 //----- (00024D30) --------------------------------------------------------
-void sub_24D30()
+int sub_24D30(char *a1, int a2, int a3)
 {
-  JUMPOUT(0x24E20);
+  /* wave 182: thunk into sub_24ACA (asm 0x24D30) */
+  return sub_24ACA(a1, a2, -1, -1, -1, -1, -1, -1, a3);
 }
-// 24D47: control flows out of bounds to 24E20
+
 
 
 //----- (00024D4C) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=12)) - nutno dohledat rucne v IDA @ 0x24D64 */
-int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
+int sub_24D4C(char *a1, int a2, int a3, int a4)
 {
-  DECOMP_TODO("call analysis failed (funcsize=12)");
+  /* wave 182: thunk into sub_24ACA (asm 0x24D4C) */
+  return sub_24ACA(a1, a2, -1, -1, a3, -1, -1, -1, a4);
 }
+
 
 
 //----- (00024D6A) --------------------------------------------------------
-void sub_24D6A()
+int sub_24D6A(char *a1, int a2, int a3, int a4)
 {
-  JUMPOUT(0x24D64);
+  /* wave 182: thunk into sub_24ACA (asm 0x24D6A) */
+  return sub_24ACA(a1, a2, a3, -1, -1, -1, -1, -1, a4);
 }
-// 24D81: control flows out of bounds to 24D64
+
 
 
 //----- (00024D83) --------------------------------------------------------
-void sub_24D83()
+int sub_24D83(char *a1, int a2, int a3, int a4)
 {
-  JUMPOUT(0x24D64);
+  /* wave 182: thunk into sub_24ACA (asm 0x24D83) */
+  return sub_24ACA(a1, a2, -1, a3, -1, -1, -1, -1, a4);
 }
-// 24D9A: control flows out of bounds to 24D64
+
 
 
 //----- (00024D9C) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DBB */
-_DWORD sub_24D9C( int _p0)
+int sub_24D9C(char *a1, int a2, int a3, int a4, int a5)
 {
-  DECOMP_TODO("call analysis failed (funcsize=18)");
+  /* wave 182: thunk into sub_24ACA (asm 0x24D9C) */
+  return sub_24ACA(a1, a2, -1, -1, -1, a3, a4, -1, a5);
 }
+
 
 
 //----- (00024DC5) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DE6 */
-_DWORD sub_24DC5( int _p0, int _p1)
+int sub_24DC5(char *a1, int a2, int a3, int a4, int a5, int a6)
 {
-  DECOMP_TODO("call analysis failed (funcsize=18)");
+  /* wave 182: thunk into sub_24ACA (asm 0x24DC5) */
+  return sub_24ACA(a1, a2, -1, a4, -1, a3, a5, -1, a6);
 }
+
 
 
 //----- (00024DF0) --------------------------------------------------------
-void sub_24DF0()
+int sub_24DF0(char *a1, int a2, int a3, int a4)
 {
-  JUMPOUT(0x24D5F);
+  /* wave 182: thunk into sub_24ACA (asm 0x24DF0) */
+  return sub_24ACA(a1, a2, -1, -1, -1, a3, -1, -1, a4);
 }
-// 24E03: control flows out of bounds to 24D5F
+
 
 
 //----- (00024E08) --------------------------------------------------------
@@ -1262,44 +1269,48 @@ void sub_24DF0()
    Posledni `push` lezi nejnize, je to tedy argument 1; sedi to i vyznamove -
    argument 1 jde do `itoa` a argument 5 do kontroly delky bufferu.
    Registrove argumenty: eax = buffer (nemeni se), edx = ebx = ecx = -1. */
-int sub_24E08(void *a1, int a2, int a3)
+int sub_24E08(char *a1, int a2, int a3)
 {
-  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
-  return sub_24ACA((char *)a1, -1, -1, -1, (int16_t)a2, -1, -1, -1, (int16_t)a3);
+  /* wave 182: thunk into sub_24ACA (asm 0x24E08) */
+  return sub_24ACA(a1, -1, -1, -1, a2, -1, -1, -1, a3);
 }
+
 
 
 //----- (00024E27) --------------------------------------------------------
-void sub_24E27()
+int sub_24E27(char *a1, int a2, int a3)
 {
-  JUMPOUT(0x24E1E);
+  /* wave 182: thunk into sub_24ACA (asm 0x24E27) */
+  return sub_24ACA(a1, -1, a2, -1, -1, -1, -1, -1, a3);
 }
-// 24E3C: control flows out of bounds to 24E1E
+
 
 
 //----- (00024E3E) --------------------------------------------------------
-void sub_24E3E()
+int sub_24E3E(char *a1, int a2, int a3)
 {
-  JUMPOUT(0x24E1C);
+  /* wave 182: thunk into sub_24ACA (asm 0x24E3E) */
+  return sub_24ACA(a1, -1, -1, -1, -1, -1, -1, a2, a3);
 }
-// 24E52: control flows out of bounds to 24E1C
+
 
 
 //----- (00024E54) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=15)) - nutno dohledat rucne v IDA @ 0x24E6B */
-int sub_24E54(_DWORD _p0, _DWORD _p1)
+int sub_24E54(char *a1, int a2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=15)");
+  /* wave 182: thunk into sub_24ACA (asm 0x24E54) */
+  return sub_24ACA(a1, -1, -1, -1, -1, -1, -1, -1, a2);
 }
+
 
 
 //----- (00024E73) --------------------------------------------------------
-void sub_24E73( int a1)
+int sub_24E73(char *a1, int a2, int a3, int a4, int a5)
 {
-  JUMPOUT(0x24DBB);
+  /* wave 182: thunk into sub_24ACA (asm 0x24E73) */
+  return sub_24ACA(a1, a2, -1, a3, -1, a4, -1, -1, a5);
 }
-// 24E91: control flows out of bounds to 24DBB
+
 
 
 //----- (00024E96) --------------------------------------------------------

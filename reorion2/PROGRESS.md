@@ -17251,3 +17251,61 @@ The original has two VRAM pages (`HIWORD(dword_1BBA64)`, flipped by
 the dirty-row copy (wave 25r-8); now only the dirty rows reach the screen
 (`PortVga_PresentScreen`), like 0x125814. Research and colony screens are
 0 px from the original's VRAM; gate 600/600.
+
+## Wave 182, part 4: the AI turn and the research screen
+
+Playing turns from a DOSBox save at 3501.1 (`t11`), the research screen
+never came and later the port crashed. Method: `REORION2_RNG_LOG=<file>`
+(port) against `DUMPREGS cond=eip:0x003487A0` (DOSBox) with `rngcmp.py` /
+`rngwin.py` finds the first diverging RNG call; then GAME -> SAVE in both
+and `savediff.py` shows the state that differs. Turn 1 and the t11 turn are
+now identical (RNG sequence and save, except settings byte 66 from MOX.SET).
+
+### Fixed
+
+- Dropped results (Hex-Rays `void` + `JUMPOUT` into a shared tail):
+  weapon pickers `sub_568EB..sub_56FEC` (return the table index; monster
+  players 8..14 get fixed weapons), `sub_6D048` (known prerequisites),
+  `sub_6E70A` (tech level, 29 callers), `sub_5685F` callers, `sub_E1002`,
+  `sub_EBE79`/`sub_EBEB7` (star distance, 20 callers), `sub_FED3F` (turns
+  to fly), `sub_D7D53` (threat at a star), `sub_CFAE5` (ship threat vs.
+  enemies), `sub_D8D11` (colony value), `sub_5F524`/`sub_5F5A3`/`sub_5F64C`
+  (colony defence scores), `sub_9488F` + `sub_97A2D` (leader hire cost -
+  the offer said 1 BC instead of 30).
+- Split arrays: Hex-Rays split stack arrays into scalars, MSVC lays them out
+  differently. `sub_D10EE` weight tables for `sub_FE96F`/`sub_FE92D` (the
+  sum matched, the pick did not - Cruiser instead of Destroyer),
+  `sub_DE280` (598-byte per-building record zeroed every pass - industry
+  5 instead of 6), 18-byte message records (`sub_DCDAC`, `sub_E2DCA`, ...),
+  save-name edit buffer `sub_806A2`. `tools/compare/mkblock.py` turns such
+  locals into one block by their ebp offsets; `splitarr2.py` finds
+  `memset`/`memcpy` larger than the declared local.
+- Wrong arguments: `sub_FDB01(v4, a1)` (marked all 36 stars), `sub_D99D8`
+  gets ebx, `sub_FD81C` tail (clears `unk_1AB504` and the diplomacy flags),
+  `sub_8FE65` = `strstr(a1, "\x01")`.
+- Text templates `sub_24D30..sub_24E73` (12 thunks into `sub_24ACA`) were
+  empty; every "%s/%d" message substitution in jimtext/billtext was lost.
+  Thunks rewritten, ~40 call sites traced from the asm.
+- Research breakthrough: `sub_10D31C` (Hex-Rays took the locals above
+  `sub ebp, 82h` for 25 arguments), `sub_10D041`/`sub_10D0DA`/`sub_10D167`/
+  `sub_10D1FC`, scientist LBX helpers `sub_103421`/`sub_1034CB`/
+  `sub_103521` (+ entry `sub_103428`), `sub_C760E` (leader skills text),
+  `sub_147E9F` (dissolve effect - `neg edx` offset used as an unsigned
+  index, 4 GB jump on x64).
+- Leader offer dialog `sub_C7ADA`: port-only pacing of one BIOS tick per
+  pass (the galaxy behind it is redrawn every pass; DOSBox ~6 Mcycles per
+  pass, galaxy loop ~1.7).
+
+The t11 run now shows the leader offer at 3501.3 (REJECT and HIRE like the
+original) and "Your scientists have completed their research in Advanced
+Engineering!" + SELECT NEW RESEARCH, same as DOSBox. Gate 600/600.
+
+### Open
+
+- `unk_1AA414` record 20 (+1/+3) differs after the t11 turn.
+- Saving over an existing slot keeps the edit marks `\x03..\x01` in the
+  name; the original's behaviour not measured yet (DOSBox saves went to an
+  empty slot).
+- `undef.py` lists ~600 "possibly undefined" variables still unassigned,
+  `jumpouts.py` ~140 JUMPOUT tails with code; go through the AI (parts
+  12-16) first.

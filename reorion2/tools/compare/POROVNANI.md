@@ -1514,3 +1514,21 @@ per frame and the colours of the few pixels left on a black screen.
 
 The "yellow cursor" during a fade-in is in the original too. Measure the
 same moment on both sides before changing code.
+
+### AI divergence: RNG first, then the save
+
+`REORION2_RNG_LOG` (port, every `sub_1247A0` call with the caller) against
+DOSBox `DUMPREGS cond=eip:0x003487A0` shows the first diverging call
+(`rngcmp.py`, `rngwin.py` for a window with asm offsets). When the RNG
+matches but the save does not (`savediff.py`), the cause is data: a
+dropped result or a split array. DOSBox `DUMPREGS cond=changed:ADDR:2`
+gives the eip that writes a differing field.
+
+### Hex-Rays patterns that silently break the game logic
+
+- `void f()` + `JUMPOUT(tail)` where the tail does `mov eax, reg`: the
+  result is lost and callers read an uninitialised local (`undef.py`,
+  `dropped.py`, `jumpouts.py`).
+- Arrays split into scalars (`int16_t v128..v136`): a pointer to the first
+  one is passed on; MSVC reorders them (`splitarr2.py`, `mkblock.py`).
+- `sub ebp, 82h` frames: locals above ebp become "arguments".

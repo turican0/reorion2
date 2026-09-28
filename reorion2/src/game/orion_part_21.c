@@ -5832,43 +5832,43 @@ char sub_147E61(char *a1, int a2, int a3, int a4, int a5)
 //----- (00147E9F) --------------------------------------------------------
 int64_t sub_147E9F(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  int v8; // ecx
-  _BYTE *v9; // esi
-  _BYTE *v10; // edi
-  int v11; // ebx
-  int64_t result; // rax
+  uint32_t v6; // ecx
+  uint8_t *v7; // esi
+  uint8_t *v8; // edi
+  uint32_t v9; // ebx
+  int32_t v10; // edx
+  uint8_t v11; // al
+  uint8_t v12; // ah
 
+  /* wave 182: rewritten from the asm - edx is a signed offset (`neg edx`,
+     `[esi+edx-1]`); as an unsigned 32-bit index it jumped 4 GB on x64 */
   dword_188FDC = a3;
   dword_18900C = a2;
   dword_188FF0 = (uint8_t)(sub_1247A0(0x3E8u) - 1);
-  v8 = a6 * a5 - dword_18900C - dword_18900C - 2;
-  v9 = (_BYTE *)(dword_18900C + a1 + 1);
-  v10 = (_BYTE *)(dword_18900C + a4 + 1);
-  v11 = dword_188FF0;
-  WORD1(result) = HIWORD(dword_188FDC);
-  BYTE1(result) = dword_188FDC;
-  HIDWORD(result) = 0;
+  v6 = (uint32_t)a5 * (uint32_t)a6 - 2 * dword_18900C - 2;
+  v7 = (uint8_t *)(intptr_t)(a1 + dword_18900C + 1);
+  v8 = (uint8_t *)(intptr_t)(a4 + dword_18900C + 1);
+  v9 = dword_188FF0;
+  v12 = (uint8_t)dword_188FDC;
   do
   {
-    LOBYTE(result) = *v9++;
-    BYTE4(result) = *((_BYTE *)&dword_189024 + v11);
-    if ( BYTE4(result) < BYTE1(result) )
+    v11 = *v7++;
+    v10 = *((uint8_t *)&dword_189024 + v9);
+    if ( (uint8_t)v10 < v12 )
     {
-      HIDWORD(result) &= dword_18900C;
-      ++BYTE4(result);
+      v10 &= dword_18900C;
+      v10 = (v10 & ~0xFF) | (uint8_t)(v10 + 1);   /* 0x147F12 inc dl */
       if ( dword_189010 )
-        HIDWORD(result) = -HIDWORD(result);
-      *v10 = v9[HIDWORD(result) - 1];
-      v10[HIDWORD(result)] = result;
+        v10 = -v10;
+      *v8 = v7[v10 - 1];
+      v8[v10] = v11;
       dword_189010 = ~dword_189010;
     }
-    HIDWORD(result) = 0;
-    v11 = (uint8_t)(v11 + 1);
-    ++v10;
-    --v8;
+    v9 = (v9 + 1) & 0xFF;
+    ++v8;
   }
-  while ( v8 );
-  return result;
+  while ( --v6 );
+  return v11;
 }
 // 188FDC: using guessed type int dword_188FDC;
 // 188FF0: using guessed type int dword_188FF0;
