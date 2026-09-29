@@ -9549,9 +9549,12 @@ void sub_6F88F( int a1)
     unk_19BB50 = 53;
     unk_19BB52 = 591;
     unk_19BB54 = 353;
+    v1 = 13;   /* wave 183: 6F8CF mov ebx, 0Dh */
   }
   sub_1196F7();
-  JUMPOUT(0x6F521);
+  /* wave 183: 6F95A jmp loc_6F521 = register the right-click help areas; without
+     it a right click in FLEETS fell through as -id and cancelled RELOCATE */
+  sub_1196B8((int)&unk_19BAD4, (int16_t)v1);
 }
 // 6F95A: control flows out of bounds to 6F521
 
@@ -10564,7 +10567,7 @@ void sub_70875()
     v18 = 5 * *(int16_t *)((char *)&word_197FC3 + v17);
     LOWORD(v18) = *(int16_t *)((char *)&word_1975D4 + v18);
     v53 = v18;
-    saveSlotInfo_199699[1 + v16/37].name[0] = v52;
+    word_1996AC[v16] = v52;   /* wave 183: 70CE4 word_1916AC[ecx*2] = fleet slot -> list index, not a save slot */
     v19 = 129 * (int16_t)v53;
     v20 = v44 + 58 * (v16 % 3) + 14;
     v41 = 2;

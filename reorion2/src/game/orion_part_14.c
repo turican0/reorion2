@@ -11336,7 +11336,9 @@ void sub_E2D09( int a1, int a2)
       ServiceAudioTick_FE8BE(v4, 0, 0, 0);
     }
   }
-  JUMPOUT(0xE2AA9);
+  /* wave 183: E2D6D jmp loc_E2AA9 = call sub_E2710(player) - the player totals
+     (command points +60 etc.) were never recomputed after scrapping a ship */
+  sub_E2710((int)((uint8_t *)dword_197F98 + 3753 * (int16_t)a1));
 }
 // E2D6D: control flows out of bounds to E2AA9
 // E2D4F: variable 'v4' is possibly undefined

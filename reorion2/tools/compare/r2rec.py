@@ -18,6 +18,7 @@ import sys
 REGIONS = ['colonies', 'planets', 'stars', 'leaders', 'players', 'ships',
            'events', '1AA414', '19ABA4', 'counts']
 NSRC = 16
+GAP_MAX = 150   # ms, dbx: longest kept gap between steps once a game is loaded
 
 
 def chunks(path):
@@ -53,7 +54,7 @@ def records(path):
             if not c & 0x80:
                 return v
 
-    nvars = {0x40: 1, 0x41: 0, 0x42: 2 + len(REGIONS) + 1, 0x43: 2, 0x44: 1, 0x45: 2}
+    nvars = {0x40: 1, 0x41: 0, 0x42: 2 + len(REGIONS) + 1 + 2, 0x43: 2, 0x44: 1, 0x45: 2}
     while pos < len(ev):
         t = ev[pos]
         pos += 1
@@ -74,8 +75,9 @@ def clicks(path):
     for t, g, pl in records(path):
         if t == 0x42:
             x, y, b = mouse(pl[1])
+            n = len(REGIONS)
             out.append(dict(kind='press', G=g, ms=pl[0], x=x, y=y, b=b,
-                            crc=pl[2:2 + len(REGIONS)], rng=pl[-1]))
+                            crc=pl[2:2 + n], rng=pl[2 + n], waitfn=pl[3 + n], caller=pl[4 + n]))
         elif t == 0x43:
             out.append(dict(kind='release', G=g, ms=pl[0]))
         elif t == 0x44:
@@ -117,6 +119,26 @@ def cmd_extract(rec, out):
             print(name, 'G=%d' % g)
 
 
+LST = 'C:/prenos/reorion2Data/diss/Orion2.exe.lst'
+CODE_DELTA = 0x224000   # IDA code address -> DOSBox runtime
+
+
+def proc_ranges():
+    """IDA function start -> end (from the proc/endp lines of the listing)"""
+    starts, rng = {}, {}
+    rx = re.compile(r'^cseg01:([0-9A-F]{8})\s+(\S+)\s+(proc|endp)\b')
+    for ln in open(LST, encoding='latin1'):
+        m = rx.match(ln)
+        if not m:
+            continue
+        a, name, kind = int(m.group(1), 16), m.group(2), m.group(3)
+        if kind == 'proc':
+            starts[name] = a
+        elif name in starts:
+            rng[starts[name]] = a + 1
+    return rng
+
+
 def cmd_dbx(rec, out):
     """Step chain (SENDCLICK seq=1): each press waits for the previous release,
     the recorded gap and the recorded structure state (from the first press
@@ -132,6 +154,7 @@ def cmd_dbx(rec, out):
     base = presses[0]['crc'] if presses else None
     loaded = False
     last_rel = sync
+    ranges = proc_ranges()
     for i, c in enumerate(cl):
         if c['ms'] < sync:
             continue
@@ -141,9 +164,22 @@ def cmd_dbx(rec, out):
             loaded = loaded or c['crc'][4] != base[4]      # players changed = a game is loaded
             state = (' state=' + ','.join('%08X' % v for v in c['crc'])) if loaded else ''
             first = ' after=0x002A56F2' if n == 1 else ''
-            lines.append('SENDCLICK seq=1%s gapms=%d x=%d y=%d holdms=%d button=%d%s label=p%d'
-                         % (first, max(c['ms'] - last_rel, 0), c['x'], c['y'], max(rel - c['ms'], 1),
-                            1 if c['b'] & 2 else 0, state, n))
+            # the recorded gap is the player's thinking time - readiness comes from
+            # the state gate + settle, so only a short gap is kept (menu clicks
+            # before the load have no state and keep the full gap)
+            gap = max(c['ms'] - last_rel, 0)
+            if loaded:
+                gap = min(gap, GAP_MAX)
+            # input loop of the step: waiting function entry + caller range
+            loop = ''
+            if c['waitfn']:
+                loop = ' waitfn=0x%X' % (c['waitfn'] + CODE_DELTA)
+                if c['caller'] in ranges:
+                    loop += ' callerlo=0x%X callerhi=0x%X' % (c['caller'] + CODE_DELTA,
+                                                              ranges[c['caller']] + CODE_DELTA)
+            lines.append('SENDCLICK seq=1%s gapms=%d x=%d y=%d holdms=%d button=%d settlems=250 timeoutms=5000%s%s label=p%d'
+                         % (first, gap, c['x'], c['y'], max(rel - c['ms'], 1),
+                            1 if c['b'] & 2 else 0, loop, state, n))
             last_rel = rel
         elif c['kind'] == 'key':
             ch = c['code'] & 0xFF

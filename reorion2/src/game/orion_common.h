@@ -3905,7 +3905,7 @@ extern int sub_A1BF4();
 extern int sub_A1C0D();
 // plna signatura: unsigned int sub_A1C74( unsigned int result, int a2, int a3, int a4, int a5, int a6, int a7, _WORD *a8, _WORD *a9, _WORD *a10);
 /* PORT (vlna 105): SKUTECNY prototyp, ne `()`. Blok "plnych signatur" nize je
-   celý v `#if 0`, takze se na volani NIC nekontroluje - a u funkci s
+   celï¿½ v `#if 0`, takze se na volani NIC nekontroluje - a u funkci s
    UKAZATELOVYMI parametry to znamena, ze volajici zapise do 8bajtoveho slotu
    jen 4 bajty a horni pulka zustane po predchozim zapisu. Presne tim padaly
    LEADERS: `sub_A1C74(..., 0, &v30)` predalo `a9` jako 0x191B7CC800000000
@@ -16155,6 +16155,7 @@ extern PoolMemHeader* dword_19916C;
 extern TypeSaveSlotInfo_199699 saveSlotInfo_199699[11];
 //extern char byte_199699[19];
 //extern int16_t word_1996AC[9];
+#define word_1996AC (saveSlotInfo_199699[0].misc)   /* wave 183: fleet window slot -> list index (70CE4, 8A0FF) */
 //extern char byte_1996BE[333];
 #define byte_19980B ((char *)&saveSlotInfo_199699[10])   /* vlna 111: slot 10, ne samostatny objekt */
 // vlna 85: pet zaznamu po 3 B (int16 + byte) - viz orion_data.c

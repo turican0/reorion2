@@ -23,7 +23,8 @@
 //           type < 0x40  value of source `type`, payload zigzag(v - last)
 //           0x40 CHECK   payload varint RNG seed (taken inside the call)
 //           0x41 MARK    no payload ("the recorder reached G")
-//           0x42 PRESS   varint ms, varint mouse, varint CRC32 x regions, varint RNG
+//           0x42 PRESS   varint ms, varint mouse, varint CRC32 x regions, varint RNG,
+//                        varint waiting game function, varint its caller (IDA)
 //           0x43 RELEASE varint ms, varint mouse
 //           0x44 SYNC    varint ms (first entry of the main menu sub_816F2)
 //           0x45 KEYMS   varint ms, varint key code
@@ -46,6 +47,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 #endif
 
 extern "C" uint8_t dseg[];
@@ -110,6 +113,38 @@ uint32_t Crc32(const uint8_t* p, uint32_t n)
     uint32_t c = 0xFFFFFFFFu;
     while (n--) c = t[(c ^ *p++) & 0xFF] ^ (c >> 8);
     return ~c;
+}
+
+// Where the game waits for this input: the innermost two game functions on the
+// stack (IDA start addresses from the symbol names sub_XXXXX / Name_XXXXX).
+// My DOSBox presses a step only when it sees the same function called from the
+// same caller - the game is back in the same input loop (not in an animation).
+void GameFrames(uint32_t& inner, uint32_t& outer)
+{
+    inner = outer = 0;
+#ifdef _WIN32
+    static bool inited = false;
+    HANDLE proc = GetCurrentProcess();
+    if (!inited) { SymSetOptions(SYMOPT_UNDNAME); SymInitialize(proc, nullptr, TRUE); inited = true; }
+    void* st[48] = {0};
+    const USHORT got = CaptureStackBackTrace(1, 48, st, nullptr);
+    unsigned char buf[sizeof(SYMBOL_INFO) + 256] = {0};
+    SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+    for (USHORT i = 0; i < got && !outer; ++i) {
+        std::memset(buf, 0, sizeof buf);
+        sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+        sym->MaxNameLen = 255;
+        DWORD64 disp = 0;
+        if (!SymFromAddr(proc, (DWORD64)st[i], &disp, sym)) continue;
+        const char* us = std::strrchr(sym->Name, '_');
+        if (!us || std::strlen(us + 1) < 4) continue;
+        char* end = nullptr;
+        const unsigned long a = std::strtoul(us + 1, &end, 16);
+        if (!end || *end || a < 0x10000 || a >= 0x200000) continue;
+        if (!inner) inner = (uint32_t)a;
+        else if ((uint32_t)a != inner) outer = (uint32_t)a;
+    }
+#endif
 }
 
 void StateHashes(uint32_t out[kRegionCount])
@@ -229,7 +264,7 @@ void NextRecord()
 int PayloadVars(int type)
 {
     if (type < kSrcCount || type == 0x40 || type == 0x44) return 1;
-    if (type == 0x42) return 2 + kRegionCount + 1;
+    if (type == 0x42) return 2 + kRegionCount + 1 + 2;
     if (type == 0x43 || type == 0x45) return 2;
     return 0;
 }
@@ -402,6 +437,7 @@ void PortRec_Init(void)
 }
 
 int PortRec_Replaying(void) { return g_mode == 2; }
+unsigned long long PortRec_G(void) { return g_G; }   // for probes
 int PortRec_FastReplay(void) { return g_mode == 2 && g_fast; }
 
 uint32_t PortRec_Value(int src, uint32_t live)
@@ -428,6 +464,10 @@ uint32_t PortRec_Value(int src, uint32_t live)
                 PutVar(g_buf, live);
                 for (int i = 0; i < kRegionCount; ++i) PutVar(g_buf, h[i]);
                 PutVar(g_buf, Rng());
+                uint32_t fin = 0, fout = 0;
+                GameFrames(fin, fout);
+                PutVar(g_buf, fin);
+                PutVar(g_buf, fout);
             } else if (src == 0 && (prev >> 24) && !(live >> 24)) {   // all released
                 Emit(0x43, ms, true);
                 PutVar(g_buf, live);
@@ -458,13 +498,34 @@ uint32_t PortRec_Value(int src, uint32_t live)
                 GetVar(v);
                 if ((uint32_t)v != h[i]) { bad += ' '; bad += kRegions[i].name; }
             }
-            GetVar(v);
+            GetVar(v);                                     // RNG
+            GetVar(v);                                     // waiting function
+            GetVar(v);                                     // its caller
             ++s_press;
             // REORION2_REPLAY_TRACE_PRESS=N: call stack at press N (which game loop reads it)
             static int s_trace = -2;
             if (s_trace == -2) {
                 const char* e = SDL_getenv("REORION2_REPLAY_TRACE_PRESS");
                 s_trace = e ? std::atoi(e) : -1;
+            }
+            // REORION2_REPLAY_DUMP_PRESS=5,6,7: dseg (0x5DCD0 B, C 0x178000..) before press N
+            if (const char* e = SDL_getenv("REORION2_REPLAY_DUMP_PRESS")) {
+                const std::string list = std::string(",") + e + ",";
+                if (list.find("," + std::to_string(s_press) + ",") != std::string::npos) {
+                    char nm[64];
+                    std::snprintf(nm, sizeof nm, "dseg_p%d.bin", s_press);
+                    if (FILE* f = std::fopen(nm, "wb")) { std::fwrite(dseg, 1, 0x5DCD0, f); std::fclose(f); }
+                    // + the 10 main structures back to back (same order as kRegions)
+                    std::snprintf(nm, sizeof nm, "regions_p%d.bin", s_press);
+                    if (FILE* f = std::fopen(nm, "wb")) {
+                        const uint8_t* rp[kRegionCount];
+                        uint32_t rn[kRegionCount];
+                        PortRec_GameRegions(rp, rn);
+                        for (int i = 0; i < kRegionCount; ++i)
+                            if (rp[i]) std::fwrite(rp[i], 1, rn[i], f);
+                        std::fclose(f);
+                    }
+                }
             }
             if (s_press == s_trace) {
                 Log("PRESS #%d at G=%llu: call stack -> reorion2_crash.log", s_press, (unsigned long long)g_G);
