@@ -10084,11 +10084,11 @@ void sub_6FF08()
 
 
 //----- (0007020A) --------------------------------------------------------
-_BOOL1 sub_7020A()
+_BOOL1 sub_7020A(int a1)   /* wave 183: ax = ship filter for sub_7802A */
 {
   _BYTE v1[1000]; // [esp+0h] [ebp-3E8h] BYREF
 
-  return (int16_t)sub_7802A((int)v1, 500) > 0;
+  return (int16_t)sub_7802A((int)v1, 500, (int16_t)a1) > 0;
 }
 
 

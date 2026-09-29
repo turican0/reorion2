@@ -17309,3 +17309,33 @@ Engineering!" + SELECT NEW RESEARCH, same as DOSBox. Gate 600/600.
 - `undef.py` lists ~600 "possibly undefined" variables still unassigned,
   `jumpouts.py` ~140 JUMPOUT tails with code; go through the AI (parts
   12-16) first.
+
+### Colony: moving colonists (wave 182, part 4 continued)
+
+Crash when a colonist was dropped on a job row (`sub_BF627 -> sub_B9E94 ->
+sub_B9DA2`, `sprintf` reading 0xFFFF...). Fixed:
+
+- `sub_B9DA2` (colonist line text): four strings go to `sprintf`, the order
+  depends on `byte_199CAE == 4`; Hex-Rays kept two, swapped. `sub_BB147`
+  tail = `sub_CDF5C(12)`.
+- `sub_B9E94` has a second argument (edx = target job row, -1 = none,
+  `var_470`); five callers traced from the asm.
+- `sub_C2A9A` returns the dragged colonist (tail of `sub_B4EF6`).
+- `sub_77658` (YES/NO box) returns `clicked == word_19BF02`; 27 callers
+  dropped the answer.
+
+Moving colonists in MOO2 is click / click, not drag and drop: measured in
+DOSBox from a hand-made session (`DOSBOX_MOUSE_LOG`) - while the button is
+held nothing is picked, the colonist sticks to the cursor on release. The
+same session replayed in the port (`replay_clicks.txt` from the log) ends
+with the same colony (2/3/3 colonists, Pop 8,946 k (-14k)), no crash.
+
+Also: leader offer - hire cost `sub_97A2D` + `sub_9488F` rewritten (was
+"1 BC" instead of "30 BC"); dialog `sub_C7ADA` paced to one BIOS tick
+(port-only, the galaxy behind it spun too fast).
+
+Tools: my DOSBox `DOSBOX_MOUSE_LOG=<file>` (MOVE/DOWN/UP with the ctl cycle
+= the `cycle=` of DUMPFRAME, game pixels 640x480); `SENDCLICK ... rx= ry=`
+releases the button elsewhere. `cropsheet.py` (scratchpad) crops one region
+of many frames. Scripted DOSBox warps do not make the game see motion the
+way a real mouse does - for input behaviour record a real session.

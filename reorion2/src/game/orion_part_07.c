@@ -317,7 +317,7 @@ int sub_7A25F(_BYTE *a1, int a2, int a3)
     case 1:
       sub_124B65();
       *a1 = 1;
-      sub_77658(a2);
+      v4 = sub_77658(a2);   /* wave 182: YES/NO answer was dropped */
       v9 = v4;
       goto LABEL_12;
     case 2:
@@ -4333,7 +4333,7 @@ int sub_7E59A(int a1, unsigned int a2, int16_t *a3)
     {
       sub_124B65();
       byte_19C06A = 1;
-      sub_77658(a1);
+      v7 = sub_77658(a1);   /* wave 182: YES/NO answer was dropped */
       v5 = v7;
     }
     else
@@ -6998,6 +6998,7 @@ void sub_816F2(int a1, int a2, int a3, int16_t *a4)
   int v20; // eax
   _BYTE v21[4]; // [esp+0h] [ebp-4h] BYREF
 
+  PortInput_Sync("816F2");   /* wave 183: anchor = DOSBox after=0x002A56F2 */
   sub_124B65();
   LOWORD(v4) = sub_11C2F0();
   ServiceAudioTick_FE8BE(v4, a1, a3, a4);
@@ -11162,7 +11163,7 @@ LABEL_74:
         }
         else
         {
-          sub_7802A((int)v65, 500);
+          sub_7802A((int)v65, 500, 0xFF);
           sub_FF799((int16_t *)v65, v73, &byte_1992A8);
           if ( !byte_1992AD )
           {

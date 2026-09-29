@@ -5,6 +5,7 @@
 #include <stddef.h> /* size_t - potreba pro PortMemory_* deklarace nize (vlna 06) */
 #include <string.h> /* memcpy - realny qmemcpy, wave 20 */
 #include <SDL3/SDL.h> /* SDL_GetTicks - realny AIL_ms_count nahrada, viz sub_149B10/149B30 nize (vlna 25) */
+#include "../port/port_rec.h" /* wave 183 */
 
 /* waves 176-177: link_stubs.c does not include orion_common.h, so the
    real functions the former stubs forward to need explicit prototypes -
@@ -380,8 +381,8 @@ int sub_1499C0(void) { return 0; }
 // argument is ignored by the real AIL_ms_count() too (Miles callers just
 // re-feed the previous return value into the throttle loop above) - a real
 // monotonic millisecond clock is all that is needed here.
-int sub_149B10(int a1) { (void)a1; return (int)SDL_GetTicks(); }
-int sub_149B30(int a1) { (void)a1; return (int)SDL_GetTicks(); }
+int sub_149B10(int a1) { (void)a1; return (int)PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks()); }   /* wave 183: record / replay */
+int sub_149B30(int a1) { (void)a1; return (int)PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks()); }
 int sub_149BB0(void) { return 0; }
 int sub_149C40(void) { return 0; }
 int sub_15C7F0(void) { return 0; }

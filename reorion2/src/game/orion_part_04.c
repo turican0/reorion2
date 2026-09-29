@@ -11798,34 +11798,81 @@ int sub_5F9EA( int a1)
 
 
 //----- (0005FA87) --------------------------------------------------------
-void sub_5FA87( int a1)
+/* wave 183: rewritten from asm - Hex-Rays dropped the result (edx -> shared
+   tail loc_5FA7E `mov eax, edx`), sub_616A5 used an undefined value. */
+int sub_5FA87( int a1)
 {
-  int v1; // esi
-  uint8_t v2; // al
+  int16_t v1; // esi
+  int16_t v2; // cx
+  int16_t v3; // di
+  int16_t v4; // [ebp-8h]
+  uint8_t v5; // al
+  uint16_t r; // ax
+  int d; // edx
 
-  v1 = a1;
-  sub_5F968(a1);
-  sub_5F9A0(v1);
-  sub_5F9EA(v1);
+  v1 = (int16_t)a1;
+  v2 = sub_5F968(v1);
+  v3 = sub_5F9A0(v1);
+  v4 = sub_5F9EA(v1);
   if ( word_1998F0 == -1000 )
-    goto LABEL_9;
-  v2 = *(_BYTE *)(3753 * v1 + (uint8_t*)dword_197F98 + 517);
-  if ( v2 >= 2u )
+    return 7;
+#define L5FB78() ( *((uint8_t*)dword_197F98 + 3753 * v1 + 379) == 3 ? 0 : 3 )   /* 5FB78 */
+#define L5FC66() ( v2 ? 1 : 2 )                                                  /* 5FC66 */
+  v5 = *((uint8_t*)dword_197F98 + 3753 * v1 + 517);
+  if ( v5 == 0 || v5 == 100 )
   {
-    if ( v2 > 2u )
-    {
-      if ( v2 <= 3u || v2 == 100 )
-        goto LABEL_8;
-LABEL_9:
-      JUMPOUT(0x5FA7E);
-    }
-    sub_1247A0(0x14u);
+    r = (uint16_t)sub_1247A0(0x14u);   /* 5FAFD */
+    if ( r < 1 ) return 0;
+    if ( r < 14 ) return L5FB78();
+    if ( r == 14 ) return 3;
+    if ( r == 15 ) return v2 ? 4 : L5FB78();
+    if ( r == 16 ) return v2 ? 1 : L5FB78();
+    if ( r == 17 ) return 2;
+    if ( r <= 19 ) return v3 ? 6 : L5FB78();
+    if ( r == 20 ) return v4 ? 5 : L5FB78();
+    return 0;
   }
-LABEL_8:
-  sub_1247A0(0x14u);
-  goto LABEL_9;
+  if ( v5 == 1 )
+  {
+    r = (uint16_t)sub_1247A0(0x14u);   /* 5FBDA */
+    if ( r < 1 ) return 0;
+    if ( r == 1 ) return L5FB78();
+    if ( r == 2 ) return 3;
+    if ( r <= 15 ) return v2 ? 4 : L5FB78();
+    if ( r <= 18 ) return L5FC66();
+    if ( r == 19 ) return v3 ? 6 : L5FC66();
+    if ( r == 20 ) return v4 ? 5 : L5FC66();
+    return 0;
+  }
+  if ( v5 > 3 )
+    return 0;
+  d = 0;
+  if ( v5 == 2 )
+  {
+    r = (uint16_t)sub_1247A0(0x14u);   /* 5FC8C: only consumes a draw, d is overwritten below */
+    if ( r < 1 ) d = 0;
+    else if ( r == 1 ) d = L5FB78();
+    else if ( r < 15 ) d = 3;
+    else if ( r == 15 ) d = v2 ? 4 : 3;
+    else if ( r <= 18 ) d = 2;
+    else if ( r == 19 ) d = v3 ? 6 : 2;
+    else if ( r == 20 ) d = v4 ? 5 : 2;
+  }
+  r = (uint16_t)sub_1247A0(0x14u);     /* 5FCF7 */
+  if ( r < 1 ) return d;
+  if ( r == 1 ) return L5FB78();
+  if ( r == 2 ) return 3;
+  if ( r == 3 ) return v2 ? 4 : L5FB78();
+  if ( r <= 5 ) return L5FC66();
+  if ( r <= 7 ) return 2;
+  if ( r <= 11 ) return v3 ? 6 : L5FC66();
+  if ( r <= 15 ) return v3 ? 6 : 2;
+  if ( r <= 17 ) return v4 ? 5 : L5FC66();
+  if ( r <= 20 ) return v4 ? 5 : 2;
+  return d;
+#undef L5FB78
+#undef L5FC66
 }
-// 5FAC9: control flows out of bounds to 5FA7E
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 1998F0: using guessed type int16_t word_1998F0;
 
@@ -13110,7 +13157,7 @@ int sub_6147F( int a1, int a2, int16_t *a3, int a4, int a5)
 int16_t sub_616A5( int a1, int a2, int a3)
 {
   int v3; // edx
-  int v4; // eax
+  int v4; // eax (wave 183: result of sub_5FA87)
   uint8_t v5; // al
   char v6; // al
   int v7; // edi
@@ -13235,7 +13282,7 @@ int16_t sub_616A5( int a1, int a2, int a3)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v3 = a1;
-  sub_5FA87(a1);
+  v4 = sub_5FA87(a1);
   v127 = v4;
   if ( a3 == 5 && *(_BYTE *)(3753 * v3 + (uint8_t*)dword_197F98 + 453) == 3 && (int)sub_1247A0(4u) < 4 )
     v127 = 6;
@@ -13862,7 +13909,7 @@ void sub_628E2(int16_t *a1)
       if ( word_19B880 == 1 )
       {
         v5 = sub_7A990(0xA2u);
-        sub_77658((int)v5);
+        v6 = sub_77658((int)v5);   /* wave 182: YES/NO answer was dropped */
         if ( v6 )
         {
           byte_199F3A = 0;
@@ -13884,7 +13931,7 @@ LABEL_11:
         v12 = word_19B880;
         v8 = sub_7A990(0xA3u);
         v4 = sprintf(v14, v8, v12, v15, v13, v16);
-        sub_77658((int)v14);
+        v4 = sub_77658((int)v14);   /* wave 182: YES/NO answer was dropped */
         if ( (_WORD)v4 )
           goto LABEL_11;
       }

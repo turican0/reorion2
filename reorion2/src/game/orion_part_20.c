@@ -6083,29 +6083,22 @@ int sub_1381B5(int a1, int a2)
 
 
 //----- (001382BF) --------------------------------------------------------
-int64_t sub_1382BF( int a1, int a2, int a3, int a4, int a5)
+/* wave 183: rewritten from asm - Hex-Rays used an int64 index whose high
+   half was a2, the byte loop wrote at 9<<32 (crash). Two palette tables
+   shifted by a1 / a3 are applied to the even / odd lines. */
+int sub_1382BF( int a1, int a2, int a3, int a4, int a5)
 {
-  int64_t v6; // [esp+0h] [ebp-14h]
-  int64_t v7; // [esp+0h] [ebp-14h]
+  int i; // [ebp-14h]
 
-  HIDWORD(v6) = a2;
   dword_1BD09C = (int)byte_1BC89C;
-  sub_1380E0((int16_t)a2, a5);
-  LODWORD(v6) = 0;
-  while ( (int)v6 < 256 )
-  {
-    *(_BYTE *)(v6 + dword_1BD09C) += a1;
-    LODWORD(v6) = v6 + 1;
-  }
-  sub_1481C2(v6);
-  sub_1380E0(a4, a5);
-  LODWORD(v7) = 0;
-  while ( (int)v7 < 256 )
-  {
-    *(_BYTE *)(v7 + dword_1BD09C) += a3;
-    LODWORD(v7) = v7 + 1;
-  }
-  return sub_1481C2(v7);
+  sub_1380E0((int16_t)a2, (int16_t)a5);
+  for ( i = 0; i < 256; ++i )
+    *(_BYTE *)(dword_1BD09C + i) += (uint8_t)a1;
+  sub_1481C2(dword_1BB904, dword_1BD09C);
+  sub_1380E0((int16_t)a4, (int16_t)a5);
+  for ( i = 0; i < 256; ++i )
+    *(_BYTE *)(dword_1BD09C + i) += (uint8_t)a3;
+  return sub_1481C2(dword_1BB904 + 640, dword_1BD09C);
 }
 // 138378: variable 'v7' is possibly undefined
 // 1BB904: using guessed type int dword_1BB904;

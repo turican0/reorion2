@@ -32,6 +32,8 @@ extern "C" void InitDataSegment(void);   /* wave 180: pointer slots of the data 
 // sledovana promenna legitimne prepisuje casto a hleda se JEDEN konkretni zapis.
 static volatile long g_watchLog = 1;
 
+extern "C" void PortRec_Flush(void);
+
 static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
 {
     // PORT (vlna 92): POJISTKA PROTI ZACYKLENI. Vectored handler bezi na
@@ -67,6 +69,7 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
     if (code == EXCEPTION_ACCESS_VIOLATION || code == EXCEPTION_STACK_OVERFLOW ||
         code == EXCEPTION_ILLEGAL_INSTRUCTION || code == EXCEPTION_INT_DIVIDE_BY_ZERO)
     {
+        PortRec_Flush();   // wave 183: the record keeps everything up to the crash
         std::fprintf(stderr, "SEH code=0x%08lX addr=%p", code, ep->ExceptionRecord->ExceptionAddress);
         if (code == EXCEPTION_ACCESS_VIOLATION && ep->ExceptionRecord->NumberParameters >= 2)
         {
@@ -452,11 +455,14 @@ extern "C" void PortDebug_Symbolize(const char* tag, void* addr)
 #include "port/port_sound.h"
 #include "port/port_mouse.h"
 #include "port/port_memory.h"
+#include "port/port_rec.h"
 
 
 int main(int argc, char* argv[])
 {
     AddVectoredExceptionHandler(1, DebugVectoredHandler);
+    // wave 183: record / replay first - a replay sets the recorded env
+    PortRec_Init();
     // PORT (vlna 95): ZMERENO jednorazovou sondou (uz odstranena):
     //   zasobnik = 0x00000000004FFBF0, kod = 0x0000000000753014
     // Obe adresy jsou hluboko pod 2 GB (ImageBase 0x400000 + ASLR jen v ramci

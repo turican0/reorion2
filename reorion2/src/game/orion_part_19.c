@@ -4884,6 +4884,24 @@ unsigned int sub_1247A0(unsigned int a1)
 // 1B9E34: using guessed type int dword_1B9E34;
 
 
+/* Wave 183: main game structures for the record / replay state check
+   (port_rec.cpp) - what the save writer sub_1049B stores. */
+void PortRec_GameRegions(const uint8_t *ptr[10], uint32_t size[10])
+{
+  static const uint32_t sz[10] = { 361 * 250, 17 * 360, 113 * 72, 59 * 67, 3753 * 8, 129 * 500, 950, 1800, 9 * 36, 0x10 };
+  ptr[0] = (const uint8_t *)dword_192B18;
+  ptr[1] = (const uint8_t *)dword_1930D4;
+  ptr[2] = (const uint8_t *)dword_19306C;
+  ptr[3] = (const uint8_t *)(uintptr_t)(uint32_t)dword_1930DC;
+  ptr[4] = (const uint8_t *)dword_197F98;
+  ptr[5] = (const uint8_t *)dword_197F9C;
+  ptr[6] = (const uint8_t *)&byte_1AB14C;
+  ptr[7] = (const uint8_t *)&byte_1AA414;
+  ptr[8] = (const uint8_t *)&byte_19ABA4;
+  ptr[9] = (const uint8_t *)&word_199994;
+  memcpy(size, sz, sizeof(sz));
+}
+
 //----- (00124820) --------------------------------------------------------
 int sub_124820(int result)
 {

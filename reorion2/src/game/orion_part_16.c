@@ -5175,7 +5175,7 @@ LABEL_42:
   v18 = (uint8_t)byte_1AAF5D;
   if ( v11 < (uint8_t)byte_1AAF5D )
   {
-    sub_77658(dword_1AB0F0);
+    v18 = sub_77658(dword_1AB0F0);   /* wave 182: YES/NO answer was dropped */
     v39 = v18;
     goto LABEL_42;
   }
@@ -5339,7 +5339,7 @@ void sub_FB7E5(int16_t *a1)
                 v10 = sub_139294(0);
                 if ( v10 == 1 )
                 {
-                  sub_77658(dword_1AB0F8);
+                  v10 = sub_77658(dword_1AB0F8);   /* wave 182: YES/NO answer was dropped */
                   v8 = (int16_t)v10;
                 }
               }
@@ -7371,7 +7371,7 @@ char sub_FDB01( int a1, int a2)
         {
           v7 = sub_77B28(v6);
           sprintf(v23, (char *)dword_1AB138, v7);
-          sub_77658((int)v23);
+          v8 = sub_77658((int)v23);   /* wave 182: YES/NO answer was dropped */
           if ( v8 )
           {
             if ( sub_9222A(a2) && !byte_199BE2 )
@@ -7396,7 +7396,7 @@ LABEL_25:
       {
         v11 = dword_17EC16 / 2;
         sprintf(v24, (char *)dword_1AB134, dword_17EC16 / 2);
-        sub_77658((int)v24);
+        v12 = sub_77658((int)v24);   /* wave 182: YES/NO answer was dropped */
         if ( !v12 )
           goto LABEL_18;
         while ( v2 )
@@ -7420,7 +7420,7 @@ LABEL_25:
       {
         v14 = sub_77B28(v13);
         sprintf(v22, (char *)dword_1AB140, v14);
-        sub_77658((int)v22);
+        v15 = sub_77658((int)v22);   /* wave 182: YES/NO answer was dropped */
         if ( v15 )
         {
           if ( sub_9222A(a2) && !byte_199BE2 )

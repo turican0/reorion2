@@ -41,45 +41,21 @@ int64_t sub_14818E(int64_t a1, int a2)
 
 
 //----- (001481C2) --------------------------------------------------------
-int64_t sub_1481C2(int64_t a1)
+/* wave 183: rewritten from asm - remaps every other line of a 640x480
+   buffer through the 256-byte table a2 (240 rows, 1481D8..148213); the caller
+   passes buf and buf+0x280 for the two line sets. */
+int sub_1481C2(int a1, int a2)
 {
-  unsigned int v1; // ebx
-  _DWORD *v2; // edi
-  int *v3; // esi
-  int v4; // edx
-  int v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
-  int v9; // eax
+  uint8_t *p = (uint8_t *)(uintptr_t)(uint32_t)a1;
+  const uint8_t *tab = (const uint8_t *)(uintptr_t)(uint32_t)a2;
+  int x;
 
-  __SET_PAIR__(v1, (unsigned int)v3, a1);
-  v2 = (_DWORD *)a1;
-  v4 = 0;
   dword_189020 = 240;
   do
   {
-    v5 = 160;
-    do
-    {
-      v6 = *v3++;
-      LOBYTE(v4) = v6;
-      LOBYTE(v6) = *(_BYTE *)(v1 + v4);
-      v7 = __ROR4__(v6, 8);
-      LOBYTE(v4) = v7;
-      LOBYTE(v7) = *(_BYTE *)(v1 + v4);
-      v8 = __ROR4__(v7, 8);
-      LOBYTE(v4) = v8;
-      LOBYTE(v8) = *(_BYTE *)(v1 + v4);
-      v9 = __ROR4__(v8, 8);
-      LOBYTE(v4) = v9;
-      LOBYTE(v9) = *(_BYTE *)(v1 + v4);
-      *v2++ = __ROR4__(v9, 8);
-      --v5;
-    }
-    while ( v5 );
-    v3 += 160;
-    v2 += 160;
+    for ( x = 0; x < 640; ++x )
+      p[x] = tab[p[x]];
+    p += 1280;
     --dword_189020;
   }
   while ( dword_189020 );

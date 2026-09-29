@@ -1532,3 +1532,12 @@ gives the eip that writes a differing field.
 - Arrays split into scalars (`int16_t v128..v136`): a pointer to the first
   one is passed on; MSVC reorders them (`splitarr2.py`, `mkblock.py`).
 - `sub ebp, 82h` frames: locals above ebp become "arguments".
+
+### Input behaviour: record a real session in the original
+
+`DOSBOX_MOUSE_LOG=<file>` in my DOSBox logs every real move / press /
+release (ctl cycle + game pixels) next to `DUMPFRAME framebuf=vram`. The
+user plays by hand, the log converts to `REORION2_CLICK` for the port
+(times relative to the first press, the port opens the same screen by
+script first). Before calling an input behaviour wrong, measure it: colonist
+moving is click / click in the original too.

@@ -8639,7 +8639,7 @@ LABEL_38:
         a1 = (int16_t *)v77;
         v29 = *(int16_t *)(v53 + 2);
         sub_24D30(v77, v29, v28);   /* wave 182: 0x10B571 */
-        sub_77658((int)v77);
+        v31 = sub_77658((int)v77);   /* wave 182: YES/NO answer was dropped */
         if ( (_WORD)v31 == 1 )
         {
           v29 = 3753 * word_19999C + (uint8_t*)dword_197F98;

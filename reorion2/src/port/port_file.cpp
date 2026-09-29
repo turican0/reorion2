@@ -1,4 +1,5 @@
 #include "port_file.h"
+#include "port_rec.h"
 
 #include <cstdio>
 #include <cstdarg>
@@ -33,6 +34,7 @@ namespace Port::File {
 // namespace), aby byly dostupne i z extern "C" bloku nize v tomto souboru.
 std::mutex g_handleMutex;
 std::vector<FILE*> g_openFiles; // index 0 nepouzity (aby handle 0 == neplatny)
+std::vector<std::string> g_openWritten; // wave 183: path of files opened for writing (record)
 
 namespace {
 
@@ -226,6 +228,10 @@ void EncodeDosDateTime(const fs::file_time_type& ftime, uint16_t& outDate, uint1
     if (year < 1980) year = 1980; // DOS datum nezna roky pred 1980
     outDate = static_cast<uint16_t>(((year - 1980) << 9) | ((tmv.tm_mon + 1) << 5) | tmv.tm_mday);
     outTime = static_cast<uint16_t>((tmv.tm_hour << 11) | (tmv.tm_min << 5) | (tmv.tm_sec / 2));
+    // wave 183: record / replay (the save list shows the dates)
+    const uint32_t dt = PortRec_Value(PORTREC_FTIME, ((uint32_t)outDate << 16) | outTime);
+    outDate = static_cast<uint16_t>(dt >> 16);
+    outTime = static_cast<uint16_t>(dt);
 }
 
 // Stav jednoho probihajiciho hledani (mezi FindFirst a nasledujicimi
@@ -416,6 +422,9 @@ int PortFile_Open(const char* path, const char* mode)
         Port::File::g_openFiles.push_back(nullptr); // index 0 = "neplatny handle" strazce
 
     Port::File::g_openFiles.push_back(f);
+    Port::File::g_openWritten.resize(Port::File::g_openFiles.size());
+    Port::File::g_openWritten.back() =
+        (mode && (mode[0] == 'w' || mode[0] == 'a' || std::strchr(mode, '+'))) ? std::string(resolved) : std::string();
     return static_cast<int>(Port::File::g_openFiles.size() - 1);
 }
 
@@ -426,7 +435,14 @@ int PortFile_Close(int handle)
         return -1; // EOF-like chyba, stejne jako skutecne fclose na spatny handle
     FILE* f = Port::File::g_openFiles[handle];
     Port::File::g_openFiles[handle] = nullptr;
-    return f ? std::fclose(f) : -1;
+    const int r = f ? std::fclose(f) : -1;
+    if (f && static_cast<size_t>(handle) < Port::File::g_openWritten.size() &&
+        !Port::File::g_openWritten[handle].empty()) {
+        const std::string p = Port::File::g_openWritten[handle];
+        Port::File::g_openWritten[handle].clear();
+        PortRec_OnFileWritten(p.c_str());   // wave 183: saves go into the record
+    }
+    return r;
 }
 
 static FILE* PortFile_Resolve(int handle)

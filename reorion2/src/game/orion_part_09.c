@@ -918,7 +918,7 @@ int sub_94B3A(
     goto LABEL_12;
   if ( a2 <= 1u )
   {
-    sub_77658(a1);
+    v6 = sub_77658(a1);   /* wave 182: YES/NO answer was dropped */
     v5 = v6;
   }
   else
@@ -7008,7 +7008,7 @@ void sub_9B2C7(int a1)
     v12 = sub_7A990(0x134u);
     sprintf(v48, v12, v42);
     sub_123E6C((int)unk_17CF00, 1);
-    sub_77658((int)v48);
+    v13 = sub_77658((int)v48);   /* wave 182: YES/NO answer was dropped */
     v64 = v13;
     *(_BYTE *)(dword_19C598 + 274) = 1;
     if ( !v13 )
@@ -7072,7 +7072,7 @@ LABEL_55:
   }
 LABEL_35:
   sub_123E6C((int)unk_17CF00, 1);
-  sub_77658((int)v48);
+  v20 = sub_77658((int)v48);   /* wave 182: YES/NO answer was dropped */
   v64 = v20;
   *(_BYTE *)(dword_19C598 + 274) = 1;
 LABEL_38:
@@ -7107,7 +7107,7 @@ LABEL_38:
       v25 = 316;
     v26 = sub_7A990(v25);
     sprintf(v48, v26, v40, v49);
-    sub_77658((int)v48);
+    v27 = sub_77658((int)v48);   /* wave 182: YES/NO answer was dropped */
     v23 = v27;
   }
   if ( v23 )
@@ -8343,7 +8343,7 @@ LABEL_20:
       /* vlna 89: asm `movsx eax, [var_1C4] / call sub_77B42 / push eax` */
       v13 = sub_77B42(v20);
       sprintf(v21, v22, v13, v16, v18);
-      sub_77658((int)v21);
+      v14 = sub_77658((int)v21);   /* wave 182: YES/NO answer was dropped */
       if ( v14 )
       {
         sub_FFD08((int16_t *)&v24, v25, &byte_1992A8);

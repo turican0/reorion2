@@ -4,6 +4,7 @@
 #include <cstdlib> /* getenv - REORION2_SENDKEY, vlna 58 */
 #include <cstdio>  /* sscanf - dtto */
 #include <cstring> /* strchr - key list, wave 182 */
+#include "port_rec.h"
 
 namespace Port::Mouse {
 
@@ -151,7 +152,17 @@ const State& GetState()
 // `sub_12C392` ("je pripravena klavesa?") vracelo vzdy 0 - proto se
 // intro nedalo preskocit. Tady se ta informace ziskava ze SDL a hlasi se
 // HRANOU (jen pri novem stisku), stejne jako by to udelalo preruseni.
+extern "C" void PortInput_Log(const char* fmt, ...);
+
+static int PollKeyPressLive(void);
+
+// wave 183: every key the game gets goes through record / replay (port_rec.cpp)
 extern "C" int PortInput_PollKeyPress(void)
+{
+    return (int)PortRec_Value(PORTREC_KEY, (uint32_t)PollKeyPressLive());
+}
+
+static int PollKeyPressLive(void)
 {
     // PORT (ladeni, vlna 58): REORION2_SENDKEY=<scancode>[:<ms>] vlozi po
     // <ms> od startu (vychozi 6000) JEDNOU umely stisk klavesy, jako by ho
@@ -169,16 +180,16 @@ extern "C" int PortInput_PollKeyPress(void)
     // backspace) - each is sent once at its time.
     {
         static int s_listInit = 0;
-        static int s_listCode[64];
-        static unsigned s_listMs[64];
-        static bool s_listDone[64];
+        static int s_listCode[512];
+        static unsigned s_listMs[512];
+        static bool s_listDone[512];
         static int s_listN = 0;
         if (!s_listInit) {
             s_listInit = 1;
             const char* e = std::getenv("REORION2_SENDKEY");
             if (e && std::strchr(e, ';')) {
                 const char* p = e;
-                while (*p && s_listN < 64) {
+                while (*p && s_listN < 512) {
                     int c = 0, ms = 0, used = 0;
                     if (std::sscanf(p, "%i:%d%n", &c, &ms, &used) == 2 && c > 0) {
                         s_listCode[s_listN] = c;
@@ -244,6 +255,8 @@ extern "C" int PortInput_PollKeyPress(void)
     if (!Port::Mouse::ConsumeKeyPress())
         return 0;
     const int code = Port::Mouse::LastKeyCode();
+    // wave 183: REORION2_INPUT_LOG (see port_dos.cpp)
+    PortInput_Log("KEY 0x%X:%u", code ? code : 0x3900, (unsigned)SDL_GetTicks());
     return code ? code : 0x3900; // kdyz se kod nepodarilo urcit, mezernik
 }
 

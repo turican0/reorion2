@@ -1810,7 +1810,7 @@ void sub_E7B79(int a1, int a2)
     if ( v6 )
     {
       sprintf(v5, (char *)dword_1AA3D0);
-      sub_77658((int)v13);
+      v12 = sub_77658((int)v13);   /* wave 182: YES/NO answer was dropped */
       v16 = v12;
       if ( v12 )
         *(_BYTE *)(a2 + 8 * a1 + dword_1AA378) = 1;
@@ -9202,7 +9202,7 @@ int sub_F0E17(void *a1, int a2, int a3, int16_t *a4)
     if ( v28 && (_WORD)v12 == *(_WORD *)(dword_192680 + 237) )
     {
       v17 = sub_7A990(0xF5u);
-      sub_77658((int)v17);
+      v18 = sub_77658((int)v17);   /* wave 182: YES/NO answer was dropped */
       if ( v18 )
       {
         v25 = 1;
@@ -11944,7 +11944,7 @@ LABEL_20:
           if ( byte_199BF2 == 3 )
           {
             v9 = sub_7A990(0x1Cu);
-            sub_77658((int)v9);
+            v10 = sub_77658((int)v9);   /* wave 182: YES/NO answer was dropped */
             if ( !v10 )
               goto LABEL_44;
           }
@@ -11977,7 +11977,7 @@ LABEL_20:
       if ( byte_199BF2 == 3 )
       {
         v8 = sub_7A990(0x1Cu);
-        sub_77658((int)v8);
+        LOWORD(v6) = sub_77658((int)v8);   /* wave 182: YES/NO answer was dropped */
         BYTE4(v6) = (_WORD)v6 != 0;
       }
       if ( BYTE4(v6) )

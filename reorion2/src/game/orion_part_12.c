@@ -1997,7 +1997,7 @@ int16_t sub_BE09C(int16_t *a1, _WORD *a2)
         v13 = sub_BB40D(v6);
         v7 = (char *)sub_CDF5C(263);
         sprintf(v15, v7, (char *)(intptr_t)v13, v14);
-        sub_77658((int)v15);
+        v8 = sub_77658((int)v15);   /* wave 182: YES/NO answer was dropped */
         if ( v8 )
         {
           *(_WORD *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 359) = dword_192FD8;
@@ -2265,7 +2265,7 @@ char sub_BE530(int16_t *a1, _WORD *a2)
               v17 = sub_BB3DB(v6);
               v9 = (char *)sub_CDF5C(263);
               sprintf(v19, v9, (char *)(intptr_t)v17, (int16_t)v7);
-              sub_77658((int)v19);
+              v10 = sub_77658((int)v19);   /* wave 182: YES/NO answer was dropped */
               if ( v10 )
               {
                 *(_WORD *)((uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 359) = dword_192FD8;
@@ -3091,7 +3091,7 @@ void sub_BF627(int16_t *a1, _WORD *a2)
       {
         if ( *a1 == word_19F9E0[i] )
         {
-          sub_B9E94(dword_19F7A8);
+          sub_B9E94(dword_19F7A8, i);   /* wave 182: edx = job row */
           word_19994C = 0;
           sub_119281();
           byte_182ACA = 1;
@@ -3297,7 +3297,7 @@ LABEL_4:
         return 0;
       }
       v9 = sub_79C54(dword_19F82C, i);
-      sub_B9E94(*(_WORD *)(17 * v9 + (uint8_t*)dword_1930D4));
+      sub_B9E94(*(_WORD *)(17 * v9 + (uint8_t*)dword_1930D4), -1);
       word_19994C = 0;
       sub_119281();
       byte_182ACA = 1;
@@ -3428,7 +3428,7 @@ LABEL_20:
   v17 = v9;
   v10 = (char *)sub_CDF5C(269);
   v11 = sprintf(v20, v10, v17, v18);
-  sub_77658((int)v20);
+  LOWORD(v11) = sub_77658((int)v20);   /* wave 182: YES/NO answer was dropped */
   if ( (_WORD)v11 )
     sub_E109D(SWORD2(v11));
   return sub_BB1A6(a1, v5);
@@ -3499,7 +3499,7 @@ LABEL_11:
       sub_1191CA((int)sub_BED21, 1);
       sub_CDB01();
       if ( v7 != -1 )
-        sub_B9E94(v7);
+        sub_B9E94(v7, -1);
       goto LABEL_3;
     }
     if ( (_WORD)a1 == word_182AF3 )
@@ -5658,7 +5658,7 @@ int sub_C2994( int a1, int a2)
 
 
 //----- (000C2A9A) --------------------------------------------------------
-void sub_C2A9A( int a1, int a2)
+int16_t sub_C2A9A( int a1, int a2)
 {
   int v3; // esi
   unsigned int v4; // ecx
@@ -5714,8 +5714,7 @@ void sub_C2A9A( int a1, int a2)
   {
     v7 = 101;
   }
-  sub_B4EF6(v12, a2, 3, v7, 31 * a1 + 38, v8, 0, (int)&unk_19FABC + 252 * v3 + 84 * a2, v9, v10, v11);
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC2A94 je epilog funkce */
+  return sub_B4EF6(v12, a2, 3, v7, 31 * a1 + 38, v8, 0, (int)&unk_19FABC + 252 * v3 + 84 * a2, v9, v10, v11);
 }
 // C2B6D: control flows out of bounds to C2A94
 // 1A04F8: using guessed type int16_t word_1A04F8[30];
@@ -6881,7 +6880,7 @@ LABEL_19:
       *a1 = word_1830EE;
       goto LABEL_19;
     }
-    sub_B9E94(word_1A0534[i]);
+    sub_B9E94(word_1A0534[i], -1);
     sub_119281();
     goto LABEL_18;
   }
@@ -6928,14 +6927,14 @@ int16_t sub_C4169(_WORD *a1, int16_t *a2, int a3)
     {
       if ( word_182974 == -1 )
       {
-        sub_C2A9A(a3, v4);
+        v5 = sub_C2A9A(a3, v4);   /* wave 182: dragged colonist */
         if ( v5 != -1 )
           sub_B9C3D(word_1A0534[a3], v5, v4);
         byte_182ACA = 1;
       }
       else
       {
-        sub_B9E94(word_1A0534[a3]);
+        sub_B9E94(word_1A0534[a3], (int16_t)v4);   /* wave 182: edx = di */
         sub_119281();
         sub_1191CA((int)sub_C3D34, 1);
         byte_182ACA = 1;

@@ -1,6 +1,7 @@
 #include "port_dos.h"
 #include "port_mouse.h"
 #include "port_vga.h"
+#include "port_rec.h"
 
 #include <SDL3/SDL.h>
 #include <cstring>
@@ -199,7 +200,99 @@ static int g_lastVx = -1, g_lastVy = -1, g_lastButtons = 0;
 // Prepocet pozice ze SDL do virtualniho rozsahu, ktery si hra nastavila
 // funkcemi 7/8 - spolecny pro dotaz fn 3 i pro callback, aby obe cesty
 // hlasily TOTEZ (drive byl vypocet jen uvnitr case 0x03).
+// Wave 183: REORION2_INPUT_LOG=<file> records the real input (game pixels
+// 640x480, SDL ms) in the REORION2_CLICK / REORION2_SENDKEY format, flushed
+// per line so it survives a crash. tools/compare/inputlog2env.py turns it
+// into the env strings for a replay.
+extern "C" void PortInput_Log(const char* fmt, ...)
+{
+    static FILE* s_f = nullptr;
+    static int s_init = 0;
+    if (!s_init) {
+        s_init = 1;
+        const char* p = SDL_getenv("REORION2_INPUT_LOG");
+        if (p && *p) {
+            s_f = std::fopen(p, "w");
+            if (s_f) {
+                const char* si = SDL_getenv("REORION2_SKIPINTRO");
+                std::fprintf(s_f, "# reorion2 input log, SKIPINTRO=%s\n", si ? si : "");
+                std::fflush(s_f);
+            }
+        }
+    }
+    if (!s_f)
+        return;
+    va_list ap;
+    va_start(ap, fmt);
+    std::vfprintf(s_f, fmt, ap);
+    va_end(ap);
+    std::fputc('\n', s_f);
+    std::fflush(s_f);
+}
+
+// First entry of a code point (main menu sub_816F2): replay times are
+// relative to it, DOSBox arms after= on the same address.
+extern "C" void PortInput_Sync(const char* name)
+{
+    static int s_done = 0;
+    if (s_done)
+        return;
+    s_done = 1;
+    PortInput_Log("SYNC %s@%u", name, (unsigned)SDL_GetTicks());
+    PortRec_Sync();
+}
+
+// Real mouse -> log: MOVE (at most every 100 ms), DOWN at press, CLICK at
+// release with the hold time and the button mask.
+static void LogRealMouse(int vx, int vy, int buttons)
+{
+    static int s_lx = -1, s_ly = -1, s_lb = 0, s_dx = 0, s_dy = 0;
+    static unsigned s_lastMove = 0, s_downMs = 0;
+    const unsigned now = (unsigned)SDL_GetTicks();
+    const int gx = (g_mouseMaxX > 0) ? vx * 640 / (g_mouseMaxX + 1) : vx;
+    const int gy = (g_mouseMaxY > 0) ? vy * 480 / (g_mouseMaxY + 1) : vy;
+    if (buttons != s_lb) {
+        if (buttons && !s_lb) {
+            s_downMs = now; s_dx = gx; s_dy = gy;
+            PortInput_Log("DOWN %d,%d@%u b=%d", gx, gy, now, buttons);
+        } else if (!buttons) {
+            PortInput_Log("CLICK %d,%d@%u:%u:%d", s_dx, s_dy, s_downMs,
+                          now - s_downMs ? now - s_downMs : 1, s_lb);
+            if (gx != s_dx || gy != s_dy)
+                PortInput_Log("UP %d,%d@%u", gx, gy, now);
+        }
+        s_lb = buttons;
+    } else if ((gx != s_lx || gy != s_ly) && now - s_lastMove >= 100) {
+        s_lastMove = now;
+        PortInput_Log("MOVE %d,%d@%u:0", gx, gy, now);
+    } else {
+        return;
+    }
+    s_lx = gx; s_ly = gy;
+}
+
+static void ComputeVirtualMouseImpl(int& vx, int& vy, int& buttons);
+
 static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
+{
+    ComputeVirtualMouseImpl(vx, vy, buttons);
+    {   // wave 183: record / replay (port_rec.cpp)
+        uint32_t m = (uint32_t)(vx & 0xFFF) | ((uint32_t)(vy & 0xFFF) << 12) | ((uint32_t)(buttons & 0xFF) << 24);
+        m = PortRec_Value(PORTREC_MOUSE, m);
+        vx = (int)(m & 0xFFF);
+        vy = (int)((m >> 12) & 0xFFF);
+        buttons = (int)(m >> 24);
+    }
+    static int s_log = -1;
+    if (s_log < 0) {
+        const char* p = SDL_getenv("REORION2_INPUT_LOG");
+        s_log = (p && *p && !SDL_getenv("REORION2_CLICK")) ? 1 : 0;
+    }
+    if (s_log)
+        LogRealMouse(vx, vy, buttons);
+}
+
+static void ComputeVirtualMouseImpl(int& vx, int& vy, int& buttons)
 {
     Port::Mouse::Poll();
     const Port::Mouse::State& s = Port::Mouse::GetState();
@@ -222,7 +315,8 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
         // vlna 73: za casem smi byt jeste ":hold" (ms) - hold 0 znamena
         // POUZE presun kurzoru bez stisku, coz je potreba na testovani
         // najeti mysi (hover) oddelene od kliknuti.
-        struct ClickEv { int x, y; unsigned ms; unsigned hold; };
+        // wave 183: optional ":buttons" after hold (1 left, 2 right).
+        struct ClickEv { int x, y; unsigned ms; unsigned hold; int btn; };
         static std::vector<ClickEv> s_evs;
         static int s_have = -1;
         static unsigned s_hold = 150;
@@ -233,14 +327,16 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
                     s_hold = (unsigned)std::atoi(h);
                 const char* p = env;
                 while (*p) {
-                    int x = 0, y = 0; unsigned ms = 0, hold = 0; int used = 0, used2 = 0;
+                    int x = 0, y = 0, btn = 1; unsigned ms = 0, hold = 0; int used = 0, used2 = 0, used3 = 0;
                     if (std::sscanf(p, "%d,%d@%u%n", &x, &y, &ms, &used) == 3) {
                         p += used;
-                        if (std::sscanf(p, ":%u%n", &hold, &used2) == 1)
+                        if (std::sscanf(p, ":%u%n", &hold, &used2) == 1) {
                             p += used2;
-                        else
+                            if (std::sscanf(p, ":%d%n", &btn, &used3) == 1)
+                                p += used3;
+                        } else
                             hold = s_hold;
-                        s_evs.push_back(ClickEv{x, y, ms, hold});
+                        s_evs.push_back(ClickEv{x, y, ms, hold, btn});
                     } else {
                         ++p; continue;
                     }
@@ -278,7 +374,7 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
                 vy = cur->y * (maxY + 1) / 480;
                 if (vx > maxX) vx = maxX;
                 if (vy > maxY) vy = maxY;
-                buttons = down ? 1 : 0;
+                buttons = down ? cur->btn : 0;
                 return;
             }
         }
@@ -557,7 +653,7 @@ extern "C" void PortDos_ServiceMouse(void)
     // Presne tak se choval vyber rasy: kurzor po tlacitkach jezdil
     // (zvyraznovalo se, protoze to jde pres sub_114177 = prvek pod
     // kurzorem), ale kliknuti nikdy neprosla - `sub_1171AB` vracelo 0.
-    // Kdyz hranu nespotrebujeme, dorucí se hned, jak maska prepne zpet.
+    // Kdyz hranu nespotrebujeme, dorucï¿½ se hned, jak maska prepne zpet.
     const int kButtonEdges = 0x02 | 0x04 | 0x08 | 0x10;
     const int deliverable = events & g_mouseMask;
     if (!(events & kButtonEdges) || (deliverable & kButtonEdges))
@@ -591,7 +687,8 @@ unsigned int PortDos_BiosTick(void)
     // V portu je MEMORY[] mrtvy stub - herni cekaci smycky (intro sub_24ED3,
     // pacing sub_12C2C6, casovani v orion_part_23) se na nem tocily donekonecna
     // nebo hned protekly. Odvozeno z realneho casu (SDL_GetTicks, ms).
-    return (unsigned int)((uint64_t)SDL_GetTicks() * 1193182ull / 65536000ull);
+    return PortRec_Value(PORTREC_TICK,
+        (unsigned int)((uint64_t)SDL_GetTicks() * 1193182ull / 65536000ull));   // wave 183: record / replay
 }
 
 void PortDebug_Checkpoint(const char* name, int value)

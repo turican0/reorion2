@@ -1,4 +1,5 @@
 #include "port_sound.h"
+#include "port_rec.h"
 
 #include <SDL3/SDL.h>
 #include <cstdlib>
@@ -143,7 +144,8 @@ int QueuedBytes()
     if (!g_initialized || !g_stream)
         return 0;
     int q = SDL_GetAudioStreamQueued(g_stream);
-    return q > 0 ? q : 0;
+    // wave 183: queue depth drives the game mixer and the video waits
+    return (int)PortRec_Value(PORTREC_AUDIOQ, (uint32_t)(q > 0 ? q : 0));
 }
 
 void WriteOplRegister(uint8_t reg, uint8_t value)

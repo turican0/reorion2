@@ -9736,7 +9736,7 @@ LABEL_311:
                   v22 = 32;
                   sub_1319E4(144, 32, 0, 0, 0, 0, 0, 0);
                   sub_131F7B();
-                  sub_77658((int)&v130);
+                  v98 = sub_77658((int)&v130);   /* wave 182: YES/NO answer was dropped */
                   if ( (_WORD)v98 )
                   {
                     if ( word_1998CE && word_199908 != word_19999C )
@@ -9845,7 +9845,7 @@ LABEL_353:
         v22 = (int)&v130;
         sub_58F1E(57, (char *)&v130, 80);
         sub_131F7B();
-        sub_77658((int)&v130);
+        v64 = sub_77658((int)&v130);   /* wave 182: YES/NO answer was dropped */
         if ( (_WORD)v64 )
         {
           word_199876 = 1 - word_199876;

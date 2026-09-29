@@ -6,6 +6,7 @@ extern "C" void PortWatchdog_Ping(void);
 // Emulace preruseni od myshi - viz komentar v Present() a port_dos.cpp.
 extern "C" void PortDos_ServiceMouse(void);
 #include "port_sound.h"
+#include "port_rec.h"
 
 #include <SDL3/SDL.h>
 #include <array>
@@ -1064,6 +1065,8 @@ namespace Port::Vga {
 
         PortWatchdog_Ping();
 
+        PortRec_Tick();   // wave 183: periodic record flush
+
         if (!g_initialized ||
             !g_framebuffer)
             return;
@@ -1511,25 +1514,27 @@ extern "C" {
     static void PortVga_WaitSliced(
         uint32_t totalMs)
     {
-        const uint64_t end =
-            SDL_GetTicks() +
+        // wave 183: the clock goes through record / replay - the number of
+        // Present() calls (mouse service, audio timer) must be the same.
+        const uint32_t end =
+            PortRec_Value(PORTREC_WAIT, (uint32_t)SDL_GetTicks()) +
             totalMs;
 
         for (;;) {
             Port::Vga::Present();
 
-            const uint64_t now =
-                SDL_GetTicks();
+            const uint32_t now =
+                PortRec_Value(PORTREC_WAIT, (uint32_t)SDL_GetTicks());
 
-            if (now >= end)
+            if ((int32_t)(now - end) >= 0)
                 break;
 
-            const uint64_t left =
+            const uint32_t left =
                 end - now;
 
-            SDL_Delay(
-                static_cast<uint32_t>(
-                    left > 8 ? 8 : left));
+            if (!PortRec_FastReplay())
+                SDL_Delay(
+                    left > 8 ? 8 : left);
         }
     }
 

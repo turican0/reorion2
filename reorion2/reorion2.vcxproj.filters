@@ -123,6 +123,9 @@
     <ClCompile Include="src\port\port_ctl.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
+    <ClCompile Include="src\port\port_rec.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\decomp_compat.h">

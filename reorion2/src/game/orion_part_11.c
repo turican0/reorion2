@@ -893,7 +893,7 @@ LABEL_17:
       if ( v11 + 1 >= v12 )
       {
         v13 = sub_CDF5C(520);
-        sub_77658(v13);
+        v14 = sub_77658(v13);   /* wave 182: YES/NO answer was dropped */
         if ( !v14 )
           goto LABEL_45;
       }
@@ -1194,7 +1194,7 @@ int16_t sub_B1E77( int a1)
       if ( *(_BYTE *)(dword_197F9C - 129 * (result + 100) + 100) == 4 )
       {
         v4 = sub_CDF5C(531);
-        sub_77658(v4);
+        v5 = sub_77658(v4);   /* wave 182: YES/NO answer was dropped */
         if ( !v5 )
           goto LABEL_7;
       }
@@ -1719,7 +1719,7 @@ LABEL_18:
       sprintf(v66, v10, v64, v65);
       if ( !byte_199BE6 )
       {
-        sub_77658((int)v66);
+        v11 = sub_77658((int)v66);   /* wave 182: YES/NO answer was dropped */
         if ( !v11 )
           break;
       }
@@ -1757,7 +1757,7 @@ LABEL_30:
           && *(_BYTE *)(dword_197F9C - 129 * (word_1828AC[(int16_t)k] + 100) + 100) == 4 )
         {
           v17 = sub_CDF5C(476);
-          sub_77658(v17);
+          v18 = sub_77658(v17);   /* wave 182: YES/NO answer was dropped */
           if ( !v18 )
           {
             *a1 = 0;
@@ -7492,36 +7492,32 @@ _BOOL1 sub_B9CE3( int a1, int a2, int a3, int a4)
 //----- (000B9DA2) --------------------------------------------------------
 int64_t sub_B9DA2( int a1, int a2, int a3)
 {
-  int v4; // edi
-  int16_t v5; // ax
-  int v6; // eax
-  int16_t v7; // ax
-  char *v8; // eax
-  int v10; // [esp-8h] [ebp-Ch]
-  int v11; // [esp-4h] [ebp-8h]
-  int v12; // [esp+0h] [ebp-4h]
+  uint32_t v3; // [eax+0Ch] colonist record
+  int v4; // BB147 (race / work)
+  int v5; // BB121
+  int v6; // BAE1A (owner race name)
+  int v7; // BB0F0 (job)
 
+  /* wave 182: rewritten from the asm - four strings go to sprintf, the
+     order depends on byte_199CAE (language, 4 = other word order) */
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  v3 = *(uint32_t *)((uint8_t*)dword_192B18 + 361 * a1 + 4 * a2 + 12);
   if ( byte_199CAE == 4 )
   {
-    v4 = 361 * a1;
-    v5 = sub_BCACF(a1, a2);
-    v11 = sub_BB147(v5);
-    sub_BB121((*(_DWORD *)(4 * a2 + v4 + (uint8_t*)dword_192B18 + 12) & 0x400) != 0);
-    sub_BAE1A(a1, a2);
-    v6 = sub_BB0F0((uint16_t)(*(_WORD *)(4 * a2 + v4 + (uint8_t*)dword_192B18 + 12) << 7) >> 14);
+    v4 = sub_BB147((int16_t)sub_BCACF(a1, a2));
+    v5 = sub_BB121((uint8_t)((v3 << 21) >> 31));
+    v6 = sub_BAE1A(a1, a2);
+    v7 = sub_BB0F0((int16_t)((v3 << 23) >> 30));
+    return sprintf((char *)(intptr_t)a3, (char *)(intptr_t)sub_CDF5C(76), (char *)(intptr_t)v7,
+                   (char *)(intptr_t)v6, (char *)(intptr_t)v5, (char *)(intptr_t)v4);
   }
-  else
-  {
-    v12 = 361 * a1;
-    v11 = sub_BB0F0((uint16_t)(*(_WORD *)((uint8_t*)dword_192B18 + v12 + 4 * a2 + 12) << 7) >> 14);
-    v7 = sub_BCACF(a1, a2);
-    sub_BB147(v7);
-    sub_BAE1A(a1, a2);
-    v6 = sub_BB121((*(_DWORD *)(v12 + (uint8_t*)dword_192B18 + 4 * a2 + 12) & 0x400) != 0);
-  }
-  v10 = v6;
-  v8 = (char *)sub_CDF5C(76);
-  return sprintf(a3, v8, (char *)(intptr_t)v10, (char *)(intptr_t)v11);
+  v7 = sub_BB0F0((int16_t)((v3 << 23) >> 30));
+  v4 = sub_BB147((int16_t)sub_BCACF(a1, a2));
+  v6 = sub_BAE1A(a1, a2);
+  v5 = sub_BB121((uint8_t)((v3 << 21) >> 31));
+  return sprintf((char *)(intptr_t)a3, (char *)(intptr_t)sub_CDF5C(76), (char *)(intptr_t)v5,
+                 (char *)(intptr_t)v6, (char *)(intptr_t)v4, (char *)(intptr_t)v7);
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -7529,7 +7525,7 @@ int64_t sub_B9DA2( int a1, int a2, int a3)
 
 
 //----- (000B9E94) --------------------------------------------------------
-char sub_B9E94( int a1)
+char sub_B9E94( int a1, int a2)
 {
   int v1; // edi
   int v2; // eax
@@ -7604,6 +7600,7 @@ char sub_B9E94( int a1)
   char v72; // [esp+46Ch] [ebp+7Eh]
 
   v57 = a1;   /* wave 181: v57 saved by the prologue (push eax) */
+  v56 = a2;   /* wave 182: push edx - the target job (-1 = none) */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v72 = 0;
   v1 = 0;
@@ -7673,7 +7670,7 @@ char sub_B9E94( int a1)
           sub_C0AF4();
           v1 = 3;
 LABEL_28:
-          sub_77658((int)v58);
+          v13 = sub_77658((int)v58);   /* wave 182: YES/NO answer was dropped */
           byte_182ACA = 1;
           v62[0] = v13;
           sub_C0ABC();
@@ -7824,7 +7821,8 @@ LABEL_72:
     v35 = v71;
     v28 = sub_CDF5C(465);
     v29 = 1;
-    sub_C5AC8(v58, 0, v28, v35);
+    /* wave 183: BA4CB pushes count, v59 (people), v60 (from), v61 (to), v66 (ETA) - Hex-Rays kept only the count */
+    sub_C5AC8(v58, 0, v28, (int16_t)v35, v59, v60, v61, (uint8_t)v66);
     if ( v65 )
     {
       v30 = sub_CDF5C(132);
@@ -8477,7 +8475,7 @@ int sub_BB147( int a1)
 {
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 )
-    JUMPOUT(0xBB12F);
+    return sub_CDF5C(12);   /* wave 182: tail loc_BB12F */
   return sub_CDF5C(286);
 }
 // BB159: control flows out of bounds to BB12F

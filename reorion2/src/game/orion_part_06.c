@@ -504,7 +504,7 @@ _BOOL1 sub_72617()
 {
   _BYTE v1[1000]; // [esp+0h] [ebp-3E8h] BYREF
 
-  return sub_918D5(2) && (int16_t)sub_7802A((int)v1, 500) > 0;
+  return sub_918D5(2) && (int16_t)sub_7802A((int)v1, 500, 0xFF) > 0;
 }
 
 
@@ -4628,7 +4628,7 @@ int16_t sub_7743A(int a1)
 
 
 //----- (00077658) --------------------------------------------------------
-void sub_77658(int a1)
+int sub_77658(int a1)
 {
   int16_t v1; // cx
   int16_t i; // cx
@@ -4697,7 +4697,7 @@ void sub_77658(int a1)
         {
           sub_779FC(v9, 2);
           word_19994C = 1;
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x77651 je epilog funkce */
+          return (int16_t)v5 == word_19BF02;   /* wave 182: 0x7784E setz al - YES */
         }
       }
     }
@@ -5318,31 +5318,37 @@ int16_t sub_78013( int a1)
 
 
 //----- (0007802A) --------------------------------------------------------
-int sub_7802A(int a1, int a2)
+/* wave 183: rewritten from asm - Hex-Rays lost the ship test (undefined zf)
+   and the third argument (ebx = required byte +11h of the ship, 0FFh = any).
+   Collects the ids of the current player's ships from the 5-byte table
+   word_1975D4 (id, +4 = in use). */
+int sub_7802A(int a1, int a2, int a3)
 {
-  int v3; // ecx
+  int16_t cnt; // cx
   int16_t i; // dx
-  char v5; // zf
-  int v6; // eax
-  int16_t v8; // [esp+0h] [ebp-8h]
-  _BOOL1 v9; // [esp+4h] [ebp-4h]
+  int16_t id; // [ebp-8h]
+  char full; // [ebp-4h]
+  char ok; // bl
+  uint8_t *ship;
 
-  a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  v9 = 0;
-  v3 = 0;
+  a2 = (int16_t)a2;
+  full = 0;
   memset(a1, -1, 2 * a2);
-  for ( i = 0; i < 500 && !v9; ++i )
+  cnt = 0;
+  for ( i = 0; i < 500 && !full; ++i )
   {
-    v8 = *(int16_t *)((char *)&word_1975D4 + 5 * i);
-    sub_169169(byte_1975D8, i);   /* vlna 160: ukazatel, ne (int) */
-    if ( !v5 )
+    id = *(int16_t *)((char *)&word_1975D4 + 5 * i);
+    ship = (uint8_t *)dword_197F9C + 129 * id;
+    ok = (int16_t)*(int8_t *)(ship + 0x63) == word_19999C
+      && ((int16_t)a3 == 0xFF || *(uint8_t *)(ship + 0x11) == (int16_t)a3);   /* 78070..78093 */
+    if ( byte_1975D8[5 * i] && ok )
     {
-      v6 = (int16_t)v3++;
-      *(_WORD *)(a1 + 2 * v6) = v8;
-      v9 = (int16_t)v3 > 500;
+      *(int16_t *)(a1 + 2 * cnt++) = id;
+      if ( cnt > 500 )
+        full = 1;
     }
   }
-  return v3;
+  return cnt;
 }
 // 780A6: variable 'v5' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);

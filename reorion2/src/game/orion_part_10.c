@@ -12513,7 +12513,7 @@ int sub_AFEFC(int a1, int a2, int a3)
 
   word_1827CE[0] = -2;
   word_1827D0 = -3;
-  sub_16948F();
+  a3 = 1;   /* wave 183: AFF11 mov ebx, 1 - no call here, a3 was a stale register (65535 -> crash) */
   word_18283A = 2;
   do
   {

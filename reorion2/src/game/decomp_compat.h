@@ -110,6 +110,17 @@ int PortWatcom_Qsort(void *base, size_t n, size_t size, int (*cmp)(const void *,
 #define qsort(b, n, s, c) \
     PortWatcom_Qsort((void *)(intptr_t)(b), (size_t)(n), (size_t)(s), (int (*)(const void *, const void *))(c))
 
+/* Wave 183: time() goes through record / replay (the RNG seed of a new game);
+   Watcom time_t is 32 bits, so only 4 bytes are stored through the pointer. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int PortRec_Time(void *p);
+#ifdef __cplusplus
+}
+#endif
+#define time(p)                    PortRec_Time((void *)(p))
+
 #define fopen(path, mode)          PortFile_Open((path), (mode))
 #define fclose(stream)             PortFile_Close(stream)
 #define fread(buf, sz, cnt, str)   PortFile_Read((buf), (sz), (cnt), (str))
@@ -239,6 +250,9 @@ unsigned char *PortVga_VideoWindow(void);
 void PortVga_SetPaletteEntry(int index, int r, int g, int b);
 /* BIOS tick counter (0x46C, ~18.2 Hz) z realneho casu, vlna 15. */
 unsigned int PortDos_BiosTick(void);
+/* Wave 183: REORION2_INPUT_LOG - input record + replay anchor. */
+void PortInput_Log(const char *fmt, ...);
+void PortInput_Sync(const char *name);
 #ifdef __cplusplus
 }
 #endif
