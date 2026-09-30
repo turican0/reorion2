@@ -7327,6 +7327,10 @@ int16_t sub_EEC02( int a1)
 
 
 //----- (000EEC98) --------------------------------------------------------
+/* wave 183: the original passes 32-bit values to sprintf (Hex-Rays: pointers as
+   `(_DWORD)a1` for %s) - PortSprintf32 reads every argument as 32 bits. */
+int PortSprintf32(char *out, const char *fmt, ...);
+#define sprintf PortSprintf32
 char sub_EEC98(int64_t a1)
 {
   int v1; // ecx
@@ -7361,7 +7365,7 @@ char sub_EEC98(int64_t a1)
   char v31[52]; // [esp+CCh] [ebp+7Eh] BYREF
   char v32[20]; // [esp+100h] [ebp+B2h] BYREF
 
-  v29 = a1;   /* wave 181: v29 saved by the prologue (push eax) */
+  v29 = (char *)(uintptr_t)(uint32_t)a1;   /* wave 181: v29 saved by the prologue (push eax); wave 183: eax only */
   v1 = HIDWORD(a1);
   LOBYTE(a1) = *(_BYTE *)HIDWORD(a1);
   switch ( *(_BYTE *)HIDWORD(a1) )
@@ -7552,7 +7556,7 @@ char sub_EEC98(int64_t a1)
             HIDWORD(a1) = dword_1AAC50;
           else
             HIDWORD(a1) = (uint8_t*)dword_197F98 + 3753 * *(uint8_t *)(HIDWORD(a1) + 4) + 21;
-          LOBYTE(a1) = sprintf(v29, (char *)dword_1AAB94, a1);
+          LOBYTE(a1) = sprintf(v29, (char *)dword_1AAB94, (_DWORD)a1, HIDWORD(a1));   /* EF258 push edx, push eax */
           return a1;
         default:
           return a1;
@@ -7874,6 +7878,8 @@ LABEL_67:
 // 1AAC4C: using guessed type int dword_1AAC4C;
 // 1AAC50: using guessed type int dword_1AAC50;
 
+
+#undef sprintf
 
 //----- (000EF629) --------------------------------------------------------
 uint8_t sub_EF629(int a1, int a2, int a3, int a4, int a5, int a6)

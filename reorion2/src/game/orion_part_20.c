@@ -2711,7 +2711,7 @@ int sub_1308A1(
   v19[2] = a11 - 1;
   v20[2] = a10 - 1;
   v17[2] = a7;
-  HIWORD(v18) = a8;
+  HIWORD64(v18) = a8;
   v19[3] = 0;
   v20[3] = a10 - 1;
   for ( i = 0; (int16_t)i < 3; ++i )
@@ -2740,7 +2740,7 @@ int sub_1308A1(
   if ( (_WORD)v18 == WORD1(v18) )
   {
     sub_130E33(0, 2, 1, 3, v18, (int)&v16, (int)&v18, (int)v19, (int)v20);
-    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD(v18) - WORD1(v18) + 1, v18, a9, a11);
+    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD64(v18) - WORD1(v18) + 1, v18, a9, a11);
   }
   else if ( WORD1(v18) == WORD2(v18) )
   {
@@ -2748,7 +2748,7 @@ int sub_1308A1(
     v27 = *(_DWORD *)((char *)&v18 + 2) - v18 + 1;
     sub_1311D5(SWORD2(qword_184530), dword_1BB904, v27, v18, a9, a11);
     sub_130E33(1, 3, 2, 3, SWORD1(v18), (int)&v16, (int)&v18, (int)v19, (int)v20);
-    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD(v18) - WORD1(v18) + 1, SWORD1(v18), a9, a11);
+    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD64(v18) - WORD1(v18) + 1, SWORD1(v18), a9, a11);
   }
   else
   {
@@ -2759,7 +2759,7 @@ int sub_1308A1(
     v27 = HIDWORD(v18) - *(_DWORD *)((char *)&v18 + 2) + 1;
     sub_1311D5(SWORD2(qword_184530), dword_1BB904, v27, SWORD1(v18), a9, a11);
     sub_130E33(1, 3, 2, 3, SWORD2(v18), (int)&v16, (int)&v18, (int)v19, (int)v20);
-    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD(v18) - WORD2(v18) + 1, SWORD2(v18), a9, a11);
+    return sub_1311D5(SWORD2(qword_184530), dword_1BB904, HIWORD64(v18) - WORD2(v18) + 1, SWORD2(v18), a9, a11);
   }
 }
 // 184530: using guessed type int64_t qword_184530;

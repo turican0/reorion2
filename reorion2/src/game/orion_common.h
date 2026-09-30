@@ -6432,8 +6432,8 @@ extern char sub_FD875();
 extern void sub_FD8ED();
 // plna signatura: char sub_FD911( int a1, int a2, int16_t *a3);
 char sub_FD911( int a1, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_FD95A(int a1, int a2);
-extern void sub_FD95A();
+// plna signatura: char sub_FD95A(int a1, int a2);
+extern char sub_FD95A();
 // plna signatura: char *sub_FDA3F( int a1, int a2);
 char *sub_FDA3F( int a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: unsigned int sub_FDAA7( int a1, int a2, int a3, int a4);
@@ -6444,18 +6444,18 @@ extern char sub_FDB01();
 extern char sub_FDF93();
 // plna signatura: char sub_FE02C( int a1, int a2, int16_t *a3);
 char sub_FE02C( int a1, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_FE0EA( int a1, int a2);
-extern void sub_FE0EA();
+// plna signatura: char sub_FE0EA( int a1, int a2);
+extern char sub_FE0EA();
 // plna signatura: char sub_FE251(int a1, int a2);
 extern char sub_FE251();
 // plna signatura: char sub_FE2E8( int a1, int a2, int16_t *a3);
 char sub_FE2E8( int a1, int a2, int16_t *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char sub_FE31F( int a1, int a2);
 extern char sub_FE31F();
-// plna signatura: void sub_FE359( int a1, int a2);
-extern void sub_FE359();
-// plna signatura: void sub_FE408(int16_t *a1, int a2);
-void sub_FE408(int16_t *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: char sub_FE359( int a1, int a2);
+extern char sub_FE359();
+// plna signatura: char sub_FE408(int16_t *a1, int a2);
+char sub_FE408(int16_t *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char sub_FE514( int a1, int a2, int a3);
 extern char sub_FE514();
 // plna signatura: char sub_FE552( int a1, int16_t *a2);
@@ -13585,18 +13585,18 @@ int sub_FD846(int result);
 char sub_FD875(int a1, int16_t a2);
 void sub_FD8ED();
 // char sub_FD911(int16_t a1, char a2, int16_t *a3);
-void sub_FD95A(int a1, char a2);
+char sub_FD95A(int a1, int a2);
 char *sub_FDA3F(int16_t a1, int16_t a2);
 unsigned int sub_FDAA7(int16_t a1, int16_t a2, int16_t a3, char a4);
 // char sub_FDB01(char a1, int a2);
 char sub_FDF93(int16_t a1, char a2);
 // char sub_FE02C(int16_t a1, char a2, int16_t *a3);
-void sub_FE0EA(int16_t a1, char a2);
+char sub_FE0EA(int a1, int a2);
 char sub_FE251(int a1, char a2);
 // char sub_FE2E8(int16_t a1, char a2, int16_t *a3);
 char sub_FE31F(int16_t a1, char a2);
-void sub_FE359(int16_t a1, char a2);
-void sub_FE408(int16_t *a1, char a2);
+char sub_FE359(int a1, int a2);
+char sub_FE408(int16_t *a1, int a2);
 // char sub_FE514(char a1, char a2, int a3);
 // char sub_FE552(char a1, int16_t *a2);
 // void sub_FE63E(char a1, int16_t *a2);

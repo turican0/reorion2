@@ -2122,7 +2122,7 @@ int sub_10FA35(int result, int a2, unsigned int a3)
   if ( a3 <= 0xFAu )
   {
     sub_120E24(10);
-    sub_EEC98(v4[0]);
+    sub_EEC98(((int64_t)(uint32_t)(uintptr_t)&byte_1AA414[18 * (uint8_t)a3] << 32) | (uint32_t)(uintptr_t)v4);   /* wave 183: 10FA57 eax = buffer, edx = report bl */
     sub_1212B3(v3, a2, (int)asc_17A3EC);
     return sub_103BC4(v3 + 13, a2, 320, (int)v4, 0);
   }
@@ -2182,8 +2182,7 @@ int16_t sub_10FB02()
 
   word_199A08 = 0;
   LOWORD(v0) = sub_EEC02(word_19999C);
-  v16 = v0;
-  if ( (int16_t)v0 > 0 )
+  v16 = v0;  if ( (int16_t)v0 > 0 )
   {
     if ( word_199A10 == 39 )
     {

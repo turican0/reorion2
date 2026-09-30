@@ -200,6 +200,48 @@ static int g_lastVx = -1, g_lastVy = -1, g_lastButtons = 0;
 // Prepocet pozice ze SDL do virtualniho rozsahu, ktery si hra nastavila
 // funkcemi 7/8 - spolecny pro dotaz fn 3 i pro callback, aby obe cesty
 // hlasily TOTEZ (drive byl vypocet jen uvnitr case 0x03).
+// Wave 183: sprintf with the original's 32-bit varargs. Hex-Rays often passes
+// a pointer as an int (`(_DWORD)a1`) for a %s; on x64 %s then reads 8 bytes of
+// the slot (garbage upper half). Here every argument is read as 32 bits, %s
+// turns it into a pointer (LAA:NO - all addresses are below 4 GB).
+extern "C" int PortSprintf32(char* out, const char* fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    char* o = out;
+    for (const char* p = fmt; *p; ) {
+        if (*p != '%') { *o++ = *p++; continue; }
+        if (p[1] == '%') { *o++ = '%'; p += 2; continue; }
+        char spec[32];
+        size_t n = 0;
+        spec[n++] = *p++;
+        while (*p && std::strchr("-+ #0123456789.*", *p) && n < 24) {
+            if (*p == '*') {   // width / precision from the arguments
+                n += std::snprintf(spec + n, sizeof spec - n, "%d", (int)va_arg(ap, unsigned int));
+                ++p;
+            } else {
+                spec[n++] = *p++;
+            }
+        }
+        while (*p == 'l' || *p == 'h' || *p == 'L' || *p == 'N' || *p == 'F') ++p;   // 32-bit anyway
+        const char c = *p ? *p++ : 'd';
+        spec[n++] = c;
+        spec[n] = 0;
+        const unsigned int v = va_arg(ap, unsigned int);
+        if (c == 's') {
+            const char* s = v ? reinterpret_cast<const char*>(static_cast<uintptr_t>(v)) : "(null)";
+            o += std::sprintf(o, spec, s);
+        } else if (c == 'c' || c == 'd' || c == 'i') {
+            o += std::sprintf(o, spec, (int)v);
+        } else {
+            o += std::sprintf(o, spec, v);
+        }
+    }
+    *o = 0;
+    va_end(ap);
+    return (int)(o - out);
+}
+
 // Wave 183: REORION2_INPUT_LOG=<file> records the real input (game pixels
 // 640x480, SDL ms) in the REORION2_CLICK / REORION2_SENDKEY format, flushed
 // per line so it survives a crash. tools/compare/inputlog2env.py turns it

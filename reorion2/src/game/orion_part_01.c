@@ -290,8 +290,7 @@ void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6)
   {
     word_199A0E = 0;
     v7 = HIWORD(a1);
-    a1 = (uint16_t)word_199A08;
-    switch ( word_199A08 )
+    a1 = (uint16_t)word_199A08;    switch ( word_199A08 )
     {
       case 0:
         sub_86188(a6);

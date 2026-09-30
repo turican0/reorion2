@@ -6460,7 +6460,7 @@ int sub_108E63(int result, int a2, unsigned int a3)
   if ( a3 <= 0xFAu )
   {
     sub_120E24(10);
-    sub_EEC98(v4[0]);
+    sub_EEC98(((int64_t)(uint32_t)(uintptr_t)&byte_1AA414[18 * (uint8_t)a3] << 32) | (uint32_t)(uintptr_t)v4);   /* wave 183: 108E85 eax = buffer, edx = report bl */
     sub_1212B3(v3, a2, (int)asc_17A2F9);
     return sub_103BC4(v3 + 13, a2, 345, (int)v4, 0);
   }
@@ -6502,7 +6502,7 @@ int sub_108EC3(int result, int a2, int a3, int a4)
       v5[72] = 0;
       v5[71] = v7;
       v5[126] = v7;
-      sub_EEC98(v12[0]);
+      sub_EEC98(((int64_t)(uint32_t)(uintptr_t)&byte_1AA414[18 * v7] << 32) | (uint32_t)(uintptr_t)v12);   /* wave 183: 108F18 edx = report cx */
       v8 = sub_103CAF(*(_WORD *)(v4 + 4), (int)v12);
       v9 = v8 % (int)(uint16_t)v13;
       v5[73] = v8 / (int)(uint16_t)v13;

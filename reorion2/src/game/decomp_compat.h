@@ -358,7 +358,13 @@ typedef int64_t  __int64;
 #define LOBYTE(x)   (*((unsigned char*)&(x)))
 #define LOWORD(x)   (*((unsigned short*)&(x)))
 #define LODWORD(x)  (*((unsigned int*)&(x)))
-#define HIBYTE(x)   (*((unsigned char*)&(x)+1))
+/* wave 183: IDA's HIBYTE is the TOP byte of the variable (byte 3 of an int,
+   byte 1 of an int16). It was always byte 1 here, so every HIBYTE on an int
+   wrote/read the wrong byte (e.g. the turn report in sub_E2DCA). 8-byte
+   variables are pointers in the port that were 4-byte in the original. */
+#define PORT_HIBYTE_OFF(x) (sizeof(x) >= 8 ? 3 : sizeof(x) - 1)
+#define HIBYTE(x)   (*((unsigned char*)&(x) + PORT_HIBYTE_OFF(x)))
+#define HIWORD64(x) (*((unsigned short*)&(x) + 3))   /* wave 183: HIWORD of a real int64 */
 #define HIWORD(x)   (*((unsigned short*)&(x)+1))
 #define HIDWORD(x)  (*((unsigned int*)&(x)+1))
 #define SHIDWORD(x) (*((int*)&(x)+1))
@@ -366,7 +372,7 @@ typedef int64_t  __int64;
 #define SLOWORD(x)  (*((short*)&(x)))
 #define SHIWORD(x)  (*((short*)&(x)+1))
 #define SLOBYTE(x)  (*((signed char*)&(x)))
-#define SHIBYTE(x)  (*((signed char*)&(x)+1))
+#define SHIBYTE(x)  (*((signed char*)&(x) + PORT_HIBYTE_OFF(x)))   /* wave 183: top byte, see HIBYTE */
 
 #define BYTE1(x) (*((unsigned char*)&(x)+1))
 #define BYTE2(x) (*((unsigned char*)&(x)+2))

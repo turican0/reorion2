@@ -7008,7 +7008,7 @@ int sub_15E3F0(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, i
   v23 = sub_15ECC8(v42);
   if ( (_WORD)v18 )
   {
-    HIWORD(v40) = HIWORD(dword_1C9CAC);
+    HIWORD64(v40) = HIWORD(dword_1C9CAC);
     WORD2(v40) = *((_WORD *)&off_18B04A + 2 * v11);
     WORD2(v40) -= (uint16_t)&byte_168130;
   }

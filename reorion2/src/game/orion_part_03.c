@@ -2154,7 +2154,7 @@ void sub_3B077(int a1, int a2)
     WORD1(v15) = v35 & 1;
     WORD2(v15) = v31;
     HIDWORD(v12) = 0;
-    HIWORD(v15) = v30;
+    HIWORD64(v15) = v30;
     DWORD2(v12) = (char *)&v14 + 4;
     v11 = 313 * a2;
     LOWORD(v16) = 0;
@@ -4185,7 +4185,7 @@ void sub_3DBD1( int a1, int a2, int a3, int a4)
     v8 = 479;
   else
     v8 = 350;
-  HIWORD(v9) = 0;
+  HIWORD64(v9) = 0;
   sub_128AB6(0, 0, 639, v8);
   sub_12B634();
   for ( i = 0; i < v7; ++i )
@@ -4233,7 +4233,7 @@ void sub_3DBD1( int a1, int a2, int a3, int a4)
     v25 = v27 + v23 - 12;
     v17 = (int16_t)(v15[i] + v27 + v23 - 12);
     v14 = v16[i] + v28 + v22 - 12;
-    HIWORD(v9) = HIWORD(v17);
+    HIWORD64(v9) = HIWORD(v17);
     sub_12A478(v14, v17, v13);
   }
   JUMPOUT(0x3C52B);

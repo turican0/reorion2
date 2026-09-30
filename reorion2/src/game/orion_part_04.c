@@ -15177,7 +15177,7 @@ int16_t sub_63FF0(int16_t *a1, int a2, int a3, int a4)
   HIDWORD(v6) = dword_192FD8;
   v5 = 0;
   v34 = HIDWORD(v6) - 35000 - (int16_t)sub_63E4C();
-  HIWORD(v6) = HIWORD(a1);
+  HIWORD64(v6) = HIWORD(a1);
   LOWORD(v6) = (uint8_t)byte_181734[0];
   v36 = 0;
   if ( (uint8_t)byte_181734[0] > *a1 )
@@ -15193,7 +15193,7 @@ LABEL_2:
       if ( v9
         && byte_181734[v8]
         && (WORD2(v6) = (uint8_t)byte_181734[v8], v35 = HIDWORD(v6),
-                                                          HIWORD(v6) = HIWORD(a1),
+                                                          HIWORD64(v6) = HIWORD(a1),
                                                           *a1 >= (int16_t)v35)
         && (HIDWORD(v6) = a2 + 2 * v8, *(uint8_t *)(a3 + v8) > (int16_t)*(_WORD *)HIDWORD(v6)) )
       {

@@ -7178,7 +7178,8 @@ char sub_FD911( int a1, int a2, int16_t *a3)
 
 
 //----- (000FD95A) --------------------------------------------------------
-void sub_FD95A(int a1, int a2)
+/* wave 183: returns al (FD989 = 0, FDA38 = 1), the event chain sub_FE63E stops on 1 */
+char sub_FD95A(int a1, int a2)
 {
   uint8_t* v2; // ebx
   char v3; // al
@@ -7212,13 +7213,14 @@ void sub_FD95A(int a1, int a2)
       if ( v4 )
         *(_BYTE *)(v2 + 40) = 0;
     }
+    return 1;   /* FDA38 */
   }
   else
   {
     *(_BYTE *)(v2 + 52) &= ~(1 << v7);
   }
 LABEL_13:
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFE2E2 je epilog funkce */
+  return 0;   /* FD989 */
 }
 // FD98B: control flows out of bounds to FE2E2
 // FD97B: variable 'v7' is possibly undefined
@@ -7614,10 +7616,13 @@ char sub_FE02C( int a1, int a2, int16_t *a3)
 
 
 //----- (000FE0EA) --------------------------------------------------------
-void sub_FE0EA( int a1, int a2)
+/* wave 183: returns ch (FE24A mov al, ch) = 4 when the TURN SUMMARY is due -
+   the event chain in sub_FE63E stops on it; void let sub_FE02C open the
+   colony screen over dispatcher state 40. */
+char sub_FE0EA( int a1, int a2)
 {
   int v3; // esi
-  _BOOL1 v4; // dh
+  _BOOL1 v4 = 0; // dh
   uint8_t *v5; // eax
   uint8_t v6; // dl
   char v7; // dl
@@ -7672,7 +7677,7 @@ LABEL_31:
         }
       }
 LABEL_36:
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFE2E2 je epilog funkce */
+      return v4 ? 4 : 0;   /* FE21B mov ch, 4 */
     }
   }
   if ( *v5 <= 8u )
@@ -7790,36 +7795,40 @@ char sub_FE31F( int a1, int a2)
 
 
 //----- (000FE359) --------------------------------------------------------
-void sub_FE359( int a1, int a2)
+/* wave 183: rewritten from asm - returns cl (FE401): 1 = an event of this
+   player exists, 2 = it was shown by sub_10D041 (FE3B4 mov cl, 2); sub_FD69F
+   takes eax = text buffer, edx = the 19-byte event record. */
+char sub_FE359( int a1, int a2)
 {
   int16_t i; // bx
-  int16_t v4; // ax
-  int64_t v5[25]; // [esp+0h] [ebp-C8h] BYREF
+  char v3; // cl
+  char v4; // al
+  char v5[200]; // [ebp-C8h]
 
+  v3 = 0;
   for ( i = 0; i < word_1AB502; ++i )
   {
-    if ( a1 == *(int16_t *)((char *)&word_1AB14D + 19 * i) && a2 )
+    if ( (int16_t)a1 != *(int16_t *)((char *)&word_1AB14D + 19 * i) )
+      continue;
+    v3 = 1;
+    if ( !(char)a2 )
+      continue;
+    v4 = 0;
+    if ( byte_1AB14C[19 * i] == 1 && !byte_1AB14F[19 * i] )
     {
-      LOBYTE(v4) = 0;
-      if ( byte_1AB14C[19 * i] == 1 )
-      {
-        HIBYTE(v4) = byte_1AB14F[19 * i];
-        if ( !HIBYTE(v4) )
-        {
-          nullsub_5(v4);
-          sub_10D041(*(int16_t *)&byte_1AB14C[19 * i + 6], (uint8_t)byte_1AB14C[19 * i + 5]);   /* wave 182: 0xFE3A2 */
-          LOBYTE(v4) = 1;
-        }
-      }
-      if ( !(_BYTE)v4 )
-      {
-        sub_FD69F(v5[0]);
-        sub_77423((int)v5);
-      }
-      *(int16_t *)((char *)&word_1AB14D + 19 * i) = -1;
+      nullsub_5(0);
+      v3 = 2;
+      sub_10D041(*(int16_t *)&byte_1AB14C[19 * i + 6], (uint8_t)byte_1AB14C[19 * i + 5]);   /* 0xFE3A2 */
+      v4 = 1;
     }
+    if ( !v4 )
+    {
+      sub_FD69F(((int64_t)(uint32_t)(uintptr_t)&byte_1AB14C[19 * i] << 32) | (uint32_t)(uintptr_t)v5);
+      sub_77423((int)(intptr_t)v5);
+    }
+    *(int16_t *)((char *)&word_1AB14D + 19 * i) = -1;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFE2E2 je epilog funkce */
+  return v3;
 }
 // FE403: control flows out of bounds to FE2E2
 // 919A3: using guessed type int nullsub_5(_DWORD);
@@ -7828,47 +7837,55 @@ void sub_FE359( int a1, int a2)
 
 
 //----- (000FE408) --------------------------------------------------------
-void sub_FE408(int16_t *a1, int a2)
+/* wave 183: rewritten from asm - returns var_8 (FE2DF): 5 as soon as some
+   player has a pending diplomacy message for a1, set before the a2 check. */
+char sub_FE408(int16_t *a1, int a2)
 {
   int v3; // ebx
   int v4; // esi
-  int v5; // edx
+  int16_t pl; // di
+  char v8; // [ebp-8h]
   int v6; // eax
 
+  pl = (int16_t)(intptr_t)a1;
+  v8 = 0;
   v3 = 0;
   v4 = 0;
   while ( v3 < word_199998 )
   {
-    if ( v3 != (int16_t)a1
-      && (((int)*(uint8_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a1 + 3680) >> v3) & 1) == 0
-      && *(_BYTE *)((int16_t)a1 + v4 + (uint8_t*)dword_197F98 + 1623)
-      && a2 )
+    if ( v3 != pl
+      && (((int)*(uint8_t *)((uint8_t*)dword_197F98 + 3753 * pl + 3680) >> v3) & 1) == 0
+      && *(_BYTE *)(pl + v4 + (uint8_t*)dword_197F98 + 1623) )
     {
-      if ( (byte_199F3A == 2 || byte_199F3A == 3)
-        && (v5 = (uint8_t*)dword_197F98 + v4, sub_20162(*(uint8_t *)((uint8_t*)dword_197F98 + v4 + (int16_t)a1 + 1623))) )
+      v8 = 5;   /* FE464 */
+      if ( (char)a2 )
       {
-        sub_FA270(v3);
-        while ( 1 )
+        if ( (byte_199F3A == 2 || byte_199F3A == 3)
+          && sub_20162(*(uint8_t *)((uint8_t*)dword_197F98 + v4 + pl + 1623)) )
         {
-          LOBYTE(v6) = sub_FA2A9();
-          if ( (_BYTE)v6 )
-            break;
-          ServiceAudioTick_FE8BE(v6, v5, v3, a1);
+          sub_FA270(v3);
+          while ( 1 )
+          {
+            LOBYTE(v6) = sub_FA2A9();
+            if ( (_BYTE)v6 )
+              break;
+            ServiceAudioTick_FE8BE(v6, 0, v3, 0);
+          }
+          sub_1AFA6(v3, 0, (int16_t *)(intptr_t)pl, v4);
+          *(_BYTE *)((uint8_t*)dword_197F98 + v4 + pl + 1623) = 0;
+          sub_FA2C5();
         }
-        sub_1AFA6(v3, 0, a1, v4);
-        *(_BYTE *)((uint8_t*)dword_197F98 + v4 + (int16_t)a1 + 1623) = 0;
-        sub_FA2C5();
-      }
-      else
-      {
-        sub_1AFA6(v3, 0, a1, v4);
-        *(_BYTE *)((uint8_t*)dword_197F98 + v4 + (int16_t)a1 + 1623) = 0;
+        else
+        {
+          sub_1AFA6(v3, 0, (int16_t *)(intptr_t)pl, v4);
+          *(_BYTE *)((uint8_t*)dword_197F98 + v4 + pl + 1623) = 0;
+        }
       }
     }
     v4 += 3753;
     ++v3;
   }
-  JUMPOUT(0xFE2DF);
+  return v8;
 }
 // FE50F: control flows out of bounds to FE2DF
 // FE4B1: variable 'v6' is possibly undefined
@@ -7995,19 +8012,19 @@ char sub_FE63E( int a1, int16_t *a2, int a3)
                 v2 = sub_FDB01(v4, a1);   /* wave 182: 0xFE70C eax = player, edx = flag */
                 if ( !v2 )
                 {
-                  sub_FD95A(v4, a1);
+                  v2 = sub_FD95A(v4, a1);   /* wave 183: al was dropped */
                   if ( !v2 )
                   {
                     v2 = sub_949A7(v4, a1);
                     if ( !v2 )
                     {
-                      sub_FE359(v4, a1);
+                      v2 = sub_FE359(v4, a1);
                       if ( !v2 )
                       {
-                        sub_FE408((int16_t *)v4, a1);
+                        v2 = sub_FE408((int16_t *)(intptr_t)v4, a1);
                         if ( !v2 )
                         {
-                          sub_FE0EA(v4, a1);
+                          v2 = sub_FE0EA(v4, a1);
                           if ( !v2 )
                           {
                             v2 = sub_FDF93(v4, a1);

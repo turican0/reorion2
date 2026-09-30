@@ -17339,3 +17339,54 @@ Tools: my DOSBox `DOSBOX_MOUSE_LOG=<file>` (MOVE/DOWN/UP with the ctl cycle
 releases the button elsewhere. `cropsheet.py` (scratchpad) crops one region
 of many frames. Scripted DOSBox warps do not make the game see motion the
 way a real mouse does - for input behaviour record a real session.
+
+## Wave 183 - whole-game record / replay, step chain in DOSBox
+
+**Record / replay (port).** `REORION2_RECORD=<file|auto>` writes one `.r2rec`
+file: the start files (MOX.SET, SAVE*.GAM), every non-deterministic value
+the game reads (mouse, keys, BIOS tick, AIL ms, frame-wait clock, audio
+queue depth, file time, `time()`) indexed by the global call counter, every
+save written, and at each mouse press the CRC32 of the 10 main structures,
+the RNG and the game function waiting for input (+ its caller).
+`REORION2_REPLAY=<file>` (`_EXTRACT=1`, `_FAST=1`) replays it bit-exact and
+goes live at the end; checks and save comparisons in `reorion2_replay.log`.
+`_TRACE_PRESS=N` prints the call stack at press N, `_DUMP_PRESS=5,6` dumps
+dseg + the structures. Code `src/port/port_rec.cpp`, tool
+`tools/compare/r2rec.py` (info / extract / dbx / state).
+
+**Step chain (my DOSBox).** `r2rec.py dbx` makes `SENDCLICK seq=1` steps:
+step k starts after step k-1 is released, waits a short gap, then for the
+recorded structure CRCs (5 s from the last change of structures / RNG, then
+STUCK) and for the same input loop (entry of the waiting function with the
+return address in the recorded caller, twice; 30 s, 1 s after a divergence).
+The button stays down until the loop ran twice. `r2rec.py state` compares
+the STATE line of every step with the record. Result: all 83 presses of the
+test session match the original.
+
+**Fixes found this way.** sub_5FA87 (AI ship role, hang in the RNG),
+sub_B9E94 (message 465 missing 4 arguments, crash), sub_AFEFC (stale
+register as loop start, crash), sub_1382BF / sub_1481C2 (int64 index,
+crash), sub_7802A (ship list: undefined test + missing 3rd argument, 7
+callers), fleet window slot table word_1996AC (a save-slot rewrite had
+redirected it into the save names - wrong labels, no selection), sub_E2D09
+tail = sub_E2710 (player totals after scrapping), sub_6F88F tail =
+sub_1196B8 (right-click help areas, RELOCATE was cancelled), `HIBYTE` /
+`SHIBYTE` = top byte of the variable (was always byte 1), `HIWORD64` for
+10 real int64 places. Gate 600/600.
+
+**TURN SUMMARY.** Found with the dispatcher state sequence (port probe vs
+DOSBox DUMPREGS at 0x234695): after the turn the original goes 12 -> 39 ->
+40, the port went 39 -> 1. The turn-event chain sub_FE63E stops on the first
+handler returning non-zero; sub_FD95A, sub_FE359, sub_FE408 and sub_FE0EA
+(the TURN SUMMARY trigger) were void, so sub_FE02C opened the colony screen
+over state 40. All four rewritten / given their al from the asm (sub_FE359
+also called sub_FD69F with a bogus int64). Then the summary itself crashed:
+sub_EEC98 (report texts) gets eax = buffer, edx = report record - its three
+callers passed only the buffer's first qword, `v29 = a1` took the whole
+int64 as the output pointer, and the 45 sprintf calls pass 32-bit values
+(pointers as `(_DWORD)a1`) for %s - they now use PortSprintf32 (port_dos.cpp,
+every vararg read as 32 bits). The screen now matches the original.
+
+**Next.** The test record rec9 was made without the summary, so its replay
+leaves the recorded path after the turn - a new session has to be recorded
+(`REORION2_RECORD=auto`) for the next comparison.
