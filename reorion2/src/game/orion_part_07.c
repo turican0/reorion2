@@ -10891,7 +10891,7 @@ void sub_86188(char *a1)
   int v62; // eax
   int v63; // eax
   int v64; // [esp-4h] [ebp-64Eh]
-  int v65[23]; // [esp+0h] [ebp-64Ah] BYREF
+  int16_t v65[500]; // [esp+0h] [ebp-64Ah] BYREF - wave 183: 1000 B ship list (sub_7802A(..., 500) memsets it), was int[23]
   int64_t v66; // [esp+5Ch] [ebp-5EEh]
   int64_t v67; // [esp+64h] [ebp-5E6h]
   int v68; // [esp+6Ch] [ebp-5DEh]

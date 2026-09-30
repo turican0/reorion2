@@ -80,6 +80,7 @@ struct SaveRec { uint64_t G; std::string name; std::vector<uint8_t> data; };
 std::vector<SaveRec> g_saves;  // replay: recorded saves, in order
 size_t   g_saveIdx = 0;        // record + replay: saves seen so far
 int      g_checks = 0, g_checkFails = 0;
+std::vector<std::string> g_metaEnv;   // replay: REORION2_* names set in the record
 
 uint32_t Rng() { return *reinterpret_cast<uint32_t*>(dseg + 0x41E34); }   // dword_1B9E34
 
@@ -308,16 +309,20 @@ bool LoadReplay(const char* path)
                 const size_t eq = ln.find('=');
                 if (ln.rfind("env.", 0) != 0 || eq == std::string::npos) continue;
                 const std::string k = ln.substr(4, eq - 4), v = ln.substr(eq + 1);
-                if (SDL_getenv(k.c_str())) continue;       // explicit env wins
                 // scripted input is in the record already
                 if (k.rfind("REORION2_CLICK", 0) == 0 || k.rfind("REORION2_SENDKEY", 0) == 0 ||
                     k.rfind("REORION2_FAKE_", 0) == 0) continue;
+                g_metaEnv.push_back(k);
+                // wave 183: the recorded env WINS - a different REORION2_VIDEO_AUDIO
+                // took the intro through other clocks (desync at G=4520)
+                const char* cur = SDL_getenv(k.c_str());
+                if (cur && v == cur) continue;
 #ifdef _WIN32
                 _putenv_s(k.c_str(), v.c_str());
 #else
-                setenv(k.c_str(), v.c_str(), 0);
+                setenv(k.c_str(), v.c_str(), 1);
 #endif
-                SDL_setenv_unsafe(k.c_str(), v.c_str(), 0);
+                SDL_setenv_unsafe(k.c_str(), v.c_str(), 1);
                 Log("REPLAY: env %s=%s (from the record)", k.c_str(), v.c_str());
             }
         } else if (!std::strcmp(tag, "FILE") && n >= 2) {
@@ -338,6 +343,39 @@ bool LoadReplay(const char* path)
             g_saves.push_back(std::move(s));
         }
         p += n;
+    }
+    // game switches that were NOT set while recording must not be set now
+    // (tool / debug variables stay: they do not change what the game does)
+    {
+        static const char* const tools[] = { "REORION2_REPLAY", "REORION2_RECORD", "REORION2_DUMP",
+            "REORION2_BLIT_DUMP", "REORION2_RNG_LOG", "REORION2_INPUT_LOG", "REORION2_PROBE",
+            "REORION2_TRACE", "REORION2_MOUSE_TRACE", "REORION2_PRESENT_TRACE", "REORION2_AUDIO_TRACE",
+            "REORION2_AUDIO_STATS", "REORION2_CTL", "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_FAKE_" };
+        std::vector<std::string> drop;
+#ifdef _WIN32
+        for (char** e = _environ; e && *e; ++e) {
+#else
+        extern char** environ;
+        for (char** e = environ; e && *e; ++e) {
+#endif
+            const std::string s = *e;
+            const size_t eq = s.find('=');
+            if (s.rfind("REORION2_", 0) != 0 || eq == std::string::npos) continue;
+            const std::string k = s.substr(0, eq);
+            bool keep = false;
+            for (const char* t : tools) if (k.rfind(t, 0) == 0) keep = true;
+            for (const std::string& m : g_metaEnv) if (m == k) keep = true;
+            if (!keep) drop.push_back(k);
+        }
+        for (const std::string& k : drop) {
+#ifdef _WIN32
+            _putenv_s(k.c_str(), "");
+#else
+            unsetenv(k.c_str());
+#endif
+            SDL_unsetenv_unsafe(k.c_str());
+            Log("REPLAY: env %s removed (not set in the record)", k.c_str());
+        }
     }
     // last G mentioned = end of the recording
     {
