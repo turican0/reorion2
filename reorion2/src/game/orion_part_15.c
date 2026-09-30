@@ -1786,26 +1786,26 @@ void sub_E7B79(int a1, int a2)
       // PORT (vlna 93): tabulka drzi UKAZATEL na retezec v `int` slotu; do
       // varargs se musi predat jako ukazatel, jinak ma horni pulka slotu smeti.
       v8 = sprintf(v5, (char *)&off_17A034, (char *)(intptr_t)dword_199150[(char)v7]);
-      v5 = v8 + HIDWORD(v8);
+      v5 += (int)v8;   /* wave 183: add edx, eax (edx = buffer) */
     }
     if ( *(_BYTE *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1583) )
     {
       ++v6;
       v9 = sprintf(v5, (char *)&off_17A034, dword_1AA3C8);
-      v5 = v9 + HIDWORD(v9);
+      v5 += (int)v9;   /* wave 183: add edx, eax (edx = buffer) */
     }
     if ( *(_BYTE *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1591) )
     {
       ++v6;
       v10 = sprintf(v5, (char *)&off_17A034, dword_1AA3C0);
-      v5 = v10 + HIDWORD(v10);
+      v5 += (int)v10;   /* wave 183: add edx, eax (edx = buffer) */
     }
     v14 = 3753 * a2 + (uint8_t*)dword_197F98;
     if ( *(_WORD *)(v14 + 2 * a1 + 1599) )
     {
       ++v6;
       v11 = sprintf(v5, (char *)&off_17A034, dword_1AA3D4);
-      v5 = v11 + HIDWORD(v11);
+      v5 += (int)v11;   /* wave 183: add edx, eax (edx = buffer) */
     }
     if ( v6 )
     {

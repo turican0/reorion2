@@ -313,73 +313,38 @@ void sub_B0AE3(int a1)
 
 
 //----- (000B0BAE) --------------------------------------------------------
+/* wave 183: rewritten from asm - `enter 5E4h / push eax, edx / sub ebp, 662h`:
+   Hex-Rays read the arguments as uninitialized locals (v4, v16, v17) and the
+   bit test ran on garbage (crash). a1 = weapon slot (id, mod bits at +5),
+   a2 = output buffer, a3 (bl) = list the other mods, a4 (cl) > 1 = 2nd name set. */
 int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4)
 {
-  int v4; // ebp
-  int v5; // ebp
-  char *v6; // esi
-  int16_t v7; // bx
-  char *v8; // edi
-  char *v9; // esi
-  char *v10; // edi
-  char *v11; // edi
-  char *v12; // eax
-  char *v13; // eax
-  char *v15; // [esp-4h] [ebp+72h]
-  int v16; // [esp+0h] [ebp+76h]
-  int v17; // [esp+4h] [ebp+7Ah]
-  char v18[500]; // [esp+8h] [ebp+7Eh] BYREF
-  char v19[500]; // [esp+1FCh] [ebp+272h] BYREF
-  char v20[500]; // [esp+3F0h] [ebp+466h] BYREF
-  int v21; // [esp+5E4h] [ebp+65Ah]
-  char v22; // [esp+5E8h] [ebp+65Eh]
+  char v18[500]; // [ebp-5E4h] other mods
+  char v19[500]; // [ebp-3F0h] mods 1 and 2, each followed by " "
+  char v20[500]; // [ebp-1FCh] weapon name
+  int16_t i; // bx
+  const char *v9;
 
-  v5 = v4 - 1634;
-  v22 = a3;
-  if ( a4 > 1u )
-    v6 = (char *)WEAPON_NAME(0x7807, *a1);
-  else
-    v6 = (char *)WEAPON_NAME(0x7803, *a1);
-  strcpy(v20, v6);
+  strcpy(v20, (uint8_t)a4 > 1u ? (char *)WEAPON_NAME(0x7807, *a1) : (char *)WEAPON_NAME(0x7803, *a1));
   strcpy(v19, (char *)sub_CDF5C(12));
   strcpy(v18, (char *)sub_CDF5C(12));
-  v7 = 0;
-  v21 = v17 + 5;
-  do
+  for ( i = 0; i < 15; ++i )
   {
-    if ( (uint16_t)sub_1276F0(v21, v7) )
+    if ( !(uint16_t)sub_1276F0((int)(intptr_t)a1 + 5, i) )   /* B0C3A */
+      continue;
+    v9 = (char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * i);
+    if ( i == 1 || i == 2 )
     {
-      if ( v7 == 1 || v7 == 2 )
-      {
-        v8 = (char *)(v5 - 1 + 626);
-        do
-          ++v8;
-        while ( *v8 );
-        strcpy(v8, ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * v7)));
-        v9 = asc_179D88;
-        v10 = v19;
-      }
-      else
-      {
-        v10 = v18;
-        v9 = ((char *)(intptr_t)*(int *)((char *)&off_17FD0F + 15 * v7));
-      }
-      v11 = v10 - 1;
-      do
-        ++v11;
-      while ( *v11 );
-      strcpy(v11, v9);
+      strcat(v19, v9);
+      strcat(v19, asc_179D88);
     }
-    ++v7;
+    else
+    {
+      strcat(v18, v9);
+    }
   }
-  while ( v7 < 15 );
-  if ( v22 )
-    v12 = v18;
-  else
-    v12 = (char *)sub_CDF5C(12);
-  v15 = v12;
-  v13 = (char *)sub_CDF5C(81);
-  return sprintf(v16, v13, v19, v20, v15);
+  return sprintf((char *)(intptr_t)a2, (char *)sub_CDF5C(81), v19, v20,
+                 (char)a3 ? v18 : (char *)sub_CDF5C(12));   /* B0CC7 */
 }
 // B0BB6: variable 'v4' is possibly undefined
 // B0C34: variable 'v17' is possibly undefined
@@ -452,8 +417,7 @@ char sub_B0CF6(uint8_t* a1, int a2, int a3)
   char v62[500]; // [esp+644h] [ebp-640h] BYREF
   char v63[500]; // [esp+838h] [ebp-44Ch] BYREF
   char v64[532]; // [esp+A2Ch] [ebp-258h] BYREF
-  int v65; // [esp+C40h] [ebp-44h] BYREF
-  char v66[12]; // [esp+C44h] [ebp-40h] BYREF
+  char v65[13]; // [ebp-44h] - wave 183: one string, was int v65 + char v66[12]
   int v67; // [esp+C50h] [ebp-34h]
   int v68; // [esp+C54h] [ebp-30h]
   int v69; // [esp+C58h] [ebp-2Ch]
@@ -468,13 +432,12 @@ char sub_B0CF6(uint8_t* a1, int a2, int a3)
   int v78; // [esp+C7Ch] [ebp-8h]
   char v79; // [esp+C80h] [ebp-4h]
 
-  v65 = 1409774615;
-  strcpy(v66, "0,5,124.");
+  memcpy(v65, "\x17t\x07T0,5,124.", 13);   /* B0D06: 13 bytes from word_AF742 */
   v4 = (char *)sub_CDF5C(70);
   v79 = 0;
   v74 = 0;
-  v5 = sprintf(a2, v4, &v65);
-  v75 = v5 + HIDWORD(v5);
+  v5 = sprintf(a2, v4, v65);
+  v75 = a2 + (int)v5;   /* wave 183: B0D2C add edx, eax - edx still holds the buffer a2 */
   v6 = 0;
   do
   {
@@ -3362,7 +3325,7 @@ int16_t sub_B494B()
     v4 = (char *)sub_CDF5C(29);
     v3 = 2;
     v5 = sprintf(v2, v4, v21);
-    v2 = v5 + HIDWORD(v5);
+    v2 += (int)v5;   /* wave 183: add edx, eax (edx = buffer) */
   }
   if ( *(_WORD *)(dword_19DEB4 + 8) )
   {
@@ -3370,7 +3333,7 @@ int16_t sub_B494B()
     v6 = (char *)sub_CDF5C(24);
     ++v3;
     v7 = sprintf(v2, v6, v22);
-    v2 = v7 + HIDWORD(v7);
+    v2 += (int)v7;   /* wave 183: add edx, eax (edx = buffer) */
   }
   if ( *(_WORD *)(dword_19DEB4 + 10) )
   {
@@ -3378,7 +3341,7 @@ int16_t sub_B494B()
     v8 = (char *)sub_CDF5C(17);
     ++v3;
     v9 = sprintf(v2, v8, v23);
-    v2 = v9 + HIDWORD(v9);
+    v2 += (int)v9;   /* wave 183: add edx, eax (edx = buffer) */
   }
   if ( *(_BYTE *)(dword_19DEB4 + 5) )
   {
@@ -3386,7 +3349,7 @@ int16_t sub_B494B()
     v10 = (char *)sub_CDF5C(27);
     ++v3;
     v11 = sprintf(v2, v10, v24);
-    v2 = v11 + HIDWORD(v11);
+    v2 += (int)v11;   /* wave 183: add edx, eax (edx = buffer) */
   }
   for ( i = 0; i < 49 && v3 < 15; ++i )
   {
@@ -3402,7 +3365,7 @@ int16_t sub_B494B()
         v19 = (char *)sub_CDF5C(55);
         v13 = sprintf(v2, v19, (char *)(intptr_t)v25);
       }
-      v2 = v13 + HIDWORD(v13);
+      v2 += (int)v13;   /* wave 183: add edx, eax (edx = buffer) */
       ++v3;
     }
   }
@@ -3410,7 +3373,7 @@ int16_t sub_B494B()
   {
     v14 = (char *)sub_CDF5C(378);
     v15 = sprintf(v2, v14);
-    v2 = v15 + HIDWORD(v15);
+    v2 += (int)v15;   /* wave 183: add edx, eax (edx = buffer) */
   }
   if ( *(_BYTE *)(dword_19DEB4 + 66) )
   {
