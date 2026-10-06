@@ -2156,7 +2156,12 @@ void sub_C8556( int a1, int a2)
     sub_C83C5();
     sub_1077D(v13, v7, v5, v3);
     if ( (int16_t)v16 >= 1 && !byte_1831AE )
-      JUMPOUT(0xC8304);
+    {
+      /* wave 183: C876C jmp loc_C8304 = call sub_C7283 + epilog; as a no-op
+         CLOSE never left the "Scouts arrive" window */
+      sub_C7283(0, 0);   /* register args unused (sub_1113CC takes only the pool) */
+      return;
+    }
   }
 }
 // C876C: control flows out of bounds to C8304
@@ -12713,9 +12718,12 @@ void sub_D5E19()
 
 
 //----- (000D5FA9) --------------------------------------------------------
-void sub_D5FA9()
+/* wave 183: qsort comparator - (b is type 8/9) - (a is type 8/9), tail loc_D578F `sub edx, eax` */
+int sub_D5FA9(const void *a, const void *b)
 {
-  JUMPOUT(0xD578F);
+  const uint32_t ta = *(const uint32_t *)a & 0xF;
+  const uint32_t tb = *(const uint32_t *)b & 0xF;
+  return (tb == 8 || tb == 9) - (ta == 8 || ta == 9);
 }
 // D5FDC: control flows out of bounds to D578F
 

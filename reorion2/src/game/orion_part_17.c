@@ -541,13 +541,15 @@ void sub_102FA8( int a1, int a2, int a3, int a4)
 // sub_103952) a dokud se nevejde, postupne zmensuje rozestup radku
 // (byte_1B3EC8), pak word_1B3EA4 a nakonec sahne po mensim fontu
 // (sub_120BB5). Nakonec vykresli a vsechny zmenene globaly vrati zpet.
+/* wave 183: current font = `word ptr dword_1AE1E4+2` (C 0x1B61E6), not dword_1B61E8 (text x) */
+#define CUR_FONT_102FD8 (*(int16_t *)(dseg + 0x3E1E6))
 int sub_102FD8(int x, int centerY, int width, int maxHeight,
                int str, int a_word, int a8, int useAlt, int centerVert)
 {
   const char savedSpacing = byte_1B3EC8;      /* var_8  */
   const int16_t savedEA6 = word_1B3EA6;       /* var_20 */
   const int16_t savedEA4 = word_1B3EA4;       /* var_1C */
-  const int16_t savedFont = (int16_t)dword_1B61E8; /* var_14 */
+  const int16_t savedFont = CUR_FONT_102FD8; /* var_14 */
   const int16_t savedE86 = word_1B3E86;       /* var_18 */
   int fontChanged = 0;                        /* var_C  */
   int measured = 0;                           /* var_10 */
@@ -567,7 +569,7 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
       measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
       if ( (int16_t)measured <= (int16_t)maxHeight )
         break;
-      if ( (uint8_t)byte_1B3EC8 <= (uint8_t)byte_183684[(int16_t)dword_1B61E8] )
+      if ( (uint8_t)byte_1B3EC8 <= (uint8_t)byte_183684[CUR_FONT_102FD8] )
         break;
       fits = 0;
       --byte_1B3EC8;
@@ -583,11 +585,11 @@ int sub_102FD8(int x, int centerY, int width, int maxHeight,
     }
     /* 3) a nakonec o font niz */
     measured = useAlt ? sub_103CAF((int16_t)width, str) : sub_103952((int16_t)width, str, 0);
-    if ( (int16_t)measured > (int16_t)maxHeight && (int16_t)dword_1B61E8 > 0 )
+    if ( (int16_t)measured > (int16_t)maxHeight && CUR_FONT_102FD8 > 0 )
     {
       fontChanged = 1;
       fits = 0;
-      sub_120BB5((int16_t)dword_1B61E8 - 1, (int)byte_1B3E88);
+      sub_120BB5(CUR_FONT_102FD8 - 1, (int)byte_1B3E88);
     }
   }
   while ( !fits );
@@ -3331,7 +3333,7 @@ LABEL_8:
       if ( word_1838F7 > 1 )
         qsort(word_1838F9, word_1838F7, 2, sub_1067BB);
     }
-    JUMPOUT(0x104385);
+    return;   /* wave 183: JUMPOUT(0x104385) = shared epilog (leave/pop/retn); as a no-op the parser ran past the text */
   }
   if ( v3 == 84 )
     word_1838F7 = 0;
@@ -5064,8 +5066,9 @@ int sub_1075AB(int a1)
 
 
 //----- (0010766E) --------------------------------------------------------
-void sub_10766E()
+int sub_10766E()
 {
+  int step; // edi (wave 183: x step per turn, returned in eax at 1078A2)
   int v0; // esi
   int v1; // edi
   int16_t v2; // ax
@@ -5130,22 +5133,26 @@ void sub_10766E()
               if ( v11 > 175 )
               {
                 v18 = 50;
+                step = 1;
                 if ( v11 > 350 )
                   v12 = 10 * ((dword_192FD8 - 345) / 10);
               }
               else
               {
                 v18 = 25;
+                step = 2;
               }
             }
             else
             {
               v18 = 10;
+              step = 5;
             }
           }
           else
           {
             v18 = 5;
+            step = 10;
           }
           v15 = 239;
           v17 = 0;
@@ -5168,7 +5175,7 @@ void sub_10766E()
             v15 += 50;
             v12 += (int16_t)v18;
             if ( (int16_t)v17 >= 8 )
-              return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x107667 je epilog funkce */
+              return step;   /* wave 183: 1078A2 mov eax, edi; jmp epilog 107667 */
           }
         }
       }
@@ -5630,7 +5637,7 @@ int sub_107E95(int a1, int a2, int a3)
     for ( i = (int16_t *)&unk_183C41; (char *)i < (char *)unk_183C41 + sizeof(unk_183C41); i = (int16_t *)((char *)i + 17) )
       sub_109E01(i);
     sub_107DEA();
-    sub_10766E();
+    v10 = sub_10766E();   /* wave 183: 107FC3 call / cwde / call sub_10794C */
     sub_10794C(v10);
     sub_124DEC();
     sub_109DB5((int)word_183C63, v6);

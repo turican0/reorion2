@@ -1618,7 +1618,6 @@ void sub_B2542(int16_t *a1, int16_t *a2, int a3)
   int16_t v57; // ax
   int v58; // edx
   int v59; // edx
-  char v60; // zf
   int v61; // eax
   int v62; // eax
   int v63; // eax
@@ -1941,8 +1940,8 @@ LABEL_96:
           v56 = 361 * dword_19F7A8;
           if ( word_1828AA[0] == -1 )
           {
-            sub_169020((int)&dword_192B18, v56, jj);
-            if ( !v60 )
+            /* wave 183: B2F2D cmp word [colony+12Ch], 0 / test bx, bx (sub_169020 + v60 was an IDA artifact) */
+            if ( *(_WORD *)(v56 + (uint8_t*)dword_192B18 + 300) && !jj )
             {
               v61 = sub_CDF5C(570);
               sub_C5B5F(v61);

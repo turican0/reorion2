@@ -5924,6 +5924,7 @@ int sub_6B577(int a1, int a2)
   char v24[296]; // [esp+4h] [ebp+7Eh] BYREF
   int v25; // [esp+12Ch] [ebp+1A6h]
 
+  v23 = a1;   /* wave 183: 6B57F push eax = var_130 (sub ebp frame) */
   memset(v24, 0, 293);
   dword_1927A8 = (int)v24;
   strcpy(v24, (char *)a2);
@@ -6207,8 +6208,7 @@ void sub_6B9B2(int a1, int a2, int16_t *a3)
     byte_199EEF = 1;
     sub_6C98D(v4, 1, a2, a3);
     sub_6A7C8(word_19999C, word_199838);
-    sub_6E777();
-    dword_19274C = v5;
+    dword_19274C = sub_6E777();   /* wave 183: 6BA58 mov dword_18A74C, eax */
     if ( byte_199EF1 )
       *(_DWORD *)(dword_1927A8 + 241) = 0;
     dword_19B9A4 = *(_DWORD *)(dword_1927A8 + 233) - *(_DWORD *)(dword_1927A8 + 237);
@@ -8430,7 +8430,7 @@ int16_t sub_6E70A( int a1, int a2)
 
 
 //----- (0006E777) --------------------------------------------------------
-void sub_6E777()
+int sub_6E777()
 {
   int v0; // ecx
   int16_t v1; // dx
@@ -8463,7 +8463,7 @@ void sub_6E777()
         {
           v5 += v0 + v2;
           sub_6E1A0(word_19999C, &v5);
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6B8CC je epilog funkce */
+          return v5;   /* wave 183: 6E817 mov eax, [ebp+var_4]; jmp epilog 6B8CC */
         }
       }
     }
@@ -8492,14 +8492,16 @@ int sub_6E81F()
 
 
 //----- (0006E862) --------------------------------------------------------
-void sub_6E862()
+int sub_6E862()
 {
   int v0; // ecx
   int16_t v1; // dx
   int16_t v2; // bx
   int v3; // ecx
   int v4; // edx
+  int r; // eax (wave 183: 6E872 [+15h] + [+21h], dropped by Hex-Rays)
 
+  r = *(int16_t *)(dword_1927A8 + 21) + *(int16_t *)(dword_1927A8 + 33);
   v0 = 0;
   v1 = 0;
   while ( 1 )
@@ -8516,7 +8518,7 @@ void sub_6E862()
         if ( *(int16_t *)(v4 + 181) > 0 )
           v3 += *(int16_t *)(v4 + 213);
         if ( ++v2 >= 8 )
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6A3DF je epilog funkce */
+          return r + v0 + v3;   /* wave 183: 6E8D3 add eax, ecx; jmp epilog 6A3DF */
       }
     }
   }
@@ -8556,9 +8558,9 @@ int sub_6E8DA( int a1)
   while ( (int16_t)v3 < 8 );
   sub_6C087(a1);
   sub_6C287(a1);
-  sub_6E777();
+  v4 = sub_6E777();   /* wave 183: results in eax */
   *(_DWORD *)(dword_1927A8 + 241) = v4;
-  sub_6E862();
+  v5 = sub_6E862();
   v6 = v5;
   v7 = dword_1927A8;
   *(_DWORD *)(dword_1927A8 + 237) = v6;

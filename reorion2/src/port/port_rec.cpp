@@ -350,7 +350,8 @@ bool LoadReplay(const char* path)
         static const char* const tools[] = { "REORION2_REPLAY", "REORION2_RECORD", "REORION2_DUMP",
             "REORION2_BLIT_DUMP", "REORION2_RNG_LOG", "REORION2_INPUT_LOG", "REORION2_PROBE",
             "REORION2_TRACE", "REORION2_MOUSE_TRACE", "REORION2_PRESENT_TRACE", "REORION2_AUDIO_TRACE",
-            "REORION2_AUDIO_STATS", "REORION2_CTL", "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_FAKE_" };
+            "REORION2_AUDIO_STATS", "REORION2_CTL", "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_FAKE_",
+            "REORION2_IGNORE_REAL_INPUT" };
         std::vector<std::string> drop;
 #ifdef _WIN32
         for (char** e = _environ; e && *e; ++e) {

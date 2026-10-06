@@ -4760,9 +4760,23 @@ void sub_DB47E(int a1, int a2, int16_t *a3)
 
 
 //----- (000DB659) --------------------------------------------------------
-void sub_DB659()
+/* wave 183: qsort comparator rewritten from asm DB659-DB6CD (12-byte records) */
+int sub_DB659(const void *pa, const void *pb)
 {
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
+  const uint8_t *a = (const uint8_t *)pa, *b = (const uint8_t *)pb;
+  int r = (a[2] - a[3]) - (b[2] - b[3]);
+  if ( r )
+    return r;
+  r = a[1] / 8 - b[1] / 8;
+  if ( r )
+    return r;
+  r = *(const int32_t *)(b + 8) - *(const int32_t *)(a + 8);
+  if ( r )
+    return r;
+  r = *(const int32_t *)(b + 4) - *(const int32_t *)(a + 4);
+  if ( r )
+    return r;
+  return a[1] - b[1];
 }
 // DB6CD: control flows out of bounds to D775E
 

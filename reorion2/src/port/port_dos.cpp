@@ -422,6 +422,23 @@ static void ComputeVirtualMouseImpl(int& vx, int& vy, int& buttons)
         }
     }
 
+    // wave 183: REORION2_IGNORE_REAL_INPUT=1 - automated runs (scripts, replays):
+    // the real mouse over the window must not reach the game, the user keeps
+    // working while the port runs. Cursor parked at 0,0, no buttons.
+    {
+        static int s_ignore = -1;
+        if (s_ignore < 0) {
+            const char* e = SDL_getenv("REORION2_IGNORE_REAL_INPUT");
+            s_ignore = (e && *e == '1') ? 1 : 0;
+        }
+        if (s_ignore) {
+            vx = 0;
+            vy = 0;
+            buttons = 0;
+            return;
+        }
+    }
+
     // TEST: vstrikovani falesne pozice a tlacitka, aby sla cesta mysi overit
     // i bez cloveka u klavesnice (REORION2_FAKE_MOUSE / REORION2_FAKE_CLICK).
     static int s_fake = -1;

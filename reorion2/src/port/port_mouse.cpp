@@ -97,6 +97,9 @@ void Poll()
         }
         case SDL_EVENT_QUIT:
             g_quitRequested = true;
+            // wave 183: window X - nothing in the game polls it; keep the record and leave
+            PortRec_Flush();
+            std::_Exit(0);
             break;
         default:
             break;
@@ -254,6 +257,15 @@ static int PollKeyPressLive(void)
     Port::Mouse::Poll();
     if (!Port::Mouse::ConsumeKeyPress())
         return 0;
+    {   // wave 183: REORION2_IGNORE_REAL_INPUT=1 - real keys do not reach the game
+        static int s_ignore = -1;
+        if (s_ignore < 0) {
+            const char* e = std::getenv("REORION2_IGNORE_REAL_INPUT");
+            s_ignore = (e && *e == '1') ? 1 : 0;
+        }
+        if (s_ignore)
+            return 0;
+    }
     const int code = Port::Mouse::LastKeyCode();
     // wave 183: REORION2_INPUT_LOG (see port_dos.cpp)
     PortInput_Log("KEY 0x%X:%u", code ? code : 0x3900, (unsigned)SDL_GetTicks());

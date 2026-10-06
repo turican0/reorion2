@@ -6137,9 +6137,9 @@ void sub_C3111( int a1_idx)
       v32 = sub_B2FFA(*(_WORD *)(v16 + 277));
       v23 = (char *)sub_CDF5C(93);
       sprintf(v35, v23, a1, a0_0, v32);
-      /* vlna 95: asm 0xC34BD - eax=200h, ebx=055h, ecx=016h; edx (y) je
-         `movsx edx, si` a esi dekompilat ztratil - TODO. */
-      sub_1031AA(512, 0, 85, 22, (int)v35, 0);
+      /* vlna 95: asm 0xC34BD - eax=200h, ebx=055h, ecx=016h; edx (y) =
+         31*radek + 26h (vlna 183 doplneno). */
+      sub_1031AA(512, 31 * (int16_t)a1_idx + 38, 85, 22, (int)v35, 0);   /* wave 183: C3456/C3476 edx = 31*esi + 26h */
     }
     else
     {
@@ -6173,7 +6173,7 @@ void sub_C3111( int a1_idx)
       }
       sub_BAF84(2u, 0);
       /* vlna 95: tentyz asm call 0xC34BD (dve vetve se tam sbihaji). */
-      sub_1031AA(512, 0, 85, 22, (int)v35, 0);
+      sub_1031AA(512, 31 * (int16_t)a1_idx + 38, 85, 22, (int)v35, 0);   /* wave 183: C3456/C3476 edx = 31*esi + 26h */
     }
     sub_120CCB(1, (int)&unk_182C2E);
   }

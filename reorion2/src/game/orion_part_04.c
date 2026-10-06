@@ -13076,78 +13076,55 @@ LABEL_126:
 //----- (0006147F) --------------------------------------------------------
 int sub_6147F( int a1, int a2, int16_t *a3, int a4, int a5)
 {
-  int16_t v5; // dx
-  int v6; // edi
-  int v7; // eax
-  char v8; // dl
-  int v11; // [esp+10h] [ebp-20h] BYREF
-  int16_t v12; // [esp+14h] [ebp-1Ch] BYREF
-  int v13; // [esp+18h] [ebp-18h] BYREF
-  int16_t v14; // [esp+1Ch] [ebp-14h] BYREF
-  int v15; // [esp+20h] [ebp-10h] BYREF
-  int16_t v16; // [esp+24h] [ebp-Ch] BYREF
-  int v17; // [esp+28h] [ebp-8h]
-  int v18; // [esp+2Ch] [ebp-4h]
+  /* wave 183: rewritten from asm 6147F-61680; ebp-18/-20/-10 are 3-word arrays (movsd+movsw),
+     the result (sub_6EE8E * used) is subtracted by sub_616A5 */
+  int16_t w18[3] = { 0, 0, 0 };
+  int16_t w20[3] = { 0, 0, 0 };
+  int16_t w10[3] = { 0, 0, 0 };
+  int16_t left;
+  int used = 0;
+  uint8_t *slot;
 
-  v5 = *(uint8_t *)(a2 + 16);
-  v13 = 0;
-  v14 = 0;
-  v11 = 0;
-  v12 = 0;
-  v15 = 0;
-  v16 = 0;
-  v6 = a1;
-  sub_60B59(
-    a1,
-    v5,
-    &v13,
-    (int16_t *)&v11,
-    &v15,
-    (_WORD *)&v13 + 1,
-    (int16_t *)&v11 + 1,
-    (_WORD *)&v15 + 1,
-    &v14,
-    &v12,
-    &v16);
-  LOBYTE(v11) = v11 | 4;
-  LOBYTE(v12) = v12 | 2;
-  v7 = sub_6EE8E(v6, *((_WORD *)&v13 + a5), 1, *((_WORD *)&v15 + a5), 0, *((_WORD *)&v11 + a5));
-  v17 = 0;
-  LOWORD(v18) = a4 / v7;
-  if ( (int16_t)v18 > 0 && *a3 < 8 && *((_WORD *)&v13 + a5) )
+  a1 = (int16_t)a1;
+  a5 = (int16_t)a5;
+  sub_60B59(a1, *(uint8_t *)(a2 + 16), (_WORD *)&w18[0], &w20[0], (_WORD *)&w10[0],
+            (_WORD *)&w18[1], (int16_t *)&w20[1], (_WORD *)&w10[1], &w18[2], &w20[2], &w10[2]);
+  *(uint8_t *)&w20[0] |= 4;   /* 614E5 or byte ptr [ebp+var_20], 4 */
+  *(uint8_t *)&w20[2] |= 2;   /* 614E9 or byte ptr [ebp+var_1C], 2 */
+  left = (int16_t)(a4 / sub_6EE8E(a1, w18[a5], 1, w10[a5], 0, w20[a5]));
+  if ( left <= 0 || *a3 >= 8 || !w18[a5] )
+    return 0;   /* loc_608A7 xor eax, eax */
+  slot = (uint8_t *)a2 + 8 * *a3;
+  *(int16_t *)(slot + 28) = w18[a5];
+  slot[32] = (uint8_t)w10[a5];
+  *(int16_t *)(slot + 33) = w20[a5];
+  for ( ;; )
   {
-    *(_WORD *)(a2 + 8 * *a3 + 28) = *((_WORD *)&v13 + a5);
-    *(_BYTE *)(a2 + 8 * *a3 + 32) = *((_BYTE *)&v15 + 2 * a5);
-    for ( *(_WORD *)(a2 + 8 * *a3 + 33) = *((_WORD *)&v11 + a5); ; *(_WORD *)(a2 + 8 * *a3 + 33) = *((_WORD *)&v11 + a5) )
-    {
-      *(_BYTE *)(a2 + 8 * *a3 + 35) = 0;
-      do
-      {
-        if ( (int16_t)v18 <= 99 || *a3 >= 8 )
-        {
-          if ( *a3 < 8 )
-          {
-            v8 = v18;
-            *(_BYTE *)(a2 + 8 * *a3 + 30) = v18;
-            *(_BYTE *)(a2 + 8 * *a3 + 31) = v8;
-            v17 += v18;
-          }
-          ++*a3;
-          sub_6EE8E(a1, *((_WORD *)&v13 + a5), 1, *((_WORD *)&v15 + a5), 0, *((_WORD *)&v11 + a5));
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x608A9 je epilog funkce */
-        }
-        *(_BYTE *)(a2 + 8 * *a3 + 30) = 99;
-        *(_BYTE *)(a2 + 8 * *a3 + 31) = 99;
-        LOWORD(v18) = v18 - 99;
-        ++*a3;
-        v17 += 99;
-      }
-      while ( *a3 >= 8 );
-      *(_WORD *)(8 * *a3 + a2 + 28) = *((_WORD *)&v13 + a5);
-      *(_BYTE *)(8 * *a3 + a2 + 32) = *((_BYTE *)&v15 + 2 * a5);
-    }
+    slot = (uint8_t *)a2 + 8 * *a3;
+    slot[35] = 0;   /* loc_61581 */
+    if ( left <= 99 || *a3 >= 8 )   /* loc_61591 */
+      break;
+    slot[30] = 99;
+    slot[31] = 99;
+    left -= 99;
+    ++*a3;
+    used += 99;
+    if ( *a3 >= 8 )
+      break;
+    slot = (uint8_t *)a2 + 8 * *a3;
+    *(int16_t *)(slot + 28) = w18[a5];
+    slot[32] = (uint8_t)w10[a5];
+    *(int16_t *)(slot + 33) = w20[a5];
   }
-  return 0;   /* wave 181: tail loc_608A7 `xor     eax, eax` */
+  if ( *a3 < 8 )   /* loc_61625 */
+  {
+    slot = (uint8_t *)a2 + 8 * *a3;
+    slot[30] = (uint8_t)left;
+    slot[31] = (uint8_t)left;
+    used += left;
+  }
+  ++*a3;   /* loc_61652 */
+  return sub_6EE8E(a1, w18[a5], 1, w10[a5], 0, w20[a5]) * used;
 }
 // 61680: control flows out of bounds to 608A9
 // 61528: control flows out of bounds to 608A7
