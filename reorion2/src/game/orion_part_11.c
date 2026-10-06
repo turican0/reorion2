@@ -1023,6 +1023,8 @@ int sub_B1C5D( int a1, int a2)
   int result; // eax
   int v4; // ebx
 
+  a1 = (int16_t)a1;   /* wave 183: asm uses cx / dx only (callers pass a dirty high word) */
+  a2 = (int16_t)a2;
   for ( result = 0; (int16_t)result < 7; ++result )
   {
     if ( a2 <= 0 || a2 >= 49 )
@@ -1035,7 +1037,7 @@ int sub_B1C5D( int a1, int a2)
         if ( a2 < 49 )
         {
           if ( (a2 == -6 || a2 == -4 || a2 == -5 || a2 == -7 || a2 == -3 || a2 == -2 || a2 == -10 || a2 == -15)
-            && a2 == *(_WORD *)((uint8_t*)dword_192B18 + 361 * a1 + 2 * (int16_t)result + 277) )
+            && a2 == *(int16_t *)((uint8_t*)dword_192B18 + 361 * a1 + 2 * (int16_t)result + 277) )
           {
             return result;
           }
@@ -1045,12 +1047,12 @@ int sub_B1C5D( int a1, int a2)
           return result;
         }
       }
-      else if ( a2 == *(_WORD *)(v4 + 277) )
+      else if ( a2 == *(int16_t *)(v4 + 277) )
       {
         return result;
       }
     }
-    else if ( a2 == *(_WORD *)((uint8_t*)dword_192B18 + 361 * a1 + 2 * (int16_t)result + 277) )
+    else if ( a2 == *(int16_t *)((uint8_t*)dword_192B18 + 361 * a1 + 2 * (int16_t)result + 277) )
     {
       return result;
     }
@@ -1065,6 +1067,7 @@ int sub_B1D57( int a1)
 {
   int i; // edx
 
+  a1 = (int16_t)a1;   /* wave 183: 16-bit compares in asm */
   for ( i = 0; (int16_t)i < 7; ++i )
   {
     if ( a1 <= 0 || a1 >= 49 )

@@ -148,11 +148,13 @@ def cmd_dbx(rec, out):
     if sync is None:
         raise SystemExit('no SYNC (the main menu was never reached)')
     names = {8: 'backspace', 9: 'tab', 13: 'enter', 27: 'esc', 32: 'space'}
-    lines = []
+    # the intro is skipped by the port (REORION2_SKIPINTRO) - ESC twice here
+    lines = ['SENDKEY cond=cycle_ge:40000000 key=esc', 'SENDKEY cond=cycle_ge:90000000 key=esc']
     n = 0
     presses = [c for c in cl if c['kind'] == 'press' and c['ms'] >= sync]
     base = presses[0]['crc'] if presses else None
     loaded = False
+    keys_in_chain = 0
     last_rel = sync
     ranges = proc_ranges()
     for i, c in enumerate(cl):
@@ -163,7 +165,7 @@ def cmd_dbx(rec, out):
             n += 1
             loaded = loaded or c['crc'][4] != base[4]      # players changed = a game is loaded
             state = (' state=' + ','.join('%08X' % v for v in c['crc'])) if loaded else ''
-            first = ' after=0x002A56F2' if n == 1 else ''
+            first = ' after=0x002A56F2' if n == 1 and not keys_in_chain else ''
             # the recorded gap is the player's thinking time - readiness comes from
             # the state gate + settle, so only a short gap is kept (menu clicks
             # before the load have no state and keep the full gap)
@@ -185,8 +187,16 @@ def cmd_dbx(rec, out):
             ch = c['code'] & 0xFF
             nm = names.get(ch) or (chr(ch).lower() if 32 < ch < 127 and chr(ch).isalnum() else None)
             if nm:
-                lines.append('SENDKEY after=0x002A56F2 delayms=%d key=%s holdms=80 label=k%d'
-                             % (c['ms'] - sync, nm, c['G']))
+                # a chain step - in order with the clicks (a timed key could land
+                # on another screen than in the port)
+                # no input loop is recorded for a key - keep up to 1 s of the gap so
+                # the screen of the previous click has settled
+                gap = min(max(c['ms'] - last_rel, 0), 1000)
+                first = ' after=0x002A56F2' if n == 0 and not keys_in_chain else ''
+                lines.append('SENDCLICK seq=1%s gapms=%d key=%s holdms=80 settlems=250 timeoutms=5000 label=k%d'
+                             % (first, gap, nm, c['G']))
+                keys_in_chain += 1
+                last_rel = c['ms'] + 80
             else:
                 lines.append('# key 0x%X at G=%d has no DOSBox name' % (c['code'], c['G']))
     open(out, 'w').write('\n'.join(lines) + '\n')
