@@ -5799,8 +5799,7 @@ LABEL_10:
   sub_124DEC();
   sub_119400((int16_t)v13);
   word_1AD1FC = sub_113E65();
-  sub_10A188(dword_1AD1E0);
-  word_1AD200 = v19;
+  word_1AD200 = sub_10A188(dword_1AD1E0);   /* wave 183: mov word_1A5200, ax */
   if ( (_BYTE)v15 )
     sub_10A5E3(dword_1AD1E0, word_1AD1FC);
   v17 = (int16_t)v39;
@@ -6563,7 +6562,7 @@ int16_t sub_108F98(int a1, int a2)
   int v12; // edx
   void *v13; // eax
   int v14; // eax
-  char v15; // [esp+0h] [ebp-3DD6h] BYREF
+  char v15[0x3DB8]; // [esp+0h] [ebp-3DD6h] BYREF - wave 183: list item buffer (was 1 byte -> stack overrun)
   char v16[64]; // [esp+3DB8h] [ebp-1Eh] BYREF
   char v17[40]; // [esp+3DF8h] [ebp+22h] BYREF
   char v18[40]; // [esp+3E20h] [ebp+4Ah] BYREF
@@ -6585,7 +6584,7 @@ int16_t sub_108F98(int a1, int a2)
   {
     v20 = sub_1151B0(592, 84, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 56), asc_17A289, 40);
     v22 = sub_1151B0(592, 395, (int)&unk_17A28B, (_WORD *)(intptr_t)*(uint32_t *)(a1 + 60), asc_17A289, 40);
-    dword_183EB9 = (int)&v15;
+    dword_183EB9 = (int)(intptr_t)v15;
     sub_108EC3((int)&unk_183EA3, (int16_t)v4, 4, 10);
     dword_1ACFE8 = sub_10A5A3((int)&unk_183EA3, byte_1AD208);
   }
@@ -6601,8 +6600,7 @@ LABEL_3:
     v9 = (int16_t)v22;
     sub_119400((int16_t)v22);
     word_1AD1FC = sub_113E65();
-    sub_10A188((int)&unk_183EA3);
-    word_1AD200 = v10;
+    word_1AD200 = sub_10A188((int)&unk_183EA3);   /* wave 183: mov word_1A5200, ax */
     v11 = (int16_t)v20;
     sub_10A4A7((int)&unk_183EA3);
     sub_10A689((int)&unk_183EA3, v11, v9);
@@ -7195,8 +7193,7 @@ int16_t sub_10988E(int a1)
     sub_124DEC();
     sub_119400(v16);
     word_1AD1FC = sub_113E65();
-    sub_10A188((int)&unk_183EE7);
-    word_1AD200 = v17;
+    word_1AD200 = sub_10A188((int)&unk_183EE7);   /* wave 183: mov word_1A5200, ax */
     sub_10A689((int)&unk_183EE7, (int16_t)v12, v16);
     v18 = (uint16_t)sub_114177();
     word_1AD202 = v18;
@@ -7556,7 +7553,7 @@ int sub_10A0A7(int a1, int a2, int a3)
 
 
 //----- (0010A188) --------------------------------------------------------
-void sub_10A188(int a1)
+int sub_10A188(int a1)
 {
   unsigned int v2; // esi
   char v3; // al
@@ -7587,8 +7584,7 @@ void sub_10A188(int a1)
     v2 += 158;
   }
   while ( !*(_BYTE *)(v2 + 4) );
-  sub_113E65();
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10A181 je epilog funkce */
+  return sub_113E65() - 1;   /* wave 183: 10A212 call sub_113E65 / dec eax = last item id */
 }
 // 10A218: control flows out of bounds to 10A181
 // 17A300: using guessed type _BYTE byte_17A300[4];

@@ -5834,7 +5834,7 @@ void sub_FC2D2(int16_t *a1)
   int v3; // eax
   int64_t v4; // rax
   int v5; // edx
-  char v6; // [esp+0h] [ebp-60h] BYREF
+  char v6[0x58]; // [esp+0h] [ebp-60h] BYREF
   int v7; // [esp+58h] [ebp-8h]
   char v8; // [esp+5Ch] [ebp-4h] BYREF
 
@@ -5843,7 +5843,7 @@ void sub_FC2D2(int16_t *a1)
   do
     v1 = sub_F55A4(v1, 11, 0, 0);
   while ( byte_1AB03F == 8 );
-  dword_1AA3E0 = (int)&v6;
+  dword_1AA3E0 = (int)(intptr_t)v6;   /* wave 183: var_60..var_8 buffer, was 1 byte */
   v2 = &v8;
   dword_1AA3E4 = (int)&v8;
   while ( 1 )

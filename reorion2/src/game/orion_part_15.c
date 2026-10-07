@@ -3350,7 +3350,7 @@ void sub_EA2F1(int a1, int16_t *a2)
 #define v24 ((_DWORD *)(blkEA2F1_v24 + 0))
 #define v25 (*(int *)(blkEA2F1_v24 + 8))
 #define v26 ((_BYTE *)(blkEA2F1_v24 + 12))
-  char v27; // [esp+6D0h] [ebp-DE8h] BYREF
+  char v27[0x6D0]; // [esp+6D0h] [ebp-DE8h] BYREF
   /* wave 182: v28..v30 are one 1742-byte record in the frame (ebp-718h) */
   _BYTE blkEA2F1_v28[1742];
 #define v28 ((_DWORD *)(blkEA2F1_v28 + 0))
@@ -3362,7 +3362,7 @@ void sub_EA2F1(int a1, int16_t *a2)
 
   v2 = 64;
   v3 = 0;
-  dword_1AB04C = (int)&v27;
+  dword_1AB04C = (int)(intptr_t)v27;   /* wave 183: var_DE8..var_718 buffer, was 1 byte */
   memset(v31, 0, sizeof(v31));
   v4 = v31;
   dword_1AA378 = (int)v31;
@@ -4782,12 +4782,12 @@ void sub_EBD80()
   int v5; // eax
   int v6; // edx
   int16_t j; // cx
-  char v8; // [esp+0h] [ebp-16h] BYREF
+  char v8[0x90]; // [esp+0h] [ebp-16h] BYREF
   int v9; // [esp+90h] [ebp+7Ah]
   int v10; // [esp+94h] [ebp+7Eh]
 
   v0 = 0;
-  dword_1AA3EC = (int)&v8;
+  dword_1AA3EC = (int)(intptr_t)v8;   /* wave 183: var_98..var_8 buffer, was 1 byte */
   while ( v0 < word_19999A )
   {
     v1 = 2 * v0++;

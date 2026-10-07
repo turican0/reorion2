@@ -4800,8 +4800,8 @@ int sub_C187B(int16_t *a1)
 {
   int v1; // edx
   int v2; // eax
-  char v4; // [esp+0h] [ebp-7F0h] BYREF
-  char v5; // [esp+3E8h] [ebp-408h] BYREF
+  char v4[1000]; // [esp+0h] [ebp-7F0h] BYREF
+  char v5[1000]; // [esp+3E8h] [ebp-408h] BYREF
   _BYTE v6[24]; // [esp+7D0h] [ebp-20h] BYREF
   int v7; // [esp+7E8h] [ebp-8h] BYREF
   char *v8; // [esp+7ECh] [ebp-4h] BYREF
@@ -4809,8 +4809,8 @@ int sub_C187B(int16_t *a1)
   v7 = 0;
   memset(v6, 0, sizeof(v6));
   dword_19FA18 = (int)v6;
-  dword_19FA14 = (int)&v4;
-  dword_19FA20 = (int)&v5;
+  dword_19FA14 = (int)(intptr_t)v4;   /* wave 183: 1000 B buffers, were 1 byte */
+  dword_19FA20 = (int)(intptr_t)v5;
   sub_C12AB();
   word_1830CE = 5 * ((word_19FA28 + 5) / 5) - 15;
   word_1830CC = 0;
@@ -5213,8 +5213,8 @@ int sub_C20AF( int a1, int16_t *a2)
   int v6; // edx
   int v7; // eax
   int v8; // eax
-  char v9; // [esp+0h] [ebp-7F0h] BYREF
-  char v10; // [esp+3E8h] [ebp-408h] BYREF
+  char v9[1000]; // [esp+0h] [ebp-7F0h] BYREF
+  char v10[1000]; // [esp+3E8h] [ebp-408h] BYREF
   _BYTE v11[24]; // [esp+7D0h] [ebp-20h] BYREF
   int v12; // [esp+7E8h] [ebp-8h] BYREF
   char *v13; // [esp+7ECh] [ebp-4h] BYREF
@@ -5223,9 +5223,9 @@ int sub_C20AF( int a1, int16_t *a2)
   memset(v11, 0, sizeof(v11));
   dword_19FA18 = (int)v11;
   word_19FA26 = a1;
-  dword_19FA14 = (int)&v9;
+  dword_19FA14 = (int)(intptr_t)v9;   /* wave 183: 1000 B buffers, were 1 byte */
   v3 = 0;
-  dword_19FA20 = (int)&v10;
+  dword_19FA20 = (int)(intptr_t)v10;
   for ( i = 0; i < 5; ++i )
   {
     if ( *(_BYTE *)(dword_197F9C + 129 * word_19FA26 + 16) == *(_BYTE *)(99 * i + 3753 * word_19999C + (uint8_t*)dword_197F98 + 822) )

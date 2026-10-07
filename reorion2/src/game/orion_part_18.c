@@ -2170,7 +2170,7 @@ int16_t sub_10FB02()
   int v7; // eax
   void *v8; // eax
   int v9; // eax
-  char v11; // [esp+0h] [ebp-3DD8h] BYREF
+  char v11[0x3DB8]; // [esp+0h] [ebp-3DD8h] BYREF - wave 183: the list item buffer (was 1 byte -> stack overrun)
   int v12; // [esp+3DB8h] [ebp-20h] BYREF
   _WORD *v13; // [esp+3DBCh] [ebp-1Ch]
   _WORD *v14; // [esp+3DC0h] [ebp-18h]
@@ -2209,7 +2209,7 @@ LABEL_6:
     sub_1191CA((int)sub_10FAAC, 2);
     v19 = sub_1151B0(441, 95, (int)&unk_17A3FA, v14, &unk_17A3FA, 0);
     v17 = sub_1151B0(441, 353, (int)&unk_17A3FA, v13, &unk_17A3FA, 0);
-    dword_18433A = (int)&v11;
+    dword_18433A = (int)(intptr_t)v11;
     sub_108EC3((int)&unk_184324, (int16_t)v16, 4, 10);
     dword_1AD6BC = sub_10A5A3((int)&unk_184324, byte_1AD6C0);
     sub_84E9D();
@@ -2218,8 +2218,7 @@ LABEL_7:
     v2 = (int16_t)v17;
     sub_119400((int16_t)v17);
     word_1AD1FC = sub_113E65();
-    sub_10A188((int)&unk_184324);
-    word_1AD200 = v3;
+    word_1AD200 = sub_10A188((int)&unk_184324);   /* wave 183: mov word_1A5200, ax */
     v18 = sub_1151B0(242, 374, (int)&unk_17A3FA, v1, asc_17A3FB, 0);
     sub_11438B(84, 51, 464, 393, asc_17A3FB, 0);
     v4 = sub_11438B(0, 0, 639, 479, asc_17A3FB, 0);

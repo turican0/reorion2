@@ -69,6 +69,13 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
     if (code == EXCEPTION_ACCESS_VIOLATION || code == EXCEPTION_STACK_OVERFLOW ||
         code == EXCEPTION_ILLEGAL_INSTRUCTION || code == EXCEPTION_INT_DIVIDE_BY_ZERO)
     {
+        // wave 183: a second fault after the first one (corrupted heap - dbghelp
+        // and the CRT keep faulting) used to loop here forever; end the process
+        static int s_faults = 0;
+        if (++s_faults > 1) {
+            PortRec_Flush();
+            TerminateProcess(GetCurrentProcess(), 3);
+        }
         PortRec_Flush();   // wave 183: the record keeps everything up to the crash
         std::fprintf(stderr, "SEH code=0x%08lX addr=%p", code, ep->ExceptionRecord->ExceptionAddress);
         if (code == EXCEPTION_ACCESS_VIOLATION && ep->ExceptionRecord->NumberParameters >= 2)
