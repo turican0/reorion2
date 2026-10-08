@@ -8457,8 +8457,6 @@ LABEL_10:
     }
     if ( (v31 & 0x8000u) != 0 )
       v49 = -v31;
-    if ( (_WORD)v49 )   /* TMPRACE */
-      PortDebug_CrashLog("TMPRACE v49=%d v87=%d v94=%d v98=%d v92=%d v93=%d v89=%d v97=%d m594=%d m595=%d v99=%d", (int16_t)v49, (int16_t)v87, v94, v98, v92, v93, (int16_t)v89, (int16_t)v97, byte_1AD594, byte_1AD595, (int16_t)v99);
     if ( !(_WORD)v49 )
     {
       sub_12C2A0();

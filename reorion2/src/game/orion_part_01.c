@@ -6488,7 +6488,6 @@ int sub_17C07(void)
   int16_t done = 0, i;
   int r, hit;
 
-  { extern unsigned long long PortRec_G(void); PortDebug_CrashLog("TMPAUD 17C07 enter G=%llu msg=%d race=%d 65=%d BE2=%d", PortRec_G(), word_19AA40, (uint8_t)byte_19AA66, byte_19AA65, byte_199BE2); }
   sub_1B92E((int16_t *)(intptr_t)(uint8_t)byte_19AA66);
   sub_1D565(word_19AA40, word_19999C, (uint8_t)byte_19AA66, (char *)&byte_19A64A);
   sub_17B51();
@@ -6515,7 +6514,6 @@ int sub_17C07(void)
       sub_12C2C6(2);
     }
   }
-  { extern unsigned long long PortRec_G(void); PortDebug_CrashLog("TMPAUD 17C07 loop end G=%llu i=%d done=%d", PortRec_G(), i, done); }
   return sub_17BB2(done, 0, 0, 0);
 }
 
