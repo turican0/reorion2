@@ -1769,7 +1769,8 @@ LABEL_234:
           // nikdy nedozvedel. Presne tak se chovala tlacitka na obrazovce
           // vyberu rasy (typ 1), zatimco ACCEPT (typ 0) fungoval, protoze
           // tudy vubec nechodi.
-          sub_16937A(PORT_PTR32(char *, (char *)off_184480 + 55 * (int16_t)v47 + 32));
+          /* wave 183: 11E66C mov word ptr [eax], 1 (sub_16937A was an IDA artifact) */
+          *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) = 1;
           goto LABEL_SPOLECNY_KONEC;
         }
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) = 0;

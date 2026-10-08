@@ -8862,7 +8862,7 @@ void sub_D10EE( int a1, int16_t *a2)
   int v118; // edx
   int v119; // [esp+0h] [ebp-1D6h]
   uint8_t v120[252]; // [esp+4h] [ebp-1D2h] BYREF
-  _WORD v121[50]; // [esp+100h] [ebp-D6h] BYREF
+  _WORD v121[72]; // [esp+100h] [ebp-D6h] BYREF   /* wave 183: grown to the stack slot (was [50]) */
   /* wave 182: var_72 (6 dwords) and var_5A (9 words) are the weight tables of
      sub_FE96F / sub_FE92D - they must be real arrays (split scalars get
      reordered by the compiler, the sum matches but the pick does not). */
@@ -10151,7 +10151,7 @@ char sub_D2AA9( int a1, int a2, int a3)
 
 
 //----- (000D2AEA) --------------------------------------------------------
-void sub_D2AEA(char *a1, int a2)
+int sub_D2AEA(char *a1, int a2)
 {
   int v3; // edi
   int v4; // ebx
@@ -10167,7 +10167,7 @@ void sub_D2AEA(char *a1, int a2)
   int v14; // [esp+24h] [ebp-8h]
   int v15; // [esp+28h] [ebp-4h]
 
-  LOWORD(v3) = 0;
+  v3 = 0;
   if ( byte_199CB0 )
   {
     v4 = *a1;
@@ -10217,10 +10217,12 @@ void sub_D2AEA(char *a1, int a2)
             }
           }
         }
+        if ( (uint16_t)v3 )   /* D2C84 test di, di / 400 / var_C */
+          v3 = 400 / v13 + (uint16_t)v3;
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD2A02 je epilog funkce */
+  return (uint16_t)v3;   /* wave 183: D2C97 mov eax, edi (was dropped) */
 }
 // D2C99: control flows out of bounds to D2A02
 // 19306C: using guessed type int dword_19306C;
@@ -10232,28 +10234,85 @@ void sub_D2AEA(char *a1, int a2)
 
 
 //----- (000D2CAE) --------------------------------------------------------
-void sub_D2CAE(int a1, int a2)
+/* wave 183: rewritten from asm D2CAE-D3029 - Hex-Rays kept only the calls and
+   dropped the whole value formula; the result (colony value for player a2,
+   0..0xFFFF) fills off_183554 in sub_D302E and through it the AI star choice */
+int sub_D2CAE(int a1, int a2)
 {
-  int16_t *v3; // edi
-  int16_t v4; // bx
-  int v5; // [esp+24h] [ebp-8h]
+  uint8_t *col = (uint8_t *)(intptr_t)a1;                                       /* esi */
+  uint8_t *pl = (uint8_t *)(intptr_t)a2;                                        /* var_24 */
+  int pidx = (int)(((uint8_t*)a2 - (uint8_t*)dword_197F98) / 3753);             /* var_8 */
+  uint8_t *planet = (uint8_t*)dword_1930D4 + 17 * *(int16_t *)(col + 2);        /* edi */
+  int owner = *(uint8_t *)(7 * (((uint8_t*)a1 - (uint8_t*)dword_192B18) / 361) + dword_1AA1EC);   /* bx */
+  uint8_t *opl = (uint8_t*)dword_197F98 + 3753 * owner;                          /* var_C */
+  int m1, m2, avg, gas, r1, r2, r3, v, w = 0, s;
+  int8_t ah;
 
-  v5 = ((uint8_t*)a2 - (uint8_t*)dword_197F98) / 3753;
-  v3 = (int16_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)(a1 + 2));
-  v4 = *(uint8_t *)(7 * (((uint8_t*)a1 - (uint8_t*)dword_192B18) / 361) + dword_1AA1EC);
-  sub_E0B4F(v3, v4);
-  sub_E0B4F(v3, ((uint8_t*)a2 - (uint8_t*)dword_197F98) / 3753);
-  if ( *(_BYTE *)(a1 + 6) )
+  m1 = (int16_t)sub_E0B4F((int16_t *)planet, owner);
+  m2 = (int16_t)sub_E0B4F((int16_t *)planet, pidx);
+  avg = (m1 + m2 + 1) / 2;                                                       /* var_10 */
+  gas = planet[8] == 5 || planet[8] == 6;                                        /* var_4 */
+  if ( col[6] )
+    return (uint16_t)sub_D2AEA((char *)col, a2);   /* D2D63, eax of sub_D2AEA */
+  r1 = (int16_t)sub_DE0C6((char *)col, pidx, owner, 0) / 2;                      /* var_18 */
+  r2 = (int16_t)sub_DED47((char *)col, pidx, owner, 0);                          /* var_14 */
+  r3 = (int16_t)sub_DFE77((char *)col, pidx, owner, 0);
+  v = r2 + r3;
+  if ( opl[0x8B1] )
+    v *= 6;
+  else if ( opl[0x8B0] )
+    v = (r3 + r1 + r2) * 4;
+  else
+    v = 3 * v + 6 * r1;
+  switch ( pl[0x8A0] )   /* var_28 stays as it was for other values (uninitialized in the original) */
   {
-    sub_D2AEA((char *)a1, a2);
-    return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD2A02 je epilog funkce */
+    case 0:    w = col[10] * 90 + avg * 10; break;
+    case 50:   w = col[10] * 85 + avg * 15; break;
+    case 100:  w = col[10] * 80 + avg * 20; break;
+    case 0xCE: w = col[10] * 95 + avg * 5;  break;
+    default: break;
   }
-  sub_DE0C6((char *)a1, v5, v4, 0);
-  sub_DED47((char *)a1, v5, v4, 0);
-  sub_DFE77((char *)a1, v5, v4, 0);
+  v *= w;
+  v = (avg + 100 - col[10]) * v / 100;
+  if ( !gas || !opl[0x8AB] )
+  {
+    v = (100 - ((uint8_t *)&word_DD4BA)[planet[8]] / 4) * v / 100;
+    if ( gas )
+      v = 3 * v / 4;
+  }
+  if ( (int16_t)(int8_t)col[0] != (int16_t)pidx || !col[0x14F] )
+  {
+    ah = pl[0x19A] == 3;
+    if ( planet[6] == 0 ? !opl[0x8A9] : planet[6] == 1 ? opl[0x8A9] != 0 : 0 )
+      v = (ah + 12) * v / 16;
+    else if ( planet[6] == 2 && !opl[0x8AA] )
+      v = (ah + 6) * v / 12;
+  }
+  if ( col[0x13F] )
+  {
+    switch ( *(int8_t *)((uint8_t*)dword_197F98 + 3753 * (int8_t)col[0] + 0x89F) / 2 )
+    {
+      case 0: v = 3 * v / 2; break;
+      case 1: v = 4 * v / 3; break;
+      case 2: v = 6 * v / 5; break;
+      default: break;
+    }
+  }
+  if ( planet[15] == 4 )
+    v += 1000;
+  else if ( planet[15] == 5 )
+    v += 2000;
+  v /= 64;
   if ( (uint8_t)byte_199CB0 >= 2u )
-    sub_D2AEA((char *)a1, a2);
-  JUMPOUT(0xD29F9);
+  {
+    s = (uint16_t)sub_D2AEA((char *)col, a2);
+    v += s / 8;
+    if ( v < s )
+      v = s;
+  }
+  if ( v >= 0xFFFF )
+    v = 0xFFFF;
+  return v;
 }
 // D2D68: control flows out of bounds to D2A02
 // D3029: control flows out of bounds to D29F9
@@ -10301,7 +10360,7 @@ void sub_D302E()
         }
         else
         {
-          sub_D2CAE(361 * (int16_t)v3 + (uint8_t*)dword_192B18, (uint8_t*)dword_197F98 + 3753 * (int16_t)v0);
+          v7 = (int16_t)sub_D2CAE((int)(intptr_t)(361 * (int16_t)v3 + (uint8_t*)dword_192B18), (int)(intptr_t)((uint8_t*)dword_197F98 + 3753 * (int16_t)v0));   /* wave 183: D30F9 mov edx, eax */
           v5 = v7;
           v6 = 720 * (int16_t)v0;
           v4 = (int)off_183554;

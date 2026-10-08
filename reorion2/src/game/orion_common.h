@@ -490,7 +490,7 @@ void sub_1B92E(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argum
 // plna signatura: void sub_1BD5B( int a1, int a2);
 extern void sub_1BD5B();
 // plna signatura: void sub_1C417( int a1, int a2);
-extern void sub_1C417();
+extern int sub_1C417();
 // plna signatura: int sub_1C479( int a1, int a2, int a3);
 extern int sub_1C479();
 // plna signatura: void sub_1C7E8(int a1, int a2, int a3, int a4, int a5);
@@ -510,7 +510,7 @@ void sub_1D0F8(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argum
 // plna signatura: int sub_1D237( int a1, int a2, int a3);
 extern int sub_1D237();
 // plna signatura: int16_t sub_1D565( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, char *a24, int a25, int a26, int a27, int a28);
-int16_t sub_1D565( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, char *a24, int a25, int a26, int a27, int a28);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int16_t sub_1D565(int msg, int player, int other, char *out);   /* wave 183: register arguments */
 // plna signatura: char *sub_1DE17(_BYTE *a1);
 char *sub_1DE17(_BYTE *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_1DEF8(int16_t *a1);
@@ -1304,7 +1304,7 @@ extern void sub_4A4E4();
 // plna signatura: int sub_4A575();
 extern int sub_4A575();
 // plna signatura: void sub_4A5CE();
-extern void sub_4A5CE();
+extern void sub_4A5CE(int a1);
 // plna signatura: void sub_4A790();
 extern void sub_4A790();
 // plna signatura: int sub_4A884( int a1);
@@ -5385,9 +5385,9 @@ int16_t sub_D2A08(uint8_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove ar
 // plna signatura: char sub_D2AA9( int a1, int a2, int a3);
 extern char sub_D2AA9();
 // plna signatura: void sub_D2AEA(char *a1, int a2);
-void sub_D2AEA(char *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_D2AEA(char *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_D2CAE(int a1, int a2);
-extern void sub_D2CAE();
+extern int sub_D2CAE();
 // plna signatura: void sub_D302E();
 extern void sub_D302E();
 // plna signatura: void sub_D3125();
@@ -10599,7 +10599,7 @@ _BOOL2 sub_1B7FB();
 int sub_1B881(int a1);
 void sub_1B92E(int16_t *a1);
 void sub_1BD5B(int16_t a1, int16_t a2);
-void sub_1C417(int16_t a1, int16_t a2);
+int sub_1C417(int16_t a1, int16_t a2);
 int sub_1C479(int16_t a1, char a2, int16_t a3);
 // void sub_1C7E8(int a1, int a2, int a3, int a4, int16_t a5);
 // void sub_1C873(int16_t a1);
@@ -10609,7 +10609,7 @@ void sub_1CB4D(int a1, int a2);
 // int sub_1CFB1(int16_t a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, __int128 a26, int a27, int a28, int a29, int64_t a30);
 // void sub_1D0F8(int16_t *a1);
 int sub_1D237(int16_t a1, int16_t a2, char a3);
-int16_t sub_1D565(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, char *a24, int16_t a25, int16_t a26, int16_t a27, int a28);
+int16_t sub_1D565(int msg, int player, int other, char *out);   /* wave 183: register arguments */
 char *sub_1DE17(_BYTE *a1);
 // void sub_1DEF8(int16_t *a1);
 // void sub_1ED17(int16_t *a1);
@@ -11006,7 +11006,7 @@ void sub_49F99();
 void sub_4A12A();
 void sub_4A4E4(int16_t a1);
 int sub_4A575();
-void sub_4A5CE();
+void sub_4A5CE(int a1);
 void sub_4A790();
 int sub_4A884(int16_t a1);
 int sub_4A8D3();
@@ -13060,8 +13060,8 @@ void sub_D2754(int a1);
 int sub_D27A7(int a1, _BYTE *a2);
 int16_t sub_D2A08(uint8_t *a1);
 char sub_D2AA9(int16_t a1, int a2, int a3);
-void sub_D2AEA(char *a1, int a2);
-void sub_D2CAE(int a1, int a2);
+int sub_D2AEA(char *a1, int a2);
+int sub_D2CAE(int a1, int a2);
 void sub_D302E();
 void sub_D3125();
 int sub_D3318(int16_t *a1, int16_t *a2);

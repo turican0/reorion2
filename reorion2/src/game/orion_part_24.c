@@ -85,7 +85,7 @@ int sub_15EC70(int a1, int a2)
   char v2; // dl
   _BYTE v4[4]; // [esp+0h] [ebp-44h] BYREF
   int v5; // [esp+4h] [ebp-40h]
-  _DWORD v6[3]; // [esp+1Ch] [ebp-28h] BYREF
+  _DWORD v6[4]; // [esp+1Ch] [ebp-28h] BYREF   /* wave 183: grown to the stack slot (was [3]) */
   int16_t v7; // [esp+2Ch] [ebp-18h]
 
   v2 = a1;
@@ -502,7 +502,7 @@ int sub_15F360(int a1, int a2, int (*a3)(_BYTE *, _DWORD))
   char v4; // bl
   int v5; // esi
   int64_t v6; // rax
-  _BYTE v8[84]; // [esp+0h] [ebp-5Ch] BYREF
+  _BYTE v8[88]; // [esp+0h] [ebp-5Ch] BYREF   /* wave 183: grown to the stack slot (was [84]) */
   int (*v9)(_BYTE *, _DWORD); // [esp+54h] [ebp-8h]
   int v10; // [esp+58h] [ebp-4h]
 

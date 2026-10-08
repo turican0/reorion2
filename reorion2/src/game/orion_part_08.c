@@ -4804,7 +4804,7 @@ LABEL_13:
   ServiceAudioTick_FE8BE(v43, SHIDWORD(v43), v73, v26);
   ServiceAudioTick_FE8BE(v43, SHIDWORD(v43), v73, v26);
   word_1999A2 = 0;
-  sub_16933A(v73);
+  sub_8C4D3(v73);   /* wave 183: 8DDF6 call sub_8C4D3 (sub_16933A was an IDA artifact) */
   if ( byte_199F0D )
     sub_8C099(v73, (unsigned int)v26);
   sub_7926C(word_199A0C);

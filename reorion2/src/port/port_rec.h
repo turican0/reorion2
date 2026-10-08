@@ -25,6 +25,7 @@ int PortRec_Replaying(void);
 int PortRec_FastReplay(void);
 void PortRec_Tick(void);
 void PortRec_Flush(void);
+int PortRec_PressIndex(void);   /* wave 183: presses replayed so far */
 void PortRec_Sync(void);
 void PortRec_OnFileWritten(const char* path);
 

@@ -8378,7 +8378,7 @@ void sub_FEA82(_BYTE *a1, unsigned int a2, int a3)
   void *v4; // esi
   int16_t v5; // [esp+82h] [ebp-12h]
   int v6; // [esp+86h] [ebp-Eh]
-  _BYTE v7[10]; // [esp+8Ah] [ebp-Ah] BYREF
+  _BYTE v7[136]; // [esp+8Ah] [ebp-Ah] BYREF   /* wave 183: grown to the stack slot (was [10]) */
   unsigned int v8; // [esp+112h] [ebp+7Eh]
 
   v5 = a3;   /* wave 181: v5 saved by the prologue (push ebx) */
@@ -8833,7 +8833,7 @@ int sub_FF212()
   unsigned int v7; // eax
   int result; // eax
   _BYTE v9[360]; // [esp+0h] [ebp-310h] BYREF
-  _BYTE v10[360]; // [esp+168h] [ebp-1A8h] BYREF
+  _BYTE v10[380]; // [esp+168h] [ebp-1A8h] BYREF   /* wave 183: grown to the stack slot (was [360]) */
   /* wave 182: v11..v15 are one 18-byte record in the frame (ebp-40h) */
   _BYTE blkFF212_v11[18];
 #define v11 (*(int *)(blkFF212_v11 + 0))
@@ -9486,7 +9486,8 @@ int sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
       *(_BYTE *)(v9 + 109) = a3[4];
       *(_BYTE *)(v9 + 107) = a3[7];
       HIBYTE(a2) = a3[8];
-      sub_16915C(v9, a2);
+      *(_BYTE *)(v9 + 108) = HIBYTE(a2);   /* wave 183: FFDA5/FFDA8 mov [eax+6Ch], dh / mov [eax+64h], dl (sub_16915C was an IDA artifact) */
+      *(_BYTE *)(v9 + 100) = (uint8_t)a2;
     }
     result = v11;
     ++v12;
@@ -10423,7 +10424,7 @@ _BOOL1 sub_100BC5( int a1, int a2, _WORD *a3, int a4)
   int v7; // edx
   unsigned int v8; // eax
   int16_t v9; // ax
-  _BYTE v13[8]; // [esp+8h] [ebp-1Ch] BYREF
+  _BYTE v13[16]; // [esp+8h] [ebp-1Ch] BYREF   /* wave 183: grown to the stack slot (was [8]) */
   /* wave 182: v14..v20 are one 7-byte record in the frame (ebp-14h) */
   _BYTE blk100BC5_v14[7];
 #define v14 (*(char *)(blk100BC5_v14 + 0))

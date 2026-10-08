@@ -6801,7 +6801,7 @@ int sub_139447()
 int sub_139476()
 {
   char v1; // [esp+0h] [ebp-2Ch]
-  _BYTE v2[20]; // [esp+4h] [ebp-28h] BYREF
+  _BYTE v2[28]; // [esp+4h] [ebp-28h] BYREF   /* wave 183: grown to the stack slot (was [20]) */
   int i; // [esp+18h] [ebp-14h]
   int j; // [esp+1Ch] [ebp-10h]
   int v5; // [esp+20h] [ebp-Ch]

@@ -976,7 +976,7 @@ int sub_10370A(
   int16_t v47; // [esp+6Ah] [ebp-6Eh]
   int v48; // [esp+6Eh] [ebp-6Ah]
   int16_t v49; // [esp+72h] [ebp-66h]
-  _BYTE v51[98]; // [esp+76h] [ebp-62h] BYREF
+  _BYTE v51[200]; // [esp+76h] [ebp-62h] BYREF   /* wave 183: grown to the stack slot (was [98]) */
   int16_t v52; // [esp+13Eh] [ebp+66h]
   int v53; // [esp+142h] [ebp+6Ah]
   int v54; // [esp+146h] [ebp+6Eh]

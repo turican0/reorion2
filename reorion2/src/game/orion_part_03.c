@@ -11892,7 +11892,7 @@ int sub_47939(
   int16_t *v157; // [esp+6Ah] [ebp-66h]
   int16_t v158; // [esp+6Eh] [ebp-62h]
   int16_t *v159; // [esp+72h] [ebp-5Eh]
-  char v160[80]; // [esp+76h] [ebp-5Ah] BYREF
+  char v160[108]; // [esp+76h] [ebp-5Ah] BYREF   /* wave 183: grown to the stack slot (was [80]) */
   _DWORD varA[4]; // [esp+C6h] [ebp-Ah] BYREF
   _BYTE *vars6; // [esp+D6h] [ebp+6h]
   _BYTE varsA[2]; // [esp+DAh] [ebp+Ah] BYREF
@@ -12582,8 +12582,8 @@ LABEL_107:
     if ( word_17D853 )
     {
       sub_42F7F(0, 0, v95);
-      sub_1694B9(v95);
-      sub_1694B9(v132);
+      sub_4A5CE(v95);    /* wave 183: 48C01 movsx eax, si / call sub_4A5CE (sub_1694B9 was an IDA artifact) */
+      sub_4A5CE(v132);   /* 48C09 movsx eax, di */
       sub_42F7F(0, 1, v95);
       sub_4545B(m, v95);
       *(_DWORD *)((char *)&a7 + 2) = v143;
@@ -12594,7 +12594,7 @@ LABEL_107:
     {
       sub_42F7F((int16_t)v95, 0, v95);
       sub_4545B(m, v95);
-      sub_4A5CE();
+      sub_4A5CE(v132);   /* wave 183: 48C49 movsx eax, di */
       if ( word_1998E0 )
         sub_2C555();
       sub_4545B(m, v95);
@@ -12604,7 +12604,7 @@ LABEL_107:
         sub_42F7F(v132, 0, v95);
         sub_4545B(m, v95);
       }
-      sub_4A5CE();
+      sub_4A5CE(v95);    /* wave 183: 48C82 movsx eax, si */
       if ( word_1998E0 )
         sub_2C555();
       sub_4545B(m, v95);
@@ -13969,7 +13969,7 @@ int sub_4A575()
 
 
 //----- (0004A5CE) --------------------------------------------------------
-void sub_4A5CE()
+void sub_4A5CE(int a1)
 {
   int16_t i; // si
   int v1; // eax
@@ -13984,6 +13984,7 @@ void sub_4A5CE()
   int v10; // [esp+14h] [ebp-8h] BYREF
   int v11; // [esp+18h] [ebp-4h]
 
+  v6 = (int16_t)a1;   /* wave 183: 4A5D7 push eax = var_1C (player) */
   v7 = 0;
   v10 = 0;
   for ( i = 0; i < word_1998C0; ++i )

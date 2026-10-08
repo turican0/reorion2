@@ -4353,7 +4353,7 @@ int sub_77048(int a1, int a2, int a3, int a4)
   int16_t v41; // [esp+76h] [ebp-D6h]
   int16_t v42; // [esp+7Ah] [ebp-D2h]
   int16_t v43; // [esp+7Eh] [ebp-CEh]
-  _WORD v44[101]; // [esp+82h] [ebp-CAh] BYREF
+  _WORD v44[146]; // [esp+82h] [ebp-CAh] BYREF   /* wave 183: grown to the stack slot (was [101]) */
   int v45; // [esp+1A6h] [ebp+5Ah]
   int16_t v46; // [esp+1BEh] [ebp+72h]
 

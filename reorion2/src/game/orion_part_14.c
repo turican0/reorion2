@@ -4914,7 +4914,7 @@ void sub_DB8D8()
   int16_t v12; // cx
   int16_t v13; // [esp-2h] [ebp-C0h] BYREF
   _BYTE v14[100]; // [esp+0h] [ebp-BEh] BYREF
-  _BYTE v15[72]; // [esp+64h] [ebp-5Ah] BYREF
+  _BYTE v15[144]; // [esp+64h] [ebp-5Ah] BYREF   /* wave 183: grown to the stack slot (was [72]) */
   /* wave 182: v16..v17 are one 72-byte record in the frame (ebp-12h) */
   _BYTE blkDB8D8_v16[72];
 #define v16 ((_BYTE *)(blkDB8D8_v16 + 0))
@@ -10358,7 +10358,7 @@ LABEL_88:
     v23 = *(char *)((uint8_t*)dword_197F98 + v38 + 2208) + 100;
     v24 = (uint8_t*)dword_197F98 + 3753 * *a1;
     v31 = 0;
-    sub_16946E();
+    /* wave 183: sub_16946E() removed - IDA artifact, not in the original */
     if ( v25 )
     {
       v23 += 50;

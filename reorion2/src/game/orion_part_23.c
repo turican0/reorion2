@@ -7198,7 +7198,7 @@ int sub_15E814(int a1)
   unsigned int v8; // [esp-8h] [ebp-68h]
   int v9; // [esp-4h] [ebp-64h]
   int v10; // [esp+8h] [ebp-58h] BYREF
-  _BYTE v11[6]; // [esp+Ch] [ebp-54h]
+  _BYTE v11[16]; // [esp+Ch] [ebp-54h]   /* wave 183: grown to the stack slot (was [6]) */
   int v12; // [esp+1Ch] [ebp-44h]
   int v13; // [esp+20h] [ebp-40h]
   void (*v14)(int, int); // [esp+26h] [ebp-3Ah]

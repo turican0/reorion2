@@ -427,6 +427,29 @@ namespace Port::Vga {
                 s_nextEvery = SDL_GetTicks() + s_everyMs;
             }
 
+            // TOOL (wave 183): REORION2_REPLAY_FRAMES=a:b writes every changed
+            // frame while the replay is between press a and press b, as
+            // p<press>_<n>.raw - for short flickers between two clicks.
+            {
+                static int s_rfA = -2, s_rfB = 0, s_rfN = 0;
+                static std::vector<uint8_t> s_rfLast;
+                if (s_rfA == -2) {
+                    s_rfA = -1;
+                    if (const char* e = std::getenv("REORION2_REPLAY_FRAMES"))
+                        if (std::sscanf(e, "%d:%d", &s_rfA, &s_rfB) != 2) s_rfA = -1;
+                }
+                const int pr = PortRec_PressIndex();
+                if (s_rfA >= 0 && pr >= s_rfA && pr <= s_rfB) {
+                    const size_t n = static_cast<size_t>(width) * height;
+                    if (s_rfLast.size() != n || std::memcmp(s_rfLast.data(), framebuffer, n) != 0) {
+                        s_rfLast.assign(framebuffer, framebuffer + n);
+                        char name[64];
+                        std::snprintf(name, sizeof(name), "/p%03d_%05d.raw", pr, s_rfN++);
+                        DumpRawFrame(base + name, framebuffer, palette, width, height);
+                    }
+                }
+            }
+
             static int s_rangeStart = -2;
             static int s_rangeCount = 0;
 

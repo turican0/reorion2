@@ -3384,7 +3384,7 @@ unsigned int sub_1694B7(int offset, int len, int destBase)
 void sub_1694B9( int a1)
 {
   sub_4A4E4(a1);
-  sub_4A5CE();
+  sub_4A5CE(0);
 }
 
 

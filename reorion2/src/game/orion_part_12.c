@@ -1076,7 +1076,7 @@ int sub_BCEA2(int a1, int a2, int a3, unsigned int a4)
   int v19; // esi
   _BYTE *v21; // [esp-8h] [ebp-218h]
   int v22; // [esp+0h] [ebp-210h]
-  _BYTE v23[500]; // [esp+4h] [ebp-20Ch] BYREF
+  _BYTE v23[504]; // [esp+4h] [ebp-20Ch] BYREF   /* wave 183: grown to the stack slot (was [500]) */
   int v24; // [esp+1FCh] [ebp-14h]
   unsigned int v25; // [esp+200h] [ebp-10h]
   char *v26; // [esp+204h] [ebp-Ch]

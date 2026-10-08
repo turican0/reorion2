@@ -416,7 +416,7 @@ char sub_B0CF6(uint8_t* a1, int a2, int a3)
   _BYTE v61[1600]; // [esp+4h] [ebp-C80h] BYREF
   char v62[500]; // [esp+644h] [ebp-640h] BYREF
   char v63[500]; // [esp+838h] [ebp-44Ch] BYREF
-  char v64[532]; // [esp+A2Ch] [ebp-258h] BYREF
+  char v64[548]; // [esp+A2Ch] [ebp-258h] BYREF   /* wave 183: grown to the stack slot (was [532]) */
   char v65[13]; // [ebp-44h] - wave 183: one string, was int v65 + char v66[12]
   int v67; // [esp+C50h] [ebp-34h]
   int v68; // [esp+C54h] [ebp-30h]

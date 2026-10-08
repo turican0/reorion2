@@ -2715,7 +2715,7 @@ char sub_7C9EE(uint8_t *a1, int a2)
   uint16_t v8; // ax
   uint16_t v9; // ax
   uint16_t v10; // ax
-  _WORD v12[10]; // [esp+0h] [ebp-30h] BYREF
+  _WORD v12[22]; // [esp+0h] [ebp-30h] BYREF   /* wave 183: grown to the stack slot (was [10]) */
   /* wave 182: v13..v16 are one 10-byte record in the frame (ebp-1Ch) */
   _BYTE blk7C9EE_v13[10];
 #define v13 ((_BYTE *)(blk7C9EE_v13 + 0))

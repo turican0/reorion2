@@ -14913,7 +14913,7 @@ int sub_63D0A(int a1, int a2, int a3, int a4)
   int v4; // eax
   int v5; // edx
   char v7[7]; // [esp+0h] [ebp-34h] BYREF
-  char v8[7]; // [esp+14h] [ebp-20h] BYREF
+  char v8[20]; // [esp+14h] [ebp-20h] BYREF   /* wave 183: grown to the stack slot (was [7]) */
   int v9; // [esp+28h] [ebp-Ch] BYREF
   int16_t v10; // [esp+2Ch] [ebp-8h] BYREF
   _BYTE v11[4]; // [esp+30h] [ebp-4h] BYREF

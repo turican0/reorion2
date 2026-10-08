@@ -246,8 +246,10 @@ int dword_1C9540;
    jako no-op nahrady (viz git historie), coz zpusobovalo LNK2005/LNK1169
    "multiply defined symbol" ve chvili, kdy se do projektu pridala realna
    CRT knihovna (SDL3 zavislosti, port_memory.cpp pouzivajici <cstdio>). */
-int DECOMP_MEMORY_STUB;
-int DECOMP_STACK_STUB;
+/* wave 183: sizes as declared in decomp_compat.h - defined as one int, the
+   STACK[...] / MEMORY[...] writes went up to 128 kB / 1 MB past it over other globals */
+int DECOMP_MEMORY_STUB[0x40000];
+int DECOMP_STACK_STUB[0x8000];
 /* int386 UZ NENI no-op stub - emulace je v src/port/port_dos.cpp
    (INT 33h/mys -> Port::Mouse, ostatni preruseni deterministicky vraci
    vstupni registry). Stub, ktery do vystupniho REGS bufferu nic nezapsal,

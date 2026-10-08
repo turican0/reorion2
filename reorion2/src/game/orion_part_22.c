@@ -4546,7 +4546,7 @@ void sub_14D89F(int a1, int *a2)
   char v21; // cl
   int v22; // eax
   char v23; // [esp+0h] [ebp-84h] BYREF
-  _BYTE v24[3]; // [esp+1h] [ebp-83h] BYREF
+  _BYTE v24[79]; // [esp+1h] [ebp-83h] BYREF   /* wave 183: grown to the stack slot (was [3]) */
   int v25; // [esp+50h] [ebp-34h]
   int v26; // [esp+54h] [ebp-30h]
   unsigned int j; // [esp+58h] [ebp-2Ch]
@@ -5663,7 +5663,7 @@ int sub_14EE75(int a1, int a2, int a3)
   int v3; // edx
   int v4; // eax
   int v5; // ecx
-  _BYTE v7[512]; // [esp+4h] [ebp-224h] BYREF
+  _BYTE v7[516]; // [esp+4h] [ebp-224h] BYREF   /* wave 183: grown to the stack slot (was [512]) */
   int i; // [esp+204h] [ebp-24h]
   int v9; // [esp+208h] [ebp-20h]
   unsigned int v10; // [esp+20Ch] [ebp-1Ch]
@@ -8692,7 +8692,7 @@ bool sub_15421D(unsigned int a1, unsigned int a2)
   unsigned int v3; // [esp+0h] [ebp-54h]
   unsigned int v4; // [esp+4h] [ebp-50h]
   _DWORD v5[7]; // [esp+Ch] [ebp-48h] BYREF
-  _BYTE v6[24]; // [esp+28h] [ebp-2Ch] BYREF
+  _BYTE v6[28]; // [esp+28h] [ebp-2Ch] BYREF   /* wave 183: grown to the stack slot (was [24]) */
   int v7 = 0; // [esp+40h] [ebp-14h]
   int v8; // [esp+44h] [ebp-10h]
   unsigned int v9; // [esp+48h] [ebp-Ch]

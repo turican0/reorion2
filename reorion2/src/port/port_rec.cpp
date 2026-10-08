@@ -58,6 +58,7 @@ extern "C" void PortDebug_Backtrace(const char* tag, int frames);
 namespace {
 
 enum { kSrcCount = 16 };
+int g_pressNow = 0;   // wave 183: presses replayed so far (REORION2_REPLAY_FRAMES)
 const char* const kSrcName[kSrcCount] = { "mouse", "key", "tick", "ms", "wait", "audioq", "ftime", "time" };
 
 int      g_mode = 0;          // 0 off, 1 record, 2 replay
@@ -477,6 +478,7 @@ void PortRec_Init(void)
 
 int PortRec_Replaying(void) { return g_mode == 2; }
 unsigned long long PortRec_G(void) { return g_G; }   // for probes
+int PortRec_PressIndex(void) { return g_pressNow; }   // wave 183: presses replayed so far
 int PortRec_FastReplay(void) { return g_mode == 2 && g_fast; }
 
 uint32_t PortRec_Value(int src, uint32_t live)
@@ -541,6 +543,7 @@ uint32_t PortRec_Value(int src, uint32_t live)
             GetVar(v);                                     // waiting function
             GetVar(v);                                     // its caller
             ++s_press;
+            g_pressNow = s_press;
             // REORION2_REPLAY_TRACE_PRESS=N: call stack at press N (which game loop reads it)
             static int s_trace = -2;
             if (s_trace == -2) {
