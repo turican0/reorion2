@@ -196,6 +196,14 @@ using MouseCallback = void (*)(int eax, int ebx, int ecx, int edx, int esi, int 
 static uint32_t g_mouseHandler = 0; // adresa herni rutiny (LAA:NO -> vejde se do 32 bitu)
 static uint16_t g_mouseMask    = 0; // maska udalosti, na ktere se ma volat
 static int g_lastVx = -1, g_lastVy = -1, g_lastButtons = 0;
+// Wave 183: button edges seen by ANY mouse read (fn 3 or the callback), queued
+// in order until the handler mask lets them through - the DOS driver called the
+// handler at the moment of the click, the port only at Present(), so a short
+// click (press + release between two deliveries) was lost.
+struct MouseEdge { int events, buttons; };
+static MouseEdge g_edgeQueue[16];
+static int g_edgeCount = 0;
+static int g_seenButtons = 0;
 
 // Prepocet pozice ze SDL do virtualniho rozsahu, ktery si hra nastavila
 // funkcemi 7/8 - spolecny pro dotaz fn 3 i pro callback, aby obe cesty
@@ -324,6 +332,19 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
         vx = (int)(m & 0xFFF);
         vy = (int)((m >> 12) & 0xFFF);
         buttons = (int)(m >> 24);
+    }
+    if (buttons != g_seenButtons) {   // wave 183: queue the edge (see g_edgeQueue)
+        int ev = 0;
+        if ((buttons & 1) && !(g_seenButtons & 1)) ev |= 0x02;
+        if (!(buttons & 1) && (g_seenButtons & 1)) ev |= 0x04;
+        if ((buttons & 2) && !(g_seenButtons & 2)) ev |= 0x08;
+        if (!(buttons & 2) && (g_seenButtons & 2)) ev |= 0x10;
+        if (g_edgeCount == 16) {
+            std::memmove(g_edgeQueue, g_edgeQueue + 1, sizeof(g_edgeQueue) - sizeof(g_edgeQueue[0]));
+            --g_edgeCount;
+        }
+        g_edgeQueue[g_edgeCount++] = MouseEdge{ev, buttons};
+        g_seenButtons = buttons;
     }
     static int s_log = -1;
     if (s_log < 0) {
@@ -692,32 +713,36 @@ extern "C" void PortDos_ServiceMouse(void)
     int events = 0;
     if (vx != g_lastVx || vy != g_lastVy)
         events |= 0x01; // pohyb
-    if ((buttons & 1) && !(g_lastButtons & 1)) events |= 0x02; // leve stisknuto
-    if (!(buttons & 1) && (g_lastButtons & 1)) events |= 0x04; // leve uvolneno
-    if ((buttons & 2) && !(g_lastButtons & 2)) events |= 0x08; // prave stisknuto
-    if (!(buttons & 2) && (g_lastButtons & 2)) events |= 0x10; // prave uvolneno
+
+    // Wave 183: one queued button edge per delivery, in the order they came.
+    // While the mask has no button bits (the game switches to 0x0001 around
+    // drawing), the edge waits; with button bits it goes if wanted, else it is
+    // dropped as the DOS driver would. The callback gets the button state of
+    // that edge, so press and release of a short click both arrive.
+    const int kButtonEdges = 0x02 | 0x04 | 0x08 | 0x10;
+    int cbButtons = buttons;
+    while (g_edgeCount && (g_mouseMask & kButtonEdges)) {
+        const MouseEdge e = g_edgeQueue[0];
+        --g_edgeCount;
+        std::memmove(g_edgeQueue, g_edgeQueue + 1, sizeof(g_edgeQueue[0]) * g_edgeCount);
+        g_lastButtons = e.buttons;
+        if (e.events & g_mouseMask) {
+            events |= e.events;
+            cbButtons = e.buttons;
+            break;
+        }
+    }
+    buttons = cbButtons;
 
     const int dx = (g_lastVx < 0) ? 0 : vx - g_lastVx;
     const int dy = (g_lastVy < 0) ? 0 : vy - g_lastVy;
     g_lastVx = vx;
     g_lastVy = vy;
 
-    // PORT (vlna 71): stav TLACITEK si smime zapamatovat teprve tehdy,
-    // kdyz jsme jeho zmenu SKUTECNE DORUCILI hre. Hra si masku obsluhy
-    // stridave prepina mezi 0x0001 (jen pohyb) a 0x002B (pohyb+tlacitka)
-    // - viz vlna 53. Kdyz stisk padne do okna s maskou 0x0001, `events`
-    // se sice spocitaji, ale callback se preskoci; pokud si pritom
-    // ulozime `g_lastButtons = buttons`, HRANA SE ZTRATI a pri dalsim
-    // volani uz zadna zmena neni - hra o kliknuti nikdy nezvi.
-    // Presne tak se choval vyber rasy: kurzor po tlacitkach jezdil
-    // (zvyraznovalo se, protoze to jde pres sub_114177 = prvek pod
-    // kurzorem), ale kliknuti nikdy neprosla - `sub_1171AB` vracelo 0.
-    // Kdyz hranu nespotrebujeme, doruc� se hned, jak maska prepne zpet.
-    const int kButtonEdges = 0x02 | 0x04 | 0x08 | 0x10;
+    // Wave 71 (now the edge queue above): the game toggles the mask between
+    // 0x0001 (motion) and 0x002B (motion + buttons); an edge seen under 0x0001
+    // must wait, not be lost.
     const int deliverable = events & g_mouseMask;
-    if (!(events & kButtonEdges) || (deliverable & kButtonEdges))
-        g_lastButtons = buttons;
-
     if (!deliverable)
         return;
 

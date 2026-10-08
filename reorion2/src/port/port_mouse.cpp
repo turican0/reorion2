@@ -14,6 +14,9 @@ bool g_initialized = false;
 bool g_keyPending = false;
 int  g_keyCode = 0;
 bool g_quitRequested = false;
+// Wave 183: a press whose release came in the same Poll - reported as down once
+bool g_leftLatch = false;
+bool g_rightLatch = false;
 } // namespace
 
 bool Init()
@@ -56,6 +59,8 @@ void Poll()
             const bool down = (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
             if (e.button.button == SDL_BUTTON_LEFT)  g_state.leftButton  = down;
             if (e.button.button == SDL_BUTTON_RIGHT) g_state.rightButton = down;
+            if (down && e.button.button == SDL_BUTTON_LEFT)  g_leftLatch  = true;
+            if (down && e.button.button == SDL_BUTTON_RIGHT) g_rightLatch = true;
             g_state.x = (int)e.button.x;
             g_state.y = (int)e.button.y;
             break;
@@ -114,8 +119,10 @@ void Poll()
         g_state.x = (int)x;
         g_state.y = (int)y;
     }
-    g_state.leftButton  = (buttons & SDL_BUTTON_LMASK) != 0;
-    g_state.rightButton = (buttons & SDL_BUTTON_RMASK) != 0;
+    g_state.leftButton  = (buttons & SDL_BUTTON_LMASK) != 0 || g_leftLatch;
+    g_state.rightButton = (buttons & SDL_BUTTON_RMASK) != 0 || g_rightLatch;
+    g_leftLatch = false;
+    g_rightLatch = false;
 }
 
 // Presun kurzoru tam, kam si ho hra nastavi pres INT 33h funkci 4.
