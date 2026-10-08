@@ -1156,9 +1156,12 @@ int sub_103952(int a1, int a2)
 
 //----- (00103971) --------------------------------------------------------
 /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=13)) - nutno dohledat rucne v IDA @ 0x103983 */
+/* wave 183: from asm 103971-10398F - measure only (sub_10370A with x = y = 0
+   and draw flag 0: eax = width, edx = text, ebx = style), result word_1A4EBA */
 int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=13)");
+  sub_10370A(0, 0, (int)_p1, (int16_t)_p0, (int16_t)_p2, 0, 0);
+  return word_1ACEBA;
 }
 
 
