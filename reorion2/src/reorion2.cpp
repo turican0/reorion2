@@ -426,9 +426,15 @@ extern "C" void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller)
     sym->MaxNameLen = 255;
     DWORD64 disp = 0;
     if (SymFromAddr(proc, (DWORD64)caller, &disp, sym))
-        std::fprintf(f, "%u %u %08X %s+0x%llx\n", n++, arg, seed, sym->Name, (unsigned long long)disp);
+        std::fprintf(f, "%u %u %08X %s+0x%llx", n++, arg, seed, sym->Name, (unsigned long long)disp);
     else
-        std::fprintf(f, "%u %u %08X %p\n", n++, arg, seed, caller);
+        std::fprintf(f, "%u %u %08X %p", n++, arg, seed, caller);
+    // wave 184: the caller's caller too (frames: this, sub_1247A0, caller, its caller)
+    void* fr[4] = {};
+    DWORD64 d2 = 0;
+    if (RtlCaptureStackBackTrace(0, 4, fr, nullptr) == 4 && SymFromAddr(proc, (DWORD64)fr[3], &d2, sym))
+        std::fprintf(f, " %s+0x%llx", sym->Name, (unsigned long long)d2);
+    std::fprintf(f, "\n");
     std::fflush(f);
 }
 
@@ -470,6 +476,8 @@ int main(int argc, char* argv[])
     AddVectoredExceptionHandler(1, DebugVectoredHandler);
     // wave 183: record / replay first - a replay sets the recorded env
     PortRec_Init();
+    // TOOL (wave 184): REORION2_RNG_LOG_ALL=1 logs the RNG from boot, not from the first turn
+    if (const char* a = std::getenv("REORION2_RNG_LOG_ALL")) if (*a == '1') g_rngLogArmed = 1;
     // PORT (vlna 95): ZMERENO jednorazovou sondou (uz odstranena):
     //   zasobnik = 0x00000000004FFBF0, kod = 0x0000000000753014
     // Obe adresy jsou hluboko pod 2 GB (ImageBase 0x400000 + ASLR jen v ramci

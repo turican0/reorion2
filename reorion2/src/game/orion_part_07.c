@@ -1278,6 +1278,7 @@ int sub_7B0B4( int a1, int a2)
 int sub_7B0FB( int a1, int a2, int a3, int a4)
 {
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  a2 = (int16_t)a2;   /* wave 184: 7B109 movsx ebx, si - a2 too */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   return (a1 - a3) * (a1 - a3) + (a2 - a4) * (a2 - a4);

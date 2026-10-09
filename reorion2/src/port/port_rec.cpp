@@ -476,7 +476,7 @@ void PortRec_Init(void)
     }
 }
 
-char g_portChainFrame[512];   // frame request for port_vga.cpp Present (path, empty = none)
+void PortVga_DumpShown(const char* path);   // port_vga.cpp: the frame on screen
 
 // ---- REORION2_CHAIN: steps recorded in the original (my DOSBox RECORDINPUT) ----
 // REORION2_CHAIN=<file of SENDCLICK seq=1 lines>. Each step waits its gap
@@ -602,9 +602,32 @@ int PortChain_Mouse(int* gx, int* gy, int* buttons)
     static size_t pathI = 0;
     static uint64_t saveSig = 0;
     const double now = (double)SDL_GetTicks();
-    if (g_frameDue >= 0 && now >= g_frameDue && !g_portChainFrame[0]) {
+    if (const char* sd = SDL_getenv("REORION2_CHAIN_SAVES"); sd && *sd) {   // archive every autosave
+        static double nextPoll = 0, changedAt = -1;
+        static uint64_t lastSig = 0;
+        static bool baseSet = false;
+        static int saveNo = 0;
+        if (now >= nextPoll) {
+            nextPoll = now + 250.0;
+            std::error_code ec;
+            const auto ft = std::filesystem::last_write_time("SAVE10.GAM", ec);
+            const uint64_t sig = ec ? 0 : (uint64_t)ft.time_since_epoch().count();
+            if (!baseSet) { baseSet = true; lastSig = sig; }
+            else if (sig != lastSig) { lastSig = sig; changedAt = now; }
+            else if (changedAt >= 0 && now - changedAt >= 1000.0) {
+                changedAt = -1;
+                char nm[600];
+                std::snprintf(nm, sizeof nm, "%s/save%03d.GAM", sd, ++saveNo);
+                std::filesystem::copy_file("SAVE10.GAM", nm, std::filesystem::copy_options::overwrite_existing, ec);
+                ChainLog("SAVE %d after=%zu", saveNo, g_chainIdx);
+            }
+        }
+    }
+    if (g_frameDue >= 0 && now >= g_frameDue) {
         g_frameDue = -1;
-        std::snprintf(g_portChainFrame, sizeof g_portChainFrame, "%s/%s_b.raw", ChainFramesDir(), g_frameLabel.c_str());
+        char nm[600];
+        std::snprintf(nm, sizeof nm, "%s/%s_b.raw", ChainFramesDir(), g_frameLabel.c_str());
+        PortVga_DumpShown(nm);
     }
     if (phase == 3) {                // done: wait for the autosave, then quit
         static double doneT = now;
@@ -634,7 +657,7 @@ int PortChain_Mouse(int* gx, int* gy, int* buttons)
     if (phase == 1) {
         uint32_t h[kRegionCount];
         StateHashes(h);
-        uint32_t sig = Rng();
+        uint32_t sig = 0;   // structures only - animations move the RNG every frame
         for (int i = 0; i < kRegionCount; ++i) sig = sig * 31u + h[i];
         if (sig != lastSig) { lastSig = sig; still = now; }
         bool ok = true;
@@ -659,25 +682,28 @@ int PortChain_Mouse(int* gx, int* gy, int* buttons)
         } else {
             matchSince = -1;
             // the first step waits for the game to load (CONTINUE)
-            const double limit = g_chainIdx == 0 ? 90000.0 : 3000.0;
-            if (now - still >= limit || now - t0 > 120000.0) {
+            const double limit = g_chainIdx == 0 ? 30000.0 : 3000.0;
+            if (now - still >= limit || now - t0 > 60000.0) {
                 ChainLog("DIFF %s: state differs in%s", s.label.c_str(), bad.c_str());
                 go = true;
             }
         }
         if (!go) { *gx = curX; *gy = curY; *buttons = 0; return 1; }
-        static bool frameAsked = false;   // the frame on screen goes out first, then the press
-        if (const char* d = ChainFramesDir()) {
-            if (!frameAsked) {
-                std::snprintf(g_portChainFrame, sizeof g_portChainFrame, "%s/%s_a.raw", d, s.label.c_str());
-                frameAsked = true;
-            }
-            if (g_portChainFrame[0]) { *gx = curX; *gy = curY; *buttons = 0; return 1; }
-            frameAsked = false;
+        if (const char* d = ChainFramesDir()) {   // the frame on screen at the press
+            char nm[600];
+            std::snprintf(nm, sizeof nm, "%s/%s_a.raw", d, s.label.c_str());
+            PortVga_DumpShown(nm);
         }
         if (s.has_rng && ok && Rng() != s.rng) {   // animations use the generator at their own pace
             ChainLog("RNG %s: %08X -> %08X", s.label.c_str(), Rng(), s.rng);
             *reinterpret_cast<uint32_t*>(dseg + 0x41E34) = s.rng;
+        }
+        if (const char* dl = SDL_getenv("REORION2_CHAIN_DUMP"); dl && *dl) {   // ,p23,p40,: dseg before the press
+            const std::string list = std::string(",") + dl + ",";
+            if (list.find("," + s.label + ",") != std::string::npos) {
+                const std::string nm = "dseg_" + s.label + ".bin";
+                if (FILE* df = std::fopen(nm.c_str(), "wb")) { std::fwrite(dseg, 1, 0x5DCD0, df); std::fclose(df); }
+            }
         }
         if (ok) ChainLog("OK %s", s.label.c_str());
         curX = s.gx; curY = s.gy;
@@ -843,10 +869,120 @@ void PortRec_Tick(void)
 
 void PortRec_Flush(void) { FlushEvents(); }
 
+// ---- REORION2_GAMEPLAY: a GAMEREC record of the original (my DOSBox) ----
+// input.txt: per read point of the original, runs "<src> <hex value> <count>"
+// (DOSBox engine.cpp kGrTick / kGrFunc). The game code asks PortGr_Value at the
+// same points, so it gets the original's inputs in the same order. Sources:
+// 0-7 tick reads (0 sub_12C2A0, 3 the wait loop of sub_12C2C6), 8 mouse x, 9 y,
+// 10 click x, 11 click y, 12 click buttons, 13 click flag 2, 14 click flag,
+// 15 buttons now, 16 key ready, 17 key read, 18 key peek, 19/20 AIL ms, 21 time.
+// REORION2_GAMEPLAY_FRAMES=<dir>: frames at the original's points - c<n>.raw at the
+// frame wait after the n-th click taken, t<n>.raw every 200th frame wait - with the
+// cursor position (2 x int16) after the pixels, as engine.cpp gr_dump writes them.
+namespace {
+enum { kGrSrc = 22, kGrClickFlag = 14, kGrWaitSrc = 3 };
+struct GrRun { uint32_t v; uint64_t n; };
+std::vector<GrRun> g_grRuns[kGrSrc];
+size_t g_grPos[kGrSrc];
+uint64_t g_grLeft[kGrSrc];
+bool g_grEnd[kGrSrc];
+int g_grInit = 0;   // 0 not yet, 1 off, 2 on
+bool g_grClickDump = false;
+uint64_t g_grClicks = 0, g_grWaits = 0;
+
+bool GrOn()
+{
+    if (!g_grInit) {
+        g_grInit = 1;
+        const char* p = SDL_getenv("REORION2_GAMEPLAY");
+        if (!p || !*p) return false;
+        FILE* f = std::fopen(p, "rt");
+        if (!f) { Log("GAMEPLAY: cannot read %s", p); return false; }
+        char line[256];
+        size_t runs = 0;
+        while (std::fgets(line, sizeof line, f)) {
+            int s = 0; unsigned v = 0; unsigned long long n = 0;
+            if (line[0] == '#' || std::sscanf(line, "%d %X %llu", &s, &v, &n) != 3 || s < 0 || s >= kGrSrc) continue;
+            g_grRuns[s].push_back(GrRun{v, n});
+            ++runs;
+        }
+        std::fclose(f);
+        Log("GAMEPLAY %s: %zu runs", p, runs);
+        g_grInit = 2;
+    }
+    return g_grInit == 2;
+}
+
+// the run the next read takes from (nullptr at the end)
+GrRun* GrCur(int s)
+{
+    while (!g_grLeft[s]) {
+        if (g_grPos[s] >= g_grRuns[s].size()) {
+            if (!g_grEnd[s]) { g_grEnd[s] = true; Log("GAMEPLAY: END source %d - live from here", s); }
+            return nullptr;
+        }
+        g_grLeft[s] = g_grRuns[s][g_grPos[s]++].n;
+    }
+    return &g_grRuns[s][g_grPos[s] - 1];
+}
+
+void GrDump(const std::string& path)
+{
+    PortVga_DumpShown(path.c_str());
+    if (SDL_getenv("REORION2_GAMEPLAY_DSEG"))   // <frame>.dseg, as DOSBOX_GR_DSEG
+        if (FILE* d = std::fopen((path + ".dseg").c_str(), "wb")) { std::fwrite(dseg, 1, 0x5DCD0, d); std::fclose(d); }
+    if (FILE* f = std::fopen(path.c_str(), "ab")) {
+        const uint16_t xy[2] = { *reinterpret_cast<uint16_t*>(dseg + 0x43A38), *reinterpret_cast<uint16_t*>(dseg + 0x43A36) };
+        std::fwrite(xy, 2, 2, f);
+        std::fclose(f);
+    }
+}
+}  // namespace
+
+int PortGr_Active(void) { return GrOn() ? 1 : 0; }
+
+// one read at point src of the original: its recorded value, or live after the record
+uint32_t PortGr_Value(int src, uint32_t live)
+{
+    if (!GrOn() || src < 0 || src >= kGrSrc) return live;
+    GrRun* r = GrCur(src);
+    if (!r) return live;
+    --g_grLeft[src];
+    if (src == kGrClickFlag && (r->v & 0xFFFF)) g_grClickDump = true;
+    return r->v;
+}
+
+// sub_12C2C6: the original spins on lodsd until (tick - base) < 0 or >= n; the
+// reads in between change nothing, so whole runs are skipped - returns the tick
+// the loop ended on
+uint32_t PortGr_Wait(uint32_t base, int n)
+{
+    for (;;) {
+        GrRun* r = GrCur(kGrWaitSrc);
+        if (!r) return base + (uint32_t)n;
+        const int32_t d = (int32_t)(r->v - base);
+        if (d < 0 || d >= n) { --g_grLeft[kGrWaitSrc]; return r->v; }
+        g_grLeft[kGrWaitSrc] = 0;   // the whole run is spent in the loop
+    }
+}
+
+// entry of sub_12C2C6: the frame of the last click taken, every 200th wait a frame
+void PortGr_FrameWait(void)
+{
+    if (!GrOn()) return;
+    const char* d = SDL_getenv("REORION2_GAMEPLAY_FRAMES");
+    if (!d || !*d) return;
+    if (g_grClickDump) {
+        g_grClickDump = false;
+        GrDump(std::string(d) + "/c" + std::to_string(++g_grClicks) + ".raw");
+    }
+    if ((++g_grWaits % 200) == 0) GrDump(std::string(d) + "/t" + std::to_string(g_grWaits / 200) + ".raw");
+}
+
 // time() of the game code (decomp_compat.h macro) - Watcom time_t is 32 bits.
 int PortRec_Time(void* p)
 {
-    const uint32_t v = PortRec_Value(7, (uint32_t)std::time(nullptr));
+    const uint32_t v = (uint32_t)PortGr_Value(21, PortRec_Value(7, (uint32_t)std::time(nullptr)));
     if (p) std::memcpy(p, &v, 4);
     return (int)v;
 }

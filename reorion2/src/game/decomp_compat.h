@@ -116,6 +116,11 @@ int PortWatcom_Qsort(void *base, size_t n, size_t size, int (*cmp)(const void *,
 extern "C" {
 #endif
 int PortRec_Time(void *p);
+/* wave 183: REORION2_GAMEPLAY - the inputs a GAMEREC record of the original got (port_rec.cpp) */
+int PortGr_Active(void);
+uint32_t PortGr_Value(int src, uint32_t live);
+uint32_t PortGr_Wait(uint32_t base, int n);
+void PortGr_FrameWait(void);
 #ifdef __cplusplus
 }
 #endif

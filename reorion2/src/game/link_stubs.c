@@ -383,8 +383,8 @@ int sub_1499C0(void) { return 0; }
 // argument is ignored by the real AIL_ms_count() too (Miles callers just
 // re-feed the previous return value into the throttle loop above) - a real
 // monotonic millisecond clock is all that is needed here.
-int sub_149B10(int a1) { (void)a1; return (int)PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks()); }   /* wave 183: record / replay */
-int sub_149B30(int a1) { (void)a1; return (int)PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks()); }
+int sub_149B10(int a1) { (void)a1; return (int)PortGr_Value(19, PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks())); }   /* wave 183: record / replay */
+int sub_149B30(int a1) { (void)a1; return (int)PortGr_Value(20, PortRec_Value(PORTREC_MS, (uint32_t)SDL_GetTicks())); }
 int sub_149BB0(void) { return 0; }
 int sub_149C40(void) { return 0; }
 int sub_15C7F0(void) { return 0; }

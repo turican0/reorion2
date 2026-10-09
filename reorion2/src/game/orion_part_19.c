@@ -4569,7 +4569,7 @@ int16_t sub_123A64()
 //----- (00123ABA) --------------------------------------------------------
 int16_t sub_123ABA()
 {
-  return dword_1BBA38;
+  return (int16_t)PortGr_Value(8, (uint16_t)dword_1BBA38);   /* wave 183: GAMEPLAY point */
 }
 // 1BBA38: using guessed type int dword_1BBA38;
 
@@ -4577,7 +4577,7 @@ int16_t sub_123ABA()
 //----- (00123AE7) --------------------------------------------------------
 int16_t sub_123AE7()
 {
-  return HIWORD(dword_1BBA34);
+  return (int16_t)PortGr_Value(9, (uint16_t)HIWORD(dword_1BBA34));   /* wave 183: GAMEPLAY point */
 }
 // 1BBA34: using guessed type int dword_1BBA34;
 
@@ -4614,7 +4614,7 @@ void sub_123B58( int a1, int a2)
 //----- (00123BC1) --------------------------------------------------------
 int16_t sub_123BC1()
 {
-  return word_1B921C;
+  return (int16_t)PortGr_Value(10, (uint16_t)word_1B921C);   /* wave 183: GAMEPLAY point */
 }
 // 1B921C: using guessed type int16_t word_1B921C;
 
@@ -4622,7 +4622,7 @@ int16_t sub_123BC1()
 //----- (00123BEE) --------------------------------------------------------
 int16_t sub_123BEE()
 {
-  return word_1B921E;
+  return (int16_t)PortGr_Value(11, (uint16_t)word_1B921E);   /* wave 183: GAMEPLAY point */
 }
 // 1B921E: using guessed type int16_t word_1B921E;
 
@@ -4630,7 +4630,7 @@ int16_t sub_123BEE()
 //----- (00123C1B) --------------------------------------------------------
 int16_t sub_123C1B()
 {
-  return dword_1B9222;
+  return (int16_t)PortGr_Value(12, (uint16_t)dword_1B9222);   /* wave 183: GAMEPLAY point */
 }
 // 1B9222: using guessed type int dword_1B9222;
 
@@ -4642,7 +4642,7 @@ int16_t sub_123C48()
 
   result = word_1B9228;
   word_1B9228 = 0;
-  return result;
+  return (int16_t)PortGr_Value(13, (uint16_t)result);   /* wave 183: GAMEPLAY point */
 }
 // 1B9228: using guessed type int16_t word_1B9228;
 
@@ -4654,7 +4654,7 @@ int16_t sub_123C84()
 
   result = word_1B9220;
   word_1B9220 = 0;
-  return result;
+  return (int16_t)PortGr_Value(14, (uint16_t)result);   /* wave 183: GAMEPLAY point */
 }
 // 1B9220: using guessed type int16_t word_1B9220;
 
@@ -4795,9 +4795,9 @@ int16_t sub_124075()
   int386(51, &dword_1BB8E0, &dword_1BB8E0);
   sub_144A48();
   if ( HIWORD(dword_18451A) )
-    return word_18451E + word_184520;
+    return (int16_t)PortGr_Value(15, (uint16_t)(word_18451E + word_184520));   /* wave 183: GAMEPLAY point */
   else
-    return dword_1BB8E4 & 3;
+    return (int16_t)PortGr_Value(15, (uint16_t)(dword_1BB8E4 & 3));
 }
 // 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);
 // 18451A: using guessed type int dword_18451A;

@@ -186,35 +186,38 @@ void sub_93EB2(_DWORD *a1, _DWORD *a2, int a3, int a4, int a5)
     v9 = a3;
     if ( a5 && (int)sub_1247A0(7u) < 3 )
       v9 = 0;
-    for ( i = 0; i < 27; ++i )
+    /* wave 184: 93EFF..93FC9 - bx = 0, 2, .. 52 over 18-byte records; record bx and bx+1
+       are tested (IDA's `i < 27` with byte offset 9*i read the wrong records) */
+    for ( i = 0; i < 54; i += 2 )
     {
-      if ( v9 || byte_17D21D[9 * i] )
+      const int r0 = 18 * i, r1 = 18 * (i + 1);
+      if ( v9 || byte_17D21D[r0] )
       {
         if ( v9 )
         {
-          if ( (uint8_t)byte_17D21D[9 * i] == a3
-            && (*a1 & dword_17D219[9 * i / 4u]) == 0
-            && (*a1 & *(int *)((char *)&dword_17D219[9 * i / 4u + 4] + 2)) == 0
+          if ( (uint16_t)(uint8_t)byte_17D21D[r0] == (uint16_t)a3   /* 93F81 cmp di, word [var_8] */
+            && (*a1 & *(int *)((char *)dword_17D219 + r0)) == 0
+            && (*a1 & *(int *)((char *)dword_17D219 + r1)) == 0
             && sub_1247A0((int16_t)++v6) == 1 )
           {
             if ( sub_1247A0(2u) == 1 )
             {
 LABEL_12:
-              v12 = i * 2;
+              v12 = i;
               continue;
             }
             goto LABEL_19;
           }
         }
       }
-      else if ( (*a2 & dword_17D219[9 * i / 4u]) == 0
-             && (*a2 & *(int *)((char *)&dword_17D219[9 * i / 4u + 4] + 2)) == 0
+      else if ( (*a2 & *(int *)((char *)dword_17D219 + r0)) == 0
+             && (*a2 & *(int *)((char *)dword_17D219 + r1)) == 0
              && sub_1247A0((int16_t)++v6) == 1 )
       {
         if ( sub_1247A0(2u) == 1 )
           goto LABEL_12;
 LABEL_19:
-        v12 = i * 2 + 1;
+        v12 = i + 1;
         continue;
       }
     }

@@ -4,6 +4,8 @@
 #   .\record_dbx.ps1 -Name regression001 -PackOnly  only pack an existing session
 #
 # Session dir (outside TEMP): C:\prenos\reorion2Data\<Name>
+#   input.txt       GAMEREC: every value the game read from the outside world (tick,
+#                   mouse / key accessors, AIL ms, time) - replay_dbx.ps1 -Gameplay
 #   record.cfg      every click / key as a SENDCLICK seq=1 chain step (replayable in
 #                   DOSBox), "# SAVE" lines mark after which step a save was written
 #   saves\          every new version of SAVE1..10.GAM (autosave each turn = SAVE10)
@@ -28,14 +30,15 @@ function SmallGameFiles { Get-ChildItem $game -File | Where-Object { $_.Length -
 
 if (-not $PackOnly) {
     if (Test-Path "$sess\record.cfg") { throw "$sess\record.cfg exists - use another name or -PackOnly" }
-    New-Item -ItemType Directory -Force "$sess\saves", "$sess\before" | Out-Null
+    New-Item -ItemType Directory -Force "$sess\saves", "$sess\before", "$sess\frames", "$sess\grframes" | Out-Null
     $t0 = Get-Date
     SmallGameFiles | ForEach-Object { Copy-Item $_.FullName "$sess\before\" -Force }
     Copy-Item "$game\MOX.SET" "$sess\MOX.SET" -Force
     $s = $sess.Replace("\", "/")
     Set-Content -Encoding ascii "$sess\ctl.cfg" @(
         "OUTPUT file=$s/ctl_log.txt",
-        "RECORDINPUT file=$s/record.cfg saves=$($game.Replace('\', '/')) savedir=$s/saves"
+        "RECORDINPUT file=$s/record.cfg saves=$($game.Replace('\', '/')) savedir=$s/saves frames=$s/frames",
+        "GAMEREC file=$s/input.txt frames=$s/grframes"
     )
     $env:DOSBOX_CTL_FILE = "$sess\ctl.cfg"
     $p = Start-Process $dbx -ArgumentList "-conf", $conf -PassThru -RedirectStandardError "$sess\dosbox_stderr.txt"
@@ -50,8 +53,12 @@ if (-not $PackOnly) {
 }
 
 New-Item -ItemType Directory -Force $outDir | Out-Null
-$files = @("record.cfg", "MOX.SET") + (Get-ChildItem "$sess\saves" -File | Sort-Object Name | ForEach-Object { "saves/" + $_.Name })
+$files = @("record.cfg", "input.txt", "MOX.SET") + (Get-ChildItem "$sess\saves" -File | Sort-Object Name | ForEach-Object { "saves/" + $_.Name })
 $files += (Get-ChildItem "$sess\before" -File | Where-Object { $_.Name -match '^(SAVE\d+\.GAM|MOX\.SET|lastrace\.rac|HOF\.M2)$' } | ForEach-Object { "before/" + $_.Name })
 & $pack pack "$outDir\$Name.binz" $sess @files
 & $pack check "$outDir\$Name.binz" $sess
+# the frames the player saw (<label>_a before each press, _b 300 ms after release) - own pack
+$fr = @(Get-ChildItem "$sess\frames" -File -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { "frames/" + $_.Name })
+$fr += @(Get-ChildItem "$sess\grframes" -File -Filter *.raw -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { "grframes/" + $_.Name })
+if ($fr.Count) { & $pack pack "$outDir\${Name}_frames.binz" $sess @fr | Select-Object -Last 1 }
 "steps: " + (Select-String -Path "$sess\record.cfg" -Pattern '^SENDCLICK').Count + ", saves: " + (Get-ChildItem "$sess\saves" -File).Count

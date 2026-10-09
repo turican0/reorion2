@@ -530,7 +530,7 @@ int sub_12C117(int a1, int a2, int a3, int a4)
 //----- (0012C2A0) --------------------------------------------------------
 void sub_12C2A0()
 {
-  dword_1845DC = PortDos_BiosTick(); // vlna 15: drive MEMORY[0x46C] (BIOS tick)
+  dword_1845DC = PortGr_Value(0, PortDos_BiosTick()); // vlna 15: drive MEMORY[0x46C] (BIOS tick); wave 183: GAMEPLAY point
 }
 // 1845DC: using guessed type int dword_1845DC;
 
@@ -542,6 +542,13 @@ int sub_12C2C6(int result)
   // drive busy-wait na MEMORY[0x46C] - v portu mrtvy stub (nekonecna smycka).
   // Ted realny cas pres PortDos_BiosTick + prubezne vykreslovani, aby byla
   // animace videt a okno reagovalo.
+  PortGr_FrameWait();   /* wave 183: GAMEPLAY frames at the original's points */
+  if ( PortGr_Active() )
+  {
+    PortGr_Wait(dword_1845DC, result);   /* the original's spin, whole runs skipped */
+    PortVga_WaitVsyncSlow();
+    return result;
+  }
   while ( (int)(PortDos_BiosTick() - dword_1845DC) < result )
     PortVga_WaitVsyncSlow();
   return result;
@@ -557,7 +564,7 @@ int sub_12C2E1()
   v1 = dword_1BC2AC[(uint8_t)byte_1BC2E3++];
   byte_1BC2E3 = (uint8_t)byte_1BC2E3 % 10;
   byte_1BC2E4 = byte_1BC2E3 != byte_1BC2E2;
-  return v1;
+  return (int)PortGr_Value(17, (uint32_t)v1);   /* wave 183: GAMEPLAY point */
 }
 // 1BC2AC: using guessed type int dword_1BC2AC[10];
 // 1BC2E2: using guessed type char byte_1BC2E2;
@@ -568,7 +575,7 @@ int sub_12C2E1()
 //----- (0012C35B) --------------------------------------------------------
 int sub_12C35B()
 {
-  return dword_1BC2AC[(uint8_t)byte_1BC2E3];
+  return (int)PortGr_Value(18, (uint32_t)dword_1BC2AC[(uint8_t)byte_1BC2E3]);   /* wave 183: GAMEPLAY point */
 }
 // 1BC2AC: using guessed type int dword_1BC2AC[10];
 // 1BC2E3: using guessed type char byte_1BC2E3;
@@ -596,10 +603,11 @@ char sub_12C392()
       byte_1BC2E4 = 1;
     }
   }
+  /* wave 183: GAMEPLAY point - the original's answer (AL) */
   if ( byte_1BC2E4 != 1 )
-    return 0;
+    return (char)PortGr_Value(16, 0);
   byte_1BC2E4 = 0;
-  return 1;
+  return (char)PortGr_Value(16, 1);
 }
 // 1BC2E4: using guessed type char byte_1BC2E4;
 

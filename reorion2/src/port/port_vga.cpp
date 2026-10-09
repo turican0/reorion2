@@ -18,7 +18,28 @@ extern "C" void PortDos_ServiceMouse(void);
 
 extern "C" void PortCtl_Tick();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
 
-extern "C" char g_portChainFrame[512];   // wave 183: port_rec.cpp REORION2_CHAIN frame request
+// wave 183: last frame shown (REORION2_CHAIN step frames, port_rec.cpp)
+static std::vector<uint8_t> g_shownFb;
+static uint32_t g_shownPal[256];
+static int g_shownW = 0, g_shownH = 0;
+
+// writes the frame on screen: the game's 6-bit DAC values (8-bit = v << 2 | v >> 4),
+// as my DOSBox writes them - the files compare byte for byte
+extern "C" void PortVga_DumpShown(const char* path)
+{
+    if (g_shownFb.empty()) return;
+    FILE* f = std::fopen(path, "wb");
+    if (!f) return;
+    for (int i = 0; i < 256; ++i) {
+        const uint32_t argb = g_shownPal[i];
+        const uint8_t rgb[3] = { static_cast<uint8_t>(((argb >> 16) & 0xFF) >> 2),
+                                 static_cast<uint8_t>(((argb >> 8) & 0xFF) >> 2),
+                                 static_cast<uint8_t>((argb & 0xFF) >> 2) };
+        std::fwrite(rgb, 1, 3, f);
+    }
+    std::fwrite(g_shownFb.data(), 1, g_shownFb.size(), f);
+    std::fclose(f);
+}
 
 namespace Port::Vga {
 
@@ -429,14 +450,11 @@ namespace Port::Vga {
                 s_nextEvery = SDL_GetTicks() + s_everyMs;
             }
 
-            // TOOL (wave 183): REORION2_CHAIN asks for the frame on screen before
-            // a press / after a release (port_rec.cpp, REORION2_CHAIN_FRAMES)
-            {
-                if (g_portChainFrame[0]) {
-                    DumpRawFrame(g_portChainFrame, framebuffer, palette, width, height);
-                    g_portChainFrame[0] = 0;
-                }
-            }
+            // TOOL (wave 183): the frame now on screen, for PortVga_DumpShown - a
+            // REORION2_CHAIN press dumps the picture the player looked at, not the next
+            g_shownFb.assign(framebuffer, framebuffer + static_cast<size_t>(width) * height);
+            for (int i = 0; i < 256; ++i) g_shownPal[i] = palette[static_cast<size_t>(i)];
+            g_shownW = width; g_shownH = height;
 
             // TOOL (wave 183): REORION2_REPLAY_FRAMES=a:b writes every changed
             // frame while the replay is between press a and press b, as

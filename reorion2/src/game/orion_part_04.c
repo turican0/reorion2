@@ -6939,7 +6939,7 @@ LABEL_19:
       {
         if ( word_19B766 >= 0 )
         {
-          sub_5AE38((int)v46);
+          sub_5AE38(v45);   /* wave 184: 5A8CC mov eax, [ebp+82h+var_90] (the race record, not word_19B772) */
           sub_1191CA((int)nullsub_15, 2);
           sub_124D7A();
           v34 = sub_127C27((int)aRaceoptLbx_0, 4, dword_193174);
@@ -6950,7 +6950,7 @@ LABEL_19:
           do
           {
             sub_1196F7();
-            a4 = sub_5D2BB(v56, *((uint8_t *)v46 + 37), v14);
+            a4 = sub_5D2BB(v56, *((uint8_t *)v45 + 37), v14);   /* wave 184: 5A930 mov edx, [var_90] / movzx edx, [edx+25h] */
             v36 = a4;
             sub_124D7A();
             v37 = sub_127C27((int)aRaceoptLbx_0, 4, dword_193174);

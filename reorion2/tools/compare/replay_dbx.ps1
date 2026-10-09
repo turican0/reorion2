@@ -12,7 +12,9 @@ param(
     [int]$Secs = 900,
     [int]$FromSave = 0,
     [switch]$Frames,
-    [switch]$StepFrames   # frame before each press (<label>_a.raw) and 300 ms after release (_b)
+    [switch]$StepFrames,  # frame before each press (<label>_a.raw) and 300 ms after release (_b)
+    [switch]$Gameplay,    # GAMEPLAY input.txt (the values the game read) - no clicks, frames compared
+    [string[]]$CtlExtra   # extra ctl lines, e.g. "DUMPREGS cond=eip:0x003487A0 label=rng" (into ctl_log.txt)
 )
 $ErrorActionPreference = "Stop"
 $game = "C:\prenos\mastori2"
@@ -47,7 +49,13 @@ if ($FromSave -gt 0) {
     $lines += "SENDKEY cond=cycle_ge:40000000 key=esc", "SENDKEY cond=cycle_ge:90000000 key=esc",
               "SENDCLICK seq=1 after=0x002A56F2 gapms=1000 key=c holdms=80 settlems=250 timeoutms=5000 label=kload"
 }
-$lines += ($all | Where-Object { $_ -match '^SENDCLICK' } | Select-Object -Skip $skipSteps)
+if ($Gameplay) {
+    New-Item -ItemType Directory -Force "$out\grframes" | Out-Null
+    $lines += "GAMEPLAY file=$(("$sess\input.txt").Replace('\', '/')) frames=$o/grframes"
+} else {
+    $lines += ($all | Where-Object { $_ -match '^SENDCLICK' } | Select-Object -Skip $skipSteps)
+}
+if ($CtlExtra) { $lines += $CtlExtra }
 Set-Content -Encoding ascii "$out\ctl.cfg" $lines
 $env:DOSBOX_CTL_FILE = "$out\ctl.cfg"
 if ($StepFrames) { New-Item -ItemType Directory -Force "$out\stepframes" | Out-Null; $env:DOSBOX_STEPFRAMES = "$out\stepframes" }
@@ -58,6 +66,8 @@ try {
     while (-not $p.HasExited -and ((Get-Date) - $t0).TotalSeconds -lt $Secs) {
         Start-Sleep 2
         if (Select-String -Path "$out\dosbox_stderr.txt" -Pattern "CHAIN done" -Quiet) { Start-Sleep 8; break }
+        # GAMEPLAY: done once every source ran out (the record ended) and 10 s passed
+        if ($Gameplay -and (Select-String -Path "$out\dosbox_stderr.txt" -Pattern "END source" -ErrorAction SilentlyContinue).Count -ge 3) { Start-Sleep 10; break }
     }
     if (-not $p.HasExited) { Stop-Process $p -Force }
 } finally {
@@ -84,3 +94,5 @@ for ($i = 0; $i -lt [Math]::Max($rec.Count, $rep.Count); $i++) {
     for ($k = 0; $k -lt [Math]::Min($x.Length, $y.Length); $k++) { if ($x[$k] -ne $y[$k]) { $d++; if ($first -lt 0) { $first = $k } } }
     "save $($i + 1): " + $(if ($d -eq 0 -and $x.Length -eq $y.Length) { "identical" } else { "differs in $d bytes (first at 0x{0:X})" -f $first })
 }
+
+if ($Gameplay) { python -I (Join-Path $PSScriptRoot "cmp_stepframes.py") "$sess\grframes" "$out\grframes" }
