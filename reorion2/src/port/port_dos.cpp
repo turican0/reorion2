@@ -200,7 +200,7 @@ static int g_lastVx = -1, g_lastVy = -1, g_lastButtons = 0;
 // in order until the handler mask lets them through - the DOS driver called the
 // handler at the moment of the click, the port only at Present(), so a short
 // click (press + release between two deliveries) was lost.
-struct MouseEdge { int events, buttons; };
+struct MouseEdge { int events, buttons, masked; };
 static MouseEdge g_edgeQueue[16];
 static int g_edgeCount = 0;
 static int g_seenButtons = 0;
@@ -343,7 +343,7 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
             std::memmove(g_edgeQueue, g_edgeQueue + 1, sizeof(g_edgeQueue) - sizeof(g_edgeQueue[0]));
             --g_edgeCount;
         }
-        g_edgeQueue[g_edgeCount++] = MouseEdge{ev, buttons};
+        g_edgeQueue[g_edgeCount++] = MouseEdge{ev, buttons, (g_mouseMask & 0x1E) == 0};
         g_seenButtons = buttons;
     }
     static int s_log = -1;
@@ -443,6 +443,18 @@ static void ComputeVirtualMouseImpl(int& vx, int& vy, int& buttons)
         }
     }
 
+    {   // wave 183: REORION2_CHAIN - steps recorded in the original (game pixels)
+        int gx = 0, gy = 0, b = 0;
+        if (PortChain_Mouse(&gx, &gy, &b)) {
+            const int maxX = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278);
+            vx = gx * 2;               // the game halves X (sub_1236D1)
+            vy = gy;
+            if (vx > maxX) vx = maxX;
+            if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
+            buttons = b;
+            return;
+        }
+    }
     // wave 183: REORION2_IGNORE_REAL_INPUT=1 - automated runs (scripts, replays):
     // the real mouse over the window must not reach the game, the user keeps
     // working while the port runs. Cursor parked at 0,0, no buttons.
@@ -719,6 +731,9 @@ extern "C" void PortDos_ServiceMouse(void)
     // drawing), the edge waits; with button bits it goes if wanted, else it is
     // dropped as the DOS driver would. The callback gets the button state of
     // that edge, so press and release of a short click both arrive.
+    // An edge seen while the mask had no button bits (the game read the click
+    // itself through fn 3) is late: it goes only while the button is still
+    // down (wave 71), else a menu got the same click twice.
     const int kButtonEdges = 0x02 | 0x04 | 0x08 | 0x10;
     int cbButtons = buttons;
     while (g_edgeCount && (g_mouseMask & kButtonEdges)) {
@@ -726,6 +741,9 @@ extern "C" void PortDos_ServiceMouse(void)
         --g_edgeCount;
         std::memmove(g_edgeQueue, g_edgeQueue + 1, sizeof(g_edgeQueue[0]) * g_edgeCount);
         g_lastButtons = e.buttons;
+        if (e.masked && (e.events & 0x0A) && !(buttons & e.buttons)) {
+            continue;
+        }
         if (e.events & g_mouseMask) {
             events |= e.events;
             cbButtons = e.buttons;

@@ -6135,7 +6135,7 @@ int16_t sub_17227( int a1, int a2, int a3, int16_t *a4)
             sub_524FB(a1, a2);
           break;
         case 2u:
-          v19 = sub_179F4(a4);
+          v19 = sub_179F4(a1, a2, a4);
           if ( (_WORD)v19 == 1 )
           {
             v27 = v19;
@@ -6144,7 +6144,7 @@ int16_t sub_17227( int a1, int a2, int a3, int16_t *a4)
           }
           break;
         case 3u:
-          sub_1D0F8(a4);
+          v20 = sub_1D0F8(a1, a2, a4);
           if ( (_WORD)v20 == 1 )
           {
             v27 = v20;
@@ -6277,13 +6277,13 @@ void sub_1758C(int16_t *a1)
           sub_1CB4D(word_19999C, (uint8_t)byte_19AA66);
           continue;
         case 5u:
-          v6 = sub_179F4(a1);
+          v6 = sub_179F4(word_19999C, (uint8_t)byte_19AA66, a1);
           if ( (_WORD)v6 != 1 )
             continue;
           v10 = v6;
           break;
         case 6u:
-          sub_1D0F8(a1);
+          v7 = sub_1D0F8(word_19999C, (uint8_t)byte_19AA66, a1);
           if ( (_WORD)v7 == 1 )
             v10 = v7;
           continue;
@@ -6332,6 +6332,8 @@ _BOOL1 sub_17847( int a1, int a2, _BYTE *a3)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
+  v7 = a1;   /* wave 183: push eax -> ebp-35Ch (sub ebp frame, Hex-Rays left it unset) */
+  v6 = a2;   /* wave 183: push edx -> ebp-360h */
   if ( *(char *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1575) < 4 )
   {
     if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a2 + 40) == 100 )
@@ -6379,7 +6381,7 @@ _BOOL1 sub_17847( int a1, int a2, _BYTE *a3)
 
 
 //----- (000179F4) --------------------------------------------------------
-int sub_179F4(int16_t *a1)
+int sub_179F4(int a1, int a2, int16_t *a3)
 {
   int v1; // esi
   int v2; // eax
@@ -6389,6 +6391,8 @@ int sub_179F4(int16_t *a1)
   char v7[400]; // [esp+8h] [ebp+7Eh] BYREF
   char v8[80]; // [esp+198h] [ebp+20Eh] BYREF
 
+  v6 = (int16_t)a1;   /* wave 183: push eax -> ebp-1E4h (sub ebp frame, Hex-Rays left it unset) */
+  v5 = (int16_t)a2;   /* wave 183: push edx -> ebp-1E8h */
   sub_1FD06(614);
   sub_249F9(aJimtext2Lbx, 59, v7, 40);
   sub_249F9(aJimtext2Lbx, 60, v8, 80);
@@ -6402,7 +6406,7 @@ int sub_179F4(int16_t *a1)
       {
         sub_1B881(v6);
         sub_18596((int16_t)v6);
-        sub_19919(a1);
+        sub_19919(a3);
         sub_1B881(v5);
       }
       else
@@ -6414,7 +6418,7 @@ int sub_179F4(int16_t *a1)
         v2 = *(int16_t *)((uint8_t*)dword_197F98 + 3753 * v5 + 43);
         word_19A194 = 1002;
         v3 = sub_F6816(v2, 2000, (int)&byte_19A190, 8u);
-        ServiceAudioTick_FE8BE(v3, 2000, (int)&byte_19A190, a1);
+        ServiceAudioTick_FE8BE(v3, 2000, (int)&byte_19A190, a3);
       }
       word_19AA40 = 160;
     }
@@ -8600,7 +8604,8 @@ int sub_1B1A7(int a1, int a2, unsigned int a3)
   sub_249F9(aJimtextLbx_0, 80, v10, 40);
   v11[0] = byte_178A64;
   v3 = 0;
-  sub_1B35A(v8, v7);
+  v8 = a1;   /* wave 183: push eax -> ebp-1C0h */
+  v4 = sub_1B35A(v8, v7);   /* wave 183: 1B20B cmp ax, 1 (result was dropped) */
   if ( v4 == 1 )
   {
     v13 = 3;
@@ -8669,20 +8674,24 @@ int sub_1B1A7(int a1, int a2, unsigned int a3)
 
 
 //----- (0001B35A) --------------------------------------------------------
-void sub_1B35A( int a1, int a2)
+/* wave 183: from asm 1B35A-1B3B4 - returns 1 (ax) when sub_1C417 says so, when
+   sub_19D5F finds something or when [+50] of a1 is over 100; Hex-Rays made it
+   void with a JUMPOUT to a shared epilog */
+int sub_1B35A( int a1, int a2)
 {
-  int v2; // esi
-  int16_t v3; // ax
   _BYTE v4[12]; // [esp+0h] [ebp-10h] BYREF
   int16_t v5; // [esp+Ch] [ebp-4h] BYREF
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  v2 = a1;
-  sub_1C417(a1, a2);
-  if ( v3 != 1 )
-    sub_19D5F(v2, a2, &v5, (int)v4);
-  JUMPOUT(0x17F39);
+  if ( (int16_t)sub_1C417(a1, a2) == 1 )
+    return 1;
+  sub_19D5F(a1, a2, &v5, (int)v4);
+  if ( v5 > 0 )
+    return 1;
+  if ( *(int *)((uint8_t*)dword_197F98 + 3753 * a1 + 50) > 100 )
+    return 1;
+  return 0;
 }
 // 1B396: control flows out of bounds to 17F39
 // 1B375: variable 'v3' is possibly undefined
@@ -10057,8 +10066,9 @@ int sub_1CFB1( int a1,
 
 
 //----- (0001D0F8) --------------------------------------------------------
-void sub_1D0F8(int16_t *a1)
+int sub_1D0F8(int a1, int a2, int16_t *a3)
 {
+  int result = 0;   /* esi */
   int v1; // eax
   int v2; // eax
   int16_t v3; // [esp+0h] [ebp+76h]
@@ -10066,6 +10076,8 @@ void sub_1D0F8(int16_t *a1)
   char v5[400]; // [esp+8h] [ebp+7Eh] BYREF
   char v6[80]; // [esp+198h] [ebp+20Eh] BYREF
 
+  v4 = (int16_t)a1;   /* wave 183: push eax -> ebp-1E4h */
+  v3 = (int16_t)a2;   /* wave 183: push edx -> ebp-1E8h */
   sub_1FD06(612);
   sub_249F9(aJimtext2Lbx, 6, v5, 40);
   sub_249F9(aJimtext2Lbx, 7, v6, 80);
@@ -10073,13 +10085,14 @@ void sub_1D0F8(int16_t *a1)
   {
     if ( sub_E4CD2(v4, v3) )
       sub_E4D06(v4, v3);
+    result = 1;   /* 1D18E mov esi, 1 */
     if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v3 + 40) == 100 )
     {
       if ( byte_199F3A == 1 )
       {
         sub_1B881(v4);
         sub_18560(v4);
-        sub_19919(a1);
+        sub_19919(a3);
         sub_1B881(v3);
       }
       else
@@ -10091,11 +10104,11 @@ void sub_1D0F8(int16_t *a1)
         v1 = *(int16_t *)(3753 * v3 + (uint8_t*)dword_197F98 + 43);
         word_19A194 = 1003;
         v2 = sub_F6816(v1, 2000, (int)&byte_19A190, 8u);
-        ServiceAudioTick_FE8BE(v2, 2000, (int)&byte_19A190, a1);
+        ServiceAudioTick_FE8BE(v2, 2000, (int)&byte_19A190, a3);
       }
     }
   }
-  JUMPOUT(0x17B44);
+  return result;   /* wave 183: JUMPOUT 17B44 = mov eax, esi + epilog of sub_179F4 */
 }
 // 1D1D2: control flows out of bounds to 17B44
 // 1D16D: variable 'v4' is possibly undefined
@@ -10844,11 +10857,11 @@ void sub_1DEF8(int16_t *a1)
             sub_1CB4D((uint8_t)byte_19AA67, (uint8_t)byte_19AA68);
             break;
           case 5u:
-            if ( (uint16_t)sub_179F4(a1) == 1 )
+            if ( (uint16_t)sub_179F4((uint8_t)byte_19AA67, (uint8_t)byte_19AA68, a1) == 1 )
               sub_19919(a1);
             break;
           case 6u:
-            sub_1D0F8(a1);
+            sub_1D0F8((uint8_t)byte_19AA67, (uint8_t)byte_19AA68, a1);
             if ( (_WORD)v14 == 1 )
               v48 = v14;
             break;
@@ -13143,64 +13156,14 @@ LABEL_97:
             if ( byte_19ACF0 )
             {
               dword_19AA70 = 0;
-              sub_1247A0(4u);
-              sub_21B6D(
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                (int)&unk_19AA74,
-                v32,
-                v33,(int)LODWORD(v34),
-                v35,
-                v36,
-                v37,
-                v38,
-                v39,
-                v40,
-                v41,
-                v42,
-                v43,
-                v44,
-                v45,
-                v46,
-                v47,
-                v48,
-                var4);
+              sub_21B6D(1, (int16_t)(sub_1247A0(4u) - 1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (char *)&unk_19AA74);   /* wave 183: asm 21A3E / 21A02 */
               byte_19ACEF = 0;
             }
             else
             {
               sub_2031D();
               dword_19AA70 = 0;
-              sub_1247A0(4u);
-              sub_21B6D(
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                (int)&unk_19AA74,
-                v32,
-                v33,(int)LODWORD(v34),
-                v35,
-                v36,
-                v37,
-                v38,
-                v39,
-                v40,
-                v41,
-                v42,
-                v43,
-                v44,
-                v45,
-                v46,
-                v47,
-                v48,
-                var4);
+              sub_21B6D(0, (int16_t)(sub_1247A0(4u) - 1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (char *)&unk_19AA74);   /* wave 183: asm 21A3E / 21A02 */
             }
             sub_20400((int16_t *)a2);
           }
@@ -13211,30 +13174,9 @@ LABEL_97:
           DWORD2(v31) = (int16_t)v43;
           DWORD1(v31) = (int16_t)v39;
           LODWORD(v31) = (int16_t)var4;
-          sub_21B6D((int)LODWORD(v31),
-            (int16_t)v41,
-            (int16_t)v44,
-            (int16_t)v48,
-            (int16_t)v40,
-            (int16_t)v47,
-            (int)&unk_19AA74,
-            v32,
-            v33,(int)LODWORD(v34),
-            v35,
-            v36,
-            v37,
-            v38,
-            v39,
-            v40,
-            v41,
-            v42,
-            v43,
-            v44,
-            v45,
-            v46,
-            v47,
-            v48,
-            var4);
+          sub_21B6D((int16_t)(v42 + 2), v4, (int16_t)v46, (int16_t)a2, (int16_t)var4, (int16_t)v39, (int16_t)v43,
+            (int16_t)v45, (int16_t)v41, (int16_t)v44, (int16_t)v48, (int16_t)v40, (int16_t)v47,
+            (char *)&unk_19AA74);   /* wave 183: asm 21A6A - eax, edx = si, ebx, ecx = di + 10 stack */
           byte_19ACEF = 0;
           if ( byte_199BE5 == 1 )
           {
@@ -13354,416 +13296,203 @@ LABEL_96:
 
 //----- (00021B6D) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
-char sub_21B6D(
-        hr_int128_t a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        hr_int128_t a10,
-        int64_t a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int64_t a25)
+/* wave 183: rewritten from asm 21B6D-2223A (sub ebp frame, Hex-Rays made 25
+   fake args and wrote through a garbage pointer). Builds an event message:
+   eax = message group, edx = index (LBX entry 4 * a1 + a2), ebx / ecx and 9
+   stack values are the fields the control bytes 0x80-0x92 put in, last stack
+   arg = output buffer (retn 28h). Group 33 appends the player ranking. */
+char sub_21B6D(int a1, int a2, int a3, int a4, int s1, int s2, int s3, int s4,
+               int s5, int s6, int s7, int s8, int s9, char *out)
 {
-  char *v25; // esi
-  char *v26; // esi
-  unsigned int v27; // ecx
-  char *v28; // edi
-  char *v29; // esi
-  int v30; // eax
-  _BOOL1 v31; // zf
-  int v32; // edx
-  int v33; // eax
-  int v34; // eax
-  int v35; // eax
-  int v36; // esi
-  int v37; // eax
-  char *v38; // edi
-  char *v39; // edi
-  int v40; // edi
-  char *v41; // edi
-  _BYTE *v42; // edi
-  char *v43; // edi
-  int v44; // edi
-  char *v45; // esi
-  char *v46; // edi
-  _BYTE *v47; // edx
-  char v48; // al
-  int v49; // eax
-  char *v50; // edi
-  int16_t v51; // bx
-  int16_t i; // di
-  int v53; // eax
-  int v54; // eax
-  int16_t j; // di
-  int16_t k; // si
-  int v57; // eax
-  char *v58; // edi
-  int16_t v59; // cx
-  int v60; // edi
-  int64_t v61; // rax
-  char *v62; // edi
-  char *v63; // edi
-  char *v65; // [esp-14h] [ebp-1C8h]
-  int v66; // [esp-14h] [ebp-1C8h]
-  _BYTE *v67; // [esp-14h] [ebp-1C8h]
-  int v68; // [esp-14h] [ebp-1C8h]
-  int16_t v69; // [esp+4Ah] [ebp-16Ah]
-  int16_t v70; // [esp+4Eh] [ebp-166h]
-  int16_t v71; // [esp+52h] [ebp-162h]
-  int16_t v72; // [esp+56h] [ebp-15Eh]
-  _BYTE v73[300]; // [esp+5Ah] [ebp-15Ah] BYREF
-  _DWORD v74[11]; // [esp+186h] [ebp-2Eh] BYREF
+  char fname[16];                         /* ebp+12h (arg_2), also the temp text */
+  char tmp[64];
+  uint8_t text[300];                      /* var_15A */
+  int vals0[8];                           /* var_2E (sub_E2671) */
+  int vals[8];                            /* var_E */
+  int16_t ids[8];                         /* arg_22 */
+  int16_t len = 0;                        /* arg_46 */
+  int16_t i;                              /* arg_3E */
+  int16_t n, j, k, x, x0, row;
+  uint8_t *base = (uint8_t *)dword_197F98;
+  const char *add;
+  int16_t p;
 
-  *(_DWORD *)((char *)&a11 + 6) = 0;
-  **(_BYTE **)((char *)&a25 + 2) = 0;
-  strcpy((char *)&a1 + 2, "EVENTMSE.LBX");
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  a3 = (int16_t)a3;
+  a4 = (int16_t)a4;
+  out[0] = 0;
+  strcpy(fname, "EVENTMSE.LBX");
   switch ( byte_199CAE )
   {
-    case 1:
-      v25 = aEventmsgLbx;
-      goto LABEL_7;
-    case 2:
-      v25 = aEventmsfLbx;
-      goto LABEL_7;
-    case 3:
-      v25 = aEventmssLbx;
-      goto LABEL_7;
-    case 4:
-      v25 = aEventmsiLbx;
-      goto LABEL_7;
-    case 5:
-      v25 = aEventmspLbx;
-LABEL_7:
-      *(_DWORD *)((char *)&a1 + 2) = *(_DWORD *)v25;
-      v26 = v25 + 4;
-      *(_DWORD *)((char *)&a1 + 6) = *(_DWORD *)v26;
-      v26 += 4;
-      *(_DWORD *)((char *)&a1 + 10) = *(_DWORD *)v26;
-      BYTE14(a1) = v26[4];
-      break;
-    default:
-      break;
+    case 1: strcpy(fname, aEventmsgLbx); break;
+    case 2: strcpy(fname, aEventmsfLbx); break;
+    case 3: strcpy(fname, aEventmssLbx); break;
+    case 4: strcpy(fname, aEventmsiLbx); break;
+    case 5: strcpy(fname, aEventmspLbx); break;
+    default: break;
   }
-  v27 = 0;
-  *(_DWORD *)((char *)&a10 + 14) = 0;
-  sub_126C91((int)&a1 + 2, (int16_t)(v71 + 4 * v72), (int)v73, 0, 1u, 300);
-  while ( SHIWORD(a10) < 300 && v73[SHIWORD(a10)] )
+  sub_126C91((int)fname, (int16_t)(4 * a1 + a2), (int)text, 0, 1u, 300);
+  for ( i = 0; i < 300 && text[i]; ++i )
   {
-    switch ( v73[SHIWORD(a10)] )
+    add = NULL;
+    switch ( text[i] )
     {
       case 0x80:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)sub_77B28(*(_WORD *)((uint8_t*)dword_192B18 + 361 * v70 + 2));
-        goto LABEL_34;
-      case 0x81:
-        v29 = (char *)&a1 + 2;
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v30 = v69;
-        goto LABEL_12;
-      case 0x82:
-        v29 = (char *)&a1 + 2;
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v30 = SHIWORD(a16);
-LABEL_12:
-        v28 = *(char **)((char *)&a25 + 2);
-        itoa(v30, (char *)&a1 + 2, 10, v27);
-        goto LABEL_34;
-      case 0x83:
-        if ( v69 > 1 )
-          goto LABEL_17;
-        v31 = v69 == 0;
-        goto LABEL_16;
-      case 0x84:
-        if ( SHIWORD(a16) > 1 )
-          goto LABEL_17;
-        v31 = HIWORD(a16) == 0;
-LABEL_16:
-        if ( !v31 )
-          goto LABEL_62;
-LABEL_17:
-        if ( byte_199CAE )
-          goto LABEL_62;
-        v29 = aS_24;
-        v28 = *(char **)((char *)&a25 + 2);
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        goto LABEL_34;
-      case 0x85:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v32 = 3753 * SHIWORD(a17);
-        v33 = (uint8_t*)dword_197F98;
-        goto LABEL_22;
-      case 0x86:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v34 = SHIWORD(a18);
-        goto LABEL_24;
-      case 0x87:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v34 = v69;
-LABEL_24:
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = ((char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * v34));
-        goto LABEL_34;
-      case 0x88:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)(3753 * SHIWORD(a19) + (uint8_t*)dword_197F98 + 1);
-        goto LABEL_34;
-      case 0x89:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v35 = 59 * SHIWORD(a20);
-        v36 = dword_1930DC;
-        goto LABEL_27;
-      case 0x8A:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v33 = 3753 * SHIWORD(a21);
-        v32 = (uint8_t*)dword_197F98;
-LABEL_22:
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)(v32 + v33 + 21);
-        goto LABEL_34;
-      case 0x8B:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v35 = 113 * SHIWORD(a22);
-        v36 = dword_19306C;
-LABEL_27:
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)(v35 + v36);
-        goto LABEL_34;
-      case 0x8C:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)dword_192BF4[v69];
-        goto LABEL_34;
-      case 0x8D:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v37 = SHIWORD(a23);
-        goto LABEL_33;
-      case 0x8E:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        v37 = SHIWORD(a24);
-LABEL_33:
-        v28 = *(char **)((char *)&a25 + 2);
-        v29 = (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * v37);
-LABEL_34:
-        v65 = v28;
-        v38 = (char *)(v28 - 1);
-        do
-          ++v38;
-        while ( *v38 );
-        strcpy(v38, v29);
-        v39 = v65;
-        goto LABEL_54;
-      case 0x8F:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        if ( HIWORD(a17) != word_19999C )
-        {
-          v40 = *(_DWORD *)((char *)&a25 + 2);
-          sub_249F9(aJimtext2Lbx_0, 61, (char *)&a1 + 2, 30);
-          v66 = v40;
-          v41 = (char *)(v40 - 1);
-          do
-            ++v41;
-          while ( *v41 );
-          strcpy(v41, (char *)&a1 + 2);
-          if ( !HIWORD(a11) )
-            *(_BYTE *)(v66 + 1) -= 32;
-        }
-        goto LABEL_53;
-      case 0x90:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        if ( HIWORD(a17) == word_19999C )
-        {
-          v42 = *(_BYTE **)((char *)&a25 + 2);
-          sub_249F9(aJimtext2Lbx_0, 62, (char *)&a1 + 2, 30);
-          v67 = v42;
-          v43 = v42 - 1;
-          do
-            ++v43;
-          while ( *v43 );
-          strcpy(v43, (char *)&a1 + 2);
-          if ( !HIWORD(a11) )
-            *v67 -= 32;
-          goto LABEL_53;
-        }
-        if ( a17 < 0 )
-          goto LABEL_53;
-        v44 = *(_DWORD *)((char *)&a25 + 2);
-        v45 = (char *)(3753 * SHIWORD(a17) + (uint8_t*)dword_197F98 + 21);
-        goto LABEL_50;
-      case 0x91:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        if ( HIWORD(a21) == word_19999C )
-          goto LABEL_53;
-        v45 = (char *)&a1 + 2;
-        v44 = *(_DWORD *)((char *)&a25 + 2);
-        sub_249F9(aJimtext2Lbx_0, 61, (char *)&a1 + 2, 30);
-        goto LABEL_50;
-      case 0x92:
-        *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-        if ( HIWORD(a21) == word_19999C )
-        {
-          v45 = (char *)&a1 + 2;
-          v44 = *(_DWORD *)((char *)&a25 + 2);
-          sub_249F9(aJimtext2Lbx_0, 62, (char *)&a1 + 2, 30);
-        }
-        else
-        {
-          if ( a21 < 0 )
-            goto LABEL_53;
-          v44 = *(_DWORD *)((char *)&a25 + 2);
-          v45 = (char *)(3753 * SHIWORD(a21) + (uint8_t*)dword_197F98 + 21);
-        }
-LABEL_50:
-        v46 = (char *)(v44 - 1);
-        do
-          ++v46;
-        while ( *v46 );
-        strcpy(v46, v45);
-LABEL_53:
-        v39 = *(char **)((char *)&a25 + 2);
-LABEL_54:
-        v27 = strlen(v39);
-        *(_DWORD *)((char *)&a11 + 6) = v27;
-LABEL_62:
-        ++*(_DWORD *)((char *)&a10 + 14);
+        add = (const char *)sub_77B28(*(int16_t *)((uint8_t*)dword_192B18 + 361 * a3 + 2));
         break;
+      case 0x81:
+        out[len] = 0;
+        itoa(a4, tmp, 10, 0);
+        add = tmp;
+        break;
+      case 0x82:
+        out[len] = 0;
+        itoa((int16_t)s1, tmp, 10, 0);
+        add = tmp;
+        break;
+      case 0x83:
+      case 0x84:
+        p = (text[i] == 0x83) ? (int16_t)a4 : (int16_t)s1;
+        if ( !(p > 1 || p == 0) || byte_199CAE )
+          continue;
+        add = aS_24;   /* "s" */
+        break;
+      case 0x85:
+        add = (const char *)(base + 3753 * (int16_t)s2 + 21);
+        break;
+      case 0x86:
+        add = (const char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * (int16_t)s3);
+        break;
+      case 0x87:
+        add = (const char *)(intptr_t)*(int *)((char *)&off_17D904 + 23 * a4);
+        break;
+      case 0x88:
+        add = (const char *)(base + 3753 * (int16_t)s4 + 1);
+        break;
+      case 0x89:
+        add = (const char *)(dword_1930DC + 59 * (int16_t)s5);
+        break;
+      case 0x8A:
+        add = (const char *)(base + 3753 * (int16_t)s6 + 21);
+        break;
+      case 0x8B:
+        add = (const char *)(dword_19306C + 113 * (int16_t)s7);
+        break;
+      case 0x8C:
+        add = (const char *)(intptr_t)dword_192BF4[a4];
+        break;
+      case 0x8D:
+        add = (const char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * (int16_t)s8);
+        break;
+      case 0x8E:
+        add = (const char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * (int16_t)s9);
+        break;
+      case 0x8F:   /* "your" unless it is the player himself (21E73) */
+        out[len] = 0;
+        if ( (int16_t)s2 != word_19999C )
+        {
+          sub_249F9(aJimtext2Lbx_0, 61, tmp, 30);
+          strcat(out, tmp);
+          if ( !len )
+            out[1] -= 32;
+        }
+        len = (int16_t)strlen(out);
+        continue;
+      case 0x90:
+        out[len] = 0;
+        if ( (int16_t)s2 == word_19999C )
+        {
+          sub_249F9(aJimtext2Lbx_0, 62, tmp, 30);
+          strcat(out, tmp);
+          if ( !len )
+            out[0] -= 32;
+        }
+        else if ( (int16_t)s2 >= 0 )
+        {
+          strcat(out, (const char *)(base + 3753 * (int16_t)s2 + 21));
+        }
+        len = (int16_t)strlen(out);
+        continue;
+      case 0x91:
+        out[len] = 0;
+        if ( (int16_t)s6 != word_19999C )
+        {
+          sub_249F9(aJimtext2Lbx_0, 61, tmp, 30);
+          strcat(out, tmp);
+        }
+        len = (int16_t)strlen(out);
+        continue;
+      case 0x92:
+        out[len] = 0;
+        if ( (int16_t)s6 == word_19999C )
+        {
+          sub_249F9(aJimtext2Lbx_0, 62, tmp, 30);
+          strcat(out, tmp);
+        }
+        else if ( (int16_t)s6 >= 0 )
+        {
+          strcat(out, (const char *)(base + 3753 * (int16_t)s6 + 21));
+        }
+        len = (int16_t)strlen(out);
+        continue;
       default:
-        v47 = (_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11));
-        v48 = v73[SHIWORD(a10)];
-        ++*(_DWORD *)((char *)&a11 + 6);
-        *v47 = v48;
-        goto LABEL_62;
+        out[len++] = text[i];
+        continue;
     }
+    out[len] = 0;
+    strcat(out, add);
+    len = (int16_t)strlen(out);
   }
-  *(_BYTE *)(*(_DWORD *)((char *)&a25 + 2) + SHIWORD(a11)) = 0;
-  LOBYTE(v49) = v72 - 2;
-  if ( v72 == 33 )
+  out[len] = 0;
+  if ( a1 != 33 )   /* 2204D: dec eax x2, cmp eax, 1Fh */
+    return 0;
+  strcat(out, asc_178B9D);
+  if ( !a2 )
+    sub_E2671((int)vals0);
+  n = 0;
+  for ( j = 0; j < word_199998; ++j )
   {
-    v50 = (char *)(*(_DWORD *)((char *)&a25 + 2) - 1);
-    do
-      ++v50;
-    while ( *v50 );
-    strcpy(v50, asc_178B9D);
-    if ( !v71 )
-      sub_E2671((int)v74);
-    v51 = 0;
-    for ( i = 0; i < word_199998; ++i )
+    uint8_t *pl = base + 3753 * j;
+    if ( pl[36] )
+      continue;
+    ids[n] = j;
+    switch ( (uint16_t)a2 )
     {
-      v53 = (uint8_t*)dword_197F98 + 3753 * i;
-      if ( !*(_BYTE *)(v53 + 36) )
-      {
-        *((_WORD *)&a6 + v51 + 1) = i;
-        switch ( v71 )
-        {
-          case 0:
-            v54 = v74[i];
-            goto LABEL_77;
-          case 1:
-            v54 = *(int16_t *)(v53 + 166);
-            goto LABEL_77;
-          case 2:
-            v54 = *(_DWORD *)(v53 + 548);
-            goto LABEL_77;
-          case 3:
-            v54 = sub_2223D(i);
-LABEL_77:
-            v74[v51 + 8] = v54;
-            break;
-          default:
-            break;
-        }
-        ++v51;
-      }
+      case 0: vals[n] = vals0[j]; break;
+      case 1: vals[n] = *(int16_t *)(pl + 166); break;
+      case 2: vals[n] = *(int *)(pl + 548); break;
+      case 3: vals[n] = sub_2223D(j); break;
+      default: break;
     }
-    for ( j = 0; j < v51; ++j )
-    {
-      for ( k = 0; k < v51 - 1; ++k )
+    ++n;
+  }
+  for ( j = 0; j < n; ++j )
+    for ( k = 0; k < n - 1; ++k )
+      if ( vals[k] < vals[k + 1] )
       {
-        v57 = k;
-        if ( v74[v57 + 8] < v74[v57 + 9] )
-        {
-          *(_DWORD *)((char *)&a10 + 2) = &v74[v57 + 9];
-          sub_1330D2(&v74[v57 + 8], *(int **)((char *)&a10 + 2));
-          *(_DWORD *)((char *)&a10 + 2) = (char *)&a6 + 2;
-          sub_133111((int16_t *)&a6 + k + 1, (int16_t *)&a6 + k + 2);
-        }
+        sub_1330D2(&vals[k], &vals[k + 1]);
+        sub_133111(&ids[k], &ids[k + 1]);
       }
-    }
-    v58 = (char *)(*(_DWORD *)((char *)&a25 + 2) - 1);
-    do
-      ++v58;
-    while ( *v58 );
-    strcpy(v58, byte_178B9F);
-    if ( byte_199BE5 == 1 )
-      *(_DWORD *)((char *)&a11 + 2) = 120;
+  strcat(out, byte_178B9F);
+  x0 = (byte_199BE5 == 1) ? 120 : 10;
+  x = x0;
+  if ( n > 6 )
+    n = 6;
+  for ( row = 0; row < n; ++row )
+  {
+    sprintf(tmp, "\aX%d.%d. %s", x, row + 1, (char *)(base + 3753 * ids[row] + 21));
+    strcat(out, tmp);
+    if ( (row + 1) % 3 )
+      x += 125;
     else
-      *(_DWORD *)((char *)&a11 + 2) = 10;
-    *(_DWORD *)((char *)&a10 + 6) = 125;
-    v59 = WORD1(a11);
-    if ( v51 > 6 )
-      v51 = 6;
-    *(_DWORD *)((char *)&a10 + 10) = 0;
-    v60 = *(_DWORD *)((char *)&a25 + 2);
-    while ( v51 > SWORD5(a10) )
     {
-      v61 = sprintf(
-              (char *)&a1 + 2,
-              "\aX%d.%d. %s",
-              v59,
-              SWORD5(a10) + 1,
-              (char *)((uint8_t*)dword_197F98 + 3753 * *((int16_t *)&a6 + SWORD5(a10) + 1) + 21));
-      v68 = v60;
-      v62 = (char *)(v60 - 1);
-      do
-        ++v62;
-      while ( *v62 );
-      strcpy(v62, (char *)&a1 + 2);
-      v60 = v68;
-      v49 = SHIDWORD(v61) / 3;
-      if ( SHIDWORD(v61) % 3 )
-      {
-        v59 += WORD3(a10);
-      }
-      else
-      {
-        v59 = WORD1(a11);
-        v63 = (char *)(v68 - 1);
-        do
-          ++v63;
-        while ( *v63 );
-        strcpy(v63, asc_178B9D);
-        v60 = v68;
-      }
-      ++*(_DWORD *)((char *)&a10 + 10);
+      x = x0;
+      strcat(out, asc_178B9D);
     }
   }
-  return v49;
+  return 0;
 }
-// 21C02: inconsistent variable size for '^218.16'
-// 22029: inconsistent variable size for '^218.16'
-// 21B7A: inconsistent variable size for '^228.8'
-// 21F69: inconsistent variable size for '^228.8'
-// 22024: inconsistent variable size for '^228.8'
-// 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-// 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 17D904: using guessed type _UNKNOWN *off_17D904;
 // 17E079: using guessed type _UNKNOWN *off_17E079;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;

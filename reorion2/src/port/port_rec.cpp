@@ -476,6 +476,230 @@ void PortRec_Init(void)
     }
 }
 
+char g_portChainFrame[512];   // frame request for port_vga.cpp Present (path, empty = none)
+
+// ---- REORION2_CHAIN: steps recorded in the original (my DOSBox RECORDINPUT) ----
+// REORION2_CHAIN=<file of SENDCLICK seq=1 lines>. Each step waits its gap
+// (at most 2.5 s), then presses once the 10 structures equal the original's at
+// that press and stay still for 300 ms; a step that does not match within 3 s
+// of stillness is pressed anyway and logged as DIFF (the test result).
+// x/y: game pixels; vx/vy (driver coordinates) when the record has them; old
+// records rounded the game x up - the original most likely saw x - 1.
+// REORION2_CHAIN_EXIT=1: after the last step wait for the autosave (SAVE10.GAM
+// changes) and quit. Log: chain_log.txt in the current directory.
+namespace {
+struct ChainStep {
+    std::string label;
+    double gap = 0, hold = 100;
+    int gx = 0, gy = 0, rgx = -1, rgy = -1;
+    bool has_state = false;
+    uint32_t state[kRegionCount] = {0};
+    std::vector<int> path;   // gx, gy, ms
+    bool has_rng = false;
+    uint32_t rng = 0;        // RNG (dword_1B9E34) of the original at the press
+};
+std::vector<ChainStep> g_chain;
+const char* ChainFramesDir() {   // REORION2_CHAIN_FRAMES=<dir>: <label>_a.raw before a press, _b 300 ms after release
+    static int s = -1;
+    if (s < 0) { const char* e = SDL_getenv("REORION2_CHAIN_FRAMES"); s = (e && *e) ? 1 : 0; }
+    return s ? SDL_getenv("REORION2_CHAIN_FRAMES") : nullptr;
+}
+size_t g_chainIdx = 0;
+double g_frameDue = -1;
+std::string g_frameLabel;
+int g_chainInit = 0;
+FILE* g_chainLog = nullptr;
+
+void ChainLog(const char* fmt, ...)
+{
+    if (!g_chainLog) g_chainLog = std::fopen("chain_log.txt", "a");
+    va_list ap;
+    va_start(ap, fmt);
+    if (g_chainLog) { std::vfprintf(g_chainLog, fmt, ap); std::fputc('\n', g_chainLog); std::fflush(g_chainLog); }
+    va_end(ap);
+}
+
+int GameX(double v, bool raw) { return raw ? ((int)v) >> 1 : (int)v - 1; }
+
+void ChainLoad(const char* path)
+{
+    FILE* f = std::fopen(path, "rt");
+    if (!f) return;
+    char line[8192];
+    while (std::fgets(line, sizeof line, f)) {
+        if (std::strncmp(line, "SENDCLICK", 9) != 0) continue;
+        ChainStep s;
+        bool raw = false, rraw = false, haveR = false;
+        double vx = 0, vy = 0, rvx = -1, rvy = -1;
+        int x = 0, y = 0, rx = -1, ry = -1;
+        std::string pathTxt, vpathTxt;
+        for (char* tok = std::strtok(line, " \t\r\n"); tok; tok = std::strtok(nullptr, " \t\r\n")) {
+            char* eq = std::strchr(tok, '=');
+            if (!eq) continue;
+            *eq = 0;
+            const std::string k = tok, v = eq + 1;
+            if (k == "gapms") s.gap = std::atof(v.c_str());
+            else if (k == "holdms") s.hold = std::atof(v.c_str());
+            else if (k == "x") x = std::atoi(v.c_str());
+            else if (k == "y") y = std::atoi(v.c_str());
+            else if (k == "rx") { rx = std::atoi(v.c_str()); haveR = true; }
+            else if (k == "ry") ry = std::atoi(v.c_str());
+            else if (k == "vx") { vx = std::atof(v.c_str()); raw = true; }
+            else if (k == "vy") vy = std::atof(v.c_str());
+            else if (k == "rvx") { rvx = std::atof(v.c_str()); rraw = true; }
+            else if (k == "rvy") rvy = std::atof(v.c_str());
+            else if (k == "path") pathTxt = v;
+            else if (k == "vpath") vpathTxt = v;
+            else if (k == "label") s.label = v;
+            else if (k == "rng") { s.rng = (uint32_t)std::strtoul(v.c_str(), nullptr, 16); s.has_rng = true; }
+            else if (k == "state") {
+                int n = 0;
+                for (const char* p = v.c_str(); n < kRegionCount && *p; ++n) {
+                    s.state[n] = (uint32_t)std::strtoul(p, nullptr, 16);
+                    p = std::strchr(p, ',');
+                    if (!p) { ++n; break; }
+                    ++p;
+                }
+                s.has_state = (n == kRegionCount);
+            }
+        }
+        s.gx = raw ? GameX(vx, true) : GameX(x, false);
+        s.gy = raw ? (int)vy : y;
+        if (rraw) { s.rgx = GameX(rvx, true); s.rgy = (int)rvy; }
+        else if (haveR) { s.rgx = GameX(rx, false); s.rgy = ry; }
+        const std::string& pt = raw ? vpathTxt : pathTxt;
+        for (size_t a = 0; a < pt.size();) {
+            size_t e = pt.find('/', a);
+            if (e == std::string::npos) e = pt.size();
+            double px = 0, py = 0, pm = 0;
+            if (std::sscanf(pt.substr(a, e - a).c_str(), "%lf:%lf:%lf", &px, &py, &pm) == 3) {
+                s.path.push_back(GameX(px, raw)); s.path.push_back((int)py); s.path.push_back((int)pm);
+            }
+            a = e + 1;
+        }
+        g_chain.push_back(s);
+    }
+    std::fclose(f);
+}
+}  // namespace
+
+// returns 1 when the chain drives the mouse (gx, gy game pixels, buttons)
+int PortChain_Mouse(int* gx, int* gy, int* buttons)
+{
+    if (!g_chainInit) {
+        g_chainInit = 1;
+        if (const char* p = SDL_getenv("REORION2_CHAIN"); p && *p) {
+            ChainLoad(p);
+            ChainLog("CHAIN %s: %zu steps", p, g_chain.size());
+            g_chainInit = g_chain.empty() ? 1 : 2;
+        }
+    }
+    if (g_chainInit != 2) return 0;
+    static int phase = 0;            // 0 start, 1 wait, 2 down, 3 done
+    static double t0 = 0, pressT = 0, still = 0, matchSince = -1;
+    static uint32_t lastSig = 0;
+    static int curX = 0, curY = 0;
+    static size_t pathI = 0;
+    static uint64_t saveSig = 0;
+    const double now = (double)SDL_GetTicks();
+    if (g_frameDue >= 0 && now >= g_frameDue && !g_portChainFrame[0]) {
+        g_frameDue = -1;
+        std::snprintf(g_portChainFrame, sizeof g_portChainFrame, "%s/%s_b.raw", ChainFramesDir(), g_frameLabel.c_str());
+    }
+    if (phase == 3) {                // done: wait for the autosave, then quit
+        static double doneT = now;
+        std::error_code ec;
+        const auto t = std::filesystem::last_write_time("SAVE10.GAM", ec);
+        const uint64_t sig = ec ? 0 : (uint64_t)t.time_since_epoch().count();
+        if (SDL_getenv("REORION2_CHAIN_EXIT") && (sig != saveSig || now - doneT > 120000.0)) {
+            static double seenT = -1;
+            if (seenT < 0) seenT = now;
+            if (now - seenT > 1500.0) {
+                ChainLog("EXIT autosave %s", sig != saveSig ? "written" : "NOT written (timeout)");
+                std::_Exit(0);
+            }
+        }
+        *gx = curX; *gy = curY; *buttons = 0;
+        return 1;
+    }
+    const ChainStep& s = g_chain[g_chainIdx];
+    if (phase == 0) {
+        phase = 1; t0 = now; still = now; matchSince = -1; lastSig = 0;
+        if (g_chainIdx == 0) {
+            std::error_code ec;
+            const auto t = std::filesystem::last_write_time("SAVE10.GAM", ec);
+            saveSig = ec ? 0 : (uint64_t)t.time_since_epoch().count();
+        }
+    }
+    if (phase == 1) {
+        uint32_t h[kRegionCount];
+        StateHashes(h);
+        uint32_t sig = Rng();
+        for (int i = 0; i < kRegionCount; ++i) sig = sig * 31u + h[i];
+        if (sig != lastSig) { lastSig = sig; still = now; }
+        bool ok = true;
+        std::string bad;
+        if (s.has_state)
+            for (int i = 0; i < kRegionCount; ++i)
+                if (h[i] != s.state[i]) { ok = false; bad += ' '; bad += kRegions[i].name; }
+        const double gap = s.gap < 150.0 ? 150.0 : (s.gap > 2500.0 ? 2500.0 : s.gap);
+        if (now - t0 < gap) { *gx = curX; *gy = curY; *buttons = 0; return 1; }
+        // a press made while the original was still busy (fast clicks during a turn) has
+        // the state from before; the game is already at the next step's state - press now
+        bool late = false;
+        if (!ok && g_chainIdx + 1 < g_chain.size() && g_chain[g_chainIdx + 1].has_state)
+            late = std::memcmp(h, g_chain[g_chainIdx + 1].state, sizeof h) == 0;
+        bool go = false;
+        if (late) {
+            ChainLog("LATE %s", s.label.c_str());
+            go = true;
+        } else if (ok) {
+            if (matchSince < 0) matchSince = now;
+            go = now - matchSince >= 300.0;
+        } else {
+            matchSince = -1;
+            // the first step waits for the game to load (CONTINUE)
+            const double limit = g_chainIdx == 0 ? 90000.0 : 3000.0;
+            if (now - still >= limit || now - t0 > 120000.0) {
+                ChainLog("DIFF %s: state differs in%s", s.label.c_str(), bad.c_str());
+                go = true;
+            }
+        }
+        if (!go) { *gx = curX; *gy = curY; *buttons = 0; return 1; }
+        static bool frameAsked = false;   // the frame on screen goes out first, then the press
+        if (const char* d = ChainFramesDir()) {
+            if (!frameAsked) {
+                std::snprintf(g_portChainFrame, sizeof g_portChainFrame, "%s/%s_a.raw", d, s.label.c_str());
+                frameAsked = true;
+            }
+            if (g_portChainFrame[0]) { *gx = curX; *gy = curY; *buttons = 0; return 1; }
+            frameAsked = false;
+        }
+        if (s.has_rng && ok && Rng() != s.rng) {   // animations use the generator at their own pace
+            ChainLog("RNG %s: %08X -> %08X", s.label.c_str(), Rng(), s.rng);
+            *reinterpret_cast<uint32_t*>(dseg + 0x41E34) = s.rng;
+        }
+        if (ok) ChainLog("OK %s", s.label.c_str());
+        curX = s.gx; curY = s.gy;
+        pressT = now; pathI = 0; phase = 2;
+    }
+    if (phase == 2) {
+        while (pathI + 2 < s.path.size() && now >= pressT + s.path[pathI + 2]) {
+            curX = s.path[pathI]; curY = s.path[pathI + 1];
+            pathI += 3;
+        }
+        const double hold = s.hold < 80.0 ? 80.0 : s.hold;
+        if (now < pressT + hold) { *gx = curX; *gy = curY; *buttons = 1; return 1; }
+        if (s.rgx >= 0) { curX = s.rgx; curY = s.rgy; }
+        if (ChainFramesDir()) { g_frameDue = now + 300.0; g_frameLabel = s.label; }
+        ++g_chainIdx;
+        phase = (g_chainIdx >= g_chain.size()) ? 3 : 0;
+        if (phase == 3) ChainLog("CHAIN done (%zu steps)", g_chain.size());
+    }
+    *gx = curX; *gy = curY; *buttons = 0;
+    return 1;
+}
+
 int PortRec_Replaying(void) { return g_mode == 2; }
 unsigned long long PortRec_G(void) { return g_G; }   // for probes
 int PortRec_PressIndex(void) { return g_pressNow; }   // wave 183: presses replayed so far

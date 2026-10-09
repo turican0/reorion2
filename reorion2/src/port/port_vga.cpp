@@ -18,6 +18,8 @@ extern "C" void PortDos_ServiceMouse(void);
 
 extern "C" void PortCtl_Tick();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
 
+extern "C" char g_portChainFrame[512];   // wave 183: port_rec.cpp REORION2_CHAIN frame request
+
 namespace Port::Vga {
 
     namespace {
@@ -425,6 +427,15 @@ namespace Port::Vga {
                     height);
 
                 s_nextEvery = SDL_GetTicks() + s_everyMs;
+            }
+
+            // TOOL (wave 183): REORION2_CHAIN asks for the frame on screen before
+            // a press / after a release (port_rec.cpp, REORION2_CHAIN_FRAMES)
+            {
+                if (g_portChainFrame[0]) {
+                    DumpRawFrame(g_portChainFrame, framebuffer, palette, width, height);
+                    g_portChainFrame[0] = 0;
+                }
             }
 
             // TOOL (wave 183): REORION2_REPLAY_FRAMES=a:b writes every changed

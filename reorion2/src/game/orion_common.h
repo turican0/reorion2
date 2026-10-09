@@ -396,7 +396,7 @@ void sub_1758C(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argum
 // plna signatura: _BOOL1 sub_17847( int a1, int a2, _BYTE *a3);
 _BOOL1 sub_17847( int a1, int a2, _BYTE *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_179F4(int16_t *a1);
-int sub_179F4(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_179F4(int a1, int a2, int16_t *a3);   /* wave 183: eax, edx, edi; vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void *sub_17B51();
 void *sub_17B51();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_17BB2(int a1, int a2, int a3, int a4);
@@ -472,7 +472,7 @@ int sub_1B06B( int a1, int a2, unsigned int a3, int16_t *a4);   /* vlna 105: sku
 // plna signatura: int sub_1B1A7(int a1, int a2, unsigned int a3);
 extern int sub_1B1A7();
 // plna signatura: void sub_1B35A( int a1, int a2);
-extern void sub_1B35A();
+extern int sub_1B35A();   /* wave 183: returns ax */
 // plna signatura: int sub_1B3B5( int a1, int a2, int a3, int a4);
 extern int sub_1B3B5();
 // plna signatura: void sub_1B487( int a1, int a2, int a3, int a4, int a5);
@@ -506,7 +506,7 @@ extern void sub_1CB4D();
 // plna signatura: int sub_1CFB1( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int a25, hr_int128_t a26, int a27, int a28, int a29, int64_t a30);
 extern int sub_1CFB1();
 // plna signatura: void sub_1D0F8(int16_t *a1);
-void sub_1D0F8(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+int sub_1D0F8(int a1, int a2, int16_t *a3);   /* wave 183: eax, edx, edi; vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_1D237( int a1, int a2, int a3);
 extern int sub_1D237();
 // plna signatura: int16_t sub_1D565( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, char *a24, int a25, int a26, int a27, int a28);
@@ -572,7 +572,7 @@ extern void sub_206A2();
 // plna signatura: void sub_21371(int a1, int a2);
 extern void sub_21371();
 // plna signatura: char sub_21B6D( hr_int128_t a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, hr_int128_t a10, int64_t a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20, int a21, int a22, int a23, int a24, int64_t a25);
-extern char sub_21B6D();
+char sub_21B6D(int a1, int a2, int a3, int a4, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int s8, int s9, char *out);   /* wave 183 */
 // plna signatura: int sub_2223D( int a1);
 extern int sub_2223D();
 // plna signatura: void sub_2230A( int a1);
@@ -10590,7 +10590,7 @@ int sub_1AFA0(int16_t a1);
 // int sub_1AFA6(int16_t a1, char a2, int16_t *a3, int16_t a4);
 // int sub_1B06B(int16_t a1, int16_t a2, uint16_t a3, int16_t *a4);
 int sub_1B1A7(int a1, int a2, uint16_t a3);
-void sub_1B35A(int16_t a1, int16_t a2);
+int sub_1B35A(int16_t a1, int16_t a2);
 int sub_1B3B5(int16_t a1, int16_t a2, int16_t a3, int16_t a4);
 // void sub_1B487(int16_t a1, int16_t a2, int16_t a3, int16_t a4, int a5);
 // void sub_1B5B8(int16_t a1, int16_t a2, int16_t a3, int16_t a4, int a5, int16_t a6, _WORD *a7);

@@ -28,6 +28,7 @@ void PortRec_Flush(void);
 int PortRec_PressIndex(void);   /* wave 183: presses replayed so far */
 void PortRec_Sync(void);
 void PortRec_OnFileWritten(const char* path);
+int PortChain_Mouse(int* gx, int* gy, int* buttons);   /* wave 183: REORION2_CHAIN */
 
 #ifdef __cplusplus
 }
