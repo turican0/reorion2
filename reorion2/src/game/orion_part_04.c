@@ -4421,6 +4421,8 @@ void sub_57F2C(uint8_t *a1)
 // `sub_122CC` mela lod c. 1 vlastnika 0x20). Sablona `v10` navic zustala
 // neinicializovana, takze se do pole lodi kopirovalo smeti.
 {
+  int v_lvl;   /* wave 184: AX of sub_56726(9) */
+
   sub_127776((_BYTE *)a1, 0x63u);
   strcpy((char *)a1, (char *)dword_192668);
   *(_BYTE *)(a1 + 17) = 0;
@@ -4468,11 +4470,13 @@ void sub_57F2C(uint8_t *a1)
   sub_127712(a1 + 23, 0x13u);
   sub_127712(a1 + 23, 0x15u);
   sub_127712(a1 + 23, 0x12u);
-  sub_56726(9);
+  /* wave 184: 5805A..58083 + shared tail 55B09 `mov [ebx+60h], al` - the JUMPOUT
+     no-op dropped the Guardian's +96 */
+  v_lvl = (int16_t)sub_56726(9);
   *(_BYTE *)(a1 + 92) = 7;
   *(_WORD *)(a1 + 94) = 0;
   *(_BYTE *)(a1 + 93) = 9;
-  JUMPOUT(0x55B09);
+  *(_BYTE *)(a1 + 96) = byte_17FE90[46 * v_lvl + *(uint8_t *)(a1 + 16)];
 }
 // 58083: control flows out of bounds to 55B09
 // 192668: using guessed type int dword_192668;
@@ -4849,7 +4853,8 @@ void sub_58487(int a1)
   *(_BYTE *)(a1 + 92) = 44;
   *(_BYTE *)(a1 + 93) = 8;
   *(_WORD *)(a1 + 94) = 500;
-  JUMPOUT(0x55B09);
+  /* wave 184: 5859B..585BD + shared tail 55B09 `mov [ebx+60h], al` (was a JUMPOUT no-op) */
+  *(_BYTE *)(a1 + 96) = byte_17FE90[46 * *(uint8_t *)(a1 + 19) + *(uint8_t *)(a1 + 16)] + 2;
 }
 // 585BF: control flows out of bounds to 55B09
 

@@ -10274,6 +10274,8 @@ int16_t sub_70602(int a1, int a2, int a3, int a4, int a5, int16_t *a6)
   int v22; // [esp+24h] [ebp-8h]
   int v23; // [esp+28h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 184: 70652 movsx eax, di - garbage high halves pushed the clip */
+  a4 = (int16_t)a4;   /* wave 184: 7064A movsx edx, cx    bottom to 421 (black box under the panel) */
   v17 = a1;
   v6 = (a5 - 1) / 3 + 1;
   if ( v6 > 3 )

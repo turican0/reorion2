@@ -7150,6 +7150,14 @@ char sub_128C32(int a1, int a2, int a3, int a4, int a5)
   // cinematic then decodes ON TOP of stale content (241 distinct values in
   // the video rect versus the original's 111). This logs every full-screen
   // fill so it can be checked whether the clear happens at all.
+  if ( PortDebug_EnvInt("REORION2_FILLPROBE", 0) && (int16_t)a1 <= 400 && (int16_t)a3 >= 400 && (int16_t)a2 <= 195
+       && (int16_t)a4 >= 195 && !((int16_t)a1 == 0 && (int16_t)a2 == 0) )   /* TEMP wave 184: black rectangle under the fleet panel */
+  {
+    char t[96];
+    sprintf(t, "FILL %d,%d-%d,%d c=%d clip=%d %d,%d-%d,%d", (int16_t)a1, (int16_t)a2, (int16_t)a3, (int16_t)a4, a5, word_1845D8, SHIWORD(dword_1BBA4A), (int16_t)dword_1BBA4E, SHIWORD(dword_1BBA4E), (int16_t)dword_1BBA52);
+    PortDebug_Message(t);
+    PortDebug_Symbolize("FILL.caller", _ReturnAddress());
+  }
   if ( (int16_t)a1 == 0 && (int16_t)a2 == 0 && (int16_t)a3 == 639 && (int16_t)a4 == 479 )
   {
     PortDebug_Checkpoint("128C32.fullscreen_fill_color", a5);
@@ -7942,6 +7950,17 @@ int sub_12A478( int a1, int a2, int a3)
   // PORT (vlna 26 pokr. 37): merime, jak casto se blit zahodi kvuli
   // nulovemu ukazateli na zdroj - podezreni, ze prave tak mizi pozadi menu
   // (vykresli se cele, pak uz jen text). Zapina REORION2_BLIT_STATS=1.
+  if ( a3 && PortDebug_EnvInt("REORION2_FILLPROBE", 0) )   /* TEMP wave 184: blits over (400,195) */
+  {
+    int w = *(int16_t *)(intptr_t)a3, h = *(int16_t *)((intptr_t)a3 + 2);
+    if ( (int16_t)a1 <= 400 && (int16_t)a1 + w > 400 && (int16_t)a2 <= 195 && (int16_t)a2 + h > 195 && w < 600 )
+    {
+      char t[96];
+      sprintf(t, "BLIT %d,%d %dx%d clip=%d %d,%d-%d,%d", (int16_t)a1, (int16_t)a2, w, h, word_1845D8, SHIWORD(dword_1BBA4A), (int16_t)dword_1BBA4E, SHIWORD(dword_1BBA4E), (int16_t)dword_1BBA52);
+      PortDebug_Message(t);
+      PortDebug_Symbolize("BLIT.caller", _ReturnAddress());
+    }
+  }
   {
     static int s_on = -1, s_null = 0, s_ok = 0;
     if ( s_on < 0 ) { const char *e = getenv("REORION2_BLIT_STATS"); s_on = (e && *e != '0') ? 1 : 0; }

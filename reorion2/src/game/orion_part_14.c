@@ -10359,7 +10359,7 @@ LABEL_88:
     v24 = (uint8_t*)dword_197F98 + 3753 * *a1;
     v31 = 0;
     /* wave 183: sub_16946E() removed - IDA artifact, not in the original */
-    if ( v25 )
+    if ( *(_BYTE *)(v24 + 472) == 3 )   /* wave 184: E1B98 cmp byte [eax+1D8h], 3 - v25 was never set */
     {
       v23 += 50;
     }
