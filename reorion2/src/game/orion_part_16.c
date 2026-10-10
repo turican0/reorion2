@@ -6338,7 +6338,7 @@ LABEL_73:
                 {
                   if ( *(char *)((uint8_t*)dword_197F98 + 3753 * a1 + 2211) >= 0 )
                   {
-                    v14 = *(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 2211) <= 0;
+                    v14 = *(char *)(3753 * a1 + (uint8_t*)dword_197F98 + 2211) <= 0;   /* wave 184: FCC68 signed (jle) */
 LABEL_117:
                     if ( v14 )
                       goto LABEL_137;
@@ -6416,7 +6416,7 @@ LABEL_109:
               {
                 if ( v5 <= 0x1B )
                 {
-                  v14 = *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 2214) <= 0;
+                  v14 = *(char *)((uint8_t*)dword_197F98 + 3753 * a1 + 2214) <= 0;   /* wave 184: FCD29 signed (jle) */
                 }
                 else
                 {
@@ -6572,7 +6572,7 @@ LABEL_212:
                   }
                   if ( v5 != 28 )
                     goto LABEL_137;
-                  v14 = *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 2213) <= 0;
+                  v14 = *(char *)((uint8_t*)dword_197F98 + 3753 * a1 + 2213) <= 0;   /* wave 184: FCCEF signed (jle) */
                 }
                 goto LABEL_117;
               }
@@ -11366,7 +11366,9 @@ int sub_101B3C(int a1, int a2)
 
 
 //----- (00101BA4) --------------------------------------------------------
-void sub_101BA4(int a1, int a2)
+/* wave 184: returns AX (101C7B..101C8C) - IDA dropped the result and the
+   race / leader multiplier behind the shared epilog 101F7C */
+int sub_101BA4(int a1, int a2)
 {
   unsigned int v3; // ebx
   int v4; // edx
@@ -11374,9 +11376,18 @@ void sub_101BA4(int a1, int a2)
   int v6; // eax
   int v7; // [esp+0h] [ebp-Ch]
   int16_t v8; // [esp+8h] [ebp-4h]
+  int base_v; // edi
+  int mult; // esi
 
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  sub_101B3C(a1, a2);
+  base_v = (int16_t)sub_101B3C(a1, a2);   /* 101BB6 movsx edi, ax */
+  mult = 100;
+  if ( *(uint8_t *)(a1 + 2207) == 4 )   /* 101BB9 [ecx+89Fh] */
+    mult = 150;
+  else if ( *(uint8_t *)(a1 + 2207) == 5 )
+    mult = 175;
+  if ( *(_BYTE *)(a1 + 2231) )   /* 101BDC [ecx+8B7h] */
+    mult += 50;
   v8 = 0;
   v3 = dword_1930DC + 3953;
   while ( 1 )
@@ -11384,7 +11395,7 @@ void sub_101BA4(int a1, int a2)
     do
     {
       if ( v3 <= dword_1930DC )
-        return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x101F7C je epilog funkce */
+        return base_v * (mult + v8) / 100;   /* 101C7B..101C8C */
       v4 = *(char *)(v3 - 1);
       v3 -= 59;
     }
@@ -11479,7 +11490,7 @@ void sub_101D53(int a1, int a2)
   int v7; // edx
   bool v8; // [esp+0h] [ebp-8h]
 
-  sub_101BA4(a1, a2);
+  v4 = sub_101BA4(a1, a2);   /* wave 184: 101D64 call / mov ecx, eax - result was dropped */
   v5 = *(_WORD *)(a1 + 2 * a2 + 1444);
   v6 = v4;
   if ( v5 >= v4 )
@@ -11515,6 +11526,12 @@ void sub_101DE5(int a1, int a2)
 
   v4 = sub_101CC5(a1, a2);
   v5 = *(_WORD *)(a1 + 2 * a2 + 1478);
+  if ( g_rngLogArmed )   /* TEMP wave 184: vs DOSBox DUMPREGS 101E05 */
+  {
+    char t[96];
+    sprintf(t, "DE5 p=%d a2=%d v4=%d v5=%d", (int)(((uint8_t *)a1 - (uint8_t *)dword_197F98) / 3753), a2, v4, v5);
+    PortDebug_Message(t);
+  }
   v6 = v4;
   if ( v5 >= v4 )
   {
@@ -11579,11 +11596,11 @@ void sub_101EE3(int a1, int a2)
   v7 = -v3;
   v4 = 3753 * a2 + (uint8_t*)dword_197F98;
   *(_WORD *)(a1 + 2 * a2 + 1444) = -(int16_t)v3;
-  sub_101BA4(a1, a2);
+  v5 = sub_101BA4(a1, a2);   /* wave 184: result was dropped */
   *(_WORD *)(a1 + 2 * a2 + 1460) = v5;
   *(_BYTE *)((int16_t)v8 + v4 + 1583) = 1;
   *(_WORD *)(v4 + 2 * (int16_t)v8 + 1444) = v7;
-  sub_101BA4(v4, v8);
+  v6 = sub_101BA4(v4, v8);   /* wave 184: result was dropped */
   *(_WORD *)(v4 + 2 * (int16_t)v8 + 1460) = v6;
   sub_E2710(a1);
   sub_E2710(v4);

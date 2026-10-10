@@ -745,8 +745,8 @@ extern void sub_26FBA();
 _DWORD *sub_27094( int a1, int a2, unsigned int a3, unsigned int a4, char *a5, _DWORD *a6, int16_t *a7, int a8);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char *sub_2720F( int a1, int a2);
 char *sub_2720F( int a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_2736E( int a1, int a2);
-extern void sub_2736E();
+// plna signatura: int sub_2736E( int a1, int a2);   /* wave 184: returns AX */
+extern int sub_2736E();
 // plna signatura: int sub_27507( int a1, int a2);
 extern int sub_27507();
 // plna signatura: int16_t sub_2755F( int a1, int a2, _WORD *a3);
@@ -2729,8 +2729,8 @@ extern int sub_7B8CD();
 extern int sub_7BBB6();
 // plna signatura: int sub_7BBBC();
 extern int sub_7BBBC();
-// plna signatura: void sub_7BD87();
-extern void sub_7BD87();
+// plna signatura: int sub_7BD87();   /* wave 184: returns a star index */
+extern int sub_7BD87();
 // plna signatura: int sub_7BF5D(int a1, int a2, int a3, int a4);
 extern int sub_7BF5D();
 // plna signatura: void sub_7C107( int a1, int a2, int a3);
@@ -6586,8 +6586,8 @@ extern int16_t sub_1019F0();
 char *sub_101A42();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_101B3C(int a1, int a2);
 extern int sub_101B3C();
-// plna signatura: void sub_101BA4(int a1, int a2);
-extern void sub_101BA4();
+// plna signatura: int sub_101BA4(int a1, int a2);   /* wave 184: returns AX */
+extern int sub_101BA4();
 // plna signatura: int16_t sub_101C93(int a1, int a2);
 extern int16_t sub_101C93();
 // plna signatura: int sub_101CC5(int a1, int a2);
@@ -10727,7 +10727,7 @@ void sub_26D19(int16_t a1, int16_t a2, int16_t *a3, int a4, int a5);
 void sub_26FBA();
 _DWORD *sub_27094(int16_t a1, int16_t a2, unsigned int a3, unsigned int a4, char *a5, _DWORD *a6, int16_t *a7, int16_t a8);
 char *sub_2720F(int16_t a1, int a2);
-void sub_2736E(int16_t a1, int16_t a2);
+int sub_2736E(int16_t a1, int16_t a2);
 int sub_27507(int16_t a1, int16_t a2);
 int16_t sub_2755F(int16_t a1, int16_t a2, _WORD *a3);
 int sub_276E6(int16_t a1, int16_t a2, char a3);
@@ -11724,7 +11724,7 @@ void sub_7B631();
 int sub_7B8CD();
 int sub_7BBB6();
 int sub_7BBBC();
-void sub_7BD87();
+int sub_7BD87();
 int sub_7BF5D(int a1, int a2, int a3, int a4);
 void sub_7C107(int16_t a1, int16_t a2, int a3);
 _BOOL1 sub_7C396(int16_t a1);
@@ -13665,7 +13665,7 @@ void sub_10192B();
 int16_t sub_1019F0(int16_t a1, int16_t a2);
 char *sub_101A42();
 int sub_101B3C(int a1, int16_t a2);
-void sub_101BA4(int a1, int16_t a2);
+int sub_101BA4(int a1, int16_t a2);
 int16_t sub_101C93(int a1, int16_t a2);
 int sub_101CC5(int a1, int a2);
 void sub_101D53(int a1, int16_t a2);

@@ -17850,7 +17850,7 @@ void sub_501CA( int a1, int a2)
   int v46; // [esp+72h] [ebp-8h]
   int16_t v47; // [esp+76h] [ebp-4h]
 
-  if ( *(char *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1575) >= 4 || (sub_2736E(a1, a2), v4 = 0, !v5) )
+  if ( *(char *)(a2 + (uint8_t*)dword_197F98 + 3753 * a1 + 1575) >= 4 || (v5 = sub_2736E(a1, a2), v4 = 0, !v5) )   /* wave 184: 501F6 call / test ax, ax */
 LABEL_74:
     return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x4FE0B je epilog funkce */
   v6 = 0;

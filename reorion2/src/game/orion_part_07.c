@@ -1716,7 +1716,7 @@ void sub_7B631()
         }
         else
         {
-          sub_7CCB5(v25);
+          v7 = sub_7CCB5(v25);   /* wave 184: 7B783 call sub_7CCB5 / 7B78F movsx ebx, ax - the orbit was dropped */
           v0 = v25;
           sub_7C3C4(v6, word_1999A2, v7, 1);
           ++word_1999A2;
@@ -1928,7 +1928,7 @@ int sub_7BBBC()
   int v16; // [esp+80h] [ebp+7Ah]
   int16_t v17; // [esp+84h] [ebp+7Eh]
 
-  sub_7BD87();
+  v0 = sub_7BD87();   /* wave 184: 7BBD6 mov [ebp+82h+var_8], eax - was dropped */
   v17 = -1;
   v16 = v0;
   for ( i = 0; i < 5; ++i )
@@ -1998,7 +1998,7 @@ int sub_7BBBC()
 
 
 //----- (0007BD87) --------------------------------------------------------
-void sub_7BD87()
+int sub_7BD87()   /* wave 184: returns the star Orion swaps places with (EAX) */
 {
   int16_t i; // ax
   int16_t j; // di
@@ -2068,12 +2068,10 @@ void sub_7BD87()
     do
       v8 = sub_1247A0(word_19999A) - 1;
     while ( sub_798C4(v8) || sub_7C396(v8) );
+    return v8;   /* wave 184: 7BF55 mov eax, edx */
   }
-  else
-  {
-    sub_1247A0(v6);
-  }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7BD81 je epilog funkce */
+  /* wave 184: 7BF0A..7BF19 - the star of a random one of the nearest candidates */
+  return *(uint16_t *)&v10[6 * (int16_t)(sub_1247A0(v6) - 1) + 4];
 }
 // 7BF58: control flows out of bounds to 7BD81
 // 7BE6E: variable 'v2' is possibly undefined
@@ -3068,6 +3066,13 @@ LABEL_48:
     {
       v13 = v18[v12];
       v21 = (int16_t)v26;
+      if ( g_rngLogArmed )   /* TEMP wave 184: distance vs DOSBox DUMPREGS 7CFB7 */
+      {
+        char t[96];
+        sprintf(t, "DST d=%X thr=%X a=%d b=%d ax=%d ay=%d", (unsigned)sub_7B0B4(v26, v13), v22, (int16_t)v26, (int16_t)v13,
+                *(int16_t *)(dword_19306C + 113 * (int16_t)v26 + 15), *(int16_t *)(dword_19306C + 113 * (int16_t)v26 + 17));
+        PortDebug_Message(t);
+      }
       if ( sub_7B0B4(v26, v13) < v22 )
         v11 = 0;
       ++v12;

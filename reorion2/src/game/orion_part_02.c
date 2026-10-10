@@ -2965,14 +2965,40 @@ char *sub_2720F( int a1, int a2)
 
 
 //----- (0002736E) --------------------------------------------------------
-void sub_2736E( int a1, int a2)
+/* wave 184: rewritten from the asm (2736E..27502) - IDA kept only the calls; the
+   computation and the result (AX, tested by sub_501CA) were lost behind the
+   shared epilog 25BC0 */
+int sub_2736E( int a1, int a2)
 {
-  if ( *(char *)(3753 * a1 + (uint8_t*)dword_197F98 + a2 + 1575) < 4 )
-  {
-    sub_E5E09(a2);
-    sub_1247A0(0x64u);
-  }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x25BC0 je epilog funkce */
+  uint8_t *base = (uint8_t *)dword_197F98;
+  uint8_t *p;
+  int v, w, d;
+
+  a1 = (int16_t)a1;   /* 2737A cwde */
+  a2 = (int16_t)a2;   /* 2738C movsx esi, dx */
+  p = base + 3753 * a1;
+  if ( *(char *)(p + a2 + 1575) >= 4 )
+    return 0;
+  v = 10 - *(int16_t *)(p + 2 * a2 + 1679) / 20;
+  v -= *(char *)(p + a2 + 1751) / 20;
+  v += *(char *)(p + a2 + 1559) / 20;
+  v -= sub_E5E09(a2) / 15;
+  v += 3 * *(int16_t *)(p + 2 * a2 + 2087);
+  v += 4 * (uint8_t)byte_199CB0;
+  v -= word_180CCC[*(uint8_t *)(p + 39)] / 5;
+  if ( *(char *)(base + 3753 * a2 + a1 + 1575) == 1 )
+    v -= 4;
+  if ( *(char *)(base + 3753 * a2 + a1 + 1575) == 2 )
+    v -= 8;
+  if ( *(char *)(base + 3753 * a2 + 479) == 3 )
+    v -= 5;
+  if ( v < 0 )
+    v = 0;
+  if ( v > 40 )
+    v = 40;
+  w = *(int16_t *)(p + 2 * a2 + 2071);
+  d = v * v / 50 + 1;
+  return (int)sub_1247A0(0x64u) > w / d ? 0 : 1;   /* 274F2 cmp eax, ebx / jg */
 }
 // 274FB: control flows out of bounds to 25BC0
 // 197F98: using guessed type int (uint8_t*)dword_197F98;

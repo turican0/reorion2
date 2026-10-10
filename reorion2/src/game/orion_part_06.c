@@ -6425,6 +6425,7 @@ _BOOL1 sub_79001( int a1)
   char v2; // dl
   int16_t i; // ax
 
+  a1 = (int16_t)a1;   /* wave 184: 7900B movsx ebx, si */
   v2 = 0;
   for ( i = 0; i < 5; ++i )
   {

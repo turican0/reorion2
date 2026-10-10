@@ -2809,6 +2809,12 @@ char sub_8BEAB( int a1)
   v2 = -1;
   v3 = a1;
   v4 = 0;
+  if ( g_rngLogArmed )   /* TEMP wave 184: entry args vs DOSBox DUMPREGS */
+  {
+    char t[64];
+    sprintf(t, "BEA a1=%X f2f=%d c31a=%d", (unsigned)a1, (uint8_t)byte_199F2F, (uint8_t)byte_19C31A);
+    PortDebug_Message(t);
+  }
   while ( byte_199F2F )
   {
     if ( (uint8_t)byte_199F2F <= 1u )
@@ -3728,6 +3734,14 @@ int16_t sub_8CC15()
     {
       v4 = sub_1247A0(word_19999A - 1);
       v5 = v4;
+      if ( g_rngLogArmed && (_WORD)v4 )   /* TEMP wave 184: vs DOSBox 8CC83.. */
+      {
+        char t[96];
+        sprintf(t, "CC15 v=%d home=%d f40=%d f79=%d f22=%d f41=%d", (int16_t)v4, v7[(int16_t)v4],
+                *(uint8_t *)(113 * (int16_t)v4 + dword_19306C + 40), sub_79001(v4),
+                *(uint8_t *)(113 * (int16_t)v4 + dword_19306C + 22), *(char *)(113 * (int16_t)v4 + dword_19306C + 41));
+        PortDebug_Message(t);
+      }
       if ( (_WORD)v4 )
       {
         if ( !v7[(int16_t)v4] )
@@ -4007,10 +4021,10 @@ LABEL_11:
         v43 = (int16_t)i * (int16_t)v49 / v34;
         if ( v52 )
         {
-          v14 = sub_8C807(v40);
-          v15 = sub_F4B41(v14, v13, v12);
-          LOBYTE(v12) = dword_19306C;
-          *(_BYTE *)(dword_19306C + v15 + 22) = v13;
+          /* wave 184: 8D18E movsx eax, word [var_38] (a3) / call sub_8C807 / imul eax, ebx, 71h /
+             mov [dword_18B06C+eax+16h], dl - IDA read an uninitialised v40 and a phantom sub_F4B41 */
+          v14 = sub_8C807((int16_t)a3);
+          *(_BYTE *)(dword_19306C + 113 * (int16_t)i + 22) = v14;
         }
         if ( a5 )
         {
@@ -4076,6 +4090,12 @@ LABEL_25:
           v5 = (int16_t)v42;
           v6 = (int16_t)v7;
           LOBYTE(v28) = sub_8D43D(v39, (int16_t)v7, v42, v27);
+          if ( g_rngLogArmed )   /* TEMP wave 184: vs DOSBox DUMPREGS 8D36C / 8D371 */
+          {
+            char t[96];
+            sprintf(t, "D43 a=%X d=%X b=%X c=%X r=%d", v39 & 0xFFFF, (int16_t)v7 & 0xFFFF, v42 & 0xFFFF, v27 & 0xFFFF, (uint8_t)v28);
+            PortDebug_Message(t);
+          }
           LOBYTE(v6) = v28;
           if ( (_BYTE)v28 == 1 && (int16_t)++v20 > 150 )
           {
@@ -4344,7 +4364,7 @@ int sub_8D6D6( int a1, int a2)
     v8 = 0;
     for ( j = 0; j < v2; ++j )
     {
-      v10 = *(_BYTE *)(dword_19306C + 113 * (int16_t)v23[j] + 41) <= 0;
+      v10 = *(char *)(dword_19306C + 113 * (int16_t)v23[j] + 41) <= 0;   /* wave 184: 8D792 cmp byte, 0 / jle - signed (-1 passes) */
       if ( !sub_79BAE(v23[j]) )
         v10 = 0;
       if ( !v10 )
@@ -4392,20 +4412,13 @@ int sub_8D6D6( int a1, int a2)
   }
   else
   {
+    /* wave 184: 8D868..8D884 - the two stars are linked (wormhole) unconditionally;
+       the `byte_1783D3` branch (both -1) is not in the asm */
     v19 = 113 * v24;
     v20 = dword_19306C;
-    if ( byte_1783D3 )
-    {
-      *(_BYTE *)(v19 + dword_19306C + 41) = -1;
-      result = 113 * a1;
-      *(_BYTE *)(result + v20 + 41) = -1;
-    }
-    else
-    {
-      *(_BYTE *)(v19 + dword_19306C + 41) = a1;
-      result = v20 + 113 * a1;
-      *(_BYTE *)(result + 41) = v24;
-    }
+    *(_BYTE *)(v19 + dword_19306C + 41) = a1;
+    result = v20 + 113 * a1;
+    *(_BYTE *)(result + 41) = v24;
   }
   return result;
 }
@@ -4837,6 +4850,12 @@ LABEL_13:
       v44 = v72;
       HIDWORD(v43) = SWORD1(a23);
       LOBYTE(v43) = sub_8CFFF(SWORD1(a22), SWORD1(a23), v72, 1, 1);   /* vlna 83: asm `test al, al` */
+      if ( g_rngLogArmed )   /* TEMP wave 184: star 7 right after placement */
+      {
+        char t[64];
+        sprintf(t, "S7 x=%d y=%d", *(int16_t *)(dword_19306C + 113 * 7 + 15), *(int16_t *)(dword_19306C + 113 * 7 + 17));
+        PortDebug_Message(t);
+      }
       if ( (_BYTE)v43 )
       {
         sub_120BB5(4, (int)&a19 + 2);
