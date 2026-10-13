@@ -3628,7 +3628,7 @@ void sub_57112( int a1)
 
   if ( byte_199CB4 == 1 )
   {
-    sub_574A1();
+    sub_574A1(a1);   /* wave 184: 57126 cwde / call sub_574A1 */
   }
   else if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 40) == 100 )
   {
@@ -3785,7 +3785,7 @@ void sub_573C7()
 
 
 //----- (000574A1) --------------------------------------------------------
-void sub_574A1()
+void sub_574A1(int a1)   /* wave 184: 574AA push eax / movsx edi, [ebp+var_10] - the player was lost */
 {
   int16_t v0; // cx
   int v1; // ebx
@@ -3794,6 +3794,7 @@ void sub_574A1()
   int16_t v4; // [esp+Ch] [ebp-4h]
   int16_t v5; // [esp+Ch] [ebp-4h]
 
+  v3 = (int16_t)a1;
   v0 = 0;
   while ( 1 )
   {

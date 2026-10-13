@@ -2835,18 +2835,16 @@ int sub_E98F2(int result)
 
   if ( *(char *)(result + 40) >= 50 )
   {
-    if ( *(char *)(result + 40) < 90 )
+    /* wave 184: E98F6..E991C - no `< 90` test in the asm (IDA phantom) */
+    v2 = result + 10;
+    do
     {
-      v2 = result + 10;
-      do
-      {
-        v1 = *(int16_t *)(v2 + 72);
-        v2 -= 2;
-        if ( v1 != -1 )
-          *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * v1 + 15) = 0;
-      }
-      while ( v2 != result );
+      v1 = *(int16_t *)(v2 + 72);
+      v2 -= 2;
+      if ( v1 != -1 )
+        *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * v1 + 15) = 0;
     }
+    while ( v2 != result );
     *(_BYTE *)(result + 40) = 0;
   }
   return result;
@@ -2939,6 +2937,10 @@ void sub_E9927(_BYTE *a1)
             a1[112] = 1;
             v18 = sub_1247A0(4u);
             v19 = ((v18 - (__CFSHL__(v18 >> 31, 2) + 4 * (v18 >> 31))) >> 2) + 1;
+            /* wave 184: E9C0B - the original leaves bytes 1, 5..17 of the message as stack
+               garbage; zeroed here so no host pointer reaches the queue / the save */
+            memset(v23, 0, sizeof(v23));
+            v24 = 0;
             BYTE2(v23[0]) = v30;
             LOBYTE(v23[0]) = 20;
             memset((char *)v23 + 3, 0, 2);
@@ -6028,7 +6030,7 @@ void sub_ED260(int a1)
       {
         v17 = sub_1247A0(v2);
         sub_EC65A(v18, v17, v7, v8, (int)v9);
-        memset(&v10, 0, 18);
+        v10 = v11 = v12 = v13 = v14 = 0;   /* wave 184: was memset(&v10, 0, 18) - the 18-byte message is 5 separate locals here */
         LOBYTE(v10) = 0;
         BYTE2(v10) = v7[2];
         LOBYTE(v11) = v18;
@@ -6623,7 +6625,7 @@ LABEL_14:
       if ( *(_BYTE *)(a1 + 40) != 100 )
         *(_DWORD *)(a1 + 50) += (uint8_t)byte_199CB0;
       sub_E2A70((int)((uint8_t*)v4 - (uint8_t*)dword_192B18) / 361, v8);
-      memset(&v9, 0, 18);
+      v9 = v10 = v11 = v12 = v13 = 0;   /* wave 184: was memset(&v9, 0, 18) - the 18-byte message is 5 separate locals here */
       LOBYTE(v9) = 0;
       HIWORD(v9) = (uint8_t)v4[2];
       LOWORD(v10) = v18;
@@ -6819,7 +6821,7 @@ int sub_EDDF7(int a1, int a2, int a3, int a4)
         *(_DWORD *)(v10 + 50) += (uint8_t)byte_199CB0;
       v12 = v22;
       sub_E2D09(v22, (int16_t)v22);
-      memset(&v16, 0, 18);
+      v16 = v17 = v18 = v19 = v20 = 0;   /* wave 184: was memset(&v16, 0, 18) - the 18-byte message is 5 separate locals here */
       LOBYTE(v16) = 6;
       HIWORD(v16) = *(_WORD *)(v6 + 101);
       LOWORD(v17) = v11;
@@ -7893,6 +7895,13 @@ uint8_t sub_EF629(int a1, int a2, int a3, int a4, int a5, int a6)
   char *v12; // edi
 
   result = a6;
+  if ( (unsigned)a2 >= 0x1000000u || (unsigned)a3 >= 0x1000000u || (unsigned)a4 >= 0x1000000u )   /* TEMP wave 184 */
+  {
+    char t[96];
+    sprintf(t, "EF629 a1=%08X a2=%08X a3=%08X a4=%08X a5=%X", a1, a2, a3, a4, a5);
+    PortDebug_Message(t);
+    PortDebug_Symbolize("EF629.caller", _ReturnAddress());
+  }
   if ( byte_1AAB24[a6] )
   {
     v7 = byte_1AAB1C[a6];
@@ -8009,7 +8018,7 @@ uint8_t sub_EF766(int a1, int a2, int a3)
 
   v12 = a2;
   v13 = a3;
-  memset(&v7, 0, 18);
+  v7 = v8 = v9 = v10 = v11 = 0;   /* wave 184: was memset(&v7, 0, 18) - the 18-byte message is 5 separate locals here */
   LOBYTE(v7) = 17;
   v4 = word_199998;
   BYTE2(v7) = v13;

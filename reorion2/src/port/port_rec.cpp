@@ -931,6 +931,20 @@ void GrDump(const std::string& path)
     PortVga_DumpShown(path.c_str());
     if (SDL_getenv("REORION2_GAMEPLAY_DSEG"))   // <frame>.dseg, as DOSBOX_GR_DSEG
         if (FILE* d = std::fopen((path + ".dseg").c_str(), "wb")) { std::fwrite(dseg, 1, 0x5DCD0, d); std::fclose(d); }
+    // wave 184: <frame>.game - the heap game arrays (players, stars, planets, colonies,
+    // ships, leaders) in this order, to compare with DOSBOX_GR_MEM (tools gamecmp.py)
+    if (SDL_getenv("REORION2_GAMEPLAY_GAME"))
+        if (FILE* d = std::fopen((path + ".game").c_str(), "wb")) {
+            static const struct { uint32_t c; uint32_t size; } arr[] = {
+                { 0x197F98, 8 * 3753 }, { 0x19306C, 72 * 113 }, { 0x1930D4, 360 * 17 },
+                { 0x192B18, 250 * 361 }, { 0x197F9C, 500 * 129 }, { 0x1930DC, 67 * 59 } };
+            for (const auto& a : arr) {
+                const uintptr_t p = *reinterpret_cast<uint32_t*>(dseg + (a.c - 0x178000));
+                std::vector<uint8_t> z(a.size, 0);
+                std::fwrite(p ? reinterpret_cast<const void*>(p) : z.data(), 1, a.size, d);
+            }
+            std::fclose(d);
+        }
     if (FILE* f = std::fopen(path.c_str(), "ab")) {
         const uint16_t xy[2] = { *reinterpret_cast<uint16_t*>(dseg + 0x43A38), *reinterpret_cast<uint16_t*>(dseg + 0x43A36) };
         std::fwrite(xy, 2, 2, f);

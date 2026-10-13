@@ -8922,7 +8922,7 @@ int sub_FF212()
         v16 -= 17;
         if ( v9[v25] )
         {
-          memset(&v11, 0, 18);
+          v11 = v12 = v13 = v14 = v15 = 0;   /* wave 184: was memset(&v11, 0, 18) - the 18-byte message is 5 separate locals here */
           BYTE2(v11) = v25;
           LOBYTE(v12) = v9[v25];
           BYTE1(v12) = v10[v25];

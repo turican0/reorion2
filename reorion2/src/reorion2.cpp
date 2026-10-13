@@ -25,6 +25,7 @@ extern "C" void PortDebug_CrashLog(const char* fmt, ...);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
 extern "C" void PortDebug_WatchEnable(int on);
 extern "C" void PortCtl_Init();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
+extern "C" uint8_t dseg[];   /* wave 184: REORION2_HWWATCH */
 extern "C" void InitDataSegment(void);   /* wave 180: pointer slots of the data segment (orion_dseg.c) */
 
 // PORT (vlna 133): spinac vypisu hardwaroveho watchpointu (PortDebug_WatchWrite).
@@ -54,7 +55,8 @@ static LONG __stdcall DebugVectoredHandler(EXCEPTION_POINTERS* ep)
         (ep->ContextRecord->Dr6 & 0xF) != 0)
     {
         static int s_hits = 0;
-        if (s_hits < 8 && g_watchLog) {
+        static const int s_max = std::getenv("REORION2_HWWATCH_MAX") ? std::atoi(std::getenv("REORION2_HWWATCH_MAX")) : 8;   // wave 184
+        if (s_hits < s_max && g_watchLog) {
             ++s_hits;
             PortDebug_CrashLog("WATCHPOINT: zapis na hlidanou adresu, DR6=0x%llx rip=%p",
                                (unsigned long long)ep->ContextRecord->Dr6,
@@ -507,6 +509,20 @@ int main(int argc, char* argv[])
     // dostupny, puvodni volajici (DOS startup kod) do nej pravdepodobne
     // predaval PSP/env blok - zatim nullptr, viz DECOMP_TODO v port_dos.h.
     InitDataSegment();
+    // TOOL (wave 184): REORION2_HWWATCH=<C address hex>[:len] - hardware write watch on a
+    // data segment variable (C address = dseg offset + 0x178000), writer backtraces to stderr
+    for (const char* w = std::getenv("REORION2_HWWATCH"); w && *w; ) {   // up to 4, comma separated
+        char* end = nullptr;
+        unsigned long c = std::strtoul(w, &end, 16);
+        int len = 1;
+        if (end && *end == ':') len = (int)std::strtol(end + 1, &end, 10);
+        if (c >= 0x178000) {
+            PortDebug_WatchEnable(1);
+            PortDebug_WatchWrite(dseg + (c - 0x178000), len);
+        }
+        if (!end || *end != ',') break;
+        w = end + 1;
+    }
     GameMain_10057(argc, argv, nullptr);
 
     // GameMain_10057 je (interne kdyz nekonci hru, zavola exit()

@@ -6196,7 +6196,7 @@ void sub_DCDAC(char *a1, int a2)
   v3 = sub_DCCCC(a1);
   if ( a2 != -1 )
   {
-    memset(&v5, 0, 18);
+    v5 = v6 = v7 = v8 = v9 = 0;   /* wave 184: was memset(&v5, 0, 18) - the 18-byte message is 5 separate locals here */
     LOBYTE(v5) = 7;
     HIWORD(v5) = *((_WORD *)a1 + 1);
     LOWORD(v6) = a2;
@@ -11481,7 +11481,7 @@ void sub_E2DCA(char *a1)
         if ( v2 == 1 )
         {
           a1[303] = 4;
-          memset(&v37, 0, 18);
+          v37 = v38 = v39 = v40 = v41 = 0;   /* wave 184: was memset(&v37, 0, 18) - the 18-byte message is 5 separate locals here */
           LOBYTE(v37) = 0;
           BYTE2(v37) = a1[2];
           HIBYTE(v37) = 2;
@@ -11599,7 +11599,7 @@ void sub_E2DCA(char *a1)
       {
         v62 = (uint8_t)a1[239] - *(_WORD *)(a1 + 231) - *(_WORD *)(a1 + 243);
         v56 = (uint8_t)a1[240] - *(_WORD *)(a1 + 233);
-        memset(&v42, 0, 18);
+        v42 = v43 = v44 = v45 = v46 = 0;   /* wave 184: was memset(&v42, 0, 18) - the 18-byte message is 5 separate locals here */
         LOBYTE(v42) = 0;
         v19 = a1[2];
         HIBYTE(v42) = 4;
@@ -11835,7 +11835,7 @@ void sub_E3456(char *a1)
         if ( v8 == 1 )
         {
           a1[303] = 4;
-          memset(&v13, 0, 18);
+          v13 = v14 = v15 = v16 = v17 = 0;   /* wave 184: was memset(&v13, 0, 18) - the 18-byte message is 5 separate locals here */
           LOBYTE(v13) = 0;
           BYTE2(v13) = a1[2];
           HIBYTE(v13) = 3;
@@ -12032,7 +12032,7 @@ LABEL_99:
       *(_WORD *)(v41 + 293) = 0x7FFF;
     goto LABEL_102;
   }
-  memset(&v49, 0, 18);
+  v49 = v50 = v51 = v52 = v53 = 0;   /* wave 184: was memset(&v49, 0, 18) - the 18-byte message is 5 separate locals here */
   LOBYTE(v49) = 0;
   BYTE2(v49) = v41[2];
   HIBYTE(v49) = 1;
@@ -12179,7 +12179,7 @@ LABEL_95:
           }
           if ( v29 )
           {
-            memset(&v44, 0, 18);
+            v44 = v45 = v46 = v47 = v48 = 0;   /* wave 184: was memset(&v44, 0, 18) - the 18-byte message is 5 separate locals here */
             LOBYTE(v44) = 0;
             HIBYTE(v44) = 11;
             BYTE2(v44) = v41[2];
@@ -13421,7 +13421,7 @@ void sub_E4F49(int16_t *a1)
       sub_E4535(v1);
       if ( *(int16_t *)(v1 + 178) < 0 && *(int *)(v1 + 50) < 50 )
       {
-        memset(&v3, 0, 18);
+        v3 = v4 = v5 = v6 = v7 = 0;   /* wave 184: was memset(&v3, 0, 18) - the 18-byte message is 5 separate locals here */
         LOBYTE(v3) = 4;
         HIWORD(v3) = *(_WORD *)(v1 + 50);
         LOWORD(v4) = *(_WORD *)(v1 + 178);
