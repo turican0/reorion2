@@ -52,6 +52,7 @@
 #endif
 
 extern "C" uint8_t dseg[];
+extern "C" uint8_t *dword_197F98, *dword_19306C, *dword_1930D4, *dword_192B18, *dword_197F9C;   // wave 184: .game dumps
 extern "C" void PortRec_GameRegions(const uint8_t* ptr[10], uint32_t size[10]);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
 
@@ -935,13 +936,14 @@ void GrDump(const std::string& path)
     // ships, leaders) in this order, to compare with DOSBOX_GR_MEM (tools gamecmp.py)
     if (SDL_getenv("REORION2_GAMEPLAY_GAME"))
         if (FILE* d = std::fopen((path + ".game").c_str(), "wb")) {
-            static const struct { uint32_t c; uint32_t size; } arr[] = {
-                { 0x197F98, 8 * 3753 }, { 0x19306C, 72 * 113 }, { 0x1930D4, 360 * 17 },
-                { 0x192B18, 250 * 361 }, { 0x197F9C, 500 * 129 }, { 0x1930DC, 67 * 59 } };
+            // five of them are real C pointers (orion_data.c), the leaders sit in dseg
+            const struct { const uint8_t* p; uint32_t size; } arr[] = {
+                { dword_197F98, 8 * 3753 }, { dword_19306C, 72 * 113 }, { dword_1930D4, 360 * 17 },
+                { dword_192B18, 250 * 361 }, { dword_197F9C, 500 * 129 },
+                { reinterpret_cast<const uint8_t*>((uintptr_t)*reinterpret_cast<uint32_t*>(dseg + 0x1B0DC)), 67 * 59 } };
             for (const auto& a : arr) {
-                const uintptr_t p = *reinterpret_cast<uint32_t*>(dseg + (a.c - 0x178000));
                 std::vector<uint8_t> z(a.size, 0);
-                std::fwrite(p ? reinterpret_cast<const void*>(p) : z.data(), 1, a.size, d);
+                std::fwrite(a.p ? a.p : z.data(), 1, a.size, d);
             }
             std::fclose(d);
         }
@@ -1010,6 +1012,19 @@ void PortRec_Sync(void)
 // The game closed a file it wrote (port_file.cpp).
 void PortRec_OnFileWritten(const char* path)
 {
+    // wave 184: REORION2_GAMEPLAY_SAVES=<dir> - every SAVE*.GAM the game writes, numbered
+    // (a 2 s folder poll missed saves written close together)
+    if (const char* sd = SDL_getenv("REORION2_GAMEPLAY_SAVES"); sd && *sd && path) {
+        const std::string name = std::filesystem::path(path).filename().string();
+        if (Upper(name).rfind("SAVE", 0) == 0) {
+            static int s_n = 0;
+            char num[16];
+            std::snprintf(num, sizeof num, "%03d_", ++s_n);
+            std::error_code ec;
+            std::filesystem::copy_file(path, std::string(sd) + "/" + num + name,
+                                       std::filesystem::copy_options::overwrite_existing, ec);
+        }
+    }
     if (!g_mode || !path) return;
     const std::string name = std::filesystem::path(path).filename().string();
     if (!IsGameFile(name) || Upper(name) == "MOX.SET") return;

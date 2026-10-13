@@ -7895,13 +7895,6 @@ uint8_t sub_EF629(int a1, int a2, int a3, int a4, int a5, int a6)
   char *v12; // edi
 
   result = a6;
-  if ( (unsigned)a2 >= 0x1000000u || (unsigned)a3 >= 0x1000000u || (unsigned)a4 >= 0x1000000u )   /* TEMP wave 184 */
-  {
-    char t[96];
-    sprintf(t, "EF629 a1=%08X a2=%08X a3=%08X a4=%08X a5=%X", a1, a2, a3, a4, a5);
-    PortDebug_Message(t);
-    PortDebug_Symbolize("EF629.caller", _ReturnAddress());
-  }
   if ( byte_1AAB24[a6] )
   {
     v7 = byte_1AAB1C[a6];

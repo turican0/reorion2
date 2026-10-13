@@ -3066,13 +3066,6 @@ LABEL_48:
     {
       v13 = v18[v12];
       v21 = (int16_t)v26;
-      if ( g_rngLogArmed )   /* TEMP wave 184: distance vs DOSBox DUMPREGS 7CFB7 */
-      {
-        char t[96];
-        sprintf(t, "DST d=%X thr=%X a=%d b=%d ax=%d ay=%d", (unsigned)sub_7B0B4(v26, v13), v22, (int16_t)v26, (int16_t)v13,
-                *(int16_t *)(dword_19306C + 113 * (int16_t)v26 + 15), *(int16_t *)(dword_19306C + 113 * (int16_t)v26 + 17));
-        PortDebug_Message(t);
-      }
       if ( sub_7B0B4(v26, v13) < v22 )
         v11 = 0;
       ++v12;

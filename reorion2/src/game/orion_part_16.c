@@ -11526,12 +11526,6 @@ void sub_101DE5(int a1, int a2)
 
   v4 = sub_101CC5(a1, a2);
   v5 = *(_WORD *)(a1 + 2 * a2 + 1478);
-  if ( g_rngLogArmed )   /* TEMP wave 184: vs DOSBox DUMPREGS 101E05 */
-  {
-    char t[96];
-    sprintf(t, "DE5 p=%d a2=%d v4=%d v5=%d", (int)(((uint8_t *)a1 - (uint8_t *)dword_197F98) / 3753), a2, v4, v5);
-    PortDebug_Message(t);
-  }
   v6 = v4;
   if ( v5 >= v4 )
   {

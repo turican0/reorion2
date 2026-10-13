@@ -2809,12 +2809,6 @@ char sub_8BEAB( int a1)
   v2 = -1;
   v3 = a1;
   v4 = 0;
-  if ( g_rngLogArmed )   /* TEMP wave 184: entry args vs DOSBox DUMPREGS */
-  {
-    char t[64];
-    sprintf(t, "BEA a1=%X f2f=%d c31a=%d", (unsigned)a1, (uint8_t)byte_199F2F, (uint8_t)byte_19C31A);
-    PortDebug_Message(t);
-  }
   while ( byte_199F2F )
   {
     if ( (uint8_t)byte_199F2F <= 1u )
@@ -3734,14 +3728,6 @@ int16_t sub_8CC15()
     {
       v4 = sub_1247A0(word_19999A - 1);
       v5 = v4;
-      if ( g_rngLogArmed && (_WORD)v4 )   /* TEMP wave 184: vs DOSBox 8CC83.. */
-      {
-        char t[96];
-        sprintf(t, "CC15 v=%d home=%d f40=%d f79=%d f22=%d f41=%d", (int16_t)v4, v7[(int16_t)v4],
-                *(uint8_t *)(113 * (int16_t)v4 + dword_19306C + 40), sub_79001(v4),
-                *(uint8_t *)(113 * (int16_t)v4 + dword_19306C + 22), *(char *)(113 * (int16_t)v4 + dword_19306C + 41));
-        PortDebug_Message(t);
-      }
       if ( (_WORD)v4 )
       {
         if ( !v7[(int16_t)v4] )
@@ -4090,12 +4076,6 @@ LABEL_25:
           v5 = (int16_t)v42;
           v6 = (int16_t)v7;
           LOBYTE(v28) = sub_8D43D(v39, (int16_t)v7, v42, v27);
-          if ( g_rngLogArmed )   /* TEMP wave 184: vs DOSBox DUMPREGS 8D36C / 8D371 */
-          {
-            char t[96];
-            sprintf(t, "D43 a=%X d=%X b=%X c=%X r=%d", v39 & 0xFFFF, (int16_t)v7 & 0xFFFF, v42 & 0xFFFF, v27 & 0xFFFF, (uint8_t)v28);
-            PortDebug_Message(t);
-          }
           LOBYTE(v6) = v28;
           if ( (_BYTE)v28 == 1 && (int16_t)++v20 > 150 )
           {
@@ -4850,12 +4830,6 @@ LABEL_13:
       v44 = v72;
       HIDWORD(v43) = SWORD1(a23);
       LOBYTE(v43) = sub_8CFFF(SWORD1(a22), SWORD1(a23), v72, 1, 1);   /* vlna 83: asm `test al, al` */
-      if ( g_rngLogArmed )   /* TEMP wave 184: star 7 right after placement */
-      {
-        char t[64];
-        sprintf(t, "S7 x=%d y=%d", *(int16_t *)(dword_19306C + 113 * 7 + 15), *(int16_t *)(dword_19306C + 113 * 7 + 17));
-        PortDebug_Message(t);
-      }
       if ( (_BYTE)v43 )
       {
         sub_120BB5(4, (int)&a19 + 2);

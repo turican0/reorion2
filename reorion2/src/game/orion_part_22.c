@@ -828,8 +828,11 @@ char sub_149890(unsigned int a1, int a2)
 // sound timing is not wired up yet (see port_sound); this only avoids the hang.
 void sub_149A20()
 {
-  if ( ++dword_18914C == 1 )
-    dword_18A5AC = (int (*)(_DWORD))sub_149B10;
+  /* wave 184: the original under DOS (DOSBox) finds no VxD and takes loc_149A85: the
+     ms counter stays sub_149B30 (set by sub_149890). Switching to sub_149B10 here made
+     the port read live time (GAMEPLAY source 19 is empty) - not deterministic. */
+  if ( ++dword_18914C == 1 && !dword_18A5AC )
+    dword_18A5AC = (int (*)(_DWORD))sub_149B30;
 }
 // 149B10: using guessed type int sub_149B10();
 // 149B30: using guessed type int sub_149B30();

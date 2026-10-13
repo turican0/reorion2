@@ -14,7 +14,10 @@ param(
     [switch]$Frames,
     [switch]$StepFrames,  # frame before each press (<label>_a.raw) and 300 ms after release (_b)
     [switch]$Gameplay,    # GAMEPLAY input.txt (the values the game read) - no clicks, frames compared
-    [string[]]$CtlExtra   # extra ctl lines, e.g. "DUMPREGS cond=eip:0x003487A0 label=rng" (into ctl_log.txt)
+    [string[]]$CtlExtra,  # extra ctl lines, e.g. "DUMPREGS cond=eip:0x003487A0 label=rng" (into ctl_log.txt)
+    [switch]$Slow,        # GAMEPLAY with the conf's cycles=auto (no speed-ups)
+    [int]$Cycles = 1000000,   # GAMEPLAY: fixed cycles per emulated ms - few timer IRQs per game work
+    [switch]$Turbo        # GAMEPLAY: DOSBox fast forward as well
 )
 $ErrorActionPreference = "Stop"
 $game = "C:\prenos\mastori2"
@@ -60,7 +63,16 @@ Set-Content -Encoding ascii "$out\ctl.cfg" $lines
 $env:DOSBOX_CTL_FILE = "$out\ctl.cfg"
 if ($StepFrames) { New-Item -ItemType Directory -Force "$out\stepframes" | Out-Null; $env:DOSBOX_STEPFRAMES = "$out\stepframes" }
 try {
-    $p = Start-Process $dbx -ArgumentList "-conf", $conf -PassThru -RedirectStandardError "$out\dosbox_stderr.txt"
+    # wave 184: GAMEPLAY feeds every outside value the game reads (ticks, AIL ms, time),
+    # so the emulation speed does not change the result - run at full speed
+    $dbxArgs = @("-conf", $conf)
+    if ($Gameplay -and -not $Slow) {
+        $dbxArgs += "-set", "cpu cycles=fixed $Cycles"
+        $env:DOSBOX_FASTHOOK = "1"   # full ctl checks only at the hooked EIPs
+        $env:DOSBOX_FASTVGA = "1"    # retrace waits end at once
+        if ($Turbo) { $env:DOSBOX_TURBO = "1" }
+    }
+    $p = Start-Process $dbx -ArgumentList $dbxArgs -PassThru -RedirectStandardError "$out\dosbox_stderr.txt"
     $last = (Select-String -Path "$sess\record.cfg" -Pattern '^SENDCLICK').Count
     $t0 = Get-Date
     while (-not $p.HasExited -and ((Get-Date) - $t0).TotalSeconds -lt $Secs) {
@@ -73,6 +85,9 @@ try {
 } finally {
     Remove-Item env:DOSBOX_CTL_FILE -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_STEPFRAMES -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_TURBO -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_FASTHOOK -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_FASTVGA -ErrorAction SilentlyContinue
     Start-Sleep 1
     foreach ($f in (Get-ChildItem $game -File)) {
         if (($f.Name -match '^SAVE\d+\.GAM$') -or ($f.LastWriteTime -ge $tStart -and -not (Test-Path (Join-Path "$out\keep" $f.Name)))) { [IO.File]::Delete($f.FullName) }
