@@ -3982,8 +3982,9 @@ LABEL_62:
         }
       }
     }
-    v21 = *((uint8_t *)&v33[497] + v20 + 1);
-    v48 = *(_DWORD *)((char *)&v33[498] + v20);
+    /* wave 184: IDA read v34 (ebp-1AEh = v33 + 1000) through v33; MSVC need not place them together */
+    v21 = v34[v20 - 5];
+    v48 = *(_DWORD *)&v34[v20 - 4];
     --v40;
     v60 = 0;
     v22 = *(_DWORD *)(dword_1AA1E0 + 32 * v21 + 4 * word_1AA24C);

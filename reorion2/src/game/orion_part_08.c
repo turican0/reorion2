@@ -618,7 +618,7 @@ LABEL_66:
             sub_77BF1();
             if ( v49 == word_199BB8 )
             {
-              sub_78B0E(v45);
+              v50 = sub_78B0E(v45);   /* wave 184: 89647 mov word_1999B8, ax */
               word_1999B8 = v50;
               if ( v50 == -1 )
                 goto LABEL_9;
@@ -1715,13 +1715,14 @@ int sub_8A97A(int16_t *a1)
   int16_t v5; // ax
   int v6; // eax
   int16_t v7; // ax
+  int16_t v8; // si
   int16_t v9; // [esp+0h] [ebp-Ch]
   char v10; // [esp+4h] [ebp-8h]
   char v11; // [esp+8h] [ebp-4h]
 
   v10 = byte_199BE0;
   v11 = 0;
-  sub_78B93(word_192248[word_1999B8]);
+  v8 = sub_78B93(word_192248[word_1999B8]);   /* wave 184: 8A9A8 mov esi, eax */
   if ( byte_199BE0 )
     byte_199BE0 = 0;
   sub_1191CA((int)sub_84E9D, 1);
@@ -1735,7 +1736,7 @@ int sub_8A97A(int16_t *a1)
   LOWORD(v3) = sub_84E9D();
   sub_1077D(v3, 0, 639, a1);
   sub_1172FC();
-  v4 = (int16_t *)sub_C8D49();
+  v4 = (int16_t *)sub_C8D49(v8);   /* wave 184: 8AA2F movsx eax, si */
   if ( (int16_t)v4 > -1 )
   {
     LOBYTE(v1) = 0;
@@ -2408,7 +2409,7 @@ int sub_8B7A5(int16_t *a1)
   LOWORD(v5) = sub_84E9D();
   sub_1077D(v5, 0, 639, a1);
   sub_1172FC();
-  sub_C8D3C(v2);
+  v6 = sub_C8D3C(v2);   /* wave 184: 8B860 cwde - the result was dropped */
   if ( v6 > -1 )
   {
     v4 = 17 * v6;

@@ -2503,8 +2503,7 @@ extern int sub_788AE(int a1);
 extern int16_t sub_789D4();   /* vlna 158: vraci index lodi */
 // plna signatura: int sub_78ABA( int a1);
 extern int sub_78ABA();
-// plna signatura: void sub_78B0E( int a1);
-extern void sub_78B0E();
+int sub_78B0E(int a1);   /* wave 184: returns esi, the group index */
 // plna signatura: int16_t sub_78B93( int a1);
 extern int16_t sub_78B93();
 // plna signatura: int16_t sub_78BB2( int a1);
@@ -5166,10 +5165,8 @@ extern void sub_C87DE();
 int sub_C8981(int16_t *a1, int16_t *a2, _WORD *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_C8BE0(int16_t *a1, int16_t *a2, _WORD *a3);
 int sub_C8BE0(int16_t *a1, int16_t *a2, _WORD *a3);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_C8D3C( int a1);
-extern void sub_C8D3C();
-// plna signatura: int sub_C8D49();
-extern int sub_C8D49();
+int sub_C8D3C(int a1);   /* wave 184: returns sub_C8DB8's eax */
+int sub_C8D49(int a1);   /* wave 184: sub_C8DB8(ax, 0) */
 // plna signatura: int sub_C8D56( int a1);
 extern int sub_C8D56();
 // plna signatura: int sub_C8DB8( int a1, int a2);
@@ -11609,7 +11606,6 @@ int16_t sub_788A2(int16_t a1);
 int sub_788AE(int a1);
 void sub_789D4();
 int sub_78ABA(int16_t a1);
-void sub_78B0E(int16_t a1);
 int16_t sub_78B93(int16_t a1);
 int16_t sub_78BB2(int16_t a1);
 int16_t sub_78BCF(int16_t a1);
@@ -12949,8 +12945,6 @@ void sub_C87C1();
 void sub_C87DE();
 int sub_C8981(int16_t *a1, int16_t *a2, _WORD *a3);
 int sub_C8BE0(int16_t *a1, int16_t *a2, _WORD *a3);
-void sub_C8D3C(int16_t a1);
-int sub_C8D49();
 int sub_C8D56(int16_t a1);
 void sub_C8DB8(int16_t a1, char a2);
 void sub_C8F1C();

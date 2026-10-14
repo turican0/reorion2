@@ -3156,6 +3156,22 @@ void sub_E9D62(int a1, int16_t *a2)
           *v10 = i;
         }
       }
+      if ( PortDebug_EnvInt("REORION2_E9D62_TRACE", 0) )   /* TEMP wave 184 */
+      {
+        char t[600]; int q, n = 0;
+        n += sprintf(t + n, "E9D62 n=%d ev=%02X%04X list=", word_1AA3E8, (uint8_t)byte_19AC86, (uint16_t)word_19AC88);
+        for ( q = 0; q < word_1AA3E8; ++q ) n += sprintf(t + n, "%02X", *(uint8_t *)(dword_1AA37C + q));
+        n += sprintf(t + n, " ac=");
+        for ( q = 0; q < 73; ++q ) if ( *(uint16_t *)(dword_1AA3AC + 2 * q) ) n += sprintf(t + n, "%d:%X,", q, *(uint16_t *)(dword_1AA3AC + 2 * q));
+        PortDebug_Message(t);
+        {
+          static int s_call;
+          char fn[64];
+          int f;
+          sprintf(fn, "e9d62_%03d.ships", s_call++);
+          if ( (f = fopen(fn, "wb")) > 0 ) { fwrite((void *)dword_197F9C, 1, 64500, f); fclose(f); }
+        }
+      }
       sub_FE9B5((_BYTE *)dword_1AA37C, word_1AA3E8);
       if ( (uint8_t)byte_199F3A <= 1u )
       {

@@ -11209,7 +11209,7 @@ LABEL_97:
           else
             v29 = v84;
           v30 = sub_78013(v29);
-          sub_78B0E(v30);
+          v31 = sub_78B0E(v30);   /* wave 184: 86906 mov word_1999B8, ax */
           word_1999B8 = v31;
           sub_7229E(0, 0);
           sub_77BF1();

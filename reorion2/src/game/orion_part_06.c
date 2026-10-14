@@ -5844,7 +5844,7 @@ int16_t sub_78770( int a1)
   sub_8A4C4();
   if ( v2 > -1 && sub_77FF5(v2) == a1 && *(char *)(dword_197F9C + 129 * v2 + 100) < 3 )
   {
-    sub_78B0E(v2);
+    v3 = sub_78B0E(v2);   /* wave 184: 787B2 mov word_1999B8, ax */
     word_1999B8 = v3;
   }
   else
@@ -6077,13 +6077,17 @@ int sub_78ABA( int a1)
 
 
 //----- (00078B0E) --------------------------------------------------------
-void sub_78B0E( int a1)
+/* wave 184: returns esi (78B8C mov eax, esi) - the index into word_192248 of the
+   group holding ship a1, 0 if none */
+int sub_78B0E( int a1)
 {
   char v1; // cl
   int16_t i; // dx
   char v3; // ch
   int16_t v4; // [esp+0h] [ebp-4h]
+  int v5; // esi
 
+  v5 = 0;
   v1 = 0;
   for ( i = 0; i < word_199A02 && !v1; ++i )
   {
@@ -6091,10 +6095,11 @@ void sub_78B0E( int a1)
     v4 = word_192248[i];
     while ( !v3 )
     {
-      if ( *(int16_t *)((char *)&word_1975D4 + 5 * v4) == a1 )
+      if ( *(int16_t *)((char *)&word_1975D4 + 5 * v4) == (int16_t)a1 )
       {
         v3 = 1;
         v1 = 1;
+        v5 = i;   /* 78B61 mov esi, edx */
       }
       else
       {
@@ -6104,7 +6109,7 @@ void sub_78B0E( int a1)
         v3 = 1;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x785E5 je epilog funkce */
+  return v5;
 }
 // 78B8E: control flows out of bounds to 785E5
 // 192248: using guessed type int16_t word_192248[500];

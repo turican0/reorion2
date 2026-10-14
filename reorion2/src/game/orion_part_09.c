@@ -3858,7 +3858,7 @@ void sub_97D59( int a1, int16_t *a2, char *a3)
       }
       else
       {
-        sub_78B0E(v6);
+        v15 = (int16_t *)(intptr_t)sub_78B0E(v6);   /* wave 184: 97E75 mov edi, eax */
         a2 = v15;
         if ( (int16_t)v15 == -1 )
         {

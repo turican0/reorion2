@@ -881,6 +881,7 @@ void PortRec_Flush(void) { FlushEvents(); }
 // REORION2_GAMEPLAY_FRAMES=<dir>: frames at the original's points - c<n>.raw at the
 // frame wait after the n-th click taken, t<n>.raw every 200th frame wait - with the
 // cursor position (2 x int16) after the pixels, as engine.cpp gr_dump writes them.
+extern "C" void PortDebug_RngRingFlush();   // reorion2.cpp, REORION2_RNG_RING
 namespace {
 enum { kGrSrc = 22, kGrClickFlag = 14, kGrWaitSrc = 3 };
 struct GrRun { uint32_t v; uint64_t n; };
@@ -925,6 +926,7 @@ GrRun* GrCur(int s)
                 g_grEnd[s] = true;
                 Log("GAMEPLAY: END source %d - live from here (after click frame c%llu, wait %llu)", s,
                     (unsigned long long)g_grClicks, (unsigned long long)g_grWaits);
+                PortDebug_RngRingFlush();   // wave 184: REORION2_RNG_RING
             }
             return nullptr;
         }

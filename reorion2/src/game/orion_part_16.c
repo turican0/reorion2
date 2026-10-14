@@ -7416,7 +7416,7 @@ LABEL_25:
       v30 = v13;
       if ( (int16_t)v13 == -1 || *(int16_t *)((uint8_t*)dword_1930D4 + 17 * (int16_t)v13) != -1 )
       {
-        v30 = sub_C8D49();
+        v30 = sub_C8D49(v28);   /* wave 184: FDD54 movsx eax, di */
       }
       else
       {

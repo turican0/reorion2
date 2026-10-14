@@ -2499,23 +2499,28 @@ int sub_C8BE0(int16_t *a1, int16_t *a2, _WORD *a3)
 
 
 //----- (000C8D3C) --------------------------------------------------------
-void sub_C8D3C( int a1)
+/* wave 184: returns eax of sub_C8DB8 (shared tail loc_C8D2E) */
+int sub_C8D3C( int a1)
 {
+  int result; // eax
+
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   byte_1831CA = 2;
-  sub_C8DB8(a1, 0);
+  result = sub_C8DB8(a1, 0);
   byte_1831CA = 0;
+  return result;
 }
 // 1831CA: using guessed type char byte_1831CA;
 
 
 //----- (000C8D49) --------------------------------------------------------
-int sub_C8D49()
+/* wave 184: C8D4A cwde, C8D4B xor edx, edx - sub_C8DB8(ax, 0) */
+int sub_C8D49( int a1)
 {
   int result; // eax
 
   byte_1831CA = 1;
-  result = sub_C8DB8();
+  result = sub_C8DB8((int16_t)a1, 0);
   byte_1831CA = 0;
   return result;
 }
