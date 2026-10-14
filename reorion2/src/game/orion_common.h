@@ -5394,8 +5394,7 @@ extern void sub_D302E();
 extern void sub_D3125();
 // plna signatura: int sub_D3318(int16_t *a1, int16_t *a2);
 int sub_D3318(int16_t *a1, int16_t *a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_D33D1(int a1);
-extern void sub_D33D1();
+int sub_D33D1(int a1, int a2);   /* wave 184: returns ebx, a2 = caller's edx */
 // plna signatura: int sub_D356F(int a1, int a2);
 extern int sub_D356F();
 // plna signatura: int16_t sub_D3576( int a1, int a2, int a3, _WORD *a4, int a5);
@@ -13065,7 +13064,6 @@ int sub_D2CAE(int a1, int a2);
 void sub_D302E();
 void sub_D3125();
 int sub_D3318(int16_t *a1, int16_t *a2);
-void sub_D33D1(int a1);
 int sub_D356F(int a1, int a2);
 int16_t sub_D3576(int16_t a1, int16_t a2, int16_t a3, _WORD *a4, char a5);
 int16_t sub_D383F(int16_t a1, int16_t a2, _WORD *a3);

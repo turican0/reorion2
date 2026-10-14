@@ -55,6 +55,7 @@ extern "C" uint8_t dseg[];
 extern "C" uint8_t *dword_197F98, *dword_19306C, *dword_1930D4, *dword_192B18, *dword_197F9C;   // wave 184: .game dumps
 extern "C" void PortRec_GameRegions(const uint8_t* ptr[10], uint32_t size[10]);
 extern "C" void PortDebug_Backtrace(const char* tag, int frames);
+extern "C" void PortDebug_GrTrace(int src, unsigned value);   // wave 184 (reorion2.cpp)
 
 namespace {
 
@@ -890,6 +891,7 @@ bool g_grEnd[kGrSrc];
 int g_grInit = 0;   // 0 not yet, 1 off, 2 on
 bool g_grClickDump = false;
 uint64_t g_grClicks = 0, g_grWaits = 0;
+uint64_t g_grReads[kGrSrc];   // wave 184: reads per source so far (<frame>.cnt)
 
 bool GrOn()
 {
@@ -919,7 +921,11 @@ GrRun* GrCur(int s)
 {
     while (!g_grLeft[s]) {
         if (g_grPos[s] >= g_grRuns[s].size()) {
-            if (!g_grEnd[s]) { g_grEnd[s] = true; Log("GAMEPLAY: END source %d - live from here", s); }
+            if (!g_grEnd[s]) {
+                g_grEnd[s] = true;
+                Log("GAMEPLAY: END source %d - live from here (after click frame c%llu, wait %llu)", s,
+                    (unsigned long long)g_grClicks, (unsigned long long)g_grWaits);
+            }
             return nullptr;
         }
         g_grLeft[s] = g_grRuns[s][g_grPos[s]++].n;
@@ -930,6 +936,11 @@ GrRun* GrCur(int s)
 void GrDump(const std::string& path)
 {
     PortVga_DumpShown(path.c_str());
+    if (SDL_getenv("REORION2_GAMEPLAY_CNT"))   // wave 184: <frame>.cnt as DOSBOX_GR_CNT
+        if (FILE* c = std::fopen((path + ".cnt").c_str(), "wt")) {
+            for (int s = 0; s < kGrSrc; ++s) std::fprintf(c, "%d %llu\n", s, (unsigned long long)g_grReads[s]);
+            std::fclose(c);
+        }
     if (SDL_getenv("REORION2_GAMEPLAY_DSEG"))   // <frame>.dseg, as DOSBOX_GR_DSEG
         if (FILE* d = std::fopen((path + ".dseg").c_str(), "wb")) { std::fwrite(dseg, 1, 0x5DCD0, d); std::fclose(d); }
     // wave 184: <frame>.game - the heap game arrays (players, stars, planets, colonies,
@@ -956,14 +967,18 @@ void GrDump(const std::string& path)
 }  // namespace
 
 int PortGr_Active(void) { return GrOn() ? 1 : 0; }
+// wave 184: reads of source s so far (debug probes)
+unsigned long long PortGr_Reads(int s) { return (s >= 0 && s < kGrSrc) ? g_grReads[s] : 0; }
 
 // one read at point src of the original: its recorded value, or live after the record
 uint32_t PortGr_Value(int src, uint32_t live)
 {
     if (!GrOn() || src < 0 || src >= kGrSrc) return live;
+    ++g_grReads[src];
     GrRun* r = GrCur(src);
     if (!r) return live;
     --g_grLeft[src];
+    PortDebug_GrTrace(src, r->v);   // wave 184: REORION2_GR_TRACE
     if (src == kGrClickFlag && (r->v & 0xFFFF)) g_grClickDump = true;
     return r->v;
 }
@@ -977,7 +992,8 @@ uint32_t PortGr_Wait(uint32_t base, int n)
         GrRun* r = GrCur(kGrWaitSrc);
         if (!r) return base + (uint32_t)n;
         const int32_t d = (int32_t)(r->v - base);
-        if (d < 0 || d >= n) { --g_grLeft[kGrWaitSrc]; return r->v; }
+        if (d < 0 || d >= n) { --g_grLeft[kGrWaitSrc]; ++g_grReads[kGrWaitSrc]; return r->v; }
+        g_grReads[kGrWaitSrc] += g_grLeft[kGrWaitSrc];
         g_grLeft[kGrWaitSrc] = 0;   // the whole run is spent in the loop
     }
 }

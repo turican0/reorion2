@@ -1061,6 +1061,14 @@ void sub_C702E( int a1, int16_t *a2)
   int16_t v6; // [esp+0h] [ebp-8h] BYREF
   int16_t v7; // [esp+4h] [ebp-4h] BYREF
 
+  if ( PortDebug_EnvInt("REORION2_C702E_TRACE", 0) )   /* TEMP wave 184 */
+  {
+    extern unsigned long long PortGr_Reads(int s);
+    char t[64];
+    sprintf(t, "C702E a1=%d k%llu", a1, PortGr_Reads(14));
+    PortDebug_Message(t);
+    PortDebug_Symbolize("C702E.caller", _ReturnAddress());
+  }
   if ( word_199A08 )
     byte_1831C4 = 0;
   word_1A123E = sub_124C3B();
@@ -10548,7 +10556,10 @@ int sub_D3318(int16_t *a1, int16_t *a2)
 
 
 //----- (000D33D1) --------------------------------------------------------
-void sub_D33D1(int a1)
+/* wave 184: rewritten from asm - returns ebx (D3568, the caller keeps it, D4E64);
+   a2 = the caller's edx (2 * word_1AA218): idiv at D34A3 has no cdq, edx:eax is
+   divided with edx = (a2 & ~0xFF) | [a1+22] (D3443 mov dl), then the remainder. */
+int sub_D33D1(int a1, int a2)
 {
   int16_t v2; // cx
   int v3; // ebx
@@ -10566,6 +10577,7 @@ void sub_D33D1(int a1)
   int16_t v15; // [esp+4h] [ebp-Ch]
   uint8_t v16; // [esp+8h] [ebp-8h]
   uint8_t v17; // [esp+Ch] [ebp-4h]
+  int64_t v18; // edx:eax
 
   v2 = *(char *)(a1 + 99);
   v3 = 0;
@@ -10583,6 +10595,7 @@ void sub_D33D1(int a1)
     v9 = *(_BYTE *)(a1 + 22);
     if ( v9 < *(_BYTE *)(v8 + 2) )
       v3 += 5 * (*(uint8_t *)(v8 + 2) - v9);
+    a2 = (a2 & ~0xFF) | v9;   /* D3443 mov dl, [esi+16h] */
     v16 = 0;
     v17 = 0;
     v15 = 8;
@@ -10592,7 +10605,10 @@ void sub_D33D1(int a1)
       if ( v10 )
       {
         v11 = 14 * v10;
-        v12 = *(int *)((char *)&dword_17D916 + 23 * *(int16_t *)((char *)&word_17E07F + 13 * word_17F80D[v11])) / 100;
+        /* D34A3 idiv dword 100 without cdq: edx:eax */
+        v18 = ((int64_t)a2 << 32) | (uint32_t)*(int *)((char *)&dword_17D916 + 23 * *(int16_t *)((char *)&word_17E07F + 13 * word_17F80D[v11]));
+        v12 = (int)(v18 / 100);
+        a2 = (int)(v18 % 100);
         BYTE1(v12) = byte_17F80F[v11 * 2];
         if ( BYTE1(v12) )
         {
@@ -10620,14 +10636,16 @@ void sub_D33D1(int a1)
     }
     if ( v3 )
     {
-      if ( *(_BYTE *)(a1 + 16) < 5u )
-        memcmp(
-          (char *)a1,
-          (char *)((uint8_t*)dword_197F98 + 3753 * v2 + 806 + 99 * *(uint8_t *)(a1 + 16)),
-          99);
+      /* D3559 repe cmpsb: same as the player's design -> 0 */
+      if ( *(_BYTE *)(a1 + 16) < 5u
+        && !memcmp(
+              (char *)a1,
+              (char *)((uint8_t*)dword_197F98 + 3753 * v2 + 806 + 99 * *(uint8_t *)(a1 + 16)),
+              99) )
+        v3 = 0;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD2AA2 je epilog funkce */
+  return v3;
 }
 // D356A: control flows out of bounds to D2AA2
 // 17D916: using guessed type int dword_17D916;
@@ -11969,8 +11987,7 @@ LABEL_136:
         if ( !*(_BYTE *)(v88 + 100) )
         {
           ServiceAudioTick_FE8BE(v87, v86, v88, (int16_t *)v44);
-          sub_D33D1(v88);
-          v90 = v89;
+          v90 = sub_D33D1(v88, v86);   /* wave 184: D4E64 mov ecx, eax; edx = 2 * word_1AA218 */
           v44 = (int)(v88 - dword_197F9C) / 129;
           v91 = (_DWORD *)(dword_1AA1CC + 4 * v44);
           *v91 = v90;

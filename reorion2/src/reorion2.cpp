@@ -440,6 +440,36 @@ extern "C" void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller)
     std::fflush(f);
 }
 
+// TOOL (wave 184): REORION2_GR_TRACE=<file> - every GAMEPLAY input read (sources 8-18) with
+// the game function that called the accessor, to compare with DOSBox DUMPREGS at the accessors
+extern "C" void PortDebug_GrTrace(int src, unsigned value)
+{
+    static FILE* f = nullptr;
+    static bool tried = false, inited = false;
+    static unsigned long long n = 0;
+    if (!tried) {
+        tried = true;
+        if (const char* p = std::getenv("REORION2_GR_TRACE"); p && *p) f = std::fopen(p, "w");
+    }
+    if (!f || src < 8 || src > 18) return;
+    HANDLE proc = GetCurrentProcess();
+    if (!inited) { SymSetOptions(SYMOPT_UNDNAME); SymInitialize(proc, nullptr, TRUE); inited = true; }
+    void* fr[6] = {};
+    // frames: this, PortGr_Value, the accessor (sub_123ABA..), its caller, 2 more callers
+    const USHORT got = RtlCaptureStackBackTrace(0, 6, fr, nullptr);
+    unsigned char buf[sizeof(SYMBOL_INFO) + 256] = {0};
+    auto* sym = reinterpret_cast<SYMBOL_INFO*>(buf);
+    sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+    sym->MaxNameLen = 255;
+    std::fprintf(f, "%llu %d %X", n++, src, value);
+    for (USHORT k = 3; k < got; ++k) {
+        DWORD64 disp = 0;
+        if (SymFromAddr(proc, (DWORD64)fr[k], &disp, sym)) std::fprintf(f, " %s+0x%llx", sym->Name, (unsigned long long)disp);
+        else std::fprintf(f, " ?");
+    }
+    std::fprintf(f, "\n");
+}
+
 extern "C" void PortDebug_Symbolize(const char* tag, void* addr)
 {
     static bool inited = false;
