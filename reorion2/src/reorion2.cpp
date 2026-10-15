@@ -416,9 +416,40 @@ static const char* g_rngRingPath = nullptr;
 
 static void GrRingFlush();
 
+// TOOL (wave 184): REORION2_MEM_RING=<file> - PortDebug_MemRing(tag, p, len) copies game memory
+// into a static buffer (records: tag, len, bytes), written by PortDebug_RngRingFlush
+static unsigned char g_memRing[32 << 20];
+static size_t g_memRingN = 0;
+static int g_memRingOn = -1;
+static const char* g_memRingPath = nullptr;
+
+extern "C" void PortDebug_MemRing(unsigned tag, const void* p, unsigned len)
+{
+    if (g_memRingOn < 0) {
+        g_memRingPath = std::getenv("REORION2_MEM_RING");
+        g_memRingOn = g_memRingPath && *g_memRingPath;
+    }
+    if (!g_memRingOn || g_memRingN + 8 + len > sizeof(g_memRing)) return;
+    memcpy(g_memRing + g_memRingN, &tag, 4);
+    memcpy(g_memRing + g_memRingN + 4, &len, 4);
+    memcpy(g_memRing + g_memRingN + 8, p, len);
+    g_memRingN += 8 + len;
+}
+
+static void MemRingFlush()
+{
+    if (g_memRingOn != 1) return;
+    g_memRingOn = 0;
+    if (FILE* f = std::fopen(g_memRingPath, "wb")) {
+        std::fwrite(g_memRing, 1, g_memRingN, f);
+        std::fclose(f);
+    }
+}
+
 extern "C" void PortDebug_RngRingFlush()
 {
     GrRingFlush();
+    MemRingFlush();
     if (!g_rngRingPath) return;
     FILE* f = std::fopen(g_rngRingPath, "w");
     g_rngRingPath = nullptr;
@@ -483,7 +514,7 @@ extern "C" void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller)
 // TOOL (wave 184): REORION2_GR_TRACE=<file> - every GAMEPLAY input read (sources 8-18) with
 // the game function that called the accessor, to compare with DOSBox DUMPREGS at the accessors
 // REORION2_GR_RING=<file>: the same kept in memory (frames only), written by PortDebug_RngRingFlush
-struct GrRingEntry { int src; unsigned value; void* fr[3]; };
+struct GrRingEntry { int src; unsigned value; void* fr[6]; };
 static GrRingEntry g_grRing[1 << 18];
 static unsigned g_grRingN = 0;
 static const char* g_grRingPath = nullptr;
@@ -499,9 +530,9 @@ extern "C" void PortDebug_GrTrace(int src, unsigned value)
         else if ((p = std::getenv("REORION2_GR_RING")) && *p) g_grRingPath = p;
     }
     if (g_grRingPath && src >= 8 && src <= 18 && g_grRingN < (1u << 18)) {
-        void* fr[6] = {};
-        RtlCaptureStackBackTrace(0, 6, fr, nullptr);
-        g_grRing[g_grRingN++] = GrRingEntry{ src, value, { fr[3], fr[4], fr[5] } };
+        void* fr[9] = {};
+        RtlCaptureStackBackTrace(0, 9, fr, nullptr);
+        g_grRing[g_grRingN++] = GrRingEntry{ src, value, { fr[3], fr[4], fr[5], fr[6], fr[7], fr[8] } };
         return;
     }
     if (!f || src < 8 || src > 18) return;

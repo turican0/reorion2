@@ -526,7 +526,6 @@ void sub_102FA8( int a1, int a2, int a3, int a4)
 
 
 //----- (00102FD8) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */
 // PORT (vlna 61): REKONSTRUOVANO Z ASM (IDA to vzdalo: "call analysis failed
 // (funcsize=111)"). Tohle je vypis textu do obdelniku se ZMENSOVANIM, dokud se
 // text nevejde na vysku - prave jim se kresli popisky v rameccich obrazovky
@@ -734,19 +733,28 @@ void sub_10324A()
 
 
 //----- (00103259) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=44)) - nutno dohledat rucne v IDA @ 0x10327D */
-_DWORD sub_103259(_DWORD _p0)
+/* wave 184: from asm (Hex-Rays failed) - centred text: sub_10370A first only measures
+   (eax = edx = 0), then x = a2 - (word_1ACEB8 - word_1B3EA0) / 2, at least 0 */
+int sub_103259(int a1, int a2, int a3, int a4, int a5)
 {
-  DECOMP_TODO("call analysis failed (funcsize=44)");
+  int16_t v6; // [var_8]
+  int v7;     // esi
+
+  v6 = word_1B3EA0;
+  sub_10370A(0, 0, (int16_t)a3, a4, 0, 0, 0);
+  v7 = (int16_t)a2 - ((int16_t)word_1ACEB8 - v6) / 2;   /* 10328D sub / cdq / sar */
+  if ( (int16_t)v7 < 0 )
+    v7 = 0;
+  return sub_10370A((int16_t)a1, (int16_t)v7, (int16_t)a3, a4, 2, 1, a5);
 }
 
 
 //----- (001032D8) --------------------------------------------------------
-int sub_1032D8(int a1)
+/* wave 184: 1032DB push [arg_0] - eax, edx, ebx, ecx and one stack argument go on */
+int sub_1032D8(int a1, int a2, int a3, int a4, int a5)
 {
-  return sub_103259(a1);
+  return sub_103259((int16_t)a1, (int16_t)a2, (int16_t)a3, a4, a5);
 }
-// 103259: using guessed type _DWORD sub_103259(_DWORD);
 
 
 //----- (001032FB) --------------------------------------------------------
@@ -777,7 +785,6 @@ int sub_103313(int a1)
   int v15; // [esp+1090h] [ebp+7Eh]
 
   v10 = a1;   /* wave 181: v10 saved by the prologue (push eax) */
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v14 = fopen(a1, aRb);
       // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
     v1 = fopen(v9, aRb);
@@ -1128,15 +1135,15 @@ int sub_103915(int a1, int x, int y, int str, int w)
 
 
 //----- (00103933) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103948 */
-_DWORD sub_103933( int _p0, _DWORD _p1)
+/* wave 184: from asm (Hex-Rays failed) - sub_103915 with the second stack argument
+   passed on: eax = x, edx = y, ebx = width, ecx = text, stack arg_0, arg_4 (retn 8) */
+int sub_103933(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  DECOMP_TODO("call analysis failed (funcsize=14)");
+  return sub_10370A((int16_t)a1, (int16_t)a2, (int16_t)a3, a4, (int16_t)a5, 1, a6);
 }
 
 
 //----- (00103952) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */
 // PORT (vlna 61): REKONSTRUOVANO Z ASM (IDA to vzdalo: "call analysis failed").
 // Zmeri, kolik radku zabere text `a2` pri sirce `a1` - kresli "na sucho"
 // pres sub_10370A s nulovymi souradnicemi a vrati citac radku.
@@ -1155,7 +1162,6 @@ int sub_103952(int a1, int a2)
 
 
 //----- (00103971) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=13)) - nutno dohledat rucne v IDA @ 0x103983 */
 /* wave 183: from asm 103971-10398F - measure only (sub_10370A with x = y = 0
    and draw flag 0: eax = width, edx = text, ebx = style), result word_1A4EBA */
 int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2)
@@ -7222,7 +7228,7 @@ int16_t sub_10988E(int a1)
                 1u,
                 1403);
         sub_120BB5(4, (int)&unk_183B1E);
-        sub_1032D8(dword_1AD1F0);
+        sub_1032D8(0, 24, 186, (int)(intptr_t)v22, dword_1AD1F0);   /* wave 184: 109C7D eax = 0, edx = 18h, ebx = 0BAh, ecx = esi */
         v16 = 186;
         sub_120BB5(3, (int)&unk_183B1E);
         v13 = (_WORD *)((char *)v22 + 103);

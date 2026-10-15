@@ -2769,33 +2769,34 @@ int sub_D93F8( int a1, int a2, _WORD *a3)
 
 //----- (000D94B3) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
-void sub_D94B3(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        hr_int128_t a23,
-        int64_t a24,
-        int64_t a25,
-        int64_t a26)
+/* wave 184: the frame above the moved ebp (Hex-Rays made it arguments a5..a26) */
+#pragma pack(push, 1)
+typedef struct {
+  int a5;
+  int a6;
+  int a7;
+  int a8;
+  int a9;
+  int a10;
+  int a11;
+  int a12;
+  int a13;
+  int a14;
+  int a15;
+  int a16;
+  int a17;
+  int a18;
+  int a19;
+  int a20;
+  int a21;
+  int a22;
+  hr_int128_t a23;
+  int64_t a24;
+  int64_t a25;
+  int64_t a26;
+} frameD94B3_t;
+#pragma pack(pop)
+void sub_D94B3(int a1, int a2, int a3, int a4)
 {
   _WORD *v26; // edi
   int v27; // esi
@@ -2818,6 +2819,30 @@ void sub_D94B3(
   _BYTE blkD94B3_v43[72];
 #define v43 ((_BYTE *)(blkD94B3_v43 + 0))
 
+  frameD94B3_t frmD94B3;
+  memset(&frmD94B3, 0, sizeof(frmD94B3));
+#define a5 (frmD94B3.a5)
+#define a6 (frmD94B3.a6)
+#define a7 (frmD94B3.a7)
+#define a8 (frmD94B3.a8)
+#define a9 (frmD94B3.a9)
+#define a10 (frmD94B3.a10)
+#define a11 (frmD94B3.a11)
+#define a12 (frmD94B3.a12)
+#define a13 (frmD94B3.a13)
+#define a14 (frmD94B3.a14)
+#define a15 (frmD94B3.a15)
+#define a16 (frmD94B3.a16)
+#define a17 (frmD94B3.a17)
+#define a18 (frmD94B3.a18)
+#define a19 (frmD94B3.a19)
+#define a20 (frmD94B3.a20)
+#define a21 (frmD94B3.a21)
+#define a22 (frmD94B3.a22)
+#define a23 (frmD94B3.a23)
+#define a24 (frmD94B3.a24)
+#define a25 (frmD94B3.a25)
+#define a26 (frmD94B3.a26)
   v37 = a4;   /* wave 181: v37 saved by the prologue (push ecx) */
   v38 = a3;   /* wave 181: v38 saved by the prologue (push ebx) */
   v39 = a2;   /* wave 181: v39 saved by the prologue (push edx) */
@@ -2954,6 +2979,28 @@ LABEL_21:
   }
   goto LABEL_23;
 #undef v43
+#undef a5
+#undef a6
+#undef a7
+#undef a8
+#undef a9
+#undef a10
+#undef a11
+#undef a12
+#undef a13
+#undef a14
+#undef a15
+#undef a16
+#undef a17
+#undef a18
+#undef a19
+#undef a20
+#undef a21
+#undef a22
+#undef a23
+#undef a24
+#undef a25
+#undef a26
 }
 // D9701: control flows out of bounds to D87B1
 // D95BC: inconsistent variable size for '^7E0.16'
@@ -2978,10 +3025,19 @@ LABEL_21:
 
 
 //----- (000D97EE) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=26)) - nutno dohledat rucne v IDA @ 0xD9830 */
-int64_t sub_D97EE(_DWORD _p0, _DWORD _p1)
+/* wave 184: from asm (Hex-Rays failed) - sub_D94B3(star, 0, a1, a2) for every star with an
+   entry in the word_1AA24C row of dword_1AA1C8 (146 bytes per player); shared epilogue D775E */
+int sub_D97EE(int a1, int a2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=26)");
+  int16_t v3; // si
+
+  for ( v3 = word_19999A; v3 > 0; )
+  {
+    --v3;
+    if ( *(int16_t *)(dword_1AA1C8 + 146 * word_1AA24C + 2 * v3) != -1 )
+      sub_D94B3(v3, 0, a1, a2);
+  }
+  return 0;
 }
 
 
@@ -5096,32 +5152,7 @@ void sub_DBB9F( int a1, int a2, int a3, int a4, int16_t *a5, _WORD *a6, _DWORD *
     dword_1AA240 = (int)v7;
     dword_1AA248 = 3753 * v16 + (uint8_t*)dword_197F98;
     word_1AA24C = a1;
-    sub_D94B3(
-      (int16_t)a4,
-      (int)v12,
-      1,
-      2,
-      v7[0],
-      v7[1],
-      v7[2],
-      v7[3],
-      v7[4],
-      v7[5],
-      v7[6],
-      v7[7],
-      v7[8],
-      v7[9],
-      v7[10],
-      v7[11],
-      v7[12],
-      v7[13],
-      v7[14],
-      v7[15],
-      v7[16],
-      v7[17],(int)LODWORD(v8),
-      v9,
-      v10,
-      v11);
+    sub_D94B3((int16_t)a4, (int)(intptr_t)v12, 1, 2);   /* wave 184: DBC24 - eax, edx, ebx, ecx only */
     if ( v13 != -1 )
     {
       *a5 = v13;
@@ -9876,8 +9907,8 @@ _BOOL1 sub_E10EA( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = (char *)(361 * a1 + (uint8_t*)dword_192B18);
-  sub_E1002(v1, *(int16_t *)(v1 + 277), *(int16_t *)(v1 + 293));
-  return v2 <= *(_DWORD *)((uint8_t*)dword_197F98 + 3753 * *v1 + 50);
+  v2 = sub_E1002(v1, *(int16_t *)(v1 + 277), *(int16_t *)(v1 + 293));   /* wave 184: E1120 cmp eax - the cost was dropped */
+  return v2 <= *(int *)((uint8_t*)dword_197F98 + 3753 * *v1 + 50);
 }
 // E1124: variable 'v2' is possibly undefined
 // 192B18: using guessed type int (uint8_t*)dword_192B18;

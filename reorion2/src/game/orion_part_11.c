@@ -1181,7 +1181,7 @@ int16_t sub_B1E77( int a1)
       v10 = word_1828AC[--v1];
       if ( v10 <= -100 )
       {
-        if ( *(_BYTE *)(dword_197F9C - 129 * (v10 + 100) + 100) != 4 || (v11 = sub_CDF5C(531), sub_77658(v11), v12) )
+        if ( *(_BYTE *)(dword_197F9C - 129 * (v10 + 100) + 100) != 4 || (v11 = sub_CDF5C(531), v12 = sub_77658(v11), (int16_t)v12) )   /* wave 184: B1EC0 test ax, ax */
         {
           if ( !sub_C5A84(v10, (uint8_t*)dword_192B18 + 361 * dword_19F7A8 + 277, 0xEu) )
           {

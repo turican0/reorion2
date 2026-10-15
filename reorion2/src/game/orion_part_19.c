@@ -6105,11 +6105,6 @@ _DWORD *sub_126CEB(int a1, int a2, int a3, int a4)
   v12 = dword_1BBA78[v10];
   v13 = v12 - v11;
   v4 = v11;
-    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
-    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
-    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
-    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
   fseek(dword_1BC26C, v11, SEEK_SET);
   switch ( v9 )
   {
@@ -6198,11 +6193,6 @@ _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int
   v16 = dword_1BBA74[v10];
   v13 = dword_1BBA78[v10];
   v15 = v13 - v16;
-    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
-    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
-    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
-    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
   fseek(dword_1BC26C, v16, SEEK_SET);
   fread(&v18, 2, 1, dword_1BC26C);
   v7 = dword_1BC26C;
@@ -6290,7 +6280,6 @@ int sub_127233(int a1, int a2, int a3, int a4)
     if ( dword_184576 )
       fclose(dword_1BC26C);
     strcpy(&unk_1BC270, v6);
-        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     dword_1BC26C = fopen(v6, aRb);
     if ( !dword_1BC26C )
     {
@@ -6298,7 +6287,6 @@ int sub_127233(int a1, int a2, int a3, int a4)
         sub_1273DC(v6, 1u, v7, a4);
       strcpy(v5, byte_184544);
       strcat(v5, &unk_1BC270);
-          // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     dword_1BC26C = fopen(v5, aRb);
       if ( !dword_1BC26C )
         sub_1273DC(v6, 1u, v7, a4);
@@ -6314,11 +6302,6 @@ int sub_127233(int a1, int a2, int a3, int a4)
   v8 = dword_1BBA74[v7];
   v9 = dword_1BBA78[v7];
   v10 = v9 - v8;
-    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
-    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
-    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
-    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
   fseek(dword_1BC26C, v8, SEEK_SET);
   fread(&v11, 2, 1, dword_1BC26C);
   return v11;
@@ -6870,11 +6853,6 @@ _DWORD *sub_12816C(int a1, int a2, int a3, int *a4)
   v9 = dword_1BBA74[v12];
   v10 = dword_1BBA78[v12];
   v11 = v10 - v9;
-    // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-    // Hex-Rays artefakt jako jinde. Vzor je jasny (LBX archiv format):
-    // prave precteny 2048bajtovy header obsahuje tabulku start/end offsetu
-    // zaznamu (dword_1BBA74[]/dword_1BBA78[]), prave spocitany zacatecni
-    // offset zaznamu se seekuje na stejnem handle, ktery cetl header.
   fseek(dword_1BC26C, v9, SEEK_SET);
   v13 = 0;
   v14 = 0;

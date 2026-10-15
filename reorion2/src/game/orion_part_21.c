@@ -246,13 +246,11 @@ int sub_13E186(int a1, int a2)
 
   v4 = &a2;
   if ( !dword_1849E6 )
-        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     dword_1849E6 = fopen(aLownetLog, aA);
   vsprintf(v3, a1, &v4);
   if ( fprintf(dword_1849E6, "%s", v3) == -1 )
     sub_126487(aLownetLogError, a1);
   fclose(dword_1849E6);
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     result = fopen(aLownetLog, aA);
   dword_1849E6 = result;
   return result;

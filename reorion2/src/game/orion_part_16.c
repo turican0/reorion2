@@ -1357,16 +1357,6 @@ void sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 //----- (000F6F90) --------------------------------------------------------
 int sub_F6F90(int a1, int a2, int a3)
 {
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. Tato funkce je "virtualni stream"
-  // abstrakce (podporuje realny soubor NEBO in-memory buffer, rozliseno
-  // bajtem na zacatku struktury a1): sesterska funkce sub_F6FD9 ma stejny
-  // dispatch a u ni je vidat, ze skutecny FILE handle je ulozeny na
-  // "*(_DWORD*)(a1+1)". Vetev pro in-memory buffer (typ==2) nize RUCNE
-  // reimplementuje fseek semantiku (a2=offset, a3=whence): "if (!a3)
-  // pozice=base+offset" odpovida SEEK_SET(0), "if (a3==1) pozice+=offset"
-  // odpovida SEEK_CUR(1) - to jednoznacne potvrzuje, ze a2/a3 jsou
-  // skutecne offset/whence parametry puvodniho fseek volani.
   if ( *(_BYTE *)a1 )
   {
     if ( *(_BYTE *)a1 <= 1u )
@@ -7416,7 +7406,7 @@ LABEL_25:
       v30 = v13;
       if ( (int16_t)v13 == -1 || *(int16_t *)((uint8_t*)dword_1930D4 + 17 * (int16_t)v13) != -1 )
       {
-        v30 = sub_C8D49(v28);   /* wave 184: FDD54 movsx eax, di */
+        v30 = sub_C8D49((int16_t)a2);   /* wave 184: FDD54 movsx eax, di - di = the star (FDB13) */
       }
       else
       {

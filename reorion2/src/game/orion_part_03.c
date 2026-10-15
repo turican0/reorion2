@@ -4002,28 +4002,7 @@ LABEL_41:
                 {
                   v29 = (int16_t)v54;
                   sub_49ED1(v54, &v45, &v47);
-                  sub_30062(
-                    v29,
-                    v29,
-                    v39,
-                    v40,
-                    v41,
-                    v42,
-                    v43,
-                    v44,
-                    v45,
-                    v46,
-                    v47,
-                    v48,
-                    v49,
-                    v50,
-                    v51,(int)LODWORD(v52),(int)LODWORD(v53),
-                    SDWORD1(v53),
-                    SDWORD2(v53),
-                    SHIDWORD(v53),
-                    v54,
-                    v55,
-                    v56);
+                  sub_30062(v29, v29, v39, v40);
                 }
                 sub_A9223();
                 sub_1077D(v30, 0, 0, 0);
@@ -4626,29 +4605,7 @@ _BOOL1 sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
       sub_49ED1(word_1998FC, &v53, &v57);
       sub_128AB6(0, 0, 639, 350);
       sub_12B634();
-      sub_30062(
-        *(_WORD *)(v48 + dword_192B14 + 6),
-        350,
-        v31,
-        v32,
-        v33,
-        v34,
-        v35,
-        v36,
-        v37,
-        v38,
-        v39,
-        v40,
-        v41,
-        v42,
-        v43,(int)LODWORD(v44),
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51);
+      sub_30062(*(_WORD *)(v48 + dword_192B14 + 6), 350, v31, v32);
       sub_12B65C();
       sub_128BE7();
     }
@@ -4692,29 +4649,7 @@ _BOOL1 sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
       if ( v7 == word_1998FC )
       {
         sub_49ED1(v7, (_WORD *)&v51 + 2, &v56);
-        sub_30062(
-          v7,
-          v7,
-          v31,
-          v32,
-          v33,
-          v34,
-          v35,
-          v36,
-          v37,
-          v38,
-          v39,
-          v40,
-          v41,
-          v42,
-          v43,(int)LODWORD(v44),
-          v45,
-          v46,
-          v47,
-          v48,
-          v49,
-          v50,
-          v51);
+        sub_30062(v7, v7, v31, v32);
       }
       sub_A9223();
       sub_1077D(v29, 0, 0, 0);
@@ -5405,29 +5340,7 @@ unsigned int sub_3EE0F( int a1, int a2, int a3)
             sub_2F4EE(v26);
           }
           v58 = 0;
-          sub_30062(
-            a1,
-            j,
-            v36[0],
-            v36[1],
-            v36[2],
-            v36[3],
-            v36[4],
-            v36[5],
-            v36[6],
-            v36[7],
-            v36[8],
-            v36[9],
-            v36[10],
-            v36[11],
-            v36[12],(int)LODWORD(v37),
-            v38,
-            v39,
-            v40,
-            v41,
-            v42,
-            v43,
-            v44);
+          sub_30062(a1, j, v36[0], v36[1]);
           do
           {
             v48 = (int16_t)v58;
@@ -5657,29 +5570,7 @@ LABEL_6:
         sub_128AB6(0, 0, 639, 350);
         sub_12B634();
         v18 = 0;
-        sub_30062(
-          a1,
-          350,
-          v22[0],
-          v22[1],
-          v22[2],
-          v22[3],
-          v22[4],
-          v22[5],
-          v22[6],
-          v22[7],
-          v22[8],
-          v22[9],
-          v22[10],
-          v22[11],
-          v22[12],(int)LODWORD(v23),
-          v24,
-          v25,
-          v26,
-          v27,
-          v28,
-          v29,
-          v30);
+        sub_30062(a1, 350, v22[0], v22[1]);
         sub_12B65C();
         sub_128BE7();
         do
@@ -6250,6 +6141,10 @@ int sub_40148(int16_t *a1, int a2, int16_t *a3, int a4, int a5, int a6, char *a7
   char v84; // [esp+A8h] [ebp+6Ah]
   char v85; // [esp+ACh] [ebp+6Eh]
 
+  {   /* TEMP wave 184: entry args */
+    int t[4] = { a2, a4, a5, a6 };
+    PortDebug_MemRing(0x401480, t, sizeof t);
+  }
   v67 = a2;
   v75 = a4;
   v66 = 0;
@@ -6309,7 +6204,7 @@ int sub_40148(int16_t *a1, int a2, int16_t *a3, int a4, int a5, int a6, char *a7
   {
     if ( (uint8_t)sub_79CF9((uint8_t*)dword_197F98 + 3753 * word_19988E, dword_19306C + 113 * a5) )
     {
-      sub_3868F(1);
+      v16 = sub_3868F(1);   /* wave 184: 4037D mov [var_8], al */
       v84 = v16;
       if ( v16 )
         v79 = -1;
@@ -6336,6 +6231,7 @@ int sub_40148(int16_t *a1, int a2, int16_t *a3, int a4, int a5, int a6, char *a7
       --word_1998BE;
     LOWORD(v17) = (uint8_t)byte_199EF6;
     v69 = v17;
+    PortDebug_MemRing(0x401481, dseg + 0x21890, 64);   /* TEMP wave 184: 0x4043E */
     while ( word_1998A2 > 0 && word_1998BE > 0 && word_199890 < 50 )
     {
       ++word_199890;
@@ -12053,7 +11949,7 @@ LABEL_36:
     && SHIWORD(a29) < word_19999A
     && (uint8_t)sub_79CF9((uint8_t*)dword_197F98 + 3753 * word_19988E, 113 * SHIWORD(a29) + dword_19306C) )
   {
-    sub_3868F(0);
+    v42 = sub_3868F(0);   /* wave 184: 47D4D mov [arg_62], al */
     v186 = v42;
     if ( v42 )
       v43 = 82;

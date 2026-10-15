@@ -913,6 +913,8 @@ bool GrOn()
         std::fclose(f);
         Log("GAMEPLAY %s: %zu runs", p, runs);
         g_grInit = 2;
+        // wave 184: REORION2_GAMEPLAY_FROM=<save>: live until PortGr_StartFrom (GameMain)
+        if (const char* from = SDL_getenv("REORION2_GAMEPLAY_FROM"); from && *from) g_grInit = 3;
     }
     return g_grInit == 2;
 }
@@ -969,6 +971,60 @@ void GrDump(const std::string& path)
 }  // namespace
 
 int PortGr_Active(void) { return GrOn() ? 1 : 0; }
+
+namespace { int g_saveN = 0; }   // numbers of the archived saves (REORION2_GAMEPLAY_SAVES)
+
+// wave 184: REORION2_GAMEPLAY_FROM=<n> - the replay continues from save n. GameMain loads
+// SAVE10.GAM (the run dir holds the record's save n) and starts TURN (state 12), whose
+// autosave is where DOSBox wrote the line "save n ..." of REORION2_GAMEPLAY_SAVEPOS
+// (DOSBOX_GR_SAVEPOS: RNG seed, frame counters, reads per source); here the record is
+// skipped to those reads and the replay goes on. Returns 1 when the replay is armed.
+int PortGr_FromSave(void)
+{
+    GrOn();
+    return g_grInit == 3 ? 1 : 0;
+}
+
+int PortGr_StartFrom(void)
+{
+    if (g_grInit != 3) return 0;
+    const int want = std::atoi(SDL_getenv("REORION2_GAMEPLAY_FROM"));
+    const char* pp = SDL_getenv("REORION2_GAMEPLAY_SAVEPOS");
+    FILE* f = pp ? std::fopen(pp, "rt") : nullptr;
+    if (!f) { Log("GAMEPLAY FROM: cannot read REORION2_GAMEPLAY_SAVEPOS"); g_grInit = 1; return 0; }
+    char line[1024];
+    bool found = false;
+    while (!found && std::fgets(line, sizeof line, f)) {
+        int n = 0, slot = 0, pending = 0, used = 0;
+        unsigned seed = 0;
+        unsigned long long clicks = 0, waits = 0;
+        if (std::sscanf(line, "save %d slot %d seed %X clicks %llu waits %llu pending %d reads%n",
+                        &n, &slot, &seed, &clicks, &waits, &pending, &used) != 6 || n != want)
+            continue;
+        const char* q = line + used;
+        for (int s = 0; s < kGrSrc; ++s) {
+            unsigned long long reads = std::strtoull(q, const_cast<char**>(&q), 10);
+            for (unsigned long long skip = reads; skip;) {   // the reads the original made so far
+                if (!GrCur(s)) break;
+                const uint64_t take = skip < g_grLeft[s] ? skip : g_grLeft[s];
+                g_grLeft[s] -= take;
+                skip -= take;
+            }
+            g_grReads[s] = reads;
+        }
+        *reinterpret_cast<uint32_t*>(dseg + 0x41E34) = seed;   // dword_1B9E34, the RNG
+        g_grClicks = clicks;
+        g_grWaits = waits;
+        g_grClickDump = pending != 0;
+        g_saveN = want - 1;   // the autosave of this TURN is save n again
+        found = true;
+        Log("GAMEPLAY FROM save %d: seed %08X, frames c%llu / wait %llu", want, seed, clicks, waits);
+    }
+    std::fclose(f);
+    g_grInit = found ? 2 : 1;
+    if (!found) Log("GAMEPLAY FROM: save %d not in %s", want, pp);
+    return found ? 1 : 0;
+}
 // wave 184: reads of source s so far (debug probes)
 unsigned long long PortGr_Reads(int s) { return (s >= 0 && s < kGrSrc) ? g_grReads[s] : 0; }
 
@@ -1035,9 +1091,8 @@ void PortRec_OnFileWritten(const char* path)
     if (const char* sd = SDL_getenv("REORION2_GAMEPLAY_SAVES"); sd && *sd && path) {
         const std::string name = std::filesystem::path(path).filename().string();
         if (Upper(name).rfind("SAVE", 0) == 0) {
-            static int s_n = 0;
             char num[16];
-            std::snprintf(num, sizeof num, "%03d_", ++s_n);
+            std::snprintf(num, sizeof num, "%03d_", ++g_saveN);
             std::error_code ec;
             std::filesystem::copy_file(path, std::string(sd) + "/" + num + name,
                                        std::filesystem::copy_options::overwrite_existing, ec);

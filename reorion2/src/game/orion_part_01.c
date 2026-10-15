@@ -43,22 +43,6 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
   PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
-  // DECOMP_TODO (vyreseno ve vlne 06): puvodni vyraz "(int)&loc_63FFB + 5"
-  // vypadal jako smysluplna adresa, ale podle asm dumpu je "loc_63FFB"
-  // navesti UPROSTRED FUNKCE sub_63FF0 (presne 5 bajtu za jejim zacatkem,
-  // hned za prologem "push esi/edi; enter 48h,0; push eax/edx/ebx; mov
-  // ch,cl") - a "+5" z toho navesti vede jeste o 5 bajtu dal, doprostred
-  // OPERANDU nasledujici instrukce "mov edx, dword_192FD8" (na posledni
-  // bajt jeji 4bajtove adresy). To neni zadny smysluplny kod/data cil.
-  // Ve skutecnosti jde o typicky IDA false-positive: puvodni C kod tu mel
-  // proste 32bit celociselnou konstantu 0x64000 (= 0x63FFB + 5 = 409600 =
-  // 400 KB), ale protoze tahle hodnota nahodou padne do rozsahu adres
-  // nahraneho programu, IDA ji automaticky prevedla na "offset nejblizsi
-  // znamy symbol + delta" misto aby ji nechala jako prosty cislo. Overeno
-  // hexadecimalnim souctem (0x63FFB + 5 = 0x64000) - PoolAlloc_110B89
-  // bere prvni parametr jako POCET BAJTU k alokaci (viz jeho definice),
-  // takze 0x64000 (400 KB) je smysluplna velikost jednorazove alokovaneho
-  // pool bufferu, ne adresa k dereferenci.
   dword_19916C = PoolAlloc_110B89(0x64000);
   PortDebug_Checkpoint("GameMain.pool64000.done", dword_19916C != 0);
   v4 = FindMoxSetPath_1114D7(aMoxSet, v5);
@@ -237,6 +221,17 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
       envState = PortDebug_EnvInt("REORION2_STATE2", -1);
       if ( envState >= 0 )
         word_199A10 = (int16_t)envState;
+    }
+    /* TOOL (wave 184): REORION2_GAMEPLAY_FROM=<n> - the run dir holds save n as SAVE10.GAM,
+       written by the autosave of TURN (sub_13822, before the turn is processed): load it
+       as the `q` argument does and run that TURN with the replay skipped to the save */
+    if ( PortGr_FromSave() )
+    {
+      if ( FindMoxSetPath_1114D7("save10.gam", saveNameBuf) )
+        sub_10E2F(9, 0, 0, 0);
+      word_199A08 = 12;
+      word_199A10 = 0;
+      PortGr_StartFrom();
     }
     PortDebug_Checkpoint("GameMain.beforeMenu", word_199A08);
     sub_1049B(0, 0, 0, 0, 0, (char *)menuBuf);   // <<< HLAVNI MENU/HERNI SMYCKA
@@ -538,30 +533,7 @@ int sub_107CA()
 
 
 //----- (000107E6) --------------------------------------------------------
-// DECOMP_TODO (opraveno ve vlne 02): puvodni dekompilace mela signaturu
-// "void sub_107E6()" bez parametru, ale telo funkce pouzivalo dve promenne
-// (puvodne v13/v14), ktere nikde nebyly nastaveny - Hex-Rays k nim hlasil
-// "variable is possibly undefined" a ve Visual Studiu to pri behu spadne na
-// "Run-Time Check Failure #3". Skutecny duvod: jde o klasicky Hex-Rays
-// artefakt, kdy volajici (GameMain_10057) preda argc/argv dale beze zmeny
-// v temze registru, ve kterem je sam prijal - zadna instrukce MOV tedy
-// neexistuje a dekompilator to nedokazal rozpoznat jako predavany parametr.
-// Assembly hodnoty tam ale REALNE jsou (argc/argv z main()), takze
-// zpristupneni jako explicitni parametry NEMENI chovani, jen opravuje
-// chybny popis funkce a odstranuje UB (cteni neinicializovane pameti).
 //
-// DECOMP_TODO (vyreseno ve vlne 05): puvodni kod tu jeste pocital zvlastni
-// ukazatel "cheatFlagsBuffer_v0 = &stackAnchor_v16 - 67" a predaval ho (jako
-// "(int)cheatFlagsBuffer_v0") do vsech volani MarkCheatPatternFlag_F4FD5.
-// Tenhle vyraz zavisel na PRESNEM stack frame puvodniho Watcom prekladace -
-// po prekompilovani modernim kompilatorem uz vypocitava nesmyslnou adresu
-// (jiny layout lokalnich promennych), coz zpusobovalo Access Violation pri
-// prvnim volani MarkCheatPatternFlag_F4FD5 (viz obrazek v zadani). Presny
-// puvodni bytovy posun se nepodarilo overit, ale funkcne je jednoznacne, ze
-// MarkCheatPatternFlag_F4FD5 ma - stejne jako vsech pet sousednich
-// "strstr(currentArg_v17, ...)" kontrol o par radku vyse a nize ve stejne
-// smycce - hledat vzor v PRAVE ZPRACOVAVANEM ARGUMENTU prikazove radky.
-// Proto se ted primo predava "currentArg_v17".
 void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
 {
   int argIndex_v1;              // ecx - index prochazeneho argv[]
@@ -587,16 +559,6 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
   strcpy(statsPrefix_v19, "/stats=");
   while ( 1 )
   {
-    // DECOMP_TODO (vyreseno ve vlne 05): tady byvalo "JUMPOUT(0x103DF);",
-    // ktere je v decomp_compat.h definovane jako NO-OP (viz komentar tam) -
-    // takze kdyz doslo vsech argumentu bez nalezeni "/saveset", kod bez
-    // navratu SPADL DAL na "strcpy(currentArg_v17, argValues_a2[argIndex_v1])"
-    // s argIndex_v1 == argCount_a1, tedy cteni argv[argc], ktere je podle
-    // standardu vzdy NULL - strcpy(dest, NULL) je jisty pad. Puvodni
-    // disassembly komentar ("control flows out of bounds to 103DF") + fakt,
-    // ze cilova adresa lezi MIMO rozpoznane telo funkce, odpovida tomu, ze
-    // asembler tu jen skakal primo na epilog/ret teto (void) funkce -
-    // funkcne tedy jde o predcasny navrat, nahrazeno primym "return;".
     if ( (int16_t)argIndex_v1 >= argCount_a1 )
       return;
     strcpy(currentArg_v17, argValues_a2[argIndex_v1]);
@@ -677,12 +639,6 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
           HIDWORD(logMessagePacked_v8) = (int)aDate;
           if ( strstr(currentArg_v17, aDate) )
           {
-            // DECOMP_TODO (vyreseno ve vlne 05): puvodni "goto LABEL_26;"
-            // skakal primo na zaverecne volani sub_126487 na konci funkce
-            // (viz tail nize) a presoskocil tak celou logiku pro nacitani
-            // save souboru. Protoze je LABEL_26 pouzity jen na tomto jednom
-            // miste a je to posledni prikaz funkce, nahrazeno primym
-            // zavolanim + return - identicke chovani, bez goto/navesti.
             LODWORD(logMessagePacked_v8) = (int)aMay222006_1;
             sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
             return;
@@ -893,18 +849,6 @@ _BYTE* sub_10CB5(int a1, int a2)
     _DWORD* v3; // eax
     _DWORD* v4; // eax
     PoolMemHeader* result; // eax
-    // DECOMP_TODO (vyreseno ve vlne 10): puvodni vyrazy "(int)&unk_1B5030",
-    // "(int)&loc_16085 + 5", "(int)&loc_3E7FB + 5" a "(int)&loc_40F0D + 3"
-    // jsou stejny IDA false-positive jako 0x64000 ve vlne 06: 32bit KONSTANTY
-    // velikosti alokaci, ktere nahodou padly do rozsahu adres programu, takze
-    // je IDA prevedla na "offset symbol + delta". Hodnoty prevedene zpet jsou
-    // presna kulata cisla (1790000 / 90250 / 256000 / 266000) a 90250 =
-    // 361*250 presne odpovida smycce cteni 250 zaznamu po 361 bajtech v
-    // sub_10E2F nize. OVERENO ZA BEHU originalu v upravenem DOSBox-X
-    // (DUMPREGS testovaci body, viz PROGRESS.md vlna 10): hra pri startu
-    // skutecne vola PoolAlloc_110B89 postupne s EAX = 1790000, 30000, 1000,
-    // 6120, 30024, 90250 a 256000 presne na techto volacich mistech
-    // (runtime EIP = IDA adresa + 0x224000).
     PortDebug_Checkpoint("sub_10CB5.enter", a1);
     dword_192EF4 = PoolAlloc_110B89(1790000);
     dword_193178 = (uint8_t*)PoolAlloc_110B89(30000);
@@ -1063,7 +1007,6 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
 
   nullsub_14(v7);
   v60 = 0;
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v8 = fopen(v55, aRb);
   v9 = (int16_t *)v8;
   v10 = v8;
@@ -1622,7 +1565,6 @@ void sub_11C83(int a1)
     }
     else
     {
-          // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v5 = fopen(v8, aRb);
       v6 = v5;
       v13 = v5;
@@ -1755,7 +1697,6 @@ int sub_11F11( int a1, int a2)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sprintf(v9, "SAVE%d.GAM", a1);
   v10 = 1;
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v4 = fopen(v9, aRb);
   if ( v4 )
   {
@@ -1843,7 +1784,6 @@ void sub_12030()
 
   v0 = (int)aRb;
   v8 = 0;
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v1 = fopen(aMoxSet_0, aRb);
   v2 = v1;
   if ( v1 )
@@ -1855,7 +1795,6 @@ void sub_12030()
     qmemcpy(v7, &byte_199BDC, 0xD3u);
     nullsub_14(v4);
     v8 = 1;
-        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v5 = fopen(aMoxSet_0, aWb);
     v6 = v5;
     if ( v5 )
@@ -2389,7 +2328,6 @@ int sub_12937()
 {
   int v0; // esi
 
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v0 = fopen(aMoxSet_1, aWb);
   if ( !v0 )
     sub_126487(aUnableToOpenMo, (int)aWb_0);
@@ -6484,7 +6422,6 @@ int sub_17BB2(int a1, int a2, int a3, int a4)
 
 
 //----- (00017C07) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=67)) - nutno dohledat rucne v IDA @ 0x17C32 */
 /* wave 183: rewritten from asm 17C07-17D18 (Hex-Rays failed): diplomacy
    message - text, then wait up to 38 frames for a click / key */
 int sub_17C07(void)

@@ -724,7 +724,6 @@ int sub_12C607(int a1, int a2, int a3, int a4)
     fclose(dword_1BC338);
     dword_1BC338 = 0;
   }
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     dword_1BC338 = fopen(v7, aRb);
   if ( !dword_1BC338 )
   {
@@ -732,7 +731,6 @@ int sub_12C607(int a1, int a2, int a3, int a4)
       sub_1273DC(v7, 1u, (int16_t)v11, a4);
     strcpy(v6, byte_184544);
     strcat(v6, v7);
-        // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     dword_1BC338 = fopen(v6, aRb);
     if ( !dword_1BC338 )
       sub_1273DC(v7, 1u, (int16_t)v11, a4);
@@ -750,9 +748,6 @@ int sub_12C607(int a1, int a2, int a3, int a4)
   dword_1BC328 = v9;
   dword_1BC354 = v8;
   dword_1BC2E8 = v8 - v9;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
   fseek(dword_1BC338, v9, SEEK_SET);
   return fread(dword_1BC31C, 0x2000, 1, dword_1BC338);
 }
@@ -1097,9 +1092,6 @@ int sub_12D1C5(int a1, int a2, int a3, int a4)
   dword_1BC348[(int16_t)v13] = v9;
   dword_1BC32C[(int16_t)v13] = v10;
   dword_1BC33C[(int16_t)v13] = v11;
-  // DECOMP_TODO (vyreseno ve vlne 07): fseek() melo 0 parametru - stejny
-  // Hex-Rays artefakt jako jinde. LBX archiv vzor (viz orion_part_19.c):
-  // prave spocitany zacatecni offset zaznamu se seekuje pred fread.
   fseek(dword_1BC310[(int16_t)v13], v9, SEEK_SET);
   return fread(dword_1BC31C, 2730, 1, dword_1BC310[(int16_t)v13]);
 }

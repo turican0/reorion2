@@ -8511,29 +8511,31 @@ int sub_2F4EE(_DWORD _p0)
 
 //----- (00030062) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
-void sub_30062( int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        hr_int128_t a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int64_t a21,
-        int64_t a22,
-        int64_t a23)
+/* wave 184: the frame above the moved ebp (Hex-Rays made it arguments a5..a23) */
+#pragma pack(push, 1)
+typedef struct {
+  int a5;
+  int a6;
+  int a7;
+  int a8;
+  int a9;
+  int a10;
+  int a11;
+  int a12;
+  int a13;
+  int a14;
+  int a15;
+  hr_int128_t a16;
+  int a17;
+  int a18;
+  int a19;
+  int a20;
+  int64_t a21;
+  int64_t a22;
+  int64_t a23;
+} frame30062_t;
+#pragma pack(pop)
+void sub_30062(int a1, int a2, int a3, int a4)
 {
   int v23; // ebx
   int v24; // eax
@@ -8566,6 +8568,27 @@ void sub_30062( int a1,
   int16_t vars6; // [esp+7Eh] [ebp+6h]
   _BYTE varsA[6]; // [esp+82h] [ebp+Ah] BYREF
 
+  frame30062_t frm30062;
+  memset(&frm30062, 0, sizeof(frm30062));
+#define a5 (frm30062.a5)
+#define a6 (frm30062.a6)
+#define a7 (frm30062.a7)
+#define a8 (frm30062.a8)
+#define a9 (frm30062.a9)
+#define a10 (frm30062.a10)
+#define a11 (frm30062.a11)
+#define a12 (frm30062.a12)
+#define a13 (frm30062.a13)
+#define a14 (frm30062.a14)
+#define a15 (frm30062.a15)
+#define a16 (frm30062.a16)
+#define a17 (frm30062.a17)
+#define a18 (frm30062.a18)
+#define a19 (frm30062.a19)
+#define a20 (frm30062.a20)
+#define a21 (frm30062.a21)
+#define a22 (frm30062.a22)
+#define a23 (frm30062.a23)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v23 = a1;
   v24 = 313 * a1;
@@ -8744,6 +8767,25 @@ LABEL_38:
     sub_49ED1(0, &vars2, &var2);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x2E2B2 je epilog funkce */
+#undef a5
+#undef a6
+#undef a7
+#undef a8
+#undef a9
+#undef a10
+#undef a11
+#undef a12
+#undef a13
+#undef a14
+#undef a15
+#undef a16
+#undef a17
+#undef a18
+#undef a19
+#undef a20
+#undef a21
+#undef a22
+#undef a23
 }
 // 30163: control flows out of bounds to 2E2B2
 // 300D4: inconsistent variable size for '^F0.8'
@@ -10773,29 +10815,7 @@ void sub_32D94( int a1)
       v24 = SWORD2((int)LODWORD(v39));
       sub_12A478(v44, SWORD2(v45), v23);
       sub_128AB6(SWORD2(v46), v46, v35, v24);
-      sub_30062(
-        a1,
-        v24,
-        v26,
-        v27,
-        v28,
-        v29,
-        v30,
-        v31,
-        v32,
-        v33,
-        v34,
-        v35,
-        (int)v36,
-        v37,
-        v38,(int)LODWORD(v39),
-        v40,
-        v41,
-        v42,
-        v43,
-        v44,
-        v45,
-        v46);
+      sub_30062(a1, v24, v26, v27);
       sub_1077D(v25, 0, 0, 0);
       sub_12C2C6(1);
       if ( (_WORD)v45 == word_1998AC )
@@ -14784,7 +14804,8 @@ int16_t sub_38656( int a1)
 
 
 //----- (0003868F) --------------------------------------------------------
-void sub_3868F( int a1)
+/* wave 184: returns al = [var_8] (38832) - 1 when every ship passed its check */
+char sub_3868F( int a1)
 {
   int i; // esi
   int16_t v2; // ax
@@ -14809,7 +14830,7 @@ void sub_3868F( int a1)
   for ( i = 1; ; ++i )
   {
     if ( (int16_t)i >= word_1998C0 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x3638A je epilog funkce */
+      return v16;   /* wave 184: 38832 mov al, [var_8] */
     v2 = v17
        ? *(uint8_t *)(33 * (int16_t)i + dword_192844 + 1)
        : *(uint8_t *)(dword_192864 + 313 * (int16_t)i + 37);

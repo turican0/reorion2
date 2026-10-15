@@ -3430,8 +3430,8 @@ LABEL_20:
   v11 = sprintf(v20, v10, v17, v18);
   LOWORD(v11) = sub_77658((int)v20);   /* wave 182: YES/NO answer was dropped */
   if ( (_WORD)v11 )
-    sub_E109D(SWORD2(v11));
-  return sub_BB1A6(a1, v5);
+    sub_E109D((int16_t)a1);   /* wave 184: BFCFE mov eax, edx - edx = movsx a1 (BFC16), not sprintf's high word */
+  return sub_BB1A6(a1, (int16_t)a1);   /* wave 184: BFD05 movsx eax, si - edx is still movsx a1 */
 }
 // BFC90: variable 'v7' is possibly undefined
 // BFCD3: variable 'v9' is possibly undefined

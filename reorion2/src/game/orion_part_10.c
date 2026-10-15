@@ -4571,10 +4571,14 @@ LABEL_24:
 
 
 //----- (000A4C0F) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=21)) - nutno dohledat rucne v IDA @ 0xA4C37 */
-_DWORD sub_A4C0F( int _p0, int _p1, int _p2)
+/* wave 184: from asm (Hex-Rays failed) - sub_A2123 with the two outputs in locals and flag 1;
+   eax, edx, ebx, ecx and three stack words (retn 0Ch) */
+int sub_A4C0F(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 {
-  DECOMP_TODO("call analysis failed (funcsize=21)");
+  int16_t v8; // [var_8]
+  int16_t v9; // [var_4]
+
+  return sub_A2123((int16_t)a1, (int16_t)a2, (int16_t)a3, (int16_t)a4, (int16_t)a5, (int16_t)a6, (int16_t)a7, &v8, &v9, 1);
 }
 
 
@@ -6957,57 +6961,13 @@ int sub_A8197(
       {
         v25 = SWORD3((int)LODWORD(a19));
         v26 = SWORD1((int)LODWORD(a19));
-        sub_30062(
-          word_1998FC,
-          350,
-          v88,
-          v89,
-          v90,
-          v91,
-          v92,
-          v93,
-          v94,
-          v95,
-          v96,
-          v97,
-          v98,
-          v99,
-          v100,(int)LODWORD(v101),
-          v102,
-          v103,
-          v104,
-          v105,
-          v106,
-          v107,
-          v108);
+        sub_30062(word_1998FC, 350, v88, v89);
       }
       if ( word_1998FC == v112 )
       {
         v25 = (int16_t)v110;
         v26 = (int16_t)v111;
-        sub_30062(
-          word_1998FC,
-          350,
-          v88,
-          v89,
-          v90,
-          v91,
-          v92,
-          v93,
-          v94,
-          v95,
-          v96,
-          v97,
-          v98,
-          v99,
-          v100,(int)LODWORD(v101),
-          v102,
-          v103,
-          v104,
-          v105,
-          v106,
-          v107,
-          v108);
+        sub_30062(word_1998FC, 350, v88, v89);
       }
       *(_DWORD *)((char *)&a7 + 6) = 0;
       do
@@ -7209,57 +7169,13 @@ LABEL_51:
                 {
                   v25 = *(_DWORD *)&_17A;
                   HIWORD(v26) = HIWORD(v52);
-                  sub_30062(
-                    v109,
-                    350,
-                    v88,
-                    v89,
-                    v90,
-                    v91,
-                    v92,
-                    v93,
-                    v94,
-                    v95,
-                    v96,
-                    v97,
-                    v98,
-                    v99,
-                    v100,(int)LODWORD(v101),
-                    v102,
-                    v103,
-                    v104,
-                    v105,
-                    v106,
-                    v107,
-                    v108);
+                  sub_30062(v109, 350, v88, v89);
                 }
                 if ( word_1998FC == v112 )
                 {
                   v25 = (int16_t)v110;
                   v26 = (int16_t)v111;
-                  sub_30062(
-                    word_1998FC,
-                    350,
-                    v88,
-                    v89,
-                    v90,
-                    v91,
-                    v92,
-                    v93,
-                    v94,
-                    v95,
-                    v96,
-                    v97,
-                    v98,
-                    v99,
-                    v100,(int)LODWORD(v101),
-                    v102,
-                    v103,
-                    v104,
-                    v105,
-                    v106,
-                    v107,
-                    v108);
+                  sub_30062(word_1998FC, 350, v88, v89);
                 }
               }
               else
@@ -10434,10 +10350,59 @@ LABEL_22:
 
 
 //----- (000AD7F5) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=97)) - nutno dohledat rucne v IDA @ 0xAD93E */
-int sub_AD7F5(_DWORD _p0, _DWORD _p1, _DWORD _p2)
+/* wave 184: from asm (Hex-Rays failed) - 8 frames of CMBTSFX.LBX entry 15 over combat ship a1
+   (eax) at the screen point of sub_34543; a2 / a3 (edx / ebx) go to sub_130098. The end is the
+   shared tail loc_ACF6A of sub_ACE08 (edx = 10 from AD96A). */
+void sub_AD7F5(int a1, int a2, int a3)
 {
-  DECOMP_TODO("call analysis failed (funcsize=97)");
+  int16_t v4;  // [var_18]
+  int16_t v5;  // [var_14]
+  int16_t v6;  // [var_8] frame
+  int16_t v7;  // [var_C] count
+  int v8;      // [var_1C]
+  int v9;      // esi - work buffer
+  int v10;     // ebx - the LBX entry
+  uint8_t *v11;
+
+  sub_34543((int16_t)a1, (_WORD *)&v4, (_WORD *)&v5);
+  sub_128B49();
+  sub_12B79D(sub_127C27((int)(intptr_t)aCmbtsfxLbx_0, 15, dword_193174));
+  sub_1112EC(dword_192ED4, 50000);
+  v6 = 0;
+  v9 = (int)(intptr_t)sub_110D3C((PoolMemType *)(intptr_t)dword_192ED4, 50000);   /* AD843: edx = 0C350h */
+  word_1998FC = (int16_t)a1;
+  v8 = sub_147D7(20);
+  v7 = 0;
+  sub_1320E9((_BYTE *)(intptr_t)dword_19294C);
+  do
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE(0);
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    v10 = sub_127C27((int)(intptr_t)aCmbtsfxLbx_0, 15, dword_193174);
+    sub_12B753(v10, v6 % 3);   /* AD8BE idiv ecx (3) - edx = the remainder */
+    sub_12F578(v9, v10);
+    sub_12DAFC(v9);
+    sub_130098(v4, v5, (int16_t)a2, (int16_t)a3, v9);
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    v11 = (uint8_t *)(intptr_t)dword_192864 + 313 * (int16_t)a1;
+    ++v7;
+    sub_30062((int16_t)a1, (int16_t)(20 * (v11[0x21] - word_1998F0)), (int16_t)(20 * (v11[0x22] - word_1998F2)), (int16_t)a1);
+    sub_12B65C();
+    sub_128BE7();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+    ++v6;
+  }
+  while ( v7 < 8 );
+  sub_112C96(v8, 10);
+  word_1998FC = -1;
+  sub_128B98();
+  sub_1113CC(dword_192ED4, 10);   /* loc_ACF6A */
+  sub_1320E9((_BYTE *)(intptr_t)dword_192950);
 }
 
 
@@ -10933,30 +10898,7 @@ LABEL_27:
         }
         else
         {
-          sub_30062(
-            v89,
-            350,
-            v86,
-            v87,
-            v88,
-            v89,
-            v90[0],
-            v90[1],
-            v90[2],
-            v90[3],
-            v90[4],
-            v90[5],
-            v90[6],
-            v90[7],
-            v90[8],
-            *(hr_int128_t *)&v90[9],
-            v90[13],
-            v90[14],
-            v90[15],
-            v90[16],
-            *(int64_t *)&v90[17],
-            *(int64_t *)&v90[19],
-            *(int64_t *)&v90[21]);
+          sub_30062(v89, 350, v86, v87);
         }
       }
       v28 = *((int16_t *)v90 + 25 * (int16_t)v86 + i);
@@ -10995,30 +10937,7 @@ LABEL_27:
           v102 = 20 * v31;
         }
         v32 = *((_WORD *)&v90[113] + (int16_t)v29++);
-        sub_30062(
-          v32,
-          v29,
-          v86,
-          v87,
-          v88,
-          v89,
-          v90[0],
-          v90[1],
-          v90[2],
-          v90[3],
-          v90[4],
-          v90[5],
-          v90[6],
-          v90[7],
-          v90[8],
-          *(hr_int128_t *)&v90[9],
-          v90[13],
-          v90[14],
-          v90[15],
-          v90[16],
-          *(int64_t *)&v90[17],
-          *(int64_t *)&v90[19],
-          *(int64_t *)&v90[21]);
+        sub_30062(v32, v29, v86, v87);
       }
       if ( (_WORD)v86 != 2 )
         sub_1320E9(v91);
@@ -11073,30 +10992,7 @@ LABEL_90:
           else
           {
             v24 = (int16_t)(v103 - v111);
-            sub_30062(
-              v89,
-              v29,
-              v86,
-              v87,
-              v88,
-              v89,
-              v90[0],
-              v90[1],
-              v90[2],
-              v90[3],
-              v90[4],
-              v90[5],
-              v90[6],
-              v90[7],
-              v90[8],
-              *(hr_int128_t *)&v90[9],
-              v90[13],
-              v90[14],
-              v90[15],
-              v90[16],
-              *(int64_t *)&v90[17],
-              *(int64_t *)&v90[19],
-              *(int64_t *)&v90[21]);
+            sub_30062(v89, v29, v86, v87);
           }
         }
       }
@@ -11701,29 +11597,7 @@ LABEL_20:
               if ( !*(_BYTE *)(v17 + dword_192864 + 36) )
               {
                 LOWORD(v17) = 20 * word_1998F0;
-                sub_30062(
-                  a1,
-                  v63 - v17,
-                  v55[0],
-                  v55[1],
-                  v55[2],
-                  v55[3],
-                  v55[4],
-                  v55[5],
-                  v55[6],
-                  v55[7],
-                  v56,
-                  v57,
-                  v58,
-                  (int)v59,
-                  v60,(int)LODWORD(v61),
-                  v62,
-                  v63,
-                  v64,
-                  v65,
-                  v66,
-                  v67,
-                  *(int64_t *)savedregs);
+                sub_30062(a1, v63 - v17, v55[0], v55[1]);
               }
               v18 = *(_BYTE *)(dword_192864 + 313 * a1 + 37);
               if ( !v18 )

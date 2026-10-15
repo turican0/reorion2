@@ -941,7 +941,7 @@ int sub_899AB( int a1, int a2, int a3, int16_t *a4, int16_t *a5, int16_t *a6, _W
     {
       v39 = 0;
       v30 = 0;
-      sub_EBFCB(v26 - v10, v22 - v11);
+      v12 = sub_EBFCB(v26 - v10, v22 - v11);   /* wave 184: 89C1B mov [var_2C], eax */
       v29 = v12;
       while ( v30 < 5 && v29 > -1 && !v39 )
       {
@@ -971,7 +971,7 @@ int sub_899AB( int a1, int a2, int a3, int16_t *a4, int16_t *a5, int16_t *a6, _W
       }
       else
       {
-        sub_EBFCB(v26 - v10, v22 - v31);
+        v15 = sub_EBFCB(v26 - v10, v22 - v31);   /* wave 184: 89CFE mov [var_18], eax */
         v34 = v15;
       }
       for ( k = 0; k < 5 && v34 > -1 && !v38; ++k )

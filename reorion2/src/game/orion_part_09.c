@@ -9306,10 +9306,25 @@ void sub_9E17C()
 
 
 //----- (0009E207) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=37)) - nutno dohledat rucne v IDA @ 0x9E257 */
-int sub_9E207(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
+/* wave 184: from asm (Hex-Rays failed) - one GNN text line: eax = x, edx = text, ebx = callback
+   run after it (0 = none); y is the word at +0B2h of the GNN block, which moves down by the
+   line height + 2. ecx (a4) is not read. Returns eax: the callback's result or the block. */
+int sub_9E207(int a1, int a2, int (*a3)(void), int a4)
 {
-  DECOMP_TODO("call analysis failed (funcsize=37)");
+  int16_t v5; // bx
+  int v6;     // [var_8]
+  int v7;     // eax
+
+  sub_120BB5(4, (int)(intptr_t)(dword_19C7C0 + 0x6E));
+  sub_120E8C(1);
+  v5 = *(int16_t *)(dword_19C7C0 + 0xB2);
+  v6 = v5 + sub_122259();   /* 9E23D lea edx, [ebx+eax] */
+  sub_9EC4A(140, v5, (int16_t)a1, a2);
+  *(int16_t *)(dword_19C7C0 + 0xB2) = v6 + 2;
+  v7 = (int)dword_19C7C0;
+  if ( a3 )
+    v7 = a3();
+  return v7;
 }
 
 
@@ -9331,7 +9346,7 @@ void sub_9E27A()
     *(_BYTE *)(dword_19C7C0 + 107) = 0;
   }
   v0 = sub_12A478(0, 0, *(_DWORD *)(dword_19C7C0 + 4));
-  sub_9E68B(v0);
+  sub_9E68B();
   v6 = *(int16_t *)(dword_19C7C0 + 160);
   v1 = sub_7A990(0x15Cu);
   sprintf(v7, v1, v6);
@@ -9545,10 +9560,26 @@ int sub_9E664(void)
 
 
 //----- (0009E68B) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=34)) - nutno dohledat rucne v IDA @ 0x9E6F5 */
-int sub_9E68B(_DWORD _p0)
+/* wave 184: from asm (Hex-Rays failed) - the GNN date line: text 15Eh with the year
+   (dword_192FD8 - 35000) at x = word +0ACh, y = 139; the next line starts at the
+   line height + 146. Returns eax = the GNN block (shared epilogue 9DB1B). */
+int sub_9E68B(void)
 {
-  DECOMP_TODO("call analysis failed (funcsize=34)");
+  int16_t v1; // cx
+  int16_t v2; // bx
+  int16_t v3; // esi
+  _BYTE v4[80]; // [var_50]
+
+  v1 = *(int16_t *)(dword_19C7C0 + 0xAC);
+  v2 = (int16_t)dword_192FD8;
+  sub_120BB5(4, (int)(intptr_t)(dword_19C7C0 + 0x6E));
+  sub_120E8C(1);
+  v2 -= 35000;   /* 9E6B8 sub ebx, 88B8h */
+  v3 = sub_122259();
+  sprintf(v4, sub_7A990(0x15Eu), (int)v2);
+  sub_9EC4A(140, 139, v1, (int)(intptr_t)v4);
+  *(int16_t *)(dword_19C7C0 + 0xB2) = v3 + 146;
+  return (int)dword_19C7C0;
 }
 
 
@@ -9845,32 +9876,33 @@ char sub_9EC32( int a1)
 
 //----- (0009EC4A) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
-int sub_9EC4A(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        hr_int128_t a25)
+/* wave 184: the frame above the moved ebp (Hex-Rays made it arguments a5..a25) */
+#pragma pack(push, 1)
+typedef struct {
+  int a5;
+  int a6;
+  int a7;
+  int a8;
+  int a9;
+  int a10;
+  int a11;
+  int a12;
+  int a13;
+  int a14;
+  int a15;
+  int a16;
+  int a17;
+  int a18;
+  int a19;
+  int a20;
+  int a21;
+  int a22;
+  int a23;
+  int a24;
+  hr_int128_t a25;
+} frame9EC4A_t;
+#pragma pack(pop)
+int sub_9EC4A(int a1, int a2, int a3, int a4)
 {
   char *v25; // eax
   int v26; // ecx
@@ -9883,6 +9915,29 @@ int sub_9EC4A(
   int16_t i; // [esp+7Eh] [ebp-3Ah]
   char v35[54]; // [esp+82h] [ebp-36h] BYREF
 
+  frame9EC4A_t frm9EC4A;
+  memset(&frm9EC4A, 0, sizeof(frm9EC4A));
+#define a5 (frm9EC4A.a5)
+#define a6 (frm9EC4A.a6)
+#define a7 (frm9EC4A.a7)
+#define a8 (frm9EC4A.a8)
+#define a9 (frm9EC4A.a9)
+#define a10 (frm9EC4A.a10)
+#define a11 (frm9EC4A.a11)
+#define a12 (frm9EC4A.a12)
+#define a13 (frm9EC4A.a13)
+#define a14 (frm9EC4A.a14)
+#define a15 (frm9EC4A.a15)
+#define a16 (frm9EC4A.a16)
+#define a17 (frm9EC4A.a17)
+#define a18 (frm9EC4A.a18)
+#define a19 (frm9EC4A.a19)
+#define a20 (frm9EC4A.a20)
+#define a21 (frm9EC4A.a21)
+#define a22 (frm9EC4A.a22)
+#define a23 (frm9EC4A.a23)
+#define a24 (frm9EC4A.a24)
+#define a25 (frm9EC4A.a25)
   v25 = sub_8E5C5(4u, 208, 209);
   qmemcpy((char *)&a23 + 2, v25, 8u);
   LOWORD(v25) = word_179BCB;
@@ -9905,6 +9960,27 @@ int sub_9EC4A(
   sub_120BB5(4, dword_19C7C0 + 110);
   sub_120E8C(1);
   return sub_1210B7(499, v27, (int)&a3 + 2);
+#undef a5
+#undef a6
+#undef a7
+#undef a8
+#undef a9
+#undef a10
+#undef a11
+#undef a12
+#undef a13
+#undef a14
+#undef a15
+#undef a16
+#undef a17
+#undef a18
+#undef a19
+#undef a20
+#undef a21
+#undef a22
+#undef a23
+#undef a24
+#undef a25
 }
 // 9ECDF: inconsistent variable size for '^144.16'
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);

@@ -72,6 +72,8 @@ try {
         $env:DOSBOX_FASTVGA = "1"    # retrace waits end at once
         if ($Turbo) { $env:DOSBOX_TURBO = "1" }
     }
+    # wave 184: the reads per source at every save - the port continues from a save with it
+    if ($Gameplay) { $env:DOSBOX_GR_SAVEPOS = "$out\savepos.txt" }
     $p = Start-Process $dbx -ArgumentList $dbxArgs -PassThru -RedirectStandardError "$out\dosbox_stderr.txt"
     $last = (Select-String -Path "$sess\record.cfg" -Pattern '^SENDCLICK').Count
     $t0 = Get-Date
@@ -88,6 +90,9 @@ try {
     Remove-Item env:DOSBOX_TURBO -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_FASTHOOK -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_FASTVGA -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_GR_SAVEPOS -ErrorAction SilentlyContinue
+    # the session keeps the first savepos.txt (never overwritten)
+    if ($Gameplay -and (Test-Path "$out\savepos.txt") -and -not (Test-Path "$sess\savepos.txt")) { Copy-Item "$out\savepos.txt" "$sess\savepos.txt" }
     Start-Sleep 1
     foreach ($f in (Get-ChildItem $game -File)) {
         if (($f.Name -match '^SAVE\d+\.GAM$') -or ($f.LastWriteTime -ge $tStart -and -not (Test-Path (Join-Path "$out\keep" $f.Name)))) { [IO.File]::Delete($f.FullName) }

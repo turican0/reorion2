@@ -2673,17 +2673,17 @@ void sub_C8F6B()
   sub_10FE41((int)&unk_1A11F8 + 18 * word_1831C2);
   ++word_1831C2;
   sub_BF500();
-  JUMPOUT(0xC8FA7);
+  /* wave 184: C8F93 push offset word_1991CE, tail loc_C8FA7 (ecx = 0Dh from C8F7D) */
+  sub_A4F1F((int16_t)dword_19F82C, word_1A123A, word_1A123C, 13, 47, (_WORD *)&word_1A11CE);
 }
-// C8F98: control flows out of bounds to C8FA7
 // 1831C2: using guessed type int16_t word_1831C2;
 
 
 //----- (000C8F9A) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (positive sp value has been found (funcsize=4)) - nutno dohledat rucne v IDA @ 0xC8F9D */
-int sub_C8F9A(_DWORD _p0)
+/* wave 184: push offset word_1991CE, then loc_C8FA2 (Hex-Rays: positive sp value) */
+void sub_C8F9A(void)
 {
-  DECOMP_TODO("positive sp value has been found (funcsize=4)");
+  sub_A4F1F((int16_t)dword_19F82C, word_1A123A, word_1A123C, 13, 47, (_WORD *)&word_1A11CE);
 }
 
 
@@ -2759,7 +2759,7 @@ LABEL_11:
 LABEL_13:
   sub_C6E7E();
   v9 = sub_BF500();
-  sub_C8F9A(v9);
+  sub_C8F9A();
   sub_124E36();
   sub_C8FC7();
   sub_1191CA((int)sub_C8FC7, 1);
@@ -2814,7 +2814,7 @@ void sub_C91B8( int a1, int a2)
   sub_1191CA((int)sub_C8FC7, 1);
   sub_C6E7E();
   v6 = sub_BF500();
-  sub_C8F9A(v6);
+  sub_C8F9A();
   word_1A1240 = word_1A11C6;
   sub_C8FC7();
   sub_1077D(v7, 1, (int)v3, (int16_t *)&v13);
@@ -3796,7 +3796,8 @@ int sub_CA63E( int a1)
 
 
 //----- (000CA6A6) --------------------------------------------------------
-void sub_CA6A6(_BYTE *a1, _BYTE *a2, int *a3, int a4, int a5, int a6)
+/* wave 184: returns the sub_CBAD0 answer (CA6F1, tail shared with sub_CA78F) */
+int sub_CA6A6(_BYTE *a1, _BYTE *a2, int *a3, int a4, int a5, int a6)
 {
   int (**v7)(void); // eax
   _BYTE v8[48]; // [esp+0h] [ebp-30h] BYREF
@@ -3806,7 +3807,7 @@ void sub_CA6A6(_BYTE *a1, _BYTE *a2, int *a3, int a4, int a5, int a6)
   v7 = sub_107C2(&dword_1A11B0);
   sub_1077D(v7, 0, 0, 0);
   sub_CA6FB((int16_t *)dword_1A11AC, a1, a2, (int)a3, a4, a5, a6);
-  sub_CBAD0((int)v8, 0, (int)a2, a3);
+  return sub_CBAD0((int)v8, 0, (int)a2, a3);
 }
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 1A11AC: using guessed type int dword_1A11AC;
@@ -4015,20 +4016,19 @@ int sub_CA85C(int a1, _WORD *a2, int16_t *a3, int16_t *a4)
 
 
 //----- (000CAB21) --------------------------------------------------------
-void sub_CAB21(int a1, _BYTE *a2, _BYTE *a3, int *a4, int a5, int a6, int a7)
+/* wave 184: one 48-byte record at ebp-30h (var_23 = +13, var_21 = +15, var_15 = +27) -
+   IDA split it into locals and sub_CA6FB wrote 45 bytes into 12; returns the answer */
+int sub_CAB21(int a1, _BYTE *a2, _BYTE *a3, int *a4, int a5, int a6, int a7)
 {
-  int16_t v7[6]; // [esp+0h] [ebp-30h] BYREF
-  int16_t v8; // [esp+Dh] [ebp-23h]
-  int16_t v9; // [esp+Fh] [ebp-21h]
-  int v10; // [esp+1Bh] [ebp-15h]
+  _BYTE v7[48]; // [esp+0h] [ebp-30h] BYREF
 
   dword_1A11AC = (int)v7;
-  v10 = a1;
-  sub_CA6FB(v7, a2, a3, (int)a4, a5, a6, a7);
-  v9 -= *(_WORD *)(*(_DWORD *)(dword_1A11AC + 27) + 8);
-  v8 -= *(_WORD *)(*(_DWORD *)(dword_1A11AC + 27) + 10);
+  *(int *)(v7 + 27) = a1;   /* CAB42 mov [var_15], esi */
+  sub_CA6FB((int16_t *)v7, a2, a3, (int)a4, a5, a6, a7);
+  *(int16_t *)(v7 + 15) -= *(_WORD *)(*(_DWORD *)(dword_1A11AC + 27) + 8);
+  *(int16_t *)(v7 + 13) -= *(_WORD *)(*(_DWORD *)(dword_1A11AC + 27) + 10);
   byte_1831C4 = 0;
-  sub_CBAD0((int)v7, 1, (int)a3, a4);
+  return sub_CBAD0((int)v7, 1, (int)a3, a4);
 }
 // 1831C4: using guessed type char byte_1831C4;
 // 1A11AC: using guessed type int dword_1A11AC;
@@ -4668,8 +4668,10 @@ LABEL_39:
 
 
 //----- (000CBAD0) --------------------------------------------------------
-void sub_CBAD0(int a1, int a2, int a3, int *a4)
+/* wave 184: returns edx (loc_C97B7 mov eax, edx) = the sub_CB88C answer (CBD95 mov edx, eax) */
+int sub_CBAD0(int a1, int a2, int a3, int *a4)
 {
+  int v31; // edx - the answer
   int v4; // eax
   int v5; // ebx
   int v6; // eax
@@ -4803,7 +4805,8 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
     }
     a4 = &v25;
     v5 = (int)&v28;
-    HIDWORD(v10) = sub_CB88C((int16_t *)&v26, (int)&v24, &v28, &v25);
+    v31 = sub_CB88C((int16_t *)&v26, (int)&v24, &v28, &v25);
+    HIDWORD(v10) = v31;
     sub_CB23C();
     sub_1077D(v10, 0, 0, 0);
     if ( a2 == 2 )
@@ -4840,9 +4843,9 @@ void sub_CBAD0(int a1, int a2, int a3, int *a4)
       sub_C7283(v10, SHIDWORD(v10));
       sub_C6CA4();
       sub_112816();
-      if ( WORD2(v10) == 3 )
+      if ( (int16_t)v31 == 3 )   /* CBEA7 cmp dx, 3 */
         sub_C5BB9();
-      JUMPOUT(0xC97B7);
+      return v31;
     }
   }
 }
@@ -6141,7 +6144,7 @@ void *sub_CD969()
                 + 3753
                 * *(char *)((uint8_t*)dword_192B18 + 361 * *(int16_t *)(17 * sub_79C54(word_199830, word_199832) + (uint8_t*)dword_1930D4))
                 + 2207) != 5;
-  if ( v0 && (v1 = sub_CDF5C(180), sub_77658(v1), v2) )
+  if ( v0 && (v1 = sub_CDF5C(180), v2 = sub_77658(v1), (int16_t)v2) )   /* wave 184: CDA81 test ax, ax */
     word_1A136C = 0;
   else
     word_1A136C = 3;
@@ -7491,6 +7494,9 @@ int sub_CF40D( int a1)
   int v41; // [esp+48h] [ebp-Ch]
   _BOOL1 v42; // [esp+4Ch] [ebp-8h]
 
+  PortDebug_MemRing(0xCF40D0, &a1, 4);   /* TEMP wave 184 */
+  PortDebug_MemRing(0xCF40D1, &dword_1A7454, 96);
+  PortDebug_MemRing(0xCF40D2, (void *)(intptr_t)dword_1AA204, 464);
   v2 = word_199998;
   v42 = *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 40) == 1;
   v28 = 3753 * word_199998;

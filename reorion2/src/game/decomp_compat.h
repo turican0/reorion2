@@ -118,6 +118,9 @@ extern "C" {
 int PortRec_Time(void *p);
 /* wave 183: REORION2_GAMEPLAY - the inputs a GAMEREC record of the original got (port_rec.cpp) */
 int PortGr_Active(void);
+/* wave 184: REORION2_GAMEPLAY_FROM=<n> - continue the replay from save n (GameMain) */
+int PortGr_FromSave(void);
+int PortGr_StartFrom(void);
 uint32_t PortGr_Value(int src, uint32_t live);
 uint32_t PortGr_Wait(uint32_t base, int n);
 void PortGr_FrameWait(void);
@@ -195,6 +198,9 @@ void PortDebug_Symbolize(const char* tag, void* addr);
    (argument, seed before the call, calling function) once armed. */
 extern int g_rngLogArmed;
 void PortDebug_RngLog(unsigned arg, unsigned seed, void* caller);
+/* TOOL (wave 184): REORION2_MEM_RING=<file> - copy of game memory kept in RAM, written at the
+   GAMEPLAY END (no deep calls, so the probe does not change uninitialized locals) */
+void PortDebug_MemRing(unsigned tag, const void* p, unsigned len);
 /* Cislo z env promenne (vlna 58). V dekompilatu neni <stdlib.h>, takze primy
    `getenv` tam ma implicitni deklaraci vracejici int -> orezany ukazatel. */
 int PortDebug_EnvInt(const char* name, int fallback);

@@ -6975,7 +6975,6 @@ LABEL_19:
           if ( v36 == 2 )
           {
             v8 = aWb_1;
-                // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v41 = fopen(aLastraceRac_0, aWb);
             v55 = v41;
             if ( v41 )
@@ -8216,7 +8215,6 @@ _DWORD *sub_5BC74(int a1, int a2)
     dword_19B7DC[(_DWORD)v3] = (int)v5;
     ServiceAudioTick_FE8BE((int)v5, 7, v4, v3);
   }
-      // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v6 = fopen(aLastraceRac, aRb);
   if ( v6 )
   {
@@ -9097,7 +9095,6 @@ LABEL_59:
     if ( (_WORD)v61 == v52 )
     {
       v10 = (int)aRb_0;
-          // DECOMP_TODO (vyreseno ve vlne 06): chybel mod parametr (Hex-Rays artefakt, viz PROGRESS.md) - dopocitan z pouziti (fread/fwrite/fprintf nize).
     v12 = fopen(aLastraceRac, aRb);
       v35 = v12;
       v5 = (int16_t *)v12;

@@ -1474,10 +1474,96 @@ char sub_E7303(int a1, int a2)
 
 
 //----- (000E7343) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=225)) - nutno dohledat rucne v IDA @ 0xE7651 */
-_DWORD sub_E7343(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4, _DWORD _p5)
+/* wave 184: written from the asm (Hex-Rays failed). Registers eax = attacker (si),
+   edx = attacker ships, ebx = their count, ecx = defender (di); stack arg_0 =
+   defender ships, arg_4 = their count, arg_8 = star, arg_C = planet, arg_10 =
+   flag, arg_14 = the result block (retn 18h). Returns -1 / 0 / 1 (E765A). */
+int sub_E7343(int a1, int16_t *a2, int a3, int a4, int16_t *a5, int a6, int a7, int a8, char a9, char *a10)
 {
-  DECOMP_TODO("call analysis failed (funcsize=225)");
+  int16_t v11; // si
+  int16_t v12; // di
+  int v13; // [ebp-1Ch]
+  char v14; // [ebp-14h]
+  char v15; // [ebp-10h] tactical combat off
+  char v16; // [ebp-0Ch] defender is human
+  char v17; // [ebp-8h] not a network game
+  char v18; // [ebp-4h] attacker is human
+
+  v11 = a1;
+  v12 = a4;
+  v13 = 0;
+  v17 = byte_199F3A != 2 && byte_199F3A != 3;
+  v15 = byte_199CB4;
+  v18 = v11 < 8 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v11 + 40) == 100;
+  v16 = v12 < 8 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v12 + 40) == 100;
+  if ( (!(int16_t)a3 || !(int16_t)a6 && (int16_t)a8 == -1) && (int16_t)a7 != word_19999A )
+    return 0;   /* E73E2 */
+  if ( v11 < 8 )
+    byte_1AB124[v11] = 1;
+  if ( v12 < 8 )
+    byte_1AB124[v12] = 1;
+  if ( v17 && v12 < 8 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v12 + 40) == 100 )
+  {
+    if ( a9 )
+      sub_1AFA0(v11, v12);   /* E7433: edx = movsx di */
+    sub_C97DB(v11, v12, (int16_t)a7, (int16_t)a8);
+    byte_183578 = 1;
+  }
+  if ( !v15 && !v18 && !v16 )
+    v15 = 1;
+  if ( v15 )
+  {
+    v13 = (int16_t)sub_40148(a2, (int16_t)a3, a5, (int16_t)a6, (int16_t)a7, (int16_t)a8, a10 + 0x281, (_DWORD *)(a10 + 0x2E5));
+    if ( (v17 || v11 == word_19999C)
+      && (v12 < 8 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v12 + 40) == 100
+       || v11 < 8 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v11 + 40) == 100) )
+    {
+      sub_8A4C4();
+      sub_3FDAA((int)(intptr_t)(a10 + 0x281), (int)(intptr_t)(a10 + 0x2E5));
+      sub_8A4C4();
+      byte_183578 = 1;
+    }
+  }
+  else
+  {
+    v14 = 1;
+    if ( v11 >= 8 || v12 >= 8 )
+    {
+      v14 = 0;
+    }
+    else if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v11 + 40) != 100 )
+    {
+      v14 = sub_E7303(v11, -1);
+    }
+    else if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v12 + 40) != 100 )
+    {
+      v14 = sub_E7303(v12, (int16_t)a8);
+    }
+    /* TODO wave 184: sub_47939 (tactical combat) has an unverified 31-argument port
+       signature; the asm passes eax, edx, ebx, ecx and 3 stack words */
+    if ( v18 && v16 && (byte_199F3A == 2 || byte_199F3A == 3) )
+    {
+      int16_t v19 = v11 == word_19999C ? v12 : v11;   /* E75A4 mov esi, edi */
+      sub_F6816(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * v19 + 43), 64, 0, 0);
+      while ( !byte_1AB0C0 )
+        ServiceAudioTick_FE8BE(0, 0, 0, 0);
+      v13 = (int16_t)((int (*)(int, int, int, int, int, int, int))sub_47939)(
+              (int)(intptr_t)a2, (int16_t)a3, (int)(intptr_t)a5, (int16_t)a6, (int16_t)a7, (int16_t)a8, (uint8_t)v14);
+      sub_F6816(*(int16_t *)((uint8_t*)dword_197F98 + 3753 * v19 + 43), 65, 0, 0);
+      while ( byte_1AB0C0 == 1 )
+        ServiceAudioTick_FE8BE(0, 0, 0, 0);
+      byte_1AB0C0 = 0;
+    }
+    else
+    {
+      v13 = (int16_t)((int (*)(int, int, int, int, int, int, int))sub_47939)(
+              (int)(intptr_t)a2, (int16_t)a3, (int)(intptr_t)a5, (int16_t)a6, (int16_t)a7, (int16_t)a8, (uint8_t)v14);
+    }
+  }
+  sub_8A4C4();
+  if ( v13 < 0 )
+    return -1;
+  return v13 > 0;
 }
 
 
@@ -1756,7 +1842,8 @@ void sub_E78A7(int a1, int a2, int a3, int a4, int a5, unsigned int *a6, int16_t
 
 
 //----- (000E7B79) --------------------------------------------------------
-void sub_E7B79(int a1, int a2)
+/* wave 184: returns al = [var_4] (E7CD3) - 1 unless the player declined to break treaties */
+char sub_E7B79(int a1, int a2)
 {
   int64_t v4; // rax
   int v5; // edx
@@ -1816,7 +1903,7 @@ void sub_E7B79(int a1, int a2)
         *(_BYTE *)(a2 + 8 * a1 + dword_1AA378) = 1;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE6CA4 je epilog funkce */
+  return v16;
 }
 // E7CD6: control flows out of bounds to E6CA4
 // E7CBE: variable 'v12' is possibly undefined
@@ -1881,7 +1968,7 @@ void sub_E7CDB(int16_t *a1, int a2, _WORD *a3, _WORD *a4)
       }
       if ( v7 == -1 )
         break;
-      sub_E7B79(a2, v7);
+      v10 = sub_E7B79(a2, v7);   /* wave 184: E7DC2 test al, al */
     }
     while ( !v10 );
   }
@@ -2483,7 +2570,8 @@ char sub_E86A0(int a1, int a2)
 
 
 //----- (000E86E7) --------------------------------------------------------
-void sub_E86E7( int a1, int a2)
+/* wave 184: returns esi (E8732 mov eax, esi) - the count */
+int sub_E86E7( int a1, int a2)
 {
   int v4; // esi
   unsigned int v5; // ebx
@@ -2501,7 +2589,7 @@ void sub_E86E7( int a1, int a2)
         ++v4;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE6CA4 je epilog funkce */
+  return v4;
 }
 // E8734: control flows out of bounds to E6CA4
 // 19306C: using guessed type int dword_19306C;
@@ -2550,11 +2638,347 @@ char sub_E8776(int a1)
 
 
 //----- (000E87D2) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (function frame is wrong (funcsize=0)) - nutno dohledat rucne v IDA @ 0xE87D2 */
-int sub_E87D2(_DWORD _p0, _DWORD _p1)
+/* wave 184: written from the asm (Hex-Rays failed: enter 0F0h, push eax/edx/ebx, sub ebp, 82h -
+   var_72/76/7A are the pushed eax/edx/ebx, arg_* are locals). The attack on a colony after the
+   space combat: a1 = attacking ships (eax), a2 = their count (edx), a3 = the colony (ebx),
+   a4 = the combat block (ecx = esi). The human attacker gets the BOMBARD / INVADE dialog. */
+#define PL_E87D2(n) ((uint8_t*)dword_197F98 + 3753 * (n))
+void sub_E87D2(int16_t *a1, int a2, int a3, char *a4)
 {
-  DECOMP_TODO("function frame is wrong (funcsize=0)");
+  char *v5;      // edi - the colony
+  int16_t v6;    // [arg_3A] attacker
+  int16_t v7;    // [arg_36] colony owner
+  int16_t v8;    // [arg_22] star of the colony
+  int16_t v9;    // [var_sA] the same star (human attacker)
+  int16_t v10;   // [arg_1E]
+  char v11;      // [arg_66] = [arg_62]
+  int v12;       // [arg_3E] the dialog answer
+  char v13;      // [arg_46] done
+  int v14;       // ecx at the switch
+  int v15;       // the saved RNG seed
+  int16_t v16;   // [arg_2A] star (AI attacker)
+  char v17;      // [arg_52]
+  char v18;      // [arg_6A]
+  char v19;      // [arg_56]
+  char v20;      // [arg_5E] attacker's people live there
+  int v21;       // [arg_E]
+  int v22;       // [arg_32]
+  char v23;      // [arg_6E] / [arg_4E]
+  char v24;      // [arg_4A] / [arg_5A]
+  int v25;
+  uint32_t *v26;
+  uint8_t *v27;  // the planet
+  int i;
+  _BYTE v28[73]; // [var_6E] - record for sub_4267B
+
+  v5 = (char *)((uint8_t*)dword_192B18 + 361 * a3);
+  v6 = *(char *)(dword_197F9C + 129 * *a1 + 99);
+  v27 = (uint8_t*)dword_1930D4 + 17 * *(int16_t *)(v5 + 2);
+  v8 = v27[2];
+  v7 = *v5;
+  v16 = 0;
+  if ( v5[6] )
+  {
+    a4[12] = 1;
+    sub_DCDAC(v5, 1);
+    --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+    goto LABEL_END;
+  }
+  if ( v6 >= 8 )   /* E8853: monsters */
+  {
+    if ( (uint16_t)v6 >= 10 && (uint16_t)v6 <= 14 )
+      sub_F9711(v6, *(int16_t *)(v5 + 2), -1);
+    memset(a4 + 15, 0, 73);
+    a4[15] = (char)v6;
+    a4[16] = (char)a3;
+    if ( v6 == 10 )
+    {
+      *(int16_t *)(a4 + 18) = 20;
+      *(int16_t *)(a4 + 21) = 0;
+    }
+    sub_4267B((int)(intptr_t)(a4 + 15));
+    sub_DD2F2((int)(intptr_t)(a4 + 15));
+    if ( PL_E87D2(v7)[40] == 100
+      && (!byte_199CB4 || byte_199F3A != 2 && byte_199F3A != 3 || *(int16_t *)(PL_E87D2(v7) + 43) == word_1AAF86)
+      && (uint8_t)a4[80] )
+    {
+      if ( v6 == 10 )
+      {
+        sub_C64AB();
+        byte_183578 = 1;
+        if ( !a4[81] )
+        {
+          v27[8] = 0;
+          v27[11] = 0;
+          sub_E1CED(v5);
+          sub_EC97C(v5);
+          sub_E2A70((int16_t)((v5 - (char *)dword_192B18) / 361), (int)(intptr_t)dword_1930D4);   /* E896C: edx = dword_18B0D4 */
+        }
+      }
+      sub_B4D02((_BYTE *)(a4 + 15));
+    }
+    if ( a4[81] )
+      sub_DCDAC(v5, 1);
+    goto LABEL_END;
+  }
+  if ( PL_E87D2(v6)[40] != 100 )
+    goto LABEL_AI;
+  /* E8994: a human attacker - the BOMBARD / INVADE dialog */
+  if ( (byte_199F3A == 2 || byte_199F3A == 3) && v6 != word_19999C )
+    goto LABEL_END;
+  v9 = v8;
+  memset(v28, 0, sizeof(v28));
+  v28[1] = (char)a3;
+  v28[0] = (char)v6;
+  sub_4267B((int)(intptr_t)v28);
+  v10 = *(int16_t *)(v28 + 3) + *(int16_t *)(v28 + 6);
+  v11 = sub_E86A0((int)(intptr_t)a1, (int16_t)a2);
+  sub_EC831(a1, (int16_t)a2, v5, (int16_t *)(a4 + 0x58), (int)(intptr_t)(a4 + 0x8F));
+  v15 = sub_12484C();
+  v12 = sub_CA6A6((_BYTE *)(a4 + 0x58), (_BYTE *)(a4 + 0x8F), (int *)(intptr_t)v15, (int16_t)a3, v10, (uint8_t)v11);
+  v13 = 0;
+  v14 = (int16_t)a3;
+  do
+  {
+    switch ( (uint16_t)(v12 + 1) <= 5 ? (int16_t)v12 : 0 )   /* E8ABB inc eax / cmp ax, 5 / ja default */
+    {
+      case -1:
+        v13 = 1;
+        break;
+      case 1:   /* E8AD1 */
+        v14 = *(uint8_t *)(v5 + 10);
+        a4[0x276] = 1;
+        sub_DCDAC(v5, 2);
+        sub_C6513();
+        --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+        v27 = (uint8_t*)dword_1930D4 + 17 * *(int16_t *)(v5 + 2);
+        v27[4] = 1;
+        if ( v27[15] )
+        {
+          v27[15] = 0;
+          *(_BYTE *)(dword_19306C + 113 * v27[2] + 40) = 0;
+        }
+        v13 = 1;
+        sub_F975C(-10000, v6, v7, 10, v9, (int16_t)v14);
+        break;
+      case 2:   /* E8B5A */
+        v15 = sub_12484C();
+        memset(a4 + 15, 0, 73);
+        a4[15] = (char)v6;
+        a4[16] = (char)a3;
+        sub_4267B((int)(intptr_t)(a4 + 15));
+        sub_EC831(a1, (int16_t)a2, v5, (int16_t *)(a4 + 0x58), (int)(intptr_t)(a4 + 0x8F));
+        v12 = sub_CAB21((int)(intptr_t)(a4 + 15), (_BYTE *)(a4 + 0x58), (_BYTE *)(a4 + 0x8F), (int *)(intptr_t)v15,
+                        (int16_t)a3, v10, (uint8_t)v11);
+        sub_F975C(-10000, v6, v7, 10, v9, *(int16_t *)(a4 + 27));
+        if ( a4[81] )
+        {
+          sub_DCDAC(v5, 1);
+          v13 = 1;
+          --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+        }
+        else if ( !*(int16_t *)(a4 + 100) && !v11 && !sub_C622A(v6, (int16_t)a3) )
+        {
+          v13 = 1;
+        }
+        v10 = -1;
+        v14 = 10;   /* ecx of sub_F975C, kept by the callees */
+        break;
+      case 3:   /* E8C3D */
+        /* TODO wave 184: sub_ED48B has a broken port signature (frame like this one); the asm
+           passes eax = ships, edx = count, ebx = colony, ecx = a4 + 0x58 */
+        ((int (*)(int, int, int, int))sub_ED48B)((int)(intptr_t)a1, (int16_t)a2, (int16_t)a3, (int)(intptr_t)(a4 + 0x58));
+        v15 = sub_12484C();
+        sub_C5C7F(1);
+        sub_B7491((int)(intptr_t)(a4 + 0x58), (int)(intptr_t)(a4 + 0x8F), *(int *)(a4 + 0xC6), (int16_t)a3);
+        sub_C5C7F(0);
+        sub_124820(v15);
+        if ( *(int16_t *)(a4 + 0x272) )
+          sub_10D0DA((int16_t *)(a4 + 0xCA), *(int16_t *)(a4 + 0x272), *(int16_t *)(a4 + 0x274));
+        sub_F975C(-10000, v6, v7, 10, v9, 0);
+        if ( *v5 == v6 )
+        {
+          ++*(_BYTE *)(dword_1AA3E0 + 11 * v6 + 7);
+          --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+        }
+        byte_183578 = 1;
+        v13 = 1;
+        break;
+      case 4:   /* E8D03 */
+        sub_ECF41(v5, v6, (int)(intptr_t)(a4 + 0x58), v14);
+        a4[0x6CD] = 1;
+        if ( *(int16_t *)(a4 + 0x272) )
+          sub_10D0DA((int16_t *)(a4 + 0xCA), *(int16_t *)(a4 + 0x272), *(int16_t *)(v5 + 2));
+        sub_F975C(-10000, v6, v7, 10, v9, *(uint8_t *)(v5 + 10));
+        ++*(_BYTE *)(dword_1AA3E0 + 11 * v6 + 7);
+        v13 = 1;
+        --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+        break;
+      default:
+        break;
+    }
+  }
+  while ( !v13 );
+  if ( *(int16_t *)(a4 + 0x4E) )
+    sub_4B11E(v6, v8, *(int16_t *)(a4 + 0x4E));
+  if ( (byte_199F3A == 2 || byte_199F3A == 3) && (v6 == word_19999C || v7 == word_19999C) )
+  {
+    v25 = sub_F3E42(0);
+    word_19994C = 1;
+    sub_F55A4(v25, 0, 0, 0);
+  }
+  goto LABEL_END;
+
+LABEL_AI:   /* E8DFE: an AI attacker */
+  if ( sub_C622A(v6, (int16_t)a3) )
+  {
+    a4[0x6CD] = 1;   /* E8E12 add esi, 58h / [esi+675h] */
+    sub_ECF41(v5, v6, (int)(intptr_t)(a4 + 0x58), v6);
+    ++*(_BYTE *)(dword_1AA3E0 + 11 * v6 + 7);
+    --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+    goto LABEL_END;
+  }
+  v17 = sub_E86A0((int)(intptr_t)a1, (int16_t)a2);
+  v18 = 0;
+  v19 = 0;
+  v20 = 0;
+  v16 = v8;
+  for ( v26 = (uint32_t *)(v5 + 12) + *(uint8_t *)(v5 + 10); (uint32_t *)(v5 + 12) < v26; )
+  {
+    --v26;
+    if ( (int)(*v26 & 0xF) == v6 )
+      v20 = 1;
+  }
+  memset(a4 + 15, 0, 73);
+  a4[15] = (char)v6;
+  a4[16] = (char)a3;
+  sub_4267B((int)(intptr_t)(a4 + 15));
+  v21 = *(int16_t *)(a4 + 18);
+  v22 = *(int16_t *)(a4 + 21);
+  if ( v21 || v22 || v17 )
+  {
+    if ( PL_E87D2(v7)[40] != 100 && (uint8_t)byte_199CB0 >= 3u && sub_E4A09(v16, v7, v6)
+      && 2 * *(uint8_t *)(v5 + 10) <= v21 )
+      v19 = 1;
+    if ( v19 )
+    {
+      *(_BYTE *)(dword_19306C + 113 * v8 + v7 + 103) = v6 + 8;
+      sub_524FB(v7, v6);
+      goto LABEL_91B8;
+    }
+    if ( v20 )
+    {
+      v23 = 0;
+      v24 = 0;
+      do
+      {
+        if ( sub_CF26E(v6, a1, (int16_t)a2, v5) )
+        {
+          v23 = 1;
+        }
+        else if ( *(uint8_t *)(v5 + 10) == 1 && (int)(*(uint32_t *)(v5 + 12) & 0xF) == v6 && PL_E87D2(v6)[39] != 1
+               && (sub_E8776(v6) || PL_E87D2(v6)[0x8B8] && !PL_E87D2(v7)[0x8B8]) )
+        {
+          v24 = 1;
+        }
+        else if ( !v22 )
+        {
+          v25 = sub_DCEBD(v5, a4 + 15, v21);
+          v21 = v25 ? v21 - v25 : 0;
+        }
+        else
+        {
+          --v22;
+          sub_DD13E(v5, a4 + 15);
+        }
+      }
+      while ( !v23 && !v24 && v21 + v22 );
+    }
+    else if ( sub_E86E7(v6, v7) >= 2 || sub_E8739(v7) == 1 )
+    {
+      if ( v17 )
+      {
+        v18 = 1;
+        a4[0x276] = 1;
+        sub_DCDAC(v5, 2);
+      }
+      else
+      {
+        sub_DD2F2((int)(intptr_t)(a4 + 15));
+      }
+    }
+    else
+    {
+      v23 = 0;
+      v24 = 0;
+      do
+      {
+        if ( sub_CF26E(v6, a1, (int16_t)a2, v5) )
+          v23 = 1;
+        else if ( *(uint8_t *)(v5 + 10) == 1 )
+          v24 = 1;
+        else if ( !v22 )
+        {
+          v25 = sub_DCEBD(v5, a4 + 15, v21);
+          v21 = v25 ? v21 - v25 : 0;
+        }
+        else
+        {
+          --v22;
+          sub_DD13E(v5, a4 + 15);
+        }
+      }
+      while ( !v23 && !v24 && v21 + v22 );
+    }
+    /* E910B */
+    if ( *(int16_t *)(a4 + 0x4E) )
+      sub_4B11E(v6, v8, *(int16_t *)(a4 + 0x4E));
+    if ( PL_E87D2(v7)[40] == 100
+      && (!byte_199CB4 || byte_199F3A != 2 && byte_199F3A != 3 || *(int16_t *)(PL_E87D2(v7) + 43) == word_1AAF86)
+      && (uint8_t)a4[80] )
+      sub_B4D02((_BYTE *)(a4 + 15));
+    sub_F975C(-10000, v6, v7, 10, v16, *(int16_t *)(a4 + 27));
+    if ( a4[81] )
+    {
+      v18 = 1;
+      sub_DCDAC(v5, 1);
+    }
+  }
+LABEL_91B8:
+  if ( v18 || v19 || !sub_CF34C(v6, a1, (int16_t)a2, (int16_t)a3) )
+    goto LABEL_END;
+  ((int (*)(int, int, int, int))sub_ED48B)((int)(intptr_t)a1, (int16_t)a2, (int16_t)a3, (int)(intptr_t)(a4 + 0x58));   /* TODO wave 184: see case 3 */
+  if ( PL_E87D2(v7)[40] == 100
+    && (!byte_199CB4 || byte_199F3A != 2 && byte_199F3A != 3 || *(int16_t *)(PL_E87D2(v7) + 43) == word_1AAF86) )
+  {
+    v15 = sub_12484C();
+    sub_C5C7F(1);
+    sub_B7491((int)(intptr_t)(a4 + 0x58), (int)(intptr_t)(a4 + 0x8F), *(int *)(a4 + 0xC6), (int16_t)a3);
+    sub_C5C7F(0);
+    sub_124820(v15);
+  }
+  sub_F975C(-10000, v6, v7, 10, v16, 0);
+  if ( *v5 == v6 )
+  {
+    ++*(_BYTE *)(dword_1AA3E0 + 11 * v6 + 7);
+    --*(_BYTE *)(dword_1AA3E0 + 11 * v7 + 7);
+  }
+  if ( PL_E87D2(v6)[40] == 100 || PL_E87D2(v7)[40] == 100 )
+    byte_183578 = 1;
+LABEL_END:   /* E9304 */
+  if ( v6 == 8 )
+  {
+    for ( i = a2; i > 0; )
+    {
+      --i;
+      sub_6485F(*(uint8_t *)(dword_197F9C + 129 * a1[i] + 16));
+      sub_A163A(a1[i], (int)(intptr_t)dword_197F9C);   /* E9335: edx = dword_18FF9C */
+    }
+    *(_BYTE *)(dword_1AA3B4 + v8) &= 0xFE;
+  }
+  sub_8A4C4();
 }
+#undef PL_E87D2
 
 
 //----- (000E9358) --------------------------------------------------------
@@ -2667,7 +3091,8 @@ int16_t sub_E938C(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
   v12 = v31;
   v13 = v26;
   v14 = &v24[v38];
-  v6[10] = sub_E7343(&v24[v32], v34, v28, v35, a6, v6);
+  /* wave 184: E9551 - eax = attacker, edx = &v24[v38], ebx = v31, ecx = defender, then the stack */
+  v6[10] = sub_E7343((int16_t)v37, &v24[v38], v31, (int16_t)v39, &v24[v32], v34, v28, v35, a6, (char *)v6);
   v15 = (int16_t)v33;
   if ( (int16_t)v33 != -1 )
   {
@@ -2682,6 +3107,11 @@ int16_t sub_E938C(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
     v16 = sub_F3E42(1);
     word_19994C = 1;
     sub_F55A4(v16, (int)v14, v12, v13);
+  }
+  {   /* TEMP wave 184: E95AF */
+    int t[8] = { (char)v6[10], (int16_t)v37, (int16_t)v39, (int16_t)v36, (int16_t)a1,
+                 (int16_t)v39 < 8 ? *(_BYTE *)(dword_1AA3E0 + 11 * (int16_t)v39) : -9, v31, v34 };
+    PortDebug_MemRing(0xE938C0, t, sizeof t);
   }
   if ( (char)v6[10] >= 0 )
   {
@@ -2729,7 +3159,7 @@ int16_t sub_E938C(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
           *(_BYTE *)dword_1AA3E4 &= ~(1 << (v37 - 8));
       }
       if ( (int16_t)v36 != -1 && *(char *)((uint8_t*)dword_192B18 + 361 * (int16_t)v36) != -1 )
-        sub_E87D2(&v24[v38], v31);
+        sub_E87D2(&v24[v38], v31, (int16_t)v36, (char *)v6);   /* wave 184: E9859 - ebx = the colony, ecx = esi */
     }
   }
   else
@@ -3156,22 +3586,7 @@ void sub_E9D62(int a1, int16_t *a2)
           *v10 = i;
         }
       }
-      if ( PortDebug_EnvInt("REORION2_E9D62_TRACE", 0) )   /* TEMP wave 184 */
-      {
-        char t[600]; int q, n = 0;
-        n += sprintf(t + n, "E9D62 n=%d ev=%02X%04X list=", word_1AA3E8, (uint8_t)byte_19AC86, (uint16_t)word_19AC88);
-        for ( q = 0; q < word_1AA3E8; ++q ) n += sprintf(t + n, "%02X", *(uint8_t *)(dword_1AA37C + q));
-        n += sprintf(t + n, " ac=");
-        for ( q = 0; q < 73; ++q ) if ( *(uint16_t *)(dword_1AA3AC + 2 * q) ) n += sprintf(t + n, "%d:%X,", q, *(uint16_t *)(dword_1AA3AC + 2 * q));
-        PortDebug_Message(t);
-        {
-          static int s_call;
-          char fn[64];
-          int f;
-          sprintf(fn, "e9d62_%03d.ships", s_call++);
-          if ( (f = fopen(fn, "wb")) > 0 ) { fwrite((void *)dword_197F9C, 1, 64500, f); fclose(f); }
-        }
-      }
+      PortDebug_MemRing(0xE9D620, (void *)(intptr_t)dword_197F9C, 64500);   /* TEMP wave 184: ships */
       sub_FE9B5((_BYTE *)dword_1AA37C, word_1AA3E8);
       if ( (uint8_t)byte_199F3A <= 1u )
       {
@@ -4913,7 +5328,9 @@ int sub_EBEEB(int a1, int a2, int *a3, int *a4, int *a5)
 
 
 //----- (000EBFCB) --------------------------------------------------------
-void sub_EBFCB(int a1, int a2)
+/* wave 184: returns var_C (EC0D6) - the nearest of the 7 points: esi - 1 when 0 < esi < 6,
+   else -1; the callers (sub_899AB) use it as the orbit under the cursor */
+int sub_EBFCB(int a1, int a2)
 {
   int v2; // edi
   int v3; // ebx
@@ -4927,10 +5344,14 @@ void sub_EBFCB(int a1, int a2)
   int v11; // [esp+8h] [ebp-14h]
   int16_t v12; // [esp+Ch] [ebp-10h]
   unsigned int v13; // [esp+14h] [ebp-8h]
+  int v14; // esi
+  int v15; // [ebp-Ch]
 
   v9 = a1;   /* wave 181: v9 saved by the prologue (push eax) */
+  v15 = -1;
   if ( a1 || a2 )
   {
+    v14 = -1;
     v13 = -1;
     v2 = 7;
     v3 = 14;
@@ -4953,11 +5374,16 @@ void sub_EBFCB(int a1, int a2)
         v7 = (v6 + 5) / 10;
       v8 = (v11 - v9) * (v11 - v9) + (v7 + a2) * (v7 + a2);
       if ( v8 < v13 )
+      {
         v13 = v8;
+        v14 = v2;   /* EC0BF mov esi, edi */
+      }
     }
     while ( v2 > 0 );
+    if ( v14 > 0 && v14 < 6 )
+      v15 = v14 - 1;   /* EC0D2 dec esi */
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xEBA76 je epilog funkce */
+  return v15;
 }
 // EC0D9: control flows out of bounds to EBA76
 // EC01D: variable 'v9' is possibly undefined
@@ -6559,6 +6985,15 @@ _BOOL1 sub_EDB1D( int a1)
 // 17EB49: using guessed type int16_t word_17EB49;
 
 
+//----- (000EDB2D) --------------------------------------------------------
+/* wave 184: IDA took the bytes 66 3D 09 00 for `dd offset loc_93D66`; the code is
+   EDB2D cmp ax, 9 / setnz al / retn (ORION2.EXE file offset 0x173181) */
+_BOOL1 sub_EDB2D( int a1)
+{
+  return (int16_t)a1 != 9;
+}
+
+
 //----- (000EDB35) --------------------------------------------------------
 int sub_EDB35(int a1, uint8_t (*a2)(_DWORD))
 {
@@ -7091,7 +7526,7 @@ void sub_EE0B0(int a1, int a2)
     sub_EDDF7(a1, 1, 0, 0);
     sub_EDDF7(a1, 0, 0, 0);
     sub_EDFE0(a1);
-    sub_EDB35(a1, (uint8_t (*)(_DWORD))&off_EDB2D);
+    sub_EDB35(a1, (uint8_t (*)(_DWORD))sub_EDB2D);   /* wave 184: was the data label off_EDB2D */
     dword_1AA3F0 = 0;
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xED9E5 je epilog funkce */
@@ -12058,17 +12493,6 @@ LABEL_44:
 
 
 //----- (000F4FD5) --------------------------------------------------------
-// DECOMP_TODO (opraveno v teto vlne): puvodni kod volal strstr pres
-// podezrely pretypovany ukazatel na funkci s JEDINYM parametrem:
-//   result = ((int (*)(int))strstr)(a2 + 34);
-// strstr ale potrebuje DVA parametry (haystack, needle). Stejny druh
-// artefaktu jako u ParseCommandLine_107E6 (viz vlna 02) - puvodni Watcom
-// kod spolehal na to, ze parametr a1 uz sedi ve spravnem registru z doby,
-// kdy byla tato funkce zavolana, takze zadna instrukce pro jeho predani
-// nebyla treba. Pri prekladu modernim kompilatorem uz tohle NEPLATI (jiny
-// stack frame, jine registry) - proto to v runtime padalo na Access
-// Violation (viz obrazek v zadani - ctenie z nesmyslne adresy).
-// Oprava: explicitni volani strstr se DVEMA parametry.
 //
 // DECOMP_TODO (a2 - zdroj textu k prohledani): puvodni kod pocital cilovou
 // adresu jako "&stackAnchor_v16 - 67 + 34" (viz puvodni verze

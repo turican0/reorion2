@@ -6170,12 +6170,6 @@ void sub_15D2E5()
 
   for ( i = 0; i < 257; ++i )
   {
-    // DECOMP_TODO (vyreseno ve vlne 06): puvodni "calloc(259)" mela jen
-    // JEDEN parametr - stejny druh chyby jako u fopen/fseek (viz PROGRESS.md).
-    // Skutecny calloc potrebuje (count, size). Tady je oprava bezpecna a
-    // jednoznacna: celkovy pocet pozadovanych bajtu (259) je jasny at uz
-    // puvodne slo o calloc(1,259) nebo calloc(259,1) - vysledek je bit-
-    // presne stejny (count*size=259 v obou pripadech).
     dword_1C9844[i] = calloc(1, 259);
     if ( !dword_1C9844[i] )
       sub_163233((int)aFailureAllocat, i);

@@ -41,10 +41,12 @@ if (-not $PackOnly) {
         "GAMEREC file=$s/input.txt frames=$s/grframes"
     )
     $env:DOSBOX_CTL_FILE = "$sess\ctl.cfg"
+    $env:DOSBOX_GR_SAVEPOS = "$sess\savepos.txt"   # wave 184: reads per source at every save
     $p = Start-Process $dbx -ArgumentList "-conf", $conf -PassThru -RedirectStandardError "$sess\dosbox_stderr.txt"
     "DOSBox pid $($p.Id) - recording to $sess"
     $p.WaitForExit()
     [Environment]::SetEnvironmentVariable("DOSBOX_CTL_FILE", $null)
+    [Environment]::SetEnvironmentVariable("DOSBOX_GR_SAVEPOS", $null)
     # the game dir gets its state back: files the session created go, the rest is copied back
     foreach ($f in (Get-ChildItem $game -File)) {
         if ($f.LastWriteTime -ge $t0 -and -not (Test-Path (Join-Path "$sess\before" $f.Name))) { [IO.File]::Delete($f.FullName) }
@@ -53,7 +55,7 @@ if (-not $PackOnly) {
 }
 
 New-Item -ItemType Directory -Force $outDir | Out-Null
-$files = @("record.cfg", "input.txt", "MOX.SET") + (Get-ChildItem "$sess\saves" -File | Sort-Object Name | ForEach-Object { "saves/" + $_.Name })
+$files = @("record.cfg", "input.txt", "MOX.SET") + @(Get-ChildItem "$sess\savepos.txt" -ErrorAction SilentlyContinue | ForEach-Object { "savepos.txt" }) +(Get-ChildItem "$sess\saves" -File | Sort-Object Name | ForEach-Object { "saves/" + $_.Name })
 $files += (Get-ChildItem "$sess\before" -File | Where-Object { $_.Name -match '^(SAVE\d+\.GAM|MOX\.SET|lastrace\.rac|HOF\.M2)$' } | ForEach-Object { "before/" + $_.Name })
 & $pack pack "$outDir\$Name.binz" $sess @files
 & $pack check "$outDir\$Name.binz" $sess

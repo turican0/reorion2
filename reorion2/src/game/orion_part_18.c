@@ -4695,21 +4695,6 @@ int sub_113765(int a1, int a2)
   if ( !dword_18442F )
     return 0;
   fread(unk_1AD854, 2048, 1, dword_18442F);
-  // PORT (vlna 26 pokr. 51): DECOMP_TODO z vlny 07 VYRESENO podle asm
-  // (sub_113765, loc_113944) - offsetova tabulka LBX tu JE, jen ji IDA
-  // schovala do adresy sousedniho symbolu:
-  //     mov     eax, [ebp+var_10]       ; cislo skladby (a1)
-  //     shl     eax, 2
-  //     mov     edx, dword_1A585C[eax]  ; 0x1A585C = unk_1A5854 + 8
-  //     xor     ebx, ebx                ; SEEK_SET
-  //     call    fseek_
-  // Prectenych 2048 B je hlavicka STREAM.LBX; od offsetu 8 v ni lezi pole
-  // 32bitovych offsetu jednotlivych skladeb.
-  // Zastupny "SEEK_CUR, 0" cetl VZDY od pozice 2048. Zmereno na datech:
-  // na 2048 lezi zaznam 0 se znackou "cats" a na +40 hodnota 65536, kdezto
-  // skladba 1 (kterou hra vybira) zacina na 2070 hlavickou "RIFF" s delkou
-  // 5 011 968 B. Stream tedy skoncil uz po dvou pul-bufferech (2x 32768 B)
-  // a znovu se rozjel - to bylo to trhani hudby.
   fseek(dword_18442F, *(int *)((char *)unk_1AD854 + 8 + 4 * v8), SEEK_SET);
   fread(dword_1AE0A4[0], 1, 44, dword_18442F);
   dword_18443F = *(_DWORD *)(dword_1AE0A4[0] + 40);
