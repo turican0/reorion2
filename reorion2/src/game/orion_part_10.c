@@ -695,7 +695,7 @@ int16_t sub_A00F1(_WORD *a1)
 
 
 //----- (000A0125) --------------------------------------------------------
-void sub_A0125(int16_t *a1)
+char sub_A0125(int16_t *a1)
 {
   int v2; // eax
   int v3; // esi
@@ -707,15 +707,15 @@ void sub_A0125(int16_t *a1)
   if ( v3 + v2 <= v4 )
   {
     if ( v3 - v2 < 0 )
+    {
       *a1 = v2;
+      return 1;   /* wave 184: A0154 mov cl, 1 */
+    }
+    return 0;
   }
-  else
-  {
-    *a1 = v4 - v2;
-  }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA00EB je epilog funkce */
+  *a1 = v4 - v2;
+  return 1;   /* wave 184: A0147 mov cl, 1 */
 }
-// A015B: control flows out of bounds to A00EB
 
 
 //----- (000A015D) --------------------------------------------------------
@@ -814,7 +814,7 @@ LABEL_8:
       a1[2] = v8;
     }
   }
-  sub_A0125(a1);
+  v9 = sub_A0125(a1);   /* wave 184: A02C8 result */
   if ( v9 )
   {
     a1[6] = sub_A0040((int)a1);
@@ -3104,9 +3104,8 @@ void sub_A2D2D(int a1, int a2, int a3)
   v3 = 3753 * a3;
   v4 = *(uint8_t *)(v3 + (uint8_t*)dword_197F98 + 38);
   dword_1904D8[v4] = sub_127C27((int)aBuffer0Lbx_4, *(uint8_t *)(v3 + (uint8_t*)dword_197F98 + 38) + 43, dword_193174);
-  JUMPOUT(0xA2C5D);
+  sub_12A478((int16_t)(a1 - *(int16_t *)(intptr_t)dword_1904D8[v4]), (int16_t)a2, dword_1904D8[v4]);   /* wave 184: A2D77 jmp A2C5D */
 }
-// A2D77: control flows out of bounds to A2C5D
 // 1904D8: using guessed type int dword_1904D8[8];
 // 193174: using guessed type int dword_193174;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -7568,7 +7567,7 @@ LABEL_113:
 
 
 //----- (000A9033) --------------------------------------------------------
-void sub_A9033(int a1, int a2, int a3, int a4, int a5, int a6)
+char sub_A9033(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   int v6; // edi
   int16_t *v7; // eax
@@ -7591,17 +7590,15 @@ void sub_A9033(int a1, int a2, int a3, int a4, int a5, int a6)
     v11 = *v7;
     v14 = ((int16_t)sub_1384B9(v11 - a3, a4 - v8) / 22 + 8) % 16;
     v12 = ((int16_t)sub_1384B9(a3 - v11, v8 - a4) / 22 + 8) % 16;
-    if ( word_182473 < a6 )
-      goto LABEL_6;
+    if ( word_182473 < (int16_t)a6 )
+      return 0;   /* wave 184: A90E9 xor al, al */
     ++v13;
     sub_A761C(v11, v8, a3, a4, (int16_t)v14, (int16_t)v12, a5, a6, 0, 0, 0, 0, 1, 0, 0, -1, 0, v10 % 3 == 0);
   }
   sub_12B65C();
   sub_124820(v6);
-LABEL_6:
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA73B1 je epilog funkce */
+  return 1;   /* wave 184: A9168 mov al, 1 */
 }
-// A90EB: control flows out of bounds to A73B1
 // A761C: using guessed type int sub_A761C(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD);
 // 182473: using guessed type int16_t word_182473;
 
@@ -7789,11 +7786,17 @@ int sub_A9412( int a1, int a2, int a3, int a4)
 
 
 //----- (000A943A) --------------------------------------------------------
-void sub_A943A()
+int sub_A943A(int a1, int a2, char a3, int a4)
 {
-  JUMPOUT(0xA9433);
+  int v4; // eax
+
+  /* wave 184: A945E jmp A9433 */
+  if ( a3 )
+    v4 = a1 + 8;
+  else
+    v4 = a1 - 8;
+  return sub_A9179((int16_t)v4, (int16_t)(a2 - 8), 0, 0, (int16_t)a4, a3);
 }
-// A945E: control flows out of bounds to A9433
 
 
 //----- (000A947F) --------------------------------------------------------
@@ -8233,7 +8236,7 @@ void sub_A9AED( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 
   LOWORD(v7) = sub_A9F9E(a6);
   v50 = v7;
-  sub_A9FCB();
+  v8 = sub_A9FCB(a6);   /* A9B0C mov [var_30], eax */
   v42 = v8;
   if ( word_182483 )
   {
@@ -8395,18 +8398,24 @@ int16_t sub_A9F9E( int a1)
   _WORD v2[16]; // [esp+0h] [ebp-20h] BYREF
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  qmemcpy(v2, &off_A6606, sizeof(v2));
+  /* wave 184: A6606 is a table of 16 words (IDA showed its first dword as `offset sub_10000`) */
+  static const int16_t kA6606[16] = { 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1 };
+  qmemcpy(v2, kA6606, sizeof(v2));
   return v2[a1 % 16];
 }
 // A6606: using guessed type void (__noreturn *off_A6606)();
 
 
 //----- (000A9FCB) --------------------------------------------------------
-void sub_A9FCB()
+int16_t sub_A9FCB(int a1)
 {
-  JUMPOUT(0xA9FBD);
+  /* wave 184: A9FEA jmp A9FBD - word_A6626 (16 words, 8 of them align bytes) */
+  static const int16_t kA6626[16] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3 };
+  _WORD v2[16];
+
+  qmemcpy(v2, kA6626, sizeof(v2));
+  return v2[(int16_t)a1 % 16];
 }
-// A9FEA: control flows out of bounds to A9FBD
 
 
 //----- (000A9FFC) --------------------------------------------------------
@@ -8545,7 +8554,7 @@ void sub_AA127(int a1, int a2, int a3, int a4)
 
 
 //----- (000AA281) --------------------------------------------------------
-void sub_AA281( int a1, int a2, int a3, int a4, int a5)
+char sub_AA281( int a1, int a2, int a3, int a4, int a5)
 {
   int16_t v6; // cx
   int16_t v7; // bx
@@ -8593,9 +8602,8 @@ void sub_AA281( int a1, int a2, int a3, int a4, int a5)
   sub_AA38D(v9, (int16_t)(a2 - v8 / 2), v14, v13, v16[0]);
   sub_12B65C();
   sub_128BE7();
-  JUMPOUT(0xA9AA1);
+  return (int16_t)v16[0] >= (int16_t)v16[1] - 1;   /* wave 184: AA378 jmp A9AA1 - setnl al */
 }
-// AA378: control flows out of bounds to A9AA1
 // 18243E: using guessed type char byte_18243E;
 // 193174: using guessed type int dword_193174;
 
@@ -8624,7 +8632,7 @@ _DWORD *sub_AA38D( int a1, int a2, int a3, int a4, int a5)
   a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   v19 = a2;
   v5 = sub_A9F9E(a4);
-  sub_A9FCB();
+  v6 = sub_A9FCB(a4);   /* AA3A8 mov [var_4], eax */
   v22 = v6;
   v21 = sub_A9AAD(a3);
   v7 = (uint8_t)byte_182477[v21] * (uint8_t)byte_182477[v21] + 32;
@@ -10345,6 +10353,7 @@ void sub_ACB4A( int a1, unsigned int a2)
   int v16; // [esp+20h] [ebp-Ch]
   int v17; // [esp+24h] [ebp-8h]
   int v18; // [esp+28h] [ebp-4h] BYREF
+  int v19; // [ebp-28h]
 
   v4 = a1;
   v5 = sub_33B19(a1);   /* wave 184: ACB60 test ax, ax */
@@ -10382,7 +10391,7 @@ LABEL_12:
     else
       v15 = 1;
     v16 = 0;
-    sub_147D7(10);
+    v19 = sub_147D7(10);   /* ACC2D mov [var_28], eax */
     while ( (int16_t)v16 < (int16_t)v17 )
     {
       sub_12C2A0();
@@ -10400,7 +10409,8 @@ LABEL_12:
       v16 += v15;
     }
     word_1998FC = -1;
-    JUMPOUT(0xABFE8);
+    sub_112C96(v19, 10);   /* wave 184: ACCD6 jmp ABFE8 - eax = [var_28] (sub_147D7 handle) */
+    return;
   }
   v17 = 24;
   goto LABEL_12;
@@ -10967,7 +10977,9 @@ LABEL_26:
           v21 = (int16_t)v21 - v4[1] / 2;
           sub_12DAFC((int)v4);
           sub_12A478(v22, v21, (int)v4);
-          JUMPOUT(0xACF6A);
+          sub_1113CC(dword_192ED4, 0);   /* wave 184: AD7E5 jmp ACF6A */
+          sub_1320E9((_BYTE *)dword_192950);
+          return;
         }
         if ( (((int)*(uint8_t *)(v7 + 35) >> 2) & 1) != 0 )
         {
@@ -11012,7 +11024,6 @@ LABEL_22:
   v10 = v11;
   goto LABEL_22;
 }
-// AD7E5: control flows out of bounds to ACF6A
 // 192864: using guessed type int dword_192864;
 // 192954: using guessed type int dword_192954;
 // 192ED4: using guessed type int dword_192ED4;

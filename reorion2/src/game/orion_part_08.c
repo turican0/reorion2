@@ -113,9 +113,8 @@ void sub_88CB7()
     }
     ++v0;
   }
-  JUMPOUT(0x83CF6);
+  sub_8FD56(v3);   /* wave 184: 88D34 jmp 83CF6 */
 }
-// 88D34: control flows out of bounds to 83CF6
 // 19306C: using guessed type int dword_19306C;
 // 19999A: using guessed type int16_t word_19999A;
 
@@ -1438,11 +1437,10 @@ int sub_8A538( int a1, int a2)
 
 
 //----- (0008A548) --------------------------------------------------------
-void sub_8A548()
+int sub_8A548(int a1, int a2)
 {
-  JUMPOUT(0x8A540);
+  return 506 * (int16_t)a1 / (int16_t)a2;   /* wave 184: 8A54A imul eax, 1FAh; jmp 8A540 */
 }
-// 8A550: control flows out of bounds to 8A540
 
 
 //----- (0008A552) --------------------------------------------------------
@@ -3867,10 +3865,9 @@ int sub_8CE12( int a1)
     }
   }
   if ( v2 > 0 )
-    JUMPOUT(0x8CE00);
+    return (int16_t)v8[(int16_t)(sub_1247A0(v2) - 1)];   /* wave 184: 8CEA7 jmp 8CE00 */
   return -1;
 }
-// 8CEA7: control flows out of bounds to 8CE00
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -4979,7 +4976,7 @@ LABEL_13:
         if ( byte_199F0D )
           sub_8D8A1(v72);
         sub_EB87D(45);   /* vlna 79: asm `mov eax, 2Dh` pred volanim */
-        sub_EBD80();
+        LOBYTE(v43) = sub_EBD80();   /* 8E183 test al, al */
         if ( (_BYTE)v43 )
         {
           BYTE2(a25) = 1;
@@ -6153,7 +6150,7 @@ LABEL_12:
       strcpy(v7, v14);
       goto LABEL_13;
     }
-    sub_8F76D((int)v14);
+    v8 = sub_8F76D((int)v14);   /* wave 184: 8F5DD result */
     if ( v8 < v15 )
     {
       v7 = v13;
@@ -6293,20 +6290,28 @@ int16_t sub_8F72D(int a1, _WORD *a2, _WORD *a3, _WORD *a4, _WORD *a5, _WORD *a6,
 
 
 //----- (0008F76D) --------------------------------------------------------
-void sub_8F76D(int a1)
+/* wave 184: written from asm 8F76D-8F7D2 - the file time from sub_111660 in seconds
+   (year since 1980, month, day, hour, minute, second; the low words of the tm fields) */
+int sub_8F76D(int a1)
 {
-  sub_111660(a1);
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8E803 je epilog funkce */
+  int *v1 = sub_111660(a1);
+
+  return ((int16_t)v1[5] - 1980) * 31536000
+       + (int16_t)v1[4] * 2678400
+       + (int16_t)v1[3] * 86400
+       + (int16_t)v1[2] * 3600
+       + (int16_t)v1[1] * 60
+       + (int16_t)v1[0];
 }
-// 8F7D2: control flows out of bounds to 8E803
 
 
 //----- (0008F7D7) --------------------------------------------------------
 void sub_8F7D7()
 {
-  JUMPOUT(0x8F276);
+  /* wave 184: 8F7DA jmp 8F276 */
+  sub_124D41();
+  sub_1077D(sub_128C32(0, 0, 639, 479, 0), 0, 639, 0);
 }
-// 8F7DA: control flows out of bounds to 8F276
 
 
 //----- (0008F7DF) --------------------------------------------------------
@@ -7368,9 +7373,16 @@ int sub_9070A( int a1, int a2, int a3, int a4)
 //----- (000907CE) --------------------------------------------------------
 void sub_907CE()
 {
-  JUMPOUT(0x906EA);
+  int v0; // ebx
+  int v1; // ecx
+  int v2; // ebx
+
+  /* wave 184: 9082E jmp 906EA */
+  v0 = dword_19306C + 113 * word_199960;
+  v1 = 1000 * *(int16_t *)(v0 + 15) / word_1999A0;
+  v2 = 1000 * *(int16_t *)(v0 + 17) / word_1999A0;
+  sub_1297C3((int16_t)(10 * v1 / 1591 + 306 - 5), (int16_t)(10 * v2 / 2366 + 235 - 5), 11, 12, 1, 113);
 }
-// 9082E: control flows out of bounds to 906EA
 // 19306C: using guessed type int dword_19306C;
 // 1999A0: using guessed type int16_t word_1999A0;
 

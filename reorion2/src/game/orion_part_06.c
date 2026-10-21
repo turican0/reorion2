@@ -6247,7 +6247,7 @@ _BOOL1 sub_78D71( int a1, int a2)
 
 
 //----- (00078D86) --------------------------------------------------------
-void sub_78D86()
+int sub_78D86()
 {
   int i; // esi
   int v1; // eax
@@ -6277,9 +6277,8 @@ void sub_78D86()
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x785E5 je epilog funkce */
+  return v7;   /* wave 184: 78DFF mov eax, [var_4] */
 }
-// 78E02: control flows out of bounds to 785E5
 // 78DD9: variable 'v2' is possibly undefined
 // 78DF2: variable 'v1' is possibly undefined
 // 19306C: using guessed type int dword_19306C;
@@ -6633,11 +6632,10 @@ int sub_7927F( int a1)
 
 
 //----- (00079293) --------------------------------------------------------
-void sub_79293()
+int sub_79293(int a1)
 {
-  JUMPOUT(0x79279);
+  return (int16_t)a1 * word_199992 / word_1999A0;   /* wave 184: 792A7 jmp 79279 (cdq; idiv ebx) */
 }
-// 792A7: control flows out of bounds to 79279
 // 199992: using guessed type int16_t word_199992;
 // 1999A0: using guessed type int16_t word_1999A0;
 
@@ -6885,9 +6883,8 @@ void sub_7962C()
   word_1992C6 = 0;
   word_1992C8 = 0;
   sub_79756();
-  JUMPOUT(0x79624);
+  memset(byte_190488, 0, 8);   /* wave 184: 7966C jmp 79624 */
 }
-// 7966C: control flows out of bounds to 79624
 // 1992C0: using guessed type int16_t word_1992C0[];
 // 1992C2: using guessed type int16_t word_1992C2;
 // 1992C4: using guessed type int16_t word_1992C4;

@@ -3605,7 +3605,7 @@ void sub_7DA13()
 
 
 //----- (0007DA76) --------------------------------------------------------
-void sub_7DA76(_WORD *a1, int a2, int a3, int a4)
+char sub_7DA76(_WORD *a1, int a2, int a3, int a4)
 {
   int v4; // edx
   _WORD *v5; // eax
@@ -3657,7 +3657,7 @@ void sub_7DA76(_WORD *a1, int a2, int a3, int a4)
         v13 = &saveSlotInfo_199699[1 + i];
         sub_80658(v13);
       }
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7DA0C je epilog funkce */
+      return v21;   /* wave 184: 7DD39 mov al, [var_4] */
     }
     v6 = sub_1171AB((int)v5, v4, a3, a4);
     v19 = -1;
@@ -3755,7 +3755,6 @@ LABEL_37:
     }
   }
 }
-// 7DD3C: control flows out of bounds to 7DA0C
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 179598: using guessed type wchar_t aNsqoA[6];
 // 1820B8: using guessed type char byte_1820B8;
@@ -5921,7 +5920,7 @@ char sub_804B7(_WORD *a1)
   sub_7E913();
   sub_803D9();
   sub_80556();
-  sub_7DA76(a1, -1, 632, (int)a1);
+  v2 = sub_7DA76(a1, -1, 632, (int)a1);   /* wave 184: 80544 result */
   LOBYTE(a1) = v2;
   sub_11C2F0();
   return (char)a1;
@@ -8619,7 +8618,7 @@ int sub_8354E(int a1, int a2, int16_t *a3)
   v7 = 0;
   v8 = (int16_t)((400 - *(int16_t *)(dword_1975CC + 2)) / 2 + 21);
   v9 = 0;
-  sub_6FB73();
+  sub_6FB73(v6, v8);   /* 835EC movsx edx, ax; movsx eax, cx */
   while ( 1 )
   {
     v11 = sub_1171AB(v10, v8, v5, v6);
@@ -10066,9 +10065,8 @@ void sub_85320()
       }
     }
   }
-  JUMPOUT(0x83CF6);
+  sub_8FD56(v6);   /* wave 184: 853CE jmp 83CF6 - restores what sub_8FD71 saved */
 }
-// 853CE: control flows out of bounds to 83CF6
 // 19995E: using guessed type int16_t word_19995E;
 // 19999A: using guessed type int16_t word_19999A;
 // 19999C: using guessed type int16_t word_19999C;
@@ -10184,9 +10182,8 @@ void sub_85593()
     }
     ++v0;
   }
-  JUMPOUT(0x83CFA);
+  sub_8FD56(v6);   /* wave 184: 8564D movsx eax, [var_4]; jmp 83CFA */
 }
-// 85651: control flows out of bounds to 83CFA
 // 19306C: using guessed type int dword_19306C;
 // 19999A: using guessed type int16_t word_19999A;
 // 19999C: using guessed type int16_t word_19999C;
@@ -12040,9 +12037,10 @@ void sub_879BC(int a1, int a2, unsigned int a3)
     sprintf(v9, "%s (%s)", (char *)(dword_19306C + 113 * word_199960), (char *)v6);
   }
   sub_120BB5(2, (int)v10);
-  JUMPOUT(0x854B5);
+  /* wave 184: 87AF4 jmp 854B5 - si/di = word_193000 + word_193010 / word_193002 + word_193012 */
+  sub_1212B3((int16_t)(word_192FDC[18] + word_192FDC[26] + 15),
+             (int16_t)(word_192FFC + (int16_t)(word_192FDC[19] + word_192FDC[27]) - 25), (int)v9);
 }
-// 87AF4: control flows out of bounds to 854B5
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 192FFC: using guessed type int16_t word_192FFC;
 // 19306C: using guessed type int dword_19306C;

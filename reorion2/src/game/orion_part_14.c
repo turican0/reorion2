@@ -279,9 +279,8 @@ void sub_D6682(uint8_t *a1)
   *(_WORD *)(v1 + 4 * v2 + 12) &= 0xFE7Fu;
   *(_BYTE *)(v1 + 4 * v2 + 13) |= 1u;
   *(_BYTE *)(v1 + 4 * a1[4]++ + 13) |= 2u;
-  JUMPOUT(0xD667A);
+  sub_D648A(a1);   /* wave 184: D66B1 jmp D667A */
 }
-// D66B1: control flows out of bounds to D667A
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
@@ -4839,7 +4838,7 @@ int sub_DB659(const void *pa, const void *pb)
 
 
 //----- (000DB6D2) --------------------------------------------------------
-void sub_DB6D2(int a1, int a2)
+int sub_DB6D2(int a1, int a2)
 {
   int v2; // esi
   int v3; // edi
@@ -4938,10 +4937,8 @@ void sub_DB6D2(int a1, int a2)
     v20 += 12;
     ++v19;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
+  return v25;   /* wave 184: DB8D0 mov eax, [var_8] */
 }
-// DB8D3: control flows out of bounds to D775E
-// DB84D: variable 'v16' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -5020,7 +5017,7 @@ void sub_DB8D8()
           v16[*(int16_t *)(v1 + 101)] = 1;
           if ( ++*(_WORD *)(v1 + 97) == 30 )
           {
-            sub_DB6D2(v32, (int)v16);
+            v2 = sub_DB6D2(v32, (int)v16);   /* DB9C6 mov edx, eax */
             *(_WORD *)(v31 + dword_197F9C + 97) = 0;
             if ( v2 != -1 && v30 == -1 )
             {
@@ -5060,7 +5057,7 @@ void sub_DB8D8()
         }
         if ( v33 )
         {
-          sub_DB6D2(v32, (int)v16);
+          v10 = sub_DB6D2(v32, (int)v16);   /* DBAB9 mov ecx, eax */
           if ( v10 == -1 )
           {
             v11 = *(_BYTE *)(v31 + dword_197F9C + 101);
@@ -5087,8 +5084,6 @@ void sub_DB8D8()
 }
 // DBB24: control flows out of bounds to DA478
 // DBAE9: bad sp value at call
-// DB9D9: variable 'v2' is possibly undefined
-// DBABE: variable 'v10' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F9C: using guessed type int dword_197F9C;
@@ -5236,7 +5231,7 @@ LABEL_8:
 
 
 //----- (000DBDB8) --------------------------------------------------------
-void sub_DBDB8(int a1, int a2)
+int sub_DBDB8(int a1, int a2)
 {
   int v3; // esi
   unsigned int v4; // eax
@@ -5285,9 +5280,8 @@ void sub_DBDB8(int a1, int a2)
     v9 = v10[i - 1]   /* wave 181: [ebp-4Dh + i] */;
     v3 += v9;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
+  return v3;   /* wave 184: DBE7D mov eax, esi */
 }
-// DBE7F: control flows out of bounds to D775E
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F9C: using guessed type int dword_197F9C;
@@ -6127,7 +6121,7 @@ char sub_DCC31(int a1, int a2)
 
 
 //----- (000DCC83) --------------------------------------------------------
-void sub_DCC83(int a1, int a2)
+char sub_DCC83(int a1, int a2)
 {
   int16_t v3; // ax
   int16_t v4; // si
@@ -6141,12 +6135,11 @@ void sub_DCC83(int a1, int a2)
   }
   if ( v4 >= 0 )
   {
-    sub_101C93(a1, a2);
-    JUMPOUT(0xDCC78);
+    /* wave 184: DCCC3 cmp ax, [ebx+0ACh]; jmp DCC78 (jge -> al = 0, else al = 1) */
+    return sub_101C93(a1, a2) < *(int16_t *)(a1 + 172);
   }
-  JUMPOUT(0xDCC7C);
+  return 0;   /* DCCB7 jl DCC7C - cl = 0 */
 }
-// DCCCA: control flows out of bounds to DCC78
 // DCCB7: control flows out of bounds to DCC7C
 // 199998: using guessed type int16_t word_199998;
 
@@ -6780,7 +6773,7 @@ int sub_DD9F2(char *a1)
 
 
 //----- (000DDA36) --------------------------------------------------------
-void sub_DDA36(int a1, int a2)
+char *sub_DDA36(int a1, int a2)
 {
   int v2; // ebx
   int v3; // esi
@@ -6808,9 +6801,8 @@ void sub_DDA36(int a1, int a2)
     if ( i )
       sprintf(v6, ".%d", v3 * i / a2);
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
+  return (char *)&byte_1AA344;   /* wave 184: DDACA mov eax, offset byte_1A2344 */
 }
-// DDACF: control flows out of bounds to DEB17
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 1AA344: using guessed type char byte_1AA344;
 
@@ -6976,15 +6968,15 @@ LABEL_31:
         v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v19, (char *)off_17ED8A);
       if ( v25 )
         v15 += sprintf(v15, "\t%+d%%\t%s\r", 5 * v25, (char *)dword_1AA328);
-      sprintf(v15, asc_179F93);
-      JUMPOUT(0xDEB0E);
+      v15 += sprintf(v15, asc_179F93);
+      sprintf(v15, "\t%+d%%\t%s\r", 5 * *(char *)(a1 + 7), (char *)(intptr_t)dword_1AA324);   /* wave 184: DDEF6 jmp DEB0E (aDS_4) */
+      return;
     }
     strcpy(a2, (char *)dword_1AA2FC);
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
 // DDD50: control flows out of bounds to DEB17
-// DDEF6: control flows out of bounds to DEB0E
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17E7F0: using guessed type _UNKNOWN *off_17E7F0;
 // 17EA60: using guessed type _UNKNOWN *off_17EA60;
@@ -7607,7 +7599,7 @@ char sub_DE664(int a1, char *a2)
           {
             v24 = (char *)dword_1AA30C;
             v23 = (char *)(v7 + (uint8_t*)dword_197F98 + 21);
-            sub_DDA36(*(int16_t *)((char *)&v33[1] + v6), 2);
+            v8 = sub_DDA36(*(int16_t *)((char *)&v33[1] + v6), 2);   /* returns byte_1AA344 */
             v5 += sprintf(v5, "\t%s\t%s %s\r", v8, v23, v24);
           }
         }
@@ -7643,49 +7635,49 @@ char sub_DE664(int a1, char *a2)
         if ( v38 )
         {
           v25 = (char *)dword_1AA2F8;
-          sub_DDA36(v38, 40);
+          v13 = sub_DDA36(v38, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v13, v25);
         }
         if ( v39 )
         {
           v26 = (char *)dword_1AA330;
-          sub_DDA36(v39, 40);
+          v14 = sub_DDA36(v39, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v14, v26);
         }
         if ( v42 )
         {
           v27 = (char *)dword_1AA338;
-          sub_DDA36(v42, 40);
+          v15 = sub_DDA36(v42, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v15, v27);
         }
         if ( v40 > 0 )
         {
           v28 = (char *)dword_1AA334;
-          sub_DDA36(v40, 40);
+          v16 = sub_DDA36(v40, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v16, v28);
         }
         if ( v40 < 0 )
         {
           v29 = (char *)dword_1AA340;
-          sub_DDA36(v40, 40);
+          v17 = sub_DDA36(v40, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v17, v29);
         }
         if ( v41 > 0 )
         {
           v30 = (char *)dword_1AA2D0;
-          sub_DDA36(v41, 40);
+          v18 = sub_DDA36(v41, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v18, v30);
         }
         if ( v41 < 0 )
         {
           v31 = (char *)dword_1AA2E4;
-          sub_DDA36(v41, 40);
+          v19 = sub_DDA36(v41, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v19, v31);
         }
         if ( v43 )
         {
           v32 = (char *)dword_1AA328;
-          sub_DDA36(v43, 40);
+          v20 = sub_DDA36(v43, 40);   /* returns byte_1AA344 */
           v5 += sprintf(v5, "\t%s\t%s\r", v20, v32);
         }
         if ( (_WORD)v44 )
@@ -7719,15 +7711,6 @@ char sub_DE664(int a1, char *a2)
 #undef v42
 #undef v43
 }
-// DE831: variable 'v8' is possibly undefined
-// DE941: variable 'v13' is possibly undefined
-// DE96B: variable 'v14' is possibly undefined
-// DE995: variable 'v15' is possibly undefined
-// DE9BF: variable 'v16' is possibly undefined
-// DE9E9: variable 'v17' is possibly undefined
-// DEA13: variable 'v18' is possibly undefined
-// DEA3D: variable 'v19' is possibly undefined
-// DEA67: variable 'v20' is possibly undefined
 // DEB17: variable 'a1' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -7762,9 +7745,8 @@ void sub_DEB1D( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sub_DE664(361 * a1 + (uint8_t*)dword_192B18, v1);
-  JUMPOUT(0xDDF24);
+  sub_A5EB2(dword_1AA2CC, (int)(intptr_t)v1);   /* wave 184: DEB46 jmp DDF24 */
 }
-// DEB46: control flows out of bounds to DDF24
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA2CC: using guessed type int dword_1AA2CC;
 
@@ -8161,49 +8143,49 @@ char sub_DEE1B(char *a1, char *a2)
         if ( v46 )
         {
           v34 = (char *)dword_1AA2F8;
-          sub_DDA36(v46, 20);
+          v23 = sub_DDA36(v46, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v23, v34);
         }
         if ( v47 )
         {
           v35 = (char *)dword_1AA330;
-          sub_DDA36(v47, 20);
+          v24 = sub_DDA36(v47, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v24, v35);
         }
         if ( v51 )
         {
           v36 = (char *)dword_1AA338;
-          sub_DDA36(v51, 20);
+          v25 = sub_DDA36(v51, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v25, v36);
         }
         if ( v49 > 0 )
         {
           v37 = (char *)dword_1AA334;
-          sub_DDA36(v49, 20);
+          v26 = sub_DDA36(v49, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v26, v37);
         }
         if ( v49 < 0 )
         {
           v38 = (char *)dword_1AA340;
-          sub_DDA36(v49, 20);
+          v27 = sub_DDA36(v49, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v27, v38);
         }
         if ( v50 > 0 )
         {
           v39 = (char *)dword_1AA2D0;
-          sub_DDA36(v50, 20);
+          v28 = sub_DDA36(v50, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v28, v39);
         }
         if ( v50 < 0 )
         {
           v40 = (char *)dword_1AA2E4;
-          sub_DDA36(v50, 20);
+          v29 = sub_DDA36(v50, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v29, v40);
         }
         if ( v52 )
         {
           v41 = (char *)dword_1AA328;
-          sub_DDA36(v52, 20);
+          v30 = sub_DDA36(v52, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v30, v41);
         }
         if ( v64 )
@@ -8219,7 +8201,7 @@ char sub_DEE1B(char *a1, char *a2)
         if ( v48 )
         {
           v42 = (char *)dword_1AA2A8;
-          sub_DDA36(v48, 20);
+          v31 = sub_DDA36(v48, 20);   /* returns byte_1AA344 */
           v16 += sprintf(v16, "\t%s\t%s\r", v31, v42);
         }
         if ( v2[276] )
@@ -8244,15 +8226,6 @@ char sub_DEE1B(char *a1, char *a2)
   }
   return (char)a1;
 }
-// DF25B: variable 'v23' is possibly undefined
-// DF285: variable 'v24' is possibly undefined
-// DF2AF: variable 'v25' is possibly undefined
-// DF2D9: variable 'v26' is possibly undefined
-// DF303: variable 'v27' is possibly undefined
-// DF32D: variable 'v28' is possibly undefined
-// DF357: variable 'v29' is possibly undefined
-// DF381: variable 'v30' is possibly undefined
-// DF44C: variable 'v31' is possibly undefined
 // DF50C: variable 'a1' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
@@ -8293,9 +8266,8 @@ void sub_DF518( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sub_DEE1B((char *)(361 * a1 + (uint8_t*)dword_192B18), v1);
-  JUMPOUT(0xDDF24);
+  sub_A5EB2(dword_1AA2C8, (int)(intptr_t)v1);   /* wave 184: DF541 jmp DDF24 */
 }
-// DF541: control flows out of bounds to DDF24
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA2C8: using guessed type int dword_1AA2C8;
 
@@ -9001,49 +8973,49 @@ void sub_DFF74(int a1, char *a2)
                     if ( v39 )
                     {
                       v26 = (char *)dword_1AA2F8;
-                      sub_DDA36(v39, 20);
+                      v18 = sub_DDA36(v39, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v18, v26);
                     }
                     if ( v40 )
                     {
                       v27 = (char *)dword_1AA330;
-                      sub_DDA36(v40, 20);
+                      v19 = sub_DDA36(v40, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v19, v27);
                     }
                     if ( v43 )
                     {
                       v28 = (char *)dword_1AA338;
-                      sub_DDA36(v43, 20);
+                      v20 = sub_DDA36(v43, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v20, v28);
                     }
                     if ( v41 > 0 )
                     {
                       v29 = (char *)dword_1AA334;
-                      sub_DDA36(v41, 20);
+                      v21 = sub_DDA36(v41, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v21, v29);
                     }
                     if ( v41 < 0 )
                     {
                       v30 = (char *)dword_1AA340;
-                      sub_DDA36(v41, 20);
+                      v22 = sub_DDA36(v41, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v22, v30);
                     }
                     if ( v42 > 0 )
                     {
                       v31 = (char *)dword_1AA2D0;
-                      sub_DDA36(v42, 20);
+                      v23 = sub_DDA36(v42, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v23, v31);
                     }
                     if ( v42 < 0 )
                     {
                       v32 = (char *)dword_1AA2E4;
-                      sub_DDA36(v42, 20);
+                      v24 = sub_DDA36(v42, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v24, v32);
                     }
                     if ( v44 )
                     {
                       v33 = (char *)dword_1AA328;
-                      sub_DDA36(v44, 20);
+                      v25 = sub_DDA36(v44, 20);   /* returns byte_1AA344 */
                       v11 += sprintf(v11, "\t%s\t%s\r", v25, v33);
                     }
                     if ( v47 )
@@ -9054,8 +9026,9 @@ void sub_DFF74(int a1, char *a2)
                       v11 += sprintf(v11, "\t+%d\t%s\r", v8, (char *)off_17ECA6);
                     if ( v46 )
                       v11 += sprintf(v11, "\t+%d\t%s\r", v46, (char *)off_17EBAF);
-                    sprintf(v11, asc_179F93);
-                    JUMPOUT(0xDEB08);
+                    v11 += sprintf(v11, asc_179F93);
+                    sprintf(v11, "\t%+d\t%s\r", *(int16_t *)(a1 + 235), (char *)(intptr_t)dword_1AA2A4);   /* wave 184: E03BE jmp DEB08 (aDS_6) */
+                    return;
                   }
                 }
               }
@@ -9072,15 +9045,6 @@ void sub_DFF74(int a1, char *a2)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
 // DFF8F: control flows out of bounds to DEB17
-// E03BE: control flows out of bounds to DEB08
-// E01F9: variable 'v18' is possibly undefined
-// E0223: variable 'v19' is possibly undefined
-// E024D: variable 'v20' is possibly undefined
-// E0277: variable 'v21' is possibly undefined
-// E02A1: variable 'v22' is possibly undefined
-// E02CB: variable 'v23' is possibly undefined
-// E02F5: variable 'v24' is possibly undefined
-// E031F: variable 'v25' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;
@@ -9114,9 +9078,8 @@ void sub_E03C3( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sub_DFF74(361 * a1 + (uint8_t*)dword_192B18, v1);
-  JUMPOUT(0xDDF24);
+  sub_A5EB2(dword_1AA298, (int)(intptr_t)v1);   /* wave 184: E03EC jmp DDF24 */
 }
-// E03EC: control flows out of bounds to DDF24
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA298: using guessed type int dword_1AA298;
 
@@ -9296,14 +9259,14 @@ LABEL_52:
       v16 += sprintf(v16, "\t%+d\t%s\r", v30, (char *)dword_1AA29C);
     if ( *(_WORD *)(a1 + 295) )
       v16 += sprintf(v16, "\t%+d\t%s\r", *(int16_t *)(a1 + 295), (char *)dword_1AA2C0);
-    sprintf(v16, asc_179F93);
-    JUMPOUT(0xDEB08);
+    v16 += sprintf(v16, asc_179F93);
+    sprintf(v16, "\t%+d\t%s\r", *(int16_t *)(a1 + 237), (char *)(intptr_t)dword_1AA2DC);   /* wave 184: E08C3 jmp DEB08 (aDS_6) */
+    return;
   }
 LABEL_76:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
 // E040C: control flows out of bounds to DEB17
-// E08C3: control flows out of bounds to DEB08
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17EC93: using guessed type _UNKNOWN *off_17EC93;
 // 17ED64: using guessed type _UNKNOWN *off_17ED64;
@@ -9332,9 +9295,8 @@ void sub_E08C8( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   sub_E03F1((char *)(361 * a1 + (uint8_t*)dword_192B18), v1);
-  JUMPOUT(0xDDF24);
+  sub_A5EB2(dword_1AA2A0, (int)(intptr_t)v1);   /* wave 184: E08F1 jmp DDF24 */
 }
-// E08F1: control flows out of bounds to DDF24
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA2A0: using guessed type int dword_1AA2A0;
 
@@ -11003,9 +10965,8 @@ void sub_E2644(int a1)
   _BYTE v1[3000]; // [esp+0h] [ebp-BB8h] BYREF
 
   sub_E2000(3753 * a1 + (uint8_t*)dword_197F98, (int)v1);
-  JUMPOUT(0xDDF24);
+  sub_A5EB2(dword_1AA25C, (int)(intptr_t)v1);   /* wave 184: E266C jmp DDF24 */
 }
-// E266C: control flows out of bounds to DDF24
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 1AA25C: using guessed type int dword_1AA25C;
 
@@ -11947,7 +11908,6 @@ _BOOL1 sub_E36B7(char *a1)
   v2 = sub_E0B4F((int16_t *)(17 * *((int16_t *)a1 + 1) + (uint8_t*)dword_1930D4), *a1);   /* wave 182: 0xE36D0 cmp cx, ax */
   return v1 == v2;
 }
-// E36D8: variable 'v2' is possibly undefined
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 
 

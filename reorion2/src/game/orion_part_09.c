@@ -2789,9 +2789,8 @@ void sub_96E0B()
 //----- (00096E27) --------------------------------------------------------
 void sub_96E27()
 {
-  JUMPOUT(0x96E1F);
+  qmemcpy((void *)dword_1930D8, (void *)dword_1930DC, 0xF71u);   /* wave 184: 96E3B jmp 96E1F */
 }
-// 96E3B: control flows out of bounds to 96E1F
 // 1930D8: using guessed type int dword_1930D8;
 // 1930DC: using guessed type int dword_1930DC;
 
@@ -8295,7 +8294,7 @@ int16_t sub_9CD24( int16_t a1, int16_t a2)
     if ( (int16_t)v6 == -1 )
     {
       LOWORD(v24) = v0;
-      sub_78D86();
+      v6 = sub_78D86();   /* wave 184: 9CE29 result */
       v25 = v6;
       if ( (int16_t)v6 != -1 )
         goto LABEL_20;
@@ -9519,9 +9518,8 @@ void sub_9E601()
   v1 = *(int16_t *)(dword_19C7C0 + 160);
   v0 = sub_7A990(0x15Cu);
   sprintf(v2, v0, v1);
-  JUMPOUT(0x9DC35);
+  sub_9E207(*(int16_t *)(dword_19C7C0 + 164), (int)(intptr_t)v2, (int (*)(void))sub_9E64A, 360);   /* wave 184: 9E645 jmp 9DC35 */
 }
-// 9E645: control flows out of bounds to 9DC35
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 19C7C0: using guessed type int dword_19C7C0;
 

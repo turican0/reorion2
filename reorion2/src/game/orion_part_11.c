@@ -2926,9 +2926,8 @@ _DWORD *sub_B435A()
 void sub_B4379()
 {
   sub_11C2F0();
-  JUMPOUT(0xB4330);
+  sub_B432D();   /* wave 184: B4381 jmp B4330 */
 }
-// B4381: control flows out of bounds to B4330
 
 
 //----- (000B4383) --------------------------------------------------------
@@ -4370,94 +4369,74 @@ void sub_B634B(int a1, int a2)
 //----- (000B6352) --------------------------------------------------------
 int sub_B6352( int a1, int a2, int a3, int a4, int a5, int16_t *a6, int a7)
 {
+  /* B4DC1: step (dx, dy); B4DD1: wall cell (dx, dy, side) */
+  static const signed char kStep[16] = { 1, 1, -1, -1, -1, 1, 1, -1, 0, 1, 1, 0, 0, -1, -1, 0 };
+  static const signed char kWall[24] = { 0, 0, 2, -1, -1, 2, -1, 0, 3, 0, -1, 3,
+                                         0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 1 };
   int16_t i; // si
-  int v8; // eax
   int16_t v9; // bx
   int16_t v10; // dx
-  int16_t v11; // cx
-  int16_t v12; // ax
-  _BOOL1 v13; // al
-  int v18; // [esp+10h] [ebp-3Ch]
-  int64_t v19; // [esp+14h] [ebp-38h]
-  int64_t v20; // [esp+1Ch] [ebp-30h]
-  int v21; // [esp+24h] [ebp-28h]
-  _DWORD v22[2]; // [esp+28h] [ebp-24h]
-  int64_t v23; // [esp+30h] [ebp-1Ch]
-  int16_t v24; // [esp+38h] [ebp-14h]
-  int16_t v25; // [esp+3Ch] [ebp-10h]
-  int16_t v26; // [esp+40h] [ebp-Ch]
-  char v27; // [esp+44h] [ebp-8h]
-  _BOOL1 v28; // [esp+48h] [ebp-4h]
+  int16_t v24; // [ebp-14h]
+  int16_t v25; // [ebp-10h]
+  int16_t v26; // [ebp-Ch]
+  char v27; // [ebp-8h]
+  char v28; // [ebp-4h]
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  v22[0] = -65279;
-  v22[1] = -16711169;
-  v23 = *(_QWORD *)((char *)&dword_B4DC4[1] + 1);
+  a2 = (int16_t)a2;
   byte_19E580[203 * a1 + 29 * a2] = 1;
-  v18 = -16646144;
-  v19 = *(_QWORD *)((char *)&dword_B4DC4[4] + 1);
-  v20 = *(_QWORD *)((char *)&dword_B4DC4[6] + 1);
-  v21 = *(int *)((char *)&dword_B4DC4[8] + 1);
   v27 = 0;
   if ( *a6 == 13 )
-    goto LABEL_30;
-  for ( i = 0; ; ++i )
+    return 0;   /* wave 184: B639B xor al, al */
+  for ( i = 0; i < 8; ++i )
   {
-    if ( i >= 8 )
+    v9 = a1 + kStep[2 * i];
+    v10 = a2 + kStep[2 * i + 1];
+    v25 = a1 + kWall[3 * i];
+    v24 = a2 + kWall[3 * i + 1];
+    v26 = kWall[3 * i + 2];
+    if ( v9 > 7 || v10 > 7 || v9 < 0 || v10 < 0 )
+      continue;
+    if ( (v26 == 2 || v26 == 3) && *(int *)((char *)dword_182AFD + 24 * v25 + 4 * v24) )
+      continue;
+    if ( v26 == 3 && byte_19E57E[203 * v25 + 29 * v24] )
+      continue;
+    if ( v26 == 2 && byte_19E57F[203 * v25 + 29 * v24] )
+      continue;
+    if ( byte_19E580[203 * v9 + 29 * v10] )
+      continue;
+    if ( (int16_t)a7 > *a6 )
+      continue;
+    v28 = byte_19E57C[203 * v25 + 29 * v24 + v26] == 0;
+    if ( v9 == (int16_t)a3 && v10 == (int16_t)a4 )
     {
-      if ( v27 )
-        byte_19E580[203 * a1 + 29 * a2] = 0;
-      goto LABEL_30;
+      if ( (int16_t)a7 > *a6 )
+        continue;
+      *a6 = 0;   /* B655E: the original resets the count before the append */
+      if ( v28 )
+      {
+        *(_BYTE *)(a5 + 3 * *a6) = (_BYTE)v25;
+        *(_BYTE *)(a5 + 3 * *a6 + 1) = (_BYTE)v24;
+        *(_BYTE *)(a5 + 3 * (*a6)++ + 2) = (_BYTE)v26;
+      }
+      return 1;   /* wave 184: B659F mov al, 1 */
     }
-    v8 = 3 * i;
-    v9 = a1 + *((char *)v22 + 2 * i);
-    v10 = a2 + *((char *)v22 + 2 * i + 1);
-    v25 = *((char *)&v18 + v8) + a1;
-    v11 = *((char *)&v18 + v8 + 1);
-    v12 = *((char *)&v18 + v8 + 2);
-    v26 = v12;
-    v24 = v11 + a2;
-    if ( v9 <= 7
-      && v10 <= 7
-      && v9 >= 0
-      && v10 >= 0
-      && (v12 != 2 && v12 != 3 || !dword_182AFD[6 * v25 + v24])
-      && (v26 != 3 || !byte_19E57E[203 * v25 + 29 * v24])
-      && (v26 != 2 || !byte_19E57F[203 * v25 + 29 * v24])
-      && !byte_19E580[203 * v9 + 29 * v10]
-      && a7 <= *a6 )
+    if ( (uint8_t)sub_B6352(v9, v10, (int16_t)a3, (int16_t)a4, a5, a6, (int16_t)((uint8_t)v28 + a7)) )   /* B64FF */
     {
-      v13 = byte_19E57C[203 * v25 + 29 * v24 + v26] == 0;
-      v28 = v13;
-      if ( v9 == a3 && v10 == a4 )
+      if ( v28 )
       {
-        if ( a7 <= *a6 )
-        {
-          *a6 = 0;
-          if ( v13 )
-          {
-            *(_BYTE *)(a5 + 3 * *a6) = v25;
-            *(_BYTE *)(a5 + 3 * *a6 + 1) = v24;
-            *(_BYTE *)(a5 + 3 * (*a6)++ + 2) = v26;
-          }
-LABEL_30:
-          JUMPOUT(0xB5ECC);
-        }
+        *(_BYTE *)(a5 + 3 * *a6) = (_BYTE)v25;
+        *(_BYTE *)(a5 + 3 * *a6 + 1) = (_BYTE)v24;
+        *(_BYTE *)(a5 + 3 * (*a6)++ + 2) = (_BYTE)v26;
       }
-      else if ( (uint8_t)((int (*)())(void*)sub_B6352)(a5, a6, (int16_t)(a7 + v28)) )
-      {
-        if ( v28 )
-        {
-          *(_BYTE *)(a5 + 3 * *a6) = v25;
-          *(_BYTE *)(a5 + 3 * *a6 + 1) = v24;
-          *(_BYTE *)(a5 + 3 * (*a6)++ + 2) = v26;
-        }
-        v27 = 1;
-      }
+      v27 = 1;
     }
   }
+  if ( v27 )
+    byte_19E580[203 * a1 + 29 * a2] = 0;
+  return v27;   /* wave 184: B65D0 mov al, [var_8] */
 }
-// B639D: control flows out of bounds to B5ECC
+// 182AFD: using guessed type int dword_182AFD[];
 // B4DC4: using guessed type int dword_B4DC4[9];
 // 182AFD: using guessed type int dword_182AFD[];
 
@@ -4821,9 +4800,8 @@ unsigned int sub_B6D05()
 void sub_B6D47()
 {
   sub_11C2F0();
-  JUMPOUT(0xB6D08);
+  sub_B6D05();   /* wave 184: B6D4F jmp B6D08 */
 }
-// B6D4F: control flows out of bounds to B6D08
 
 
 //----- (000B6D51) --------------------------------------------------------
@@ -4957,11 +4935,10 @@ unsigned int sub_B7185( int a1, int a2)
 
 
 //----- (000B71A0) --------------------------------------------------------
-void sub_B71A0()
+unsigned int sub_B71A0(int a1, int a2)
 {
-  JUMPOUT(0xB7194);
+  return sub_C6CAE((int16_t)(a1 + 15), (int16_t)(a2 + 15), dword_19F364, 1, 1);   /* wave 184: B71B7 jmp B7194 */
 }
-// B71B7: control flows out of bounds to B7194
 
 
 //----- (000B71B9) --------------------------------------------------------
@@ -6029,7 +6006,7 @@ LABEL_5:
 
 
 //----- (000B83ED) --------------------------------------------------------
-void sub_B83ED(int a1)
+char sub_B83ED(int a1)
 {
   _WORD *v2; // eax
   int16_t v3; // bx
@@ -6060,7 +6037,9 @@ void sub_B83ED(int a1)
             *(_DWORD *)(a1 + 21) = 0;
           }
           *(_WORD *)(a1 + 10) = sub_1247A0(3u) - 2;
+          return 1;   /* wave 184: B855C -> B84E8 mov al, 1 */
         }
+        return 0;   /* wave 184: B855E xor al, al */
       }
       else
       {
@@ -6077,9 +6056,8 @@ void sub_B83ED(int a1)
       *(_WORD *)(a1 + 10) = -1;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xB7C86 je epilog funkce */
+  return 1;   /* wave 184: al = 1 on the other exits */
 }
-// B84A4: control flows out of bounds to B7C86
 // B8519: conditional instruction was optimized away because %var_4.1==1
 
 
@@ -6094,7 +6072,7 @@ void sub_B8575(int a1)
   v3 = *(_WORD *)(v2 + 2) + *(_WORD *)(a1 + 2) + *(int16_t *)(v2 + 6) * *(int16_t *)(a1 + 10) / 5;
   while ( 1 )
   {
-    sub_B83ED(a1);
+    v4 = sub_B83ED(a1);   /* wave 184: B85B0 result */
     if ( v4 )
       break;
     switch ( sub_1247A0(4u) )
@@ -6957,9 +6935,8 @@ _DWORD *sub_B93A8()
 void sub_B93C7()
 {
   sub_11C2F0();
-  JUMPOUT(0xB937E);
+  sub_B937B();   /* wave 184: B93CF jmp B937E */
 }
-// B93CF: control flows out of bounds to B937E
 
 
 //----- (000B93D1) --------------------------------------------------------
@@ -8068,9 +8045,8 @@ void sub_BABA4(int a1, int a2, int a3)
     }
     while ( v5 < 16 );
   }
-  JUMPOUT(0xBAB8C);
+  sub_C5CFF((int16_t)a1, (int16_t)a2, (int16_t *)dword_19F7C0);   /* wave 184: BAC47 jmp BAB8C */
 }
-// BAC47: control flows out of bounds to BAB8C
 // BA71A: using guessed type int16_t word_BA71A;
 // BA71C: using guessed type int dword_BA71C[24];
 // 182C1D: using guessed type int16_t word_182C1D;
@@ -8292,9 +8268,8 @@ void sub_BAF3C( unsigned int a1, unsigned int a2)
   sub_120DED(80, 80);
   sub_120CCB(a1, (int)&unk_182C56 + 8 * *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * a2 + 38));
   sub_120EB9((int)&unk_182C26);
-  JUMPOUT(0xBAFC2);
+  sub_120F07((int)&unk_182C46);   /* wave 184: BAF82 jmp BAFC2 */
 }
-// BAF82: control flows out of bounds to BAFC2
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
@@ -8332,7 +8307,8 @@ void sub_BAFC9( unsigned int a1, int a2)
       {
 LABEL_8:
         sub_120EB9((int)&unk_182C26);
-        JUMPOUT(0xBAFBA);
+        sub_120F07((int)&unk_182C46 + 8 * (uint8_t)a2);   /* wave 184: BB010 jmp BAFBA */
+        return;
       }
       v3 = &unk_182C3E;
     }
@@ -8344,7 +8320,6 @@ LABEL_8:
   sub_120CCB(a1, (int)v3);
   goto LABEL_8;
 }
-// BB010: control flows out of bounds to BAFBA
 
 
 //----- (000BB012) --------------------------------------------------------

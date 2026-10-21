@@ -3528,11 +3528,10 @@ int sub_13FA7( int a1, int a2)
 
 
 //----- (00013FB8) --------------------------------------------------------
-void sub_13FB8()
+int sub_13FB8(int a1, int a2)
 {
-  JUMPOUT(0x13FB1);
+  return (int)sub_13A3D((int16_t)a1, (int16_t)a2, 0);   /* wave 184: 13FBD xor ebx, ebx; jmp 13FB1 */
 }
-// 13FBF: control flows out of bounds to 13FB1
 
 
 //----- (00013FD9) --------------------------------------------------------
@@ -7811,7 +7810,7 @@ int sub_1A1FD( int a1, int a2, int a3, int a4)
   byte_19AA64 = a3;
   word_19AA34 = a1;
   sub_1CA7C(a1, a2, &word_19AA3E, &word_19AA3A, (int)byte_19AA5E);
-  sub_E5B69(a2, word_199960);
+  v4 = sub_E5B69(a2, word_199960);   /* 1A291 mov word_192A42, ax */
   word_19AA42 = v4;
   sub_249F9(aJimtext2Lbx, 56, (char *)dword_19A2AC, 30);
   sub_24E08((char *)dword_19A2AC, word_19AA42, 30);
@@ -7847,7 +7846,6 @@ int sub_1A1FD( int a1, int a2, int a3, int a4)
     return -1;
   return result;
 }
-// 1A291: variable 'v4' is possibly undefined
 // 24E08: using guessed type int sub_24E08(_DWORD, _DWORD, _DWORD);
 // 178A64: using guessed type char byte_178A64;
 // 182ACE: using guessed type char byte_182ACE;
@@ -9404,7 +9402,7 @@ LABEL_19:
         goto LABEL_20;
       }
       word_199960 = word_19AA34 - 1;
-      sub_E5B69(a1, word_19AA34 - 1);
+      v14 = sub_E5B69(a1, word_19AA34 - 1);   /* 1C694 mov word_192A42, ax */
       word_19AA42 = v14;
       sub_249F9(aJimtext2Lbx, 56, (char *)dword_19A2AC, 30);
       v8 = 35;
@@ -9464,7 +9462,6 @@ LABEL_20:
 }
 // 1C5EB: variable 'v11' is possibly undefined
 // 1C666: variable 'v13' is possibly undefined
-// 1C694: variable 'v14' is possibly undefined
 // 1C75D: variable 'v15' is possibly undefined
 // 1C7B3: variable 'v16' is possibly undefined
 // 24E08: using guessed type int sub_24E08(_DWORD, _DWORD, _DWORD);

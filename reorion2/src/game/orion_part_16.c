@@ -472,7 +472,7 @@ void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
         v20 = *a5;
         byte_1AAF96[12 * v51] = v20;
         byte_1AAF8B[12 * v51] = 38;
-        sub_FA1A3(v20);
+        v21 = sub_FA1A3(v20);   /* F5D5C cmp eax, -1 */
         if ( v21 == -1 )
         {
           byte_1AB050 |= 1 << v51;
@@ -499,7 +499,7 @@ LABEL_32:
         {
           v23 = byte_1AAF96[12 * v51];
           byte_1AB051 &= ~(1 << v51);
-          sub_FA1A3(v23);
+          v24 = sub_FA1A3(v23);   /* F5E03 cmp eax, -1 */
           if ( v24 != -1 )
           {
             byte_1AB051 |= 1 << v24;
@@ -535,7 +535,7 @@ LABEL_32:
         byte_1AAF8B[v31] = 4;
         byte_1AB055[v26] = -1;
         byte_1AB05D[v26] = v51;
-        sub_FA1A3(v26);
+        v32 = sub_FA1A3(v26);   /* F5EE5 mov ecx, eax */
         v33 = v32;
         if ( v32 == -1 )
           return;
@@ -880,9 +880,6 @@ LABEL_51:
 }
 // F5ACD: variable 'v51' is possibly undefined
 // F5CA0: variable 'v50' is possibly undefined
-// F5D5F: variable 'v21' is possibly undefined
-// F5E06: variable 'v24' is possibly undefined
-// F5EE5: variable 'v32' is possibly undefined
 // F594C: using guessed type int dword_F594C[16];
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -1607,7 +1604,7 @@ LABEL_22:
 
 
 //----- (000F72D1) --------------------------------------------------------
-void sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
+int sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
 {
   int v5; // edx
   char *v6; // eax
@@ -1635,7 +1632,7 @@ void sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
       while ( 1 )
       {
         if ( (unsigned int)v15 >= v12 )
-          return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xF72CB je epilog funkce */
+          return v14 - a2;   /* wave 184: F73B7 mov eax, [var_8]; sub eax, [var_1C] */
         v7 = v15 + 1;
         if ( *v15 >= 0xF5u )
           break;
@@ -1671,10 +1668,10 @@ void sub_F72D1(char *a1, char *a2, int a3, _BYTE *a4, int a5)
       v6 = aPLimitPDiff;
 LABEL_3:
       sub_126487(v6, v5);
+      return 0;   /* wave 184: F7303 xor eax, eax */
     }
   }
 }
-// F73BD: control flows out of bounds to F72CB
 
 
 //----- (000F73C2) --------------------------------------------------------
@@ -1986,7 +1983,7 @@ char sub_F79F6(char *a1, int16_t *a2, int a3)
     v4 = (char *)(intptr_t)(0xE1000 - (int)(intptr_t)a2);   /* wave 181: number 0xE1000 */
     v5 = v23;
     v6 = sub_F73C2((int)aRb_1, 0, v3);
-    sub_F72D1(v6, v23, 0xE1000 - (int)(intptr_t)v3, v20, (int)v3);
+    v7 = (int16_t *)(intptr_t)sub_F72D1(v6, v23, 0xE1000 - (int)(intptr_t)v3, v20, (int)v3);   /* F7A31 mov edi, eax */
     v3 = v7;
     ServiceAudioTick_FE8BE((int)v7, (int)v23, (int)v4, v7);
     if ( *v6 == 1 )
@@ -2107,7 +2104,6 @@ char sub_F79F6(char *a1, int16_t *a2, int a3)
   return 1;
 }
 // F7A2C: variable 'v20' is possibly undefined
-// F7A31: variable 'v7' is possibly undefined
 // F7A95: variable 'v9' is possibly undefined
 // F7ACE: variable 'v10' is possibly undefined
 // 12697A: using guessed type int fclose(_DWORD);
@@ -3787,7 +3783,7 @@ int sub_FA16C(int a1)
 
 
 //----- (000FA1A3) --------------------------------------------------------
-void sub_FA1A3(int a1)
+int sub_FA1A3(int a1)
 {
   int v1; // eax
   int v2; // edx
@@ -3845,11 +3841,10 @@ void sub_FA1A3(int a1)
       if ( v3 > v8[--v6] )
         v8[v6] = 0;
     }
-    sub_FE8DA((const uint8_t *)v8, word_199998);
+    return (int16_t)sub_FE8DA((const uint8_t *)v8, word_199998);   /* wave 184: FA266 movsx edi, ax */
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFA388 je epilog funkce */
+  return -1;   /* wave 184: FA1C8 mov edi, 0FFFFFFFFh */
 }
-// FA26B: control flows out of bounds to FA388
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -4579,7 +4574,7 @@ char sub_FAAD8(int16_t *a1)
 
 
 //----- (000FAC85) --------------------------------------------------------
-void sub_FAC85(int16_t *a1)
+char sub_FAC85(int16_t *a1)
 {
   int v1; // edx
   int v2; // eax
@@ -4607,7 +4602,7 @@ void sub_FAC85(int16_t *a1)
   {
     v11 = -1;
     sub_F6816(word_1AAF68, 33, (int)&v11, 4u);
-    return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFAC7E je epilog funkce */
+    return 0;   /* wave 184: FACFD xor al, al */
   }
   sub_11C2F0();
   sub_11438B(0, 0, 639, 479, &unk_17A174, 0);
@@ -4655,10 +4650,18 @@ void sub_FAC85(int16_t *a1)
         word_19999C = v11;
     }
   }
-  JUMPOUT(0xFAC44);
+  /* wave 184: FAE7B jmp loc_FAC44 - the shared tail of sub_FAAD8 */
+  byte_1AB03F = 4;
+  sub_1279A(0);
+  sub_11C2F0();
+  sub_119281();
+  sub_8CF09((uint8_t)byte_199CB2, 0);
+  sub_7962C();
+  sub_1279F(0);
+  byte_19C1A0 = 1;
+  sub_8A4C4();
+  return 1;   /* FAC7C mov al, 1 */
 }
-// FACFF: control flows out of bounds to FAC7E
-// FAE7B: control flows out of bounds to FAC44
 // FAD7D: variable 'v3' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -4816,7 +4819,7 @@ LABEL_19:
       else if ( byte_1AB03F == 44 )
       {
         sub_F6816(word_1AAF68, 66, (int)&dword_192EF0, 4u);
-        sub_FAC85(a1);
+        v13 = sub_FAC85(a1);   /* FB1A6 mov [var_4], al */
         v16 = v13;
         if ( !v13 )
         {

@@ -5903,23 +5903,21 @@ int sub_15C8A9( unsigned int a1, int a2, int a3, int a4, unsigned int a5, _DWORD
 //----- (0015C941) --------------------------------------------------------
 uint64_t sub_15C941(int a1, unsigned int a2)
 {
-  unsigned int v2; // ecx
-  int v3; // edx
-
-  /* asm: int     21h; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK) - DOS/BIOS level, not needed in the port (wave 184) */;
-  v3 = a2 << 16;
-  LOWORD(v3) = 16896;
-  return __PAIR64__(v2, v3);
+  /* 15C956: int 21h AX=4200h (lseek from start), returns DX:AX = new position (wave 184) */
+  if ( PortFile_Seek(a1, (long)a2, SEEK_SET) )
+    return (uint64_t)(uint32_t)-1;
+  return (uint32_t)PortFile_Tell(a1);
 }
-// 15C95E: variable 'v2' is possibly undefined
 
 
 //----- (0015C965) --------------------------------------------------------
-void sub_15C965()
+uint64_t sub_15C965(int a1, unsigned int a2)
 {
-  JUMPOUT(0x15C945);
+  /* 15C965: mov ax, 4201h; jmp loc_15C945 - lseek from the current position (wave 184) */
+  if ( PortFile_Seek(a1, (long)(int)a2, SEEK_CUR) )
+    return (uint64_t)(uint32_t)-1;
+  return (uint32_t)PortFile_Tell(a1);
 }
-// 15C969: control flows out of bounds to 15C945
 
 
 //----- (0015C971) --------------------------------------------------------

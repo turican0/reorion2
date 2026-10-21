@@ -2839,7 +2839,7 @@ _DWORD *sub_14BC40(unsigned int a1, int a2, _DWORD *a3)
     else
       v7 = a3;
     v66 = (unsigned int)v7;
-    sub_15C965();
+    v8 = (unsigned int)sub_15C965((int)v66, 0);   /* 14BC90 mov [var_2C], eax */
     v63 = v8;
   }
   else
@@ -3204,7 +3204,6 @@ LABEL_12:
 // 1C9830: invalid function type '?' has been ignored
 // 14C13C: conditional instruction was optimized away because edx.4>=2000u
 // 14BC63: variable 'v6' is possibly undefined
-// 14BC90: variable 'v8' is possibly undefined
 // 18915C: using guessed type int dword_18915C;
 // 189160: using guessed type int dword_189160;
 // 18A5AC: using guessed type int (*dword_18A5AC)(_DWORD);

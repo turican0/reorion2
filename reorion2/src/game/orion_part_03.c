@@ -3807,7 +3807,7 @@ int sub_3D2DF(int a1, int a2, int a3)
       HIDWORD(v55) = (v40 + (2 * v13 + 22) / 45) % 16;
       if ( byte_17F80F[28 * SWORD6(v53)] == 4 )
       {
-        sub_3DB8F(v54);
+        v14 = sub_3DB8F(v54);   /* wave 184: 3D4DA result */
         v50 = v14;
         v4 = 0;
       }
@@ -4079,24 +4079,26 @@ LABEL_116:
 
 
 //----- (0003DB8F) --------------------------------------------------------
-void sub_3DB8F( int a1)
+int sub_3DB8F( int a1)
 {
   int16_t v2; // cx
   int16_t v3; // dx
   int v4; // eax
+  int v5; // ebx - the weakest shield side
 
   v2 = 200;
-  v3 = 0;
-  while ( 1 )
+  v5 = 0;
+  for ( v3 = 0; v3 < 4; ++v3 )
   {
-    v4 = 313 * a1 + dword_192864 + 2 * v3;
+    v4 = 313 * (int16_t)a1 + dword_192864 + 2 * v3;
     if ( v2 > *(int16_t *)(v4 + 41) )
+    {
+      v5 = v3;   /* wave 184: 3DBBD mov ebx, edx */
       v2 = *(_WORD *)(v4 + 41);
-    if ( ++v3 >= 4 )
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x3C87C je epilog funkce */
+    }
   }
+  return v5;   /* wave 184: 3DBCA mov eax, ebx */
 }
-// 3DBCC: control flows out of bounds to 3C87C
 // 192864: using guessed type int dword_192864;
 
 
@@ -4196,9 +4198,9 @@ void sub_3DBD1( int a1, int a2, int a3, int a4)
     HIWORD64(v9) = HIWORD(v17);
     sub_12A478(v14, v17, v13);
   }
-  JUMPOUT(0x3C52B);
+  sub_12B65C();   /* wave 184: 3DDD3 jmp 3C52B */
+  sub_128BE7();
 }
-// 3DDD3: control flows out of bounds to 3C52B
 // 129FE4: using guessed type int64_t j___clock(_DWORD, _DWORD, _DWORD);
 // 18B2A8: using guessed type int dword_18B2A8[960];
 // 192B14: using guessed type int dword_192B14;
@@ -4601,7 +4603,7 @@ _BOOL1 sub_3E1A4( int a1, int a2, int a3, int a4, int a5)
     sub_3DBD1(a1, (int16_t)v62, (int16_t)v60, 1);
     v30 = v52;
     v24 = sub_3BB3D(v47);
-    sub_A9033((int)&v31, v58, v55, v54, word_199254[v24], v30);
+    v25 = sub_A9033((int)&v31, v58, v55, v54, word_199254[v24], v30);   /* wave 184: 3E441 result */
     v63 = v25;
     sub_1077D(v25, 0, 0, 0);
     ++v52;
@@ -8753,7 +8755,7 @@ void sub_42F7F(int a1, int a2, int a3)
     ServiceAudioTick_FE8BE(v11, 0, 0, 0);
     word_1998D8 = -1;
     word_19B578 = 1;
-    sub_455A4((int16_t)a1, v10);
+    v13 = sub_455A4((int16_t)a1, v10);   /* wave 184: 455A4 result -> var_38 */
     *(_DWORD *)&v147[4] = v13;
     if ( (_WORD)v13 != 1 )
     {
@@ -8836,7 +8838,7 @@ void sub_42F7F(int a1, int a2, int a3)
                 }
                 while ( v120 < 300 );
               }
-              sub_37173(m);
+              v122 = sub_37173(m);   /* wave 184: 44E3D result */
               *(_BYTE *)(dword_192864 + 313 * m + 177) = v122;
             }
           }
@@ -8889,7 +8891,7 @@ void sub_42F7F(int a1, int a2, int a3)
               sub_2C601(v23, v22);
             }
             word_19296C[word_1998D8] = -1;
-            sub_455A4((int16_t)a1, v22);
+            v24 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
             *(_DWORD *)&v147[4] = v24;
             if ( word_1998CE )
               sub_3FBFE(1);
@@ -8900,7 +8902,7 @@ void sub_42F7F(int a1, int a2, int a3)
         if ( sub_3E563(word_1998F8) )
         {
           word_19296C[word_1998D8] = -1;
-          sub_455A4((int16_t)a1, v22);
+          v103 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
           *(_DWORD *)&v147[4] = v103;
           goto LABEL_341;
         }
@@ -9135,7 +9137,7 @@ LABEL_107:
 LABEL_108:
                       v47 = (int16_t)a1;
 LABEL_109:
-                      sub_455A4(v47, v22);
+                      v48 = sub_455A4(v47, v22);   /* wave 184: 455A4 result -> var_38 */
                       *(_DWORD *)&v147[4] = v48;
                     }
                     else
@@ -9317,7 +9319,7 @@ LABEL_181:
             j = 0;
             sub_42B0F(word_199908, 10009, 0, 0, 0);
           }
-          sub_455A4((int16_t)a1, v22);
+          v73 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
           a3 = 0;
           *(_DWORD *)&v147[4] = v73;
           if ( word_1998CE )
@@ -9403,7 +9405,7 @@ LABEL_237:
               v22 = dword_192864;
               *(_BYTE *)(dword_192864 + 313 * word_1998F8 + 75) = 1;
               word_19296C[word_1998D8] = -1;
-              sub_455A4((int16_t)a1, v22);
+              v79 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
               *(_DWORD *)&v147[4] = v79;
               if ( word_1998CE )
                 sub_3FBFE(1);
@@ -9475,7 +9477,7 @@ LABEL_237:
           {
             v22 = dword_192864;
             word_199206[*(uint8_t *)(dword_192864 + 313 * word_1998F8 + 32)] = 1;
-            sub_455A4((int16_t)a1, v22);
+            v82 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
             *(_DWORD *)&v147[4] = v82;
           }
           else
@@ -9538,7 +9540,7 @@ LABEL_237:
             if ( v95 || (v22 = dword_192864, *(uint8_t *)(dword_192864 + 313 * word_1998F8 + 32) != (_WORD)v158) )
             {
               word_19296C[word_1998D8] = -1;
-              sub_455A4((int16_t)a1, v22);
+              v96 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
               *(_DWORD *)&v147[4] = v96;
             }
 LABEL_311:
@@ -9657,7 +9659,7 @@ LABEL_341:
           }
           sub_38858(word_1998F8);
           word_19296C[word_1998D8] = -1;
-          sub_455A4((int16_t)a1, v22);
+          v104 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
           *(_DWORD *)&v147[4] = v104;
           if ( word_1998CE )
             sub_3FBFE(1);
@@ -9710,7 +9712,7 @@ LABEL_353:
           LOBYTE(v22) = v152;
           *(_BYTE *)(v70 + 49) = v152;
           word_19296C[word_1998D8] = -1;
-          sub_455A4((int16_t)a1, v22);
+          v71 = sub_455A4((int16_t)a1, v22);   /* wave 184: 455A4 result -> var_38 */
           *(_DWORD *)&v147[4] = v71;
           if ( word_1998CE )
             sub_3FBFE(1);
@@ -10102,12 +10104,13 @@ LABEL_28:
 
 
 //----- (0004545B) --------------------------------------------------------
-void sub_4545B(int a1, int a2)
+int sub_4545B(int a1, int a2)
 {
   int16_t v2; // di
   int16_t v3; // bx
   int16_t i; // si
   uint8_t *v5; // eax
+  int v6; // edx
 
   v2 = 0;
   v3 = 0;
@@ -10124,9 +10127,16 @@ void sub_4545B(int a1, int a2)
         ++v3;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x42DE2 je epilog funkce */
+  /* wave 184: 454C3 - the result Hex-Rays lost (edx) */
+  v6 = 0;
+  if ( word_199890 > 50 )
+    v6 = v3 > 0 ? -1 : 666;
+  if ( v2 <= 0 )
+    return v3 > 0 ? -1 : 666;
+  if ( v3 <= 0 )
+    return 1;
+  return v6;
 }
-// 45502: control flows out of bounds to 42DE2
 // 192864: using guessed type int dword_192864;
 // 199890: using guessed type int16_t word_199890;
 // 1998AC: using guessed type int16_t word_1998AC;
@@ -10178,7 +10188,7 @@ void sub_45507( int a1, int a2, int a3)
 
 
 //----- (000455A4) --------------------------------------------------------
-void sub_455A4(int a1, int a2)
+int sub_455A4(int a1, int a2)
 {
   int16_t v2; // bx
   int v3; // ecx
@@ -10189,11 +10199,12 @@ void sub_455A4(int a1, int a2)
   int16_t v8; // ax
   int16_t v9; // ax
   int16_t v10; // [esp+0h] [ebp-4h]
+  int v11 = 0; // edx - wave 184: 1 = no ship left to move
 
   v2 = word_1998D8;
   v3 = 0;
   v10 = word_1998F8;
-  sub_4545B(0, word_1998D8);
+  v4 = sub_4545B(0, word_1998D8);   /* wave 184: 455BC result */
   if ( !v4 )
   {
     while ( 1 )
@@ -10228,6 +10239,7 @@ void sub_455A4(int a1, int a2)
     {
       word_1998D8 = v2;
       word_1998F8 = v10;
+      v11 = 1;   /* wave 184: 45818 mov edx, 1 */
     }
     else
     {
@@ -10264,10 +10276,8 @@ void sub_455A4(int a1, int a2)
     if ( word_1998E0 )
       sub_2C555();
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x42DE1 je epilog funkce */
+  return v4 ? 1 : v11;   /* wave 184: 455CB / 45845 mov eax, edx */
 }
-// 455D0: control flows out of bounds to 42DE1
-// 455C9: variable 'v4' is possibly undefined
 // 45732: variable 'v7' is possibly undefined
 // 17D853: using guessed type int16_t word_17D853;
 // 192864: using guessed type int dword_192864;
@@ -12495,7 +12505,7 @@ LABEL_107:
   word_1998D4 = 0;
   sub_465D0();
   ServiceAudioTick_FE8BE(v129, 0, 0, 0);
-  sub_4545B(v98, v95);
+  v130 = sub_4545B(v98, v95);   /* wave 184: 48A48 result */
   *(_DWORD *)((char *)&a7 + 2) = v130;
   sub_1191CA((int)sub_2F4EE, 1);
   LOWORD(v131) = sub_123E6C((int)unk_17CF00, 1);
@@ -12562,7 +12572,7 @@ LABEL_107:
       sub_4A5CE(v95);    /* wave 183: 48C01 movsx eax, si / call sub_4A5CE (sub_1694B9 was an IDA artifact) */
       sub_4A5CE(v132);   /* 48C09 movsx eax, di */
       sub_42F7F(0, 1, v95);
-      sub_4545B(m, v95);
+      v143 = sub_4545B(m, v95);   /* wave 184: 48C15 result */
       *(_DWORD *)((char *)&a7 + 2) = v143;
       if ( word_1998E0 )
         sub_2C555();
@@ -12574,7 +12584,7 @@ LABEL_107:
       sub_4A5CE(v132);   /* wave 183: 48C49 movsx eax, di */
       if ( word_1998E0 )
         sub_2C555();
-      sub_4545B(m, v95);
+      v144 = sub_4545B(m, v95);   /* wave 184: 48C5B result */
       if ( !v144 )
       {
         word_19B540 = -1;
@@ -12584,7 +12594,7 @@ LABEL_107:
       sub_4A5CE(v95);    /* wave 183: 48C82 movsx eax, si */
       if ( word_1998E0 )
         sub_2C555();
-      sub_4545B(m, v95);
+      v145 = sub_4545B(m, v95);   /* wave 184: 48C94 result */
       if ( !v145 )
       {
         word_19B540 = -1;
@@ -12593,7 +12603,7 @@ LABEL_107:
       }
       if ( word_1998E0 )
         sub_2C555();
-      sub_4545B(m, v95);
+      v146 = sub_4545B(m, v95);   /* wave 184: 48CCC result */
       if ( !v146 )
       {
         word_19B540 = -1;
@@ -12602,7 +12612,7 @@ LABEL_107:
       }
       if ( word_1998E0 )
         sub_2C555();
-      sub_4545B(m, v95);
+      v147 = sub_4545B(m, v95);   /* wave 184: 48D04 result */
       *(_DWORD *)((char *)&a7 + 2) = v147;
     }
     ++word_199890;
@@ -15855,10 +15865,9 @@ void sub_4D10E( int a1, int a2)
       sub_55F67(a1);
       break;
     default:
-      JUMPOUT(0x4CB1D);
+      break;   /* 4CB1D: retn */
   }
 }
-// 4D11B: control flows out of bounds to 4CB1D
 
 
 //----- (0004D141) --------------------------------------------------------
@@ -17318,13 +17327,13 @@ signed int sub_4F694( int a1, int a2)
     v27 = result - 9;
     v20 = 5 * (int16_t)sub_50028(v4, a2);
     v21 = v20 - 5 * (int16_t)sub_50028(a2, v4);
-    sub_500CF(v4, a2);
+    v6 = sub_500CF(v4, a2);   /* wave 184: the result was dropped */
     v22 = v6 / 10 + v21;
-    sub_DBDB8(v4, a2);
+    v7 = sub_DBDB8(v4, a2);   /* wave 184: the result was dropped */
     v23 = 40 * v7 + v22 - 10;
-    sub_DBDB8(a2, v4);
+    v8 = sub_DBDB8(a2, v4);   /* wave 184: the result was dropped */
     v24 = *(char *)(a2 + v25 + (uint8_t*)dword_197F98 + 1751) / 2 + *(char *)(a2 + v25 + (uint8_t*)dword_197F98 + 2030) + v23 - 20 * v8;
-    sub_51F0F(v4, a2);
+    v9 = sub_51F0F(v4, a2);   /* wave 184: the result was dropped */
     v26 = v9 / 10 + v24;
     v10 = sub_53E96(v4, a2);
     v11 = 0;
@@ -17333,7 +17342,7 @@ signed int sub_4F694( int a1, int a2)
     {
       if ( v11 != a1 && v11 != a2 )
       {
-        sub_DBDB8(v11, a2);
+        v13 = sub_DBDB8(v11, a2);   /* wave 184: the result was dropped */
         v12 += 20 * v13;
       }
       ++v11;
@@ -17733,7 +17742,7 @@ int sub_5008B( int a1)
 
 
 //----- (000500CF) --------------------------------------------------------
-void sub_500CF( int a1, int a2)
+unsigned int sub_500CF( int a1, int a2)
 {
   unsigned int v4; // eax
   unsigned int i; // edx
@@ -17748,9 +17757,8 @@ void sub_500CF( int a1, int a2)
     if ( i != a1 && i != a2 && *(char *)((uint8_t*)dword_197F98 + 3753 * a1 + i + 1575) >= 4 )
       v4 >>= 1;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x4FE0B je epilog funkce */
+  return v4;   /* wave 184: eax at 5015F */
 }
-// 5015F: control flows out of bounds to 4FE0B
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
@@ -17768,11 +17776,13 @@ unsigned int sub_50164( int a1, int a2)
 
 
 //----- (0005019E) --------------------------------------------------------
-void sub_5019E()
+unsigned int sub_5019E(int a1, int a2)
 {
-  JUMPOUT(0x50196);
+  /* wave 184: 501AD imul ebx, [rec+0B4h], 64h; jmp 50196 (div ecx; inc eax) */
+  return (unsigned int)(100 * *(int *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a1 + 180))
+       / (unsigned int)(*(int *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a2 + 180) + 1)
+       + 1;
 }
-// 501C8: control flows out of bounds to 50196
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
@@ -17884,7 +17894,7 @@ LABEL_74:
   else if ( v4 == 2
          && (v10 = a1,
              v41 = a2,
-             sub_500CF(a1, a2),
+             v13 = sub_500CF(a1, a2),   /* wave 184: the result was dropped */
              v29 = v13,
              v34 = 3753 * a1,
              v28 = 2 * word_180CCC[*(uint8_t *)(v34 + (uint8_t*)dword_197F98 + 39)],
@@ -17898,7 +17908,7 @@ LABEL_74:
     if ( v4 != 3
       || (v10 = a1,
           v39 = a2,
-          sub_500CF(a1, a2),
+          v14 = sub_500CF(a1, a2),   /* wave 184: the result was dropped */
           v29 = v14,
           v33 = 3753 * a1,
           v28 = 2 * word_180CCC[*(uint8_t *)(v33 + (uint8_t*)dword_197F98 + 39)],
@@ -18903,7 +18913,7 @@ int sub_51E98( int a1, int a2)
 
 
 //----- (00051F0F) --------------------------------------------------------
-void sub_51F0F(int a1, int a2)
+int sub_51F0F(int a1, int a2)
 {
   int v3; // ebx
   int v4; // ecx
@@ -18927,9 +18937,22 @@ void sub_51F0F(int a1, int a2)
     v5 += 2;
     ++v4;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x4FE0B je epilog funkce */
+  /* wave 184: 51F7A - the ratio Hex-Rays lost, clamped to -300..300 */
+  if ( v3 < 10 )
+    v3 = 10;
+  v6 = *(int16_t *)((uint8_t*)dword_197F98 + 3753 * (int16_t)a1 + 2 * (int16_t)a2 + 1775);
+  if ( v6 < 10 )
+    v6 = 10;
+  if ( v6 > v3 )
+    v6 = 100 - 100 * v6 / v3;
+  else
+    v6 = 100 * v3 / v6 - 100;
+  if ( v6 > 300 )
+    v6 = 300;
+  if ( v6 < -300 )
+    v6 = -300;
+  return v6;   /* wave 184: 51FDE mov eax, ecx */
 }
-// 51FE0: control flows out of bounds to 4FE0B
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
