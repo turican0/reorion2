@@ -1376,9 +1376,6 @@ int sub_F6FD9(int a1)
   if ( *(_BYTE *)a1 )
   {
     if ( *(_BYTE *)a1 <= 1u )
-      // DECOMP_TODO (oprava): fgetc() melo jen 1 parametr - stejny
-      // "guessed type" artefakt dekompilatoru jako u fseek/ftell (viz
-      // decomp_compat.h). Druhy (nulovy) parametr byl nesouvisejici.
       return fgetc(*(_DWORD *)(a1 + 1));
     if ( *(_BYTE *)a1 != 2 )
       return 0;
@@ -1689,10 +1686,9 @@ char *sub_F73C2(int a1, int a2, int16_t *a3)
     }
     else
     {
-          // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    dword_1AB0CF = fopen(aModemTmp, aRb);
+    dword_1AB0CF = fopen(aModemTmp, (char *)(intptr_t)a1);   /* F7422 edx = ebx = a1 (mode) */
       if ( !dword_1AB0CF )
-        sub_126487((char *)dword_1AAEA4, a1);
+        sub_126487((char *)dword_1AAEA4, 0);   /* F7437 */
       byte_1AB0CE = 1;
     }
   }

@@ -7493,16 +7493,9 @@ int sub_13AEBB(int result, int a2, int a3)
       if ( v7 + 1 > *v5 )
       {
         sprintf(v4, "ERROR: Play_Sound(%d)", v7);
-        sub_126487(v4, v3);
+        sub_126487(v4, 0);   /* 13AF12: eax only */
       }
-      // DECOMP_TODO - NIZKA JISTOTA (vlna 07): fseek() melo 0 parametru.
-      // Tabulka velikosti zaznamu je jasne na "v5[4*v7+8]" (DWORD, cteno
-      // pres int16_t* indexovani). Hypoteza: jde o prokladanou tabulku
-      // {offset,size} DWORD paru (bezny format), takze offset by byl o
-      // 4 bajty (2 int16_t jednotky) driv - "v5[4*v7+6]". NEOVERENO -
-      // spatny odhad zpusobi prehrani spatneho zvuku, ne pad, ale
-      // potrebuje potvrzeni pred oznacenim za hotove.
-      fseek(*((_DWORD *)v5 + 2), *(_DWORD *)&v5[4 * v7 + 6], SEEK_SET);
+      fseek(*((_DWORD *)v5 + 2), *(_DWORD *)&v5[4 * v7 + 6], SEEK_SET);   /* 13AF17: edx = [v5 + 8*n + 0Ch], ebx = 0 */
       return fread(v6, *(_DWORD *)&v5[4 * v7 + 8], 1, *((_DWORD *)v5 + 2));
     }
   }

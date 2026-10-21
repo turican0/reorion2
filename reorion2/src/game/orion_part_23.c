@@ -210,8 +210,7 @@ int sub_155951(void *a1, int a2)
 
   memset(v10, 0, sizeof(v10));
   memset(&v10[128], -1, 24);
-      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    result = fopen(a2, aRb);
+    result = fopen(a2, aRt_1);   /* 155985 edx = aRt_1 "rt" */
   v4 = result;
   if ( !result )
     return result;
@@ -6591,27 +6590,12 @@ LABEL_7:
 
 
 //----- (0015E0F0) --------------------------------------------------------
-int sub_15E0F0(unsigned int a1)
+int sub_15E0F0(unsigned int a1, int a2)
 {
   if ( a1 > 0x22 )
     return 0;
-  else
-    // DECOMP_TODO - KRITICKE (vlna 06): puvodni "calloc(1)" mela jen JEDEN
-    // parametr (stejna trida chyby jako fopen/fseek/calloc vyse), a navic
-    // vysledek se u sesterske funkce sub_15E124 (o par radku nize) pouziva
-    // jako RETEZCOVY BUFFER - volajici do nej zapisuji pres itoa()/strcpy()/
-    // rucni konkatenaci desitky bajtu (overeno v orion_part_22.c, napr.
-    // "*(_DWORD*)v5 = v4;" hned prvni zapis prekracuje 1 bajt). Puvodni
-    // "1" byl temer jiste jen JEDNA ze dvou ztracenych hodnot (count NEBO
-    // size), ne skutecny pozadavek na 1 bajt - alokace 1 bajtu by tu
-    // zpusobovala poskozeni haldy. Zatim nastaveno na 256 bajtu jako
-    // bezpecny (velkorysy, ale nikoliv overeny) zastupny odhad na zaklade
-    // pozorovaneho pouziti (kratke prikazove/cestovni retezce) - VYZADUJE
-    // dohledani VSECH volajicich mist sub_15E124/sub_15E0F0 a zjisteni
-    // skutecne max. delky pred oznacenim za vyresene, viz PROGRESS.md.
-    return (int)calloc(1, 256);
+  return (int)calloc(1, a2);   /* 15E0F9: eax = 1, edx = size */
 }
-// 16321B: using guessed type int calloc(_DWORD);
 
 
 //----- (0015E108) --------------------------------------------------------
@@ -6631,14 +6615,10 @@ int sub_15E108(unsigned int a1, int a2)
 
 
 //----- (0015E124) --------------------------------------------------------
-int sub_15E124()
+int sub_15E124(int a1)
 {
-  // DECOMP_TODO - KRITICKE: viz podrobne vysvetleni u sub_15E0F0 o par
-  // radku vyse - stejny bug, stejny docasny odhad (256 bajtu), stejne
-  // nutna nasledna verifikace skutecne max. delky pouzivaneho retezce.
-  return (int)calloc(1, 256);
+  return (int)calloc(1, a1);   /* 15E125: edx = eax (size), eax = 1 */
 }
-// 16321B: using guessed type int calloc(_DWORD);
 
 
 //----- (0015E154) --------------------------------------------------------

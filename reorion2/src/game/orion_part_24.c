@@ -6285,8 +6285,6 @@ bool sub_162E63(_DWORD *a1, int a2)
   {
     if ( *(int *)(*a1 + 4) <= 0 || (*(_BYTE *)(*a1 + 12) & 4) != 0 || *(_BYTE *)(intptr_t)*(uint32_t *)(intptr_t)*a1 == 13 || *(_BYTE *)(intptr_t)*(uint32_t *)(intptr_t)*a1 == 26 )
     {
-      // DECOMP_TODO (oprava): fgetc() melo jen 1 parametr - viz stejna
-      // poznamka v orion_part_16.c.
       v7 = fgetc(*a1);
     }
     else

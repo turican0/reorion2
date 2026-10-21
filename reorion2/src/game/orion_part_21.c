@@ -583,8 +583,7 @@ void sub_13F640()
   if ( getenv(aAilSysDebug) )
     dword_1C0E58 = 1;
   v0 = aWT;
-      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    v1 = fopen(v2, aRb);
+    v1 = fopen(v2, aWT);   /* 13F68B edx = aWT "w+t" */
   dword_1C0E50 = v1;
   if ( v1 )
   {

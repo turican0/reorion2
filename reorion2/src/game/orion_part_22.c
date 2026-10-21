@@ -6543,7 +6543,7 @@ int sub_151D54(char *a1, int a2)
   char v6; // al
   char v7; // al
 
-  v3 = sub_15E124();
+  v3 = sub_15E124(12);   /* 151D67 */
   v4 = (char *)v3;
   itoa(a2, v3, 10, a2);
   v5 = (char *)&a1[strlen(a1)];
@@ -6588,9 +6588,9 @@ int sub_151DA8(int a1, int a2, int a3)
   int v22; // [esp+0h] [ebp-1Ch]
 
   v4 = dword_17C21C;
-  v5 = (char *)sub_15E124();
+  v5 = (char *)sub_15E124(12);   /* 151DC4 */
   *(_DWORD *)v5 = v4;
-  v21 = sub_15E124();
+  v21 = sub_15E124(12);   /* 151DD7 */
   v6 = (char *)v21;
   itoa(a2, v21, 10, a2);
   v7 = &v5[strlen(v5)];
@@ -6622,7 +6622,7 @@ int sub_151DA8(int a1, int a2, int a3)
     v12 += 2;
   }
   while ( v14 );
-  v22 = sub_15E124();
+  v22 = sub_15E124(12);   /* 151E48 */
   v15 = (char *)v22;
   itoa(a3, v22, 10, ~v11);
   v16 = &v5[strlen(v5)];
@@ -6768,7 +6768,7 @@ int sub_151FF8(int a1, char *a2)
   char v8; // al
   int v9; // edi
 
-  v2 = (char *)sub_15E124();
+  v2 = (char *)sub_15E124(50);   /* 152008 */
   v3 = v2;
   v4 = *(_DWORD *)(a1 + 19);
   if ( v4 == 1 )
@@ -6833,7 +6833,7 @@ int sub_1520A4(int a1, char *a2)
   char v12; // al
   int v13; // edi
 
-  v2 = (char *)sub_15E124();
+  v2 = (char *)sub_15E124(50);   /* 1520B4 */
   v3 = v2;
   v4 = *(_DWORD *)(a1 + 19);
   if ( v4 == 1 )
@@ -6900,7 +6900,7 @@ int sub_15215C(int a1, char *a2)
   char v12; // al
   int v13; // edi
 
-  v2 = (char *)sub_15E124();
+  v2 = (char *)sub_15E124(50);   /* 15216C */
   v3 = v2;
   v4 = *(_DWORD *)(a1 + 19);
   if ( v4 == 1 )
@@ -6979,7 +6979,7 @@ int sub_152230(int a1, char *a2, int a3)
   char *v14; // [esp-4h] [ebp-1Ch]
   int v15; // [esp+0h] [ebp-18h]
 
-  v4 = (char *)sub_15E124();
+  v4 = (char *)sub_15E124(40);   /* 152242 */
   v5 = v4;
   v14 = v4;
   do
@@ -6994,7 +6994,7 @@ int sub_152230(int a1, char *a2, int a3)
     v4 += 2;
   }
   while ( v7 );
-  v15 = sub_15E124();
+  v15 = sub_15E124(12);   /* 152271 */
   v8 = (char *)v15;
   itoa(a3, v15, 10, a3);
   v9 = (char *)&v14[strlen(v14)];
@@ -7145,7 +7145,7 @@ int sub_1523FC(int a1, char *a2)
   int v8; // edi
   int v9; // eax
 
-  v3 = sub_15E124();
+  v3 = sub_15E124(40);   /* 15240D */
   v4 = sub_1524D0(a1, a2, 13);
   if ( v4 >= 0 )
   {
@@ -7239,9 +7239,9 @@ int sub_1524FC(int a1, int a2)
   int v19; // [esp+0h] [ebp-20h]
   int v20; // [esp+4h] [ebp-1Ch]
 
-  v2 = (char *)sub_15E124();
+  v2 = (char *)sub_15E124(40);   /* 15250F */
   *(_DWORD *)v2 = dword_17C21C;
-  v20 = sub_15E124();
+  v20 = sub_15E124(12);   /* 15252B */
   v3 = (char *)v20;
   itoa(a2, v20, 10, a2);
   v4 = &v2[strlen(v2)];
@@ -8449,7 +8449,7 @@ int *sub_153BD8(unsigned int a1, int a2, unsigned int a3, int a4, unsigned int a
 
   v11 = a2;
   sub_15E68C();
-  v6 = sub_15E0F0(a1);
+  v6 = sub_15E0F0(a1, 135);   /* 153BF0 */
   v7 = v6;
   if ( !v6 )
     return sub_15F048();

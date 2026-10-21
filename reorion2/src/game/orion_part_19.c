@@ -6189,14 +6189,7 @@ _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int
     sub_1273DC(v12, 0xAu, v10, v7);
   if ( (_WORD)v19 != a7 )
     sub_1273DC(v12, 9u, v10, v7);
-  // DECOMP_TODO - NIZKA JISTOTA (vlna 07): fseek() melo 0 parametru. Na
-  // rozdil od 4 ostatnich fseek v teto funkci tu neni primy "table[idx]"
-  // vzor. Nejlepsi dostupna hypoteza: soubor je prave na pozici "v16 + 4"
-  // (zacatek zaznamu + 2x 2bajtove pole v18/v19 prave precteny), a dalsi
-  // krok pravdepodobne preskakuje na konkretni snimek "a5" (pocatecni
-  // index) o velikosti "v19" kazdy - proto "v16 + 4 + a5 * v19". POTREBUJE
-  // OVERENI - spatny odhad by zpusobil tiche cteni spatnych dat, ne pad.
-  fseek(dword_1BC26C, v16 + 4 + a5 * (uint16_t)v19, SEEK_SET);
+  fseek(dword_1BC26C, (uint16_t)v19 * a5, SEEK_CUR);   /* 127155: edx = word var_4 * arg_0, ebx = 1 */
   // PORT (wave 23b): Hex-Rays inserted spurious `return result;` (result is
   // never assigned - always garbage) at the end of case 0/1/2, but the real
   // asm (Debug/diss/Orion2.exe.asm sub_126F3B @ 0x126F3B) shows ALL FOUR

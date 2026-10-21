@@ -17,7 +17,8 @@ param(
     [string[]]$CtlExtra,  # extra ctl lines, e.g. "DUMPREGS cond=eip:0x003487A0 label=rng" (into ctl_log.txt)
     [switch]$Slow,        # GAMEPLAY with the conf's cycles=auto (no speed-ups)
     [int]$Cycles = 1000000,   # GAMEPLAY: fixed cycles per emulated ms - few timer IRQs per game work
-    [switch]$Turbo        # GAMEPLAY: DOSBox fast forward as well
+    [switch]$Turbo,       # GAMEPLAY: DOSBox fast forward as well
+    [switch]$V150         # the 1.50 patch (ORION150.EXE in mastori2_150), output to replay150\
 )
 $ErrorActionPreference = "Stop"
 $game = "C:\prenos\mastori2"
@@ -25,6 +26,14 @@ $dbx = "C:\prenos\dosbox-x-reorion2\bin\x64\Release\dosbox-x.exe"
 $conf = "C:\prenos\reorion2\reorion2\tools\compare\moo2_sondy.conf"
 $sess = "C:\prenos\reorion2Data\$Name"
 $out = "$sess\replay"
+$savepos = "$sess\savepos.txt"
+if ($V150) {
+    $game = "C:\prenos\mastori2_150"
+    $conf = "C:\prenos\reorion2\reorion2\tools\compare\moo2_150_sondy.conf"
+    $out = "$sess\replay150"
+    $savepos = "$sess\savepos150.txt"
+    $env:DOSBOX_MOO2_DSEG = "21E000"   # 1.50: data object 0x8000 higher (C address + 0x21E000)
+}
 if (-not (Test-Path "$sess\record.cfg")) { throw "no $sess\record.cfg" }
 if (Test-Path $out) { Get-ChildItem $out -File -Recurse | ForEach-Object { [IO.File]::Delete($_.FullName) } }
 New-Item -ItemType Directory -Force "$out\saves", "$out\keep" | Out-Null
@@ -91,8 +100,9 @@ try {
     Remove-Item env:DOSBOX_FASTHOOK -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_FASTVGA -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_GR_SAVEPOS -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_MOO2_DSEG -ErrorAction SilentlyContinue
     # the session keeps the first savepos.txt (never overwritten)
-    if ($Gameplay -and (Test-Path "$out\savepos.txt") -and -not (Test-Path "$sess\savepos.txt")) { Copy-Item "$out\savepos.txt" "$sess\savepos.txt" }
+    if ($Gameplay -and (Test-Path "$out\savepos.txt") -and -not (Test-Path $savepos)) { Copy-Item "$out\savepos.txt" $savepos }
     Start-Sleep 1
     foreach ($f in (Get-ChildItem $game -File)) {
         if (($f.Name -match '^SAVE\d+\.GAM$') -or ($f.LastWriteTime -ge $tStart -and -not (Test-Path (Join-Path "$out\keep" $f.Name)))) { [IO.File]::Delete($f.FullName) }

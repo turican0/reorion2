@@ -14,7 +14,7 @@ extern "C" {
 typedef struct
 {
     char    name[19];   // puvodne byte_199699 (slot 0) / byte_1996BE[37*n] (sloty 1-9) / byte_19980B (slot 10)
-    int16_t misc[9];    // puvodne word_1996AC (slot 0); presny vyznam pro ostatni sloty neznamy - DECOMP_TODO
+    int16_t misc[9];    // rest of the 37-byte slot record; the code only copies it
 } TypeSaveSlotInfo_199699;
 #pragma pack(pop)
 //static_assert(sizeof(SaveSlotInfo) == 37, "SaveSlotInfo musi mit 37 bajtu");
@@ -214,8 +214,7 @@ typedef struct
    ruzny pocet argumentu (typicky artefakt dekompilace registrovych
    parametru), takze presny prototyp by odmital jinak platny kod.
    Skutecna/plna signatura je v komentari nad kazdou deklaraci a v
-   tele prislusne definice. DECOMP_TODO: az bude potreba typova
-   kontrola, dohledat a sjednotit realny pocet parametru v IDA. ==== */
+   tele prislusne definice. ==== */
 // plna signatura: void GameMain_10057(int argc, char** argv, int16_t *a3);
 extern void GameMain_10057(int argc, char** argv, int16_t *a3);
 // plna signatura: void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6);
@@ -231,8 +230,6 @@ extern int (**sub_107C2(int (**result)(void)))(void);
 // plna signatura: int sub_107CA();
 extern int sub_107CA();
 // plna signatura: void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2);
-// (opraveno ve vlne 02 - puvodni Hex-Rays signatura byla bez parametru, viz
-// DECOMP_TODO primo u definice funkce v orion_part_01.c)
 extern void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2);
 // plna signatura: int sub_10A0E(char *a1, char *a2);
 int sub_10A0E(char *a1, char *a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
@@ -400,8 +397,8 @@ int sub_179F4(int a1, int a2, int16_t *a3);   /* wave 183: eax, edx, edi; vlna 1
 void *sub_17B51();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_17BB2(int a1, int a2, int a3, int a4);
 extern int sub_17BB2();
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=67)) - nutno dohledat rucne v IDA @ 0x17C32 */ int sub_17C07(void);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=67)) - nutno dohledat rucne v IDA @ 0x17C32 */ int sub_17C07(void);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_17C07(void);
+int sub_17C07(void);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_17D1D();
 extern int sub_17D1D();
 // plna signatura: void sub_17D5B( int a1, int a2);
@@ -666,25 +663,25 @@ char sub_249F9(char *a1, int a2, char *a3, int a4);   /* vlna 105: skutecny prot
 char sub_24ACA(char *bufEax, int16_t regEdx, int16_t regEbx, int16_t regEcx, int16_t s1, int16_t s2, int16_t s3, int16_t s4, int16_t s5);   /* vlna 139: skutecna signatura podle asm */
 // plna signatura: void sub_24D30();
 int sub_24D30(char *a1, int a2, int a3);   /* wave 182: text template thunk */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=12)) - nutno dohledat rucne v IDA @ 0x24D64 */ int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3);
+// plna signatura: int sub_24D4C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3);
 int sub_24D4C(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: void sub_24D6A();
 int sub_24D6A(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
 // plna signatura: void sub_24D83();
 int sub_24D83(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DBB */ _DWORD sub_24D9C( int _p0);
+// plna signatura: _DWORD sub_24D9C( int _p0);
 int sub_24D9C(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=18)) - nutno dohledat rucne v IDA @ 0x24DE6 */ _DWORD sub_24DC5( int _p0, int _p1);
+// plna signatura: _DWORD sub_24DC5( int _p0, int _p1);
 int sub_24DC5(char *a1, int a2, int a3, int a4, int a5, int a6);   /* wave 182: text template thunk */
 // plna signatura: void sub_24DF0();
 int sub_24DF0(char *a1, int a2, int a3, int a4);   /* wave 182: text template thunk */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x24E20 */ int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2);
+// plna signatura: int sub_24E08(_DWORD _p0, _DWORD _p1, _DWORD _p2);
 int sub_24E08(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E27();
 int sub_24E27(char *a1, int a2, int a3);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E3E();
 int sub_24E3E(char *a1, int a2, int a3);   /* wave 182: text template thunk */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=15)) - nutno dohledat rucne v IDA @ 0x24E6B */ int sub_24E54(_DWORD _p0, _DWORD _p1);
+// plna signatura: int sub_24E54(_DWORD _p0, _DWORD _p1);
 int sub_24E54(char *a1, int a2);   /* wave 182: text template thunk */
 // plna signatura: void sub_24E73( int a1);
 int sub_24E73(char *a1, int a2, int a3, int a4, int a5);   /* wave 182: text template thunk */
@@ -4119,8 +4116,8 @@ extern char sub_B09CE();
 _DWORD *sub_B0A24();   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: void sub_B0A9C( int a1);
 extern void sub_B0A9C();
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=51)) - nutno dohledat rucne v IDA @ 0xB0BA4 */ int sub_B0AE3(_DWORD _p0);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=51)) - nutno dohledat rucne v IDA @ 0xB0BA4 */ void sub_B0AE3(int a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_B0AE3(_DWORD _p0);
+void sub_B0AE3(int a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4);
 int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: char sub_B0CF6(int a1, int a2, int a3);
@@ -6072,8 +6069,6 @@ extern void sub_F4D53();
 // plna signatura: void sub_F4D99(int16_t *a1);
 void sub_F4D99(int16_t *a1);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int MarkCheatPatternFlag_F4FD5(char *pattern_a1, char *argText_a2);
-// (opraveno ve vlne 05 - puvodni signatura "(_BYTE *a1, int a2)" s
-// skryvala rozbite volani strstr, viz DECOMP_TODO u definice)
 extern int MarkCheatPatternFlag_F4FD5(char *pattern_a1, char *argText_a2);
 // plna signatura: void sub_F520A(int j, int a2);
 extern void sub_F520A();
@@ -6517,8 +6512,8 @@ extern void sub_102F4F();
 extern void sub_102F78();
 // plna signatura: void sub_102FA8(int a1, int a2, int a3, int a4);
 extern void sub_102FA8(int a1, int a2, int a3, int a4);
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=111)) - nutno dohledat rucne v IDA @ 0x10311B */ _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: _DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);
+_DWORD sub_102FD8(_DWORD _p0, int _p1, _DWORD _p2, int _p3, int _p4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_10315D(int x, int y, int w, int h, int str, int a_word);
 extern int sub_10315D(int x, int y, int w, int h, int str, int a_word);
 // plna signatura: int sub_103183(int a1, int a2, int a3);
@@ -6554,10 +6549,10 @@ extern int sub_103915(int a1, int x, int y, int str, int w);
 /* vlna 73: mista, kde registrove argumenty jeste nejsou dohledane */
 #define SUB_103915_TODO(a1) sub_103915((a1), 0, 0, 0, 0)
 int sub_103933(int a1, int a2, int a3, int a4, int a5, int a6);   /* wave 184 */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */ int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=14)) - nutno dohledat rucne v IDA @ 0x103963 */ int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: /* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=13)) - nutno dohledat rucne v IDA @ 0x103983 */ int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2);
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=13)) - nutno dohledat rucne v IDA @ 0x103983 */ int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2);
+int sub_103952(_DWORD _p0, _DWORD _p1, _DWORD _p2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2);
+int sub_103971(_DWORD _p0, _DWORD _p1, _DWORD _p2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_103990();
 extern int sub_103990();
 // plna signatura: void sub_1039B9();
@@ -6970,7 +6965,7 @@ typedef struct PoolMemHeader
 {
     uint32_t reservedSize;  // +0  kolik bajtu z bloku uz je vyuzito (viz sub_110D3C - sub-alokace uvnitr bloku)
     uint32_t requestedSize; // +4  puvodne pozadovana velikost (parametr size v PoolAlloc_110B89)
-    uint32_t flags;         // +8  priznak (0/nenulovy, presny vyznam neznamy - DECOMP_TODO)
+    uint32_t flags;         // +8  written 0 on allocation (110B89), not read
 } PoolMemHeader;
 #pragma pack(pop)
 
@@ -16059,8 +16054,7 @@ extern int (*dword_1C9830)(_DWORD);
 /* ==== osirele symboly: adresa je nekde pouzita (napr. jako cil skoku,
    ukazatel v datech, nebo volani), ale Hex-Rays pro ni negeneroval
    zadnou deklaraci ani telo - typicky adresy uvnitr staticky
-   linkovane knihovny nebo prekryvajicich se segmentu. DECOMP_TODO:
-   overit v IDA, co se na teto adrese skutecne nachazi. ==== */
+   linkovane knihovny nebo prekryvajicich se segmentu. ==== */
 extern int nullsub_1();
 extern int nullsub_10();
 extern int nullsub_11();

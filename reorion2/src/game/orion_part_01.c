@@ -5,12 +5,6 @@
 //----- (00010057) --------------------------------------------------------
 void GameMain_10057(int argc, char** argv, int16_t *a3)
 {
-  // DECOMP_TODO: docasny bezpecny placeholder (misto puvodni neinicializovane
-  // promenne - stejna trida chyby jako u ParseCommandLine_107E6/vlna 02).
-  // Presny puvodni vyznam (pravdepodobne navratova hodnota nejakeho volani,
-  // viz PROGRESS.md "dalsi krok") je porad nedoreseny - 0 jen zarucuje
-  // deterministicke chovani mist toho nedefinovaneho.
-  int v3 = 0; // eax
   int v4; // eax
   _BYTE v5[32]; // [esp+6Ch] [ebp+3Eh] BYREF
   char v6[16]; // [esp+9Ch] [ebp+6Eh] BYREF
@@ -22,24 +16,9 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   word_1999EA = 20;
   word_1999EE = 20;
   byte_19A006 = -1;
-  // argc/argv jsou tady porad nedotcene argc/argv teto funkce (GameMain_10057) -
-  // presne ty hodnoty, ktere ParseCommandLine_107E6 drive cetla z
-  // neinicializovanych promennych. Viz DECOMP_TODO u ParseCommandLine_107E6.
-  ParseCommandLine_107E6(argc, argv);
+  ParseCommandLine_107E6(argc, argv);   /* 1009B: eax = argc (movsx var_B0) */
   PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
-  // ServiceAudioTick_FE8BE's a2/a3 slots here were originally just whatever
-  // the DOS/x86 compiler happened to leave in eax/edx at this point in
-  // main__0 - namely this function's own argc/argv, purely by register-
-  // reuse coincidence (see PROGRESS.md wave notes). They have no actual
-  // meaning to ServiceAudioTick_FE8BE (a1 is dead, a2 only matters when
-  // dword_184380 is set, which it never is this early), so rather than
-  // pass argc/argv through - which reads as if this call cared about the
-  // program's command-line arguments, and it doesn't - we pass explicit
-  // deterministic 0s here, same as the plain "(0, 0, 0, 0)" call sites
-  // used elsewhere in this file. Only a3 (GameMain_10057's own third
-  // parameter, forwarded into the a4/int16_t* slot) is a real, intentional
-  // pass-through and is kept as-is.
-  ServiceAudioTick_FE8BE(v3, 0, 0, a3);
+  ServiceAudioTick_FE8BE(0, 0, 0, a3);   /* 100A0: registers are leftovers, a1 is unused */
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
   PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
@@ -128,10 +107,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     PortDebug_Checkpoint("tail.before_2484F", (uint8_t)byte_199BEF);
     sub_2484F();                              // 010193
     PortDebug_Checkpoint("tail.after_2484F", 0);
-    // DECOMP_TODO: ServiceAudioTick_FE8BE/sub_CDF65 zde dostavaji leftover registry (zadne
-    // explicitni nastaveni v asm) - predano 0; ServiceAudioTick_FE8BE je bezny "update"
-    // volany 700x jinde, nuly jsou bezpecne.
-    ServiceAudioTick_FE8BE(0, 0, 0, 0);                    // 010198
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);                    // 010198 (registers are leftovers)
     PortDebug_Checkpoint("tail.after_FE8BE", 0);
     IsMemPoolReady_110B5C();                  // 01019D
     if ( dword_19327C )                       // 0101A2
@@ -167,9 +143,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     ServiceAudioTick_FE8BE(0, 0, 0, 0);                    // 010294
     PortDebug_Checkpoint("tail.after_294", 0);
 
-    // Prekopirovani argv[1] do jmena savu (jen kdyz argc>=2) - 010299.
-    // DECOMP_TODO: word_18FF78 je puvodne vetsi buffer (IDA ho zmensila na
-    // int16_t); pri argc>=2 se sem strcpy jmeno savu. Default argc==1.
+    // 010299: argv[1] -> word_18FF78 (a text buffer in dseg)
     if ( argc < 2 )
       *(char *)&word_18FF78 = 0;
     else
@@ -178,8 +152,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     // Vyber pocatecniho herniho stavu (word_199A08) - 0102BD..010360.
     if ( byte_19A007 )
     {
-      // DECOMP_TODO: vetev ladeni/editoru (byte_19A007 nastavi jen prepinac
-      // prikazove radky, default 0 -> preskoceno). Rekonstruovano best-effort.
+      // 0102C6: debug switch only; sub_1202D ignores its eax and returns 0
       if ( sub_1202D() )
       {
         sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB2,
@@ -739,8 +712,7 @@ int sub_10A72()
 LABEL_34:
     sub_126487((char *)v0, SHIDWORD(v0));
   }
-      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    v1 = fopen(aOrioncdIni, aRb);
+    v1 = fopen(aOrioncdIni, aRt);   /* 10A96 edx = aRt "rt" */
   fgets(v10, 60, v1, v1);
   fclose(v1);
   v10[60] = 0;
@@ -818,8 +790,7 @@ int LoadLanguageSetting_10C2F()
   result = FindMoxSetPath_1114D7(aLanguageIni, v4);
   if ( result )
   {
-        // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    v1 = fopen(aLanguageIni, aRb);
+    v1 = fopen(aLanguageIni, aRt);   /* 10C4C edx = aRt "rt" */
     fgets(v3, 60, v1, v1);
     fclose(v1);
     result = sub_12760B(v3);
