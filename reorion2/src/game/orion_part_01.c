@@ -610,7 +610,7 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
           HIDWORD(logMessagePacked_v8) = (int)aDate;
           if ( strstr(currentArg_v17, aDate) )
           {
-            LODWORD(logMessagePacked_v8) = (int)aMay222006_1;
+            LODWORD(logMessagePacked_v8) = (int)aDec232024;
             sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
             return;
           }

@@ -407,7 +407,7 @@ void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5)
         byte_199CB4 = a5[43];
         byte_199CB5 = a5[44];
         byte_199CAF = a5[45];
-        sprintf(v55, "%s", aMay222006);
+        sprintf(v55, "%s", aDec232024_0);
         if ( strcmp(a5 + 46, v55) )
         {
           sprintf(v53, (char *)dword_1AAEA8, a5 + 46, v55);
@@ -741,7 +741,7 @@ LABEL_81:
         v48 = v51;
         goto LABEL_111;
       case 40:
-        sprintf(v54, "%s", aMay222006);
+        sprintf(v54, "%s", aDec232024_0);
         if ( strcmp(a5 + 46, v54) )
         {
           sprintf(v52, (char *)dword_1AAEA8, a5 + 46, v54);
@@ -5069,7 +5069,7 @@ LABEL_4:
         --v28;
         *(_DWORD *)&v34[v29 + 6] = *(int16_t *)((uint8_t*)dword_197F98 + v30 + 43);
       }
-      sprintf(v35, "%s", aMay222006_0);
+      sprintf(v35, "%s", aDec232024_1);
       sub_F6816(32766, 42, (int)v34, 0x60u);
       dword_1849E2 = (uint8_t)byte_1AAF5D;
       word_1AB09C = word_1AAF5E;
@@ -5342,7 +5342,7 @@ char sub_FB7E5(int16_t *a1)
           v51 = byte_199CB4;
           v52 = byte_199CB5;
           v53 = byte_199CAF;
-          sprintf(v54, "%s", aMay222006_0);
+          sprintf(v54, "%s", aDec232024_1);
           memset(byte_1AAF60, 0, 8);
           memset(byte_19B814, 0, sizeof(byte_19B814));
           memset(byte_19B848, 0, sizeof(byte_19B848));

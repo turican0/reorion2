@@ -196,16 +196,6 @@ _UNKNOWN loc_166880; // weak
 _UNKNOWN loc_167084; // weak
 _UNKNOWN loc_1671E0; // weak
 _UNKNOWN loc_16845A; // weak
-char aMay222006_1[12] = "May 22 2006"; // weak
-char aNowh[6] = "/nowh"; // weak
-char aNobh[6] = "/nobh"; // weak
-char aVeuillezIns[] = "Veuillez ins"; // idb
-char aGoodstart[11] = "/goodstart"; // weak
-char aNosplint[10] = "/nosplint"; // weak
-char aRichstart[11] = "/richstart"; // weak
-char aPlanets[10] = "/planets="; // weak
-char aNoorion[9] = "/noorion"; // weak
-char aPicks[8] = "/picks="; // weak
 wchar_t aAcg[4] = L"aCG\x1B"; // weak
 char a360[4] = "360"; // weak
 /* PORT (vlna 73): v asm je to retezec ", " (db 2Ch, 20h, 0) - oddelovac,
@@ -215,7 +205,6 @@ char a0[2] = "0"; // weak
 wchar_t aLb[3] = L"\x1BLB"; // weak
 wchar_t aNsqoA[6] = L"NSQO\x1B""A"; // weak
 wchar_t aLnmhq[6] = L"LNMHQ."; // weak
-char aVer140b23[12] = "Ver 1.40b23"; // weak
 wchar_t aDph[3] = L"DPH"; // weak
 char a3[2] = "3"; // weak
 char a4[2] = "4"; // weak
@@ -230,8 +219,6 @@ char a5[2] = "5"; // weak
 wchar_t aFs[3] = L"fs "; // weak
 char a1[3] = "\x1B""1"; // weak
 char a2[3] = "\x1B""2"; // weak
-char aMay222006[12] = "May 22 2006"; // weak
-char aMay222006_0[12] = "May 22 2006"; // weak
 char a05[5] = "-0.5"; // weak
 wchar_t aRad[4] = L"RAD"; // weak
 char a302[5] = "3.02"; // weak

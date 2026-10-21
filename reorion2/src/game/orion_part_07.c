@@ -6759,7 +6759,7 @@ LABEL_16:
   qmemcpy(v6, sub_8E5C5(1u, 210, 215), sizeof(v6));
   sub_120BB5(1, (int)v6);
   v5 = sub_122259();
-  sub_1210FD(517, 443 - (v5 + 1), (int)aVer140b23);
+  sub_1210FD(517, 443 - (v5 + 1), (int)aVersion150);
   // PORT (vlna 26 pokr. 52): `locret_810C0` je SDILENY EPILOG sub_80DB4
   // (`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`),
   // ktery Watcom sdili mezi funkcemi se shodnym prologem - skok tam
