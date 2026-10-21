@@ -18,7 +18,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   byte_19A006 = -1;
   ParseCommandLine_107E6(argc, argv);   /* 1009B: eax = argc (movsx var_B0) */
   PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
-  ServiceAudioTick_FE8BE(0, 0, 0, a3);   /* 100A0: registers are leftovers, a1 is unused */
+  ServiceAudioTick_FE8BE(0, 0, 0, a3);   /* 100A0: registers are leftovers, result unused */
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
   MarkMemPoolReady_110B34();
   PortDebug_Checkpoint("GameMain.after_MarkPoolReady", 0);
@@ -1973,7 +1973,7 @@ int sub_1241A()
 
 //----- (00012479) --------------------------------------------------------
 // PORT (vlna 79): REKONSTRUOVANO Z ASM (0x12479..0x1279A). IDA to vzdala
-// ("call analysis failed", funcsize=170) a nechala DECOMP_TODO pahyl - a je
+// ("call analysis failed", funcsize=170) a nechala prazdny pahyl - a je
 // to pritom funkce, ktera HRU SPOUSTI (generovani vesmiru + prechod do stavu
 // 39). Dokud byla prazdna, po vyberu rasy a barvy vlajky se stav nezmenil,
 // `sub_1049B` se v case 13 zatocil zpatky na NEW GAME / vyber rasy a hra

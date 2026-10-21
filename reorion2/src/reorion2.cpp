@@ -645,8 +645,7 @@ int main(int argc, char* argv[])
     // Predavame puvodni parametry programu i tehdy, kdyz uzivatel nezadal
     // zadny argument (argc je v takovem pripade 1 a argv obsahuje cestu EXE).
     // Treti parametr dekompilovaneho vstupu (a3) neni ve standardnim main
-    // dostupny, puvodni volajici (DOS startup kod) do nej pravdepodobne
-    // predaval PSP/env blok - zatim nullptr, viz DECOMP_TODO v port_dos.h.
+    // dostupny. It only reaches the network path of ServiceAudioTick_FE8BE (a4): nullptr.
     InitDataSegment();
     // TOOL (wave 184): REORION2_HWWATCH=<C address hex>[:len] - hardware write watch on a
     // data segment variable (C address = dseg offset + 0x178000), writer backtraces to stderr

@@ -1094,7 +1094,7 @@ int sub_F6816(int a1, int a2, int a3, unsigned int a4)
 
 
 //----- (000F69FE) --------------------------------------------------------
-void sub_F69FE(int a1, int a2, int a3, int16_t *a4)
+int sub_F69FE(int a1, int a2, int a3, int16_t *a4)
 {
   int v4; // eax
   int v5; // edx
@@ -1320,7 +1320,7 @@ void sub_F69FE(int a1, int a2, int a3, int16_t *a4)
     }
     byte_183609 = 0;
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFA388 je epilog funkce */
+  return a1;   /* F6A17 jnz locret_FA388: eax kept (network turn: the last call's eax) */
 }
 // FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 183609: using guessed type char byte_183609;
@@ -8073,52 +8073,11 @@ char sub_FE86B(int a1, int16_t *a2)
 
 
 //----- (000FE8BE) --------------------------------------------------------
-// ServiceAudioTick_FE8BE: periodic "give the audio driver a timeslice" pump,
-// called from all over the codebase (loading screens, long computation
-// loops, menus, ...) - the classic DOS-era pattern of a game manually
-// yielding to its sound driver instead of relying on a preemptive OS.
-//
-// Body: 1) sub_1131F0(a1, a2) - services MIDI channel volume fades and
-//          pumps the next block of a currently streaming/digitized (AIL)
-//          audio file from disk.
-//       2) sub_F69FE(0, a2, a3, a4) - scans the animation-frame-linked
-//          sound/voice "trigger" flag bytes (byte_1AB050/51/52/53/...) and
-//          dispatches any pending ones via sub_F6816.
-//
-// a1 is a genuinely dead parameter: sub_1131F0 never reads it (confirmed
-// in its full body), so whatever a caller passes as a1 is discarded. This
-// matches the "leftover register" pattern noted where GameMain_10057
-// passes its own unrelated first args through here.
-//
-// COMPAT FIX: in the original DOS/x86 binary many call sites only ever set
-// up 1 of the 4 register-based params (the rest kept whatever value was
-// already sitting in that register from earlier code - harmless there,
-// since a1 is dead and a2/a3/a4 are only read behind runtime flags that
-// were usually false). On a modern recompile that "leftover value" is not
-// reproducible (different compiler, different ABI, different register
-// contents) and reading it is genuine undefined behavior, so every such
-// call site across the codebase has been changed to pass explicit
-// trailing 0s (",0, 0, 0"), matching the deterministic-zero convention
-// already established elsewhere in this project (see the DECOMP_TODO
-// note in GameMain_10057 about "predano 0"). This changes no observable
-// behavior versus the original (those parameters still go unread in the
-// same runtime conditions as before), it just removes reliance on
-// whatever the new compiler happens to leave in a register/stack slot.
-//
-// DECOMP_TODO: this function's real return value/tail is NOT fully
-// present in any wave we have. sub_F69FE ends in "JUMPOUT(0xFA388)" -
-// IDA's marker for a tail-jump to code outside the function it could
-// decompile - and 0xFA388 isn't defined in any uploaded part file. Several
-// call sites elsewhere DO use this function's return value (e.g.
-// "v7 = ServiceAudioTick_FE8BE(v6)"), so the value is real and meaningful,
-// just not visible here; keep the `int` return type (do NOT change to
-// void) until the missing wave with address 0xFA388 turns up.
+/* wave 185: FE8BE call sub_1131F0 / jmp sub_F69FE - the result is the eax both leave
+   (callers read it: sound off = a1 back) */
 int ServiceAudioTick_FE8BE(int a1, int a2, int a3, int16_t *a4)
 {
-  int v4=0; // eax
-
-  sub_1131F0(a1, a2);
-  sub_F69FE(v4, a2, a3, a4);
+  return sub_F69FE(sub_1131F0(a1, a2), a2, a3, a4);
 }
 
 

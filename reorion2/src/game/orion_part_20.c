@@ -634,7 +634,7 @@ _BOOL1 sub_12C3D3()
 // ztotoznil s parametrem a2 - zapis "segment = a2" je proto ponechan
 // 1:1 dle puvodniho kodu.
 // 1050/1052 (0x41A/0x41C) jsou adresy hlavy/ocasu klavesniceho bufferu
-// v BIOS data area - viz DECOMP_TODO u sub_12C3D3.
+// v BIOS data area - viz sub_12C3D3.
 void InstallKeyboardIsr_12C420(int a1, int a2)
 {
   sub_144A46();

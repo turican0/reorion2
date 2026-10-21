@@ -8340,7 +8340,7 @@ LABEL_49:
       //   lea ecx, [ebp+82h+var_148] (= v24, sestaveny popis rasy)
       //   mov ebx, 127h / push 0 / mov edx, 187h / mov eax, 32h
       // Tohle je ten radek pod portretem ("Ship Defense:+50, Artifacts Home
-      // World and Dictatorship") - dokud byla sub_103915 jen DECOMP_TODO stub,
+      // World and Dictatorship") - dokud byla sub_103915 jen prazdny stub,
       // text se sice spravne sestavil, ale nikdy nevykreslil.
       sub_103915(0, 50, 391, (int)v24, 295);
       if ( word_19B85A == 13 )

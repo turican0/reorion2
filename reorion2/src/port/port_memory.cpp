@@ -263,7 +263,7 @@ std::size_t GetAvailableBytes()
 } // namespace Port::Memory
 
 // ---------------------------------------------------------------------
-// C-linkage most - viz DECOMP_TODO v port_memory.h. Vsechny 4 funkce jsou
+// C-linkage most - viz port_memory.h. Vsechny 4 funkce jsou
 // jen tenke obalky nad Port::Memory:: API vyse.
 extern "C" {
 

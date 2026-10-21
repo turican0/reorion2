@@ -6104,8 +6104,8 @@ void sub_F5A9F(int a1, int a2, unsigned int a3, unsigned int a4, char *a5);   /*
 void sub_F67C1( unsigned int a1, unsigned int a2, unsigned int a3, char *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_F6816(int a1, int a2, int a3, unsigned int a4);
 extern int sub_F6816();
-// plna signatura: void sub_F69FE(int a1, int a2, int a3, int16_t *a4);
-void sub_F69FE(int a1, int a2, int a3, int16_t *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_F69FE(int a1, int a2, int a3, int16_t *a4);
+int sub_F69FE(int a1, int a2, int a3, int16_t *a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_F6F90(int a1, int a2, int a3);
 extern int sub_F6F90();
 // plna signatura: int sub_F6FD9(int a1);
@@ -7125,8 +7125,8 @@ extern int sub_11312B();
 extern bool sub_113166();
 // plna signatura: void sub_1131BB(int a1);
 extern void sub_1131BB();
-// plna signatura: void sub_1131F0(int a1, int a2);
-extern void sub_1131F0();
+// plna signatura: int sub_1131F0(int a1, int a2);
+extern int sub_1131F0();
 // plna signatura: int sub_113475(char *a1, int a2);
 int sub_113475(char *a1, int a2);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_1136CA(int result);
@@ -8196,8 +8196,8 @@ void sub_141884(int a1, int a2, void *a3);   /* vlna 105: skutecny prototyp (uka
 extern int sub_14197D();
 // plna signatura: int sub_141A76(_DWORD *a1); // PORT (vlna 26)
 extern int sub_141A76();
-// plna signatura: void sub_141B5B(int *a1, int a2, int a3, int a4);
-void sub_141B5B(int *a1, int a2, int a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: int sub_141B5B(int *a1, int a2, int a3, int a4);
+int sub_141B5B(int *a1, int a2, int a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 int sub_141C60(int a1);
 int sub_141D45(int a1, int a2);
 int sub_141E32(int a1, int a2);
@@ -9196,11 +9196,11 @@ extern void sub_15DD55();
 extern bool sub_15DDE1();
 // plna signatura: int sub_15DE09();
 extern int sub_15DE09();
-// plna signatura: int sub_15E0F0(unsigned int a1);
+// plna signatura: int sub_15E0F0(unsigned int a1, int a2);
 extern int sub_15E0F0();
 // plna signatura: int sub_15E108(unsigned int a1, int a2);
 extern int sub_15E108();
-// plna signatura: int sub_15E124();
+// plna signatura: int sub_15E124(int a1);
 extern int sub_15E124();
 // plna signatura: int sub_15E154(unsigned int a1, int a2);
 extern int sub_15E154();
@@ -13138,7 +13138,7 @@ unsigned int sub_F5883(char *a1);
 void sub_F5A9F(int a1, int a2, uint16_t a3, uint16_t a4, char *a5);
 void sub_F67C1(uint16_t a1, uint16_t a2, uint16_t a3, char *a4);
 int sub_F6816(int a1, int16_t a2, int a3, uint16_t a4);
-// void sub_F69FE(int a1, int a2, int a3, int16_t *a4);
+// int sub_F69FE(int a1, int a2, int a3, int16_t *a4);
 int sub_F6F90(int a1, int a2, int a3);
 int sub_F6FD9(int a1);
 int sub_F7023(void *a1, int a2, int a3, char *a4);
@@ -13634,7 +13634,7 @@ int sub_1130F0(int result);
 int sub_11312B(int result);
 bool sub_113166();
 void sub_1131BB(int a1);
-void sub_1131F0(int a1, int a2);
+int sub_1131F0(int a1, int a2);
 int sub_113475(char *a1, int a2);
 int sub_1136CA(int result);
 int sub_1136EC(_BYTE *a1);
@@ -14217,7 +14217,7 @@ int sub_1413FF(int a1); // PORT (vlna 26): vraci stav samplu
 void sub_141884(int a1, int a2, void *a3);
 int sub_14197D(_DWORD *a1, int a2, int a3); // PORT (vlna 26): min. velikost bufferu
 int sub_141A76(_DWORD *a1); // PORT (vlna 26): vraci pripraveny buffer
-void sub_141B5B(int *a1, int a2, int a3, int a4);
+int sub_141B5B(int *a1, int a2, int a3, int a4);
 int sub_1420F9(int a1, int a2, int a3);
 void sub_14234D();
 void sub_1427CA(_DWORD *a1);
@@ -14728,9 +14728,9 @@ void sub_15DD55();
 bool sub_15DDE1();
 int sub_15DE09();
 // void _assert(_DWORD, _DWORD, _DWORD, _DWORD); weak
-int sub_15E0F0(unsigned int a1);
+int sub_15E0F0(unsigned int a1, int a2);
 int sub_15E108(unsigned int a1, int a2);
-int sub_15E124();
+int sub_15E124(int a1);
 int j__nfree(_DWORD); // weak
 int sub_15E154(unsigned int a1, int a2);
 int sub_15E184(unsigned int a1, int a2);

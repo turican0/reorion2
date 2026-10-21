@@ -4,8 +4,7 @@
  * (Orion2.exe, Watcom C++, DOS4GW protected mode) beznym C kompilatorem.
  *
  * Ucel: umoznit SYNTAKTICKY preklad puvodniho pseudokodu, ne nutne
- * bit-presnou funkcni ekvivalenci. __asm bloky a "decompilation failure"
- * funkce jsou nahrazeny stuby s TODO komentarem - viz DECOMP_TODO.
+ * bit-presnou funkcni ekvivalenci. Failed functions are rewritten from the asm.
  */
 #ifndef DECOMP_COMPAT_H
 #define DECOMP_COMPAT_H
@@ -56,11 +55,10 @@ int   PortMemory_Free(void* ptr);
 /* ---- presmerovani souborovych funkci na port_file (vlna 06) ----
    fopen/fclose/fread/fwrite/fflush/access presmerovane na case-insensitive
    wrappery (viz src/port/port_file.h/.cpp) - overeno, ze VSECHNA jejich
-   volani v dekompilovanem kodu maji spravny pocet argumentu (na rozdil od
-   fseek/ftell nize, ktera VETSINOU nemaji - viz DECOMP_TODO tam).
+   volani v dekompilovanem kodu maji spravny pocet argumentu.
    Handle je "int" (ne FILE*) - dekompilovany kod vzdy uklada vysledek
    fopen() do "int"/"_DWORD" promennych; skutecny 8bajtovy FILE* na x64
-   by se pri takovem ulozeni oriznul. Viz DECOMP_TODO v port_file.h. */
+   by se pri takovem ulozeni oriznul. Viz port_file.h. */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -305,15 +303,7 @@ int dos_setvect(unsigned int vectorNumber, unsigned int vectorNumberDup,
 }
 #endif
 
-/* DECOMP_TODO - DLUH (vlna 07, castecne vyreseno): z 20 fseek + 1 mylne
-   pojmenovaneho ftell (celkem 21 mist) je ted 19 opraveno na spravny
-   3parametrovy tvar (handle, offset, origin) na zaklade rozpoznaneho LBX
-   archivniho vzoru (offset tabulka nactena spolu s 2048bajtovym headerem,
-   viz orion_part_19/20.c) nebo klasickeho "zjisti velikost souboru" idiomu
-   (orion_part_22.c). 2 mista (orion_part_19.c ~radek 5907, orion_part_20.c
-   ~radek 7230 - "Play_Sound") maji jen NIZKOU jistotu rekonstrukce (viz
-   DECOMP_TODO primo u nich) - oznaceny explicitne v komentari, aby bylo
-   jasne, ze potrebuji dalsi overeni, i kdyz uz technicky pouzivaji makro.
+/* wave 185: all 21 fseek/ftell calls have their (handle, offset, origin) from the asm.
    VSECHNY fseek/ftell/fopen/fclose/fread/fwrite ted konzistentne pouzivaji
    stejny int-handle system (viz port_file.h) - fseek/ftell NEMOHOU zustat
    na skutecnem CRT FILE*, protoze fopen uz vraci jen maly int handle. */
@@ -533,15 +523,9 @@ static inline void _disable(void) {}
 static inline void *_GETDS_STUB(void) { return (void*)0; }
 #define _GETDS _GETDS_STUB
 
-/* sub_ED48B: the decompiler, for this (jiz tak podezrele - "local variable
-   allocation has failed") funkce nedokazal urcit typ 8. argumentu.
-   DECOMP_TODO: verify against the disassembly, jak je a8 skutecne pouzivan. */
-typedef struct { unsigned char arr[4]; } arg8_ED48B;
-
 /* ---- MSVC/Watcom intrinsics (port I/O, GS-segmentovy pristup, flagy) ----
-   DECOMP_TODO: skutecna semantika (I/O porty, alternativni linear segment
-   pres GS) se dorezi az pri realne portaci/emulaci - zde jen stuby pro
-   syntakticky preklad. */
+   The port has no I/O ports or GS segment: VGA, timer and keyboard go through
+   src/port, these stay inert. */
 /* MSVC bere tyto nazvy jako sve vlastni vestavene intrinsiky (nejdou
    predefinovat) - split.py proto v generovanem kodu VSECHNY vyskyty
    __readgsbyte/__outbyte/... prejmenuje na hr_readgsbyte/hr_outbyte/...
@@ -558,9 +542,5 @@ static inline void hr_writegsbyte(unsigned int off, unsigned char v) { (void)off
 static inline void hr_writegsword(unsigned int off, unsigned short v) { (void)off; (void)v; }
 static inline void hr_writegsdword(unsigned int off, unsigned int v) { (void)off; (void)v; }
 static inline void hr_addgsword(unsigned int off, unsigned short v) { (void)off; (void)v; }
-
-/* Oznaceni mist, kde je potreba rucni dopracovani (asm bloky, funkce s
-   selhanou dekompilaci). Vyhledatelne pres grep DECOMP_TODO. */
-#define DECOMP_TODO(msg)
 
 #endif /* DECOMP_COMPAT_H */

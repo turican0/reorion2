@@ -96,10 +96,8 @@ void TerminalWrite(const char* text)
     // pri ladeni) i jako obecny pozadavek ze zadani.
     std::fputs(text, stdout);
 
-    // DECOMP_TODO: az bude port_vga.cpp umet vykreslit znakovou mrizku,
-    // sem pribude zapis do skutecneho textoveho bufferu (Port::Vga::...)
-    // vcetne posunu kurzoru, rolovani obrazovky atd. Zatim jen stdout, aby
-    // aspon selo sledovat, co GameMain_10057 pri startu dela.
+    // Text mode output only goes to stdout (the game prints here only before
+    // switching to graphics and on exit).
     (void)g_cursorRow;
     (void)g_cursorCol;
 }
@@ -157,8 +155,7 @@ int dos_setvect(unsigned int vectorNumber, unsigned int vectorNumberDup,
 // driver required" v MouseInit sub_123491). Emulace:
 //   - INT 33h (mys) se preklada na Port::Mouse (SDL3),
 //   - ostatni interrupty (10h video, 21h DOS, 31h DPMI...) zatim vraci
-//     vstupni registry beze zmeny (deterministicke; konkretni sluzby se
-//     napoji az na ne herni kod skutecne narazi - DECOMP_TODO).
+//     vstupni registry beze zmeny (deterministicke).
 // Layout Watcom "union REGS" (386): eax,ebx,ecx,edx,esi,edi,cflag -
 // 7x uint32 na ofsetech 0/4/8/12/16/20/24 - presne tak k nim
 // dekompilovany kod pristupuje (dword_1BB8E0 = eax, +4 = ebx, ...).
@@ -630,8 +627,7 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
         default:
             // 01/02 (zobraz/schovej kurzor), 04 (nastav pozici), 07/08
             // (rozsahy), 0Fh (mickey ratio)... - v SDL vrstve zatim neni
-            // co nastavovat, tiche prijeti je bezpecne (DECOMP_TODO: az
-            // hra bude kurzor skutecne ridit, napojit na Port::Mouse).
+            // co nastavovat, tiche prijeti je bezpecne.
             break;
         }
     }
@@ -640,9 +636,7 @@ extern "C" int PortDos_Int386(int intNum, const void* inRegs, void* outRegs)
     // dekompilovane volajici funkce mivaji vystupni buffer jen _BYTE[24]
     // (IDA rekonstrukce stacku) a zapis cflag by prepsal sousedni lokal
     // (Debug RTC guard -> "zamrznuti" v assert dialogu). Volajici, ktere
-    // cflag ctou, maji vlastni (typicky nulou inicializovany) slot -
-    // DECOMP_TODO: az bude nejaka sluzba potrebovat vracet chybu pres
-    // cflag, vyresit cilene u ni.
+    // cflag ctou, maji vlastni (typicky nulou inicializovany) slot.
     std::memcpy(outRegs, &regs, 24);
     return (int)regs.eax; // Watcom int386 vraci AX/EAX po preruseni
 }

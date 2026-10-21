@@ -4522,12 +4522,8 @@ void sub_C132A( int a1, int a2)
     v6 = 395;
   }
   v8 = sub_CDF5C(v6);
-  /* vlna 122 TODO: asm loc_C141E ma eax=movsx cx, edx=movsx bx, ebx=37h, ecx=38h,
-     ale ktere C promenne odpovidaji ecx/ebx v tomhle miste, jeste dohledane neni
-     (obe vychazi na a1, coz jako souradnice nedava smysl - nekde uprostred
-     funkce se prepisuji). Sirka 0 = nekresli se nic; zkusmo dosazena 55/56
-     kreslila do leveho horniho rohu, tedy hur nez nic. */
-  sub_1031C6(0, 0, 0, 0, v8, 2);
+  /* wave 185: C141E eax = cx = edi + 0A1h (C13A3), edx = bx = var_8 + 31h (C13B5), ebx = 37h, ecx = 38h */
+  sub_1031C6((int16_t)(60 * (a2 % 5) + 161), (int16_t)(61 * (a2 / 5) + 49), 55, 56, v8, 2);
 LABEL_8:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC1875 je epilog funkce */
 }

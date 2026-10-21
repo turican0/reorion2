@@ -1589,9 +1589,7 @@ struct DosDta unk_1AD828; // weak
    DTA `unk_1AD828` o par radku vyse. */
 // vlna 12: tentativni "int dword_1AE0A4[]" nevytvarel definici (LNK2001
 // po odstraneni duplikatu z link_stubs.c). V puvodnich datech ma symbol
-// 4 bajty (0x1AE0A4..0x1AE0A8). DECOMP_TODO: pouziva se i s indexem
-// [v3]/[v10] (streamovani zvukovych samplu, sub_113xxx) - presna sirka
-// se doresi az se zvukovou vlnou (kod ted nebezi, zvuk je vypnuty).
+// 4 bajty (0x1AE0A4..0x1AE0A8); two elements, see wave 26 below.
 /* PORT (vlna 26 pokr. 50): DVA ukazatele na pul-buffery audio streamu.
    `sub_1131F0` je indexuje `dword_1AE0A4[v3]` / `[v10]`, kde v3/v10 je index
    pul-bufferu (0/1) vraceny z `sub_141A76` - v originale tedy jde o jedno
@@ -1650,9 +1648,8 @@ int (*dword_1B9210)(_DWORD); // weak
 // do nej kopiruje 1024 bajtu (paletova/barevna tabulka 0x1BB358..0x1BB758).
 // IDA cely 1024B usek rozsekala na desitky jednotlivych symbolu (byte_1BB359,
 // 35B[318], 499, 49B[253]...), takze kopie by prepisovala sousedni globaly
-// -> pad. Standalone 1024B buffer prepis zastavi. DECOMP_TODO: jednotlive
-// byte_1BB35x/49x/59x/61x/65x symboly do nej zatim NEaliasuji (paletova data
-// se pres ne necti) - plny overlay az bude potreba barevna presnost.
+// -> pad. Standalone 1024B buffer prepis zastavi. Since wave 180 it lives in dseg;
+// byte_1BB359.. below point into it.
 char* byte_1BB359 = byte_1BB358 + 1;
 char* byte_1BB35A = byte_1BB358 + 2;
 char* byte_1BB35B = byte_1BB358 + 3;

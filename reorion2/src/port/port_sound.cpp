@@ -46,18 +46,6 @@ void Shutdown()
     g_initialized = false;
 }
 
-void PlaySample(const uint8_t* pcmData, uint32_t lengthBytes, uint32_t sampleRateHz)
-{
-    // DECOMP_TODO: puvodni format vzorku (bitova hloubka, mono/stereo,
-    // pripadne u-law/kompresni format pouzity ve hre) zjistime az z
-    // konkretnich prevadenych funkci - ted jen predpokladame 8bit mono PCM,
-    // coz byl nejcastejsi format Sound Blaster efektu v teto ere.
-    if (!g_initialized || !pcmData || lengthBytes == 0)
-        return;
-    (void)sampleRateHz;
-    SDL_PutAudioStreamData(g_stream, pcmData, static_cast<int>(lengthBytes));
-}
-
 // Prehravani streamovaneho audia (audio stopa SMK videa). Format se muze
 // lisit od toho, s jakym byl stream otevren pri Init(), takze se pri prvni
 // davce (nebo pri zmene) zarizeni znovu otevre.
@@ -146,15 +134,6 @@ int QueuedBytes()
     int q = SDL_GetAudioStreamQueued(g_stream);
     // wave 183: queue depth drives the game mixer and the video waits
     return (int)PortRec_Value(PORTREC_AUDIOQ, (uint32_t)(q > 0 ? q : 0));
-}
-
-void WriteOplRegister(uint8_t reg, uint8_t value)
-{
-    // DECOMP_TODO: zatim jen zaslepka - hudebni OPL emulace (napr. napojeni
-    // na Nuked-OPL3, stejne jako pouziva dosbox-x) pribude az narazime na
-    // konkretni funkce, ktere s temito registry pracuji.
-    (void)reg;
-    (void)value;
 }
 
 } // namespace Port::Sound

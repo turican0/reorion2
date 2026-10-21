@@ -5813,7 +5813,7 @@ char sub_15C730()
 
 
 //----- (0015C850) --------------------------------------------------------
-// PORT (wave 24): another `DECOMP_TODO("inline asm")` stub around a missed
+// PORT (wave 24): another empty "inline asm" stub around a missed
 // inline `int 21h` (DOS AH=3Dh, OPEN DISK FILE WITH HANDLE) - it never
 // actually opened anything, just returned a bit-manipulated garbage "handle"
 // built from its own arguments. Callers (sub_14BC40, the Smacker-style intro
@@ -5838,7 +5838,7 @@ int sub_15C850( int a1, int a2, int a3, int a4)
 
 //----- (0015C8A9) --------------------------------------------------------
 // PORT (wave 23c): the decompiler could not follow the inline `int 21h`
-// (DOS AH=3Fh, READ FROM FILE WITH HANDLE) and left a DECOMP_TODO stub that
+// (DOS AH=3Fh, READ FROM FILE WITH HANDLE) and left an empty stub that
 // never actually read anything - every caller of sub_14CD50/sub_14BC40 (the
 // Smacker-style intro cinematic loader) silently got zero bytes back, so the
 // "SMK2" header magic check always failed and the intro animation spun

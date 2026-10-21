@@ -8978,7 +8978,7 @@ int sub_9241D(void)
 
 //----- (00092457) --------------------------------------------------------
 /* vlna 89e: VRACI sirku popisku hvezdy (do te doby se misto ni pouzivala 0,
-   viz TODO u sub_922C2). Dve chyby naraz:
+   viz sub_922C2). Dve chyby naraz:
    - `enter 2Ch, 0 / push eax` - ulozene EAX lezi na [ebp-30h] = var_30 = v5,
      tedy SPILLNUTY registrovy argument (cislo hvezdy), ktery IDA nechala
      neinicializovany (`variable 'v5' is possibly undefined`);

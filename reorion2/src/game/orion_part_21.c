@@ -811,8 +811,6 @@ int sub_13FBC8(int a1, int a2, _WORD *a3, _WORD *a4)
   // (PortSound_CreateDigDriver) nema kodovy obraz, takze `sub_15541F` cetla
   // z null+8 a padalo to. Prehravani obstarava primo Port::Sound (PCM se
   // posila ze `sub_14B620`), takze tady staci tiche "nic se nestalo".
-  // DECOMP_TODO: az bude potreba emulovat konkretni sluzbu driveru
-  // (napr. 1025 = start prehravani), odbocit tady podle `a2`.
   {
     static unsigned n = 0;
     if ( ++n <= 8 )
@@ -1919,16 +1917,17 @@ int sub_141A76(_DWORD *a1)
 
 
 //----- (00141B5B) --------------------------------------------------------
-void sub_141B5B(int *a1, int a2, int a3, int a4)
+int sub_141B5B(int *a1, int a2, int a3, int a4)
 {
   int v4; // edx
+  int r;
 
   v4 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v4 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_load_sample_buffer(0x%X,%u,0x%X,%u)\n", a1, a2, a3, a4);
-  sub_157B00(a1, a2, a3, a4);
+  r = sub_157B00(a1, a2, a3, a4);
   --dword_1C0E40;
-  return;   /* wave 184: 13FB37 - shared AIL API epilogue */
+  return r;   /* wave 184: 13FB37 - shared AIL API epilogue, eax kept */
 }
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;

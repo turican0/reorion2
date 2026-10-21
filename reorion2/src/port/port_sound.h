@@ -12,16 +12,6 @@ namespace Port::Sound {
 bool Init();
 void Shutdown();
 
-// Nahrazuje puvodni prehravani digitalizovaneho PCM efektu (v dekompilaci
-// typicky videt jako zapisy do DMA bufferu / volani nejasnych sub_* funkci
-// kolem "Sound Blaster" retezcu). Az takove funkce najdeme, prepojime je
-// sem misto primeho portovani DOS driveru.
-void PlaySample(const uint8_t* pcmData, uint32_t lengthBytes, uint32_t sampleRateHz);
-
-// Nahrazuje OPL2/OPL3 (AdLib/Sound Blaster FM) - zapis registru pro hudbu.
-// DECOMP_TODO: potreba az najdeme funkce volajici port 388h/389h.
-void WriteOplRegister(uint8_t reg, uint8_t value);
-
 // Streamovane audio (audio stopa SMK videa) - viz PortSound_FeedStream.
 void FeedStream(const uint8_t* pcm, uint32_t bytes, int milesSampleType, int rateHz);
 

@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 namespace Port::File {
 
 // Tabulka otevrenych souboru - PortFile_Open vraci INDEX+1 do tohoto pole
-// (0 = neplatny handle) misto skutecneho FILE*, viz DECOMP_TODO v
+// (0 = neplatny handle) misto skutecneho FILE*, viz
 // port_file.h (herni kod uklada handle do 32bit int/_DWORD promennych,
 // realny ukazatel na x64 by se orizl). Soubor-scope (ne anonymous
 // namespace), aby byly dostupne i z extern "C" bloku nize v tomto souboru.
@@ -374,7 +374,7 @@ bool FindNext(DosDta* dta)
 } // namespace Port::File
 
 // ---------------------------------------------------------------------
-// C-linkage most - viz DECOMP_TODO v port_file.h. Handle 0 = neplatny
+// C-linkage most - viz port_file.h. Handle 0 = neplatny
 // (falsy, stejne jako puvodne NULL z fopen).
 extern "C" {
 

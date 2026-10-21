@@ -11,10 +11,8 @@
 //      na to, ze cely proces skonci a OS/DOS vezme pamet zpet - to uz
 //      v modernim behovem prostredi nechceme).
 //
-// DECOMP_TODO: az narazime na konkretni volani PoolAlloc_110B89 (a jeho
-// protejsky pro uvolneni), presmerujeme je sem misto puvodni zonove logiky.
-// Zatim je tahle vrstva nezavisla a pripravena k pouziti pro NOVY kod
-// (napr. port_vga/port_sound bufery).
+// PoolAlloc_110B89 stays ported as in the original (orion_part_18.c); the
+// game's malloc/calloc/realloc/free come here via decomp_compat.h.
 #ifndef PORT_MEMORY_H
 #define PORT_MEMORY_H
 

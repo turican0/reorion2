@@ -1112,12 +1112,6 @@ int sub_103915(int a1, int x, int y, int str, int w)
   return sub_10370A((int16_t)x, (int16_t)y, str, (int16_t)w, (int16_t)a1, 1, 0);
 }
 
-// Dokud nejsou u dalsich volajicich dohledane registrove argumenty, volaji
-// sub_103915 pres tohle makro: retezec = 0, takze sub_10370A hned vyskoci
-// (`... || !a3) return result;`) a chovani je presne stejne jako u puvodniho
-// DECOMP_TODO stubu - tedy nekresli se nic. Seznam mist a jejich asm kontext
-// je v PROGRESS.md (vlna 73).
-
 
 //----- (00103933) --------------------------------------------------------
 /* wave 184: from asm (Hex-Rays failed) - sub_103915 with the second stack argument

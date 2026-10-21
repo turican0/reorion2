@@ -2705,8 +2705,7 @@ PoolMemType *PoolRawAlloc_110DFE(int a1)
 // 16-zarovnane bloky, takze prevod adresa>>4 a zpet 16*(addr>>4), ktery
 // volajici delaji, funguje. POZOR: 16bit "segment" (word_1B0700 v
 // sub_113E08) se pri adresach nad 1 MiB orizne - smi se pouzivat jen
-// pro real-mode sluzby, ktere v portu stejne neexistuji (DECOMP_TODO:
-// az na ne narazime, presmerovat na port vrstvu).
+// pro real-mode sluzby, ktere v portu neexistuji.
 // Puvodni dekompilovane telo (pro srovnani):
 //   v4 = (a1 & 0xF) ? (a1 >> 4) + 1 : a1 >> 4;  // bajty -> paragrafy
 //   if ( v4 > 0xFFFF ) return 0;                 // DOS blok max ~1 MiB
@@ -4292,7 +4291,7 @@ void sub_1131BB(int a1)
 int g_ailSnapshot[17];
 int g_ailSnapshotValid;
 
-void sub_1131F0(int a1, int a2)
+int sub_1131F0(int a1, int a2)
 {
   /* DOCASNA SONDA (vlna 107): kontrola invariantu po fazich (recept z vlny 87).
      Handle 0x01010101 v `dword_1B0670` nevznika pri inicializaci (zmereno),
@@ -4335,6 +4334,7 @@ void sub_1131F0(int a1, int a2)
   int v9; // [esp+14h] [ebp-Ch]
   int v10; // [esp+18h] [ebp-8h]
   bool v11; // [esp+1Ch] [ebp-4h]
+  int r = a1;   /* eax: untouched when the sound is off (113205) */
 
   if ( dword_184380 )
   {
@@ -4356,6 +4356,7 @@ void sub_1131F0(int a1, int a2)
       if ( (n++ % 200) == 0 )
         PortDebug_Checkpoint("hudba.obsluha_437_42B",
                              ((dword_184437 != 0) << 16) | (dword_18442B != 0)); }
+    r = 15;   /* 11321D: eax = last loop index */
     if ( dword_184437 && dword_18442B )
     {
       if ( dword_1843AB )
@@ -4381,6 +4382,7 @@ void sub_1131F0(int a1, int a2)
       v11 = v2 == 2;
       v3 = sub_141A76((_DWORD *)dword_18442B);
       v10 = v3;
+      r = v3;   /* 11333A: eax = -1 when no buffer is done */
       if ( v3 == -1 )
       {
         if ( v11 )
@@ -4388,7 +4390,7 @@ void sub_1131F0(int a1, int a2)
           v8 = sub_113B56();
           sub_1410E0(dword_18442B);
           dword_184437 = 0;
-          fclose(dword_18442F);
+          r = fclose(dword_18442F);   /* 113405 */
           dword_18442F = 0;
           dword_18442B = 0;
           dword_184447 = 0;
@@ -4396,9 +4398,9 @@ void sub_1131F0(int a1, int a2)
           if ( dword_18443B )
           {
             if ( dword_184443 >= 1 )
-              sub_113765(dword_184443, v8);
+              r = sub_113765(dword_184443, v8);   /* 113458 */
             else
-              sub_113475(byte_1AE054, a2);
+              r = sub_113475(byte_1AE054, a2);   /* 113449 */
             if ( dword_18443B > 0 )
               --dword_18443B;
           }
@@ -4421,10 +4423,11 @@ void sub_1131F0(int a1, int a2)
             PortDebug_Checkpoint("hudba.zarad_index", v10);
             PortDebug_Checkpoint("hudba.zarad_buffer", dword_1AE0A4[v10 & 1]);
             PortDebug_Checkpoint("hudba.zarad_delka", v9); } }
-        sub_141B5B((int *)dword_18442B, v10, dword_1AE0A4[v10], v9);
+        r = sub_141B5B((int *)dword_18442B, v10, dword_1AE0A4[v10], v9);   /* 1133C9 */
       }
     }
   }
+  return r;
 }
 // 113765: using guessed type int sub_113765(_DWORD, _DWORD);
 // 12697A: using guessed type int fclose(_DWORD);
