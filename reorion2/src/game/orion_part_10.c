@@ -803,7 +803,7 @@ _BOOL1 sub_A0226(int16_t *a1, void (*a2)(_DWORD))
     if ( (int)((HIDWORD(v7) ^ v7) - HIDWORD(v7)) > a1[3] / 2 )
     {
       a1[3] = sub_A00F1(a1);
-      v9 = sub_A0125(a1);   /* A02D4 */
+      sub_A0125(a1);
       a1[6] = sub_A0040((int)a1);
 LABEL_8:
       v8 = *a1;
@@ -11524,7 +11524,7 @@ LABEL_27:
         word_1998FC = -1;
         goto LABEL_103;
       }
-      v37 = sub_128BE7();   /* AE5F9 */
+      sub_128BE7();
       sub_12C2A0();
       sub_124D41();
       sub_128AB6(0, 0, 639, 350);

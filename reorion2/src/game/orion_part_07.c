@@ -8396,7 +8396,7 @@ void sub_831B1(int a1, int a2, int a3, int16_t *a4)
       {
         sub_C5B94(0);
         byte_19BFC4 = 0;
-        v9 = sub_84E9D();   /* 83249 */
+        sub_84E9D();
       }
       else
       {
@@ -12172,7 +12172,7 @@ void sub_87BAE()
   v91 = (int16_t)v102;
   sub_8FDA1((int)v76, (int)v81, v101, v8, 4, v102, 1);
   v10 = sub_8F64C();
-  v22 = sub_8F645();   /* 88192 */
+  sub_8F645();
   v86 = v10;
   sub_8F6F8(v10, 75, 77, (char *)&v79);
   sub_8F6F8(v86, 14, v112, v81);

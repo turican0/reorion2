@@ -5860,7 +5860,7 @@ void sub_8F1C4(void (*a1)(int, int), _BYTE *a2, int a3)
   sub_1205E6(a3, 0, 255);
   sub_1318D4(0, 255);
   sub_131F7B();
-  v4 = sub_132C80(100);   /* 8F25B */
+  sub_132C80(100);
   sub_123E6C((int)unk_17CF00, 1);
   v3 = sub_124D41();
   a1(v3, 1);
@@ -9519,7 +9519,7 @@ int64_t sub_92CF8(int a1, int a2)
 
 
 //----- (00092D72) --------------------------------------------------------
-void sub_92D72( int a1)
+int sub_92D72( int a1)
 {
   uint16_t v2; // ax
   int16_t *v3; // eax
@@ -9557,7 +9557,7 @@ void sub_92D72( int a1)
   byte_19C543 = 0;
   sub_1191CA((int)sub_93550, 1);
   byte_199F11 = 1;
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x94801 je epilog funkce */
+  return (int)(intptr_t)v7;   /* wave 184: 92E64 mov eax, ebx (ebx = lea [var_198], the sprintf buffer) */
 }
 // 92E6D: control flows out of bounds to 94801
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);

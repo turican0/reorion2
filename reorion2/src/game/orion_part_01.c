@@ -383,7 +383,7 @@ void sub_1049B(int a1, int a2, int a3, int a4, int a5, char *a6)
         byte_199F19 = 20;
         break;
       case 21:
-        sub_FB7E5((int16_t *)a6);
+        LOBYTE(a1) = sub_FB7E5((int16_t *)a6);   /* 10658 test al, al */
         if ( (_BYTE)a1 )
           word_199A08 = 39;
         byte_199F19 = 21;

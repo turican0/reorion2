@@ -11463,7 +11463,7 @@ void sub_4752F( int a1, int a2, int a3)
   v26 = a2;
   if ( sub_4B0D3(a1, 33) || sub_4B0D3(a1, 22) )
   {
-    v18 = sub_38876((int16_t)a1);   /* 4783E */
+    v5 = sub_38876((int16_t)a1);   /* 4756E test ax, ax */
     if ( !v5 && a2 < 20 )
       v26 = 20;
   }
@@ -11568,7 +11568,6 @@ void sub_4752F( int a1, int a2, int a3)
   }
   while ( v7 < 81 );
 }
-// 4756E: variable 'v5' is possibly undefined
 // 18C9A8: using guessed type int16_t word_18C9A8[4979];
 // 192864: using guessed type int dword_192864;
 

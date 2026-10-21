@@ -3932,7 +3932,7 @@ int16_t sub_C058A(int a1, int16_t *a2)
     byte_182ACA = 1;
     sub_1191CA((int)sub_BED21, 1);
     v2 = sub_128C32(0, 0, 639, 479, 0);   /* C07F1 */
-    v16 = sub_BED21(v2, v3);   /* C0840 */
+    sub_BED21(v2, v3);
     sub_C5C44();
     sub_124C08();
     v15 = 1;

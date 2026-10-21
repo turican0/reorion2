@@ -2802,7 +2802,7 @@ void sub_6767F(int a1, int a2)
           }
           if ( (_WORD)v42 )
           {
-            v8 = sub_8F64C();   /* 67861 */
+            sub_8F64C();
             sprintf(v25, "%d", v31);
             v17 = i;
             sprintf(v24, "%d", (int16_t)v30);
@@ -7877,7 +7877,7 @@ void sub_6D29C()
           {
             if ( 8 - (uint8_t)byte_199EF3 > 1 )
               v83 = (125 - (uint8_t)byte_199EF3 * (int16_t)v85) / 2 - 14 + (int16_t)v83;
-            sub_6E42E();
+            v51 = sub_6E42E();   /* 6DE9D test al, al */
             if ( v51 )
             {
               sub_120BB5(2, (int)v70);
@@ -7925,7 +7925,6 @@ void sub_6D29C()
   }
 }
 // 6E078: control flows out of bounds to 6C081
-// 6DE9F: variable 'v51' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 1791EB: using guessed type char byte_1791EB;
@@ -8199,7 +8198,7 @@ int sub_6E3D3(int a1, int a2, int a3)
 
 
 //----- (0006E42E) --------------------------------------------------------
-void sub_6E42E()
+char sub_6E42E()
 {
   int16_t v0; // di
   int16_t i; // si
@@ -8240,7 +8239,7 @@ void sub_6E42E()
       }
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6A3DE je epilog funkce */
+  return v0 > 0;   /* wave 184: 6E566 test di, di; setnle al */
 }
 // 6E56C: control flows out of bounds to 6A3DE
 // 17E07D: using guessed type int16_t word_17E07D;

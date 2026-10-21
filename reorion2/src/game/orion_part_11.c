@@ -2819,7 +2819,7 @@ void sub_B4041( int a1, int16_t *a2)
   sub_11C2F0();
   if ( word_1828AA[0] != -1 )
     sub_C0AF4();
-  v6 = sub_120E8C(3);   /* B4145 */
+  sub_120E8C(3);
   sub_1196F7();
   sub_119281();
   sub_124E36();
@@ -5102,7 +5102,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   sub_1191CA((int)sub_B7289, 1);
   sub_CDAED((int)&unk_182953, 3);
   sub_128C32(0, 0, 639, 479, 0);
-  v8 = sub_B7289();   /* B765F */
+  sub_B7289();
   sub_132C80(100);
   v7 = sub_131922(0, 255);
   sub_1077D(v7, 0, 0, 0);

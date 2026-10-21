@@ -11451,7 +11451,7 @@ void sub_F3AE4(int16_t *a1)
     }
   }
   sub_11C2F0();
-  v3 = sub_117174(3);   /* F3B1E */
+  sub_117174(3);
   sub_119281();
   sub_1113CC(dword_192ED4, v2);
   dword_192680 = 0;

@@ -1911,7 +1911,7 @@ LABEL_53:
         word_19990C = word_19990A == 0;
       if ( word_1999D8 > -1 && word_1999D8 < word_199A02 )
       {
-        sub_75EE8(word_192248[word_1999D8]);
+        v33 = sub_75EE8(word_192248[word_1999D8]);   /* 74382 test ax, ax */
         if ( !v33 )
           sub_74502();
       }
@@ -1971,7 +1971,6 @@ LABEL_18:
   goto LABEL_19;
 }
 // 744C8: control flows out of bounds to 734A3
-// 74385: variable 'v33' is possibly undefined
 // 772BF: using guessed type int sub_772BF(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182ACE: using guessed type char byte_182ACE;
@@ -2066,7 +2065,7 @@ void sub_74502()
     if ( v4 == word_19999C && v2 == v4
       || (uint16_t)sub_77FE9(word_192248[v3]) != word_19999C && v2 != word_19999C )
     {
-      sub_75EE8(word_192248[v3]);
+      v5 = sub_75EE8(word_192248[v3]);   /* 74586 test ax, ax */
       if ( v5 > 0 )
       {
         v1 = 1;
@@ -2079,7 +2078,6 @@ void sub_74502()
   }
   while ( !v1 );
 }
-// 74589: variable 'v5' is possibly undefined
 // 192248: using guessed type int16_t word_192248[500];
 // 19999C: using guessed type int16_t word_19999C;
 // 1999D8: using guessed type int16_t word_1999D8;
@@ -2114,7 +2112,7 @@ void sub_745A5(int a1, int a2)
     if ( v7 == word_19999C && v5 == v7
       || (uint16_t)sub_77FE9(word_192248[(int16_t)v6]) != word_19999C && v5 != word_19999C )
     {
-      sub_75EE8(word_192248[(int16_t)v6]);
+      v8 = sub_75EE8(word_192248[(int16_t)v6]);   /* 7462B test ax, ax */
       if ( v8 > 0 )
       {
         v3 = 1;
@@ -2127,7 +2125,6 @@ void sub_745A5(int a1, int a2)
   }
   while ( !v3 );
 }
-// 7462E: variable 'v8' is possibly undefined
 // 192248: using guessed type int16_t word_192248[500];
 // 19999C: using guessed type int16_t word_19999C;
 // 1999D8: using guessed type int16_t word_1999D8;
@@ -3471,7 +3468,7 @@ LABEL_14:
 
 
 //----- (00075EE8) --------------------------------------------------------
-void sub_75EE8( int a1)
+int sub_75EE8( int a1)
 {
   int16_t v2; // cx
   int16_t v3; // bx
@@ -3487,8 +3484,18 @@ void sub_75EE8( int a1)
   v3 = sub_78BCF(a1);
   v4 = sub_77FE9(a1);
   sub_A432F(v2, v3, v4, &v9, &v6, &v8, &v7, (int)v5);
-  sub_75FE2();
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7593D je epilog funkce */
+  /* wave 184: 75F32 - esi by the sub_75FE2 mode, then 7593B mov eax, esi */
+  switch ( (uint16_t)sub_75FE2() )
+  {
+    case 0:
+      return v9;
+    case 1:
+      return v6 + v7 + v8;
+    case 2:
+      return v9 - (v6 + v7 + v8);
+    default:
+      return 0;
+  }
 }
 // 7593B: control flows out of bounds to 7593D
 

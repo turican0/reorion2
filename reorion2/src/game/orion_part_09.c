@@ -3983,7 +3983,7 @@ int16_t sub_98062( int a1)
   {
     if ( v3 <= *(_DWORD *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 50) )
     {
-      sub_92D72(v1);
+      v5 = sub_92D72(v1);   /* 980C7 mov cl, al */
       return v5;
     }
     else
@@ -3997,7 +3997,6 @@ int16_t sub_98062( int a1)
   }
   return v4;
 }
-// 980C7: variable 'v5' is possibly undefined
 // 1930DC: using guessed type int dword_1930DC;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19999C: using guessed type int16_t word_19999C;

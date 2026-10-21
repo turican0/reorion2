@@ -2913,7 +2913,7 @@ char *sub_2720F( int a1, int a2)
   if ( !result[1623] && result[1575] < 4 )
   {
     v21 = sub_26FBA((int16_t)a2, a1);   /* wave 184: 27255 eax = a2, edx = a1 */
-    if ( v4 < 10 )
+    if ( v21 < 10 )   /* 2725D cmp eax, 0Ah */
       v21 = 10;
     sub_FD219(a1);
     v5 = 0;
@@ -2963,7 +2963,6 @@ char *sub_2720F( int a1, int a2)
   }
   return result;
 }
-// 2725A: variable 'v4' is possibly undefined
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19ACF8: using guessed type int dword_19ACF8;
 
@@ -12158,7 +12157,7 @@ void sub_34AB6()
   if ( word_1998F8 )
   {
     if ( *(int16_t *)(313 * word_1998F8 + dword_192864 + 61) > 0
-      || (sub_4B0D3(word_1998F8, 33) || sub_4B0D3(word_1998F8, 22)) && (sub_38876((int16_t)word_1998F8), !v0) )
+      || (sub_4B0D3(word_1998F8, 33) || sub_4B0D3(word_1998F8, 22)) && !(int16_t)sub_38876((int16_t)word_1998F8) )   /* 34B1E test ax, ax */
     {
       v1 = *(_BYTE *)(dword_192864 + 313 * word_1998F8 + 37);
       if ( v1 )
@@ -12200,7 +12199,6 @@ void sub_34AB6()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x33AFE je epilog funkce */
 }
 // 34C3D: control flows out of bounds to 33AFE
-// 34B21: variable 'v0' is possibly undefined
 // 34BCB: v7 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 34BCD: v8 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 18C9A8: using guessed type int16_t word_18C9A8[4979];

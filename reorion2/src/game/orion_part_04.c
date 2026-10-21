@@ -8950,9 +8950,10 @@ LABEL_58:
               // ktera vraci zpet na vyber rasy - a protoze `sub_5D03C` pred
               // odchodem stmiva paletu (`sub_123E6C`) a tahle vetev uz zadny
               // fade-in nedela, byla obrazovka pokazde tmavsi.
-              v6 += sub_5D03C(v53, 0, v17);
+              v19 = sub_5D03C(v53, 0, v17);
+              v6 += v19;
               if ( (_WORD)v6 != 2 )
-                sub_5BC74(v19, 0);
+                sub_5BC74(v19, 0);   /* wave 184: 5C7E8 - eax is still the sub_5D03C result */
             }
           }
           while ( (_WORD)v6 == 1 );
@@ -9079,7 +9080,7 @@ LABEL_59:
             word_19B858 = v62[0];
             fclose(v5);
             v29 = sub_5A3BC(v47, 15, 1, (int)v5);   /* vlna 70 */
-            if ( v38 == 1 )
+            if ( (int16_t)v29 == 1 )   /* wave 184: 5CD0E cmp ax, 1 */
             {
               v12 = v62[0];
               v58 = 1;
@@ -9188,8 +9189,6 @@ LABEL_59:
 #undef v51   /* vlna 73 */
 #undef v52
 // 5C209: control flows out of bounds to 5BD91
-// 5C7E0: variable 'v19' is possibly undefined
-// 5CD12: variable 'v38' is possibly undefined
 // 12697A: using guessed type int fclose(_DWORD);
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
 // 192630: using guessed type int dword_192630[];
@@ -9434,7 +9433,7 @@ int sub_5D2BB(char *a1, int a2, int16_t *a3)
     v7 = v13;
   strcpy(a1, v7);
   sub_1113CC(dword_192ED4, v8);
-  v3 = sub_11C2F0();   /* 5D2CB */
+  sub_11C2F0();
   return v8;
 }
 // 192ED4: using guessed type int dword_192ED4;
@@ -14634,7 +14633,7 @@ void sub_638A9()
   while ( (int16_t)v0 < word_199998 )
   {
     v1 = (int16_t)v21;
-    sub_63CA0(v0);
+    v2 = sub_63CA0(v0);   /* 638E1 */
     if ( v2 > v1 )
     {
       v21 = v2;
@@ -14702,7 +14701,7 @@ void sub_638A9()
               ++v17[k];
               *(_BYTE *)(113 * *(uint8_t *)(v13 + 2) + dword_19306C + 40) = v25[0];
             }
-            sub_63CA0(k);
+            v14 = sub_63CA0(k);   /* 63AAE */
             if ( v14 >= 90 * (int16_t)v21 / 100 )
               v27 = 1;
           }
@@ -14710,7 +14709,7 @@ void sub_638A9()
           {
             v26 = sub_63B8F(m, (int)v20);
             sub_8C6C0(*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * m + 2), m);
-            sub_63CA0(k);
+            v16 = sub_63CA0(k);   /* 63AFC */
             v19 = 100;
             if ( v16 >= 90 * (int16_t)v21 / 100 )
               v27 = 1;
@@ -14722,9 +14721,6 @@ void sub_638A9()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x62C69 je epilog funkce */
 }
 // 63B55: control flows out of bounds to 62C69
-// 638EA: variable 'v2' is possibly undefined
-// 63AC4: variable 'v14' is possibly undefined
-// 63B15: variable 'v16' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 182247: using guessed type char byte_182247;
 // 19306C: using guessed type int dword_19306C;
@@ -14801,7 +14797,7 @@ char sub_63B8F( int a1, int a2)
 
 
 //----- (00063CA0) --------------------------------------------------------
-void sub_63CA0( int a1)
+int sub_63CA0( int a1)
 {
   int16_t i; // si
   int v3; // [esp+0h] [ebp-10h] BYREF
@@ -14818,7 +14814,8 @@ void sub_63CA0( int a1)
       v4 += v3;
     }
   }
-  return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x62C69 je epilog funkce */
+  /* wave 184: 63CEA - 10 * sum / [rec+4], rec = dword_193888 + 10A0h * a1 */
+  return 10 * v4 / *(int16_t *)(dword_19B888 + 4256 * (int16_t)a1 + 4);
 }
 // 63D05: control flows out of bounds to 62C69
 // 1999A2: using guessed type int16_t word_1999A2;

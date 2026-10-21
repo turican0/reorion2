@@ -5185,7 +5185,7 @@ LABEL_41:
 
 
 //----- (000FB7E5) --------------------------------------------------------
-void sub_FB7E5(int16_t *a1)
+char sub_FB7E5(int16_t *a1)
 {
   int v1; // eax
   int v2; // eax
@@ -5469,6 +5469,7 @@ void sub_FB7E5(int16_t *a1)
           sub_1279F(0);
           byte_19C1A0 = 1;
           sub_8A4C4();
+          return 1;   /* wave 184: FBE63 mov al, 1 */
         }
       }
       else
@@ -5482,7 +5483,7 @@ void sub_FB7E5(int16_t *a1)
         byte_1AB09E = 0;
       }
 LABEL_78:
-      return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xFAC7F je epilog funkce */
+      return 0;   /* wave 184: FB85C xor al, al / FB957 xor dl, dl */
     }
     byte_1AB03F = 0;
     sub_77423(dword_1AB0E8);

@@ -878,7 +878,7 @@ LABEL_43:
           WORD2(v30) = *(_WORD *)((uint32_t)v30 + 2 * HIDWORD(v30) + 382);   /* wave 182: eax only */
           if ( WORD2(v30) )
           {
-            v38 = sub_10EE6F(v30);   /* 10E374 */
+            sub_10EE6F(v30);
             HIDWORD(v30) = WORD2(v30);
             sub_10F62F(281, SWORD2(v30));
             goto LABEL_19;
@@ -1293,7 +1293,7 @@ LABEL_12:
   sub_12A478(v52 + 187, 434, (int)v43);
   sub_12C2A0();
   sub_1077D(0, 434, (int)v37, v32);
-  v34 = sub_12C2C6(4);   /* 10EB6C */
+  sub_12C2C6(4);
   sub_107BA(&v48);
   sub_10FEC1((int)&unk_1AD6A0);
   sub_1113CC(dword_192ED4, 434);
@@ -3645,7 +3645,7 @@ LABEL_21:
         sub_14129D(dword_1B0670[v7], (uint8_t)byte_1843A4);
         sub_141313(dword_1B0670[v7], (uint8_t)byte_1843A5);
         sub_141F1F(dword_1B0670[v7], (int)sub_1119BE);
-        v2 = sub_140E69((_DWORD *)dword_1B0670[v7], dword_184394 + dword_1AE0AC[10 * i], -1);   /* 112605 */
+        sub_140E69((_DWORD *)dword_1B0670[v7], dword_184394 + dword_1AE0AC[10 * i], -1);
         sub_141073((_DWORD *)dword_1B0670[v7]);
         ++dword_184457;
         PortDebug_Checkpoint("zvuk.112399_spusteno_z_cache", a1);
