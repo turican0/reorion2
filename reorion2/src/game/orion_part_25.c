@@ -998,9 +998,6 @@ LABEL_45:
     JUMPOUT(0x1676C0);
   return sub_164920(dword_18A6A0);
 }
-// 164CAE: control flows out of bounds to 1675C0
-// 164CFA: control flows out of bounds to 1676C0
-// 164C7A: variable 'v44' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;
 // 18A660: using guessed type int dword_18A660;

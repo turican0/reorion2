@@ -6171,8 +6171,7 @@ extern char sub_FA38F();
 extern _BOOL1 sub_FA3D1();
 // plna signatura: char sub_FA3DC();
 extern char sub_FA3DC();
-// plna signatura: void sub_FA3F6( int a1);
-extern void sub_FA3F6();
+int sub_FA3F6(int a1);
 // plna signatura: char sub_FA521( int a1);
 extern char sub_FA521();
 // plna signatura: _BOOL1 sub_FA54B();
@@ -8193,8 +8192,7 @@ extern void sub_141389();
 // plna signatura: int sub_1413FF(int a1); // PORT (vlna 26): vraci stav samplu
 extern int sub_1413FF();
 int sub_1414E4(int a1);
-// plna signatura: void sub_1415D5(int a1);
-extern int sub_1415D5();   /* vlna 106: vraci esi (hlasitost samplu) */
+int sub_1415D5(int a1);
 int sub_1416BA(int a1);
 int sub_14179F(int a1);
 // plna signatura: void sub_141884(int a1, int a2, void *a3);
@@ -13175,7 +13173,6 @@ char sub_FA2C5();
 char sub_FA38F();
 _BOOL1 sub_FA3D1();
 char sub_FA3DC();
-void sub_FA3F6(char a1);
 // char sub_FA521(char a1);
 _BOOL1 sub_FA54B();
 char sub_FA556();
@@ -14222,7 +14219,6 @@ void sub_14129D(int a1, int a2);
 void sub_141313(int a1, int a2);
 void sub_141389(int a1, int a2);
 int sub_1413FF(int a1); // PORT (vlna 26): vraci stav samplu
-void sub_1415D5(int a1);
 void sub_141884(int a1, int a2, void *a3);
 int sub_14197D(_DWORD *a1, int a2, int a3); // PORT (vlna 26): min. velikost bufferu
 int sub_141A76(_DWORD *a1); // PORT (vlna 26): vraci pripraveny buffer

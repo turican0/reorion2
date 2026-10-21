@@ -3744,7 +3744,6 @@ void sub_132869(int a1, int a2, int a3, int a4)
       sub_14B200(dword_1845F0);
   }
 }
-// 1328E0: variable 'v4' is possibly undefined
 // 1845F0: using guessed type int dword_1845F0;
 // 1845F4: using guessed type int dword_1845F4;
 // 1BB904: using guessed type int dword_1BB904;
@@ -6711,7 +6710,6 @@ int sub_139153(int a1, int a2, int a3, unsigned int a4)
   }
 }
 // 139153: could not find valid save-restore pair for ebx
-// 13919B: variable 'a1' is possibly undefined
 // 18464C: using guessed type int dword_18464C;
 // 1849A0: using guessed type int dword_1849A0;
 // 1BD150: using guessed type int dword_1BD150;

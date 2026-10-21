@@ -3354,7 +3354,6 @@ int sub_121DEB(int a1, int a2, unsigned int a3)
   WORD2(v3) = word_1B3EA6;
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);
 }
-// 121E54: variable 'v5' is possibly undefined
 // 184532: using guessed type int dword_184532;
 // 1B3E74: using guessed type int dword_1B3E74;
 // 1B3EA0: using guessed type int16_t word_1B3EA0;
@@ -3381,7 +3380,6 @@ int sub_121E85(int a1, int a2, unsigned int a3)
   WORD2(v3) = word_1B3EA6;
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);
 }
-// 121EEE: variable 'v5' is possibly undefined
 // 184532: using guessed type int dword_184532;
 // 1B3E74: using guessed type int dword_1B3E74;
 // 1B3EA0: using guessed type int16_t word_1B3EA0;

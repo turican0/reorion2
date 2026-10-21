@@ -295,7 +295,6 @@ int sub_14861D( int a1, int a2, char *a3)
   return result;
 }
 // 14861D: could not find valid save-restore pair for ebx
-// 1486B2: variable 'v6' is possibly undefined
 // 1BB904: using guessed type int dword_1BB904;
 // 1BBA4A: using guessed type int dword_1BBA4A;
 // 1BBA4E: using guessed type int dword_1BBA4E;
@@ -1083,7 +1082,6 @@ unsigned int sub_149ED0(unsigned int *a1)
   }
   return v3 + a1[20];
 }
-// 149EE6: variable 'v1' is possibly undefined
 // 18A5AC: using guessed type int (*dword_18A5AC)(_DWORD);
 
 
@@ -4723,7 +4721,6 @@ LABEL_41:
   sub_14D1C9(v6, a1);
   goto LABEL_42;
 }
-// 14DBB1: control flows out of bounds to 14D5DB
 // 15C9DA: using guessed type int _FDFS(_DWORD, _DWORD, _DWORD);
 // 18A54C: using guessed type void (*off_18A54C)(void);
 
@@ -9165,7 +9162,6 @@ void sub_155149()
 {
   /* asm: retfw - DOS/BIOS level, not needed in the port (wave 184) */;
 }
-// 15514C: control flows out of bounds to 15514E
 
 
 //----- (00155159) --------------------------------------------------------
@@ -9400,7 +9396,6 @@ int32_t sub_155589(int a1, int32_t a2)
   sub_13F94E();
   return v4;
 }
-// 1555A5: variable 'v2' is possibly undefined
 // 1899AC: using guessed type int dword_1899AC[];
 
 

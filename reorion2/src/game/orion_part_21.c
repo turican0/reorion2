@@ -1740,8 +1740,6 @@ int sub_1415D5(int a1)
   }
   return volume;   /* vlna 106: tentyz epilog bez vypisu */
 }
-// 1416B5: control flows out of bounds to 1415C4
-// 14164A: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;

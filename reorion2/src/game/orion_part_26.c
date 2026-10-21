@@ -1737,9 +1737,6 @@ LABEL_45:
   sub_164920(dword_18A6A0);
   return SmkFrame_Done;
 }
-// 16673E: control flows out of bounds to 1675C0
-// 16678A: control flows out of bounds to 1676C0
-// 16671A: variable 'v42' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;
 // 18A660: using guessed type int dword_18A660;
@@ -3037,7 +3034,6 @@ void sub_1685E9(int a1)
   /* asm: iret - DOS/BIOS level, not needed in the port (wave 184) */;
 }
 // 168635: positive sp value 4 has been found
-// 168635: control flows out of bounds to 168636
 
 
 //----- (00169020) --------------------------------------------------------
@@ -3242,7 +3238,6 @@ void sub_16937A(char *a1)
   *(_WORD *)a1 = (dword_19306C[14] & 2) == 0 || a1 != (char *)&word_1998D4;
   JUMPOUT(0x11E68A);   /* skok zpet do sub_11CEF5, ktery hned za volanim vraci */
 }
-// 1693A5: control flows out of bounds to 11E68A
 
 
 //----- (001693B6) --------------------------------------------------------

@@ -97,7 +97,6 @@ void sub_D61E7(uint8_t *a1)
   sub_E1D59((char *)v2);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE8 je epilog funkce */
 }
-// D6310: control flows out of bounds to D5CE8
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA224: using guessed type int dword_1AA224;
 
@@ -125,7 +124,6 @@ int sub_D6315(int a1, int a2)
     return (int16_t)v2 - (int16_t)v3;
   return (*(_DWORD *)a1 & 0xF) - (*(_DWORD *)a2 & 0xF);
 }
-// D638A: control flows out of bounds to D61D2
 // 1AA224: using guessed type int dword_1AA224;
 
 
@@ -157,7 +155,6 @@ int sub_D63A6(int a1, int a2)
     return (int16_t)v3 - (int16_t)v6;
   return (*(_DWORD *)a1 & 0xF) - (*(_DWORD *)a2 & 0xF);
 }
-// D646A: control flows out of bounds to D61D6
 // 1AA224: using guessed type int dword_1AA224;
 
 
@@ -196,7 +193,6 @@ void sub_D648A(uint8_t *a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE7 je epilog funkce */
 }
-// D6516: control flows out of bounds to D5CE7
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
@@ -242,7 +238,6 @@ void sub_D652C(uint8_t *a1)
   sub_D648A(a1);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE7 je epilog funkce */
 }
-// D6646: control flows out of bounds to D5CE7
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA224: using guessed type int dword_1AA224;
 
@@ -386,7 +381,6 @@ LABEL_14:
     v16 = 1;
   }
 }
-// D677C: control flows out of bounds to D5CE7
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA21C: using guessed type int dword_1AA21C;
 // 1AA230: using guessed type int dword_1AA230;
@@ -470,7 +464,6 @@ int sub_D68CB(_DWORD *a1, _DWORD *a2)
   }
   return v6 - v7;
 }
-// D69EC: control flows out of bounds to D61D6
 // 1AA224: using guessed type int dword_1AA224;
 // 1AA228: using guessed type int dword_1AA228;
 
@@ -503,7 +496,6 @@ void sub_D6A00(uint8_t *a1)
     *((_WORD *)a1 + 4) = sub_D682A(a1, (_DWORD *)((uint8_t*)dword_192B18 + 361 * *a1 + 12 + 4 * a1[4]));
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE8 je epilog funkce */
 }
-// D6AC4: control flows out of bounds to D5CE8
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1AA224: using guessed type int dword_1AA224;
 // 1AA228: using guessed type int dword_1AA228;
@@ -631,7 +623,6 @@ void sub_D6AD4()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD5CE7 je epilog funkce */
 }
-// D6D7B: control flows out of bounds to D5CE7
 // 1399FF: using guessed type int memmove(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 199CB0: using guessed type char byte_199CB0;
@@ -950,7 +941,6 @@ void sub_D7171(int a1, int a2)
     }
   }
 }
-// D73CF: control flows out of bounds to D716B
 // 10000: using guessed type void sub_10000();
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -1230,7 +1220,6 @@ LABEL_11:
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
 }
-// D791E: control flows out of bounds to D775E
 // 1399FF: using guessed type int memmove(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -1371,7 +1360,6 @@ LABEL_22:
   }
   return result;
 }
-// D7B07: variable 'v16' is possibly undefined
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -1571,7 +1559,6 @@ int sub_D7D53( int a1, int a2)
     return ((v11 + 2) * v8 + v10 - 1) / (unsigned int)(2 * v8);
   return *(uint8_t *)(dword_197F9C + 129 * a1 + 16) + 1;   /* 0xD7F18 */
 }
-// D7F2F: control flows out of bounds to D775E
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 197F9C: using guessed type int dword_197F9C;
@@ -2120,7 +2107,6 @@ void sub_D8847(uint8_t *a1, uint8_t *a2)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD775E je epilog funkce */
 }
-// D8911: control flows out of bounds to D775E
 // 199998: using guessed type int16_t word_199998;
 // 1AA208: using guessed type int dword_1AA208;
 // 1AA214: using guessed type int dword_1AA214;
@@ -2372,7 +2358,6 @@ int sub_D8D11(int a1, int a2)
   v7 = (uint16_t *)off_183554;
   return (v7[360 * v3 + v6] * v5 + v7[360 * a2 + v6] * v4) / 6;
 }
-// D8DDC: control flows out of bounds to D775E
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
@@ -2984,7 +2969,6 @@ LABEL_21:
 #undef a25
 #undef a26
 }
-// D9701: control flows out of bounds to D87B1
 // D95BC: inconsistent variable size for '^7E0.16'
 // D95BF: inconsistent variable size for '^7E0.16'
 // D95CF: inconsistent variable size for '^7E0.16'
@@ -3472,7 +3456,6 @@ LABEL_20:
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD87B1 je epilog funkce */
 }
-// D9ABD: control flows out of bounds to D87B1
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F9C: using guessed type int dword_197F9C;
 // 1AA1C8: using guessed type int dword_1AA1C8;
@@ -4044,7 +4027,6 @@ LABEL_50:
   v60 = 1;
   goto LABEL_51;
 }
-// DA667: control flows out of bounds to DA478
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F9C: using guessed type int dword_197F9C;
@@ -4418,7 +4400,6 @@ LABEL_25:
     }
   }
 }
-// DAF16: control flows out of bounds to DA478
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -4567,7 +4548,6 @@ void sub_DAFD4()
 }
 #undef v13
 #undef v14
-// DB252: control flows out of bounds to DA478
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F9C: using guessed type int dword_197F9C;
@@ -4633,7 +4613,6 @@ void sub_DB257()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDA47F je epilog funkce */
 }
-// DB3E0: control flows out of bounds to DA47F
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -4681,7 +4660,6 @@ void sub_DB3E5(int a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDB3DF je epilog funkce */
 }
-// DB479: control flows out of bounds to DB3DF
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -4768,7 +4746,6 @@ void sub_DB47E(int a1, int a2, int16_t *a3)
   dword_1AA23C = 0;
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD8D0B je epilog funkce */
 }
-// DB654: control flows out of bounds to D8D0B
 // D97EE: using guessed type int64_t sub_D97EE(_DWORD, _DWORD);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -4803,7 +4780,6 @@ int sub_DB659(const void *pa, const void *pb)
     return r;
   return a[1] - b[1];
 }
-// DB6CD: control flows out of bounds to D775E
 
 
 //----- (000DB6D2) --------------------------------------------------------
@@ -5051,7 +5027,6 @@ void sub_DB8D8()
 #undef v16
 #undef v17
 }
-// DBB24: control flows out of bounds to DA478
 // DBAE9: bad sp value at call
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
@@ -5127,7 +5102,6 @@ void sub_DBB9F( int a1, int a2, int a3, int a4, int16_t *a5, _WORD *a6, _DWORD *
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD93CD je epilog funkce */
 }
-// DBC57: control flows out of bounds to D93CD
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199CB0: using guessed type char byte_199CB0;
 // 1AA1C8: using guessed type int dword_1AA1C8;
@@ -5192,7 +5166,6 @@ void sub_DBCC8(int a1, int a2, int a3, _DWORD *a4, _DWORD *a5)
 LABEL_8:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD99B2 je epilog funkce */
 }
-// DBDB3: control flows out of bounds to D99B2
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19999A: using guessed type int16_t word_19999A;
 // 1AA204: using guessed type int dword_1AA204;
@@ -5518,7 +5491,6 @@ int sub_DC323(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC34D: control flows out of bounds to DC31D
 // 17F63E: using guessed type int16_t word_17F63E;
 
 
@@ -5533,7 +5505,6 @@ int sub_DC34F(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC379: control flows out of bounds to DC31D
 // 17FDF2: using guessed type int16_t word_17FDF2[];
 
 
@@ -5548,7 +5519,6 @@ int sub_DC37B(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC3A5: control flows out of bounds to DC31D
 // 17FFE8: using guessed type int16_t word_17FFE8[];
 
 
@@ -5574,7 +5544,6 @@ int sub_DC3E3(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC411: control flows out of bounds to DC31D
 // 17FE76: using guessed type int16_t word_17FE76[];
 
 
@@ -5589,7 +5558,6 @@ int sub_DC416(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC444: control flows out of bounds to DC31D
 // 14A88: using guessed type int16_t word_14A88;
 
 
@@ -5604,7 +5572,6 @@ int sub_DC449(int a1)
     --v2;
   return v2;   /* wave 181: tail loc_DC31D `mov     eax, edx` */
 }
-// DC477: control flows out of bounds to DC31D
 // 14A9A: using guessed type int16_t word_14A9A;
 
 
@@ -6059,7 +6026,6 @@ void sub_DCBB0()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDCA62 je epilog funkce */
 }
-// DCC2C: control flows out of bounds to DCA62
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
@@ -6106,7 +6072,6 @@ char sub_DCC83(int a1, int a2)
   }
   return 0;   /* DCCB7 jl DCC7C - cl = 0 */
 }
-// DCCB7: control flows out of bounds to DCC7C
 // 199998: using guessed type int16_t word_199998;
 
 
@@ -6462,7 +6427,6 @@ LABEL_20:
 LABEL_25:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDCEB7 je epilog funkce */
 }
-// DD1EF: control flows out of bounds to DCEB7
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
 
@@ -6500,7 +6464,6 @@ void sub_DD2F2(int a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDCDA5 je epilog funkce */
 }
-// DD31F: control flows out of bounds to DCDA5
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
@@ -6587,7 +6550,6 @@ void sub_DD42A(char *a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDD423 je epilog funkce */
 }
-// DD4B0: control flows out of bounds to DD423
 // FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -6942,7 +6904,6 @@ LABEL_31:
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
-// DDD50: control flows out of bounds to DEB17
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17E7F0: using guessed type _UNKNOWN *off_17E7F0;
 // 17EA60: using guessed type _UNKNOWN *off_17EA60;
@@ -7029,7 +6990,6 @@ int sub_DDFD3(char *a1, int a2, int a3)
     v4 = (v4 & 0xFFFF0000) | (uint16_t)((int16_t)v4 / 2);
   return v4;
 }
-// DE039: control flows out of bounds to E0B48
 // 18355C: using guessed type int (*funcs_DDFF0[3])();
 
 
@@ -7188,8 +7148,6 @@ int sub_DE22C(char *a1, _WORD *a2, int a3, int a4)
     return v6;
   return v5r;
 }
-// DE27B: control flows out of bounds to DEE14
-// DE275: control flows out of bounds to DEE17
 // 18355C: using guessed type int (*funcs_DDFF0[3])();
 
 
@@ -7674,7 +7632,6 @@ char sub_DE664(int a1, char *a2)
 #undef v42
 #undef v43
 }
-// DEB17: variable 'a1' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
@@ -7781,7 +7738,6 @@ void sub_DEB4B(uint8_t *a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// DEB7F: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -8285,7 +8241,6 @@ void sub_DF546(uint8_t *a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// DF57A: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -8411,7 +8366,6 @@ void sub_DF66F(int a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// DF8BC: control flows out of bounds to E1F97
 
 
 //----- (000DF8C1) --------------------------------------------------------
@@ -8674,7 +8628,6 @@ LABEL_42:
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
-// DFDC1: control flows out of bounds to DEB17
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -8789,8 +8742,6 @@ int sub_DFE77(char *a1, int a2, int a3, int a4)
   LOWORD(v9) = (char)byte_1AA36C[a3];   /* wave 181: loc_DFF67 movsx ax, byte_1A236C[eax] -> loc_DEE10 */
   return v9;
 }
-// DFF62: control flows out of bounds to DEE14
-// DFF6F: control flows out of bounds to DEE10
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 183572: using guessed type int dword_183572;
 // 183576: using guessed type char byte_183576;
@@ -9005,7 +8956,6 @@ void sub_DFF74(int a1, char *a2)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
-// DFF8F: control flows out of bounds to DEB17
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
 // 17EB3D: using guessed type _UNKNOWN *off_17EB3D;
@@ -9227,7 +9177,6 @@ LABEL_52:
 LABEL_76:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
-// E040C: control flows out of bounds to DEB17
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 17EC93: using guessed type _UNKNOWN *off_17EC93;
 // 17ED64: using guessed type _UNKNOWN *off_17ED64;
@@ -9316,7 +9265,6 @@ void sub_E094F(int a1)
   *(_WORD *)(a1 + 249) = *(uint8_t *)(a1 + 242) - *(_WORD *)(a1 + 237);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// E0A0F: control flows out of bounds to E1F97
 // DD4BA: using guessed type int16_t word_DD4BA;
 // 17EB49: using guessed type int16_t word_17EB49;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -9485,7 +9433,6 @@ int sub_E0B4F(int16_t *a1, int a2)
   return result;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce;
                       vlna 91: v EAX se vraci ECX */
 }
-// E0C18: control flows out of bounds to DEB17
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -9586,7 +9533,6 @@ int8_t sub_E0C9B(int a1, int a2)
   }
   return v15 == 0;   /* wave 182: 0xE0D8C setz al */
 }
-// E0D93: control flows out of bounds to DF50C
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 
 
@@ -9784,8 +9730,6 @@ int sub_E1002(char *a1, unsigned int a2, int a3)
   }
   return result;
 }
-// E1058: control flows out of bounds to E0B48
-// E1080: control flows out of bounds to E0B46
 
 
 //----- (000E1085) --------------------------------------------------------
@@ -10102,7 +10046,6 @@ int8_t sub_E11BC(char *a1, int a2)
       return 0;
   }
 }
-// E1834: control flows out of bounds to DEB17
 // 17EB43: using guessed type int16_t word_17EB43;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -10362,8 +10305,6 @@ LABEL_70:
     v30 = v23 * sub_134C92(2000 * (uint8_t)v28[v21] * (v35 - v43) / v35) / 100 + v31;
   }
 }
-// E1875: control flows out of bounds to E1F97
-// E1B9F: variable 'v25' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1930DC: using guessed type int dword_1930DC;
@@ -10885,7 +10826,6 @@ void sub_E2000(int a1, int a2)
   while ( (int16_t)v35 > 0 );
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDEB17 je epilog funkce */
 }
-// E263F: control flows out of bounds to DEB17
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17E079: using guessed type _UNKNOWN *off_17E079;
@@ -10958,7 +10898,6 @@ void sub_E2671(int a1)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F98 je epilog funkce */
 }
-// E26DB: control flows out of bounds to E1F98
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17EB45: using guessed type int dword_17EB45;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -11129,7 +11068,6 @@ LABEL_31:
   v11 = 75 * ((int16_t)sub_94951(v10) + 1) / 10;
   goto LABEL_31;
 }
-// E2A6B: control flows out of bounds to E1F97
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -11306,7 +11244,6 @@ void sub_E2D09( int a1, int a2)
      (command points +60 etc.) were never recomputed after scrapping a ship */
   sub_E2710((int)((uint8_t *)dword_197F98 + 3753 * (int16_t)a1));
 }
-// E2D6D: control flows out of bounds to E2AA9
 // FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -11704,7 +11641,6 @@ LABEL_88:
 #undef v45
 #undef v46
 }
-// E3451: control flows out of bounds to E1F98
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -11808,7 +11744,6 @@ void sub_E3456(char *a1)
 #undef v16
 #undef v17
 }
-// E3611: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -12259,7 +12194,6 @@ LABEL_42:
 #undef v42
 #undef v43
 }
-// E377A: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17D16E: using guessed type int16_t word_17D16E[];
 // 17EB49: using guessed type int16_t word_17EB49;
@@ -12323,7 +12257,6 @@ void sub_E3E9A(int a1)
     }
   }
 }
-// E3F69: control flows out of bounds to E1F97
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -12781,7 +12714,6 @@ void sub_E4535(int a1)
     }
   }
 }
-// E45FA: control flows out of bounds to E1F97
 // 17D90E: using guessed type int16_t word_17D90E;
 // 17D916: using guessed type int dword_17D916;
 
@@ -12880,7 +12812,6 @@ void sub_E45FF(int a1)
     }
   }
 }
-// E481A: control flows out of bounds to E1F97
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 192FD8: using guessed type int dword_192FD8;
 // 19306C: using guessed type int dword_19306C;
@@ -13073,7 +13004,6 @@ void sub_E4AB3( int a1, int a2, int a3)
     ;
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE44DB je epilog funkce */
 }
-// E4B56: control flows out of bounds to E44DB
 // 19306C: using guessed type int dword_19306C;
 // 199998: using guessed type int16_t word_199998;
 
@@ -13154,7 +13084,6 @@ void sub_E4B5F( int a1, int a2)
     }
   }
 }
-// E4CCD: control flows out of bounds to DEB17
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -13210,7 +13139,6 @@ void sub_E4D06( int a1, int a2)
     ;
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xDF513 je epilog funkce */
 }
-// E4DC0: control flows out of bounds to DF513
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
 
@@ -13253,7 +13181,6 @@ void sub_E4DC9()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// E4E4F: control flows out of bounds to E1F97
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -13384,7 +13311,6 @@ void sub_E4F49(int16_t *a1)
 #undef v6
 #undef v7
 }
-// E5025: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -13521,7 +13447,6 @@ void sub_E5097()
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// E5270: control flows out of bounds to E1F97
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 19306C: using guessed type int dword_19306C;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -13594,7 +13519,6 @@ void sub_E5296(_BYTE *a1)
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
   }
 }
-// E53C8: control flows out of bounds to E1F97
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -13838,7 +13762,6 @@ void sub_E55BE(char *a1, int16_t *a2)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F98 je epilog funkce */
 }
-// E572E: control flows out of bounds to E1F98
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 1930DC: using guessed type int dword_1930DC;
@@ -13855,7 +13778,6 @@ void sub_E57D0(int a1)
     ++v2;
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE4F45 je epilog funkce */
 }
-// E57E5: control flows out of bounds to E4F45
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 
 
@@ -14003,7 +13925,6 @@ void sub_E5832(int a1, int a2, int a3, int16_t *a4)
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 }
-// E5AE2: control flows out of bounds to E1F97
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;

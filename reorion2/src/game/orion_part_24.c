@@ -6176,7 +6176,6 @@ uint8_t ***sub_162B06(uint8_t ***result, int a2)
   }
   return result;
 }
-// 162BEB: variable 'v6' is possibly undefined
 // 148337: using guessed type int fputc(_DWORD, _DWORD);
 // 188DBE: using guessed type int dword_188DBE;
 // 188DC2: using guessed type int dword_188DC2;
@@ -6331,7 +6330,6 @@ bool sub_162E63(_DWORD *a1, int a2)
     *((_BYTE *)a1 + 4) = 0x80;
   return v9 != 0;
 }
-// 162F18: variable 'v6' is possibly undefined
 // 13C992: using guessed type int fgetc(_DWORD, _DWORD);
 // 148337: using guessed type int fputc(_DWORD, _DWORD);
 // 188DBE: using guessed type int dword_188DBE;
