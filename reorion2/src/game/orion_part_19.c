@@ -25,7 +25,6 @@ int sub_11A558()
   else
     return v4;
 }
-// 11A57F: variable 'v0' is possibly undefined
 // 11A5B3: variable 'v3' is possibly undefined
 
 
@@ -1682,7 +1681,7 @@ LABEL_234:
           && *(int *)((char *)off_184480 + 55 * (dword_18448E >> 16) + 6) >> 16 != 10
           && *(int *)((char *)off_184480 + 55 * (dword_18448E >> 16) + 6) >> 16 != 11 )
         {
-          sub_123A30();
+          v6 = sub_123A30();   /* 11CFCC */
           sub_11B05A((char *)(dword_18448E >> 16), 0);
           sub_123B14(v41, v44);
           sub_123A64();
@@ -1847,7 +1846,6 @@ LABEL_325:
 // 11D0CE: conditional instruction was optimized away because %var_14.2!=0
 // 11D491: conditional instruction was optimized away because %var_44.2!=0
 // 11CF61: variable 'v4' is possibly undefined
-// 11CFCC: variable 'v6' is possibly undefined
 // 11D9E8: variable 'v17' is possibly undefined
 // 11DB6B: variable 'v18' is possibly undefined
 // 13F37F: using guessed type int strcpy(_DWORD, _DWORD);

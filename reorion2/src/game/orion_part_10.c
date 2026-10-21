@@ -1073,7 +1073,6 @@ void sub_A070F( int a1)
 }
 // A07C3: control flows out of bounds to A0708
 // A073E: variable 'v1' is possibly undefined
-// A0743: variable 'v2' is possibly undefined
 // 1906C8: using guessed type int16_t word_1906C8[];
 // 1906CA: using guessed type int16_t word_1906CA[3427];
 // 1999B8: using guessed type int16_t word_1999B8;
@@ -1864,7 +1863,6 @@ void sub_A1455()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xA0708 je epilog funkce */
 }
 // A1565: control flows out of bounds to A0708
-// A146A: variable 'v0' is possibly undefined
 // A14FD: variable 'v16' is possibly undefined
 // 190518: using guessed type int dword_190518[32];
 // 1905F8: using guessed type int dword_1905F8[32];
@@ -7412,7 +7410,7 @@ LABEL_51:
         }
         else
         {
-          sub_A9AC8();
+          v61 = sub_A9AC8(*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 2) + 5));   /* A8C55 */
           v62 = (uint8_t)byte_182477[v61];
           v86 = word_18247F;
           v84 = sub_A956C(v112, 0);
@@ -8167,24 +8165,28 @@ void sub_A999F(int a1, int a2, int a3, int a4, int a5)
 //----- (000A9AAD) --------------------------------------------------------
 int16_t sub_A9AAD( int a1)
 {
-  _DWORD v2[3]; // [esp+0h] [ebp-Ch]
+  /* wave 184: A65F0 is a table of 6 words (IDA showed its first dword as `offset sub_10000`) */
+  static const int16_t kA65F0[6] = { 0, 1, 1, 2, 3, 3 };
+  _WORD v2[6]; // [esp+0h] [ebp-Ch]
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  v2[0] = sub_10000;
-  v2[1] = 131073;
-  v2[2] = dword_A65F4[1];
-  return *((_WORD *)v2 + a1);
+  qmemcpy(v2, kA65F0, sizeof(v2));
+  return v2[a1];
 }
 // 10000: using guessed type int sub_10000();
 // A65F4: using guessed type int[2];
 
 
 //----- (000A9AC8) --------------------------------------------------------
-void sub_A9AC8()
+int16_t sub_A9AC8( int a1)
 {
-  JUMPOUT(0xA9ABF);
+  /* wave 184: A9ADB jmp A9ABF - dword_A65FC = 5 words */
+  static const int16_t kA65FC[5] = { 4, 5, 6, 7, 7 };
+  _WORD v2[5]; // [ebp-0Ch]
+
+  qmemcpy(v2, kA65FC, sizeof(v2));
+  return v2[(int16_t)a1];
 }
-// A9ADB: control flows out of bounds to A9ABF
 
 
 //----- (000A9AED) --------------------------------------------------------
@@ -8251,7 +8253,7 @@ void sub_A9AED( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
     {
       v9 = dword_192864;
       v41 = *(uint8_t *)(dword_192864 + 37) + 6;
-      sub_A9AC8();
+      v10 = sub_A9AC8(*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 2) + 5));   /* A9B8A */
     }
     v46 = v10;
     v11 = (int16_t)v10;
@@ -8346,7 +8348,7 @@ LABEL_21:
     else
     {
       HIWORD(v30) = HIWORD(dword_1930D4);
-      sub_A9AC8();
+      v31 = sub_A9AC8(*(uint8_t *)((uint8_t*)dword_1930D4 + 17 * *(int16_t *)((uint8_t*)dword_192B18 + 361 * word_199878 + 2) + 5));   /* A9E8E */
       LOWORD(v30) = (uint8_t)byte_182477[v31];
       v32 = (uint8_t)byte_182477[v31];
       v40 = v30;
@@ -8377,9 +8379,6 @@ LABEL_21:
 }
 // A9F99: control flows out of bounds to A93A4
 // A9B02: variable 'v7' is possibly undefined
-// A9B0C: variable 'v8' is possibly undefined
-// A9B8F: variable 'v10' is possibly undefined
-// A9E93: variable 'v31' is possibly undefined
 // 18246B: using guessed type int dword_18246B;
 // 182483: using guessed type int16_t word_182483;
 // 18248B: using guessed type int16_t word_18248B;
@@ -8700,7 +8699,6 @@ LABEL_16:
   }
   return sub_1113CC(dword_192ED4, v9);
 }
-// AA3A8: variable 'v6' is possibly undefined
 // 18246F: using guessed type int dword_18246F;
 // 182489: using guessed type int16_t word_182489;
 // 18248B: using guessed type int16_t word_18248B;
@@ -11558,7 +11556,7 @@ LABEL_27:
         word_1998FC = -1;
         goto LABEL_103;
       }
-      sub_128BE7();
+      v37 = sub_128BE7();   /* AE5F9 */
       sub_12C2A0();
       sub_124D41();
       sub_128AB6(0, 0, 639, 350);
@@ -11896,7 +11894,6 @@ LABEL_153:
 // AE1A8: variable 'v86' is possibly undefined
 // AE1CD: variable 'v87' is possibly undefined
 // AE1CD: variable 'v88' is possibly undefined
-// AE5F9: variable 'v37' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // 39E15: using guessed type int sub_39E15(_DWORD, _DWORD, _DWORD, _DWORD);
@@ -13084,7 +13081,6 @@ int sub_AFEFC(int a1, int a2, int a3)
   while ( a3 < 49 );
   return qsort(&unk_1827D2, word_18283A - 2, 2, sub_AFEE0);   /* vlna 84: komparator z asm */
 }
-// AFF38: variable 'v3' is possibly undefined
 // 1827CE: using guessed type int16_t word_1827CE[];
 // 1827D0: using guessed type int16_t word_1827D0;
 // 18283A: using guessed type int16_t word_18283A;

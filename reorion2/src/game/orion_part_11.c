@@ -2832,7 +2832,7 @@ void sub_B4041( int a1, int16_t *a2)
   sub_11C2F0();
   if ( word_1828AA[0] != -1 )
     sub_C0AF4();
-  sub_120E8C(3);
+  v6 = sub_120E8C(3);   /* B4145 */
   sub_1196F7();
   sub_119281();
   sub_124E36();
@@ -2860,7 +2860,6 @@ LABEL_32:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xB065D je epilog funkce */
 }
 // B4328: control flows out of bounds to B065D
-// B4145: variable 'v6' is possibly undefined
 // B419D: variable 'v8' is possibly undefined
 // B4234: variable 'v11' is possibly undefined
 // BB9FD: using guessed type int nullsub_7(_DWORD, _DWORD);
@@ -5124,7 +5123,7 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   sub_1191CA((int)sub_B7289, 1);
   sub_CDAED((int)&unk_182953, 3);
   sub_128C32(0, 0, 639, 479, 0);
-  sub_B7289();
+  v8 = sub_B7289();   /* B765F */
   sub_132C80(100);
   v7 = sub_131922(0, 255);
   sub_1077D(v7, 0, 0, 0);
@@ -5175,7 +5174,6 @@ int16_t sub_B7491(int a1, int a2, int a3, int a4)
   word_199A08 = word_199A10;
   return result;
 }
-// B765F: variable 'v8' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // BB9FD: using guessed type int nullsub_7(_DWORD, _DWORD);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);

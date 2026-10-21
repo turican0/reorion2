@@ -1019,11 +1019,6 @@ LABEL_12:
   }
   return result;
 }
-// 149CF4: variable 'v3' is possibly undefined
-// 149D11: variable 'v4' is possibly undefined
-// 149D2D: variable 'v5' is possibly undefined
-// 149D98: variable 'v8' is possibly undefined
-// 149DFC: variable 'v12' is possibly undefined
 // 18913C: using guessed type int dword_18913C;
 // 189140: using guessed type int dword_189140;
 // 189144: using guessed type int dword_189144;
@@ -4376,9 +4371,8 @@ LABEL_23:
     else
       *(_WORD *)a4 = 0;
   }
-  JUMPOUT(0x14D5DB);
+  return;   /* wave 184: 14D5DB is the epilogue */
 }
-// 14D6FF: control flows out of bounds to 14D5DB
 
 
 //----- (0014D704) --------------------------------------------------------
@@ -4656,7 +4650,7 @@ LABEL_42:
           *v18 = v22;
         }
 LABEL_60:
-        JUMPOUT(0x14D5DB);
+        return;   /* wave 184: 14D5DB is the epilogue */
       }
 LABEL_17:
       if ( v6 == 46 )

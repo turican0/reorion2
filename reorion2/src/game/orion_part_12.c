@@ -3123,7 +3123,6 @@ void sub_BF627(int16_t *a1, _WORD *a2)
     }
   }
 }
-// BF672: variable 'v5' is possibly undefined
 // BF6BC: variable 'v6' is possibly undefined
 // 182ABB: using guessed type char byte_182ABB;
 // 182ABC: using guessed type int16_t word_182ABC;
@@ -3431,7 +3430,6 @@ LABEL_20:
   return sub_BB1A6(a1, (int16_t)a1);   /* wave 184: BFD05 movsx eax, si - edx is still movsx a1 */
 }
 // BFC90: variable 'v7' is possibly undefined
-// BFCD3: variable 'v9' is possibly undefined
 // BFCFC: variable 'v11' is possibly undefined
 // BFD4D: variable 'v15' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -3950,8 +3948,8 @@ int16_t sub_C058A(int a1, int16_t *a2)
     sub_BF456();
     byte_182ACA = 1;
     sub_1191CA((int)sub_BED21, 1);
-    sub_128C32(0, 0, 639, 479, 0);
-    sub_BED21(v2, v3);
+    v2 = sub_128C32(0, 0, 639, 479, 0);   /* C07F1 */
+    v16 = sub_BED21(v2, v3);   /* C0840 */
     sub_C5C44();
     sub_124C08();
     v15 = 1;
@@ -4014,8 +4012,6 @@ int16_t sub_C058A(int a1, int16_t *a2)
   }
   return result;
 }
-// C07F1: variable 'v2' is possibly undefined
-// C0840: variable 'v16' is possibly undefined
 // 182AC8: using guessed type char byte_182AC8;
 // 182AC9: using guessed type char byte_182AC9;
 // 182ACA: using guessed type char byte_182ACA;
@@ -4322,7 +4318,6 @@ void sub_C0E1D( int a1, int a2, int a3)
   /* wave 182: 0xC0ECA - esi = a1, edi = a2 */
   sub_1031AA((int16_t)(a1 + 14), (int16_t)(a2 + 45), 154, 140, (int)v6, 0);
 }
-// C0E78: variable 'v4' is possibly undefined
 
 
 //----- (000C0ED4) --------------------------------------------------------
@@ -6181,8 +6176,6 @@ LABEL_26:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC267F je epilog funkce */
 }
 // C34D8: control flows out of bounds to C267F
-// C31E3: variable 'v7' is possibly undefined
-// C32CB: variable 'v13' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182AB7: using guessed type int16_t word_182AB7;
 // 182ACA: using guessed type char byte_182ACA;
@@ -6960,7 +6953,6 @@ int16_t sub_C4169(_WORD *a1, int16_t *a2, int a3)
   }
   return v6;
 }
-// C4204: variable 'v5' is possibly undefined
 // 182974: using guessed type int16_t word_182974;
 // 182AB7: using guessed type int16_t word_182AB7;
 // 182ABC: using guessed type int16_t word_182ABC;

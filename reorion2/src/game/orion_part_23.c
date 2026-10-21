@@ -366,7 +366,7 @@ LABEL_9:
   sub_13FBC8((int)v3, 768, 0, 0);
   if ( *(int16_t *)(v3[3] + 46) > 0 )
   {
-    sub_1400A9((int)sub_155861);
+    v7 = sub_1400A9((int)sub_155861);   /* 155DF5 */
     v3[7] = v7;
     if ( v7 == -1 )
     {
@@ -386,7 +386,6 @@ LABEL_9:
   return v3;
 }
 // 155D98: variable 'v6' is possibly undefined
-// 155DF5: variable 'v7' is possibly undefined
 // 1399FF: using guessed type int memmove(_DWORD, _DWORD, _DWORD);
 // 16023E: using guessed type int strnicmp(_DWORD, _DWORD, _DWORD);
 // 1C9400: using guessed type int dword_1C9400[];
@@ -1205,7 +1204,7 @@ int *sub_156EA0(int a1, void *a2)
       }
       if ( !v27 )
       {
-        sub_140734(*v3);
+        v5 = (void *)(intptr_t)sub_140734(*v3);   /* 156FE3 */
         v26 = v5;
         if ( v5 )
         {
@@ -1297,7 +1296,7 @@ int *sub_156EA0(int a1, void *a2)
                 }
                 while ( v16 < v3[24] );
               }
-              sub_1400A9((int)sub_156680);
+              v18 = sub_1400A9((int)sub_156680);   /* 1573AB */
               v3[3] = v18;
               if ( v18 == -1 )
               {
@@ -1371,8 +1370,6 @@ int *sub_156EA0(int a1, void *a2)
   }
   return result;
 }
-// 156FE3: variable 'v5' is possibly undefined
-// 1573AB: variable 'v18' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1C9440: using guessed type char byte_1C9440;
 // 1C9540: using guessed type int dword_1C9540[];
@@ -1397,7 +1394,7 @@ int sub_1574B0(int a1, void *a2)
   if ( result )
   {
     v4 = sub_154A9A(a1);
-    sub_140819(v3, v4);
+    v5 = sub_140819(v3, v4);   /* 1574F1 */
     v6 = v5;
     off_189868(v3);
     if ( v6 )
@@ -1418,7 +1415,6 @@ int sub_1574B0(int a1, void *a2)
   }
   return result;
 }
-// 1574F1: variable 'v5' is possibly undefined
 // 189868: using guessed type int (*off_189868)(_DWORD);
 // 1C9440: using guessed type char byte_1C9440;
 
@@ -1429,7 +1425,7 @@ void sub_157530(int a1, int a2, void *a3)
   int v3; // eax
   unsigned int v4; // esi
 
-  sub_140819(a1, a2);
+  v3 = sub_140819(a1, a2);   /* wave 184: sub_140819 returns its result */
   v4 = v3;
   if ( v3 )
   {
@@ -1437,7 +1433,6 @@ void sub_157530(int a1, int a2, void *a3)
       sub_14090C(v4);
   }
 }
-// 157541: variable 'v3' is possibly undefined
 
 
 //----- (00157570) --------------------------------------------------------
@@ -2338,7 +2333,6 @@ void sub_1580A3(int a1, int a2, int a3)
   }
 }
 // 158131: conditional instruction was optimized away because ebp.4==1
-// 158108: variable 'v4' is possibly undefined
 // 16023E: using guessed type int strnicmp(_DWORD, _DWORD, _DWORD);
 // 1C9440: using guessed type char byte_1C9440;
 
@@ -2983,7 +2977,7 @@ int sub_158B50(int a1, int a2, unsigned int a3, int a4, int a5)
           }
           else if ( v8[8] != 1 )
           {
-            sub_143DB7(v25);
+            v21 = sub_143DB7(v25);   /* 158EBB */
             v22 = v21;
             if ( v21 )
             {
@@ -3103,7 +3097,6 @@ LABEL_31:
   }
 }
 // 158B50: could not find valid save-restore pair for ebx
-// 158EBB: variable 'v21' is possibly undefined
 // 143E9C: using guessed type _DWORD sub_143E9C(_DWORD, _DWORD);
 
 
@@ -3884,7 +3877,7 @@ int *sub_159CA0(int a1, void *a2)
       }
       if ( !v32 )
       {
-        sub_140734(*v3);
+        v15 = (void *)(intptr_t)sub_140734(*v3);   /* 159E7A */
         v31 = v15;
         if ( v15 )
         {
@@ -3967,7 +3960,7 @@ int *sub_159CA0(int a1, void *a2)
               v24[87] = 0;
             }
             while ( v24 != v3 + 16 );
-            sub_1400A9((int)sub_159440);
+            v25 = sub_1400A9((int)sub_159440);   /* 15A132 */
             v3[3] = v25;
             if ( v25 == -1 )
             {
@@ -4056,8 +4049,6 @@ int *sub_159CA0(int a1, void *a2)
   }
   return result;
 }
-// 159E7A: variable 'v15' is possibly undefined
-// 15A132: variable 'v25' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 139ACE: using guessed type int strncpy(_DWORD, _DWORD, _DWORD);
 // 155777: using guessed type int getenv(_DWORD);
@@ -4085,7 +4076,7 @@ int sub_15A340(int a1, void *a2)
   if ( result )
   {
     v4 = sub_154A9A(a1);
-    sub_140819(v3, v4);
+    v5 = sub_140819(v3, v4);   /* 15A381 */
     v6 = v5;
     off_189868(v3);
     if ( v6 )
@@ -4106,7 +4097,6 @@ int sub_15A340(int a1, void *a2)
   }
   return result;
 }
-// 15A381: variable 'v5' is possibly undefined
 // 189868: using guessed type int (*off_189868)(_DWORD);
 // 1C9440: using guessed type char byte_1C9440;
 
@@ -4117,7 +4107,7 @@ void sub_15A3C0(int a1, int a2, void *a3)
   int v3; // eax
   unsigned int v4; // esi
 
-  sub_140819(a1, a2);
+  v3 = sub_140819(a1, a2);   /* wave 184: sub_140819 returns its result */
   v4 = v3;
   if ( v3 )
   {
@@ -4125,7 +4115,6 @@ void sub_15A3C0(int a1, int a2, void *a3)
       sub_14090C(v4);
   }
 }
-// 15A3D1: variable 'v3' is possibly undefined
 
 
 //----- (0015A400) --------------------------------------------------------
@@ -4474,7 +4463,7 @@ void sub_15AA50(_DWORD *a1)
     {
       if ( (int)v1[100] >= 64 )
       {
-        sub_143DB7(v6);
+        v3 = sub_143DB7(v6);   /* 15AA92 */
         v4 = v3 - 1;
         if ( v4 == -1 )
           v4 = v2;
@@ -4489,7 +4478,6 @@ void sub_15AA50(_DWORD *a1)
     a1[1] = 4;
   }
 }
-// 15AA92: variable 'v3' is possibly undefined
 
 
 //----- (0015AAE0) --------------------------------------------------------
@@ -5715,9 +5703,9 @@ int *sub_15BFAD(int a1, int a2, int a3, int a4)
     result[1] = a1;
     *result = a2;
     result[2] = a3;
-    sub_1439F8(a2, (int)sub_15BBB9);
+    v7 = sub_1439F8(a2, (int)sub_15BBB9);   /* 15C00C */
     v5[3] = v7;
-    sub_143AE5(a2, (int)sub_15BB94);
+    v8 = sub_143AE5(a2, (int)sub_15BB94);   /* 15C021 */
     v5[4] = v8;
     *(_DWORD *)(a2 + 432) = v5;
     for ( i = 0; i < 16; ++i )
@@ -5755,8 +5743,6 @@ int *sub_15BFAD(int a1, int a2, int a3, int a4)
   }
   return result;
 }
-// 15C00C: variable 'v7' is possibly undefined
-// 15C021: variable 'v8' is possibly undefined
 // 15C0AE: variable 'v10' is possibly undefined
 // 1C9440: using guessed type char byte_1C9440;
 // 1C957C: using guessed type int dword_1C957C;
@@ -5772,9 +5758,8 @@ void sub_15C125(int *a1)
   sub_1439F8(*a1, a1[3]);
   sub_143AE5(*a1, a1[4]);
   sub_1540EC((unsigned int)a1, 1628);
-  JUMPOUT(0x15BFA6);
+  return;   /* wave 184: 15BFA6 is the epilogue */
 }
-// 15C174: control flows out of bounds to 15BFA6
 
 
 //----- (0015C179) --------------------------------------------------------

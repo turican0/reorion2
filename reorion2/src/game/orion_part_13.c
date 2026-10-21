@@ -6049,7 +6049,6 @@ int sub_CD435(int16_t *a1)
 }
 // CD8DC: control flows out of bounds to CCC36
 // CD640: variable 'v10' is possibly undefined
-// CD727: variable 'v11' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 182ACA: using guessed type char byte_182ACA;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -7874,8 +7873,6 @@ int sub_CFCB6(int a1, int a2, int a3, int16_t *a4)
     --i;
   return result;
 }
-// CFD7E: variable 'v8' is possibly undefined
-// CFD99: variable 'v10' is possibly undefined
 // CFE8A: variable 'v13' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 197F9C: using guessed type int dword_197F9C;
@@ -8677,7 +8674,6 @@ void sub_D0D2F(int16_t *a1)
   }
 }
 // D1001: control flows out of bounds to CFADE
-// D0E34: variable 'v9' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -9879,7 +9875,6 @@ LABEL_26:
 // D158B: variable 'v42' is possibly undefined
 // D15C5: variable 'v43' is possibly undefined
 // D1986: variable 'v54' is possibly undefined
-// D216C: variable 'v80' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1399FF: using guessed type int memmove(_DWORD, _DWORD, _DWORD);
 // 183558: using guessed type _UNKNOWN *off_183558;
@@ -10376,7 +10371,6 @@ void sub_D302E()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xD2AA2 je epilog funkce */
 }
 // D3120: control flows out of bounds to D2AA2
-// D30F9: variable 'v7' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 183554: using guessed type _UNKNOWN *off_183554;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;

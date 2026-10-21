@@ -880,7 +880,6 @@ char sub_72B33(int a1, int a2, int a3)
   }
   return v15;
 }
-// 72B79: variable 'v5' is possibly undefined
 // 72E56: variable 'v15' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -5861,7 +5860,6 @@ int16_t sub_78770( int a1)
   }
   return result;
 }
-// 787B2: variable 'v3' is possibly undefined
 // 197F9C: using guessed type int dword_197F9C;
 // 1992C4: using guessed type int16_t word_1992C4;
 // 1999B8: using guessed type int16_t word_1999B8;
@@ -6200,17 +6198,24 @@ int16_t sub_78CDB( int a1, int a2)
 
 
 //----- (00078CF2) --------------------------------------------------------
-void sub_78CF2( int a1)
+int sub_78CF2( int a1)
 {
   int16_t i; // ax
   _BOOL1 v3; // [esp+0h] [ebp-4h]
+  int v4; // ecx
 
   v3 = 0;
+  v4 = 0;
   for ( i = 0; i < 500 && !v3; ++i )
-    v3 = word_1906C2[6 * i] == word_1931C2[6 * a1];
-  JUMPOUT(0x77FD6);
+  {
+    if ( word_1906C2[6 * i] == word_1931C2[6 * (int16_t)a1] )
+    {
+      v3 = 1;
+      v4 = i;   /* 78D26 mov ecx, eax */
+    }
+  }
+  return v4;   /* wave 184: 78D39 jmp 77FD6 (mov eax, ecx) */
 }
-// 78D39: control flows out of bounds to 77FD6
 // 1906C2: using guessed type int16_t word_1906C2[];
 // 1931C2: using guessed type int16_t word_1931C2[];
 

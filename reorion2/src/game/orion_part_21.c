@@ -668,8 +668,9 @@ int sub_13F7BC()
 
 
 //----- (0013F84F) --------------------------------------------------------
-void sub_13F84F(int a1, int a2)
+int sub_13F84F(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -677,19 +678,20 @@ void sub_13F84F(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_preference(%d,%d)\n", a1, a2);
-  sub_155C19(a1, a2);
+  v_ailres = (int)sub_155C19(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FCCA);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13FCCA - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 13F944: control flows out of bounds to 13FCCA
-// 13F8CD: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -698,8 +700,9 @@ void sub_13F84F(int a1, int a2)
 
 
 //----- (0013F953) --------------------------------------------------------
-void sub_13F953(int a1, int a2, int a3)
+int sub_13F953(int a1, int a2, int a3)
 {
+  int v_ailres; // esi
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -707,19 +710,20 @@ void sub_13F953(int a1, int a2, int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_get_real_vect(0x%X)\n", a3);
-  sub_1550B1(a3, v3, a2, a1);
+  v_ailres = (int)sub_1550B1(a3, v3, a2, a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415CA);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415CA - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 13FA39: control flows out of bounds to 1415CA
-// 13F9C8: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -736,9 +740,9 @@ void sub_13FA3E(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_real_vect(0x%X,0x%X)\n", a1, a2);
   sub_1550DD();
-  JUMPOUT(0x13FBAC);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBAC - shared AIL API epilogue */
 }
-// 13FAB2: control flows out of bounds to 13FBAC
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -755,9 +759,9 @@ void sub_13FAB7(int a1, int a2, int a3)
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_USE16_ISR(%d,0x%X,%u)\n", a1, a2, a3);
   sub_155159(a1, a2, a3);
-  JUMPOUT(0x13FB34);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FB34 - shared AIL API epilogue */
 }
-// 13FB2F: control flows out of bounds to 13FB34
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -845,9 +849,9 @@ void sub_13FCDE(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_delay(%d)\n", a1);
   sub_1554F9(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 13FD46: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -956,13 +960,14 @@ int sub_1400A9(int a1)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415CA);
+    fprintf(dword_1C0E50, "Result = %u\n", timerHandle);
+    --dword_1C0E40;
+    return timerHandle;   /* wave 184: 1415CA - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return timerHandle;   /* wave 184: 13FCD2 - shared AIL API epilogue */
   return timerHandle; // sdileny epilog jen propusti EAX ze sub_155542
 }
-// 14018F: control flows out of bounds to 1415CA
-// 14011E: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -971,8 +976,9 @@ int sub_1400A9(int a1)
 
 
 //----- (00140194) --------------------------------------------------------
-void sub_140194(int a1, int32_t a2)
+int sub_140194(int a1, int32_t a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -980,19 +986,20 @@ void sub_140194(int a1, int32_t a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_timer_user(%u,%u)\n", a1, a2);
-  sub_155589(a1, a2);
+  v_ailres = (int)sub_155589(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F93D);
+    fprintf(dword_1C0E50, "Result = %u\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F93D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 140282: control flows out of bounds to 13F93D
-// 140212: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1009,9 +1016,9 @@ void sub_140287(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_timer_period(%u,%u)\n", a1, a2);
   sub_1556A4(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 1402F8: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1028,9 +1035,9 @@ void sub_1402FD(int a1, unsigned int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_timer_frequency(%u,%u)\n", a1, a2);
   sub_1556D4(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 14036E: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1039,8 +1046,9 @@ void sub_1402FD(int a1, unsigned int a2)
 
 
 //----- (001403E9) --------------------------------------------------------
-void sub_1403E9()
+int sub_1403E9()
 {
+  int v_ailres; // esi
   int v0; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1048,19 +1056,20 @@ void sub_1403E9()
   v0 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v0 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_interrupt_divisor()\n");
-  sub_155746();
+  v_ailres = (int)sub_155746();   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F63);
+    fprintf(dword_1C0E50, "Result = %u\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140F63 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1404C2: control flows out of bounds to 140F63
-// 140451: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1077,9 +1086,9 @@ void sub_1404C7(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_start_timer(%u)\n", a1);
   sub_1555FC(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 14052F: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1096,9 +1105,9 @@ void sub_140596(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_stop_timer(%u)\n", a1);
   sub_155650(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 1405FE: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1115,9 +1124,9 @@ void sub_140665(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_release_timer_handle(%u)\n", a1);
   sub_1555B1(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 1406CD: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1134,9 +1143,9 @@ void sub_1406D2()
   if ( dword_1C0E54 && (v0 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_release_all_timers()\n");
   sub_1555D8();
-  JUMPOUT(0x13F847);
+  --dword_1C0E40;
+  return;   /* wave 184: 13F847 - shared AIL API epilogue */
 }
-// 14072F: control flows out of bounds to 13F847
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1145,8 +1154,9 @@ void sub_1406D2()
 
 
 //----- (00140734) --------------------------------------------------------
-void sub_140734(int a1)
+int sub_140734(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1154,19 +1164,20 @@ void sub_140734(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_get_IO_environment(0x%X)\n", a1);
-  sub_155F05(a1);
+  v_ailres = (int)sub_155F05(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FA33);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13FA33 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 140814: control flows out of bounds to 13FA33
-// 1407A9: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1175,8 +1186,9 @@ void sub_140734(int a1)
 
 
 //----- (00140819) --------------------------------------------------------
-void sub_140819(int a1, int a2)
+int sub_140819(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1184,19 +1196,20 @@ void sub_140819(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_driver(0x%X,%u)\n", a1, a2);
-  sub_155C32(a1, a2);
+  v_ailres = (int)sub_155C32(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F93D);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F93D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 140907: control flows out of bounds to 13F93D
-// 140897: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1213,9 +1226,9 @@ void sub_14090C(unsigned int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_uninstall_driver(0x%X)\n", a1);
   sub_155E62(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 140974: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1254,12 +1267,10 @@ int sub_140979()
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F63);
+    /* wave 184: 140F63 - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
 }
-// 140A52: control flows out of bounds to 140F63
-// 1409E1: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1291,13 +1302,11 @@ int sub_140A57(char *a1, void *a2)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    /* wave 184: 140901 - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
   return PortSound_CreateDigDriver();
 }
-// 140B3F: control flows out of bounds to 140901
-// 140AD5: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1359,12 +1368,10 @@ void sub_140C96(int a1, int a2, int a3)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140A4C);
+    /* wave 184: 140A4C - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
 }
-// 140D8A: control flows out of bounds to 140A4C
-// 140D1F: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1381,9 +1388,9 @@ void sub_140D8F(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_release_sample_handle(0x%X)\n", a1);
   sub_157680(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 140DF7: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1400,9 +1407,9 @@ void sub_140DFC(int *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_init_sample(0x%X)\n", a1);
   sub_157690(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 140E64: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1432,13 +1439,14 @@ int sub_140E69(_DWORD *a1, int a2, int a3)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FCCA);
+    fprintf(dword_1C0E50, "Result = %d\n", setFileResult);
+    --dword_1C0E40;
+    return setFileResult;   /* wave 184: 13FCCA - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return setFileResult;   /* wave 184: 13FCD2 - shared AIL API epilogue */
   return setFileResult; // sdileny epilog jen propusti EAX ze sub_1581CE
 }
-// 140F6A: control flows out of bounds to 13FCCA
-// 140EF2: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1495,9 +1503,9 @@ void sub_141073(_DWORD *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_start_sample(0x%X)\n", a1);
   sub_1578A0(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 1410DB: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1514,9 +1522,9 @@ void sub_1410E0(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_stop_sample(0x%X)\n", a1);
   sub_157920(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 141148: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1533,9 +1541,9 @@ void sub_14114D(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_resume_sample(0x%X)\n", a1);
   sub_157940(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 1411B5: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1552,9 +1560,9 @@ void sub_1411BA(int a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_end_sample(0x%X)\n", a1);
   sub_157960(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 141222: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1571,9 +1579,9 @@ void sub_141227(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sample_playback_rate(0x%X,%d)\n", a1, a2);
   sub_1577C0(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 141298: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1590,9 +1598,9 @@ void sub_14129D(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sample_volume(0x%X,%d)\n", a1, a2);
   sub_1577E0(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 14130E: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1609,9 +1617,9 @@ void sub_141313(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sample_pan(0x%X,%d)\n", a1, a2);
   sub_157810(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 141384: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1628,9 +1636,9 @@ void sub_141389(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sample_loop_count(0x%X,%d)\n", a1, a2);
   sub_157890(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 1413FA: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1659,13 +1667,14 @@ int sub_1413FF(int a1)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140189);
+    fprintf(dword_1C0E50, "Result = %u\n", sampleStatus);
+    --dword_1C0E40;
+    return sampleStatus;   /* wave 184: 140189 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return sampleStatus;   /* wave 184: 13FCD2 - shared AIL API epilogue */
   return sampleStatus;
 }
-// 1414DF: control flows out of bounds to 140189
-// 141474: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1674,8 +1683,9 @@ int sub_1413FF(int a1)
 
 
 //----- (001414E4) --------------------------------------------------------
-void sub_1414E4(int a1)
+int sub_1414E4(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1683,19 +1693,20 @@ void sub_1414E4(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_playback_rate(0x%X)\n", a1);
-  sub_1577B0(a1);
+  v_ailres = (int)sub_1577B0(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FCCA);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13FCCA - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1415D0: control flows out of bounds to 13FCCA
-// 141559: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1739,8 +1750,9 @@ int sub_1415D5(int a1)
 
 
 //----- (001416BA) --------------------------------------------------------
-void sub_1416BA(int a1)
+int sub_1416BA(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1748,19 +1760,20 @@ void sub_1416BA(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_pan(0x%X)\n", a1);
-  sub_157800(a1);
+  v_ailres = (int)sub_157800(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 14179A: control flows out of bounds to 1415C4
-// 14172F: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1769,8 +1782,9 @@ void sub_1416BA(int a1)
 
 
 //----- (0014179F) --------------------------------------------------------
-void sub_14179F(int a1)
+int sub_14179F(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1778,19 +1792,20 @@ void sub_14179F(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_loop_count(0x%X)\n", a1);
-  sub_157870(a1);
+  v_ailres = (int)sub_157870(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 14187F: control flows out of bounds to 1415C4
-// 141814: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1815,12 +1830,10 @@ void sub_141884(int a1, int a2, void *a3)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140A4C);
+    /* wave 184: 140A4C - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
 }
-// 141978: control flows out of bounds to 140A4C
-// 14190D: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1856,13 +1869,14 @@ int sub_14197D(_DWORD *a1, int a2, int a3)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F5D);
+    fprintf(dword_1C0E50, "Result = %d\n", minBufferSize);
+    --dword_1C0E40;
+    return minBufferSize;   /* wave 184: 140F5D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return minBufferSize;   /* wave 184: 13FCD2 - shared AIL API epilogue */
   return minBufferSize; // sdileny epilog jen propusti EAX ze sub_157A60
 }
-// 141A71: control flows out of bounds to 140F5D
-// 141A06: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1892,13 +1906,14 @@ int sub_141A76(_DWORD *a1)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", bufferReady);
+    --dword_1C0E40;
+    return bufferReady;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return bufferReady;   /* wave 184: 13FCD2 - shared AIL API epilogue */
   return bufferReady; // sdileny epilog jen propusti EAX ze sub_157B90
 }
-// 141B56: control flows out of bounds to 1415C4
-// 141AEB: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1915,9 +1930,9 @@ void sub_141B5B(int *a1, int a2, int a3, int a4)
   if ( dword_1C0E54 && (v4 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_load_sample_buffer(0x%X,%u,0x%X,%u)\n", a1, a2, a3, a4);
   sub_157B00(a1, a2, a3, a4);
-  JUMPOUT(0x13FB37);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FB37 - shared AIL API epilogue */
 }
-// 141BE5: control flows out of bounds to 13FB37
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1926,8 +1941,9 @@ void sub_141B5B(int *a1, int a2, int a3, int a4)
 
 
 //----- (00141C60) --------------------------------------------------------
-void sub_141C60(int a1)
+int sub_141C60(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1935,19 +1951,20 @@ void sub_141C60(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_position(0x%X)\n", a1);
-  sub_157830(a1);
+  v_ailres = (int)sub_157830(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140189);
+    fprintf(dword_1C0E50, "Result = %u\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140189 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 141D40: control flows out of bounds to 140189
-// 141CD5: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1956,8 +1973,9 @@ void sub_141C60(int a1)
 
 
 //----- (00141D45) --------------------------------------------------------
-void sub_141D45(int a1, int a2)
+int sub_141D45(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1965,19 +1983,20 @@ void sub_141D45(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_SOB_callback(0x%X,0x%X)\n", a1, a2);
-  sub_1579B0(a1, a2);
+  v_ailres = (int)sub_1579B0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 141E2D: control flows out of bounds to 140901
-// 141DC3: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -1986,8 +2005,9 @@ void sub_141D45(int a1, int a2)
 
 
 //----- (00141E32) --------------------------------------------------------
-void sub_141E32(int a1, int a2)
+int sub_141E32(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -1995,19 +2015,20 @@ void sub_141E32(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_EOB_callback(0x%X,0x%X)\n", a1, a2);
-  sub_1579D0(a1, a2);
+  v_ailres = (int)sub_1579D0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 141F1A: control flows out of bounds to 140901
-// 141EB0: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2016,8 +2037,9 @@ void sub_141E32(int a1, int a2)
 
 
 //----- (00141F1F) --------------------------------------------------------
-void sub_141F1F(int a1, int a2)
+int sub_141F1F(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2025,19 +2047,20 @@ void sub_141F1F(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_EOS_callback(0x%X,0x%X)\n", a1, a2);
-  sub_1579F0(a1, a2);
+  v_ailres = (int)sub_1579F0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142007: control flows out of bounds to 140901
-// 141F9D: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2046,8 +2069,9 @@ void sub_141F1F(int a1, int a2)
 
 
 //----- (0014200C) --------------------------------------------------------
-void sub_14200C(int a1, int a2)
+int sub_14200C(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2055,19 +2079,20 @@ void sub_14200C(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_EOF_callback(0x%X,0x%X)\n", a1, a2);
-  sub_1582A6(a1, a2);
+  v_ailres = (int)sub_1582A6(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1420F4: control flows out of bounds to 140901
-// 14208A: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2096,8 +2121,9 @@ int sub_1420F9(int a1, int a2, int a3)
 
 
 //----- (0014217B) --------------------------------------------------------
-void sub_14217B(int a1, int a2)
+int sub_14217B(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2105,19 +2131,20 @@ void sub_14217B(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sample_user_data(0x%X,%u)\n", a1, a2);
-  sub_157A30(a1, a2);
+  v_ailres = (int)sub_157A30(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F937);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F937 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142263: control flows out of bounds to 13F937
-// 1421F9: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2126,8 +2153,9 @@ void sub_14217B(int a1, int a2)
 
 
 //----- (00142268) --------------------------------------------------------
-void sub_142268(int a1)
+int sub_142268(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2135,19 +2163,20 @@ void sub_142268(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_active_sample_count(0x%X)\n", a1);
-  sub_1575E0(a1);
+  v_ailres = (int)sub_1575E0(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142348: control flows out of bounds to 1415C4
-// 1422DD: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2173,12 +2202,10 @@ void sub_14234D()
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140A4C);
+    /* wave 184: 140A4C - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
 }
-// 142420: control flows out of bounds to 140A4C
-// 1423B5: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2187,8 +2214,9 @@ void sub_14234D()
 
 
 //----- (00142425) --------------------------------------------------------
-void sub_142425(char *a1, void *a2)
+int sub_142425(char *a1, void *a2)
 {
+  int v_ailres; // esi
   PortDebug_Checkpoint("MDI.install_driver_file", 1); /* PORT: docasne mereni hudebniho retezce */
   int v2; // edx
   unsigned int i; // edx
@@ -2197,19 +2225,20 @@ void sub_142425(char *a1, void *a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_MDI_driver_file(%s,0x%X)\n", a1, a2);
-  sub_15A340((int)a1, a2);
+  v_ailres = (int)sub_15A340((int)a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 14250D: control flows out of bounds to 140901
-// 1424A3: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2218,8 +2247,9 @@ void sub_142425(char *a1, void *a2)
 
 
 //----- (0014257F) --------------------------------------------------------
-void sub_14257F(int a1)
+int sub_14257F(int a1)
 {
+  int v_ailres; // esi
   PortDebug_Checkpoint("MDI.allocate_sequence", 1); /* PORT: docasne mereni hudebniho retezce */
   int v1; // edx
   unsigned int i; // edx
@@ -2228,19 +2258,20 @@ void sub_14257F(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_allocate_sequence_handle(0x%X)\n", a1);
-  sub_15A4F0(a1);
+  v_ailres = (int)sub_15A4F0(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FA33);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13FA33 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 14265F: control flows out of bounds to 13FA33
-// 1425F4: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2249,8 +2280,9 @@ void sub_14257F(int a1)
 
 
 //----- (001426D1) --------------------------------------------------------
-void sub_1426D1(int **a1, int a2, int a3)
+int sub_1426D1(int **a1, int a2, int a3)
 {
+  int v_ailres; // esi
   PortDebug_Checkpoint("MDI.init_sequence", 1); /* PORT: docasne mereni hudebniho retezce */
   int v3; // edx
   unsigned int i; // edx
@@ -2259,19 +2291,20 @@ void sub_1426D1(int **a1, int a2, int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_init_sequence(0x%X,0x%X,%d)\n", a1, a2, a3);
-  sub_15A590(a1, a2, a3);
+  v_ailres = (int)sub_15A590(a1, a2, a3);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F5D);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140F5D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1427C5: control flows out of bounds to 140F5D
-// 14275A: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2289,9 +2322,9 @@ void sub_1427CA(_DWORD *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_start_sequence(0x%X)\n", a1);
   sub_15A940(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 142832: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2308,9 +2341,9 @@ void sub_142837(_DWORD *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_stop_sequence(0x%X)\n", a1);
   sub_15A980(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 14289F: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2327,9 +2360,9 @@ void sub_1428A4(_DWORD *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_resume_sequence(0x%X)\n", a1);
   sub_15AA50(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 14290C: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2346,9 +2379,9 @@ void sub_142911(_DWORD *a1)
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_end_sequence(0x%X)\n", a1);
   sub_15AAE0(a1);
-  JUMPOUT(0x13FBA9);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FBA9 - shared AIL API epilogue */
 }
-// 142979: control flows out of bounds to 13FBA9
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2405,9 +2438,9 @@ void sub_142A82(int a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_set_sequence_loop_count(0x%X,%d)\n", a1, a2);
   sub_15AB10(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 142AF3: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2416,8 +2449,9 @@ void sub_142A82(int a1, int a2)
 
 
 //----- (00142AF8) --------------------------------------------------------
-void sub_142AF8(int a1)
+int sub_142AF8(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2425,19 +2459,20 @@ void sub_142AF8(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sequence_status(0x%X)\n", a1);
-  sub_15AC10(a1);
+  v_ailres = (int)sub_15AC10(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140189);
+    fprintf(dword_1C0E50, "Result = %u\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140189 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142BD8: control flows out of bounds to 140189
-// 142B6D: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2446,8 +2481,9 @@ void sub_142AF8(int a1)
 
 
 //----- (00142BDD) --------------------------------------------------------
-void sub_142BDD(int a1)
+int sub_142BDD(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2455,19 +2491,20 @@ void sub_142BDD(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sequence_tempo(0x%X)\n", a1);
-  sub_15AC40(a1);
+  v_ailres = (int)sub_15AC40(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142CBD: control flows out of bounds to 1415C4
-// 142C52: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2476,8 +2513,9 @@ void sub_142BDD(int a1)
 
 
 //----- (00142CC2) --------------------------------------------------------
-void sub_142CC2(int a1)
+int sub_142CC2(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2485,19 +2523,20 @@ void sub_142CC2(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sequence_volume(0x%X)\n", a1);
-  sub_15AC50(a1);
+  v_ailres = (int)sub_15AC50(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142DA2: control flows out of bounds to 1415C4
-// 142D37: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2506,8 +2545,9 @@ void sub_142CC2(int a1)
 
 
 //----- (00142DA7) --------------------------------------------------------
-void sub_142DA7(int a1)
+int sub_142DA7(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2515,19 +2555,20 @@ void sub_142DA7(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sequence_loop_count(0x%X)\n", a1);
-  sub_15AC20(a1);
+  v_ailres = (int)sub_15AC20(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 142E87: control flows out of bounds to 1415C4
-// 142E1C: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2552,12 +2593,10 @@ void sub_142E8C(int a1, int a2, void *a3)
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140A4C);
+    /* wave 184: 140A4C - "Result" log of the shared epilogue, skipped (port driver) */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;   /* wave 184: 13FCD2 - shared AIL API epilogue (dec dword_1B8E40) */
 }
-// 142F80: control flows out of bounds to 140A4C
-// 142F15: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2566,8 +2605,9 @@ void sub_142E8C(int a1, int a2, void *a3)
 
 
 //----- (00142FF2) --------------------------------------------------------
-void sub_142FF2(int *a1, int a2, int a3)
+int sub_142FF2(int *a1, int a2, int a3)
 {
+  int v_ailres; // esi
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2575,19 +2615,20 @@ void sub_142FF2(int *a1, int a2, int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_timbre_status(0x%X,%d,%d)\n", a1, a2, a3);
-  sub_15AC60(a1, a2, a3);
+  v_ailres = (int)sub_15AC60(a1, a2, a3);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F5D);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140F5D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1430E6: control flows out of bounds to 140F5D
-// 14307B: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2596,8 +2637,9 @@ void sub_142FF2(int *a1, int a2, int a3)
 
 
 //----- (001430EB) --------------------------------------------------------
-void sub_1430EB(int *a1, int a2, int a3)
+int sub_1430EB(int *a1, int a2, int a3)
 {
+  int v_ailres; // esi
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2605,19 +2647,20 @@ void sub_1430EB(int *a1, int a2, int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_install_timbre(0x%X,%d,%d)\n", a1, a2, a3);
-  sub_15ACA0(a1, a2, a3);
+  v_ailres = (int)sub_15ACA0(a1, a2, a3);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F5D);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140F5D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1431DF: control flows out of bounds to 140F5D
-// 143174: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2666,8 +2709,9 @@ int sub_143266(int *a1, int a2, int a3)
 
 
 //----- (001432E8) --------------------------------------------------------
-void sub_1432E8(int a1)
+int sub_1432E8(int a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2675,19 +2719,20 @@ void sub_1432E8(int a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_active_sequence_count(0x%X)\n", a1);
-  sub_15AE20(a1);
+  v_ailres = (int)sub_15AE20(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1433C8: control flows out of bounds to 1415C4
-// 14335D: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2696,8 +2741,9 @@ void sub_1432E8(int a1)
 
 
 //----- (001433CD) --------------------------------------------------------
-void sub_1433CD(int a1, int a2, unsigned int a3)
+int sub_1433CD(int a1, int a2, unsigned int a3)
 {
+  int v_ailres; // esi
   int v3; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2705,19 +2751,20 @@ void sub_1433CD(int a1, int a2, unsigned int a3)
   v3 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v3 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_controller_value(0x%X,%d,%d)\n", a1, a2, a3);
-  sub_15AE50(a1, a2, a3);
+  v_ailres = (int)sub_15AE50(a1, a2, a3);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140F5D);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140F5D - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1434C1: control flows out of bounds to 140F5D
-// 143456: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2726,8 +2773,9 @@ void sub_1433CD(int a1, int a2, unsigned int a3)
 
 
 //----- (001434C6) --------------------------------------------------------
-void sub_1434C6(int a1, int a2)
+int sub_1434C6(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2735,19 +2783,20 @@ void sub_1434C6(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_channel_notes(0x%X,%d)\n", a1, a2);
-  sub_15AE80(a1, a2);
+  v_ailres = (int)sub_15AE80(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F937);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F937 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1435AE: control flows out of bounds to 13F937
-// 143544: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2773,12 +2822,12 @@ void sub_1435B3(_DWORD *a1, _DWORD *a2, int *a3)
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
     fprintf(dword_1C0E50, "Result = %d:%d\n", *a3 + 1, *a2 + 1);
-    JUMPOUT(0x141BE2);
+    --dword_1C0E40;
+    return;   /* wave 184: 141BE2 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FB37);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FB37 - shared AIL API epilogue */
 }
-// 1436B6: control flows out of bounds to 141BE2
-// 143632: control flows out of bounds to 13FB37
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2795,9 +2844,9 @@ void sub_1436BB(_DWORD *a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_branch_index(0x%X,%u)\n", a1, a2);
   sub_15AF30(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 14372C: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2806,8 +2855,9 @@ void sub_1436BB(_DWORD *a1, int a2)
 
 
 //----- (00143731) --------------------------------------------------------
-void sub_143731(int a1, int a2)
+int sub_143731(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2815,19 +2865,20 @@ void sub_143731(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_prefix_callback(0x%X,0x%X)\n", a1, a2);
-  sub_15AFC0(a1, a2);
+  v_ailres = (int)sub_15AFC0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143819: control flows out of bounds to 140901
-// 1437AF: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2836,8 +2887,9 @@ void sub_143731(int a1, int a2)
 
 
 //----- (0014381E) --------------------------------------------------------
-void sub_14381E(int a1, int a2)
+int sub_14381E(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2845,19 +2897,20 @@ void sub_14381E(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_trigger_callback(0x%X,0x%X)\n", a1, a2);
-  sub_15AFE0(a1, a2);
+  v_ailres = (int)sub_15AFE0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143906: control flows out of bounds to 140901
-// 14389C: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2866,8 +2919,9 @@ void sub_14381E(int a1, int a2)
 
 
 //----- (0014390B) --------------------------------------------------------
-void sub_14390B(int a1, int a2)
+int sub_14390B(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2875,19 +2929,20 @@ void sub_14390B(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_sequence_callback(0x%X,0x%X)\n", a1, a2);
-  sub_15B000(a1, a2);
+  v_ailres = (int)sub_15B000(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 1439F3: control flows out of bounds to 140901
-// 143989: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2896,8 +2951,9 @@ void sub_14390B(int a1, int a2)
 
 
 //----- (001439F8) --------------------------------------------------------
-void sub_1439F8(int a1, int a2)
+int sub_1439F8(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2905,19 +2961,20 @@ void sub_1439F8(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_event_callback(0x%X,0x%X)\n", a1, a2);
-  sub_15B020(a1, a2);
+  v_ailres = (int)sub_15B020(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143AE0: control flows out of bounds to 140901
-// 143A76: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2926,8 +2983,9 @@ void sub_1439F8(int a1, int a2)
 
 
 //----- (00143AE5) --------------------------------------------------------
-void sub_143AE5(int a1, int a2)
+int sub_143AE5(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2935,19 +2993,20 @@ void sub_143AE5(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_register_timbre_callback(0x%X,0x%X)\n", a1, a2);
-  sub_15B040(a1, a2);
+  v_ailres = (int)sub_15B040(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x140901);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 140901 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143BCD: control flows out of bounds to 140901
-// 143B63: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -2976,8 +3035,9 @@ int sub_143BD2(int a1, int a2, int a3)
 
 
 //----- (00143C54) --------------------------------------------------------
-void sub_143C54(int a1, int a2)
+int sub_143C54(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -2985,19 +3045,20 @@ void sub_143C54(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_sequence_user_data(0x%X,%u)\n", a1, a2);
-  sub_15B080(a1, a2);
+  v_ailres = (int)sub_15B080(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F937);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F937 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143D3C: control flows out of bounds to 13F937
-// 143CD2: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -3006,8 +3067,9 @@ void sub_143C54(int a1, int a2)
 
 
 //----- (00143DB7) --------------------------------------------------------
-void sub_143DB7(_DWORD *a1)
+int sub_143DB7(_DWORD *a1)
 {
+  int v_ailres; // esi
   int v1; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -3015,19 +3077,20 @@ void sub_143DB7(_DWORD *a1)
   v1 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v1 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_lock_channel(0x%X)\n", a1);
-  sub_15B0B0(a1);
+  v_ailres = (int)sub_15B0B0(a1);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x1415C4);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 1415C4 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 143E97: control flows out of bounds to 1415C4
-// 143E2C: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -3044,9 +3107,9 @@ void sub_143E9C(_DWORD *a1, int a2)
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_release_channel(0x%X,%d)\n", a1, a2);
   sub_15B250(a1, a2);
-  JUMPOUT(0x13FAAF);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FAAF - shared AIL API epilogue */
 }
-// 143F0D: control flows out of bounds to 13FAAF
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -3075,8 +3138,9 @@ _DWORD *sub_143F12(_DWORD *a1, int a2, int a3)
 
 
 //----- (00143F94) --------------------------------------------------------
-void sub_143F94(int a1, int a2)
+int sub_143F94(int a1, int a2)
 {
+  int v_ailres; // esi
   int v2; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -3084,19 +3148,20 @@ void sub_143F94(int a1, int a2)
   v2 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v2 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_true_sequence_channel(0x%X,%d)\n", a1, a2);
-  sub_15B3C0(a1, a2);
+  v_ailres = (int)sub_15B3C0(a1, a2);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13F937);
+    fprintf(dword_1C0E50, "Result = %d\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13F937 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 14407C: control flows out of bounds to 13F937
-// 144012: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -3113,9 +3178,9 @@ void sub_144081(int a1, int a2, int a3, unsigned int a4, int a5)
   if ( dword_1C0E54 && (v5 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_send_channel_voice_message(0x%X,0x%X,0x%X,0x%X,0x%X)\n", a1, a2, a3, a4, a5);
   sub_15B3E0(a1, a2, a3, a4, a5);
-  JUMPOUT(0x13FB37);
+  --dword_1C0E40;
+  return;   /* wave 184: 13FB37 - shared AIL API epilogue */
 }
-// 144115: control flows out of bounds to 13FB37
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
@@ -3124,8 +3189,9 @@ void sub_144081(int a1, int a2, int a3, unsigned int a4, int a5)
 
 
 //----- (00144190) --------------------------------------------------------
-void sub_144190(int a1, int a2, int a3, int a4)
+int sub_144190(int a1, int a2, int a3, int a4)
 {
+  int v_ailres; // esi
   int v4; // edx
   unsigned int i; // edx
   unsigned int j; // edx
@@ -3133,19 +3199,20 @@ void sub_144190(int a1, int a2, int a3, int a4)
   v4 = ++dword_1C0E40;
   if ( dword_1C0E54 && (v4 == 1 || dword_1C0E58) && !sub_155536() && sub_13F59A() )
     fprintf(dword_1C0E50, "AIL_create_wave_synthesizer(0x%X,0x%X,0x%X,%d)\n", a1, a2, a3, a4);
-  sub_15BFAD(a1, a2, a3, a4);
+  v_ailres = (int)sub_15BFAD(a1, a2, a3, a4);   /* wave 184: mov esi, eax */
   if ( dword_1C0E54 && (dword_1C0E40 == 1 || dword_1C0E58) && !sub_155536() )
   {
     for ( i = 0; i < 0xE; ++i )
       fprintf(dword_1C0E50, " ");
     for ( j = 1; j < dword_1C0E40; ++j )
       fprintf(dword_1C0E50, &unk_17B145);
-    JUMPOUT(0x13FCC3);
+    fprintf(dword_1C0E50, "Result = 0x%X\n", v_ailres);
+    --dword_1C0E40;
+    return v_ailres;   /* wave 184: 13FCC3 - shared AIL API epilogue */
   }
-  JUMPOUT(0x13FCD2);
+  --dword_1C0E40;
+  return v_ailres;   /* wave 184: 13FCD2 - shared AIL API epilogue */
 }
-// 144293: control flows out of bounds to 13FCC3
-// 144223: control flows out of bounds to 13FCD2
 // 153DFA: using guessed type _DWORD fprintf(_DWORD, _DWORD, ...);
 // 1C0E40: using guessed type int dword_1C0E40;
 // 1C0E50: using guessed type int dword_1C0E50;
