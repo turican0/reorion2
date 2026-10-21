@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="game150">
+      <UniqueIdentifier>{0d6e2f51-8a3c-4b77-9e1a-5c2f7a9b3e15}</UniqueIdentifier>
+    </Filter>
     <Filter Include="lua">
       <UniqueIdentifier>{6c1f3d0e-2b7a-4f5e-9a51-3d2c8e7b1a42}</UniqueIdentifier>
     </Filter>
