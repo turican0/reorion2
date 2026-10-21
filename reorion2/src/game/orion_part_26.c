@@ -2707,7 +2707,6 @@ void sub_1676F0(unsigned int *a1, int a2, int a3, int a4, int a5, int a6)
   }
   PortDebug_Checkpoint("1676F0.RETURNED", 1);
 }
-// 167D64: variable 'v71' is possibly undefined
 // 18A68C: using guessed type int dword_18A68C;
 // 18A690: using guessed type int dword_18A690;
 // 18A694: using guessed type int dword_18A694;
@@ -3221,7 +3220,6 @@ int sub_16933A( int a1)
     v2[137776] = 0;
   return v4;
 }
-// 16933F: variable 'v1' is possibly undefined
 
 
 //----- (0016937A) --------------------------------------------------------
@@ -3312,7 +3310,6 @@ int sub_1693B6()
   }
   return result;
 }
-// 1693BB: variable 'v0' is possibly undefined
 // 19997C: using guessed type int16_t word_19997C;
 // 199992: using guessed type int16_t word_199992;
 // 19999E: using guessed type int16_t word_19999E;

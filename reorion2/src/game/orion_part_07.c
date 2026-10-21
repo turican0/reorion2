@@ -1343,7 +1343,6 @@ void sub_7B11A( int a1)
 // 7B20D: control flows out of bounds to 7BF57
 // 7B134: variable 'v2' is possibly undefined
 // 7B134: variable 'v3' is possibly undefined
-// 7B18D: variable 'v4' is possibly undefined
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 1999A2: using guessed type int16_t word_1999A2;
@@ -1730,7 +1729,6 @@ void sub_7B631()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7BF57 je epilog funkce */
 }
 // 7B8C8: control flows out of bounds to 7BF57
-// 7B797: variable 'v7' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
 // 19306C: using guessed type int dword_19306C;
@@ -1845,7 +1843,7 @@ int sub_7B8CD()
     v3 = v1;
     LOBYTE(v17) = sub_7AD13((int)v26, v1);
     LOBYTE(v3) = v17;
-    ServiceAudioTick_FE8BE(v17, v3, v2, (int16_t *)v1);
+    ServiceAudioTick_FE8BE(0, v3, v2, (int16_t *)v1);
     if ( (_BYTE)v3 )
     {
       LOWORD(v6) = (_WORD)v6 + 1;
@@ -1878,8 +1876,6 @@ int sub_7B8CD()
   return 1;   /* vlna 79: asm `mov eax, 1 / jmp locret_7BF57` */
 }
 // 7BAFB: control flows out of bounds to 7BF57
-// 7B974: variable 'v5' is possibly undefined
-// 7BAE5: variable 'v17' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192ED4: using guessed type int dword_192ED4;
 // 19306C: using guessed type int dword_19306C;
@@ -2294,7 +2290,6 @@ void sub_7C107( int a1, int a2, int a3)
     }
   }
 }
-// 7C17E: variable 'v8' is possibly undefined
 // 192EE8: using guessed type int (uint8_t*)dword_192EE8;
 // 19306C: using guessed type int dword_19306C;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
@@ -3947,7 +3942,7 @@ LABEL_36:
   goto LABEL_12;
 }
 // 7E00A: control flows out of bounds to 7E50B
-// 7DDA9: variable 'v15' is possibly undefined
+// 7DDA9: v15 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 199830: using guessed type int16_t word_199830;
 // 19999C: using guessed type int16_t word_19999C;
 // 1999E4: using guessed type int16_t word_1999E4;
@@ -5324,7 +5319,6 @@ void sub_7F701(int a1, int a2)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x7DA0C je epilog funkce */
 }
 // 7FA0A: control flows out of bounds to 7DA0C
-// 7F716: variable 'v2' is possibly undefined
 // 19983A: using guessed type int16_t word_19983A;
 // 19983C: using guessed type int16_t word_19983C;
 // 19994C: using guessed type int16_t word_19994C;
@@ -5712,7 +5706,7 @@ void sub_8012F(int a1, int a2)
   sub_124C08();
   word_19994C = 0;
   v2 = 632;
-  sub_7EA5C(v3, a2, 632, v8);
+  sub_7EA5C(0, a2, 632, v8);
   v4 = -1;
   sub_111499(dword_192ED4);
   memset(dword_19C038, -1, 632);
@@ -5817,7 +5811,6 @@ void sub_8012F(int a1, int a2)
   }
 }
 // 8038A: control flows out of bounds to 7DA0C
-// 801BE: variable 'v3' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192ED4: using guessed type int dword_192ED4;
 // 199830: using guessed type int16_t word_199830;
@@ -6027,7 +6020,7 @@ int sub_806A2(char *a1, int a2)
 #undef v5
 #undef v6
 }
-// 806E4: variable 'v4' is possibly undefined
+// 806E4: v4 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 
 
@@ -6529,7 +6522,6 @@ LABEL_15:
   }
   return v22;
 }
-// 80FC1: variable 'v13' is possibly undefined
 // 17969C: using guessed type wchar_t aLnmhq[6];
 // 1796B7: using guessed type _UNKNOWN *off_1796B7;
 // 1845E0: using guessed type int dword_1845E0;
@@ -10076,7 +10068,6 @@ int sub_854C0()
   v6 = v3;
   return sub_12A478(v5, v3, v1);
 }
-// 85530: variable 'v3' is possibly undefined
 // 1906C8: using guessed type int16_t word_1906C8[];
 // 1906CA: using guessed type int16_t word_1906CA[3427];
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -11583,9 +11574,6 @@ LABEL_207:
   }
 }
 // 8763F: control flows out of bounds to 83D00
-// 869DD: variable 'v32' is possibly undefined
-// 87390: variable 'v55' is possibly undefined
-// 874F0: variable 'v61' is possibly undefined
 // FE8BD: using guessed type int nullsub_14(_DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -12480,7 +12468,6 @@ LABEL_64:
   goto LABEL_64;
 }
 // 88B05: control flows out of bounds to 87638
-// 882FB: variable 'v27' is possibly undefined
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 192FD8: using guessed type int dword_192FD8;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;

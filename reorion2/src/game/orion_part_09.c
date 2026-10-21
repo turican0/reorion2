@@ -108,7 +108,7 @@ char sub_93D8E( int a1, _WORD *a2, _WORD *a3)
   char result; // al
 
   v5 = a1;
-  sub_97A2D(word_19999C, a1);
+  v6 = sub_97A2D(word_19999C, a1);   /* 93DAA */
   *a2 = v6;
   *a3 = sub_94A9D(word_19999C, v5);
   result = (*(_DWORD *)(dword_1930DC + 59 * v5 + 38) & dword_17D411) != 0;
@@ -116,7 +116,6 @@ char sub_93D8E( int a1, _WORD *a2, _WORD *a3)
     *a3 = 0;
   return result;
 }
-// 93DAA: variable 'v6' is possibly undefined
 // 17D411: using guessed type int dword_17D411;
 // 1930DC: using guessed type int dword_1930DC;
 // 19999C: using guessed type int16_t word_19999C;
@@ -611,7 +610,6 @@ LABEL_13:
   *a1 = 1;
   byte_199F11 = 1;
 }
-// 945B0: variable 'v4' is possibly undefined
 // 192248: using guessed type int16_t word_192248[500];
 // 1975C4: using guessed type int dword_1975C4;
 // 199838: using guessed type int16_t word_199838;
@@ -1175,7 +1173,7 @@ void sub_94C1D(int a1, int a2, int16_t *a3, int a4)
     }
     v65 = byte_199F1F == 0;
     sub_12C2A0();
-    v14 = sub_1171AB(v11, SHIDWORD(v11), v12, (int)v13);
+    v14 = sub_1171AB(0, SHIDWORD(v11), v12, (int)v13);
     v15 = v14;
     v55 = v14;
     v41 = sub_114177();
@@ -1471,7 +1469,6 @@ LABEL_100:
   }
 }
 // 956DD: control flows out of bounds to 94800
-// 94F73: variable 'v11' is possibly undefined
 // 772BF: using guessed type int sub_772BF(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182ACE: using guessed type char byte_182ACE;
@@ -1569,7 +1566,6 @@ int sub_956E2( int a1, int a2, int a3, int a4)
   sub_134D2D((int16_t)v10, (int16_t)(v15 + v16), v11, (int16_t)(v15 + v16), 75);
   return sub_134D2D((int16_t)v10, (int16_t)(v14 + 1), v11, (int16_t)(v14 + 1), 129);
 }
-// 95718: variable 'v6' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1930DC: using guessed type int dword_1930DC;
 
@@ -3965,7 +3961,6 @@ char sub_97F8D(int16_t *a1, int a2, int a3, int16_t a4)
   }
   return v14;
 }
-// 97FF5: variable 'v8' is possibly undefined
 // 1930DC: using guessed type int dword_1930DC;
 
 
@@ -3980,7 +3975,7 @@ int16_t sub_98062( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v1 = a1;
-  sub_97A2D(word_19999C, a1);
+  v2 = sub_97A2D(word_19999C, a1);   /* 9807C */
   v3 = v2;
   sub_123E6C((int)unk_17CF00, 1);
   v4 = 0;
@@ -4002,7 +3997,6 @@ int16_t sub_98062( int a1)
   }
   return v4;
 }
-// 9807C: variable 'v2' is possibly undefined
 // 980C7: variable 'v5' is possibly undefined
 // 1930DC: using guessed type int dword_1930DC;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -5598,7 +5592,6 @@ void sub_99AFA()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x99A68 je epilog funkce */
 }
 // 99E02: control flows out of bounds to 99A68
-// 99BBE: variable 'v2' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192248: using guessed type int16_t word_192248[500];
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -7794,9 +7787,6 @@ LABEL_33:
 }
 // 9C5FB: control flows out of bounds to 9B7DF
 // 9C175: conditional instruction was optimized away because si.2 is in (1..7F)
-// 9C1FC: variable 'v16' is possibly undefined
-// 9C45D: variable 'v39' is possibly undefined
-// 9C4DF: variable 'v42' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1822B8: using guessed type int16_t word_1822B8[];
 // 1822BA: using guessed type int16_t word_1822BA[32];
@@ -8255,7 +8245,7 @@ int16_t sub_9CD24( int16_t a1, int16_t a2)
     if ( (int16_t)v6 == -1 )
     {
       LOWORD(v24) = v0;
-      v6 = sub_78D86();   /* wave 184: 9CE29 result */
+      v6 = sub_78D86((int)(intptr_t)&v24);   /* wave 184: 9CE22 lea eax, [var_8] */
       v25 = v6;
       if ( (int16_t)v6 != -1 )
         goto LABEL_20;
@@ -8319,8 +8309,6 @@ LABEL_20:
   }
   return v6;
 }
-// 9CDCB: variable 'v5' is possibly undefined
-// 9CF4E: variable 'v13' is possibly undefined
 // 77433: using guessed type int sub_77433(_DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 19306C: using guessed type int dword_19306C;

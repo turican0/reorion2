@@ -2018,7 +2018,7 @@ void sub_14AC60(int a1, int a2, int a3, int a4, int a5, int a6)
   }
 }
 // 14AFDC: conditional instruction was optimized away because %var_14.4 is in (==4|==8)
-// 14B01A: variable 'v38' is possibly undefined
+// 14B01A: v38 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 10000: using guessed type void sub_10000();
 
 
@@ -2069,7 +2069,6 @@ void sub_14B200(int a1)
       dword_1C3C34(v5);
   }
 }
-// 14B296: variable 'v5' is possibly undefined
 // 189154: using guessed type int dword_189154;
 // 1C3C34: using guessed type int (*dword_1C3C34)(_DWORD);
 
@@ -3195,7 +3194,6 @@ LABEL_12:
 }
 // 1C9830: invalid function type '?' has been ignored
 // 14C13C: conditional instruction was optimized away because edx.4>=2000u
-// 14BC63: variable 'v6' is possibly undefined
 // 18915C: using guessed type int dword_18915C;
 // 189160: using guessed type int dword_189160;
 // 18A5AC: using guessed type int (*dword_18A5AC)(_DWORD);
@@ -4128,7 +4126,6 @@ LABEL_54:
   else
     return -1;
 }
-// 14D385: variable 'v15' is possibly undefined
 
 
 //----- (0014D418) --------------------------------------------------------
@@ -7555,7 +7552,6 @@ int sub_1529B8(int a1, int a2)
   sub_168560(v8 + 3, v9);
   return 0;
 }
-// 1529E7: variable 'v7' is possibly undefined
 
 
 //----- (00152A5C) --------------------------------------------------------

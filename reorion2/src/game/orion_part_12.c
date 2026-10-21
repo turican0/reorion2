@@ -2313,8 +2313,6 @@ LABEL_21:
     return v8;
   }
 }
-// BE553: variable 'v2' is possibly undefined
-// BE55B: variable 'v4' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 17EB43: using guessed type int16_t word_17EB43;
 // 17EB45: using guessed type int dword_17EB45;
@@ -2392,7 +2390,6 @@ void sub_BE960( int a1, int a2, int a3, int a4, int a5)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xBDA51 je epilog funkce */
 }
 // BEA2E: control flows out of bounds to BDA51
-// BE996: variable 'v10' is possibly undefined
 // 19DD8C: using guessed type int dword_19DD8C;
 
 
@@ -3418,7 +3415,6 @@ LABEL_20:
     sub_E109D((int16_t)a1);   /* wave 184: BFCFE mov eax, edx - edx = movsx a1 (BFC16), not sprintf's high word */
   return sub_BB1A6(a1, (int16_t)a1);   /* wave 184: BFD05 movsx eax, si - edx is still movsx a1 */
 }
-// BFD4D: variable 'v15' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182ACA: using guessed type char byte_182ACA;
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -5956,7 +5952,6 @@ void sub_C2E4D()
   }
 }
 // C2E39: control flows out of bounds to C267E
-// C2E7E: variable 'v13' is possibly undefined
 // C2220: using guessed type int[4];
 // C2234: using guessed type int dword_C2234[7];
 // 179E06: using guessed type _BYTE byte_179E06[2];
@@ -8409,7 +8404,6 @@ int sub_C5E2D(int a1, int a2, int a3, int a4)
   LOBYTE(v10) = sub_131B5D(255, 19, 16, 9, 32, 40, 21, a4);
   return nullsub_10(v10);
 }
-// C5E9E: variable 'v10' is possibly undefined
 // C5E9F: using guessed type int nullsub_10(_DWORD);
 
 

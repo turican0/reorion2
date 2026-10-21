@@ -25,7 +25,7 @@ int sub_11A558()
   else
     return v4;
 }
-// 11A5B3: variable 'v3' is possibly undefined
+// 11A5B3: v3 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 
 
 //----- (0011A5D0) --------------------------------------------------------
@@ -1844,7 +1844,6 @@ LABEL_325:
 }
 // 11D0CE: conditional instruction was optimized away because %var_14.2!=0
 // 11D491: conditional instruction was optimized away because %var_44.2!=0
-// 11DB6B: variable 'v18' is possibly undefined
 // 13F37F: using guessed type int strcpy(_DWORD, _DWORD);
 // 184480: using guessed type _UNKNOWN *off_184480;
 // 18448E: using guessed type int dword_18448E;
@@ -2445,8 +2444,6 @@ int16_t sub_120486(int a1)
   }
   return result;
 }
-// 1204CB: variable 'v2' is possibly undefined
-// 1204F5: variable 'v3' is possibly undefined
 
 
 //----- (00120526) --------------------------------------------------------
@@ -3214,9 +3211,9 @@ LABEL_66:
   LOWORD(v5) = dword_1B61E8;
   return v5;
 }
-// 121AE3: variable 'v11' is possibly undefined
-// 121AF0: variable 'v8' is possibly undefined
-// 121AF0: variable 'v9' is possibly undefined
+// 121AE3: v11 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 121AF0: v8 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 121AF0: v9 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 184510: using guessed type int dword_184510;
 // 1B3EA2: using guessed type int16_t word_1B3EA2;
 // 1B61E0: using guessed type int dword_1B61E0;
@@ -3358,8 +3355,6 @@ int sub_121DEB(int a1, int a2, unsigned int a3)
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);
 }
 // 121E54: variable 'v5' is possibly undefined
-// 121E54: variable 'v6' is possibly undefined
-// 121E54: variable 'v7' is possibly undefined
 // 184532: using guessed type int dword_184532;
 // 1B3E74: using guessed type int dword_1B3E74;
 // 1B3EA0: using guessed type int16_t word_1B3EA0;
@@ -3659,9 +3654,9 @@ LABEL_60:
   }
   return 1;
 }
-// 1225DA: variable 'v11' is possibly undefined
-// 1225E7: variable 'v8' is possibly undefined
-// 1225E7: variable 'v9' is possibly undefined
+// 1225DA: v11 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 1225E7: v8 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 1225E7: v9 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 1B3E82: using guessed type int dword_1B3E82;
 // 1B3EA2: using guessed type int16_t word_1B3EA2;
 // 1B61E0: using guessed type int dword_1B61E0;
@@ -6779,7 +6774,7 @@ int sub_127C27(int a1, int a2, int a3)
                      + 23);
   }
 }
-// 127CDE: variable 'v10' is possibly undefined
+// 127CDE: v10 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 13C896: using guessed type int stricmp(_DWORD, _DWORD);
 // 13F37F: using guessed type int strcpy(_DWORD, _DWORD);
 // 184580: using guessed type int dword_184580;

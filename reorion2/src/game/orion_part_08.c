@@ -1520,7 +1520,7 @@ void sub_8A6C2()
   }
   else
   {
-    ServiceAudioTick_FE8BE(v0, 0, 0, 0);
+    ServiceAudioTick_FE8BE(0, 0, 0, 0);
     byte_19C1A0 = 0;
     byte_19C1A2 = 0;
     byte_19C18E = 1;
@@ -1567,7 +1567,6 @@ void sub_8A6C2()
     sub_1172FC();
   }
 }
-// 8A6E2: variable 'v0' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 84E9D: using guessed type int sub_84E9D(_DWORD);
 // FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
@@ -2207,8 +2206,7 @@ void sub_8B2DE()
   sub_A20CD();
 }
 // 8B4C7: control flows out of bounds to 8AB1C
-// 8B30C: variable 'v0' is possibly undefined
-// 8B411: variable 'v11' is possibly undefined
+// 8B411: v11 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 192248: using guessed type int16_t word_192248[500];
 // 192FE0: using guessed type int16_t word_192FE0[];
 // 192FE2: using guessed type int16_t word_192FE2[];
@@ -2993,7 +2991,7 @@ void sub_8C099(int a1, unsigned int a2)
     LOWORD(v4) = (uint8_t)byte_199F0D;
     if ( (int16_t)i >= (uint8_t)byte_199F0D )
       break;
-    ServiceAudioTick_FE8BE((int)v4, i, v6, (int16_t *)a2);
+    ServiceAudioTick_FE8BE(0, i, v6, (int16_t *)a2);
     v6 = 0;
     do
     {
@@ -3136,10 +3134,7 @@ LABEL_40:
   goto LABEL_40;
 }
 // 8C4BE: control flows out of bounds to 8BBFD
-// 8C13E: variable 'v4' is possibly undefined
 // 8C25F: variable 'v17' is possibly undefined
-// 8C452: variable 'v28' is possibly undefined
-// 8C465: variable 'v29' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 192ED4: using guessed type int dword_192ED4;
 // 192EF0: using guessed type int dword_192EF0;
@@ -4039,7 +4034,7 @@ LABEL_25:
             v20 = 0;
             do
             {
-              ServiceAudioTick_FE8BE(v28, v6, v5, v7);
+              ServiceAudioTick_FE8BE(0, v6, v5, v7);
               v29 = sub_1247A0(0x189u) + 20;
               v41 = sub_1247A0(0x155u) + 20;
               v31 = sub_7927F((int16_t)v29);   /* wave 182: 0x8D3B8 */
@@ -4091,9 +4086,6 @@ LABEL_25:
   goto LABEL_11;
 }
 // 8D405: control flows out of bounds to 8CB8D
-// 8D38D: variable 'v28' is possibly undefined
-// 8D3CE: variable 'v31' is possibly undefined
-// 8D3E3: variable 'v32' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 19306C: using guessed type int dword_19306C;
 // 199954: using guessed type int16_t word_199954;
@@ -4227,13 +4219,14 @@ void sub_8D65D()
 
 
 //----- (0008D687) --------------------------------------------------------
-void sub_8D687()
+void sub_8D687(int a1)
 {
   _DWORD *v0; // eax
   void *v1; // edi
   int v2; // [esp+0h] [ebp-8h]
   int v3; // [esp+4h] [ebp-4h]
 
+  v2 = a1;   /* wave 184: spilled by `push eax` after enter */
   v3 = 0;
   do
   {
@@ -4245,7 +4238,6 @@ void sub_8D687()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x8BBFC je epilog funkce */
 }
 // 8D6D1: control flows out of bounds to 8BBFC
-// 8D6BF: variable 'v2' is possibly undefined
 // 192ED4: using guessed type int dword_192ED4;
 
 
@@ -4356,7 +4348,6 @@ int sub_8D6D6( int a1, int a2)
   }
   return result;
 }
-// 8D71A: variable 'v5' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 1783D3: using guessed type char byte_1783D3;
 // 19306C: using guessed type int dword_19306C;
@@ -5793,12 +5784,11 @@ int sub_8EFE1( unsigned int a1,
   ServiceAudioTick_FE8BE((int)v10, a3, (int)&v17, a4);
   v11 = v14;
   LOWORD(v12) = sub_8FC82(0, 0, v14, v15, 0, (int)a4, a5, 8u, a9);
-  ServiceAudioTick_FE8BE(v12, 0, v11, a4);
+  ServiceAudioTick_FE8BE(0, 0, v11, a4);
   result = sub_12A478(a6, a7, (int)a9);
   ++*a2;
   return result;
 }
-// 8F037: variable 'v12' is possibly undefined
 
 
 //----- (0008F055) --------------------------------------------------------
@@ -7160,7 +7150,7 @@ void sub_90430()
       if ( v1 == -1 )
         sub_91A40();
       else
-        sub_6FF08();
+        sub_6FF08(v1, word_192FDC[34] == 0);   /* 904D9 setz dl - word_193020 */
     }
   }
   sub_128BE7();
@@ -9429,7 +9419,7 @@ LABEL_13:
   }
   return (char)v13;
 }
-// 92B3A: variable 'v23' is possibly undefined
+// 92B3A: v23 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 1930DC: using guessed type int dword_1930DC;
 // 19999C: using guessed type int16_t word_19999C;
 

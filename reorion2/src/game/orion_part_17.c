@@ -764,7 +764,7 @@ int sub_1032FB(int result)
 
 
 //----- (00103313) --------------------------------------------------------
-int sub_103313(int a1)
+int sub_103313(int a1, int a2)
 {
   int v1; // eax
   int v2; // esi
@@ -782,9 +782,9 @@ int sub_103313(int a1)
   int v15; // [esp+1090h] [ebp+7Eh]
 
   v10 = a1;   /* wave 181: v10 saved by the prologue (push eax) */
-    v14 = fopen(a1, aRb);
-      // DECOMP_TODO (castecne vyreseno ve vlne 06): chybel mod parametr - v okoli se nenaslo jednoznacne fread/fwrite, takze "aRb" je bezpecny odhad (needela zadnou zapisovou vedlejsi ucinek jako by mohl "wb"), potrebuje overit.
-    v1 = fopen(v9, aRb);
+  v9 = (char *)(intptr_t)a2;   /* wave 184: the target name, spilled by `push edx` (var_1094) */
+  v14 = fopen(a1, aRb);
+  v1 = fopen(v9, "wb");   /* wave 184: 1032D mov edx, offset aWb_9 */
   v2 = v1;
   if ( !v14 )
   {
@@ -815,7 +815,6 @@ int sub_103313(int a1)
   fclose(v2);
   return fclose(v14);
 }
-// 10333D: variable 'v9' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 12697A: using guessed type int fclose(_DWORD);
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
@@ -838,7 +837,7 @@ static char *ScientistLbx_103428(int a1, const char *a2, char *a3)
       sub_1117BF((int)(intptr_t)v4);
     strcpy(v3, byte_184544);
     strcat(v3, byte_1ACE98);
-    sub_103313((int)(intptr_t)v3);
+    sub_103313((int)(intptr_t)v3, (int)(intptr_t)byte_1ACE98);   /* 1034B3: eax = source, edx = byte_1A4E98 */
   }
   return byte_1ACE98;
 }
@@ -1094,9 +1093,7 @@ LABEL_25:
   return result;
 }
 // 103851: conditional instruction was optimized away because dh.1 is in (==0|==D|==20)
-// 10376F: variable 'v48' is possibly undefined
-// 10378A: variable 'v46' is possibly undefined
-// 10388C: variable 'v44' is possibly undefined
+// 10376F: v48 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 1ACEB8: using guessed type int16_t word_1ACEB8;
 // 1ACEBA: using guessed type int16_t word_1ACEBA;
 // 1B3EA0: using guessed type int16_t word_1B3EA0;
@@ -3114,8 +3111,8 @@ LABEL_32:
   }
   return;   /* wave 184: 104385 is the epilogue */
 }
-// 1050F9: variable 'v20' is possibly undefined
-// 1052D5: variable 'v21' is possibly undefined
+// 1050F9: v20 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 1052D5: v21 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 183871: using guessed type char *off_183871[21];
@@ -4762,7 +4759,6 @@ LABEL_17:
 #undef v26
 #undef v27
 // 107095: control flows out of bounds to 107668
-// 106E8E: variable 'v16' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 183F42: using guessed type char byte_183F42;
 // 184378: using guessed type int dword_184378;
@@ -5565,7 +5561,7 @@ void sub_107DEA()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x107667 je epilog funkce */
 }
 // 107E90: control flows out of bounds to 107667
-// 107E83: variable 'v5' is possibly undefined
+// 107E83: v5 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199934: using guessed type int16_t word_199934;
 // 1ACFC0: using guessed type int dword_1ACFC0[];
@@ -6506,7 +6502,6 @@ int sub_108EC3(int result, int a2, int a3, int a4)
   }
   return result;
 }
-// 108EF5: variable 'v6' is possibly undefined
 // 19999C: using guessed type int16_t word_19999C;
 
 
@@ -6587,7 +6582,7 @@ LABEL_3:
     sub_109DB5(v9, v4);
     while ( 1 )
     {
-      v13 = (void *)sub_1171AB((int)v13, v12, v9, 81);
+      v13 = (void *)sub_1171AB(0, v12, v9, 81);
       v12 = (int)v13;
       if ( word_19994C )
         break;
@@ -6664,8 +6659,6 @@ LABEL_3:
 }
 // 10915F: control flows out of bounds to 108E57
 // 10917D: control flows out of bounds to 108E55
-// 10901B: variable 'v3' is possibly undefined
-// 1091D9: variable 'v13' is possibly undefined
 // 24E54: using guessed type int sub_24E54(_DWORD, _DWORD);
 // 108F97: using guessed type int nullsub_18();
 // 183CEB: using guessed type int16_t word_183CEB[8];
@@ -7769,7 +7762,7 @@ LABEL_8:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10A33F je epilog funkce */
 }
 // 10A58E: control flows out of bounds to 10A33F
-// 10A589: variable 'v6' is possibly undefined
+// 10A589: v6 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 
 
 //----- (0010A5A3) --------------------------------------------------------
@@ -8108,7 +8101,6 @@ LABEL_20:
   dword_192BD8 = result + (uint8_t*)dword_197F98;
   return result;
 }
-// 10A7FB: variable 'v12' is possibly undefined
 // 24E08: using guessed type int sub_24E08(_DWORD, _DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 183F42: using guessed type char byte_183F42;
@@ -8879,7 +8871,6 @@ void sub_10BA3D(int a1, int a2)
   }
 }
 // 10BD4B: control flows out of bounds to 10C887
-// 10BD29: variable 'v14' is possibly undefined
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 18400F: using guessed type int16_t word_18400F[13];
 // 18408B: using guessed type int16_t word_18408B;
@@ -9461,8 +9452,6 @@ void sub_10C8E0()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x10BDE6 je epilog funkce */
 }
 // 10CB33: control flows out of bounds to 10BDE6
-// 10C90F: variable 'v1' is possibly undefined
-// 10C917: variable 'v3' is possibly undefined
 // 10C935: variable 'v4' is possibly undefined
 // 183FF1: using guessed type int16_t word_183FF1[];
 // 183FF3: using guessed type int16_t word_183FF3[13];

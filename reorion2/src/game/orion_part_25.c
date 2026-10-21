@@ -486,7 +486,6 @@ int sub_164600(
   return result;
 }
 // 164600: could not find valid save-restore pair for edi
-// 164678: variable 'result' is possibly undefined
 // 18A68C: using guessed type int dword_18A68C;
 // 18A690: using guessed type int dword_18A690;
 // 18A6C0: using guessed type char byte_18A6C0;
@@ -1001,7 +1000,6 @@ LABEL_45:
 }
 // 164CAE: control flows out of bounds to 1675C0
 // 164CFA: control flows out of bounds to 1676C0
-// 164C4C: variable 'v39' is possibly undefined
 // 164C7A: variable 'v44' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;

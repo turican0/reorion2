@@ -6264,7 +6264,7 @@ int sub_162CA3(uint8_t ***a1, int a2, int a3)
   }
   return result;
 }
-// 162DA4: variable 'v9' is possibly undefined
+// 162DA4: v9 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 148337: using guessed type int fputc(_DWORD, _DWORD);
 // 188DBE: using guessed type int dword_188DBE;
 // 188DC2: using guessed type int dword_188DC2;

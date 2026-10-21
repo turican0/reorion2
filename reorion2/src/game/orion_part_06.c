@@ -1640,7 +1640,7 @@ void sub_73980(int a1, int16_t *a2, char *a3)
     v11 = sub_7267D(&v86, &v92, &v82, &v93, &v81, &v80, &v75, &v87, &v88, &v85);
     sub_12C2A0();
     byte_199F1E = 0;
-    LODWORD(v11) = sub_1171AB(v11, SHIDWORD(v11), (int)&v82, (int)&v93);
+    LODWORD(v11) = sub_1171AB(0, SHIDWORD(v11), (int)&v82, (int)&v93);
     v12 = v11;
     v91 = v11;
     v90 = sub_114177();
@@ -1971,7 +1971,6 @@ LABEL_18:
   goto LABEL_19;
 }
 // 744C8: control flows out of bounds to 734A3
-// 73C72: variable 'v11' is possibly undefined
 // 74385: variable 'v33' is possibly undefined
 // 772BF: using guessed type int sub_772BF(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -2849,7 +2848,6 @@ void sub_7527A( int a1)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x734A2 je epilog funkce */
 }
 // 75393: control flows out of bounds to 734A2
-// 75304: variable 'v3' is possibly undefined
 // 19999A: using guessed type int16_t word_19999A;
 // 19999C: using guessed type int16_t word_19999C;
 
@@ -3109,7 +3107,7 @@ int sub_75802(int result)
 
 
 //----- (0007585D) --------------------------------------------------------
-int sub_7585D()
+int sub_7585D(int a1)
 {
   int v0; // edx
   int16_t v1; // cx
@@ -3119,6 +3117,7 @@ int sub_7585D()
   int v6; // [esp+0h] [ebp-8h]
   int16_t v7; // [esp+4h] [ebp-4h]
 
+  v6 = a1;   /* wave 184: spilled by `push eax` after enter */
   v0 = 1;
   v1 = 0;
   v2 = 0;
@@ -3143,7 +3142,6 @@ int sub_7585D()
     return 0;
   return v0;
 }
-// 7588D: variable 'v6' is possibly undefined
 // 192B24: using guessed type int dword_192B24;
 // 19992E: using guessed type int16_t word_19992E;
 // 199EFE: using guessed type char byte_199EFE;
@@ -3415,7 +3413,7 @@ void sub_75D48( int a1)
   char v8[100]; // [esp+C8h] [ebp+7Eh] BYREF
 
   memset(dword_192B6C, -1, 500);
-  if ( (uint16_t)sub_7585D() )
+  if ( (uint16_t)sub_7585D(dword_192B6C) )   /* 75D6D mov eax, dword_18AB6C */
   {
     sub_FF799((int16_t *)dword_192B6C, a1, &byte_1992A8);
     if ( byte_1992AD )
@@ -3668,7 +3666,7 @@ void sub_761A5()
   memset(dword_192B6C, -1, 500);
   qmemcpy(v31, &byte_182078, sizeof(v31));
   v38 = 0;
-  if ( (uint16_t)sub_7585D() )
+  if ( (uint16_t)sub_7585D(dword_192B6C) )   /* 76216 mov eax, dword_18AB6C */
   {
     v38 = 1;
     sub_FF799((int16_t *)dword_192B6C, word_199960, &byte_1992A8);
@@ -4427,10 +4425,10 @@ LABEL_15:
   return result * 2;
 }
 #undef PORT_A26_ARG6A
-// 770AE: variable 'v43' is possibly undefined
-// 770AE: variable 'v42' is possibly undefined
-// 770AE: variable 'v41' is possibly undefined
-// 770AE: variable 'v40' is possibly undefined
+// 770AE: v43 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 770AE: v42 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 770AE: v41 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 770AE: v40 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 1906C2: using guessed type int16_t word_1906C2[];
 // 1906C4: using guessed type int16_t word_1906C4[];
 // 1906C6: using guessed type int16_t word_1906C6[];
@@ -6243,7 +6241,7 @@ _BOOL1 sub_78D71( int a1, int a2)
 
 
 //----- (00078D86) --------------------------------------------------------
-int sub_78D86()
+int sub_78D86(int a1)
 {
   int i; // esi
   int v1; // eax
@@ -6254,6 +6252,7 @@ int sub_78D86()
   int v6; // [esp+14h] [ebp-8h]
   int v7; // [esp+18h] [ebp-4h]
 
+  v2 = (int16_t *)(intptr_t)a1;   /* wave 184: spilled by `push eax` after enter */
   v6 = 255;
   v7 = -1;
   for ( i = 0; (int16_t)i < word_19999A; ++i )
@@ -6275,8 +6274,6 @@ int sub_78D86()
   }
   return v7;   /* wave 184: 78DFF mov eax, [var_4] */
 }
-// 78DD9: variable 'v2' is possibly undefined
-// 78DF2: variable 'v1' is possibly undefined
 // 19306C: using guessed type int dword_19306C;
 // 19999A: using guessed type int16_t word_19999A;
 // 19999C: using guessed type int16_t word_19999C;

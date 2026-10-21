@@ -1197,7 +1197,6 @@ int sub_12D408( int a1)
   }
   return result;
 }
-// 12D59E: variable 'v5' is possibly undefined
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BBA28: using guessed type int dword_1BBA28;
@@ -6375,10 +6374,10 @@ int sub_1387B2( int a1, int *a2, int *a3)
   }
   return result;
 }
-// 138B13: variable 'v11' is possibly undefined
-// 138B13: variable 'v8' is possibly undefined
-// 138B1C: variable 'v12' is possibly undefined
-// 138B1C: variable 'v9' is possibly undefined
+// 138B13: v11 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 138B13: v8 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 138B1C: v12 (stack slot) is unset on one path - the original reads the same uninitialized slot there
+// 138B1C: v9 (stack slot) is unset on one path - the original reads the same uninitialized slot there
 // 138405: using guessed type int16_t word_138405[];
 
 
@@ -7917,7 +7916,6 @@ int sub_13CC5B(int a1, int (*a2)(_DWORD, _DWORD, _DWORD, _DWORD), int a3, int a4
   byte_184980 = 1;
   return 1;
 }
-// 13CC99: variable 'v4' is possibly undefined
 // 184980: using guessed type char byte_184980;
 // 1BF388: using guessed type int (*dword_1BF388)(_DWORD, _DWORD, _DWORD, _DWORD);
 
