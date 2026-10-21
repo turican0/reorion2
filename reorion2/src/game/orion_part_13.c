@@ -1061,14 +1061,6 @@ void sub_C702E( int a1, int16_t *a2)
   int16_t v6; // [esp+0h] [ebp-8h] BYREF
   int16_t v7; // [esp+4h] [ebp-4h] BYREF
 
-  if ( PortDebug_EnvInt("REORION2_C702E_TRACE", 0) )   /* TEMP wave 184 */
-  {
-    extern unsigned long long PortGr_Reads(int s);
-    char t[64];
-    sprintf(t, "C702E a1=%d k%llu", a1, PortGr_Reads(14));
-    PortDebug_Message(t);
-    PortDebug_Symbolize("C702E.caller", _ReturnAddress());
-  }
   if ( word_199A08 )
     byte_1831C4 = 0;
   word_1A123E = sub_124C3B();
@@ -5178,7 +5170,7 @@ int sub_CC491( int a1)
     sub_12A478(0, 0, dword_1A11A8);
     sub_BBA8E(12);
     sub_BBA8E(11);
-    sub_90C4F(156, 302, a1, 148, 94, 0, 0, 0, 0, 0, 0);
+    sub_90C4F(156, 302, a1, 148, 94, 0, 0, 0, 0, 0, 0, 11);   /* wave 184: CC517 eax = 0Bh */
     if ( word_1831CC == 1 )
     {
       v6 = 3753 * word_1831B0 + (uint8_t*)dword_197F98 + 1;
@@ -7494,9 +7486,6 @@ int sub_CF40D( int a1)
   int v41; // [esp+48h] [ebp-Ch]
   _BOOL1 v42; // [esp+4Ch] [ebp-8h]
 
-  PortDebug_MemRing(0xCF40D0, &a1, 4);   /* TEMP wave 184 */
-  PortDebug_MemRing(0xCF40D1, &dword_1A7454, 96);
-  PortDebug_MemRing(0xCF40D2, (void *)(intptr_t)dword_1AA204, 464);
   v2 = word_199998;
   v42 = *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 40) == 1;
   v28 = 3753 * word_199998;

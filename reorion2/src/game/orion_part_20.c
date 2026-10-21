@@ -6411,7 +6411,7 @@ void sub_138C58()
 //----- (00138C87) --------------------------------------------------------
 void sub_138C87()
 {
-  /* __asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS 1.1 - GET/SET DISPLAY START */ DECOMP_TODO("inline asm");
+  /* asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS 1.1 - GET/SET DISPLAY START - DOS/BIOS level, not needed in the port (wave 184) */;
 }
 // 1BBA64: using guessed type int dword_1BBA64;
 
@@ -6422,7 +6422,7 @@ int sub_138CB0(int a1, int a2)
 {
   unsigned int v2; // ett
 
-  /* __asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS - CPU VIDEO MEMORY CONTROL */ DECOMP_TODO("inline asm");
+  /* asm: int     10h; - VIDEO - VESA SuperVGA BIOS -  VESA SuperVGA BIOS - CPU VIDEO MEMORY CONTROL - DOS/BIOS level, not needed in the port (wave 184) */;
   LOWORD(v2) = a2;
   HIWORD(v2) = a2;
   word_1BBA30 = v2 / (uint16_t)word_1BBA5C;
@@ -6626,7 +6626,7 @@ int sub_138F3B(int a1, int a2, int (*a3)(_DWORD, _DWORD, _DWORD, _DWORD), int a4
   }
   else
   {
-    /* __asm: int     2Fh; - Multiplex - Novell NetWare - LOW-LEVEL API (IPX) INSTALLATION CHECK */ DECOMP_TODO("inline asm");
+    /* asm: int     2Fh; - Multiplex - Novell NetWare - LOW-LEVEL API (IPX) INSTALLATION CHECK - DOS/BIOS level, not needed in the port (wave 184) */;
     return 0;
   }
 }

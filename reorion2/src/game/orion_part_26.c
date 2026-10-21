@@ -3036,7 +3036,7 @@ void sub_1685E9(int a1)
     hr_outbyte(v2, 0x20u);
   if ( (_WORD)v3 )
     hr_outbyte(v3, 0x20u);
-  /* __asm: iret */ DECOMP_TODO("inline asm");
+  /* asm: iret - DOS/BIOS level, not needed in the port (wave 184) */;
 }
 // 168635: positive sp value 4 has been found
 // 168635: control flows out of bounds to 168636

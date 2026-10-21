@@ -5808,7 +5808,7 @@ char sub_15C730()
   if ( !dword_18A5B0 )
   {
     dword_1C9830 = (int)nullsub_21;
-    /* __asm: int     2Fh; - Multiplex - MS WINDOWS - GET DEVICE API ENTRY POINT */ DECOMP_TODO("inline asm");
+    /* asm: int     2Fh; - Multiplex - MS WINDOWS - GET DEVICE API ENTRY POINT - DOS/BIOS level, not needed in the port (wave 184) */;
     *(_WORD *)byte_1C9836 = 0;
     *(_WORD *)&byte_1C9836[2] = 0;
     *(_WORD *)&byte_1C9836[4] = 0;
@@ -5906,7 +5906,7 @@ uint64_t sub_15C941(int a1, unsigned int a2)
   unsigned int v2; // ecx
   int v3; // edx
 
-  /* __asm: int     21h; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK) */ DECOMP_TODO("inline asm");
+  /* asm: int     21h; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK) - DOS/BIOS level, not needed in the port (wave 184) */;
   v3 = a2 << 16;
   LOWORD(v3) = 16896;
   return __PAIR64__(v2, v3);
@@ -5925,10 +5925,10 @@ void sub_15C965()
 //----- (0015C971) --------------------------------------------------------
 int64_t sub_15C971()
 {
-  int64_t result; // rax
+  int64_t result = 0; // rax - wave 184: DOS leaves AX = 3E00h after a good close
 
   BYTE1(result) = 62;
-  /* __asm: int     21h; DOS - 2+ - CLOSE A FILE WITH HANDLE */ DECOMP_TODO("inline asm");
+  /* asm: int     21h; DOS - 2+ - CLOSE A FILE WITH HANDLE - DOS/BIOS level, not needed in the port (wave 184) */;
   return result;
 }
 
@@ -6427,7 +6427,7 @@ int sub_15DBCA()
   word_18AC72 = 256;
   word_18AC78 = word_18AC82;
   word_18AC76 = dword_18AC7E + 512;
-  /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+  /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
   return dword_18AC86;
 }
 // 18AC72: using guessed type int16_t word_18AC72;

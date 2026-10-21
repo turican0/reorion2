@@ -4599,32 +4599,33 @@ int sub_8CF09()
 }
 
 
-int sub_8DAE8(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        hr_int128_t a21,
-        int64_t a22,
-        int64_t a23,
-        int a24,
-        int a25)
+/* wave 184: the frame above the moved ebp (Hex-Rays made it arguments a5..a25) */
+#pragma pack(push, 1)
+typedef struct {
+  int a5;
+  int a6;
+  int a7;
+  int a8;
+  int a9;
+  int a10;
+  int a11;
+  int a12;
+  int a13;
+  int a14;
+  int a15;
+  int a16;
+  int a17;
+  int a18;
+  int a19;
+  int a20;
+  hr_int128_t a21;
+  int64_t a22;
+  int64_t a23;
+  int a24;
+  int a25;
+} frame8DAE8_t;
+#pragma pack(pop)
+int sub_8DAE8(int a1, int a2, int a3, int a4)
 {
   char *v25; // eax
   int16_t *v26; // edi
@@ -4677,6 +4678,29 @@ int sub_8DAE8(
   int16_t v73; // [esp+7Eh] [ebp-52h]
   char var4E[80]; // [esp+82h] [ebp-4Eh] BYREF
   _BYTE vars2[14]; // [esp+D2h] [ebp+2h] BYREF
+  frame8DAE8_t frm8DAE8;
+  memset(&frm8DAE8, 0, sizeof(frm8DAE8));
+#define a5 (frm8DAE8.a5)
+#define a6 (frm8DAE8.a6)
+#define a7 (frm8DAE8.a7)
+#define a8 (frm8DAE8.a8)
+#define a9 (frm8DAE8.a9)
+#define a10 (frm8DAE8.a10)
+#define a11 (frm8DAE8.a11)
+#define a12 (frm8DAE8.a12)
+#define a13 (frm8DAE8.a13)
+#define a14 (frm8DAE8.a14)
+#define a15 (frm8DAE8.a15)
+#define a16 (frm8DAE8.a16)
+#define a17 (frm8DAE8.a17)
+#define a18 (frm8DAE8.a18)
+#define a19 (frm8DAE8.a19)
+#define a20 (frm8DAE8.a20)
+#define a21 (frm8DAE8.a21)
+#define a22 (frm8DAE8.a22)
+#define a23 (frm8DAE8.a23)
+#define a24 (frm8DAE8.a24)
+#define a25 (frm8DAE8.a25)
   uint8_t *starRec = 0;   /* vlna 82: docasny ukazatel misto 4bajtoveho slotu */
   uint8_t *starFld = 0;   /* vlna 82: dtto pro adresy poli zaznamu hvezdy */
 
@@ -5005,6 +5029,27 @@ LABEL_13:
   if ( BYTE6(a23) )
     sub_126487(aMapTestDone, SHIDWORD(v43));
   return result;
+#undef a5
+#undef a6
+#undef a7
+#undef a8
+#undef a9
+#undef a10
+#undef a11
+#undef a12
+#undef a13
+#undef a14
+#undef a15
+#undef a16
+#undef a17
+#undef a18
+#undef a19
+#undef a20
+#undef a21
+#undef a22
+#undef a23
+#undef a24
+#undef a25
 }
 // 8E204: inconsistent variable size for '^154.16'
 // 8E228: inconsistent variable size for '^154.16'
@@ -7606,7 +7651,7 @@ LABEL_22:
 //----- (00090C4F) --------------------------------------------------------
 void sub_90C4F(
         int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8,
-        int a9, int a10, int a11)
+        int a9, int a10, int a11, int a12)
 {
   int i; // eax
   char v13; // dl
@@ -7626,7 +7671,7 @@ void sub_90C4F(
   int16_t v27; // dx
   int16_t v28; // ax
   int16_t v29; // ax
-  int v30; // [esp+0h] [ebp-44h]
+  int v30 = a12; // [ebp-44h] - wave 184: 90C55 push eax (flag tested at 90CDF)
   _BYTE v31[8]; // [esp+4h] [ebp-40h] BYREF
   int v32; // [esp+Ch] [ebp-38h]
   int v33; // [esp+10h] [ebp-34h]
@@ -7862,7 +7907,8 @@ void sub_91099( int a1)
             word_192FF4[v2],
             word_192FF6[v2],
             0,
-            0);
+            0,
+            *(int *)((char *)&dword_193070 + 20 * v1));   /* wave 184: 91137 eax = dword_18B070[ebx*14h] */
         }
         else if ( v3 == 2 )
         {
@@ -10019,7 +10065,7 @@ void sub_93550( int a1)
   {
     sub_974A6(word_19C53E);
   }
-  sub_90C4F(235, 306, a1, 318, 169, 0, 0, 0, 0, 1, 0);
+  sub_90C4F(235, 306, a1, 318, 169, 0, 0, 0, 0, 1, 0, 0);
   sub_734F1(29);
   sub_737A2();
   if ( word_19990E > -1 )

@@ -6740,35 +6740,188 @@ char sub_A75C3( int a1, int a2, int a3)
 
 
 //----- (000A761C) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (function frame is wrong (funcsize=0)) - nutno dohledat rucne v IDA @ 0xA761C */
-int sub_A761C(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3, _DWORD _p4, _DWORD _p5, _DWORD _p6, _DWORD _p7, _DWORD _p8, _DWORD _p9, _DWORD _p10, _DWORD _p11, _DWORD _p12, _DWORD _p13, _DWORD _p14, _DWORD _p15, _DWORD _p16, _DWORD _p17)
+/* wave 184: written from asm A761C-A8194 (Hex-Rays: "function frame is wrong"). Moved-ebp frame
+   (enter 8Ch; push eax/edx/ebx/ecx; sub ebp, 4Eh), retn 38h: a1..a4 = eax, edx, ebx, ecx and
+   14 stack arguments s1..s14 (s3 = the effect type, s13 = flags, s14 unused). The per-type
+   parameters live in the slots Hex-Rays called arg_2..arg_3A (they are locals of this frame). */
+void sub_A761C(int a1, int a2, int a3, int a4, int s1, int s2, int s3, int s4, int s5, int s6, int s7,
+               int s8, int s9, int s10, int s11, int s12, int s13, int s14)
 {
-  DECOMP_TODO("function frame is wrong (funcsize=0)");
+  /* [ebp+..] slots of the frame, named after the IDA offsets */
+  int p2, p6, pA, pE, p12, p16, p1A, p1E, p22, p26, p2A, p2E, p32, p36, p3A, ps2, psE;
+  int v_si, v_di, v_ax;       // esi, edi, eax (the sound id)
+  int v2 = 0;                 // [ebp-2]
+  int vsA = 0;                // [ebp+0Ah]
+  int v6, vA, vE, vs6;        // [ebp-6] [ebp-0Ah] [ebp-0Eh] [ebp+6]
+  _DWORD *v12;                // [ebp-12h]
+  uint8_t v3E[40];            // [ebp-3Eh] filled by sub_AB11C (+20h, +24h read back)
+  int16_t v_cx = (int16_t)s3; // cx - the effect type
+  int v_set;
+
+  (void)s14;
+  switch ( v_cx )   /* A7629 */
+  {
+    case 1:   /* A7805 */
+      v_ax = 7; p6 = 0; p2A = 0; p3A = 45; p2 = 10; psE = 0; p2E = 0; ps2 = 0; p1A = 0; p16 = 0; p12 = 0;
+      pE = 0; p32 = 12; v2 = 1; p22 = 1; v_si = 1; p1E = 1; p26 = 1; p36 = 1; v_di = 1; vsA = 1; pA = 7;
+      break;
+    case 2:   /* A7876 */
+      v_ax = 2; v2 = 1; p6 = 40; p2A = 3; p3A = 45; p22 = 1; p2 = 10; psE = 0; pA = 7; p2E = 0; p1E = 1;
+      p26 = 0; p36 = 1; ps2 = 1; p1A = 0; p16 = 0; p12 = 0; pE = 0; v_di = 1; p32 = 15; v_si = 2; vsA = 1;
+      break;
+    case 3:   /* A7908 */
+      v_ax = 0; p6 = 10; p2A = 1; p3A = 55; p22 = 1; v_si = 90; pA = 0; p2E = 0; p2 = 10; psE = 7; p1E = 0;
+      p26 = 0; p36 = 0; ps2 = 0; p1A = 1; p16 = 0; p12 = 0; pE = 0; p32 = 1; v_di = 0;
+      break;
+    case 4:   /* A798D */
+      v_ax = 1; p6 = 50; p2A = 3; p3A = 45; v_si = 60; p2 = 15; psE = 7; pA = 3; p2E = 0; p1A = 0; p16 = 0;
+      p12 = 0; pE = 0; p32 = 23; p22 = 1; p1E = 1; p26 = 1; p36 = 1; ps2 = 1; v_di = 1;
+      break;
+    case 5:   /* A76F7 */
+      v_ax = 8; p6 = 40; p2A = 5; p3A = 40; p22 = 0; v_si = 640; p2 = 15; psE = 10; pA = 7; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 1; p16 = 0; p12 = 1; pE = 0; v_di = 2; p32 = 9;
+      break;
+    case 6:   /* A7782 */
+      v_ax = 3; p6 = 50; p3A = 45; p22 = 1; v_si = 40; p2 = 15; psE = 7; p2E = 0; p1E = 1; p26 = 1; p36 = 1;
+      ps2 = 1; p1A = 1; p16 = 0; p12 = 0; pE = 0; v_di = 1; p32 = 14; p2A = 3; pA = 3;
+      break;
+    case 7:   /* A7A01 */
+      v_ax = 6; p6 = 30; p2A = 5; p3A = 35; p22 = 1; v_si = 640; p2 = 7; psE = 7; pA = 3; p2E = 0; p1E = 1;
+      p26 = 0; p36 = 1; ps2 = 0; p1A = 0; p16 = 0; p12 = 0; pE = 0; v_di = 2; p32 = 11;
+      break;
+    case 8:   /* A7A8C */
+      v_ax = 2; p6 = 30; p2A = 3; p3A = 45; p22 = 1; v_si = 90; p2 = 15; psE = 7; pA = 3; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 0; p16 = 0; p12 = 0; pE = 0; v_di = 1; p32 = 22;
+      break;
+    case 9:
+    case 41:   /* A7B17 */
+      v_ax = 0; p6 = 15; p2A = 3; p3A = 50; p22 = 1; v_si = 90; p2 = 15; psE = 7; pA = 6; p2E = 2; p1E = 1;
+      p36 = 1; p1A = 1; v_di = 1; p32 = 19; p26 = 0; ps2 = 0; p16 = 0; p12 = 0; pE = 0;
+      break;
+    case 10:   /* A7C16 */
+      v_ax = 0; p6 = 40; p2A = 3; p3A = 45; p22 = 1; v_si = 40; p2 = 15; psE = 7; pA = 3; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 0; p16 = 0; p12 = 0; pE = 0; v_di = 1; p32 = 2;
+      break;
+    case 11:
+    case 42:   /* A7C9E */
+      v_ax = 6; p6 = 40; p2A = 3; p3A = 35; p22 = 1; v_si = 90; p2 = 15; psE = 7; pA = 3; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 0; p16 = 0; p12 = 0; pE = 0; v_di = 2; p32 = 21;
+      break;
+    case 12:   /* A7D29 */
+      v_ax = 0; p6 = 50; p2A = 5; p3A = 50; p22 = 1; v_si = 60; p2 = 13; psE = 10; pA = 8; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 1; p16 = 0; p12 = 0; pE = 0; v_di = 2; p32 = 13;
+      break;
+    case 13:   /* A7DAF */
+      v_ax = 2; p6 = 30; p2A = 3; p3A = 55; p22 = 1; v_si = 40; p2 = 15; psE = 10; pA = 10; p2E = 0; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 1; p16 = 0; p12 = 0; pE = 0; p32 = 1; v_di = 2;
+      break;
+    case 27:
+    case 40:
+    case 43:   /* A7E35 */
+      v_ax = 5; p6 = 30; p3A = 40; p22 = 1; v_si = 20; p2 = 15; psE = 10; pA = 7; p2E = 0; p1E = 1; p26 = 1;
+      p36 = 1; ps2 = 1; p1A = 1; p16 = 0; p12 = 0; pE = 1; v_di = 1; p2A = 5; vsA = 1; p32 = 5;
+      break;
+    case 46:   /* A7B8B */
+      v_ax = 6; p6 = 10; p2A = 3; p3A = 50; p22 = 1; v_si = 40; p2 = 15; psE = 10; pA = 10; p2E = 7; p1E = 1;
+      p26 = 1; p36 = 1; ps2 = 1; p1A = 1; p16 = 1; p12 = 0; pE = 0; v_di = 2; p32 = 18;
+      break;
+    default:
+      return;   /* A818E */
+  }
+  /* A7EB6: types 1..12, 41 and 42 take their size from sub_AB11C below */
+  v_set = (v_cx >= 1 && v_cx <= 12) || v_cx == 41 || v_cx == 42;
+  if ( !v_set )
+  {
+    if ( (int16_t)v_ax != ((int16_t *)&word_182439)[(int16_t)s5] )
+    {
+      ((int16_t *)&word_182439)[(int16_t)s5] = (int16_t)v_ax;
+      sub_A75C3((int16_t)v_ax, (int16_t)(16 * s5 + 144), 16);
+    }
+    if ( (s13 & 2) != 0 )   /* A7F1E */
+    {
+      v_di = (int16_t)v_di + 1;
+      if ( v_di >= 2 )
+        v_di = 2;
+    }
+    if ( (s13 & 0x80) != 0 )
+    {
+      v_si = (int16_t)v_si / 2;
+      p3A <<= 1;
+    }
+    if ( (s13 & 4) != 0 )
+    {
+      v_di = (int16_t)v_di - 1;
+      if ( v_di <= 0 )
+        v_di = 0;
+    }
+    if ( (s13 & 8) != 0 )
+      p36 = 1;
+    if ( (s13 & 0x10) != 0 && (int16_t)v_si != 640 )
+      v_si *= 2;
+    if ( (s13 & 0x20) != 0 )
+      ps2 = 0;
+    if ( (s13 & 0x40) != 0 )
+      p36 = 1;
+  }
+  v6 = (int16_t)vsA && (int16_t)s12 != -1 ? 3 : 1;   /* A7FA7 */
+  *(int16_t *)(dseg + 0x255D2) = v_cx;   /* 1955D2 (C name word_19D5D2) */
+  *(int16_t *)(dseg + 0x255D0) = (int16_t)p32;   /* 1955D0 */
+  if ( v_set )
+  {
+    sub_AB11C(v_cx, (int16_t)s13, v3E);   /* A801B */
+    v12 = (_DWORD *)v3E;
+    p3A = *(int *)(v3E + 32);   /* var_1E */
+    v_si = *(int *)(v3E + 36);  /* var_1A */
+  }
+  else
+  {
+    v12 = 0;
+  }
+  vA = 16 * s5 + 144;   /* A8038 */
+  vs6 = s4;
+  vE = s4 + v6;
+  while ( (int16_t)vs6 < (int16_t)vE )   /* A8057 */
+  {
+    sub_A6B9C(
+      (int16_t)a1, (int16_t)a2, (int16_t)a3, (int16_t)a4,
+      (int16_t)s1, (int16_t)s2, (int16_t)v_si, (int16_t)vA, (int16_t)p6, (int16_t)p2A, (int16_t)p3A,
+      (int16_t)p22, (int16_t)p1E, (int16_t)p26, (int16_t)p36, (int16_t)ps2, (int16_t)p1A, (int16_t)p16,
+      (int16_t)p12, (int16_t)pE, (int16_t)v_di, (int16_t)p2, (int16_t)psE, (int16_t)pA, (int16_t)p2E,
+      (int16_t)vs6, (int16_t)s6, (int16_t)s7, (int16_t)s8, (int16_t)s9, (int16_t)v2, (int16_t)s11,
+      (int16_t)s12, v12);
+    ++vs6;
+  }
+  if ( (int16_t)s4 == (int16_t)s10 || !(int16_t)s4 )   /* A8114 */
+  {
+    *(int *)((char *)&dword_182443 + 20 * (int16_t)s5 + 4 * (int16_t)s10) = sub_147D7((int16_t)p32);
+    return;
+  }
+  if ( byte_182441[(int16_t)s5] && (int16_t)s4 < (int16_t)sub_A6B95() - 1 )   /* A8145 */
+    return;
+  sub_112C96(*(int *)((char *)&dword_182443 + 20 * (int16_t)s5 + 4 * (int16_t)s10), 10);   /* A8161 */
+  *(int *)((char *)&dword_182443 + 20 * (int16_t)s5 + 4 * (int16_t)s10) = 0;
 }
 
 
 //----- (000A8197) --------------------------------------------------------
 // local variable allocation has failed, the output may be wrong!
-int sub_A8197(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        hr_int128_t a5,
-        int64_t a6,
-        int64_t a7,
-        int64_t a8,
-        int64_t a9,
-        int64_t a10,
-        int64_t a11,
-        int64_t a12,
-        int64_t a13,
-        hr_int128_t a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        hr_int128_t a19)
+/* wave 184: the frame above the moved ebp (Hex-Rays made it arguments a5..a15) */
+#pragma pack(push, 1)
+typedef struct {
+  hr_int128_t a5;
+  int64_t a6;
+  int64_t a7;
+  int64_t a8;
+  int64_t a9;
+  int64_t a10;
+  int64_t a11;
+  int64_t a12;
+  int64_t a13;
+  hr_int128_t a14;
+  int a15;
+} frameA8197_t;
+#pragma pack(pop)
+int sub_A8197(int a1, int a2, int a3, int a4, int a16, int a17, int a18, int a19)
 {
   int v19; // ecx
   int v20; // ebx
@@ -6877,6 +7030,19 @@ int sub_A8197(
   int vars6; // [esp+176h] [ebp+6h]
   int16_t _17A; // [esp+17Ah] [ebp+Ah] OVERLAPPED
   _UNKNOWN *retaddr; // [esp+17Ch] [ebp+Ch]
+  frameA8197_t frmA8197;
+  memset(&frmA8197, 0, sizeof(frmA8197));
+#define a5 (frmA8197.a5)
+#define a6 (frmA8197.a6)
+#define a7 (frmA8197.a7)
+#define a8 (frmA8197.a8)
+#define a9 (frmA8197.a9)
+#define a10 (frmA8197.a10)
+#define a11 (frmA8197.a11)
+#define a12 (frmA8197.a12)
+#define a13 (frmA8197.a13)
+#define a14 (frmA8197.a14)
+#define a15 (frmA8197.a15)
 
   v109 = a3;   /* wave 181: v109 saved by the prologue (push ecx) */
   v110 = a4;   /* wave 181: v110 saved by the prologue (push ebx) */
@@ -6891,9 +7057,9 @@ int sub_A8197(
   vars6 = -65536;
   *(_DWORD *)((char *)&a6 + 6) = 0;
   vars2 = 0;
-  v19 = SWORD3((int)LODWORD(a19));
+  v19 = (int16_t)a17;
   var2 = 0;
-  v20 = SWORD1((int)LODWORD(a19));
+  v20 = (int16_t)a16;
   v118 = 0;
   v117 = sub_12484C();
   v116 = 0;
@@ -6906,8 +7072,8 @@ int sub_A8197(
   sub_A97F7(0, 0, 1, 0);
   word_182439 = -1;
   word_18243B = -1;
-  if ( **(_WORD **)((char *)&a19 + 10) == 46
-    || (result = 28 * (int16_t)**(_WORD **)((char *)&a19 + 10), !byte_17F80F[result]) )
+  if ( *(_WORD *)(intptr_t)a18 == 46
+    || (result = 28 * (int16_t)*(_WORD *)(intptr_t)a18, !byte_17F80F[result]) )
   {
     HIWORD(a13) = *(uint8_t *)(dword_192864 + 313 * v112 + 35);
     v23 = 313 * v109;
@@ -6916,19 +7082,19 @@ int sub_A8197(
     sub_49ED1(v112, (_WORD *)&a14 + 3, (_WORD *)&a8 + 1);
     *(_DWORD *)((char *)&a14 + 6) += v111;
     *(_DWORD *)((char *)&a8 + 2) += v110;
-    if ( HIWORD(a19) )
+    if ( (int16_t)a19 )
     {
-      *(_DWORD *)((char *)&a5 + 2) = *(_DWORD *)((char *)&a19 + 2);
-      *(_DWORD *)((char *)&a14 + 2) = *(_DWORD *)((char *)&a19 + 6);
+      *(_DWORD *)((char *)&a5 + 2) = a16;
+      *(_DWORD *)((char *)&a14 + 2) = a17;
     }
     else
     {
       sub_49ED1(v109, (_WORD *)&a5 + 1, (_WORD *)&a14 + 1);
-      *(_DWORD *)((char *)&a5 + 2) += *(_DWORD *)((char *)&a19 + 2);
-      *(_DWORD *)((char *)&a14 + 2) += *(_DWORD *)((char *)&a19 + 6);
+      *(_DWORD *)((char *)&a5 + 2) += a16;
+      *(_DWORD *)((char *)&a14 + 2) += a17;
     }
     memset(&dword_182443, 0, 40);
-    if ( *(char *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SWORD1(a13)) + 12) < 0 )
+    if ( *(char *)(a18 + 15 * *((int16_t *)&vars6 + SWORD1(a13)) + 12) < 0 )
       *((_WORD *)&v116 + SWORD1(a13)) = 3;
     while ( 1 )
     {
@@ -6951,16 +7117,16 @@ int sub_A8197(
       }
       sub_12C2A0();
       v24 = sub_124D41();
-      sub_2F4EE(v24);
+      sub_2F4EE();
       v25 = 639;
       HIWORD(v26) = 0;
       sub_128AB6(0, 0, 639, 350);
       sub_12B634();
       *(_DWORD *)((char *)&a6 + 2) = 0;
-      if ( word_1998FC == v109 && !HIWORD(a19) )
+      if ( word_1998FC == v109 && !(int16_t)a19 )
       {
-        v25 = SWORD3((int)LODWORD(a19));
-        v26 = SWORD1((int)LODWORD(a19));
+        v25 = (int16_t)a17;
+        v26 = (int16_t)a16;
         sub_30062(word_1998FC, 350, v88, v89);
       }
       if ( word_1998FC == v112 )
@@ -6975,7 +7141,7 @@ int sub_A8197(
         v27 = *((int16_t *)&vars6 + SHIWORD(a7));
         if ( v27 <= -1 )
           goto LABEL_51;
-        v28 = (_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * v27);
+        v28 = (_WORD *)(a18 + 15 * v27);
         LOWORD(v26) = *v28;
         LOWORD(v28) = v28[1];
         *(_DWORD *)((char *)&a5 + 14) = v28;
@@ -6986,11 +7152,11 @@ int sub_A8197(
         LOWORD(v30) = *(uint8_t *)(v30 + 32);
         *(_DWORD *)((char *)&a9 + 6) = v29;
         *(_DWORD *)((char *)&a10 + 2) = v30;
-        if ( HIWORD(a19) )
+        if ( (int16_t)a19 )
         {
-          v25 = SWORD3((int)LODWORD(a19));
-          v26 = SWORD1((int)LODWORD(a19));
-          v31 = sub_329A4(v112, SWORD1(a19), SWORD3(a19));
+          v25 = (int16_t)a17;
+          v26 = (int16_t)a16;
+          v31 = sub_329A4(v112, (int16_t)a16, (int16_t)a17);
         }
         else
         {
@@ -7009,8 +7175,8 @@ int sub_A8197(
         }
         if ( !*((_WORD *)&vars2 + SHIWORD(a7)) )
         {
-          v32 = *(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7));
-          if ( !*(_WORD *)(v32 + 4) && !*(_WORD *)(v32 + 6) && !*(_BYTE *)(v32 + 14) && v109 && !HIWORD(a19) )
+          v32 = a18 + 15 * *((int16_t *)&vars6 + SHIWORD(a7));
+          if ( !*(_WORD *)(v32 + 4) && !*(_WORD *)(v32 + 6) && !*(_BYTE *)(v32 + 14) && v109 && !(int16_t)a19 )
           {
             v33 = (uint8_t)byte_182477[sub_A9AAD(*(uint8_t *)(313 * v109 + dword_192864 + 37))];
             v34 = SWORD3((int)LODWORD(a5)) / 2;
@@ -7023,7 +7189,7 @@ int sub_A8197(
             v36 = sub_1247A0(v35) - v25;
             goto LABEL_39;
           }
-          if ( !v109 && !*(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
+          if ( !v109 && !*(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
           {
             v37 = SWORD3((int)LODWORD(a5)) / 2;
             if ( v37 >= 30 )
@@ -7045,7 +7211,7 @@ LABEL_39:
             *((_WORD *)&v118 + v26) = v36;
             goto LABEL_46;
           }
-          if ( HIWORD(a19) && !*(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
+          if ( (int16_t)a19 && !*(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + SHIWORD(a7)) + 8) )
           {
             v44 = SWORD3((int)LODWORD(a5)) / 2;
             if ( (uint8_t)byte_182477[0] / 2 <= v44 )
@@ -7081,7 +7247,7 @@ LABEL_46:
               BYTE6(a13),
               BYTE2(retaddr),
               i);
-          v49 = (int16_t *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7)));
+          v49 = (int16_t *)(a18 + 15 * *((int16_t *)&vars6 + SHIWORD(a7)));
           v82 = i;
           v25 = (int16_t)(*((_WORD *)&var2 + SHIWORD(a7)) + WORD1(a5));
           v26 = (int16_t)(HIWORD(a6) + WORD1(a8));
@@ -7098,7 +7264,7 @@ LABEL_46:
             *(uint8_t *)(dword_192864 + 313 * v109 + 37),
             v49[2],
             v49[3],
-            SHIWORD(a19),
+            (int16_t)a19,
             v82,
             word_18248B,
             *(uint8_t *)(dword_192864 + 313 * v112 + 37),
@@ -7110,7 +7276,7 @@ LABEL_51:
           || (*((int16_t *)&vars6 + SHIWORD(a7)) > -1
            || *((int16_t *)&vars6 + (HIWORD(a7) == 0)) == -1
            || *((int16_t *)&vars6 + (HIWORD(a7) == 0)) >= 16
-           || *(int16_t *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + (HIWORD(a7) == 0))) > 0
+           || *(int16_t *)(a18 + 15 * *((int16_t *)&vars6 + (HIWORD(a7) == 0))) > 0
            && *((int16_t *)&vars2 + (HIWORD(a7) == 0)) < 9)
           && ((v26 = 2 * SHIWORD(a7), *(int16_t *)((char *)&vars6 + v26) <= -1)
            || sub_A6B95() > *(int16_t *)((char *)&vars2 + v26)) )
@@ -7129,7 +7295,7 @@ LABEL_51:
           if ( *(int16_t *)((char *)&v116 + v50) <= 0 )
           {
             v25 = SWORD1(a11) + 1;
-            v26 = *(_DWORD *)((char *)&a19 + 10) + 15 * v25;
+            v26 = a18 + 15 * v25;
             *(_WORD *)((char *)&v116 + v50) = 0;
             if ( *(int16_t *)v26 <= 0 || v25 >= 16 )
             {
@@ -7146,14 +7312,14 @@ LABEL_51:
                 memset(v113, 0, 240);
                 v51 = 15 * (SWORD1(a11) + 1);
                 ++*(_DWORD *)((char *)&a11 + 2);
-                qmemcpy(v113, (void *)(*(_DWORD *)((char *)&a19 + 10) + v51), 15);   /* wave 182: was sizeof(v113) */
+                qmemcpy(v113, (void *)(a18 + v51), 15);   /* wave 182: was sizeof(v113) */
                 v115 = 0;
                 v114 = 0;
                 word_18248B = 2;
-                v52 = SWORD1((int)LODWORD(a19));
-                *(_DWORD *)&_17A = SWORD3((int)LODWORD(a19));
+                v52 = (int16_t)a16;
+                *(_DWORD *)&_17A = (int16_t)a17;
                 byte_18248D = 1;
-                ((int (*)())(void*)sub_A8197)(v109, SWORD1(a19), *(_DWORD *)&_17A, v112, (int16_t)v111, (int16_t)v110, v113, 0);
+                sub_A8197(v109, (int16_t)a16, v112, (int16_t)a17, (int16_t)v111, (int16_t)v110, (int)(intptr_t)v113, 0);   /* wave 184: A891F eax, edx, ecx = a3, ebx = a4 */
                 byte_18248D = 0;
                 word_182489 = 0;
                 v25 = 639;
@@ -7161,11 +7327,11 @@ LABEL_51:
                 *((_WORD *)&vars6 + (HIWORD(a7) == 0)) = -1000;
                 sub_12C2A0();
                 v53 = sub_124D41();
-                sub_2F4EE(v53);
+                sub_2F4EE();
                 sub_128AB6(0, 0, 639, 350);
                 sub_12B634();
                 *(_DWORD *)((char *)&a6 + 2) = 1;
-                if ( word_1998FC == v109 && !HIWORD(a19) )
+                if ( word_1998FC == v109 && !(int16_t)a19 )
                 {
                   v25 = *(_DWORD *)&_17A;
                   HIWORD(v26) = HIWORD(v52);
@@ -7181,7 +7347,7 @@ LABEL_51:
               else
               {
                 *((_WORD *)&vars6 + SHIWORD(a7)) = -1000;
-                if ( *(_BYTE *)(*(_DWORD *)((char *)&a19 + 10) + 15 * (SWORD1(a11) + 1) + 14) )
+                if ( *(_BYTE *)(a18 + 15 * (SWORD1(a11) + 1) + 14) )
                 {
                   word_18248B = 1;
                   word_182489 = 1;
@@ -7193,12 +7359,12 @@ LABEL_51:
               ++*(_DWORD *)((char *)&a11 + 2);
               v54 = WORD1(a11);
               *(_WORD *)((char *)&vars6 + v50) = WORD1(a11);
-              if ( *(_BYTE *)(*(_DWORD *)((char *)&a19 + 10) + 15 * (v54 + 1) + 14) )
+              if ( *(_BYTE *)(a18 + 15 * (v54 + 1) + 14) )
               {
                 word_18248B = 1;
                 word_182489 = 1;
               }
-              v26 = *(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + SHIWORD(a7));
+              v26 = a18 + 15 * *((int16_t *)&vars6 + SHIWORD(a7));
               if ( *(char *)(v26 + 12) < 0 )
                 *((_WORD *)&v116 + SHIWORD(a7)) = 3;
             }
@@ -7217,7 +7383,7 @@ LABEL_51:
         BYTE14(a14) = 1;
         word_18248B = 0;
       }
-      if ( HIWORD(a19) )
+      if ( (int16_t)a19 )
       {
         word_182483 = 0;
         word_182489 = 0;
@@ -7227,9 +7393,9 @@ LABEL_51:
         sub_A9618(&word_18247F);
         v56 = 0;
         if ( (int16_t)vars6 > -1 )
-          v56 = *(_BYTE *)(*(_DWORD *)((char *)&a19 + 10) + 15 * (int16_t)vars6 + 6);
+          v56 = *(_BYTE *)(a18 + 15 * (int16_t)vars6 + 6);
         if ( SHIWORD(vars6) > -1 )
-          v56 += *(_BYTE *)(*(_DWORD *)((char *)&a19 + 10) + 15 * ((_WORD)vars6 == 0) + 6);
+          v56 += *(_BYTE *)(a18 + 15 * ((_WORD)vars6 == 0) + 6);
         if ( byte_182438 )
           v56 = 1;
         v57 = v56 != 0;
@@ -7240,7 +7406,7 @@ LABEL_51:
           if ( (int16_t)vars6 <= -1 )
             v60 = 0;
           else
-            v60 = *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * (int16_t)vars6 + 12) & 0x100;
+            v60 = *(_WORD *)(a18 + 15 * (int16_t)vars6 + 12) & 0x100;
           v85 = word_18247F;
           v83 = sub_A956C(v112, v109);
           sub_A9AED(WORD1(a5) - v59 / 2, WORD1(a14) - v59 / 2, v109, v58, v60, v83, v85);
@@ -7278,8 +7444,8 @@ LABEL_51:
             LOWORD(v70) = (uint8_t)byte_182485[(int16_t)v70];
             *(_DWORD *)((char *)&a14 + 10) = v70;
             sub_49ED1(v109, (_WORD *)&a8 + 3, (_WORD *)&a7 + 1);
-            *(_DWORD *)((char *)&a8 + 6) += *(_DWORD *)((char *)&a19 + 2);
-            *(_DWORD *)((char *)&a7 + 2) += *(_DWORD *)((char *)&a19 + 6);
+            *(_DWORD *)((char *)&a8 + 6) += a16;
+            *(_DWORD *)((char *)&a7 + 2) += a17;
             v87 = word_182481;
             v64 = sub_A956C(v112, v109);
             v65 = *(uint8_t *)(v69 + dword_192864 + 37);
@@ -7293,12 +7459,12 @@ LABEL_113:
       }
       for ( j = 0; j < 2; ++j )
       {
-        if ( HIWORD(a19) )
+        if ( (int16_t)a19 )
         {
           v76 = *((int16_t *)&vars6 + j);
           if ( v76 > -1 )
           {
-            v77 = *(_DWORD *)((char *)&a19 + 10) + 15 * v76;
+            v77 = a18 + 15 * v76;
             if ( *(int16_t *)(v77 + 8) > 0 || *(int16_t *)(v77 + 10) > 0 )
             {
               if ( byte_18243F[j] )
@@ -7307,14 +7473,14 @@ LABEL_113:
                   SWORD1(a5),
                   SWORD1(a14),
                   1,
-                  *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 8));
+                  *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 8));
                 v78 = dword_192B14 + 26 * v109;
-                *(_WORD *)(v78 + 15) -= *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 8);
+                *(_WORD *)(v78 + 15) -= *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 8);
                 if ( *(int16_t *)(v78 + 15) <= 0 )
                   sub_3BC80(v109);
-                if ( *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 8) )
+                if ( *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 8) )
                   sub_147D7(28);
-                *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 8) = -1;
+                *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 8) = -1;
               }
             }
           }
@@ -7326,15 +7492,15 @@ LABEL_113:
           {
             if ( byte_18243F[j] )
             {
-              v73 = *(_DWORD *)((char *)&a19 + 10) + 15 * v72;
+              v73 = a18 + 15 * v72;
               if ( *(int16_t *)(v73 + 8) > 0 || *(int16_t *)(v73 + 10) > 0 )
               {
                 v74 = ((int16_t)sub_A956C(v109, v112) + 4) % 16;
-                v75 = *(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j);
-                sub_A93AA(SWORD1(a19), SWORD3(a19), v109, v74 < 8, *(_WORD *)(v75 + 8), *(_WORD *)(v75 + 10));
+                v75 = a18 + 15 * *((int16_t *)&vars6 + j);
+                sub_A93AA((int16_t)a16, (int16_t)a17, v109, v74 < 8, *(_WORD *)(v75 + 8), *(_WORD *)(v75 + 10));
                 sub_147D7(29);
-                *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 8) = -1;
-                *(_WORD *)(*(_DWORD *)((char *)&a19 + 10) + 15 * *((int16_t *)&vars6 + j) + 10) = -1;
+                *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 8) = -1;
+                *(_WORD *)(a18 + 15 * *((int16_t *)&vars6 + j) + 10) = -1;
               }
             }
           }
@@ -7351,6 +7517,17 @@ LABEL_113:
 #undef v113
 #undef v114
 #undef v115
+#undef a5
+#undef a6
+#undef a7
+#undef a8
+#undef a9
+#undef a10
+#undef a11
+#undef a12
+#undef a13
+#undef a14
+#undef a15
 }
 // A8197: variables would overlap: ^1C2.2 and ^1C2.4
 // A83E3: inconsistent variable size for '^1C8.16'
@@ -7637,7 +7814,7 @@ _BOOL1 sub_A94A1()
   {
     sub_12C2A0();
     v0 = sub_124D41();
-    sub_2F4EE(v0);
+    sub_2F4EE();
     sub_128AB6(0, 0, 639, 350);
     sub_12B634();
     sub_A9223();
@@ -7886,10 +8063,50 @@ int sub_A97F7( int a1, int a2, int a3, int a4)
 
 
 //----- (000A9867) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=87)) - nutno dohledat rucne v IDA @ 0xA9930 */
-int sub_A9867(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
+/* wave 184: from asm (Hex-Rays failed) - combat animation of ship a1 (eax) towards the screen
+   point (a3, a4) (ebx, ecx); a2 (edx) goes to sub_A9AED. Runs until word_182483 is clear and
+   sub_A929A says done. */
+void sub_A9867(int a1, int a2, int a3, int a4)
 {
-  DECOMP_TODO("call analysis failed (funcsize=87)");
+  int16_t v5;   // si - the ship
+  int16_t v6;   // [var_18] its type byte
+  int16_t v7;   // [var_24]
+  int16_t v8;   // [var_20]
+  int16_t v9;   // [var_1C]
+  int16_t v10;  // [var_10]
+  int16_t v11;  // [var_C]
+  int16_t v12;  // [var_4]
+  int v13;
+
+  v5 = (int16_t)a1;
+  v6 = *(uint8_t *)((uint8_t *)(intptr_t)dword_192864 + 313 * v5 + 0x25);
+  v7 = sub_A9AAD(v6);
+  v12 = 0;
+  sub_49ED1(v5, (_WORD *)&v9, (_WORD *)&v8);
+  v13 = (uint8_t)byte_182477[(int16_t)sub_A9AAD(v6)] / 2;   /* A98C0 cdq / sub / sar */
+  v10 = (int16_t)a3 - v13;
+  v11 = (int16_t)a4 - v13;
+  sub_A97F7(0, v7, 0, 0);
+  byte_18243D = 1;
+  do
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    if ( v5 == word_1998FC )
+      sub_30062(v5, (int16_t)(a3 - v9), (int16_t)(a4 - v8), 0);
+    sub_A9618(&v12);
+    sub_A9AED(v10, v11, v5, 0, 0, (int16_t)a2, v12);
+    sub_A9223();
+    sub_12C2C6(1);
+    sub_1077D(0, 0, 0, 0);
+    sub_12B65C();
+    sub_128BE7();
+    byte_18243D = 0;
+  }
+  while ( word_182483 || !sub_A929A() );
 }
 
 
@@ -8280,10 +8497,50 @@ int sub_AA109( int a1, int a2)
 
 
 //----- (000AA127) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=92)) - nutno dohledat rucne v IDA @ 0xAA1FF */
-_DWORD sub_AA127(void)
+/* wave 184: written from asm AA127-AA280 (Hex-Rays failed). No caller in the original (dead code):
+   a beam animation of ship a1 (eax), a2 = edx, a3 = ebx x, a4 = ecx y */
+void sub_AA127(int a1, int a2, int a3, int a4)
 {
-  DECOMP_TODO("call analysis failed (funcsize=92)");
+  int16_t v_si = (int16_t)a1; // esi
+  int16_t v10 = (int16_t)a2;  // [ebp-10h]
+  int16_t v24 = (int16_t)a3;  // [ebp-24h]
+  int16_t v_di = (int16_t)a4; // edi
+  int16_t v1C;                // [ebp-1Ch] ship size
+  int16_t v14;                // [ebp-14h]
+  int16_t v18;                // [ebp-18h]
+  int16_t v20, v4;            // [ebp-20h] [ebp-4]
+  int16_t v8, vC, v_c;
+
+  v1C = *(uint8_t *)(dword_192864 + 313 * v_si + 37);
+  v14 = sub_A9AAD(v1C);
+  v18 = 0;
+  sub_49ED1(v_si, (_WORD *)&v20, (_WORD *)&v4);
+  v_c = (uint8_t)byte_182485[(int16_t)sub_A9AAD(v1C)] / 2;   /* AA179 */
+  v8 = v24 - v_c;
+  vC = v_di - v_c;
+  sub_127C27((int)aBeamsLbx, (int16_t)(5 * v14 + 89), dword_193174);
+  byte_18243E = 1;
+  do
+  {
+    sub_12C2A0();   /* AA1BB */
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    if ( v_si == word_1998FC )
+      sub_30062(v_si, (int16_t)(v24 - v20), (int16_t)(v_di - v4), 350);
+    sub_128AB6(0, 0, 639, 350);   /* AA204 */
+    sub_12B634();
+    sub_A9FFC(&v18);
+    sub_AA38D(v8, vC, v_si, v10, v18);   /* AA238 */
+    sub_A9223();
+    sub_12C2C6(1);
+    sub_1077D(0, 0, 0, 0);
+    sub_12B65C();
+    sub_128BE7();
+    byte_18243E = 0;
+  }
+  while ( word_182489 || !sub_A929A() );   /* AA262 */
 }
 
 
@@ -9392,26 +9649,221 @@ void sub_AB850( int a1, int a2)
 
 
 //----- (000AB8BF) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=89)) - nutno dohledat rucne v IDA @ 0xAB9C1 */
-int sub_AB8BF(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
+/* wave 184: from asm (Hex-Rays failed) - moves the combat view from ship a1's point (a2, a3)
+   towards the record a4 of dword_192B14 (26 bytes, x +9, y +0Bh) until it is reached.
+   The epilogue is locret_AEBED (retn 4): a5 is a stack argument the body does not read. */
+void sub_AB8BF(int a1, int a2, int a3, int a4, int a5)
 {
-  DECOMP_TODO("call analysis failed (funcsize=89)");
+  int16_t v6;   // si - the ship
+  int16_t v7;   // [var_4] 20 * word_1998F0
+  int16_t v8;   // ecx - 20 * word_1998F2
+  int16_t v9;   // [var_C] target x
+  int16_t v10;  // [var_10] target y
+  int16_t v11;  // [var_1C]
+  int16_t v12;  // [var_28]
+  int16_t v13;  // [var_24] current x
+  int16_t v14;  // [var_20] current y
+  int16_t v15;  // [var_8] step
+  int16_t v16;  // [var_18]
+  int16_t v17;  // edi
+  uint8_t *v18;
+
+  v6 = (int16_t)a1;
+  v7 = 20 * word_1998F0;
+  v8 = 20 * word_1998F2;
+  v18 = (uint8_t *)(intptr_t)dword_192B14 + 26 * (int16_t)a4;
+  v9 = *(int16_t *)(v18 + 9) - v7;
+  v10 = *(int16_t *)(v18 + 11) - v8;
+  v11 = 0;
+  v12 = 0;
+  sub_49ED1(v6, (_WORD *)&v11, (_WORD *)&v12);
+  v11 = a2 + v11 - v7;
+  v12 = v12 + a3 - v8;
+  v13 = v11;
+  v14 = v12;
+  v15 = word_19987E == 1 || word_1998CE ? 30 : 20;
+  sub_128B49();
+  v16 = a2 - v7;
+  v17 = a3 - v8;
+  while ( v13 != v9 || v14 != v10 )
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    if ( v6 == word_1998FC )
+      sub_30062(v6, v16, v17, 0);
+    sub_1344B0(&v13, &v14, v11, v12, v9, v10, v15);
+    sub_AB850(v13, v14);
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+  }
 }
 
 
 //----- (000ABA09) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=160)) - nutno dohledat rucne v IDA @ 0xABBFD */
-_DWORD sub_ABA09( int _p0, int _p1)
+/* wave 184: from asm (Hex-Rays failed) - ship a1 (eax, at the point a2 / a3 = edx / ebx) fires
+   its weapon slot a5 (stack arg_0) at the target record a4 (ecx) of dword_192B14; a6 (arg_4)
+   sets the hit chance 70 - ((a6 + 2) * 10 / 3 - 1). Every shot takes rng(100); a hit lowers
+   the target's word +0Fh, at 0 sub_3BC80 removes it. Then the explosion animation (retn 8). */
+void sub_ABA09(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  DECOMP_TODO("call analysis failed (funcsize=160)");
+  int16_t v7;   // si - the ship
+  int16_t v8;   // [var_2C] 20 * word_1998F0
+  int16_t v9;   // [var_10] 20 * word_1998F2
+  int16_t v10;  // [var_4] target x
+  int16_t v11;  // [var_28] target y
+  int16_t v12;  // [var_18] hit chance
+  int16_t v13;  // [var_1C] shots
+  int16_t v14;  // ebx
+  int16_t v15;  // edi - hits, then the frame
+  int16_t v16;  // [var_24] frames
+  int v17;
+  uint8_t *v18;
+  uint8_t *v19;
+
+  v7 = (int16_t)a1;
+  v8 = 20 * word_1998F0;
+  v9 = 20 * word_1998F2;
+  v18 = (uint8_t *)(intptr_t)dword_192B14 + 26 * (int16_t)a4;
+  v15 = 0;
+  v10 = *(int16_t *)(v18 + 9) - v8;
+  v11 = *(int16_t *)(v18 + 11) - v9;
+  if ( word_1998F6 == 1 && !word_1998E0 )
+    sub_AB8BF(v7, (int16_t)a2, (int16_t)a3, (int16_t)a4, (int16_t)a6);
+  v12 = 70 - (((int16_t)a6 + 2) * 10 / 3 - 1);
+  v13 = *((uint8_t *)(intptr_t)dword_192864 + 313 * v7 + 11 * (int16_t)a5 + 0x5B);
+  for ( v14 = 0; v14 < v13; ++v14 )
+  {
+    v18 = (uint8_t *)(intptr_t)dword_192B14 + 26 * (int16_t)a4;
+    if ( !*(int16_t *)v18 )
+      break;
+    v17 = sub_1247A0(100);
+    v19 = (uint8_t *)(intptr_t)dword_192864 + 313 * v7 + 11 * (int16_t)a5;
+    --v19[0x5B];
+    --*(int16_t *)(v19 + 0x58);
+    if ( (int16_t)v17 < v12 )
+    {
+      if ( --*(int16_t *)(v18 + 15) <= 0 )
+        sub_3BC80((int16_t)a4);
+      ++v15;
+    }
+  }
+  if ( v15 <= 0 || word_1998F6 != 1 || word_1998E0 )
+    return;
+  sub_147D7(28);   /* ABB5C: eax = 1Ch (edx = 7) */
+  v16 = *(int16_t *)(sub_127C27((int)(intptr_t)aCmbtsfxLbx_0, 7, dword_193174) + 6);
+  sub_A9412(v10, v11, 1, v15);
+  for ( v15 = 0; v15 < v16; ++v15 )
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    if ( v7 == word_1998FC )
+      sub_30062(v7, (int16_t)(a2 - v8), (int16_t)(a3 - v9), 0);
+    v17 = sub_127C27((int)(intptr_t)aCmbtsfxLbx_0, 7, dword_193174);
+    sub_12B753(v17, v15);
+    sub_12A478((int16_t)(v10 - 12), (int16_t)(v11 - 12), v17);
+    sub_12B65C();
+    sub_128BE7();
+    sub_A9223();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+  }
 }
 
 
 //----- (000ABC5D) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=226)) - nutno dohledat rucne v IDA @ 0xABE1B */
-_DWORD sub_ABC5D(void)
+/* wave 184: written from asm ABC5D-ABFF2 (Hex-Rays failed) - beam animation for weapon 34
+   (CMBTSFX.LBX 8) from ship a1 (eax) to ship a2 (edx), called from sub_AC136 */
+void sub_ABC5D(int a1, int a2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=226)");
+  int16_t v28 = (int16_t)a1;  // [ebp-28h] push eax
+  int16_t v2C = (int16_t)a2;  // [ebp-2Ch] push edx
+  int16_t v10;                // [ebp-10h] frame count
+  int16_t v18, v1C, v20, v14; // line ends
+  int16_t vC, v8, v4;
+  int v_esi, v_edi, v_r;
+  uint8_t *v_s;
+
+  sub_12B79D(sub_127C27((int)aCmbtsfxLbx_0, 68, dword_193174));
+  v10 = *(int16_t *)(intptr_t)(sub_127C27((int)aCmbtsfxLbx_0, 8, dword_193174) + 6);
+  sub_1112EC(dword_192ED4, 50000);
+  v_esi = (int)(intptr_t)sub_110D3C((PoolMemType *)(intptr_t)dword_192ED4, 50000);
+  sub_49ED1(v28, (_WORD *)&v18, (_WORD *)&v1C);
+  v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v28);
+  v18 += (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0));
+  v1C += (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2));
+  sub_49ED1(v2C, (_WORD *)&v20, (_WORD *)&v14);   /* ABD07 */
+  v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v2C);
+  v20 += (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0));
+  v14 += (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2));
+  vC = word_19987E == 1 || word_1998CE ? 2 : 1;
+  v_edi = sub_147D7(11);
+  for ( v8 = 0; v8 < v10; v8 += vC )   /* ABD7A */
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    v_r = sub_127C27((int)aCmbtsfxLbx_0, 8, dword_193174);
+    sub_12B753(v_r, v8);
+    sub_12F578(v_esi, v_r);
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    sub_130098(v18, v1C, v20, v14, v_esi);
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v28);
+    sub_30062(
+      v28,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v2C);
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v2C);
+    sub_30062(
+      v2C,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v2C);
+    sub_128BE7();
+    sub_12B65C();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+  }
+  sub_112C96(v_edi, 10);   /* ABE85 */
+  v_edi = sub_147D7(11);
+  for ( v4 = 0; v4 < 8; v4 += vC )   /* ABEA9 */
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    v_r = sub_127C27((int)aCmbtsfxLbx_0, 8, dword_193174);
+    sub_12B753(v_r, v4 % 3 + v10 - 3);   /* ABEE7: the last three frames */
+    sub_12F578(v_esi, v_r);
+    sub_130098(v18, v1C, v20, v14, v_esi);
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v2C);
+    v_s[35] = (uint8_t)((v_s[35] + 1) % 16);
+    sub_30062(
+      v2C,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v2C);
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v28);
+    sub_30062(
+      v28,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v28);
+    sub_12B65C();
+    sub_128BE7();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(2);
+  }
+  sub_1113CC(dword_192ED4, 10);   /* ABFD7 */
+  sub_112C96(v_edi, 10);
 }
 
 
@@ -9494,18 +9946,164 @@ void sub_ABFF3( int a1, int a2)
 
 
 //----- (000AC136) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=212)) - nutno dohledat rucne v IDA @ 0xAC203 */
-int sub_AC136(_DWORD _p0, _DWORD _p1, _DWORD _p2)
+/* wave 184: written from asm AC136-AC471 (Hex-Rays failed) - weapon 34 (a damage roll on +0C0h):
+   a1 = eax attacker, a2 = edx target, a3 = ebx count. The animation part (only when the combat is
+   shown) draws random numbers too. */
+void sub_AC136(int a1, int a2, int a3)
 {
-  DECOMP_TODO("call analysis failed (funcsize=212)");
+  int16_t v24 = (int16_t)a1;  // [ebp-24h] push eax
+  int16_t v_si = (int16_t)a2; // esi
+  int16_t v14 = (int16_t)a3;  // [ebp-14h]
+  int16_t v_di;               // edi
+  int16_t v10;                // [ebp-10h] saved word_1998FC
+  int16_t v8;                 // [ebp-8]
+  int v18 = 0;                // [ebp-18h] sound handle
+  int16_t v_dx, v_bx, v_rem;
+  uint8_t *v_s;
+
+  v_di = 0;
+  if ( word_1998F6 == 1 && !word_1998E0 )
+  {
+    if ( !(int16_t)sub_339A7(v_si, 0, 0) )   /* AC166 */
+    {
+      v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_si);
+      sub_49D09(v_s[33], v_s[34]);
+    }
+    v10 = word_1998FC;   /* AC18B */
+    word_1998FC = v_si;
+    sub_2C6BA(sub_124D7A());   /* eax = 124D7A */
+    sub_2F4EE();
+    sub_124E36();
+    sub_124D41();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_si);
+    sub_30062(
+      v_si,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v_si);
+    sub_12B65C();
+    sub_128BE7();
+    sub_1077D(0, 0, 0, 0);
+    sub_ABC5D(v24, v_si);   /* AC21D */
+    for ( v_dx = 0; v_dx < 19; ++v_dx )   /* AC224 */
+      v_di += (int16_t)sub_1247A0(13);
+    v_rem = v_di % 16;
+    while ( v_rem == 15 || v_rem < 2 )   /* AC247 */
+    {
+      v_di += (int16_t)sub_1247A0(13);
+      v_rem = v_di % 16;
+    }
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    v8 = 0;
+    v18 = sub_147D7(3);
+    while ( v_di > v8 )   /* AC324 */
+    {
+      sub_124D41();
+      v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_si);
+      v_s[35] = (uint8_t)((v_s[35] + 1) % 16);
+      sub_128AB6(0, 0, 639, 350);
+      sub_12B634();
+      ++v8;
+      sub_30062(
+        v_si,
+        (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+        (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+        350);   /* AC310 ecx = 15Eh */
+      sub_128BE7();
+      sub_12B65C();
+      sub_1077D(0, 0, 0, 0);
+    }
+    sub_12B65C();
+    sub_128BE7();
+    sub_2C6BA(sub_124D7A());   /* eax = 124D7A */
+    sub_124D41();
+    word_1998FC = v10;
+  }
+  v_dx = 0;   /* AC350 */
+  for ( v_bx = 0; v_bx < v14; ++v_bx )
+    v_dx += (int16_t)((sub_1247A0((int16_t)(word_17F819[14 * 34] - word_17F817[14 * 34] + 1)) + word_17F817[14 * 34] - 1)
+                    * (*(uint8_t *)(dword_192864 + 313 * v_si + 37) + 1));
+  v_dx = (int16_t)(v_dx * word_199224[*(uint8_t *)(dword_192864 + 313 * v24 + 32)] / 100);   /* AC3A0 */
+  v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_si);
+  if ( *(int16_t *)(v_s + 192) + v_dx > *(int16_t *)(v_s + 170) )
+    v_dx = *(int16_t *)(v_s + 170) - *(int16_t *)(v_s + 192);
+  *(int16_t *)(v_s + 192) += v_dx;   /* AC40E */
+  if ( word_1998F6 == 1 && !word_1998E0 )
+  {
+    sub_A93AA(
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v_si,
+      1,
+      v_dx,
+      0);
+    sub_A94A1();
+    sub_112C96(v18, 10);
+  }
 }
 
 
 //----- (000AC472) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=124)) - nutno dohledat rucne v IDA @ 0xAC5B8 */
-int sub_AC472(_DWORD _p0, _DWORD _p1, _DWORD _p2, _DWORD _p3)
+/* wave 184: written from asm AC472-AC618 (Hex-Rays failed) - a missile hit animation (15 frames of
+   CMBTSFX.LBX 0): a1 = eax ship, a2 = edx missile, a3 = ebx x, a4 = ecx y. Only the low words of
+   the frame slots are used, so the sums are 16-bit. */
+void sub_AC472(int a1, int a2, int a3, int a4)
 {
-  DECOMP_TODO("call analysis failed (funcsize=124)");
+  int16_t v30 = (int16_t)a1;  // [ebp-30h] push eax
+  int16_t v28 = (int16_t)a3;  // [ebp-28h]
+  int16_t v10 = (int16_t)a4;  // [ebp-10h]
+  int16_t vC;                 // [ebp-0Ch]
+  int16_t v2C;                // [ebp-2Ch]
+  int16_t v8, v4, v14, v18, v24, v1C, v20;
+  int16_t v_cy, v_cx, v_r, v_si;
+  int v_di;
+  int16_t *v_m;
+  uint8_t *v_s;
+
+  sub_49ED1(v30, (_WORD *)&vC, (_WORD *)&v2C);
+  v8 = v28 - vC;
+  v4 = v10 - v2C;
+  if ( !(int16_t)sub_339A7(v30, 0, 0) )   /* AC4A5 */
+  {
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v30);
+    sub_49D09(v_s[33], v_s[34]);
+  }
+  v_cy = (int16_t)(20 * word_1998F2);   /* AC4CA */
+  v_cx = (int16_t)(20 * word_1998F0);
+  v_m = (int16_t *)(intptr_t)(dword_192B14 + 26 * (int16_t)a2);
+  v4 -= v_cy;
+  v8 -= v_cx;
+  v14 = *(int16_t *)((char *)v_m + 9) - v_cx;
+  v18 = *(int16_t *)((char *)v_m + 11) - v_cy;
+  v28 -= v_cx;
+  v10 -= v_cy;
+  v24 = v8 + vC - 36;
+  v1C = v4 + v2C - 36;
+  v_r = (int16_t)sub_134637(v28, v10, v14, v18);   /* AC530 */
+  if ( v_r - 16 > 0 )
+    sub_13432D(&v28, &v10, v14, v18, (int16_t)(v_r - 16));
+  v20 = word_1998FC;   /* AC565 */
+  word_1998FC = v30;
+  v_di = sub_147D7(4);
+  for ( v_si = 0; v_si < 15; ++v_si )
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    sub_30062(v30, v8, v4, 350);   /* AC5B8 ecx = 15Eh */
+    sub_12A478(v24, v1C, sub_127C27((int)aCmbtsfxLbx_0, 0, dword_193174));
+    sub_12B65C();
+    sub_128BE7();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+  }
+  word_1998FC = v20;   /* AC600 */
+  sub_112C96(v_di, 10);
 }
 
 
@@ -9649,10 +10247,83 @@ LABEL_31:
 
 
 //----- (000AC87A) --------------------------------------------------------
-/* DECOMP_TODO: dekompilace selhala (call analysis failed (funcsize=169)) - nutno dohledat rucne v IDA @ 0xACA74 */
-int sub_AC87A(_DWORD _p0, _DWORD _p1)
+/* wave 184: written from asm AC87A-ACB45 (Hex-Rays failed) - beam animation from ship a1 (eax)
+   to ship a2 (edx): CMBTSFX.LBX 1, then 10 frames of sub_AC619 on the target */
+void sub_AC87A(int a1, int a2)
 {
-  DECOMP_TODO("call analysis failed (funcsize=169)");
+  int16_t v28 = (int16_t)a1;  // [ebp-28h] push eax
+  int16_t v_di = (int16_t)a2; // edi
+  int16_t v10;                // [ebp-10h] frame count
+  int v24;                    // [ebp-24h] work buffer
+  int16_t v18, v20, v1C, v14; // [ebp-18h] [ebp-20h] [ebp-1Ch] [ebp-14h] line ends
+  int16_t vC;                 // [ebp-0Ch] step
+  int16_t v8, v4;
+  int v_esi, v_r;
+  uint8_t *v_s;
+
+  if ( word_1998F6 != 1 || word_1998E0 )
+    return;
+  if ( !(int16_t)sub_339A7(v_di, 0, 0) )   /* AC8A6 - the target */
+  {
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_di);
+    sub_49D09(v_s[33], v_s[34]);
+  }
+  v_r = sub_127C27((int)aCmbtsfxLbx_0, 1, dword_193174);   /* AC8CB */
+  sub_12B79D(v_r);
+  v10 = *(int16_t *)(intptr_t)(v_r + 6);
+  sub_1112EC(dword_192ED4, 50000);
+  v24 = (int)(intptr_t)sub_110D3C((PoolMemType *)(intptr_t)dword_192ED4, 50000);
+  sub_49ED1(v28, (_WORD *)&v18, (_WORD *)&v20);
+  v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v28);
+  v18 += (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0));
+  v20 += (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2));
+  sub_49ED1(v_di, (_WORD *)&v1C, (_WORD *)&v14);   /* AC957 */
+  v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_di);
+  v1C += (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0));
+  v14 += (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2));
+  vC = word_19987E == 1 || word_1998CE ? 2 : 1;   /* AC98E */
+  word_1998FC = v28;
+  v_esi = sub_147D7(10);
+  for ( v8 = 0; v8 < v10; v8 += vC )   /* AC9D3 */
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    v_r = sub_127C27((int)aCmbtsfxLbx_0, 1, dword_193174);
+    sub_12B753(v_r, v8);
+    sub_12F578(v24, v_r);
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    sub_130098(v18, v20, v1C, v14, v24);   /* ACA37 */
+    v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v28);
+    sub_30062(
+      v28,
+      (int16_t)(20 * (int16_t)(v_s[33] - word_1998F0)),
+      (int16_t)(20 * (int16_t)(v_s[34] - word_1998F2)),
+      v28);
+    sub_128BE7();
+    sub_12B65C();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(2);
+  }
+  word_1998FC = -1;   /* ACAAC */
+  sub_112C96(v_esi, 10);
+  v_esi = sub_147D7(10);
+  for ( v4 = 0; v4 < 10; v4 += vC )   /* ACACF */
+  {
+    sub_12C2A0();
+    sub_124D41();
+    sub_2F4EE();
+    sub_128AB6(0, 0, 639, 350);
+    sub_12B634();
+    sub_AC619(v_di, (int16_t)(10 * v4), 0, 0);
+    sub_12B65C();
+    sub_128BE7();
+    sub_1077D(0, 0, 0, 0);
+    sub_12C2C6(1);
+  }
+  sub_112C96(v_esi, 10);
+  sub_1113CC(dword_192ED4, 10);   /* ACB40 edx = 0Ah */
 }
 
 
@@ -9676,7 +10347,7 @@ void sub_ACB4A( int a1, unsigned int a2)
   int v18; // [esp+28h] [ebp-4h] BYREF
 
   v4 = a1;
-  sub_33B19(a1);
+  v5 = sub_33B19(a1);   /* wave 184: ACB60 test ax, ax */
   if ( !v5 )
     return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xABFED je epilog funkce */
   sub_34454(*(uint8_t *)(dword_192864 + 313 * v4 + 37), &v11, &v10);
@@ -9716,7 +10387,7 @@ LABEL_12:
     {
       sub_12C2A0();
       v8 = sub_124D41();
-      sub_2F4EE(v8);
+      sub_2F4EE();
       sub_32B26(a1, 0, (int16_t)a2, v16);
       sub_34454(a1, &v18, &v12);
       sub_128AB6(0, 0, 639, 350);
@@ -9996,7 +10667,7 @@ int sub_ACF83( int a1, int a2, int a3)
     while ( (_WORD)v40 != (_WORD)v39 || (_WORD)v43 != (_WORD)v34 )
     {
       v11 = sub_124D41();
-      sub_2F4EE(v11);
+      sub_2F4EE();
       sub_128AB6(0, 0, 639, 350);
       sub_12B634();
       v12 = (int16_t)v46;
@@ -10054,7 +10725,7 @@ LABEL_22:
         goto LABEL_36;
       }
       v18 = sub_124D41();
-      sub_2F4EE(v18);
+      sub_2F4EE();
       sub_128AB6(0, 0, 639, 350);
       sub_12B634();
       sub_1320E9((_BYTE *)dword_192954);
@@ -10181,7 +10852,7 @@ void sub_AD3CA( int a1, int a2)
       sub_128BE7();
       sub_12B65C();
       v11 = sub_1320E9((_BYTE *)dword_192950);
-      v12 = sub_2F4EE(v11);
+      v12 = sub_2F4EE();
       sub_1077D(v12, 0, 0, 0);
       ++v9;
       sub_12C2C6(1);
@@ -10190,7 +10861,7 @@ void sub_AD3CA( int a1, int a2)
     sub_1113CC(dword_192ED4, v10);
   }
   *(_BYTE *)(313 * a1 + dword_192864 + 66) = a2;
-  sub_4528F(a2);
+  v13 = sub_4528F(a2);   /* wave 184: AD54E result */
   *(_WORD *)(dword_192864 + 313 * a2 + 59) = v13;
   sub_2C601(313 * a2, v13);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xABFED je epilog funkce */
@@ -10378,7 +11049,7 @@ void sub_AD7F5(int a1, int a2, int a3)
   {
     sub_12C2A0();
     sub_124D41();
-    sub_2F4EE(0);
+    sub_2F4EE();
     sub_128AB6(0, 0, 639, 350);
     sub_12B634();
     v10 = sub_127C27((int)(intptr_t)aCmbtsfxLbx_0, 15, dword_193174);
@@ -10484,7 +11155,7 @@ _BOOL1 sub_AD98A( int a1, int a2, int a3)
     {
       sub_12C2A0();
       v11 = sub_124D41();
-      sub_2F4EE(v11);
+      sub_2F4EE();
       v12 = sub_127C27((int)aCmbtsfxLbx_0, 40, dword_193174);
       sub_12B753(v12, v10);
       sub_12F578((int)v20, v12);
@@ -10863,7 +11534,7 @@ LABEL_27:
   {
     word_1998FC = v89;
     v25 = sub_124D7A();
-    sub_2F4EE(v25);
+    sub_2F4EE();
     sub_124E36();
     if ( word_1998CE || word_19987E == 1 || word_1998CE )
       v109 = 2;
@@ -11389,7 +12060,7 @@ void sub_AEC7B( int a1, int a2, int a3, int a4, int a5)
     {
       sub_12C2A0();
       v29 = sub_124D41();
-      sub_2F4EE(v29);
+      sub_2F4EE();
       sub_128AB6(0, 0, 639, 350);
       sub_12B634();
       v30 = dword_192864 + 313 * a1;
@@ -11514,7 +12185,7 @@ LABEL_87:
       LOWORD(v65) = WORD2(v61) + v65;
     }
     v49 = sub_124D41();
-    v50 = sub_2F4EE(v49);
+    v50 = sub_2F4EE();
     sub_1077D(v50, 0, 0, 0);
 LABEL_84:
     sub_46CC8(word_1998F8, v14);
@@ -11590,7 +12261,7 @@ LABEL_20:
               if ( (int16_t)v65 >= (int16_t)v64 / 2 )
                 *(_BYTE *)(dword_192864 + 313 * a1 + 36) = 5;
               v16 = sub_124D41();
-              sub_2F4EE(v16);
+              sub_2F4EE();
               sub_128AB6(0, 0, 639, 350);
               sub_12B634();
               v17 = 313 * a1;
@@ -11732,7 +12403,7 @@ LABEL_19:
     if ( !word_1998E0 )
     {
       v11 = sub_124D41();
-      v12 = sub_2F4EE(v11);
+      v12 = sub_2F4EE();
       sub_1077D(v12, 0, 0, 0);
     }
     if ( a4 == 1 )

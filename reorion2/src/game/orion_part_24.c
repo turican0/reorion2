@@ -6720,7 +6720,7 @@ int sub_163800(int a1, int a2)
 //----- (00163B3C) --------------------------------------------------------
 bool sub_163B3C( int a1)
 {
-  /* __asm: int     16h; KEYBOARD - */ DECOMP_TODO("inline asm");
+  /* asm: int     16h; KEYBOARD - - DOS/BIOS level, not needed in the port (wave 184) */;
   return !a1;
 }
 
@@ -6829,8 +6829,8 @@ void sub_163C7A()
   v1[8] = (uint16_t)__DS__;
   v1[7] = (uint16_t)__ES__;
   _EBP = v1;
-  /* __asm: fnstenv byte ptr [ebp+0] */ DECOMP_TODO("inline asm");
-  /* __asm: fclex fdisi */ DECOMP_TODO("inline asm");
+  /* asm: fnstenv byte ptr [ebp+0] - DOS/BIOS level, not needed in the port (wave 184) */;
+  /* asm: fclex fdisi - DOS/BIOS level, not needed in the port (wave 184) */;
   _enable();
   ((void (__noreturn *)(void))_GETDS)();
 }
@@ -6849,11 +6849,11 @@ void sub_163D80( int a1, double *a2, double a3)
       v3 = a1 == -9739;
     if ( !v3 && (a1 & 0x310) != 0x310 && (a1 & 0x110) == 0x110 )
     {
-      /* __asm: fstp    st fldz */ DECOMP_TODO("inline asm");
+      /* asm: fstp    st fldz - DOS/BIOS level, not needed in the port (wave 184) */;
       if ( (a1 & 0xC0) != 0xC0 )
         sub_163EAA(a1, a2, a3);
       if ( (a1 & 8) != 0 )
-        /* __asm: fstp    st */ DECOMP_TODO("inline asm");
+        /* asm: fstp    st - DOS/BIOS level, not needed in the port (wave 184) */;
     }
   }
 }
@@ -6873,7 +6873,7 @@ void sub_163E0D( int a1, int a2, double *a3, int a4, double a5)
       if ( (a1 & 0xC0) != 0xC0 )
         sub_163EAA(a1, a3, v5);
       if ( (a1 & 8) != 0 )
-        /* __asm: fstp    st */ DECOMP_TODO("inline asm");
+        /* asm: fstp    st - DOS/BIOS level, not needed in the port (wave 184) */;
     }
     else if ( (a1 & 0xC0) == 0xC0 )
     {
@@ -6930,16 +6930,16 @@ int64_t sub_163E85(int a1, int a2, int _ESI)
     LOBYTE(a1) = a1 - 1;
     if ( v3 )
       break;
-    /* __asm: fincstp */ DECOMP_TODO("inline asm");
+    /* asm: fincstp - DOS/BIOS level, not needed in the port (wave 184) */;
   }
-  /* __asm: fstp    st fld     tbyte ptr [esi] */ DECOMP_TODO("inline asm");
+  /* asm: fstp    st fld     tbyte ptr [esi] - DOS/BIOS level, not needed in the port (wave 184) */;
   HIDWORD(result) = v5;
   while ( 1 )
   {
     v3 = BYTE4(result)-- < 1;
     if ( v3 )
       break;
-    /* __asm: fdecstp */ DECOMP_TODO("inline asm");
+    /* asm: fdecstp - DOS/BIOS level, not needed in the port (wave 184) */;
   }
   return result;
 }

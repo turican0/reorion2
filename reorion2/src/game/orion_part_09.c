@@ -8184,7 +8184,7 @@ LABEL_13:
   }
   sub_12B65C();
   sub_128BE7();
-  sub_90C4F(17, 443, i, 180, 116, v18, v19, v16, (int16_t)v13, v15, v17);
+  sub_90C4F(17, 443, i, 180, 116, v18, v19, v16, (int16_t)v13, v15, v17, 0);   /* wave 184: 9CCAB eax = var_28 = 0 */
   v11 = dword_19C5A0;
   *(_WORD *)(dword_19C5A0 + 23) += 2 * *(char *)(dword_19C5A0 + 25);
   if ( *(char *)(v11 + 25) > 0 && *(int16_t *)(v11 + 23) >= 3
@@ -9938,6 +9938,10 @@ int sub_9EC4A(int a1, int a2, int a3, int a4)
 #define a23 (frm9EC4A.a23)
 #define a24 (frm9EC4A.a24)
 #define a25 (frm9EC4A.a25)
+  v33 = a1;   /* wave 184: push eax in the prologue */
+  v32 = a2;   /* wave 184: push edx in the prologue */
+  v31 = a3;   /* wave 184: push ebx in the prologue */
+  v30 = a4;   /* wave 184: push ecx in the prologue */
   v25 = sub_8E5C5(4u, 208, 209);
   qmemcpy((char *)&a23 + 2, v25, 8u);
   LOWORD(v25) = word_179BCB;

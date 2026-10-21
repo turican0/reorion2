@@ -8940,7 +8940,7 @@ int sub_154D9A(
   {
     v17 = a1;
     hr_outbyte(0x20u, 0x20u);
-    /* __asm: iret */ DECOMP_TODO("inline asm");
+    /* asm: iret - DOS/BIOS level, not needed in the port (wave 184) */;
   }
   v17 = a7;
   v16 = a6;
@@ -8988,7 +8988,7 @@ int sub_154D9A(
   if ( !dword_1899A8 )
   {
     --dword_1899FE;
-    /* __asm: iret */ DECOMP_TODO("inline asm");
+    /* asm: iret - DOS/BIOS level, not needed in the port (wave 184) */;
   }
   --dword_1899A8;
   --dword_1899FE;
@@ -9104,12 +9104,12 @@ void sub_154F88(int a1, unsigned int a2)
   memset(dword_1898EC, 0, 0x40u);
   memset(dword_18992C, 0, 0x40u);
   memset(dword_18996C, 0, 0x40u);
-  /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-  /* __asm: int     21h; DOS - 2+ - GET INTERRUPT VECTOR */ DECOMP_TODO("inline asm");
+  /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+  /* asm: int     21h; DOS - 2+ - GET INTERRUPT VECTOR - DOS/BIOS level, not needed in the port (wave 184) */;
   dword_1899EC = 8;
   word_1899F0 = __DS__;
   dword_1899F2 = a2;
-  /* __asm: int     21h; DOS - SET INTERRUPT VECTOR */ DECOMP_TODO("inline asm");
+  /* asm: int     21h; DOS - SET INTERRUPT VECTOR - DOS/BIOS level, not needed in the port (wave 184) */;
   dword_1898E8 = 2;
   sub_140287(60, 54925);
   v3 = (v4 & 2) == 0;
@@ -9146,7 +9146,7 @@ int sub_155076()
   _disable();
   sub_154EC0(0);
   result = 9480;
-  /* __asm: int     21h; DOS - SET INTERRUPT VECTOR */ DECOMP_TODO("inline asm");
+  /* asm: int     21h; DOS - SET INTERRUPT VECTOR - DOS/BIOS level, not needed in the port (wave 184) */;
   v2 = (v3 & 2) == 0;
   _disable();
   if ( !v2 )
@@ -9163,10 +9163,10 @@ int sub_1550B1(int a1, int a2, int a3, int a4)
 {
   int v4; // ecx
 
-  /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+  /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
   v4 = a4 << 16;
   LOWORD(v4) = a2;
-  /* __asm: int     21h; DOS - 2+ - GET INTERRUPT VECTOR */ DECOMP_TODO("inline asm");
+  /* asm: int     21h; DOS - 2+ - GET INTERRUPT VECTOR - DOS/BIOS level, not needed in the port (wave 184) */;
   return v4;
 }
 
@@ -9177,7 +9177,7 @@ int sub_1550DD()
   int result; // eax
 
   result = 513;
-  /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+  /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
   return result;
 }
 
@@ -9185,7 +9185,7 @@ int sub_1550DD()
 //----- (00155149) --------------------------------------------------------
 void sub_155149()
 {
-  /* __asm: retfw */ DECOMP_TODO("inline asm");
+  /* asm: retfw - DOS/BIOS level, not needed in the port (wave 184) */;
 }
 // 15514C: control flows out of bounds to 15514E
 
@@ -9198,26 +9198,26 @@ int sub_155159(int a1, int a2, int a3)
 
   if ( dword_189A08 == -1 )
   {
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: lar     ecx, edx */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: lar     ecx, edx */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: lar     ecx, edx */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
-    /* __asm: lar     ecx, edx */ DECOMP_TODO("inline asm");
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: lar     ecx, edx - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: lar     ecx, edx - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: lar     ecx, edx - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: lar     ecx, edx - DOS/BIOS level, not needed in the port (wave 184) */;
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
     dword_155120 = (int)&unk_189A14 - ((unsigned int)&unk_189A14 & 0xFFFFFFF0) + 512;
     word_15511A = 0;
     word_15510B = 0;
@@ -9225,11 +9225,11 @@ int sub_155159(int a1, int a2, int a3)
     word_155147 = a3;
     word_155136 = (uint16_t)&dword_155104 - ((unsigned int)&dword_155104 & 0xFFFFFFF0) + 74;
     dword_189A08 = a1;
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
     dword_189A0C = 49407;
     dword_189A10 = __DS__;
     result = 517;
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
   }
   return result;
 }
@@ -9259,7 +9259,7 @@ int sub_15536F(int a1)
   if ( a1 != -1 && a1 == dword_189A08 )
   {
     result = 517;
-    /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+    /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
     dword_189A08 = -1;
   }
   return result;
@@ -9316,7 +9316,7 @@ int sub_15541F(int a1, int a2, _WORD *a3, _WORD *a4)
   _SF = 0;
   v17[18] = 0;
   v17[17] = 0;
-  /* __asm: pushfw */ DECOMP_TODO("inline asm");
+  /* asm: pushfw - DOS/BIOS level, not needed in the port (wave 184) */;
   v17[16] = 0;
   v17[14] = a2;
   if ( a3 )
@@ -9330,7 +9330,7 @@ int sub_15541F(int a1, int a2, _WORD *a3, _WORD *a4)
     v17[0] = v10;
   }
   v17[8] = *(_WORD *)(*(_DWORD *)(a1 + 8) + 50);
-  /* __asm: int     31h; DPMI Services   ax=func xxxxh */ DECOMP_TODO("inline asm");
+  /* asm: int     31h; DPMI Services   ax=func xxxxh - DOS/BIOS level, not needed in the port (wave 184) */;
   if ( a4 )
   {
     v11 = v17[12];

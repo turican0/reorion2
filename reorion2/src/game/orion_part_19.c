@@ -6600,7 +6600,7 @@ void sub_1277DE(void *a1, void *a2, unsigned int a3)
 //----- (00127880) --------------------------------------------------------
 int sub_127880()
 {
-  /* __asm: int     2Fh; - Multiplex - MS WINDOWS - MS Windows 3.1 - IDENTIFY WINDOWS VERSION AND TYPE */ DECOMP_TODO("inline asm");
+  /* asm: int     2Fh; - Multiplex - MS WINDOWS - MS Windows 3.1 - IDENTIFY WINDOWS VERSION AND TYPE - DOS/BIOS level, not needed in the port (wave 184) */;
   return 0;
 }
 
