@@ -877,8 +877,6 @@ int sub_12C7CC()
   }
   return result;
 }
-// 12C9DA: variable 'v3' is possibly undefined
-// 12C9DA: variable 'v4' is possibly undefined
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BBA28: using guessed type int dword_1BBA28;
@@ -1200,7 +1198,6 @@ int sub_12D408( int a1)
   return result;
 }
 // 12D59E: variable 'v5' is possibly undefined
-// 12D59E: variable 'v6' is possibly undefined
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
 // 1B06FC: using guessed type int dword_1B06FC;
 // 1BBA28: using guessed type int dword_1BBA28;
@@ -6100,7 +6097,6 @@ int sub_1382BF( int a1, int a2, int a3, int a4, int a5)
     *(_BYTE *)(dword_1BD09C + i) += (uint8_t)a3;
   return sub_1481C2(dword_1BB904 + 640, dword_1BD09C);
 }
-// 138378: variable 'v7' is possibly undefined
 // 1BB904: using guessed type int dword_1BB904;
 // 1BD09C: using guessed type int dword_1BD09C;
 

@@ -6421,11 +6421,10 @@ bool sub_1633C4(int a1, int a2, int a3, int a4)
   _BYTE v6[4]; // [esp+8h] [ebp-4h] BYREF
 
   LOWORD(v5) = sub_15EB44();
-  sub_15E3A8((int)v6, 1174, v5, a4, 0x496u, v5, 1);
+  sub_15E3A8((int)v6, 1174, 0, a4, 0x496u, 0, 1);
   return (v6[0] & 0x10) != 0;
 }
 // 1633C4: could not find valid save-restore pair for ebx
-// 1633E2: variable 'v5' is possibly undefined
 
 
 //----- (00163400) --------------------------------------------------------

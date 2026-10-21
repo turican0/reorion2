@@ -5536,7 +5536,7 @@ int sub_15BBB9(int a1, int a2, int a3, unsigned int a4, int a5)
             v18 = v5 + 4 * i;
             if ( *(_DWORD *)(v18 + 1240) == v31 )
             {
-              sub_1413FF(*(_DWORD *)(v18 + 1172));
+              v10 = sub_1413FF(*(_DWORD *)(v18 + 1172));   /* 15BCD4 */
               if ( v19 == 4 )
                 sub_15BA8A(v5, i);
             }
@@ -5554,7 +5554,7 @@ int sub_15BBB9(int a1, int a2, int a3, unsigned int a4, int a5)
           v12 = v5 + 4 * j;
           if ( *(_DWORD *)(v12 + 1240) == v31 )
           {
-            sub_1413FF(*(_DWORD *)(v12 + 1172));
+            v13 = sub_1413FF(*(_DWORD *)(v12 + 1172));   /* 15BD16 */
             if ( v13 == 4 )
               sub_15BA8A(v5, j);
           }
@@ -5570,7 +5570,7 @@ LABEL_26:
         v9 = v5 + 4 * k;
         if ( *(_DWORD *)(v9 + 1240) == v31 )
         {
-          sub_1413FF(*(_DWORD *)(v9 + 1172));
+          v16 = sub_1413FF(*(_DWORD *)(v9 + 1172));   /* 15BD58 */
           if ( v10 == 4 )
             sub_15BA1E(v5, k);
         }
@@ -5588,7 +5588,7 @@ LABEL_26:
             v15 = v5 + 4 * m;
             if ( *(_DWORD *)(v15 + 1240) == v31 )
             {
-              sub_1413FF(*(_DWORD *)(v15 + 1172));
+              v19 = sub_1413FF(*(_DWORD *)(v15 + 1172));   /* 15BDBD */
               if ( v16 == 4 )
                 sub_1411BA(*(_DWORD *)(v15 + 1172));
             }
@@ -5611,7 +5611,7 @@ LABEL_26:
         v28 = (int *)(v5 + 4 * n);
         if ( v28[310] == v31 && v28[326] == a4 )
         {
-          sub_1413FF(v28[293]);
+          v21 = sub_1413FF(v28[293]);   /* 15BE1F */
           if ( v29 == 4 )
           {
             sub_1411BA(v28[293]);
@@ -5630,7 +5630,7 @@ LABEL_26:
     return 0;
   for ( ii = 0; ii < *(_DWORD *)(v5 + 1236); ++ii )
   {
-    sub_1413FF(*(_DWORD *)(v5 + 4 * ii + 1172));
+    v29 = sub_1413FF(*(_DWORD *)(v5 + 4 * ii + 1172));   /* 15BF8B */
     if ( v21 == 2 )
       break;
   }
@@ -5671,12 +5671,6 @@ LABEL_26:
   sub_141073(*(_DWORD **)(v5 + 4 * ii + 1172));
   return 1;
 }
-// 15BCD4: variable 'v10' is possibly undefined
-// 15BD16: variable 'v13' is possibly undefined
-// 15BD58: variable 'v16' is possibly undefined
-// 15BDBD: variable 'v19' is possibly undefined
-// 15BE1F: variable 'v21' is possibly undefined
-// 15BF8B: variable 'v29' is possibly undefined
 
 
 //----- (0015BFAD) --------------------------------------------------------
@@ -6760,8 +6754,8 @@ int sub_15E270(int a1, int a2, int a3, int a4)
   LOWORD(v5) = sub_15EB44();
   do
   {
-    sub_15E3A8((int)&v6, 4, v5, 1132, 0x46Cu, v5, 4);
-    sub_15E3A8((int)v7, 4, v5, 1132, 0x46Cu, v5, 4);
+    sub_15E3A8((int)&v6, 4, 0, 1132, 0x46Cu, 0, 4);
+    sub_15E3A8((int)v7, 4, 0, 1132, 0x46Cu, 0, 4);
   }
   while ( v6 != v7[0] );
   if ( v6 < dword_18ACCC )
@@ -6769,7 +6763,6 @@ int sub_15E270(int a1, int a2, int a3, int a4)
   dword_18ACCC = v6;
   return dword_18ACD0 + 55 * v6;
 }
-// 15E29B: variable 'v5' is possibly undefined
 // 18ACCC: using guessed type int dword_18ACCC;
 // 18ACD0: using guessed type int dword_18ACD0;
 

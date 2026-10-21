@@ -840,7 +840,7 @@ int sub_11C4C1( int a1, int a2, int a3,
   while ( 1 )
   {
     sub_12C2A0();
-    v15 = sub_1171AB(v14, a2, a3, a4);
+    v15 = sub_1171AB(0, a2, a3, a4);
     v29 = v15;
     v19 = v15 != 0;
     if ( v15 > 0 && !*(_BYTE *)(v15 + a8 - 1) && a8 || v15 == v27 )
@@ -875,7 +875,6 @@ int sub_11C4C1( int a1, int a2, int a3,
 }
 // 11C4C1: could not find valid save-restore pair for ebx
 // 11C71C: conditional instruction was optimized away because %var_4C.4==0
-// 11C727: variable 'v14' is possibly undefined
 // 184474: using guessed type char byte_184474;
 // 18447A: using guessed type int dword_18447A;
 // 184480: using guessed type _UNKNOWN *off_184480;
@@ -1845,8 +1844,6 @@ LABEL_325:
 }
 // 11D0CE: conditional instruction was optimized away because %var_14.2!=0
 // 11D491: conditional instruction was optimized away because %var_44.2!=0
-// 11CF61: variable 'v4' is possibly undefined
-// 11D9E8: variable 'v17' is possibly undefined
 // 11DB6B: variable 'v18' is possibly undefined
 // 13F37F: using guessed type int strcpy(_DWORD, _DWORD);
 // 184480: using guessed type _UNKNOWN *off_184480;
@@ -3390,8 +3387,6 @@ int sub_121E85(int a1, int a2, unsigned int a3)
   return a1 + (uint8_t)byte_1B3EA8[a3] + HIDWORD(v3);
 }
 // 121EEE: variable 'v5' is possibly undefined
-// 121EEE: variable 'v6' is possibly undefined
-// 121EEE: variable 'v7' is possibly undefined
 // 184532: using guessed type int dword_184532;
 // 1B3E74: using guessed type int dword_1B3E74;
 // 1B3EA0: using guessed type int16_t word_1B3EA0;
@@ -7886,8 +7881,6 @@ LABEL_54:
   }
   return result;
 }
-// 12A252: variable 'v5' is possibly undefined
-// 12A252: variable 'v6' is possibly undefined
 // 1845D8: using guessed type int16_t word_1845D8;
 // 1845DA: using guessed type int16_t word_1845DA;
 // 1BBA28: using guessed type int dword_1BBA28;
@@ -8121,8 +8114,6 @@ LABEL_57:
   }
   return result;
 }
-// 12A6EE: variable 'v5' is possibly undefined
-// 12A6EE: variable 'v6' is possibly undefined
 // 1845D8: using guessed type int16_t word_1845D8;
 // 1845DA: using guessed type int16_t word_1845DA;
 // 1BBA28: using guessed type int dword_1BBA28;

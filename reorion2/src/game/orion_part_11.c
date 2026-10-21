@@ -159,8 +159,6 @@ void sub_B0663()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xAFDE3 je epilog funkce */
 }
 // AFDE2: control flows out of bounds to AFDE3
-// B07EC: variable 'v6' is possibly undefined
-// B085D: variable 'v8' is possibly undefined
 // 1827BF: using guessed type char byte_1827BF;
 // 18283C: using guessed type int16_t word_18283C[54];
 // 1828A8: using guessed type int16_t word_1828A8;
@@ -346,9 +344,6 @@ int64_t sub_B0BAE(int16_t *a1, int a2, int a3, unsigned int a4)
   return sprintf((char *)(intptr_t)a2, (char *)sub_CDF5C(81), v19, v20,
                  (char)a3 ? v18 : (char *)sub_CDF5C(12));   /* B0CC7 */
 }
-// B0BB6: variable 'v4' is possibly undefined
-// B0C34: variable 'v17' is possibly undefined
-// B0CE4: variable 'v16' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 17F803: using guessed type _UNKNOWN *off_17F803;
 // 17F807: using guessed type _UNKNOWN *off_17F807;
@@ -999,9 +994,6 @@ LABEL_45:
   *(_BYTE *)((uint8_t*)dword_192B18 + v16 + 297) = word_19DEAC;
   return 1;
 }
-// B1846: variable 'v14' is possibly undefined
-// B19A0: variable 'v17' is possibly undefined
-// B1B18: variable 'v25' is possibly undefined
 // B3E75: using guessed type int sub_B3E75(_DWORD);
 // 1827BD: using guessed type char byte_1827BD;
 // 1827BF: using guessed type char byte_1827BF;
@@ -1216,8 +1208,6 @@ LABEL_20:
   }
   return result;
 }
-// B1EC3: variable 'v5' is possibly undefined
-// B1FC3: variable 'v12' is possibly undefined
 // B3E75: using guessed type int sub_B3E75(_DWORD);
 // 1828AC: using guessed type int16_t word_1828AC[];
 // 1828AE: using guessed type int16_t word_1828AE[5];
@@ -2055,8 +2045,6 @@ LABEL_113:
   }
 }
 // B27CB: control flows out of bounds to AFC1F
-// B2677: variable 'v11' is possibly undefined
-// B27C6: variable 'v18' is possibly undefined
 // B2F39: variable 'v60' is possibly undefined
 // B3E75: using guessed type int sub_B3E75(_DWORD);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -2816,7 +2804,7 @@ void sub_B4041( int a1, int16_t *a2)
   do
   {
     sub_B3CF7();
-    v12 = sub_1077D(v11, v10, a1, a2);
+    v12 = sub_1077D(0, v10, a1, a2);
     v13 = sub_1171AB(v12, v10, a1, v2);
     v10 = (int)&v16;
     v15 = v13;
@@ -2861,7 +2849,6 @@ LABEL_32:
 }
 // B4328: control flows out of bounds to B065D
 // B419D: variable 'v8' is possibly undefined
-// B4234: variable 'v11' is possibly undefined
 // BB9FD: using guessed type int nullsub_7(_DWORD, _DWORD);
 // 1827BD: using guessed type char byte_1827BD;
 // 1828AA: using guessed type int16_t word_1828AA[];
@@ -4126,7 +4113,6 @@ LABEL_8:
   }
   sub_12B65C();
 }
-// B5670: variable 'v58' is possibly undefined
 // B5AD5: variable 'v28' is possibly undefined
 // B5B3C: variable 'v31' is possibly undefined
 // B5CB1: variable 'v41' is possibly undefined
@@ -6101,7 +6087,6 @@ void sub_B8575(int a1)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xB81DA je epilog funkce */
 }
 // B85BC: control flows out of bounds to B81DA
-// B85BC: variable 'v4' is possibly undefined
 
 
 //----- (000B861F) --------------------------------------------------------
@@ -6420,7 +6405,6 @@ int sub_B896D(int a1, int a2, int16_t *a3)
   }
   return result;
 }
-// B8A27: variable 'v24' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1828D1: using guessed type int16_t word_1828D1;
 // 182ACA: using guessed type char byte_182ACA;
@@ -7115,7 +7099,6 @@ LABEL_10:
   }
   return result;
 }
-// B9705: variable 'v13' is possibly undefined
 // 103915: using guessed type _DWORD sub_103915(int16_t);
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 18F990: using guessed type int dword_18F990[];
@@ -7796,9 +7779,7 @@ LABEL_72:
   }
   return v3;
 }
-// B9F05: variable 'v57' is possibly undefined
 // BA0B6: variable 'v13' is possibly undefined
-// BA0FA: variable 'v56' is possibly undefined
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 182974: using guessed type int16_t word_182974;
 // 182ACA: using guessed type char byte_182ACA;

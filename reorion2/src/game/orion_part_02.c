@@ -1486,7 +1486,7 @@ void sub_24ED3(int16_t *a1)
   PortDebug_Checkpoint("24ED3.after_12D78E", 0);
   sub_2518F(v8, 639, a1);
   PortDebug_Checkpoint("24ED3.after_2518F", 0);
-  ServiceAudioTick_FE8BE(v17, v8, 639, a1);
+  ServiceAudioTick_FE8BE(0, v8, 639, a1);
   PortDebug_Checkpoint("24ED3.after_FE8BE", 0);
   sub_124D41();
   PortDebug_Checkpoint("24ED3.after_124D41", 0);
@@ -1500,9 +1500,6 @@ void sub_24ED3(int16_t *a1)
     PortDebug_Checkpoint("24ED3.after_14DF7", 0);
   }
 }
-// 24FE5: variable 'v9' is possibly undefined
-// 250E0: variable 'v15' is possibly undefined
-// 2515A: variable 'v17' is possibly undefined
 // 180EB4: using guessed type int16_t word_180EB4;
 // 192EF4: using guessed type int dword_192EF4;
 // 19ACF4: using guessed type int16_t word_19ACF4;
@@ -1567,7 +1564,6 @@ int sub_251EF(int16_t *a1)
     word_19ACF4 = v1;
   return v2;
 }
-// 2520A: variable 'v4' is possibly undefined
 // 19ACF4: using guessed type int16_t word_19ACF4;
 
 
@@ -2004,7 +2000,6 @@ LABEL_51:
   goto LABEL_68;
 }
 // 25ACD: control flows out of bounds to 25526
-// 25A03: variable 'v21' is possibly undefined
 // 180CCC: using guessed type int16_t word_180CCC[6];
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 199998: using guessed type int16_t word_199998;
@@ -2492,12 +2487,6 @@ void sub_25DF1()
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x25526 je epilog funkce */
 }
 // 26705: control flows out of bounds to 25526
-// 25F30: variable 'v7' is possibly undefined
-// 25FED: variable 'v11' is possibly undefined
-// 260DF: variable 'v17' is possibly undefined
-// 261A1: variable 'v22' is possibly undefined
-// 264BE: variable 'v39' is possibly undefined
-// 264E9: variable 'v41' is possibly undefined
 // 266E5: variable 'v53' is possibly undefined
 // 180CCC: using guessed type int16_t word_180CCC[6];
 // 192FD8: using guessed type int dword_192FD8;
@@ -2798,8 +2787,6 @@ LABEL_2:
     *a3 = 0;
   }
 }
-// 26DA4: variable 'v10' is possibly undefined
-// 26E73: variable 'v14' is possibly undefined
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 19ACF8: using guessed type int dword_19ACF8;
 // 19B117: using guessed type int dword_19B117;
@@ -4771,13 +4758,12 @@ void sub_29790( int a1)
       strcpy(v5, v4);
       sub_131F7B();
       LOWORD(v6) = sub_77423((int)v8);
-      sub_2C601(v6, (int)v8);
+      sub_2C601(0, (int)v8);
     }
   }
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x2BAFF je epilog funkce */
 }
 // 29832: control flows out of bounds to 2BAFF
-// 2982D: variable 'v6' is possibly undefined
 // 192864: using guessed type int dword_192864;
 
 
@@ -5219,15 +5205,11 @@ LABEL_28:
     v8 -= 1000;
   if ( !(_WORD)v22 )
     v8 -= 2000;
-  sub_388CE((int16_t)a1);
+  v14 = sub_388CE((int16_t)a1);   /* 2A454 */
   if ( v14 )
     v8 -= 5000;
   return v8;
 }
-// 2A25E: variable 'v4' is possibly undefined
-// 2A27B: variable 'v16' is possibly undefined
-// 2A434: variable 'v13' is possibly undefined
-// 2A454: variable 'v14' is possibly undefined
 // 192864: using guessed type int dword_192864;
 
 
@@ -5260,7 +5242,6 @@ int sub_2A46A(int a1)
   }
   return v5;   /* wave 184: 2A4E3 jmp 29478 (mov eax, [var_4]) */
 }
-// 2A487: variable 'v3' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -5801,7 +5782,6 @@ int sub_2AFA9( int a1, int *a2)
     *a2 = v9;
   return v2;
 }
-// 2B013: variable 'v7' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 192B14: using guessed type int dword_192B14;
 
@@ -6486,8 +6466,6 @@ int sub_2BBA1( int a1, int a2, int a3, int a4)
   }
   return v27;   /* wave 184: 2BE1D mov eax, [var_8] */
 }
-// 2BC09: variable 'v4' is possibly undefined
-// 2BC79: variable 'v17' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 // 1998C0: using guessed type int16_t word_1998C0;
@@ -6670,7 +6648,7 @@ int sub_2C129( int a1, int a2)
       goto LABEL_21;
     if ( *(_BYTE *)(v37 + dword_192864 + 64) == 4 )
       goto LABEL_21;
-    sub_388A2(v33);
+    v10 = sub_388A2(v33);   /* 2C203 */
     if ( v10 )
       goto LABEL_21;
     if ( !a2 )
@@ -6711,7 +6689,7 @@ LABEL_21:
       if ( word_19988E > 8 )
         return 0;
       v35 = a1;
-      sub_388A2(v35);
+      v14 = sub_388A2(v35);   /* 2C33A */
       if ( v14 )
       {
         return 0;
@@ -6751,9 +6729,6 @@ LABEL_21:
   return v7;
 }
 // 2C176: variable 'v9' is possibly undefined
-// 2C203: variable 'v10' is possibly undefined
-// 2C269: variable 'v11' is possibly undefined
-// 2C33A: variable 'v14' is possibly undefined
 // 2C38E: variable 'v17' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
@@ -6905,15 +6880,15 @@ void sub_2C6BA(int a1)
     goto LABEL_36;
   if ( !word_1998CA )
     LOBYTE(a1) = sub_128C32(0, 0, 639, 479, 0);
-  ServiceAudioTick_FE8BE(a1, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
   sub_128EDE(15, 362, 102, 374, 0, 199);
   sub_128EDE(401, 362, 489, 374, 0, 199);
   LOBYTE(v1) = sub_128EDE(401, 379, 488, 467, 0, 199);
-  ServiceAudioTick_FE8BE(v1, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
   v2 = word_1998F8;
   if ( word_1998F8 > -1 )
     sub_3459E(401, 379);
-  ServiceAudioTick_FE8BE(v2, 0, 0, 0);
+  ServiceAudioTick_FE8BE(0, 0, 0, 0);
   dword_192880 = sub_127C27((int)aCombatLbx_0, 0, dword_193174);
   ServiceAudioTick_FE8BE(dword_192880, 0, 0, 0);
   v3 = sub_12A478(0, 351, dword_192880);
@@ -7023,10 +6998,6 @@ LABEL_36:
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x33AFE je epilog funkce */
 }
 // 2CBC7: control flows out of bounds to 33AFE
-// 2C6FE: variable 'a1' is possibly undefined
-// 2C763: variable 'v1' is possibly undefined
-// 2C783: variable 'v2' is possibly undefined
-// 2C91A: variable 'v7' is possibly undefined
 // FE8BE: using guessed type int ServiceAudioTick_FE8BE(_DWORD);
 // 192858: using guessed type int dword_192858;
 // 192864: using guessed type int dword_192864;
@@ -7720,7 +7691,6 @@ LABEL_134:
   }
   return result;
 }
-// 2D295: variable 'v38' is possibly undefined
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 17ED2B: using guessed type _UNKNOWN *off_17ED2B;
 // 17ED3E: using guessed type _UNKNOWN *off_17ED3E;
@@ -8077,8 +8047,6 @@ LABEL_103:
   while ( (int16_t)v51 < 8 );
   return result;
 }
-// 2E3D5: variable 'v40' is possibly undefined
-// 2E46C: variable 'v41' is possibly undefined
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 17F803: using guessed type _UNKNOWN *off_17F803;
 // 17F807: using guessed type _UNKNOWN *off_17F807;
@@ -10232,7 +10200,7 @@ void sub_31F25( int a1)
     v8 = (uint16_t)sub_1171AB(v9, 0, 639, 479) == v10;
     sub_124D41();
     sub_30631();
-    v9 = sub_1077D(v11, 0, 0, 0);
+    v9 = sub_1077D(0, 0, 0, 0);
   }
   if ( !v15 )
   {
@@ -10247,8 +10215,6 @@ void sub_31F25( int a1)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x33AFE je epilog funkce */
 }
 // 321FE: control flows out of bounds to 33AFE
-// 321A7: variable 'v11' is possibly undefined
-// 321C2: variable 'v12' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 192814: using guessed type int dword_192814;
 // 192824: using guessed type int dword_192824;
@@ -10904,8 +10870,6 @@ LABEL_23:
     return sub_33DC3((int16_t *)dword_19283C, a4, v21, v4);
   return result;
 }
-// 32B50: variable 'v22' is possibly undefined
-// 32D7C: variable 'v21' is possibly undefined
 // 19283C: using guessed type int dword_19283C;
 // 192840: using guessed type int dword_192840;
 // 192864: using guessed type int dword_192864;
@@ -11076,7 +11040,7 @@ void sub_32D94( int a1)
       sub_12A478(v44, SWORD2(v45), v23);
       sub_128AB6(SWORD2(v46), v46, v35, v24);
       sub_30062(a1, v24, v26, v27);
-      sub_1077D(v25, 0, 0, 0);
+      sub_1077D(0, 0, 0, 0);
       sub_12C2C6(1);
       if ( (_WORD)v45 == word_1998AC )
         HIDWORD(v44) -= HIDWORD(v39);
@@ -11089,9 +11053,6 @@ void sub_32D94( int a1)
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x33AFE je epilog funkce */
 }
 // 33151: control flows out of bounds to 33AFE
-// 33085: variable 'v22' is possibly undefined
-// 3310D: variable 'v26' is possibly undefined
-// 33112: variable 'v25' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // 19283C: using guessed type int dword_19283C;
@@ -11494,11 +11455,9 @@ int sub_33C05( int a1)
   sub_31F25(-1);
   sub_465D0();
   sub_46CC8(word_1998F8, 1);
-  sub_2C601(v8, 1);
+  sub_2C601(0, 1);
   return sub_1191CA((int)sub_2F4EE, 1);
 }
-// 33C6D: variable 'v3' is possibly undefined
-// 33CD3: variable 'v8' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // 18C9A8: using guessed type int16_t word_18C9A8[4979];
@@ -11760,14 +11719,13 @@ int sub_33F60( int a1, int a2, int a3, int a4)
     sub_12B753(v20, v18);
     sub_12A478(v29 - 12, v33 - 12, v20);
     sub_A9223();
-    sub_1077D(v21, 0, 0, 0);
+    sub_1077D(0, 0, 0, 0);
     ++v18;
     sub_12C2C6(1);
   }
   sub_A94A1();
   return sub_112C96(v16, 10);
 }
-// 3425B: variable 'v21' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // AD7F5: using guessed type int sub_AD7F5(_DWORD, _DWORD, _DWORD);
@@ -12336,19 +12294,15 @@ void sub_34C42(int a1, int a2)
     sub_12A478(267, a2, dword_19282C);
     sub_12B65C();
     LOWORD(v10) = sub_128BE7();
-    sub_1077D(v10, 0, 0, 0);
+    sub_1077D(0, 0, 0, 0);
   }
   sub_465D0();
   sub_46CC8(word_1998F8, a2);
   sub_1172FC();
-  sub_2C601(v11, a2);
+  sub_2C601(0, a2);
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x33AFE je epilog funkce */
 }
 // 34EC3: control flows out of bounds to 33AFE
-// 34C79: variable 'v5' is possibly undefined
-// 34CA2: variable 'v8' is possibly undefined
-// 34E9E: variable 'v10' is possibly undefined
-// 34EBE: variable 'v11' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // 192818: using guessed type int dword_192818;
@@ -12444,11 +12398,11 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
   v19 = sub_114C72(asc_178CD5, 1);
   sub_124D41();
   sub_34EC8();
-  sub_1077D(v12, 0, 0, 0);
+  sub_1077D(0, 0, 0, 0);
   LOWORD(v13) = sub_123E6C((int)unk_17CF00, 1);
   while ( 1 )
   {
-    v9 = (void *)sub_1171AB(v13, v11, (int)v9, (int)v10);
+    v9 = (void *)sub_1171AB(0, v11, (int)v9, (int)v10);
     v11 = (int)v9;
     sub_114177();
     if ( (_WORD)v9 == (_WORD)v10 )
@@ -12474,7 +12428,7 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
       break;
     sub_124D41();
     sub_34EC8();
-    v13 = sub_1077D(v14, 0, 0, 0);
+    v13 = sub_1077D(0, 0, 0, 0);
   }
   sub_1113CC(dword_192ED4, 1);
   sub_11C2F0();
@@ -12484,11 +12438,6 @@ int sub_34FC3( int a1, int a2, int a3, _WORD *a4)
   *a4 = word_19B56E;
   return v23;
 }
-// 3506A: variable 'v6' is possibly undefined
-// 350C7: variable 'v17' is possibly undefined
-// 35177: variable 'v12' is possibly undefined
-// 35186: variable 'v13' is possibly undefined
-// 35201: variable 'v14' is possibly undefined
 // 1077D: using guessed type int sub_1077D(_DWORD);
 // 2F4EE: using guessed type int sub_2F4EE(_DWORD);
 // 192ED4: using guessed type int dword_192ED4;
@@ -13000,7 +12949,6 @@ void sub_35C56( int a1, int a2, int a3, _WORD *a4, _WORD *a5)
   v6 = sub_35D0D(a2, a3);   /* wave 184: 35C72 result */
   *a5 = v6;
 }
-// 35C69: variable 'v5' is possibly undefined
 
 
 //----- (00035C7F) --------------------------------------------------------
@@ -13096,7 +13044,6 @@ int sub_35E0C( int a1)
   }
   return v2;
 }
-// 35E55: variable 'v6' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -13220,7 +13167,6 @@ int sub_35F7E( int a1)
   return v2;   /* wave 181: tail loc_35E63 `mov     eax, ebx` */
 }
 // 35FD5: control flows out of bounds to 35E63
-// 35FC7: variable 'v6' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -13252,7 +13198,6 @@ int sub_35FDA( int a1)
   return v2;   /* wave 181: tail loc_35E63 `mov     eax, ebx` */
 }
 // 36031: control flows out of bounds to 35E63
-// 36023: variable 'v6' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -13321,7 +13266,6 @@ int sub_360AA( int a1)
   return v2;   /* wave 181: tail loc_35E63 `mov     eax, ebx` */
 }
 // 36101: control flows out of bounds to 35E63
-// 360F3: variable 'v6' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -13400,8 +13344,6 @@ int sub_36139( int a1, int a2, int16_t *a3)
     return v3;
   }
 }
-// 36194: variable 'v7' is possibly undefined
-// 36246: variable 'v12' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 1998C0: using guessed type int16_t word_1998C0;
 
@@ -13472,9 +13414,6 @@ int sub_36266(int a1)
   }
   return v13 + v2 + v0 + v1;
 }
-// 362C1: variable 'v11' is possibly undefined
-// 36339: variable 'v8' is possibly undefined
-// 3634F: variable 'v9' is possibly undefined
 // 192864: using guessed type int dword_192864;
 // 19988E: using guessed type int16_t word_19988E;
 // 1998AC: using guessed type int16_t word_1998AC;

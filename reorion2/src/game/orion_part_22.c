@@ -1179,8 +1179,6 @@ void sub_149F20()
     }
   }
 }
-// 149F5D: variable 'v2' is possibly undefined
-// 149FB4: variable 'v9' is possibly undefined
 // 18913C: using guessed type int dword_18913C;
 // 18A5AC: using guessed type int (*dword_18A5AC)(_DWORD);
 
@@ -2235,7 +2233,6 @@ int sub_14B4D0(int a1, int a2, int a3, int a4, int a5)
     dword_1C3C34(v8);
   return v12;
 }
-// 14B592: variable 'v8' is possibly undefined
 // 189154: using guessed type int dword_189154;
 // 18A5AC: using guessed type int (*dword_18A5AC)(_DWORD);
 // 1C3C34: using guessed type int (*dword_1C3C34)(_DWORD);
@@ -4890,7 +4887,6 @@ LABEL_34:
   }
   return v7;
 }
-// 14DD33: variable 'v24' is possibly undefined
 
 
 //----- (0014DDA6) --------------------------------------------------------
@@ -7479,10 +7475,9 @@ int sub_152850(int a1, int a2, int a3, int a4)
 
   v6[4] = a4;
   LOWORD(v5) = *(_WORD *)(a1 + 4);
-  sub_15E3A8((int)v6, *(_DWORD *)a1 + 14, v5, a4, *(_DWORD *)a1 + 14, v5, 4);
+  sub_15E3A8((int)v6, *(_DWORD *)a1 + 14, 0, a4, *(_DWORD *)a1 + 14, 0, 4);
   return sub_168549(v6[0] + 6);
 }
-// 152872: variable 'v5' is possibly undefined
 
 
 //----- (00152894) --------------------------------------------------------
@@ -7498,16 +7493,15 @@ int sub_152894(int a1)
   LOWORD(v4) = *(_WORD *)(a1 + 4);
   v1 = *(_DWORD *)a1 + 14;
   v2 = *(_DWORD *)a1 + 30;
-  sub_15E3A8((int)&v5, v2, v1, v4, v1, v4, 4);
+  sub_15E3A8((int)&v5, v2, v1, 0, v1, 0, 4);
   sub_168545();
   v6 = sub_168549(v5 + 5);
-  sub_15E3A8((int)&v7, v2, v1, v4, v2, v4, 4);
+  sub_15E3A8((int)&v7, v2, v1, 0, v2, 0, 4);
   v6 |= v7;
-  sub_15E37C(v2, v4, (uint8_t *)&v6, 4);
+  sub_15E37C(v2, 0, (uint8_t *)&v6, 4);
   sub_168541();
   return v6 & 0x1E;
 }
-// 1528CF: variable 'v4' is possibly undefined
 
 
 //----- (00152934) --------------------------------------------------------
@@ -7653,7 +7647,7 @@ int sub_152BCC(int a1, int a2, int a3, int a4)
   _DWORD v7[6]; // [esp+8h] [ebp-18h] BYREF
 
   LOWORD(v6) = *(_WORD *)(a1 + 4);
-  sub_15E3A8((int)v7, *(_DWORD *)a1 + 14, v6, a4, *(_DWORD *)a1 + 14, v6, 4);
+  sub_15E3A8((int)v7, *(_DWORD *)a1 + 14, 0, a4, *(_DWORD *)a1 + 14, 0, 4);
   sub_168545();
   v4 = sub_168549(v7[0] + 4);
   if ( a2 )
@@ -7664,7 +7658,6 @@ int sub_152BCC(int a1, int a2, int a3, int a4)
   sub_168541();
   return 0;
 }
-// 152BF4: variable 'v6' is possibly undefined
 
 
 //----- (00152C3C) --------------------------------------------------------
@@ -7675,7 +7668,7 @@ int sub_152C3C(int a1, int a2, int a3, int a4)
   _DWORD v7[6]; // [esp+8h] [ebp-18h] BYREF
 
   LOWORD(v6) = *(_WORD *)(a1 + 4);
-  sub_15E3A8((int)v7, *(_DWORD *)a1 + 14, v6, a4, *(_DWORD *)a1 + 14, v6, 4);
+  sub_15E3A8((int)v7, *(_DWORD *)a1 + 14, 0, a4, *(_DWORD *)a1 + 14, 0, 4);
   sub_168545();
   v4 = sub_168549(v7[0] + 4);
   if ( a2 )
@@ -7686,7 +7679,6 @@ int sub_152C3C(int a1, int a2, int a3, int a4)
   sub_168541();
   return 0;
 }
-// 152C64: variable 'v6' is possibly undefined
 
 
 //----- (00152CAC) --------------------------------------------------------
@@ -7926,20 +7918,19 @@ int sub_153118(int a1)
   LOWORD(v5) = *(_WORD *)(a1 + 4);
   v1 = *(_DWORD *)a1 + 30;
   v2 = *(_DWORD *)a1 + 14;
-  sub_15E3A8((int)v7, v1, v2, v5, v2, v5, 4);
+  sub_15E3A8((int)v7, v1, v2, 0, v2, 0, 4);
   do
   {
     v3 = sub_168549(v7[0] + 5);
     sub_168545();
-    sub_15E3A8((int)&v6, v1, v2, v5, v1, v5, 4);
+    sub_15E3A8((int)&v6, v1, v2, 0, v1, 0, 4);
     v6 |= v3;
-    sub_15E37C(v1, v5, (uint8_t *)&v6, 4);
+    sub_15E37C(v1, 0, (uint8_t *)&v6, 4);
     sub_168541();
   }
   while ( (v3 & 0x20) == 0 );
   return 0;
 }
-// 15315D: variable 'v5' is possibly undefined
 
 
 //----- (001531B8) --------------------------------------------------------
@@ -7957,16 +7948,15 @@ bool sub_1531B8(int *a1, int a2, int a3, int a4)
   v5 = *a1;
   v6 = *((_WORD *)a1 + 2);
   LOWORD(v7) = v6;
-  sub_15E3A8((int)&v8, v5 + 14, v7, a4, v5 + 14, v6, 4);
+  sub_15E3A8((int)&v8, v5 + 14, 0, a4, v5 + 14, v6, 4);
   sub_168545();
   v10 = sub_168549(v8 + 5);
-  sub_15E3A8((int)&v9, v5 + 14, v7, a4, v5 + 30, v6, 4);
+  sub_15E3A8((int)&v9, v5 + 14, 0, a4, v5 + 30, v6, 4);
   v9 |= v10;
   sub_15E37C(v5 + 30, v6, (uint8_t *)&v9, 4);
   sub_168541();
   return (v10 & 0x20) != 0;
 }
-// 1531E7: variable 'v7' is possibly undefined
 
 
 //----- (0015325C) --------------------------------------------------------
@@ -7984,16 +7974,15 @@ bool sub_15325C(int *a1, int a2, int a3, int a4)
   v5 = *a1;
   v6 = *((_WORD *)a1 + 2);
   LOWORD(v7) = v6;
-  sub_15E3A8((int)&v8, v5 + 14, v7, a4, v5 + 14, v6, 4);
+  sub_15E3A8((int)&v8, v5 + 14, 0, a4, v5 + 14, v6, 4);
   sub_168545();
   v10 = sub_168549(v8 + 5);
-  sub_15E3A8((int)&v9, v5 + 14, v7, a4, v5 + 30, v6, 4);
+  sub_15E3A8((int)&v9, v5 + 14, 0, a4, v5 + 30, v6, 4);
   v9 |= v10;
   sub_15E37C(v5 + 30, v6, (uint8_t *)&v9, 4);
   sub_168541();
   return (v10 & 0x20) == 0;
 }
-// 15328B: variable 'v7' is possibly undefined
 
 
 //----- (00153300) --------------------------------------------------------

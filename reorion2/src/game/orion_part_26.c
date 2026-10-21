@@ -1739,7 +1739,6 @@ LABEL_45:
 }
 // 16673E: control flows out of bounds to 1675C0
 // 16678A: control flows out of bounds to 1676C0
-// 1666FC: variable 'v39' is possibly undefined
 // 16671A: variable 'v42' is possibly undefined
 // 18A600: using guessed type int dword_18A600;
 // 18A604: using guessed type int dword_18A604;
