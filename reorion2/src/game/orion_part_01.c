@@ -16,7 +16,11 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
   word_1999EA = 20;
   word_1999EE = 20;
   byte_19A006 = -1;
+  if ( g_orion150 )
+    byte_19A006 = Hook150_MonstersSetting();   /* 1.50 1009B call sub_1E0824: the config value first */
   ParseCommandLine_107E6(argc, argv);   /* 1009B: eax = argc (movsx var_B0) */
+  if ( g_orion150 )
+    sub_1E6B83(0);   /* 1E0836: the switches back into the config */
   PortDebug_Checkpoint("GameMain.after_ParseCmdLine", 0);
   ServiceAudioTick_FE8BE(0, 0, 0, a3);   /* 100A0: registers are leftovers, result unused */
   PortDebug_Checkpoint("GameMain.after_FE8BE", 0);
@@ -82,6 +86,8 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     PortDebug_Checkpoint("tail.after_10A72", 0);
     sub_11919E((int)ServiceAudioTick_FE8BE);               // 010119 (eax=&ServiceAudioTick_FE8BE)
     sub_1205E6(5, 0, 255);                    // 010125 (eax=5,edx=0,ebx=0xFF)
+    if ( g_orion150 )
+      Hook150_VideoReady();                   // 1.50 010125: call sub_1E2BDA
     PortDebug_Checkpoint("tail.after_1205E6", 0);
     sub_123E6C((int)unk_17CF00, 1);          // 010134 (eax=unk_17CF00,edx=1)
     sub_123387(2);                            // 01013E
@@ -213,6 +219,8 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
     // switch2 (01036A): lokalizovane "Thanks for playing" + ukonceni hry.
     lang = (unsigned int)(uint8_t)byte_199CAE <= 4u ? (uint8_t)byte_199CAE : 0u;
     strcpy(thanksBuf, kThanksMsg[lang]);
+    if ( g_orion150 )
+      Hook150_Exit(thanksBuf, 1);             // 1.50 0103DA: call sub_16957E, a normal end
     sub_126487(thanksBuf, 0);                 // noreturn: printf + exit
   }
 }
@@ -509,8 +517,6 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
 {
   int argIndex_v1;              // ecx - index prochazeneho argv[]
   int saveSlotNumber_v2;        // eax - cislo save slotu ze "SAVESET=N"
-  int64_t sprintfResult_v6;     // rax - pouzit jen kvuli SHIDWORD() nize (viz TODO)
-  int64_t logMessagePacked_v8;  // rax - pouzit jen kvuli HIDWORD/LODWORD trik (viz TODO)
   int picksCount_v9;            // eax - z "PICKS=N", povoleny rozsah 10..14
   int planetsCount_v10;         // eax - z "PLANETS=N", povoleny rozsah 2..5
   _BYTE* gameFlagsTable_v11;    // [esp-Ch] [ebp-42h] - spolecna tabulka nastaveni (viz GetGameFlagsTable_F4B81)
@@ -550,14 +556,8 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
              && !strstr(currentArg_v17, statsPrefix_v19)
              && !strstr(currentArg_v17, aQuickstart) )
       {
-        // DECOMP_TODO: MarkCheatPatternFlag_F4FD5(vzor, text) hleda "vzor" v
-        // "text" a pokud ho najde, nastavi bajt hned za koncem retezce "vzor"
-        // v pameti na -1 (0xFF) - jde o dobovy trik, kdy je priznakovy bajt
-        // ulozeny bezprostredne za textovym literalem v pameti (viz DECOMP_TODO
-        // primo u MarkCheatPatternFlag_F4FD5 - krehke pod modernim linkerem).
-        // Nazvy vzoru (NOWH, NOBH, NOORION, GOODSTART, RICHSTART, NOSPLINT...)
-        // odpovidaji cheat/debug prepinacum Master of Orion - presny vyznam
-        // kazdeho priznaku (kdo ho cte) se doresi az v dalsi vlne.
+        // 1.50 109A9 jmp F4ACA..F4D09 (1.40 switches): the flag of a switch is the byte after its
+        // string in dseg (FFh when given), a value switch keeps its number there
         MarkCheatPatternFlag_F4FD5(aNowh, currentArg_v17);
         MarkCheatPatternFlag_F4FD5(aNobh, currentArg_v17);
         MarkCheatPatternFlag_F4FD5(aNoorion, currentArg_v17);
@@ -575,21 +575,15 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
         MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 732), currentArg_v17);
         MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 610), currentArg_v17);
         MarkCheatPatternFlag_F4FD5((char*)(gameFlagsTable_v11 + 621), currentArg_v17);
-        if ( MarkCheatPatternFlag_F4FD5(aPicks, currentArg_v17) )
+        if ( MarkCheatPatternFlag_F4FD5(aPicks, currentArg_v17) )   /* F4C89 */
         {
           picksCount_v9 = sub_10A0E(aPicks, currentArg_v17);
-          if ( picksCount_v9 < 10 || picksCount_v9 >= 15 )
-            aPicks[0] = 10;
-          else
-            aPicks[0] = picksCount_v9;
+          ((char *)aPicks)[sizeof(aPicks)] = picksCount_v9 >= 10 && picksCount_v9 < 15 ? picksCount_v9 : 10;
         }
-        if ( MarkCheatPatternFlag_F4FD5(aPlanets, currentArg_v17) )
+        if ( MarkCheatPatternFlag_F4FD5(aPlanets, currentArg_v17) )   /* F4CC3 */
         {
           planetsCount_v10 = sub_10A0E(aPlanets, currentArg_v17);
-          if ( planetsCount_v10 < 2 || planetsCount_v10 >= 6 )
-            aPlanets[0] = 2;
-          else
-            aPlanets[0] = planetsCount_v10;
+          ((char *)aPlanets)[sizeof(aPlanets)] = planetsCount_v10 >= 1 && planetsCount_v10 < 6 ? planetsCount_v10 : 3;
         }
         if ( strstr(currentArg_v17, aSkipintro) )
         {
@@ -601,17 +595,11 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
         }
         else
         {
-          // DECOMP_TODO: puvodni kod predem uklada HIDWORD(logMessagePacked_v8)
-          // = aDate jeste PRED samotnym testem strstr - klasicky pripad, kdy
-          // Hex-Rays predstira 64bit navratovou hodnotu funkce (tady sprintf),
-          // aby simuloval "par registru" (eax:edx), pricemz LODWORD/HIDWORD
-          // pak drzi dva ruzne 32bit ukazatele (zpravu a "kod"/kontext) pro
-          // nasledne volani sub_126487(zprava, kod). Zachovano 1:1.
-          HIDWORD(logMessagePacked_v8) = (int)aDate;
-          if ( strstr(currentArg_v17, aDate) )
+          if ( strstr(currentArg_v17, aDate) )   /* /date prints the build date and ends */
           {
-            LODWORD(logMessagePacked_v8) = (int)aDec232024;
-            sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
+            if ( g_orion150 )
+              Hook150_Exit(aDec232024, 1);   /* 1.50 109F9: call sub_16957E, a normal end */
+            sub_126487(aDec232024, 0);
             return;
           }
         }
@@ -623,16 +611,17 @@ void ParseCommandLine_107E6(int argCount_a1, char** argValues_a2)
   sprintf(messageBuffer_v15, "SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
   if ( !FindMoxSetPath_1114D7(messageBuffer_v15, messageBuffer_v15) )
   {
-    sprintfResult_v6 = sprintf(messageBuffer_v15, "Unable to open SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
-    sub_126487(messageBuffer_v15, SHIDWORD(sprintfResult_v6));
+    sprintf(messageBuffer_v15, "Unable to open SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
+    sub_126487(messageBuffer_v15, 0);
   }
   sub_10E2F((int16_t)(saveSlotNumber_v2 - 1), (int)messageBuffer_v15, saveSlotNumber_v2 - 1, argIndex_v1);
   if ( (uint8_t)sub_11F11((int16_t)saveSlotNumber_v2, (int)aSetTmp) )
-    logMessagePacked_v8 = sprintf(messageBuffer_v15, "settings from SAVE%d.GAM saved to SET.TMP", (int16_t)saveSlotNumber_v2);
+    sprintf(messageBuffer_v15, "settings from SAVE%d.GAM saved to SET.TMP", (int16_t)saveSlotNumber_v2);
   else
-    logMessagePacked_v8 = sprintf(messageBuffer_v15, "Unable to convert settings saved in SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
-  LODWORD(logMessagePacked_v8) = (int)messageBuffer_v15;
-  sub_126487((char *)logMessagePacked_v8, SHIDWORD(logMessagePacked_v8));
+    sprintf(messageBuffer_v15, "Unable to convert settings saved in SAVE%d.GAM", (int16_t)saveSlotNumber_v2);
+  if ( g_orion150 )
+    Hook150_Exit(messageBuffer_v15, 1);   /* 1.50 108C4: call sub_16957E, a normal end */
+  sub_126487(messageBuffer_v15, 0);
 }
 // 178440: using guessed type _BYTE[10];
 // 178463: using guessed type _BYTE[11];

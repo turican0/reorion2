@@ -5992,6 +5992,8 @@ void sub_126487(char *a1, int a2)
   // uklidoveho retezu se ztratila (prave to se stalo u HALL OF FAME - hra
   // hlasila chybu LBX, ale videt byl jen pad v sub_155E62). Vypis jde ted
   // primo na stderr a hned se flushne.
+  if ( g_orion150 )
+    Hook150_Exit(a1, 0);   /* 1.50: every call goes to sub_16957E (1E2BA8 -> 1FEA6F) */
   PortDebug_Message(a1);
   sub_113DBD();
   printf("%s\n", a1);

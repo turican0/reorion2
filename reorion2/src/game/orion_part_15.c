@@ -12306,38 +12306,13 @@ LABEL_44:
 
 
 //----- (000F4FD5) --------------------------------------------------------
-//
-// DECOMP_TODO (a2 - zdroj textu k prohledani): puvodni kod pocital cilovou
-// adresu jako "&stackAnchor_v16 - 67 + 34" (viz puvodni verze
-// ParseCommandLine_107E6 pred vlnou 05) - vyraz zavisly na PRESNEM stack
-// frame puvodniho Watcom prekladace, ktery se pri prekladu modernim
-// kompilatorem NEZACHOVA (jiny layout lokalnich promennych), takze
-// vysledna adresa byla po prekompilovani nesmyslna - to je skutecna
-// prvotni pricina padu, ne jen chybejici druhy parametr strstr vyse.
-// Funkcne davá jednoznacny smysl, ze tato funkce ma - stejne jako vsechny
-// sousedni "strstr(currentArg_v17, ...)" kontroly ve stejne smycce - hledat
-// vzor v prave zpracovavanem argumentu prikazove radky, takze volajici
-// (ParseCommandLine_107E6) uz ted primo predava "currentArg_v17" misto
-// puvodniho nepresnosneho vypoctu. Presny puvodni bytovy posun (+34) se
-// nepodarilo overit (neodpovida zadne pojmenovane lokalni promenne v
-// puvodnim rozpisu stack frame) - ale funkcni zamer je jednoznacny.
+// F4FD5 (1.40/1.50): strstr([ebp+arg_6] = the argument, edx = switch string); edx then points behind the
+// string's NUL, where dseg keeps the switch flag (aNowh -> byte_1783D3): FFh when the switch is given
 int MarkCheatPatternFlag_F4FD5(char *pattern_a1, char *argText_a2)
 {
   int patternFound_result; // eax - 1 pokud se vzor v argText_a2 nasel, jinak 0
   char *patternEnd_v3;     // edx - ukazatel na bajt hned za koncem vzoru v pameti
 
-  // DECOMP_TODO: zapis "*patternEnd_v3 = -1" pri nalezeni vzoru spoleha na
-  // to, ze bezprostredne za textovym literalem "pattern_a1" v pameti lezi
-  // samostatny bajt slouzici jako priznak (potvrzeno v orion_data.c - napr.
-  // za "aNowh" nasleduje "byte_1783D3"). To je krehky trik zavisly na
-  // PRESNEM poradi globalnich promennych v pameti, jak je usporadal puvodni
-  // Watcom linker - moderni linker (MSVC) stejne poradi negarantuje (mj.
-  // muze slucovat identicke retezcove literaly, pridavat zarovnani atd.).
-  // Zatim ponechano 1:1 kvuli zachovani chovani (a protoze presny vyznam
-  // vsech takto ulozenych priznaku - zejmena uvnitr GetGameFlagsTable_F4B81
-  // tabulky - jeste neni prozkoumany), ale je to jasny kandidat na
-  // nahrazeni radnou strukturou v nekterI z pristich vln, az bude jasne,
-  // co presne kazdy priznak rika a kdo ho cte.
   patternFound_result = strstr(argText_a2, pattern_a1) != NULL;
   patternEnd_v3 = pattern_a1;
   while ( *patternEnd_v3 )

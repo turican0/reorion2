@@ -11172,6 +11172,8 @@ LABEL_115:
     if ( (_WORD)v85 == word_19C170 && !word_199976 )
     {
       v38 = sub_7A990(0xDEu);
+      if ( g_orion150 )
+        Hook150_Exit(v38, 1);   /* 1.50 86BA9: call sub_16957E, a normal end */
       sub_126487(v38, v37);
     }
     if ( (_WORD)v85 != word_19C17C || word_199976 )
