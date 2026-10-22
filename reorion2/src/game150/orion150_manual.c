@@ -200,9 +200,10 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
   return 0;
 }
 
-/* vsnprintf for the block's variadic calls: every argument is a 32-bit stack slot there (pointers for %s
-   too), so each one is read as int and handed to snprintf one conversion at a time */
-static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
+/* vsnprintf for the block's variadic calls: the arguments are the 32-bit stack slots of the original
+   (va32 of the variadic functions, pointers for %s too, a double takes two slots); each conversion is
+   handed to snprintf on its own */
+static int Vsnprintf150(char *buf, int size, const char *fmt, uint32_t *va)
 {
   char spec[32], one[512];
   int n = 0;
@@ -228,7 +229,7 @@ static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
     while ( (*fmt == '*' || (*fmt >= '0' && *fmt <= '9') || *fmt == '.') && k < 24 )
     {
       if ( *fmt == '*' )
-        star[ns++ & 1] = va_arg(va, int);
+        star[ns++ & 1] = (int)*va++;
       spec[k++] = *fmt++;
     }
     while ( *fmt == 'h' || *fmt == 'l' || *fmt == 'L' )
@@ -241,7 +242,7 @@ static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
     {
       case 's':
       {
-        char *s = (char *)(intptr_t)va_arg(va, int);
+        char *s = (char *)(uintptr_t)*va++;
 
         if ( !s )
           s = "(null)";
@@ -254,18 +255,25 @@ static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
         break;
       }
       case 'p':
-        len = snprintf(one, sizeof(one), "%08X", (unsigned)va_arg(va, int));
+        len = snprintf(one, sizeof(one), "%08X", (unsigned)*va++);
         break;
       case 'f': case 'e': case 'g': case 'E': case 'G':
-        len = snprintf(one, sizeof(one), spec, va_arg(va, double));
+      {
+        double d;
+
+        memcpy(&d, va, 8);
+        va += 2;
+        len = snprintf(one, sizeof(one), spec, d);
         break;
+      }
       default:
         if ( ns == 2 )
-          len = snprintf(one, sizeof(one), spec, star[0], star[1], va_arg(va, int));
+          len = snprintf(one, sizeof(one), spec, star[0], star[1], (int)*va);
         else if ( ns == 1 )
-          len = snprintf(one, sizeof(one), spec, star[0], va_arg(va, int));
+          len = snprintf(one, sizeof(one), spec, star[0], (int)*va);
         else
-          len = snprintf(one, sizeof(one), spec, va_arg(va, int));
+          len = snprintf(one, sizeof(one), spec, (int)*va);
+        ++va;
         break;
     }
     (void)p;
@@ -282,7 +290,12 @@ static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
 
 //----- (001E0076) --------------------------------------------------------
 /* 1E0083 call __fprtf_(arg_0 file, arg_4 format, &arg_8): vfprintf on a port file handle */
-int sub_1E0076(int a1, char *a2, va_list a3)
+int Vsprintf150(char *buf, const char *fmt, uint32_t *va)
+{
+  return Vsnprintf150(buf, 0x7FFFFFFF, fmt, va);
+}
+
+int sub_1E0076(int a1, char *a2, uint32_t *a3)
 {
   char buf[4096];
   int n = Vsnprintf150(buf, sizeof(buf), a2, a3);
@@ -295,7 +308,7 @@ int sub_1E0076(int a1, char *a2, va_list a3)
 //----- (001E009E) --------------------------------------------------------
 /* 1E00B0 call __prtf_(&{arg_0 buffer, arg_4 room}, arg_8 format, &arg_C, putc 1E00B7): the putc stores
    only while there is room and counts every character; no terminating NUL */
-int sub_1E009E(char *a1, int a2, char *a3, va_list a4)
+int sub_1E009E(char *a1, int a2, char *a3, uint32_t *a4)
 {
   char buf[4096];
   int n = Vsnprintf150(buf, sizeof(buf), a3, a4);

@@ -1,7 +1,20 @@
 /* Wave 185: DOS services the 1.50 block calls inline (int 21h). Kept apart from the game headers, whose
    macros redirect the C library. */
+#include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <time.h>
+
+/* trace output while the 1.50 block is being brought up (stderr of the port) */
+void Dbg150(const char *fmt, ...)
+{
+  va_list va;
+
+  va_start(va, fmt);
+  vfprintf(stderr, fmt, va);
+  va_end(va);
+  fflush(stderr);
+}
 
 /* int 21h AH=2Ch GET CURRENT TIME: CH = hour, CL = minute, DH = second, DL = hundredths */
 void Dos150_GetTime(uint16_t *cx, uint16_t *dx)
