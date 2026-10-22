@@ -381,4 +381,9 @@
       <Filter>game150</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\game150\orion150_dos.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

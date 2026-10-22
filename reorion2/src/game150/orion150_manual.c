@@ -46,13 +46,246 @@ void Dos150_AsmPending(uint32_t addr)
 }
 
 #define ESTR150(a) ((char *)(eseg + (a) - 0x22A600))
+#define EINT150(a) ((int)(intptr_t)(eseg + (a) - 0x22A600))
+
+void Dos150_GetTime(uint16_t *cx, uint16_t *dx);
+
+/* the milliseconds since midnight the block computes from CX:DX (202B74..202BA6) */
+static int Ms150(uint16_t cx, uint16_t dx)
+{
+  return 10 * ((dx & 0xFF) + 100 * ((dx >> 8) + 60 * ((cx & 0xFF) + 60 * (cx >> 8))));
+}
+
+//----- (001E5BC7) --------------------------------------------------------
+/* Lua C function: pushes the time of day in ms (integer, tag 13h) on the Lua stack of a3 (L->top at +0Ch);
+   it works on the 32-bit Lua internals of ORION150.EXE - rewritten with the Lua API later */
+int sub_1E5BC7(int a1, int a2, int a3)
+{
+  uint16_t cx, dx;
+  uint32_t *top;
+
+  Dos150_GetTime(&cx, &dx);
+  top = (uint32_t *)(intptr_t)*(uint32_t *)(intptr_t)(a3 + 12);
+  top[0] = Ms150(cx, dx);
+  top[1] = 19;
+  *(uint32_t *)(intptr_t)(a3 + 12) = (uint32_t)(uintptr_t)(top + 2);
+  return 1;
+}
+
+//----- (001EB8E3) --------------------------------------------------------
+/* time of day in 1/100 s (1EB929 mul 51EB851Fh / shr 5 = ms / 10), stored to *a3 when *a3 != 0 */
+unsigned int sub_1EB8E3(int a1, int a2, unsigned int *a3)
+{
+  uint16_t cx, dx;
+  unsigned int r;
+
+  Dos150_GetTime(&cx, &dx);
+  r = (unsigned int)Ms150(cx, dx) / 100;
+  if ( *a3 )
+    *a3 = r;
+  return r;
+}
+
+//----- (001EB947) --------------------------------------------------------
+/* [arg_0] = CX and [arg_0+2] = DX, both with the bytes swapped (rol 8) */
+int64_t sub_1EB947(int64_t result, int a2, _WORD *a3)
+{
+  uint16_t cx, dx;
+
+  Dos150_GetTime(&cx, &dx);
+  a3[0] = (uint16_t)((cx << 8) | (cx >> 8));
+  a3[1] = (uint16_t)((dx << 8) | (dx >> 8));
+  return result;
+}
+
+//----- (002029AB) --------------------------------------------------------
+/* entry of the 1.50 block, called by the loader (169716) before main__0. cdecl arguments: argc, argv,
+   block base, block size, data object base, code object base. Reads the command line (/c=<config>,
+   /extract=<file>), loads the configs (ORION2.CFG by default) and applies them. */
+int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size, int data, int code)
+{
+  uint16_t cx, dx;
+  int16_t n;
+  int i, r, t0;
+  int *res = 0;   /* var_28 */
+  int *msg = 0;
+
+  *(uint32_t *)ESTR150(0x240782) = base;
+  *(uint32_t *)ESTR150(0x240786) = size;
+  *(uint32_t *)ESTR150(0x24078A) = 0;
+  *(uint32_t *)ESTR150(0x24076A) = data;
+  *(uint32_t *)ESTR150(0x24076E) = 0x130FE;
+  *(uint32_t *)ESTR150(0x240772) = 0x1F6694;
+  *(uint32_t *)ESTR150(0x240776) = code;
+  *(uint32_t *)ESTR150(0x24077A) = 0x161000;
+  *(uint32_t *)ESTR150(0x24077E) = 0x95694;
+  sub_1EBC6B();
+  for ( i = 0x24071E; i != 0x240768; i += 2 )
+    *(uint16_t *)ESTR150(i) = 0xFFFF;
+  r = sub_1FA13F(EINT150(0x240768), 0);   /* 202A26: eax = end of the loop above */
+  Dos150_GetTime(&cx, &dx);
+  sub_1EC907(0, EINT150(0x2528B5), cx >> 8, cx & 0xFF, dx >> 8, dx & 0xFF, argv[0],
+             (int)(intptr_t)(ccode + 0x169549 - 0x10000), r);   /* "starting %s, version %s" */
+  sub_1EC907(0, EINT150(0x2528E5), base, data, code);
+  if ( !*ESTR150(0x2407BE) )   /* close ORION2.LOG */
+  {
+    *ESTR150(0x2407BE) = 1;
+    if ( *(uint32_t *)ESTR150(0x23F992) )
+    {
+      fclose(*(uint32_t *)ESTR150(0x23F992));
+      *(uint32_t *)ESTR150(0x23F992) = 0;
+    }
+    *ESTR150(0x2407BE) = 0;
+  }
+  sub_1E8BCF();
+  sub_1FB173((uint32_t *)ESTR150(0x23E6A8), 0, 0, 0);
+  n = *(int16_t *)ESTR150(0x24068E);
+  for ( i = 0; i < argc; ++i )
+  {
+    char *s = (char *)(intptr_t)argv[i];
+    size_t len = strlen(s);
+
+    if ( !*s )
+      continue;
+    if ( len > 2 && !strncmp(s, ESTR150(0x247030), 3) )   /* "/c=" */
+    {
+      if ( n == 25 )
+        sub_1ECCDF(0, 0, EINT150(0x252909), 25);   /* "at most %d configs" */
+      *(int16_t *)ESTR150(0x24068E) = n + 1;
+      *(uint32_t *)ESTR150(0x24069E + 4 * n) = (uint32_t)(uintptr_t)(s + 3);
+      n = n + 1;
+    }
+    else if ( len > 8 && !strncmp(s, ESTR150(0x247034), 9) )   /* "/extract=" */
+    {
+      *(uint32_t *)ESTR150(0x23E6B8) = (uint32_t)(uintptr_t)(s + 9);
+    }
+  }
+  if ( !n )
+  {
+    *(int16_t *)ESTR150(0x24068E) = 1;
+    *(uint32_t *)ESTR150(0x24069E) = EINT150(0x24703E);   /* "ORION2.CFG" */
+    n = 1;
+  }
+  Dos150_GetTime(&cx, &dx);
+  t0 = Ms150(cx, dx);
+  if ( !sub_20228B(0, (uint32_t *)&res, 0, 0, (int *)ESTR150(0x23E6A8), (int *)ESTR150(0x24069E), n) )
+  {
+    /* 202BD3: "failed to load config:\n%.*s" */
+    if ( res )
+      sub_1ECCDF(0, 0, EINT150(0x247060), *res, (int)(intptr_t)(res + 2));
+    sub_1ECCDF(0, 0, EINT150(0x247060), 0, 0);
+  }
+  sub_1F8F2B();
+  sub_1FB173((uint32_t *)ESTR150(0x23E698), 0, 0, 0);
+  Dos150_GetTime(&cx, &dx);
+  sub_1EC907(0, EINT150(0x247049), Ms150(cx, dx) - t0);   /* "config loaded in %ums" */
+  sub_1FF103(0, 0, 0);
+  if ( !sub_1FD03B((uint32_t *)&res) )
+  {
+    /* 202D2C..202E2D: the original lists the languages the config works with ($AVAIL$ in 25292D);
+       here only the "configuration is broken" message (252A05) - not ported yet */
+    sub_1FC7BB(&msg, ESTR150(0x252A05), ESTR150(0x246E2C), res);
+    sub_1ECCDF(0, 0, EINT150(0x246E50), msg ? *msg : 0, (int)(intptr_t)(msg ? msg + 2 : 0));
+  }
+  if ( !*ESTR150(0x2407BE) )
+  {
+    *ESTR150(0x2407BE) = 1;
+    if ( *(uint32_t *)ESTR150(0x23F992) )
+    {
+      fclose(*(uint32_t *)ESTR150(0x23F992));
+      *(uint32_t *)ESTR150(0x23F992) = 0;
+    }
+    *ESTR150(0x2407BE) = 0;
+  }
+  return 0;
+}
+
+/* vsnprintf for the block's variadic calls: every argument is a 32-bit stack slot there (pointers for %s
+   too), so each one is read as int and handed to snprintf one conversion at a time */
+static int Vsnprintf150(char *buf, int size, const char *fmt, va_list va)
+{
+  char spec[32], one[512];
+  int n = 0;
+
+  while ( *fmt )
+  {
+    const char *p = fmt;
+    int k = 0, star[2], ns = 0, len;
+
+    if ( *fmt != '%' || fmt[1] == '%' )
+    {
+      char c = *fmt;
+
+      fmt += (*fmt == '%') ? 2 : 1;
+      if ( n < size - 1 )
+        buf[n] = c;
+      ++n;
+      continue;
+    }
+    spec[k++] = *fmt++;
+    while ( *fmt && strchr("-+ #0", *fmt) && k < 20 )
+      spec[k++] = *fmt++;
+    while ( (*fmt == '*' || (*fmt >= '0' && *fmt <= '9') || *fmt == '.') && k < 24 )
+    {
+      if ( *fmt == '*' )
+        star[ns++ & 1] = va_arg(va, int);
+      spec[k++] = *fmt++;
+    }
+    while ( *fmt == 'h' || *fmt == 'l' || *fmt == 'L' )
+      ++fmt;   /* every slot is 32-bit */
+    spec[k++] = *fmt;
+    spec[k] = 0;
+    if ( !*fmt )
+      break;
+    switch ( *fmt++ )
+    {
+      case 's':
+      {
+        char *s = (char *)(intptr_t)va_arg(va, int);
+
+        if ( !s )
+          s = "(null)";
+        if ( ns == 2 )
+          len = snprintf(one, sizeof(one), spec, star[0], star[1], s);
+        else if ( ns == 1 )
+          len = snprintf(one, sizeof(one), spec, star[0], s);
+        else
+          len = snprintf(one, sizeof(one), spec, s);
+        break;
+      }
+      case 'p':
+        len = snprintf(one, sizeof(one), "%08X", (unsigned)va_arg(va, int));
+        break;
+      case 'f': case 'e': case 'g': case 'E': case 'G':
+        len = snprintf(one, sizeof(one), spec, va_arg(va, double));
+        break;
+      default:
+        if ( ns == 2 )
+          len = snprintf(one, sizeof(one), spec, star[0], star[1], va_arg(va, int));
+        else if ( ns == 1 )
+          len = snprintf(one, sizeof(one), spec, star[0], va_arg(va, int));
+        else
+          len = snprintf(one, sizeof(one), spec, va_arg(va, int));
+        break;
+    }
+    (void)p;
+    if ( len > (int)sizeof(one) - 1 )
+      len = (int)sizeof(one) - 1;
+    for ( k = 0; k < len; ++k, ++n )
+      if ( n < size - 1 )
+        buf[n] = one[k];
+  }
+  if ( size > 0 )
+    buf[n < size - 1 ? n : size - 1] = 0;
+  return n;
+}
 
 //----- (001E0076) --------------------------------------------------------
 /* 1E0083 call __fprtf_(arg_0 file, arg_4 format, &arg_8): vfprintf on a port file handle */
 int sub_1E0076(int a1, char *a2, va_list a3)
 {
   char buf[4096];
-  int n = vsnprintf(buf, sizeof(buf), a2, a3);
+  int n = Vsnprintf150(buf, sizeof(buf), a2, a3);
 
   if ( n > 0 )
     fwrite(buf, 1, n < (int)sizeof(buf) ? n : (int)sizeof(buf) - 1, a1);
@@ -65,7 +298,7 @@ int sub_1E0076(int a1, char *a2, va_list a3)
 int sub_1E009E(char *a1, int a2, char *a3, va_list a4)
 {
   char buf[4096];
-  int n = vsnprintf(buf, sizeof(buf), a3, a4);
+  int n = Vsnprintf150(buf, sizeof(buf), a3, a4);
 
   if ( n > 0 && a2 > 0 )
     memcpy(a1, buf, n < a2 ? n : a2);
@@ -145,16 +378,16 @@ int sub_1F8F2B()
 }
 
 /* refcounted string slot: release the old string, store the new one (1FB8DE..1FB8F5 / 1FD9BF..1FD9D6) */
-static void SetRefString150(int **slot, int *s)
+static void SetRefString150(uint32_t *slot, int *s)
 {
   int *old;
 
   if ( !slot )
   {
-    sub_1EE113();
+    sub_1ECCDF(0, 1, (int)(intptr_t)ESTR150(0x250759), (int)(intptr_t)ESTR150(0x2467E7));   /* 1FB902 call sub_1EE113 (fatal) */
     return;
   }
-  old = *slot;
+  old = (int *)(uintptr_t)*slot;
   if ( old == s )
     return;
   if ( old )
@@ -164,11 +397,11 @@ static void SetRefString150(int **slot, int *s)
     if ( !--old[1] )
       nfree((int)(intptr_t)old);
   }
-  *slot = s;
+  *slot = (uint32_t)(uintptr_t)s;
 }
 
 //----- (001FB8CF) --------------------------------------------------------
-int sub_1FB8CF(int **a1, int *a2)
+int sub_1FB8CF(uint32_t *a1, int *a2)
 {
   SetRefString150(a1, a2);
   return (int)(intptr_t)a2;
@@ -178,7 +411,7 @@ int sub_1FB8CF(int **a1, int *a2)
 /* message with its context: without a message yet (*a1 == 0) every context of the chain a2 gets
    "<prefix> <file>:<line>: <text>" in its slot [ctx+0Ch] (1FD967..1FD9DC); then sub_1FC66B(a1, text,
    strlen(text), a4) (1FD956 tail jump) */
-int *sub_1FD8FF(int **a1, int a2, char *a3, unsigned int *a4)
+int *sub_1FD8FF(uint32_t *a1, int a2, char *a3, unsigned int *a4)
 {
   if ( !*a1 && a2 )
   {
@@ -188,14 +421,14 @@ int *sub_1FD8FF(int **a1, int a2, char *a3, unsigned int *a4)
     do
     {
       int *f = 0;   /* var_20 */
-      int name = **(int **)(a2 + 12);
+      int name = *(int *)(uintptr_t)*(uint32_t *)(a2 + 12);
       int line = *(int *)(*(int *)(ctx + 8) + 4) + 1;
       int file = *(int *)(ctx + 4);
 
       sub_1FC7BB(&f, ESTR150(0x246CAA), ESTR150(0x246CA8), ESTR150(a2 == ctx ? 0x246C8C : 0x246C8F),
                  ESTR150(0x246C82), file, ESTR150(0x246CA4), line, ESTR150(0x246C9D), name, 0, s);
       s = (char *)f;
-      SetRefString150((int **)(intptr_t)*(int *)(a2 + 12), f);   /* 1FD9B5 edi = [ebp+0Ch] */
+      SetRefString150((uint32_t *)(uintptr_t)*(uint32_t *)(a2 + 12), f);   /* 1FD9B5 edi = [ebp+0Ch] */
       ctx = *(int *)ctx;
     }
     while ( ctx );

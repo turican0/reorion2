@@ -409,6 +409,67 @@ for x in sorted(extra):
     if n:
         own[n] = x
         nparams[n] = k
+# absolute addresses the block's code gets from its relocations: Hex-Rays prints most of them as plain
+# numbers ("4 * i + 2353214"); in the port they become expressions on eseg / ecode / dseg / ccode
+_img_len = len(open(DISS + 'ext/ext150.bin', 'rb').read())
+_exe = open(DISS + 'ORION150.EXE', 'rb').read()
+_size, _rs, _cs = struct.unpack_from('<III', _exe, 0x285B6A)
+_blk = _exe[0x285B6A + 12:0x285B6A + 12 + _size]
+reloc_vals = {}
+for _r in range(_rs, _cs, 11):
+    _typ, _sb, _tb, _so, _add = struct.unpack_from('<BBBII', _blk, _r)
+    if _typ or _sb != 0 or BB + _so >= DATA:
+        continue
+    if _tb == 0:
+        v = BB + _add
+        reloc_vals[v] = '((int)(intptr_t)(eseg + 0x%X))' % (v - DATA) if v >= DATA else \
+            '((int)(intptr_t)(ecode + 0x%X))' % (v - BB)
+    elif _tb == 1:
+        v = 0x178000 + _add
+        reloc_vals[v] = '((int)(intptr_t)(dseg + 0x%X))' % _add
+    else:
+        v = 0x10000 + _add
+        reloc_vals[v] = '((int)(intptr_t)(ccode + 0x%X))' % _add
+
+
+# arrays (game data in dseg, block data in eseg): Hex-Rays writes "arr + 188" for a BYTE offset (the
+# array name stands for its address as an integer; element addresses are always "&arr[i]")
+array_names = set(re.findall(r'(?m)^#define (\w+) \(\*\([^()]*\(\*\)\[', dseg_h))
+for _n, _d in datadecl.items():
+    if re.search(r'\]\s*$', _d):
+        array_names.add(_n)
+array_names = {n for n in array_names if not re.match(r'^[av]\d+$', n)}
+
+
+def fix_array_arith(t):
+    def ar(m):
+        stats['array address arithmetic'] += 1
+        return '((int)(intptr_t)%s)' % m.group(2)
+    names = [n for n in set(re.findall(r'\b([A-Za-z_]\w*)\b', t)) if n in array_names]
+    for n in names:
+        # "n + x", "n - x", "x + n", "x - n": not "&n", not "n[", not a declaration
+        t = re.sub(r'(?<![&\w.])()(%s)(?=\s*[-+]\s*[^=+\-])' % n, ar, t)
+        t = re.sub(r'(?<=[-+]\s)()(%s)\b(?!\s*\[)' % n, ar, t)
+    return t
+
+
+def fix_addr_literals(t):
+    def lit(m):
+        s = m.group(0)
+        v = int(s[:-1] if s.endswith(('u', 'U')) else s, 0) if not s.startswith('0x') else int(s.rstrip('uU'), 16)
+        if v in reloc_vals:
+            stats['address literals'] += 1
+            return reloc_vals[v]
+        return s
+    out = []
+    for line in t.split('\n'):
+        if line.lstrip().startswith('//'):
+            out.append(line)
+            continue
+        out.append(re.sub(r'(?<![\w.])(?:0x[0-9A-Fa-f]{5,8}|\d{6,8})[uU]?\b', lit, line))
+    return '\n'.join(out)
+
+
 # port globals declared as pointers: Hex-Rays does integer arithmetic on them
 port_ptrs = set(re.findall(r'(?m)^extern\s+[\w ]+?\*+\s*(\w+)\s*;', common))
 
@@ -457,6 +518,300 @@ def fix_asm(a, t):
     return re.sub(r'__asm \{ ([^}]*) \}', rp, t)
 
 
+# Every pointer the block keeps in memory is a 32-bit slot (LARGEADDRESSAWARE:NO keeps the port's addresses
+# below 2 GB). Hex-Rays types them as T ** and *(T **)(addr): on x64 those read 8 bytes and step by 8.
+# Casts become 32-bit slot reads/writes, T ** variables become uint32_t * with converting uses.
+PP_CAST = re.compile(r'\*\(((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*{2,})\)\s*')
+STMT_START = r'(^|[;{}(,:]|\belse|\bdo)\s*$'      # an assignment that begins a statement
+PP_FCAST = re.compile(r'(\*+)\(((?:const |unsigned |signed )*[A-Za-z_]\w*(?: \*)?) \((\*{2,})\)(\([^()]*\))\)\s*')
+PP_ARR = re.compile(r'(?m)^  ((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*+)(\w+)(\[\d+\]);')
+PP_DECL = re.compile(r'(?m)^  ((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*{2,})(\w+);')
+LOCAL_DECL = re.compile(r'^  (?!return\b)[A-Za-z_][^=;(]*(?:\(\*\w+(?:\[[^\]]*\])*\)\([^;=]*\))?(?:\[[^\]]*\])*;( *//.*)?$')
+
+
+def pp_group(t, i):
+    """end of the operand at t[i]: a parenthesised group or &name"""
+    if i < len(t) and t[i] == '(':
+        d = 0
+        for k in range(i, len(t)):
+            if t[k] == '(':
+                d += 1
+            elif t[k] == ')':
+                d -= 1
+                if d == 0:
+                    return k + 1
+    m = re.match(r'&?\w+', t[i:])
+    if not m:
+        return None
+    e = i + m.end()
+    while e < len(t) and t[e] == '[':      # &arr[k]: the cast takes the element address
+        e = pp_close(t, e, '[', ']')
+    return e
+
+
+def pp_close(t, i, o, c):
+    """index after the bracket that closes t[i] == o"""
+    d = 0
+    for k in range(i, len(t)):
+        if t[k] == o:
+            d += 1
+        elif t[k] == c:
+            d -= 1
+            if d == 0:
+                return k + 1
+    return None
+
+
+def pp_rhs_end(t, i):
+    d = 0
+    for k in range(i, len(t)):
+        ch = t[k]
+        if ch in '([{':
+            d += 1
+        elif ch in ')]}':
+            if d == 0:
+                return k
+            d -= 1
+        elif ch in ';,' and d == 0:
+            return k
+    return None
+
+
+def pp_slot(typ, stars):
+    """type of the value one slot holds: T * for T **, a slot array for T ***"""
+    return typ + ' *' if stars == 2 else 'uint32_t *'
+
+
+def pp_elem(typ, stars):
+    return 'uint32_t' if stars > 2 else '_BYTE' if typ == 'void' else typ
+
+
+def pp_assign(t, k):
+    """('=', end) / ('+=', end) for an assignment at t[k], else None"""
+    m = re.match(r'\s*(=|\+=|-=)(?!=)', t[k:])
+    if not m:
+        return None
+    return m.group(1), k + m.end()
+
+
+def fix_ptr32(t):
+    # *(T **)(ADDR): right to left, so an outer operand already holds its rewritten inner accesses
+    for m in reversed(list(PP_CAST.finditer(t))):
+        a1 = pp_group(t, m.end())
+        if a1 is None:
+            stats['ptr32 cast left'] += 1
+            continue
+        addr, typ, stars = t[m.end():a1], m.group(1), len(m.group(2))
+        # **(T **)A = R writes through the pointer the slot holds: the slot itself is only read
+        asg = pp_assign(t, a1) if t[m.start() - 1:m.start()] != '*' else None
+        if asg and asg[0] == '=':
+            r1 = pp_rhs_end(t, asg[1])
+            t = t[:m.start()] + '*(uint32_t *)%s = (uint32_t)(uintptr_t)(%s)' % (addr, t[asg[1]:r1].strip()) + t[r1:]
+        elif asg:
+            r1 = pp_rhs_end(t, asg[1])
+            t = t[:m.start()] + '*(uint32_t *)%s %s (uint32_t)((%s) * sizeof(%s))' % (
+                addr, asg[0], t[asg[1]:r1].strip(), pp_elem(typ, stars)) + t[r1:]
+        else:
+            t = t[:m.start()] + '((%s)(uintptr_t)*(uint32_t *)%s)' % (pp_slot(typ, stars), addr) + t[a1:]
+        stats['ptr32 casts'] += 1
+    # function pointer slots: *(R (**)(A))ADDR, **(R (***)(A))ADDR
+    for m in reversed(list(PP_FCAST.finditer(t))):
+        a1 = pp_group(t, m.end())
+        derefs, stars = len(m.group(1)), len(m.group(3))
+        if a1 is None or derefs > stars or pp_assign(t, a1):
+            stats['ptr32 function slot left'] += 1
+            continue
+        v = t[m.end():a1]
+        for i in range(derefs):
+            v = '*(uint32_t *)(uintptr_t)(%s)' % v if i else '*(uint32_t *)%s' % v
+        left = stars - derefs
+        typ = '%s (%s)%s' % (m.group(2), '*' * left, m.group(4)) if left == 1 else 'uint32_t *' if left else None
+        t = t[:m.start()] + ('((%s)(uintptr_t)%s)' % (typ, v) if typ else v) + t[a1:]
+        stats['ptr32 function slots'] += 1
+    t = re.sub(r'\((?:const |unsigned |signed )*[A-Za-z_]\w* ?\*? \(\*{2,}\)\([^()]*\)\)', '(uint32_t *)', t)
+    fh = func_header(t)
+    if not fh:
+        return t
+    hs, he, ret, name, ptext = fh
+    vars_ = {}
+    for pm in re.finditer(r'((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*{2,})(a\d+)\b', ptext):
+        vars_[pm.group(3)] = (pm.group(1), len(pm.group(2)))
+    ptext = re.sub(r'(?:const |unsigned |signed )*[A-Za-z_]\w* \*{2,}(a\d+)\b', r'uint32_t *\1', ptext)
+    body = t[he:]
+    k = 0
+    for line in body.split('\n'):
+        if LOCAL_DECL.match(line):
+            k += len(line) + 1
+        else:
+            break
+    decls, code = body[:k], body[k:]
+    for dm in PP_DECL.finditer(decls):
+        vars_[dm.group(3)] = (dm.group(1), len(dm.group(2)))
+    decls = PP_DECL.sub(r'  uint32_t *\3;', decls)
+    # arrays of pointers on the stack (the callee walks 32-bit slots)
+    for dm in PP_ARR.finditer(decls):
+        vars_[dm.group(3)] = (dm.group(1), len(dm.group(2)) + 1)
+    decls = PP_ARR.sub(r'  uint32_t \3\4;', decls)
+    # a pointer local whose address is handed on: the callee writes only its low 32 bits
+    def zi(dm):
+        if re.search(r'&%s\b(?!\s*\[)' % dm.group(2), code):
+            stats['ptr32 address-taken local zeroed'] += 1
+            return '  %s%s = 0;%s' % (dm.group(1), dm.group(2), dm.group(3))
+        return dm.group(0)
+    decls = re.sub(r'(?m)^  ((?:const |unsigned |signed )*[A-Za-z_]\w* \*)(\w+);(.*)$', zi, decls)
+    for n, (typ, stars) in vars_.items():
+        slot = pp_slot(typ, stars)
+        for m in reversed(list(re.finditer(r'(\*\*|\*|&)?\b%s\b' % n, code))):
+            pre, e = m.group(1) or '', m.end()
+            rest = code[e:]
+            if rest.lstrip().startswith('['):
+                b0 = e + len(rest) - len(rest.lstrip())
+                b1 = pp_close(code, b0, '[', ']')
+                if b1 is None or pre == '&':
+                    continue
+                acc = code[m.start() + len(pre):b1]
+                asg = pp_assign(code, b1)
+                if not pre and re.search(r'\b(?:S?(?:LO|HI)BYTE|BYTE\d|(?:LO|HI)WORD|WORD\d)\(\s*$', code[:m.start()][-12:]):
+                    continue     # BYTE1(v[2]) = 1: bits of the slot itself
+                if asg and asg[0] == '=' and not pre:
+                    r1 = pp_rhs_end(code, asg[1])
+                    new, end = '%s = (uint32_t)(uintptr_t)(%s)' % (acc, code[asg[1]:r1].strip()), r1
+                elif asg and not pre:
+                    stats['ptr32 var compound left'] += 1
+                    continue
+                else:
+                    new, end = '%s((%s)(uintptr_t)%s)' % (pre, slot, acc), b1
+            elif pre == '**':
+                new, end = '*((%s)(uintptr_t)*%s)' % (slot, n), e
+            elif pre == '*':
+                inc = re.match(r'(\+\+|--)', rest)
+                asg = pp_assign(code, e)
+                if inc:
+                    new, end = '((%s)(uintptr_t)*%s%s)' % (slot, n, inc.group(1)), e + 2
+                elif asg and asg[0] == '=':
+                    r1 = pp_rhs_end(code, asg[1])
+                    new, end = '*%s = (uint32_t)(uintptr_t)(%s)' % (n, code[asg[1]:r1].strip()), r1
+                elif asg:
+                    stats['ptr32 var compound left'] += 1
+                    continue
+                else:
+                    new, end = '((%s)(uintptr_t)*%s)' % (slot, n), e
+            elif pre == '&':
+                stats['ptr32 var address taken'] += 1
+                continue
+            else:
+                asg = pp_assign(code, e)
+                if not asg or asg[0] != '=' or not re.search(STMT_START, code[:m.start()][-40:]):
+                    continue
+                r1 = pp_rhs_end(code, asg[1])
+                new, end = '%s = (uint32_t *)(%s)' % (n, code[asg[1]:r1].strip()), r1
+            code = code[:m.start()] + new + code[end:]
+            stats['ptr32 var uses'] += 1
+    # remaining casts to T ** (values handed on): slot arrays
+    code = re.sub(r'\((?:const |unsigned |signed )*[A-Za-z_]\w* \*{2,}\)', '(uint32_t *)', code)
+    return t[:hs] + t[hs:he].replace(fh[4], ptext, 1) + decls + code
+
+
+# Locals whose address is handed on (Hex-Rays BYREF) are often one structure on the 32-bit stack that
+# Hex-Rays split into variables (sub_1FB173: v11 +0, v12 +4, v13[4] +8). On x64 the compiler places them
+# freely and pointers take 8 bytes: from the lowest BYREF local up they live in a byte array with the
+# original offsets (frame150), pointers as 32-bit slots.
+FRAME_DECL = re.compile(r'^  ([^=;/]*?)\b(\w+)((?:\[[^\]]*\])*)(?: = 0)?; // (.*)$')
+SIZE32 = {'char': 1, '_BYTE': 1, 'uint8_t': 1, 'int8_t': 1, '_BOOL1': 1, 'bool': 1, '__int8': 1, 'unsigned __int8': 1,
+          'int16_t': 2, 'uint16_t': 2, '_WORD': 2, '__int16': 2, 'unsigned __int16': 2,
+          'int': 4, '_DWORD': 4, 'unsigned int': 4, 'signed int': 4, 'uint32_t': 4, 'int32_t': 4, 'float': 4, '_BOOL4': 4,
+          '_QWORD': 8, '__int64': 8, 'unsigned __int64': 8, 'int64_t': 8, 'uint64_t': 8, 'double': 8}
+
+
+def fix_frame(t):
+    fh = func_header(t)
+    if not fh:
+        return t
+    he = fh[1]
+    body = t[he:]
+    lines = body.split('\n')
+    locs, k = [], 0
+    for line in lines:
+        if not line.strip():
+            break
+        k += 1
+        m = FRAME_DECL.match(line)
+        if not m:
+            continue
+        cm = m.group(4)
+        om = re.search(r'\[ebp([+-][0-9A-F]+)h\]', cm)
+        locs.append((int(om.group(1), 16) if om else None, m.group(2), m.group(1).strip(), m.group(3), 'BYREF' in cm, line))
+    byref = [x[0] for x in locs if x[4] and x[0] is not None and x[0] < 0 and x[1] != 'savedregs']
+    if not byref:
+        return t
+    lo = min(byref)
+    grp = [x for x in locs if x[0] is not None and lo <= x[0] < 0 and x[2] != 'va_list']
+    if len(grp) < 2:
+        return t
+    vars_ = []
+    for off, n, typ, arr, b, line in grp:
+        dims = [int(d, 0) for d in re.findall(r'\[([^\]]*)\]', arr)]
+        if typ.endswith('*'):
+            size = 4
+        elif typ in SIZE32:
+            size = SIZE32[typ]
+        else:
+            stats['frame left (type %s)' % typ] += 1
+            return t
+        if len(dims) > 1:
+            stats['frame left (2D array)'] += 1
+            return t
+        vars_.append((off - lo, n, typ, dims[0] if dims else None, size))
+    fsize = max(o + s * (d or 1) for o, n, typ, d, s in vars_)
+    fsize = (fsize + 3) & ~3
+    gnames = {x[1] for x in grp}
+    decl_lines = [l for l in lines[:k] if not (FRAME_DECL.match(l) and FRAME_DECL.match(l).group(2) in gnames)]
+    decl_lines.append('  uint8_t frame150[0x%X] = { 0 };   // 32-bit stack frame from [ebp%sh]' % (fsize, '-%X' % -lo))
+    code = '\n'.join(lines[k:])
+    for o, n, typ, d, s in vars_:
+        if typ.endswith('*') and d is None:
+            slot = '(*(uint32_t *)(frame150 + 0x%X))' % o
+            pt = typ[:-1].strip()
+            sz = '1' if pt in ('void', 'const void') else 'sizeof(%s)' % pt
+            for m in reversed(list(re.finditer(r'(?<![.>\w])(&|\+\+|--)?\b%s\b' % n, code))):
+                pre, e = m.group(1) or '', m.end()
+                rest = code[e:]
+                post = re.match(r'(\+\+|--)', rest)
+                asg = pp_assign(code, e)
+                if pre == '&' and not rest.lstrip().startswith('['):
+                    new, end = '((uint32_t *)(frame150 + 0x%X))' % o, e
+                elif pre in ('++', '--'):
+                    new, end = '((%s)(uintptr_t)(%s %s= %s))' % (typ, slot, pre[0], sz), e
+                elif post:
+                    inv = '-' if post.group(1) == '++' else '+'
+                    new, end = '((%s)(uintptr_t)((%s %s= %s) %s %s))' % (typ, slot, post.group(1)[0], sz, inv, sz), e + 2
+                elif asg and asg[0] != '=':
+                    r1 = pp_rhs_end(code, asg[1])
+                    new, end = '(%s %s (uint32_t)((%s) * %s))' % (slot, asg[0], code[asg[1]:r1].strip(), sz), r1
+                elif asg and not pre and re.search(STMT_START, code[:m.start()][-40:]):
+                    r1 = pp_rhs_end(code, asg[1])
+                    new, end = '%s = (uint32_t)(uintptr_t)(%s)' % (slot, code[asg[1]:r1].strip()), r1
+                else:
+                    new, end = '%s((%s)(uintptr_t)%s)' % ('&' if pre == '&' else '', typ, slot), e
+                code = code[:m.start()] + new + code[end:]
+        elif d is not None:
+            code = re.sub(r'\bsizeof\(\s*%s\s*\)' % n, '0x%X' % (d * s), code)
+            code = re.sub(r'(?<![.>\w])&%s\b(?!\s*\[)' % n, '((%s *)(frame150 + 0x%X))' % (typ, o), code)
+            code = re.sub(r'(?<![.>\w])\b%s\b' % n, '((%s *)(frame150 + 0x%X))' % (typ, o), code)
+        else:
+            code = re.sub(r'(?<![.>\w])\b%s\b' % n, '(*(%s *)(frame150 + 0x%X))' % (typ, o), code)
+    stats['frame150 functions'] += 1
+    return t[:he] + '\n'.join(decl_lines) + '\n' + code
+
+
+gen_head, reg_params = {}, {}
+# block code addresses kept in block data (callback tables)
+fix_c_targets = set()
+for _r in range(_rs, _cs, 11):
+    _typ, _sb, _tb, _so, _add = struct.unpack_from('<BBBII', _blk, _r)
+    if not _typ and _sb == 0 and _tb == 0 and BB + _so >= DATA and BB + _add < DATA:
+        fix_c_targets.add(BB + _add)
+
 lua_bound = []
 for a, c in funcs:
     if any(in_ranges(int(n, 16), LUA) for n in re.findall(r'\bsub_(2[0-9A-F]{5})\s*\(', c)):
@@ -472,8 +827,19 @@ for a, c in funcs:
     t = fix_crt(a, t)
     t = fix_void_return(t)
     t = fix_values(t)
+    t = fix_addr_literals(t)
+    t = fix_array_arith(t)
     t = fix_asm(a, t)
+    t = fix_ptr32(t)
+    t = fix_frame(t)
     t = promote(t)
+    fh = func_header(t)
+    if fh and '...' not in fh[4] and '(' not in fh[2]:
+        gen_head[fh[3]] = (fh[2], [p.strip() for p in split_args(fh[4])] if fh[4].strip() not in ('', 'void') else [])
+        oh = c.split('\n')[1] if c.startswith('//-----') else ''
+        om = re.match(r'^.*?\b%s(?:@<\w+>)?\((.*)\)\s*$' % fh[3], oh)
+        if om and '@<' in om.group(1):
+            reg_params[fh[3]] = ['@<' in p for p in split_args(om.group(1))]
     for n in set(re.findall(r'\b([A-Za-z_]\w*)\b', t)):
         sm = re.match(r'^(?:byte|word|dword|qword|unk|off|asc|stru|flt|dbl|algn)_([0-9A-F]{5,6})$', n)
         if n not in symaddr and sm and n in datadecl or n not in symaddr and sm and int(sm.group(1), 16) >= BB:
@@ -489,6 +855,27 @@ for a, c in funcs:
             stats['code label used as data: ' + n] += 1
             used.add(n)
     outs.append(t)
+
+# A function with register parameters (Hex-Rays: a1@<esi>, mostly a register it only saves) whose address is
+# handed on is called through the pointer with the stack arguments alone: it gets a wrapper without them.
+cb_wrapped = set()
+for n, regs in reg_params.items():
+    ret, params = gen_head[n]
+    if len(params) != len(regs) or all(regs):
+        continue
+    if any(re.search(r'\b%s\b(?!\s*\()' % n, t) for t in outs) or own.get(n) in fix_c_targets:
+        cb_wrapped.add(n)
+        args = ', '.join('0' if r else re.match(r'.*?(\w+)$', p).group(1) for p, r in zip(params, regs))
+        decl = ', '.join(p for p, r in zip(params, regs) if not r) or 'void'
+        outs.append('//----- wrapper: %s called through a pointer (stack arguments only)\n%s %s_cb(%s)\n{\n  %s%s(%s);\n}\n\n'
+                    % (n, ret, n, decl, '' if ret == 'void' else 'return ', n, args))
+        gen_head[n + '_cb'] = (ret, [p for p, r in zip(params, regs) if not r])
+for i, t in enumerate(outs):
+    for n in cb_wrapped:
+        if n in t:
+            t = re.sub(r'\b%s\b(?!\s*\()' % n, n + '_cb', t)
+    outs[i] = t
+stats['callback wrappers'] = len(cb_wrapped)
 os.makedirs(OUT, exist_ok=True)
 for k in range(0, len(outs), 150):
     with open(os.path.join(OUT, 'orion150_code_%02d.c' % (k // 150 + 1)), 'w', encoding='latin1', newline='\r\n') as f:
@@ -517,7 +904,7 @@ for r in range(rstart, cstart, 11):
         else:
             name = 'sub_%X' % tgt
             if (name in own and tgt not in lua_bound) or tgt in manual:
-                fix_c.append((slot, name))
+                fix_c.append((slot, name + '_cb' if name in cb_wrapped else name))
             else:
                 fix_miss['lua or unported block code' if in_ranges(tgt, LUA) or tgt in lua_bound else 'block code without function'] += 1
     elif tb == 1:
@@ -578,8 +965,15 @@ for n, a in sorted(own.items(), key=lambda kv: kv[1]):
         if own[n] in manual:
             mm = re.search(r'(?m)^([A-Za-z_][\w \*]*?)\s*\b' + n + r'\s*\(', open(mp, encoding='latin1').read())
             h.append('%s %s();' % (mm.group(1).strip() if mm else 'int', n))
+        elif n in own_full:
+            h.append(own_full[n] + ';')
+        elif n in gen_head:
+            # full prototypes: an int argument for a pointer parameter must be widened by the caller
+            h.append('%s %s(%s);' % (gen_head[n][0], n, ', '.join(gen_head[n][1]) or 'void'))
         else:
-            h.append(own_full[n] + ';' if n in own_full else '%s %s();' % (own_ret.get(n, 'int'), n))
+            h.append('%s %s();' % (own_ret.get(n, 'int'), n))
+for n in sorted(cb_wrapped):
+    h.append('%s %s_cb(%s);' % (gen_head[n][0], n, ', '.join(p for p, r in zip(gen_head[n][1], reg_params[n]) if not r) or 'void'))
 h += ['', '#endif', '']
 open(os.path.join(OUT, 'orion150.h'), 'w', encoding='latin1', newline='\r\n').write('\n'.join(h))
 

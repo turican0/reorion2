@@ -27,6 +27,24 @@ extern "C" void PortDebug_WatchEnable(int on);
 extern "C" void PortCtl_Init();   /* vlna 112: srovnavaci harness (port_ctl.cpp) */
 extern "C" uint8_t dseg[];   /* wave 184: REORION2_HWWATCH */
 extern "C" void InitDataSegment(void);   /* wave 180: pointer slots of the data segment (orion_dseg.c) */
+extern "C" void InitEseg150(void);       /* wave 185: pointer slots of the 1.50 block data (orion150_eseg.c) */
+extern "C" uint8_t eseg[], ecode[];
+extern "C" int sub_2029AB(char* a1, char* a2, int a3, uint32_t* a4, int a5, int a6, int a7, int a8);
+
+// Wave 185: the 1.50 patch block starts like in ORION150.EXE before main__0 (main_ 10018 -> 169725 ->
+// loader 169583 -> 169716 call entry 2029AB). Its arguments: argc, argv (32-bit pointers), block base,
+// block size 0x7598E (code + data), data object base, code object base. Only with REORION2_150=1 until
+// the hooks are wired into the 1.31 functions.
+static void Start150(int argc, char** argv)
+{
+    static uint32_t argv32[64];
+    int n = argc < 63 ? argc : 63;
+
+    InitEseg150();
+    for (int i = 0; i < n; ++i)
+        argv32[i] = (uint32_t)(uintptr_t)argv[i];
+    sub_2029AB(nullptr, nullptr, n, argv32, (int)(intptr_t)ecode, 0x7598E, (int)(intptr_t)dseg, 0x10000);
+}
 
 // PORT (vlna 133): spinac vypisu hardwaroveho watchpointu (PortDebug_WatchWrite).
 // Registr zustava nastaveny, jen se hlaseni potlaci - hodi se, kdyz se
@@ -661,6 +679,8 @@ int main(int argc, char* argv[])
         if (!end || *end != ',') break;
         w = end + 1;
     }
+    if (std::getenv("REORION2_150"))
+        Start150(argc, argv);
     GameMain_10057(argc, argv, nullptr);
 
     // GameMain_10057 je (interne kdyz nekonci hru, zavola exit()
