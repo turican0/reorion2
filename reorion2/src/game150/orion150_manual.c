@@ -3,6 +3,9 @@
    tools/compare/gen150.py.
    Goal: the hook stubs and the code constants patched through ccode are temporary - they will be
    rewritten as normal C functions and variables (see the GOAL note in tools/compare/gen150.py). */
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 #include "orion150.h"
 
 void PortDebug_Message(const char *msg);
@@ -42,12 +45,171 @@ void Dos150_AsmPending(uint32_t addr)
   PortDebug_Message(buf);
 }
 
-//----- (00077433) --------------------------------------------------------
-/* 1.50 entry in front of sub_7743A: 77433 mov byte_19BF08, 1, then the 1.31 body */
-int sub_77433(int a1)
+#define ESTR150(a) ((char *)(eseg + (a) - 0x22A600))
+
+//----- (001E0076) --------------------------------------------------------
+/* 1E0083 call __fprtf_(arg_0 file, arg_4 format, &arg_8): vfprintf on a port file handle */
+int sub_1E0076(int a1, char *a2, va_list a3)
 {
-  byte_19BF08 = 1;
-  return sub_7743A(a1);
+  char buf[4096];
+  int n = vsnprintf(buf, sizeof(buf), a2, a3);
+
+  if ( n > 0 )
+    fwrite(buf, 1, n < (int)sizeof(buf) ? n : (int)sizeof(buf) - 1, a1);
+  return n;
+}
+
+//----- (001E009E) --------------------------------------------------------
+/* 1E00B0 call __prtf_(&{arg_0 buffer, arg_4 room}, arg_8 format, &arg_C, putc 1E00B7): the putc stores
+   only while there is room and counts every character; no terminating NUL */
+int sub_1E009E(char *a1, int a2, char *a3, va_list a4)
+{
+  char buf[4096];
+  int n = vsnprintf(buf, sizeof(buf), a3, a4);
+
+  if ( n > 0 && a2 > 0 )
+    memcpy(a1, buf, n < a2 ? n : a2);
+  return n;
+}
+
+//----- (001E090B) --------------------------------------------------------
+/* hook stub inside sub_3D2DF: 1E090B tests [ebp-27h] bit 0, byte_23F0F4 and word [ebp-18h] of the game
+   function's frame and jumps to 3D751 or 3D79D - wired into the game function at the hook site */
+int sub_1E090B()
+{
+  return 0;
+}
+
+//----- (001E136E) --------------------------------------------------------
+/* cdecl -> register wrapper: eax..ecx = arg_0..arg_C, call sub_F6816 */
+int sub_1E136E(int a1, int a2, int a3, int a4)
+{
+  return sub_F6816(a1, a2, a3, a4);
+}
+
+//----- (001E3727) --------------------------------------------------------
+/* cdecl -> register wrapper: eax..ecx = arg_0..arg_C, call sub_77048 */
+int sub_1E3727(int a1, int a2, int a3, int a4)
+{
+  return sub_77048(a1, a2, a3, a4);
+}
+
+//----- (001E4BBB) --------------------------------------------------------
+/* 1E4BBB eax = dword 1E4BA3 (kept in the block code), call sub_1FA583, call ServiceAudioTick (eax kept) */
+int sub_1E4BBB()
+{
+  int r = (uint8_t)sub_1FA583(*(uint32_t *)(ecode + 0x4BA3), 0, 0, 0, 0);
+
+  return ServiceAudioTick_FE8BE(r, 0, 0, 0);
+}
+
+//----- (001F8F2B) --------------------------------------------------------
+/* applies the parsed config to the game data (asm 1F8F2B-1F90A0) */
+int sub_1F8F2B()
+{
+  int src, dst, k;
+
+  sub_1EEBFB(0, 0, 0, 0, 0, 0, 0, 0);   /* 1F8F2F: its register arguments are scratch */
+  dseg[0x485] = eseg[0x137D6];
+  dseg[0x3D3] = (uint8_t)-eseg[0x137DC];   /* the switch flag bytes after "/nowh" ... */
+  dseg[0x3DA] = (uint8_t)-eseg[0x137DB];
+  dseg[0x44A] = (uint8_t)-eseg[0x137D7];
+  dseg[0x456] = (uint8_t)-eseg[0x137DA];
+  dseg[0x461] = (uint8_t)-eseg[0x137DE];
+  dseg[0x46E] = (uint8_t)-eseg[0x137D8];
+  dseg[0x47A] = (uint8_t)-eseg[0x137D9];
+  dseg[0x4DD] = (uint8_t)-eseg[0x137DF];
+  dseg[0x749] = (uint8_t)-eseg[0x137DD];
+  dseg[0x7AD] = (uint8_t)-eseg[0x14B8E];
+  byte_19A006 = eseg[0x137D5];
+  dseg[0x7C1] = (uint8_t)-eseg[0x14B90];
+  dseg[0x755] = (uint8_t)-eseg[0x14B8F];
+  /* 1F8FD8: 130 records of 17 bytes 0x23D180 (stride 22) -> 0x180184 */
+  for ( src = 0x23D180, dst = 0x180184; dst != 0x180A26; src += 22, dst += 17 )
+    memcpy(dseg + dst - 0x178000, eseg + src - 0x22A600, 17);
+  /* 1F900C: 130 records of 5 bytes 0x23D191 (stride 22) -> 0x180A26 */
+  for ( src = 0x23D191, dst = 0x180A26; dst != 0x180CB0; src += 22, dst += 5 )
+    memcpy(dseg + dst - 0x178000, eseg + src - 0x22A600, 5);
+  /* 1F9040: every second byte of 0x23D121 -> 0x17D1FD..0x17D218 */
+  for ( k = 0; k < 0x17D218 - 0x17D1FD; ++k )
+    dseg[0x17D1FD - 0x178000 + k] = eseg[0x23D121 - 0x22A600 + 2 * k];
+  sub_1E6CD3();
+  if ( *(uint32_t *)(eseg + 0x13DE8) )   /* dword 23E3E8 */
+  {
+    sub_1F8EB3((int)(intptr_t)(eseg + 0x13DE8));
+    nfree(*(uint32_t *)(eseg + 0x13DE8));
+    *(uint32_t *)(eseg + 0x13DE8) = 0;
+  }
+  *(uint32_t *)(eseg + 0x13DEC) = 0;   /* dword 23E3EC */
+  return 0;
+}
+
+/* refcounted string slot: release the old string, store the new one (1FB8DE..1FB8F5 / 1FD9BF..1FD9D6) */
+static void SetRefString150(int **slot, int *s)
+{
+  int *old;
+
+  if ( !slot )
+  {
+    sub_1EE113();
+    return;
+  }
+  old = *slot;
+  if ( old == s )
+    return;
+  if ( old )
+  {
+    if ( !old[1] )
+      sub_1ECCDF(0, 1, (int)(intptr_t)ESTR150(0x25071D), (int)(intptr_t)ESTR150(0x2467D9), old[1]);
+    if ( !--old[1] )
+      nfree((int)(intptr_t)old);
+  }
+  *slot = s;
+}
+
+//----- (001FB8CF) --------------------------------------------------------
+int sub_1FB8CF(int **a1, int *a2)
+{
+  SetRefString150(a1, a2);
+  return (int)(intptr_t)a2;
+}
+
+//----- (001FD8FF) --------------------------------------------------------
+/* message with its context: without a message yet (*a1 == 0) every context of the chain a2 gets
+   "<prefix> <file>:<line>: <text>" in its slot [ctx+0Ch] (1FD967..1FD9DC); then sub_1FC66B(a1, text,
+   strlen(text), a4) (1FD956 tail jump) */
+int *sub_1FD8FF(int **a1, int a2, char *a3, unsigned int *a4)
+{
+  if ( !*a1 && a2 )
+  {
+    char *s = a3;
+    int ctx = a2;
+
+    do
+    {
+      int *f = 0;   /* var_20 */
+      int name = **(int **)(a2 + 12);
+      int line = *(int *)(*(int *)(ctx + 8) + 4) + 1;
+      int file = *(int *)(ctx + 4);
+
+      sub_1FC7BB(&f, ESTR150(0x246CAA), ESTR150(0x246CA8), ESTR150(a2 == ctx ? 0x246C8C : 0x246C8F),
+                 ESTR150(0x246C82), file, ESTR150(0x246CA4), line, ESTR150(0x246C9D), name, 0, s);
+      s = (char *)f;
+      SetRefString150((int **)(intptr_t)*(int *)(a2 + 12), f);   /* 1FD9B5 edi = [ebp+0Ch] */
+      ctx = *(int *)ctx;
+    }
+    while ( ctx );
+  }
+  return sub_1FC66B(a1, a3, (int)strlen(a3), a4);
+}
+
+/* empty functions of the block (retn only) */
+void nullsub_41()
+{
+}
+
+void nullsub_42()
+{
 }
 
 //----- (00169569) --------------------------------------------------------
