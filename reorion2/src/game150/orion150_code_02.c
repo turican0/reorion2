@@ -325,7 +325,7 @@ int sub_1E13C6(int a1)
 {
   return (HIWORD(off_23D0F8) + 100) * a1 / 100;
 }
-// 23D0F8: using guessed type _UNKNOWN *off_23D0F8;
+// 23D0F8: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_23D0F8);
 
 //----- (001E13DC) --------------------------------------------------------
 int sub_1E13DC(int a1, int a2)
@@ -345,7 +345,7 @@ int sub_1E13F9(int a1)
 {
   return (LOWORD(off_23D0F8) + 100) * a1 / 100;
 }
-// 23D0F8: using guessed type _UNKNOWN *off_23D0F8;
+// 23D0F8: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_23D0F8);
 
 //----- (001E1411) --------------------------------------------------------
 int sub_1E1411(int a1)
@@ -998,7 +998,7 @@ int sub_1E1775(int a1, int a2)
   if ( *(int16_t *)(a2 + 102) != result )
   {
     if ( (_WORD)dword_17D853 )
-      qsort(&dword_19296C, *(int16_t *)(a2 + 102), 2, (char *)sub_42E9C + 1698132);
+      qsort(&dword_19296C, *(int16_t *)(a2 + 102), 2, (char *)((_BYTE *)ccode + 0x32E9C) + 1698132);
     *((_WORD *)&dword_19296C + *(int16_t *)(a2 + 102)) = -10;
     JUMPOUT(0x43195);
   }

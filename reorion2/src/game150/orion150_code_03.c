@@ -508,9 +508,9 @@ LABEL_39:
 LABEL_45:
     v26 = 11 * *(int16_t *)(a1 + 122) + 313 * (int16_t)dword_1998F8 + dword_192864;
     if ( *(_BYTE *)(v26 + 91) == 1 )
-      v27 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v26 + 82));
+      v27 = (char *)*((&off_17F803) + 7 * *(int16_t *)(v26 + 82));
     else
-      v27 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v26 + 82));
+      v27 = (char *)*((&off_17F807) + 7 * *(int16_t *)(v26 + 82));
     v28 = (char *)(a1 + 9);
     do
       ++v28;
@@ -740,8 +740,8 @@ LABEL_28:
 // 2E42C: variable 'v7' is possibly undefined
 // 2E4B3: variable 'v14' is possibly undefined
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD);
-// 17F803: using guessed type _UNKNOWN *off_17F803;
-// 17F807: using guessed type _UNKNOWN *off_17F807;
+// 17F803: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F803);
+// 17F807: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F807);
 // 17FD1E: using guessed type _UNKNOWN *off_17FD1E;
 // 17FD2D: using guessed type _UNKNOWN *off_17FD2D;
 // 192864: using guessed type int dword_192864;

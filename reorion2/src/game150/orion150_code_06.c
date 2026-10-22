@@ -1122,7 +1122,7 @@ LABEL_6:
     }
   }
 LABEL_9:
-  v6 = (char)off_23CD38;
+  v6 = (char)((_UNKNOWN *)(uintptr_t)off_23CD38);
   if ( v8 )
   {
     v5 += word_23DD4C[0];
@@ -1140,7 +1140,7 @@ LABEL_11:
 }
 // 197F98: using guessed type int ((int)(intptr_t)dword_197F98);
 // 197F9C: using guessed type int ((int)(intptr_t)dword_197F9C);
-// 23CD38: using guessed type _UNKNOWN *off_23CD38;
+// 23CD38: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_23CD38);
 // 23DD4C: using guessed type int16_t word_23DD4C[4];
 
 //----- (001E915F) --------------------------------------------------------
@@ -2323,7 +2323,7 @@ unsigned int sub_1EA2DF(int a1, int a2)
   else
     return 0;
 }
-// 23CD56: using guessed type _UNKNOWN *off_23CD56;
+// 23CD56: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_23CD56);
 // 23CD5A: using guessed type uint16_t word_23CD5A[3];
 
 //----- (001EA31F) --------------------------------------------------------
@@ -4967,8 +4967,8 @@ int sub_1EC7CF(int a1)
   int v4; // eax
   int v5; // eax
 
-  v2 = off_22D940;
-  if ( !off_22D940 )
+  v2 = ((char *)(uintptr_t)off_22D940);
+  if ( !((char *)(uintptr_t)off_22D940) )
     return a1;
   v3 = ((int)(intptr_t)(eseg + 0x3340));
   while ( 1 )
@@ -4989,7 +4989,7 @@ int sub_1EC7CF(int a1)
 }
 // 13C896: using guessed type int stricmp(_DWORD, _DWORD);
 // 199CAE: using guessed type char byte_199CAE;
-// 22D940: using guessed type char *off_22D940;
+// 22D940: using guessed type char *((char *)(uintptr_t)off_22D940);
 
 //----- (001EC829) --------------------------------------------------------
 _BOOL1 sub_1EC829(int a1)

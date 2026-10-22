@@ -1429,9 +1429,9 @@ void sub_1E0AB0(int a1, int a2)
       sub_6EFF8(*(_BYTE *)(v11 + dword_1927A8 + 85), (_BYTE *)(a2 + 58));
       v12 = dword_1927A8 + v10;
       if ( *(int16_t *)(v12 + 69) <= 1 )
-        v13 = (char *)*(&off_17F803 + 7 * *(int16_t *)(v12 + 53));
+        v13 = (char *)*((&off_17F803) + 7 * *(int16_t *)(v12 + 53));
       else
-        v13 = (char *)*(&off_17F807 + 7 * *(int16_t *)(v12 + 53));
+        v13 = (char *)*((&off_17F807) + 7 * *(int16_t *)(v12 + 53));
       strcpy((char *)(a2 - 346), v13);
       v14 = *(int16_t *)(a2 + 122);
       if ( sub_6EFEB(*(_WORD *)(dword_1927A8 + 2 * v14 + 53)) == 1 )
@@ -1633,8 +1633,8 @@ void sub_1E0AB0(int a1, int a2)
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 138B90: using guessed type int strcmp(_DWORD, _DWORD);
 // 17EEE0: using guessed type _UNKNOWN *off_17EEE0;
-// 17F803: using guessed type _UNKNOWN *off_17F803;
-// 17F807: using guessed type _UNKNOWN *off_17F807;
+// 17F803: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F803);
+// 17F807: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F807);
 // 19269C: using guessed type int dword_19269C[39];
 // 1927A8: using guessed type int dword_1927A8;
 // 19999A: using guessed type int dword_19999A;
@@ -2176,9 +2176,9 @@ void sub_1E0B45(int a1, int a2, int a3, int a4, int a5)
     while ( *v12 );
     strcpy(v12, asc_178C52);
     if ( byte_199A66[v11] == 1 )
-      v13 = (char *)*(&off_17F803 + 7 * *(int16_t *)((char *)&word_199A64 + v11));
+      v13 = (char *)*((&off_17F803) + 7 * *(int16_t *)((char *)&word_199A64 + v11));
     else
-      v13 = (char *)*(&off_17F807 + 7 * *(int16_t *)((char *)&word_199A64 + v11));
+      v13 = (char *)*((&off_17F807) + 7 * *(int16_t *)((char *)&word_199A64 + v11));
     v14 = (char *)(a4 - 251);
     do
       ++v14;
@@ -2402,8 +2402,8 @@ LABEL_70:
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD);
 // 17EEE0: using guessed type _UNKNOWN *off_17EEE0;
-// 17F803: using guessed type _UNKNOWN *off_17F803;
-// 17F807: using guessed type _UNKNOWN *off_17F807;
+// 17F803: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F803);
+// 17F807: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_17F807);
 // 17FD0F: using guessed type _UNKNOWN *off_17FD0F;
 // 19292C: using guessed type int dword_19292C;
 // 193174: using guessed type int dword_193174;

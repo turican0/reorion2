@@ -145,6 +145,10 @@ for st in re.split(r';[ \t]*(?://[^\n]*)?\n', ddecl):
     m = re.search(r'\b([A-Za-z_]\w*)\s*((?:\[[^\]]*\])*)\s*$', st)
     if m and '(' not in st:
         datadecl[m.group(1)] = clean(st)
+# pointers to functions kept in data ("int (*off_X)()", "int (*funcs_X[5])()"): name -> slot count (0 = one)
+fptrdecl = {}
+for m in re.finditer(r'(?m)^(?!//)[^;\n]*?\(\*\s*([A-Za-z_]\w*)\s*(?:\[(\d+)\])?\)\s*\([^;\n]*\)\s*(?:=[^;\n]*)?;', ddecl):
+    fptrdecl[m.group(1)] = int(m.group(2) or 0)
 
 # functions of the block
 chunks = re.split(r'(?m)^(?=//----- \([0-9A-F]{8}\) )', impl)
@@ -445,6 +449,48 @@ for _n, _d in datadecl.items():
 array_names = {n for n in array_names if not re.match(r'^[av]\d+$', n)}
 
 
+def data_type(n):
+    """(type, array suffix) of a data symbol from its Hex-Rays declaration"""
+    decl = datadecl.get(n)
+    dm = re.match(r'^(.*?)\b' + re.escape(n) + r'\s*((?:\[[^\]]*\])*)\s*$', decl) if decl else None
+    if not dm:
+        return None, ''
+    return re.sub(r'\b(extern|static)\b\s*', '', dm.group(1)).strip(), dm.group(2)
+
+
+# data pointers of the block (and of the game data the port does not name): 32-bit slots
+ptr_globals, ptr_garrays = {}, {}
+for _n in datadecl:
+    if _n in dseg_names or _n in common_names or re.match(r'^[av]\d+$', _n):
+        continue
+    _t, _a = data_type(_n)
+    if not _t or not _t.endswith('*'):
+        continue
+    if not _a:
+        ptr_globals[_n] = _t
+    elif re.match(r'^\[\d+\]$', _a):
+        _b = _t[:-1].strip()
+        ptr_garrays[_n] = (_b.rstrip(' *'), 2 + _b.count('*'))
+
+
+def fix_gptr(t):
+    """data pointers and function pointers live in 32-bit slots: their macros are uint32_t lvalues"""
+    fh = func_header(t)
+    if not fh:
+        return t
+    head, code = t[:fh[1]], t[fh[1]:]
+    for n, typ in ptr_globals.items():
+        if n in code and re.search(r'\b%s\b' % n, code):
+            code = slot_uses(code, n, typ, n, '(&%s)' % n)
+            stats['ptr32 global uses'] += 1
+    for n in fptrdecl:
+        if n in code:
+            # calls through the slot (fix_values made them "((int (*)())n)(")
+            code = re.sub(r'\(\(int \(\*\)\(\)\)%s\)\(' % n, '((int (*)())(uintptr_t)%s)(' % n, code)
+            code = re.sub(r'(?<![\w(])\b%s\[([^\[\]]+)\]\s*\(' % n, r'((int (*)())(uintptr_t)%s[\1])(' % n, code)
+    return head + code
+
+
 def fix_array_arith(t):
     def ar(m):
         stats['array address arithmetic'] += 1
@@ -470,7 +516,9 @@ def fix_addr_literals(t):
         if line.lstrip().startswith('//'):
             out.append(line)
             continue
-        out.append(re.sub(r'(?<![\w.])(?:0x[0-9A-Fa-f]{5,8}|\d{6,8})[uU]?\b', lit, line))
+        line = re.sub(r'(?<![\w.])(?:0x[0-9A-Fa-f]{5,8}|\d{6,8})[uU]?\b', lit, line)
+        # game code addresses below 100000 only where they are added to an index ("(i + 76937)")
+        out.append(re.sub(r'(?<=\+ )\d{5}(?=\))', lit, line))
     return '\n'.join(out)
 
 
@@ -482,7 +530,10 @@ def fix_values(t):
     # a game function the port does not have, used as an address: the block patches its code -> ccode
     def ga(m):
         a = int(m.group(2), 16)
-        if a < BB and m.group(1) not in own and a not in portname:
+        # "(_BYTE *)sub_93D4B + 2": a code byte the block patches, even where the port has the function
+        data_cast = re.search(r'\((?:const )?(?:_BYTE|_WORD|_DWORD|char|int|__int16|unsigned \w+|u?int\d+_t|void) \*\)\s*&?$',
+                              m.string[max(0, m.start() - 24):m.start()])
+        if a < BB and m.group(1) not in own and (a not in portname or data_cast):
             return '((_BYTE *)ccode + 0x%X)' % (a - 0x10000)
         if BB <= a < DATA and m.group(1) not in own:     # block code without a function: data there
             return '((_BYTE *)ecode + 0x%X)' % (a - BB)
@@ -657,6 +708,9 @@ def fix_ptr32(t):
     for dm in PP_ARR.finditer(decls):
         vars_[dm.group(3)] = (dm.group(1), len(dm.group(2)) + 1)
     decls = PP_ARR.sub(r'  uint32_t \3\4;', decls)
+    for n, ts in ptr_garrays.items():       # global arrays of pointers (uint32_t slots in orion150.h)
+        if n in code and re.search(r'\b%s\b' % n, code):
+            vars_[n] = ts
     # a pointer local whose address is handed on: the callee writes only its low 32 bits
     def zi(dm):
         if re.search(r'&%s\b(?!\s*\[)' % dm.group(2), code):
@@ -728,6 +782,37 @@ SIZE32 = {'char': 1, '_BYTE': 1, 'uint8_t': 1, 'int8_t': 1, '_BOOL1': 1, 'bool':
           '_QWORD': 8, '__int64': 8, 'unsigned __int64': 8, 'int64_t': 8, 'uint64_t': 8, 'double': 8}
 
 
+def slot_uses(code, n, typ, slot, addr):
+    """uses of n, a pointer of type typ kept in the 32-bit slot `slot` (an lvalue uint32_t, &n == addr):
+    reads widen the slot, writes and pointer arithmetic store 32 bits"""
+    pt = typ[:-1].strip()
+    sz = '1' if pt in ('void', 'const void', '_UNKNOWN') else 'sizeof(%s)' % pt
+    for m in reversed(list(re.finditer(r'(?<![.>\w])(&|\+\+|--)?\b%s\b' % n, code))):
+        pre, e = m.group(1) or '', m.end()
+        rest = code[e:]
+        post = re.match(r'(\+\+|--)', rest)
+        asg = pp_assign(code, e)
+        if not pre and re.search(BYTE_MACRO, code[:m.start()][-12:]):
+            new, end = slot, e     # BYTE1(v) = 1: bits of the slot itself
+        elif pre == '&' and not rest.lstrip().startswith('['):
+            new, end = addr, e
+        elif pre in ('++', '--'):
+            new, end = '((%s)(uintptr_t)(%s %s= %s))' % (typ, slot, pre[0], sz), e
+        elif post:
+            inv = '-' if post.group(1) == '++' else '+'
+            new, end = '((%s)(uintptr_t)((%s %s= %s) %s %s))' % (typ, slot, post.group(1)[0], sz, inv, sz), e + 2
+        elif asg and asg[0] != '=':
+            r1 = pp_rhs_end(code, asg[1])
+            new, end = '(%s %s (uint32_t)((%s) * %s))' % (slot, asg[0], code[asg[1]:r1].strip(), sz), r1
+        elif asg and not pre and re.search(STMT_START, code[:m.start()][-40:]):
+            r1 = pp_rhs_end(code, asg[1])
+            new, end = '%s = (uint32_t)(uintptr_t)(%s)' % (slot, code[asg[1]:r1].strip()), r1
+        else:
+            new, end = '%s((%s)(uintptr_t)%s)' % ('&' if pre == '&' else '', typ, slot), e
+        code = code[:m.start()] + new + code[end:]
+    return code
+
+
 def fix_frame(t):
     fh = func_header(t)
     if not fh:
@@ -775,32 +860,7 @@ def fix_frame(t):
     code = '\n'.join(lines[k:])
     for o, n, typ, d, s in vars_:
         if typ.endswith('*') and d is None:
-            slot = '(*(uint32_t *)(frame150 + 0x%X))' % o
-            pt = typ[:-1].strip()
-            sz = '1' if pt in ('void', 'const void') else 'sizeof(%s)' % pt
-            for m in reversed(list(re.finditer(r'(?<![.>\w])(&|\+\+|--)?\b%s\b' % n, code))):
-                pre, e = m.group(1) or '', m.end()
-                rest = code[e:]
-                post = re.match(r'(\+\+|--)', rest)
-                asg = pp_assign(code, e)
-                if not pre and re.search(BYTE_MACRO, code[:m.start()][-12:]):
-                    new, end = slot, e     # BYTE1(v) = 1: bits of the slot itself
-                elif pre == '&' and not rest.lstrip().startswith('['):
-                    new, end = '((uint32_t *)(frame150 + 0x%X))' % o, e
-                elif pre in ('++', '--'):
-                    new, end = '((%s)(uintptr_t)(%s %s= %s))' % (typ, slot, pre[0], sz), e
-                elif post:
-                    inv = '-' if post.group(1) == '++' else '+'
-                    new, end = '((%s)(uintptr_t)((%s %s= %s) %s %s))' % (typ, slot, post.group(1)[0], sz, inv, sz), e + 2
-                elif asg and asg[0] != '=':
-                    r1 = pp_rhs_end(code, asg[1])
-                    new, end = '(%s %s (uint32_t)((%s) * %s))' % (slot, asg[0], code[asg[1]:r1].strip(), sz), r1
-                elif asg and not pre and re.search(STMT_START, code[:m.start()][-40:]):
-                    r1 = pp_rhs_end(code, asg[1])
-                    new, end = '%s = (uint32_t)(uintptr_t)(%s)' % (slot, code[asg[1]:r1].strip()), r1
-                else:
-                    new, end = '%s((%s)(uintptr_t)%s)' % ('&' if pre == '&' else '', typ, slot), e
-                code = code[:m.start()] + new + code[end:]
+            code = slot_uses(code, n, typ, '(*(uint32_t *)(frame150 + 0x%X))' % o, '((uint32_t *)(frame150 + 0x%X))' % o)
         elif d is not None:
             code = re.sub(r'\bsizeof\(\s*%s\s*\)' % n, '0x%X' % (d * s), code)
             code = re.sub(r'(?<![.>\w])&%s\b(?!\s*\[)' % n, '((%s *)(frame150 + 0x%X))' % (typ, o), code)
@@ -856,6 +916,7 @@ for a, c in funcs:
     t = fix_asm(a, t)
     t = fix_ptr32(t)
     t = fix_frame(t)
+    t = fix_gptr(t)
     t = fix_va(t)
     t = promote(t)
     fh = func_header(t)
@@ -947,6 +1008,9 @@ for r in range(rstart, cstart, 11):
 h = ['/* Generated by tools/compare/gen150.py - the 1.50 patch block for the port. */',
      '#ifndef ORION150_H', '#define ORION150_H', '#include <stdarg.h>', '#include "../game/orion_common.h"', '',
      '#define __ROL2__(x, n) ((uint16_t)(((uint16_t)(x) << (n)) | ((uint16_t)(x) >> (16 - (n)))))', '',
+     '/* Hex-Rays treats _DWORD as a signed int: a plain "<" between _DWORDs is jl/jge in the block (1EC090,',
+     '   1FF83F, 200B40), unsigned compares carry an explicit (unsigned int) */',
+     '#undef _DWORD', '#define _DWORD int32_t', '',
      '/* block data 0x%X..0x%X (block at 0x1E0000): eseg offset = address - 0x%X;' % (DATA, END, DATA),
      '   data the block keeps inside its code area: ecode offset = address - 0x%X */' % BB,
      '/* ccode = the game code object of ORION150.EXE (0x10000..0x170695): the block patches constants of the',
@@ -971,6 +1035,10 @@ for n in sorted(used):
         typ = '_BYTE'
     if arr == '[]':
         arr = '[1]'
+    if n in ptr_globals or n in ptr_garrays or n in fptrdecl:
+        typ = 'uint32_t'      # pointers are 32-bit slots (fix_ptr32 / fix_gptr convert the uses)
+        if n in fptrdecl:
+            arr = '[%d]' % fptrdecl[n] if fptrdecl[n] else ''
     if DATA <= a < END:
         base, off = 'eseg', a - DATA
     elif BB <= a < DATA:

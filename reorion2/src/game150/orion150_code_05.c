@@ -3735,7 +3735,7 @@ unsigned int sub_1E6C5F()
   v7 = dword_22DD04;
   if ( dword_22DD04 )
   {
-    v1 = &off_22DD00;
+    v1 = (&off_22DD00);
     do
     {
       v2 = v1[2];
@@ -3769,7 +3769,7 @@ LABEL_7:
   }
   return result;
 }
-// 22DD00: using guessed type _UNKNOWN *off_22DD00;
+// 22DD00: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_22DD00);
 // 22DD04: using guessed type _DWORD dword_22DD04;
 
 //----- (001E6CD3) --------------------------------------------------------
@@ -3799,7 +3799,7 @@ void sub_1E6CD3()
     v1 = dword_22DD04;
     if ( dword_22DD04 )
     {
-      v2 = (int *)&off_22DD00;
+      v2 = (int *)(&off_22DD00);
       do
       {
         v3 = v2[4];
@@ -3823,7 +3823,7 @@ void sub_1E6CD3()
 // 17D90E: using guessed type int16_t word_17D90E[];
 // 17E083: using guessed type _BYTE algn_17E083;
 // 1E0621: using guessed type _BYTE algn_1E0621;
-// 22DD00: using guessed type _UNKNOWN *off_22DD00;
+// 22DD00: using guessed type _UNKNOWN *((_UNKNOWN *)(uintptr_t)off_22DD00);
 // 22DD04: using guessed type _DWORD dword_22DD04;
 
 //----- (001E6D55) --------------------------------------------------------
