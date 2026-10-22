@@ -12,6 +12,11 @@ Output  src/game150/orion150.h            macros of the block data (eseg), of da
         src/game150/orion150_lua_pending.c stubs of the functions that call into Lua directly
 Functions with a //----- (ADDR) marker in src/game150/orion150_manual.c (hand written) are not generated.
 Regenerate: python tools/compare/gen150.py
+
+GOAL (Tomas, 2026-10-22): the hook stubs of 1.50 (call/jmp patched into 1.31 code, stubs that jump back
+into the middle of a game function, constants patched into game code via ccode) are a first step only.
+They are to be rewritten cleanly later: the 1.50 behaviour as normal C functions called from the game
+functions, config values as normal variables - no ccode, no stubs, no jumps back into game code.
 """
 import glob, os, re, struct, collections
 
@@ -179,13 +184,25 @@ if os.path.exists(mp):
 
 # ---------------------------------------------------------------- code
 own = {}                          # block function name -> address
+def own_name(c):
+    """name and parameter count of a Hex-Rays definition (header found on the cleaned text)"""
+    t = clean(c)
+    m = re.search(r'(?m)^[^/\n][^\n]*?\b(sub_[0-9A-F]+|nullsub_\d+)\s*\(', t)
+    if not m:
+        return None, None
+    depth, j = 1, m.end()
+    while j < len(t) and depth:
+        depth += {'(': 1, ')': -1}.get(t[j], 0)
+        j += 1
+    ps = [x for x in split_args(t[m.end():j - 1]) if x.strip() and x.strip() != 'void']
+    return m.group(1), len(ps)
+
+
 for a, c in funcs:
-    m = re.search(r'(?m)^[^/\n][^\n]*?\b(sub_[0-9A-F]+|nullsub_\d+)\s*\(', c)
-    if m:
-        own[m.group(1)] = a
-        hm = re.search(r'\b' + m.group(1) + r'\s*\(([^)]*)\)\s*\n\{', clean(c))
-        if hm:
-            nparams[m.group(1)] = len([x for x in split_args(hm.group(1)) if x.strip() and x.strip() != 'void'])
+    n, k = own_name(c)
+    if n:
+        own[n] = a
+        nparams[n] = k
 stats = collections.Counter()
 used = set()
 
@@ -243,6 +260,200 @@ def fit_args(text):
     return ''.join(out)
 
 
+PROMOTE = {'int16_t': 'int', 'uint16_t': 'unsigned int', 'int8_t': 'int', 'uint8_t': 'unsigned int',
+           'char': 'int', 'unsigned char': 'unsigned int', '_BOOL1': 'int', '_BOOL2': 'int', '_WORD': 'unsigned int',
+           '_BYTE': 'unsigned int', 'bool': 'int'}
+own_ret, own_full = {}, {}
+
+
+def func_header(t):
+    """(start, end, return type, name, params text) of the definition header (up to and with '\\n{\\n')"""
+    b = t.find('\n{\n')
+    if b < 0:
+        return None
+    # the header may span several lines (one parameter per line): back to the line with the name
+    k = t.rfind('\n', 0, b)
+    while k > 0 and t[k + 1:k + 3] == '  ':
+        k = t.rfind('\n', 0, k)
+    s = k + 1
+    head = t[s:b]
+    m = re.match(r'^(.*?)\b(sub_[0-9A-F]+|nullsub_\d+)\s*\((.*)\)\s*$', head, re.S)
+    if not m:
+        return None
+    return s, b + 3, m.group(1).strip() or 'int', m.group(2), m.group(3)
+
+
+def promote(t):
+    """K&R prototypes (RET name();) need promoted parameters: int16_t a2 -> int a2 + 'a2 = (int16_t)a2;'
+    at the top of the body (the original reads only the narrow part). Also records the return type."""
+    fh = func_header(t)
+    if not fh:
+        return t
+    hs, he, ret, name, ptext = fh
+    own_ret[name] = ret
+    if '(' in ret:      # returns a function pointer: the prototype needs the whole declarator
+        own_full[name] = t[hs:he - 3].strip()
+
+    class M:
+        pass
+    m = M()
+    m.start, m.end = (lambda: hs), (lambda: he)
+    m.group = lambda i: {1: ret + ' ', 2: name, 3: ptext}[i]
+    params, casts = [], []
+    for p in split_args(m.group(3)):
+        q = p.strip()
+        pm = re.match(r'^(.*?)\s*\b([A-Za-z_]\w*)$', q)
+        if pm and '*' not in q and pm.group(1) in PROMOTE:
+            params.append(PROMOTE[pm.group(1)] + ' ' + pm.group(2))
+            casts.append('  %s = (%s)%s;\n' % (pm.group(2), 'uint8_t' if pm.group(1) in ('_BOOL1', 'bool') else pm.group(1), pm.group(2)))
+        else:
+            params.append(q)
+    head = m.group(1) + m.group(2) + '(' + ', '.join(params) + ')\n{\n'
+    body = t[m.end():]
+    if casts:      # after the local declarations at the top of the body
+        k = 0
+        for line in body.split('\n'):
+            if re.match(r'^  [A-Za-z_][\w \*]*?\b[A-Za-z_]\w*(\[[^\]]*\])*;( *//.*)?$', line):
+                k += len(line) + 1
+            elif line.strip() == '' and k:
+                k += len(line) + 1
+                break
+            else:
+                break
+        body = body[:k] + ''.join(casts) + body[k:]
+    return t[:m.start()] + head + body
+
+
+# fopen (Watcom: eax = name, edx = mode) lost its mode in Hex-Rays: take edx from the listing, per call order
+lst_lines = open(DISS + 'ORION150.full.lst', encoding='latin1').read().split('\n')
+lst_func = {}
+cur = None
+for l in lst_lines:
+    m = re.match(r'^ext150:([0-9A-F]{8}) (\w+)\s+proc\b', l)
+    if m:
+        cur = int(m.group(1), 16)
+        lst_func[cur] = []
+        continue
+    if cur is not None:
+        if re.search(r'\sendp\b', l):
+            cur = None
+        else:
+            lst_func[cur].append(l)
+
+
+def fix_crt(a, t):
+    modes = []
+    body = lst_func.get(a, [])
+    for i, l in enumerate(body):
+        if re.search(r'\scall\s+fopen_\b', l):
+            mode = None
+            for b in range(i - 1, max(0, i - 12), -1):
+                mm = re.search(r'\smov\s+edx,\s*(?:offset\s+)?([0-9A-F]+h|\w+)', body[b])
+                if mm:
+                    mode = mm.group(1)
+                    break
+            modes.append(mode)
+    k = [0]
+
+    def fo(m):
+        i = k[0]
+        k[0] += 1
+        mode = modes[i] if i < len(modes) else None
+        if mode and mode.endswith('h') and re.match(r'^[0-9A-F]+h$', mode):
+            v = int(mode[:-1], 16)
+            if DATA <= v < BB + len(open(DISS + 'ext/ext150.bin', 'rb').read()):
+                return 'fopen(%s, (char *)(eseg + 0x%X))' % (m.group(1), v - DATA)
+        if mode and mode in symaddr:
+            return 'fopen(%s, (char *)&%s)' % (m.group(1), mode)
+        stats['fopen mode not found'] += 1
+        return m.group(0)
+    t = re.sub(r'\bfopen\(([^(),]*(?:\([^()]*\)[^(),]*)*)\)', fo, t)
+    t = re.sub(r'\bftell\(([^(),]+),[^()]*\)', r'ftell(\1)', t)
+    return t
+
+
+# port functions returning void used as a value: "return f(..);" -> "f(..); return 0;"
+port_void = set(re.findall(r'(?m)^(?:extern\s+)?void\s+(\w+)\s*\(', common))
+
+
+def fix_void_return(t):
+    def rv(m):
+        if m.group(2) in port_void:
+            return '%s%s(%s); return 0;' % (m.group(1), m.group(2), m.group(3))
+        return m.group(0)
+    return re.sub(r'(?m)^(\s*)return (\w+)\((.*)\);$', rv, t)
+
+
+# game functions the block calls that the port never needed: generated from the same Hex-Rays output
+full_chunks = {}
+for c in chunks:
+    m = re.match(r'//----- \(([0-9A-F]{8})\)', c)
+    if m:
+        full_chunks[int(m.group(1), 16)] = c
+todo = [a for a, c in funcs]
+extra = []
+while todo:
+    a = todo.pop()
+    c = full_chunks.get(a, '')
+    for n in re.findall(r'\bsub_([0-9A-F]{5,6})\s*\(', c):
+        x = int(n, 16)
+        if x < BB and x not in portname and x in full_chunks and x not in extra:
+            extra.append(x)
+            todo.append(x)
+for x in sorted(extra):
+    funcs.append((x, full_chunks[x]))
+    n, k = own_name(full_chunks[x])
+    if n:
+        own[n] = x
+        nparams[n] = k
+# port globals declared as pointers: Hex-Rays does integer arithmetic on them
+port_ptrs = set(re.findall(r'(?m)^extern\s+[\w ]+?\*+\s*(\w+)\s*;', common))
+
+
+def fix_values(t):
+    # a game function the port does not have, used as an address: the block patches its code -> ccode
+    def ga(m):
+        a = int(m.group(2), 16)
+        if a < BB and m.group(1) not in own and a not in portname:
+            return '((_BYTE *)ccode + 0x%X)' % (a - 0x10000)
+        if BB <= a < DATA and m.group(1) not in own:     # block code without a function: data there
+            return '((_BYTE *)ecode + 0x%X)' % (a - BB)
+        return m.group(0)
+    t = re.sub(r'\b(sub_([0-9A-F]{5,6}))\b(?!\s*\()', ga, t)
+    # call through a pointer kept in data
+    t = re.sub(r'(?<![\w)])\b((?:off|dword|funcs)_[0-9A-F]{5,6})\s*\(', r'((int (*)())\1)(', t)
+    # integer arithmetic on port pointer globals
+    for n in port_ptrs:
+        if n in t:
+            t = re.sub(r'\b' + n + r'\b(?!\s*=[^=])', '((int)(intptr_t)%s)' % n, t)
+    # value of a port function returning void
+    def va(m):
+        if m.group(3) in port_void:
+            return '%s%s(%s);\n%s%s = 0;' % (m.group(1), m.group(3), m.group(4), m.group(1), m.group(2))
+        return m.group(0)
+    t = re.sub(r'(?m)^(\s*)([^\n=;]+?)\s*=\s*(\w+)\((.*)\);$', va, t)
+    return t
+
+
+# "functions" Hex-Rays made of bytes the block uses as data (written through *(T *)sub_X): no code
+alltext = ''.join(c for a, c in funcs)
+data_like = set()
+for n in set(re.findall(r'\*\s*\(\s*_?[A-Za-z]\w*\s*\*\s*\)\s*&?(sub_[0-9A-F]{6})\b', alltext)):
+    if n in own and BB <= own[n] < DATA:
+        data_like.add(own[n])
+        del own[n]
+funcs = [(a, c) for a, c in funcs if a not in data_like]
+asm_pending = []
+
+
+def fix_asm(a, t):
+    """inline DOS calls Hex-Rays left as __asm: an explicit marker call + asm_pending.txt"""
+    def rp(m):
+        asm_pending.append('%06X %s' % (a, m.group(1).strip()))
+        return 'Dos150_AsmPending(0x%X);   /* %s - registers not wired yet (asm_pending.txt) */' % (a, m.group(1).strip())
+    return re.sub(r'__asm \{ ([^}]*) \}', rp, t)
+
+
 lua_bound = []
 for a, c in funcs:
     if any(in_ranges(int(n, 16), LUA) for n in re.findall(r'\bsub_(2[0-9A-F]{5})\s*\(', c)):
@@ -255,10 +466,20 @@ for a, c in funcs:
     t = re.sub(r'(?m)^#error .*$', '', t)
     t = rename_calls(t)
     t = fit_args(t)
+    t = fix_crt(a, t)
+    t = fix_void_return(t)
+    t = fix_values(t)
+    t = fix_asm(a, t)
+    t = promote(t)
     for n in set(re.findall(r'\b([A-Za-z_]\w*)\b', t)):
         sm = re.match(r'^(?:byte|word|dword|qword|unk|off|asc|stru|flt|dbl|algn)_([0-9A-F]{5,6})$', n)
         if n not in symaddr and sm and n in datadecl or n not in symaddr and sm and int(sm.group(1), 16) >= BB:
             symaddr[n] = int(sm.group(1), 16)     # unnamed in the listing (e.g. a plain "db 2")
+        lm = re.match(r'^(?:loc|locret|def|algn|byte|word|dword|off|unk)_([0-9A-F]{5,6})$', n)
+        if n not in symaddr and lm and (int(lm.group(1), 16) < 0x170695 or BB <= int(lm.group(1), 16) < DATA) \
+                and not re.search(r'\b' + n + r'\s*\(', t):
+            symaddr[n] = int(lm.group(1), 16)     # label inside game code (address taken / patched)
+            code_syms.add(n)
         if n in symaddr and n not in code_syms or n in symaddr and symaddr[n] >= DATA:
             used.add(n)
         elif n in code_syms and n not in own and n not in portname.values() and not n.startswith('sub_'):
@@ -315,6 +536,8 @@ h = ['/* Generated by tools/compare/gen150.py - the 1.50 patch block for the por
      'void InitEseg150(void);', '']
 unplaced, ccode_syms = [], []
 for n in sorted(used):
+    if re.match(r'^[av]\d+$', n):      # same names as Hex-Rays parameters / locals: never a macro
+        continue
     a = symaddr[n]
     decl = datadecl.get(n)
     typ, arr = '_BYTE', ''
@@ -348,7 +571,11 @@ for n in sorted(used):
 h.append('')
 for n, a in sorted(own.items(), key=lambda kv: kv[1]):
     if n not in common_names:
-        h.append('extern int %s();' % n)
+        if own[n] in manual:
+            mm = re.search(r'(?m)^([A-Za-z_][\w \*]*?)\s*\b' + n + r'\s*\(', open(mp, encoding='latin1').read())
+            h.append('%s %s();' % (mm.group(1).strip() if mm else 'int', n))
+        else:
+            h.append(own_full[n] + ';' if n in own_full else '%s %s();' % (own_ret.get(n, 'int'), n))
 h += ['', '#endif', '']
 open(os.path.join(OUT, 'orion150.h'), 'w', encoding='latin1', newline='\r\n').write('\n'.join(h))
 
@@ -408,6 +635,9 @@ open(os.path.join(OUT, 'orion150_lua_pending.c'), 'w', encoding='latin1', newlin
 print('functions %d (manual %d, lua pending %d), files %d' % (len(outs), len(manual), len(lua_bound), (len(outs) + 149) // 150))
 print('eseg %d B, ecode %d B; fixups data %d, dseg %d, code %d; unresolved %s' % (len(eseg), len(ecode), len(fix_e), len(fix_d), len(fix_c), dict(fix_miss)))
 print('data symbols %d, in game code (ccode) %d, not placeable %d %s' % (len(used), len(ccode_syms), len(unplaced), unplaced[:12]))
+with open(os.path.join(OUT, 'asm_pending.txt'), 'w') as f:
+    for x in asm_pending:
+        f.write(x + '\n')
 with open(os.path.join(OUT, 'ccode_sites.txt'), 'w') as f:
     for a, n in sorted(ccode_syms):
         f.write('%06X %s\n' % (a, n))

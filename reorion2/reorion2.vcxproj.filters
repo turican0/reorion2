@@ -346,4 +346,39 @@
       <Filter>lua</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\game150\orion150_code_01.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_02.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_03.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_04.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_05.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_06.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_07.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_code_08.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_eseg.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_lua_pending.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game150\orion150_manual.c">
+      <Filter>game150</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

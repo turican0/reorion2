@@ -12,7 +12,6 @@ extern uint8_t ecode[0x4A600];
 extern uint8_t ccode[0x160695];
 void InitEseg150(void);
 
-#define a13 (*(_BYTE *)(eseg + 0x23FAE))
 #define a2222d (*(wchar_t (*)[5])(eseg + 0x13BD8))
 #define a2d2 (*(wchar_t (*)[3])(eseg + 0x127E4))
 #define a2d2_0 (*(wchar_t (*)[3])(eseg + 0x12800))
@@ -182,7 +181,7 @@ void InitEseg150(void);
 #define byte_23F0B8 (*(uint8_t (*)[2])(eseg + 0x14AB8))
 #define byte_23F0EE (*(_BYTE (*)[2])(eseg + 0x14AEE))
 #define byte_23F990 (*(_BYTE (*)[2])(eseg + 0x15390))
-#define byte_23FA46 (*(_BYTE (*)[8])(eseg + 0x15446))
+#define byte_23FA46 (*(_BYTE (*)[532])(eseg + 0x15446))
 #define byte_23FC77 (*(_BYTE (*)[3])(eseg + 0x15677))
 #define byte_23FDA6 (*(_BYTE (*)[8])(eseg + 0x157A6))
 #define byte_23FF63 (*(_BYTE (*)[3])(eseg + 0x15963))
@@ -223,7 +222,6 @@ void InitEseg150(void);
 #define byte_DD4DC (*(char (*)[1])(ccode + 0xCD4DC))
 #define byte_DD4DD (*(char (*)[3])(ccode + 0xCD4DD))
 #define byte_DD4E0 (*(char *)(ccode + 0xCD4E0))
-#define def_4D11B (*(_BYTE *)(ccode + 0x3CB1D))
 #define def_6B526 (*(_BYTE *)(ccode + 0x5B551))
 #define def_6E620 (*(_BYTE *)(ccode + 0x5E644))
 #define def_6E659 (*(_BYTE *)(ccode + 0x5E66F))
@@ -244,8 +242,7 @@ void InitEseg150(void);
 #define dword_1998D6 (*(int *)(dseg + 0x218D6))
 #define dword_1998DA (*(int *)(dseg + 0x218DA))
 #define dword_1998E0 (*(int *)(dseg + 0x218E0))
-#define dword_1998EE (*(_BYTE *)(dseg + 0x218EE))
-#define dword_1998F2 (*(_BYTE *)(dseg + 0x218F2))
+#define dword_1998F0 (*(int *)(dseg + 0x218F0))
 #define dword_1998F8 (*(int *)(dseg + 0x218F8))
 #define dword_199900 (*(int *)(dseg + 0x21900))
 #define dword_199906 (*(int *)(dseg + 0x21906))
@@ -303,8 +300,7 @@ void InitEseg150(void);
 #define dword_23F17E (*(_DWORD *)(eseg + 0x14B7E))
 #define dword_23F182 (*(int * *)(eseg + 0x14B82))
 #define dword_23F992 (*(_DWORD (*)[45])(eseg + 0x15392))
-#define dword_23FA4E (*(_DWORD (*)[131])(eseg + 0x1544E))
-#define dword_23FC5A (*(_DWORD *)(eseg + 0x1565A))
+#define dword_23FC5A (*(int *)(eseg + 0x1565A))
 #define dword_23FC5E (*(_DWORD *)(eseg + 0x1565E))
 #define dword_23FC7A (*(_DWORD (*)[75])(eseg + 0x1567A))
 #define dword_23FF66 (*(_DWORD *)(eseg + 0x15966))
@@ -343,70 +339,984 @@ void InitEseg150(void);
 #define dword_DD4BC (*(int (*)[2])(ccode + 0xCD4BC))
 #define dword_DD4D4 (*(int (*)[2])(ccode + 0xCD4D4))
 #define dword_F87F4 (*(_BYTE *)(ccode + 0xE87F4))
+#define loc_100A4A (*(_BYTE *)(ccode + 0xF0A4A))
+#define loc_100A58 (*(_BYTE *)(ccode + 0xF0A58))
+#define loc_100A64 (*(_BYTE *)(ccode + 0xF0A64))
+#define loc_100A70 (*(_BYTE *)(ccode + 0xF0A70))
+#define loc_100A7C (*(_BYTE *)(ccode + 0xF0A7C))
+#define loc_100A98 (*(_BYTE *)(ccode + 0xF0A98))
+#define loc_100C50 (*(_BYTE *)(ccode + 0xF0C50))
+#define loc_10120C (*(_BYTE *)(ccode + 0xF120C))
+#define loc_101484 (*(_BYTE *)(ccode + 0xF1484))
 #define loc_10148D (*(_BYTE *)(ccode + 0xF148D))
+#define loc_101492 (*(_BYTE *)(ccode + 0xF1492))
 #define loc_101497 (*(_BYTE *)(ccode + 0xF1497))
+#define loc_10149F (*(_BYTE *)(ccode + 0xF149F))
+#define loc_10154F (*(_BYTE *)(ccode + 0xF154F))
+#define loc_10155B (*(_BYTE *)(ccode + 0xF155B))
+#define loc_1015D9 (*(_BYTE *)(ccode + 0xF15D9))
+#define loc_1015DE (*(_BYTE *)(ccode + 0xF15DE))
 #define loc_1015E7 (*(_BYTE *)(ccode + 0xF15E7))
+#define loc_1015EC (*(_BYTE *)(ccode + 0xF15EC))
+#define loc_1015F3 (*(_BYTE *)(ccode + 0xF15F3))
+#define loc_1015F8 (*(_BYTE *)(ccode + 0xF15F8))
 #define loc_10160E (*(_BYTE *)(ccode + 0xF160E))
+#define loc_101613 (*(_BYTE *)(ccode + 0xF1613))
+#define loc_10161E (*(_BYTE *)(ccode + 0xF161E))
+#define loc_101623 (*(_BYTE *)(ccode + 0xF1623))
+#define loc_107B0D (*(_BYTE *)(ccode + 0xF7B0D))
+#define loc_1089A4 (*(_BYTE *)(ccode + 0xF89A4))
+#define loc_1089A7 (*(_BYTE *)(ccode + 0xF89A7))
 #define loc_130B9 (*(_BYTE *)(ccode + 0x030B9))
 #define loc_130E6 (*(_BYTE *)(ccode + 0x030E6))
+#define loc_132B38 (*(_BYTE *)(ccode + 0x122B38))
+#define loc_132B49 (*(_BYTE *)(ccode + 0x122B49))
+#define loc_13BA0 (*(_BYTE *)(ccode + 0x03BA0))
+#define loc_13F7F (*(_BYTE *)(ccode + 0x03F7F))
 #define loc_13FD9 (*(_BYTE *)(ccode + 0x03FD9))
+#define loc_149F9 (*(_BYTE *)(ccode + 0x049F9))
+#define loc_1690B (*(_BYTE *)(ccode + 0x0690B))
+#define loc_169480 (*(_BYTE *)(ccode + 0x159480))
+#define loc_16949 (*(_BYTE *)(ccode + 0x06949))
+#define loc_1E20BF (*(_BYTE *)(ecode + 0x020BF))
 #define loc_2091D (*(_BYTE *)(ccode + 0x1091D))
+#define loc_20941 (*(_BYTE *)(ccode + 0x10941))
+#define loc_20B7F (*(_BYTE *)(ccode + 0x10B7F))
+#define loc_20B8C (*(_BYTE *)(ccode + 0x10B8C))
 #define loc_211FE (*(_BYTE *)(ccode + 0x111FE))
+#define loc_21207 (*(_BYTE *)(ccode + 0x11207))
+#define loc_21257 (*(_BYTE *)(ccode + 0x11257))
+#define loc_21260 (*(_BYTE *)(ccode + 0x11260))
+#define loc_22337 (*(_BYTE *)(ccode + 0x12337))
+#define loc_22366 (*(_BYTE *)(ccode + 0x12366))
 #define loc_2237D (*(_BYTE *)(ccode + 0x1237D))
+#define loc_22A1B (*(_BYTE *)(ccode + 0x12A1B))
+#define loc_22A23 (*(_BYTE *)(ccode + 0x12A23))
+#define loc_22A26 (*(_BYTE *)(ccode + 0x12A26))
+#define loc_22B6E (*(_BYTE *)(ccode + 0x12B6E))
+#define loc_22B78 (*(_BYTE *)(ccode + 0x12B78))
+#define loc_22C58 (*(_BYTE *)(ccode + 0x12C58))
 #define loc_22FEF (*(_BYTE *)(ccode + 0x12FEF))
+#define loc_2300C (*(_BYTE *)(ccode + 0x1300C))
+#define loc_27A78 (*(_BYTE *)(ccode + 0x17A78))
+#define loc_2831D (*(_BYTE *)(ccode + 0x1831D))
+#define loc_2834C (*(_BYTE *)(ccode + 0x1834C))
+#define loc_28EFB (*(_BYTE *)(ccode + 0x18EFB))
+#define loc_28FFE (*(_BYTE *)(ccode + 0x18FFE))
+#define loc_29023 (*(_BYTE *)(ccode + 0x19023))
+#define loc_2903A (*(_BYTE *)(ccode + 0x1903A))
+#define loc_29197 (*(_BYTE *)(ccode + 0x19197))
+#define loc_2989A (*(_BYTE *)(ccode + 0x1989A))
+#define loc_2BBEB (*(_BYTE *)(ccode + 0x1BBEB))
+#define loc_2BFA9 (*(_BYTE *)(ccode + 0x1BFA9))
 #define loc_2BFB0 (*(_BYTE *)(ccode + 0x1BFB0))
+#define loc_2BFFD (*(_BYTE *)(ccode + 0x1BFFD))
+#define loc_2C003 (*(_BYTE *)(ccode + 0x1C003))
+#define loc_2C030 (*(_BYTE *)(ccode + 0x1C030))
+#define loc_2C186 (*(_BYTE *)(ccode + 0x1C186))
 #define loc_2C18F (*(_BYTE *)(ccode + 0x1C18F))
+#define loc_2C258 (*(_BYTE *)(ccode + 0x1C258))
+#define loc_2C28C (*(_BYTE *)(ccode + 0x1C28C))
+#define loc_2C293 (*(_BYTE *)(ccode + 0x1C293))
 #define loc_2C551 (*(_BYTE *)(ccode + 0x1C551))
+#define loc_2EABF (*(_BYTE *)(ccode + 0x1EABF))
+#define loc_31EDE (*(_BYTE *)(ccode + 0x21EDE))
+#define loc_358ED (*(_BYTE *)(ccode + 0x258ED))
+#define loc_358F4 (*(_BYTE *)(ccode + 0x258F4))
 #define loc_358FE (*(_BYTE *)(ccode + 0x258FE))
+#define loc_35DD6 (*(_BYTE *)(ccode + 0x25DD6))
+#define loc_3621D (*(_BYTE *)(ccode + 0x2621D))
+#define loc_36285 (*(_BYTE *)(ccode + 0x26285))
+#define loc_3628F (*(_BYTE *)(ccode + 0x2628F))
 #define loc_36302 (*(_BYTE *)(ccode + 0x26302))
+#define loc_3636C (*(_BYTE *)(ccode + 0x2636C))
+#define loc_36725 (*(_BYTE *)(ccode + 0x26725))
+#define loc_36AAA (*(_BYTE *)(ccode + 0x26AAA))
+#define loc_36AB0 (*(_BYTE *)(ccode + 0x26AB0))
+#define loc_36ACE (*(_BYTE *)(ccode + 0x26ACE))
+#define loc_36AD1 (*(_BYTE *)(ccode + 0x26AD1))
+#define loc_36AEF (*(_BYTE *)(ccode + 0x26AEF))
+#define loc_36AF2 (*(_BYTE *)(ccode + 0x26AF2))
+#define loc_36B0F (*(_BYTE *)(ccode + 0x26B0F))
+#define loc_36B18 (*(_BYTE *)(ccode + 0x26B18))
+#define loc_36B33 (*(_BYTE *)(ccode + 0x26B33))
+#define loc_36B3C (*(_BYTE *)(ccode + 0x26B3C))
 #define loc_36FBB (*(_BYTE *)(ccode + 0x26FBB))
+#define loc_373DC (*(_BYTE *)(ccode + 0x273DC))
 #define loc_3743A (*(_BYTE *)(ccode + 0x2743A))
+#define loc_374F7 (*(_BYTE *)(ccode + 0x274F7))
+#define loc_37E39 (*(_BYTE *)(ccode + 0x27E39))
 #define loc_382EA (*(_BYTE *)(ccode + 0x282EA))
+#define loc_383A7 (*(_BYTE *)(ccode + 0x283A7))
+#define loc_3877B (*(_BYTE *)(ccode + 0x2877B))
+#define loc_38785 (*(_BYTE *)(ccode + 0x28785))
+#define loc_387A7 (*(_BYTE *)(ccode + 0x287A7))
+#define loc_387B6 (*(_BYTE *)(ccode + 0x287B6))
+#define loc_387C1 (*(_BYTE *)(ccode + 0x287C1))
+#define loc_38A79 (*(_BYTE *)(ccode + 0x28A79))
+#define loc_396FE (*(_BYTE *)(ccode + 0x296FE))
+#define loc_39775 (*(_BYTE *)(ccode + 0x29775))
+#define loc_397FB (*(_BYTE *)(ccode + 0x297FB))
+#define loc_39B0D (*(_BYTE *)(ccode + 0x29B0D))
+#define loc_39BA9 (*(_BYTE *)(ccode + 0x29BA9))
+#define loc_39BD3 (*(_BYTE *)(ccode + 0x29BD3))
+#define loc_39FBB (*(_BYTE *)(ccode + 0x29FBB))
+#define loc_39FD2 (*(_BYTE *)(ccode + 0x29FD2))
+#define loc_3A024 (*(_BYTE *)(ccode + 0x2A024))
+#define loc_3A034 (*(_BYTE *)(ccode + 0x2A034))
+#define loc_3A044 (*(_BYTE *)(ccode + 0x2A044))
+#define loc_3A054 (*(_BYTE *)(ccode + 0x2A054))
+#define loc_3A064 (*(_BYTE *)(ccode + 0x2A064))
+#define loc_3A07C (*(_BYTE *)(ccode + 0x2A07C))
+#define loc_3A0A6 (*(_BYTE *)(ccode + 0x2A0A6))
+#define loc_3A430 (*(_BYTE *)(ccode + 0x2A430))
+#define loc_3B151 (*(_BYTE *)(ccode + 0x2B151))
+#define loc_3C351 (*(_BYTE *)(ccode + 0x2C351))
 #define loc_3C9ED (*(_BYTE *)(ccode + 0x2C9ED))
+#define loc_3CADB (*(_BYTE *)(ccode + 0x2CADB))
 #define loc_3CAE2 (*(_BYTE *)(ccode + 0x2CAE2))
 #define loc_3CAE8 (*(_BYTE *)(ccode + 0x2CAE8))
+#define loc_3CB65 (*(_BYTE *)(ccode + 0x2CB65))
+#define loc_3D513 (*(_BYTE *)(ccode + 0x2D513))
+#define loc_3D537 (*(_BYTE *)(ccode + 0x2D537))
+#define loc_3D54E (*(_BYTE *)(ccode + 0x2D54E))
+#define loc_3D70D (*(_BYTE *)(ccode + 0x2D70D))
+#define loc_3D738 (*(_BYTE *)(ccode + 0x2D738))
+#define loc_3E077 (*(_BYTE *)(ccode + 0x2E077))
 #define loc_3E07C (*(_BYTE *)(ccode + 0x2E07C))
 #define loc_3E081 (*(_BYTE *)(ccode + 0x2E081))
 #define loc_3E086 (*(_BYTE *)(ccode + 0x2E086))
+#define loc_3E0F6 (*(_BYTE *)(ccode + 0x2E0F6))
 #define loc_3E100 (*(_BYTE *)(ccode + 0x2E100))
 #define loc_3E10A (*(_BYTE *)(ccode + 0x2E10A))
 #define loc_3E114 (*(_BYTE *)(ccode + 0x2E114))
+#define loc_3E13B (*(_BYTE *)(ccode + 0x2E13B))
+#define loc_3E156 (*(_BYTE *)(ccode + 0x2E156))
+#define loc_3E171 (*(_BYTE *)(ccode + 0x2E171))
+#define loc_3E18C (*(_BYTE *)(ccode + 0x2E18C))
+#define loc_3EEA4 (*(_BYTE *)(ccode + 0x2EEA4))
+#define loc_42008 (*(_BYTE *)(ccode + 0x32008))
+#define loc_4203E (*(_BYTE *)(ccode + 0x3203E))
+#define loc_4204C (*(_BYTE *)(ccode + 0x3204C))
+#define loc_44CBC (*(_BYTE *)(ccode + 0x34CBC))
+#define loc_44D85 (*(_BYTE *)(ccode + 0x34D85))
+#define loc_452FB (*(_BYTE *)(ccode + 0x352FB))
+#define loc_4538B (*(_BYTE *)(ccode + 0x3538B))
+#define loc_454C3 (*(_BYTE *)(ccode + 0x354C3))
+#define loc_456E2 (*(_BYTE *)(ccode + 0x356E2))
+#define loc_45A15 (*(_BYTE *)(ccode + 0x35A15))
 #define loc_45A1E (*(_BYTE *)(ccode + 0x35A1E))
 #define loc_45ADE (*(_BYTE *)(ccode + 0x35ADE))
 #define loc_45B32 (*(_BYTE *)(ccode + 0x35B32))
+#define loc_45B3D (*(_BYTE *)(ccode + 0x35B3D))
+#define loc_45C1F (*(_BYTE *)(ccode + 0x35C1F))
+#define loc_45C26 (*(_BYTE *)(ccode + 0x35C26))
+#define loc_45C53 (*(_BYTE *)(ccode + 0x35C53))
+#define loc_47577 (*(_BYTE *)(ccode + 0x37577))
+#define loc_47861 (*(_BYTE *)(ccode + 0x37861))
+#define loc_4A593 (*(_BYTE *)(ccode + 0x3A593))
+#define loc_4A75E (*(_BYTE *)(ccode + 0x3A75E))
+#define loc_4A7E6 (*(_BYTE *)(ccode + 0x3A7E6))
+#define loc_4A7F5 (*(_BYTE *)(ccode + 0x3A7F5))
+#define loc_4AB67 (*(_BYTE *)(ccode + 0x3AB67))
+#define loc_4AC66 (*(_BYTE *)(ccode + 0x3AC66))
+#define loc_4AD2C (*(_BYTE *)(ccode + 0x3AD2C))
+#define loc_4AD94 (*(_BYTE *)(ccode + 0x3AD94))
+#define loc_4ADB7 (*(_BYTE *)(ccode + 0x3ADB7))
+#define loc_4ADF1 (*(_BYTE *)(ccode + 0x3ADF1))
+#define loc_4AE04 (*(_BYTE *)(ccode + 0x3AE04))
+#define loc_4AE19 (*(_BYTE *)(ccode + 0x3AE19))
+#define loc_4AE3C (*(_BYTE *)(ccode + 0x3AE3C))
+#define loc_4AE52 (*(_BYTE *)(ccode + 0x3AE52))
+#define loc_4AED5 (*(_BYTE *)(ccode + 0x3AED5))
+#define loc_4AEE5 (*(_BYTE *)(ccode + 0x3AEE5))
+#define loc_4AF4F (*(_BYTE *)(ccode + 0x3AF4F))
+#define loc_4BF9F (*(_BYTE *)(ccode + 0x3BF9F))
+#define loc_4BFC4 (*(_BYTE *)(ccode + 0x3BFC4))
+#define loc_4BFE1 (*(_BYTE *)(ccode + 0x3BFE1))
+#define loc_4C005 (*(_BYTE *)(ccode + 0x3C005))
+#define loc_4C022 (*(_BYTE *)(ccode + 0x3C022))
+#define loc_4C047 (*(_BYTE *)(ccode + 0x3C047))
+#define loc_4C064 (*(_BYTE *)(ccode + 0x3C064))
+#define loc_4C089 (*(_BYTE *)(ccode + 0x3C089))
+#define loc_4C0A5 (*(_BYTE *)(ccode + 0x3C0A5))
+#define loc_4C0C9 (*(_BYTE *)(ccode + 0x3C0C9))
+#define loc_4C0E1 (*(_BYTE *)(ccode + 0x3C0E1))
+#define loc_4C106 (*(_BYTE *)(ccode + 0x3C106))
+#define loc_4C11C (*(_BYTE *)(ccode + 0x3C11C))
+#define loc_4C141 (*(_BYTE *)(ccode + 0x3C141))
+#define loc_4C32A (*(_BYTE *)(ccode + 0x3C32A))
+#define loc_4C34E (*(_BYTE *)(ccode + 0x3C34E))
+#define loc_4C3B2 (*(_BYTE *)(ccode + 0x3C3B2))
+#define loc_4C7E6 (*(_BYTE *)(ccode + 0x3C7E6))
+#define loc_4CF65 (*(_BYTE *)(ccode + 0x3CF65))
+#define loc_4CFDA (*(_BYTE *)(ccode + 0x3CFDA))
+#define loc_4D036 (*(_BYTE *)(ccode + 0x3D036))
+#define loc_4D062 (*(_BYTE *)(ccode + 0x3D062))
+#define loc_4D0AD (*(_BYTE *)(ccode + 0x3D0AD))
+#define loc_4D202 (*(_BYTE *)(ccode + 0x3D202))
+#define loc_4D2B3 (*(_BYTE *)(ccode + 0x3D2B3))
+#define loc_4D2D1 (*(_BYTE *)(ccode + 0x3D2D1))
+#define loc_4D2F3 (*(_BYTE *)(ccode + 0x3D2F3))
+#define loc_4D315 (*(_BYTE *)(ccode + 0x3D315))
+#define loc_4D337 (*(_BYTE *)(ccode + 0x3D337))
+#define loc_4D359 (*(_BYTE *)(ccode + 0x3D359))
+#define loc_4D37B (*(_BYTE *)(ccode + 0x3D37B))
+#define loc_4D39D (*(_BYTE *)(ccode + 0x3D39D))
+#define loc_4D3FA (*(_BYTE *)(ccode + 0x3D3FA))
+#define loc_4D404 (*(_BYTE *)(ccode + 0x3D404))
+#define loc_4D411 (*(_BYTE *)(ccode + 0x3D411))
+#define loc_4D417 (*(_BYTE *)(ccode + 0x3D417))
+#define loc_4D487 (*(_BYTE *)(ccode + 0x3D487))
+#define loc_4D491 (*(_BYTE *)(ccode + 0x3D491))
+#define loc_4D49E (*(_BYTE *)(ccode + 0x3D49E))
+#define loc_4D4A4 (*(_BYTE *)(ccode + 0x3D4A4))
+#define loc_4D50C (*(_BYTE *)(ccode + 0x3D50C))
+#define loc_4D524 (*(_BYTE *)(ccode + 0x3D524))
+#define loc_4D52B (*(_BYTE *)(ccode + 0x3D52B))
+#define loc_4D570 (*(_BYTE *)(ccode + 0x3D570))
+#define loc_4D57A (*(_BYTE *)(ccode + 0x3D57A))
+#define loc_4D584 (*(_BYTE *)(ccode + 0x3D584))
+#define loc_4D58D (*(_BYTE *)(ccode + 0x3D58D))
+#define loc_4D5F5 (*(_BYTE *)(ccode + 0x3D5F5))
+#define loc_4D60D (*(_BYTE *)(ccode + 0x3D60D))
+#define loc_4D614 (*(_BYTE *)(ccode + 0x3D614))
+#define loc_4D655 (*(_BYTE *)(ccode + 0x3D655))
+#define loc_4D65F (*(_BYTE *)(ccode + 0x3D65F))
+#define loc_4D669 (*(_BYTE *)(ccode + 0x3D669))
+#define loc_4D672 (*(_BYTE *)(ccode + 0x3D672))
+#define loc_54DA9 (*(_BYTE *)(ccode + 0x44DA9))
+#define loc_54DC3 (*(_BYTE *)(ccode + 0x44DC3))
+#define loc_54DDB (*(_BYTE *)(ccode + 0x44DDB))
+#define loc_54DF0 (*(_BYTE *)(ccode + 0x44DF0))
+#define loc_54DF3 (*(_BYTE *)(ccode + 0x44DF3))
+#define loc_54E08 (*(_BYTE *)(ccode + 0x44E08))
+#define loc_54E0B (*(_BYTE *)(ccode + 0x44E0B))
+#define loc_54E20 (*(_BYTE *)(ccode + 0x44E20))
+#define loc_54E35 (*(_BYTE *)(ccode + 0x44E35))
+#define loc_54F9C (*(_BYTE *)(ccode + 0x44F9C))
+#define loc_55193 (*(_BYTE *)(ccode + 0x45193))
+#define loc_55197 (*(_BYTE *)(ccode + 0x45197))
+#define loc_5519B (*(_BYTE *)(ccode + 0x4519B))
+#define loc_5519F (*(_BYTE *)(ccode + 0x4519F))
+#define loc_551D1 (*(_BYTE *)(ccode + 0x451D1))
+#define loc_551D7 (*(_BYTE *)(ccode + 0x451D7))
+#define loc_551DB (*(_BYTE *)(ccode + 0x451DB))
+#define loc_551DF (*(_BYTE *)(ccode + 0x451DF))
+#define loc_551E5 (*(_BYTE *)(ccode + 0x451E5))
+#define loc_551EF (*(_BYTE *)(ccode + 0x451EF))
+#define loc_551F7 (*(_BYTE *)(ccode + 0x451F7))
+#define loc_551FD (*(_BYTE *)(ccode + 0x451FD))
+#define loc_55201 (*(_BYTE *)(ccode + 0x45201))
+#define loc_55205 (*(_BYTE *)(ccode + 0x45205))
+#define loc_5520B (*(_BYTE *)(ccode + 0x4520B))
+#define loc_55215 (*(_BYTE *)(ccode + 0x45215))
+#define loc_55255 (*(_BYTE *)(ccode + 0x45255))
+#define loc_55269 (*(_BYTE *)(ccode + 0x45269))
+#define loc_55286 (*(_BYTE *)(ccode + 0x45286))
+#define loc_552C1 (*(_BYTE *)(ccode + 0x452C1))
+#define loc_55348 (*(_BYTE *)(ccode + 0x45348))
+#define loc_55384 (*(_BYTE *)(ccode + 0x45384))
+#define loc_55388 (*(_BYTE *)(ccode + 0x45388))
+#define loc_5538C (*(_BYTE *)(ccode + 0x4538C))
+#define loc_55390 (*(_BYTE *)(ccode + 0x45390))
+#define loc_55398 (*(_BYTE *)(ccode + 0x45398))
+#define loc_5539C (*(_BYTE *)(ccode + 0x4539C))
+#define loc_553A2 (*(_BYTE *)(ccode + 0x453A2))
+#define loc_553A6 (*(_BYTE *)(ccode + 0x453A6))
+#define loc_553AC (*(_BYTE *)(ccode + 0x453AC))
+#define loc_553B0 (*(_BYTE *)(ccode + 0x453B0))
+#define loc_553B4 (*(_BYTE *)(ccode + 0x453B4))
+#define loc_553B8 (*(_BYTE *)(ccode + 0x453B8))
+#define loc_553BE (*(_BYTE *)(ccode + 0x453BE))
+#define loc_553C2 (*(_BYTE *)(ccode + 0x453C2))
+#define loc_553C8 (*(_BYTE *)(ccode + 0x453C8))
+#define loc_553CD (*(_BYTE *)(ccode + 0x453CD))
+#define loc_553D4 (*(_BYTE *)(ccode + 0x453D4))
+#define loc_553DA (*(_BYTE *)(ccode + 0x453DA))
+#define loc_553E3 (*(_BYTE *)(ccode + 0x453E3))
+#define loc_553F8 (*(_BYTE *)(ccode + 0x453F8))
+#define loc_5540B (*(_BYTE *)(ccode + 0x4540B))
+#define loc_5545D (*(_BYTE *)(ccode + 0x4545D))
+#define loc_55461 (*(_BYTE *)(ccode + 0x45461))
+#define loc_55465 (*(_BYTE *)(ccode + 0x45465))
+#define loc_55469 (*(_BYTE *)(ccode + 0x45469))
+#define loc_5549B (*(_BYTE *)(ccode + 0x4549B))
+#define loc_554A1 (*(_BYTE *)(ccode + 0x454A1))
+#define loc_554A5 (*(_BYTE *)(ccode + 0x454A5))
+#define loc_554A9 (*(_BYTE *)(ccode + 0x454A9))
+#define loc_554AF (*(_BYTE *)(ccode + 0x454AF))
+#define loc_554B9 (*(_BYTE *)(ccode + 0x454B9))
+#define loc_554C1 (*(_BYTE *)(ccode + 0x454C1))
+#define loc_554C7 (*(_BYTE *)(ccode + 0x454C7))
+#define loc_554CB (*(_BYTE *)(ccode + 0x454CB))
+#define loc_554CF (*(_BYTE *)(ccode + 0x454CF))
+#define loc_554D5 (*(_BYTE *)(ccode + 0x454D5))
+#define loc_554DF (*(_BYTE *)(ccode + 0x454DF))
+#define loc_554E7 (*(_BYTE *)(ccode + 0x454E7))
+#define loc_554ED (*(_BYTE *)(ccode + 0x454ED))
+#define loc_554F1 (*(_BYTE *)(ccode + 0x454F1))
+#define loc_554F5 (*(_BYTE *)(ccode + 0x454F5))
+#define loc_554FB (*(_BYTE *)(ccode + 0x454FB))
+#define loc_55505 (*(_BYTE *)(ccode + 0x45505))
+#define loc_55546 (*(_BYTE *)(ccode + 0x45546))
+#define loc_5555A (*(_BYTE *)(ccode + 0x4555A))
+#define loc_55577 (*(_BYTE *)(ccode + 0x45577))
+#define loc_5558E (*(_BYTE *)(ccode + 0x4558E))
+#define loc_555C8 (*(_BYTE *)(ccode + 0x455C8))
+#define loc_5564F (*(_BYTE *)(ccode + 0x4564F))
+#define loc_5567C (*(_BYTE *)(ccode + 0x4567C))
+#define loc_55680 (*(_BYTE *)(ccode + 0x45680))
+#define loc_55684 (*(_BYTE *)(ccode + 0x45684))
+#define loc_55688 (*(_BYTE *)(ccode + 0x45688))
+#define loc_55690 (*(_BYTE *)(ccode + 0x45690))
+#define loc_55694 (*(_BYTE *)(ccode + 0x45694))
+#define loc_5569A (*(_BYTE *)(ccode + 0x4569A))
+#define loc_5569E (*(_BYTE *)(ccode + 0x4569E))
+#define loc_556A4 (*(_BYTE *)(ccode + 0x456A4))
+#define loc_556A8 (*(_BYTE *)(ccode + 0x456A8))
+#define loc_556AC (*(_BYTE *)(ccode + 0x456AC))
+#define loc_556B0 (*(_BYTE *)(ccode + 0x456B0))
+#define loc_556B6 (*(_BYTE *)(ccode + 0x456B6))
+#define loc_556BA (*(_BYTE *)(ccode + 0x456BA))
+#define loc_556C0 (*(_BYTE *)(ccode + 0x456C0))
+#define loc_556C4 (*(_BYTE *)(ccode + 0x456C4))
+#define loc_556C8 (*(_BYTE *)(ccode + 0x456C8))
+#define loc_556CC (*(_BYTE *)(ccode + 0x456CC))
+#define loc_556D2 (*(_BYTE *)(ccode + 0x456D2))
+#define loc_556D6 (*(_BYTE *)(ccode + 0x456D6))
+#define loc_556DC (*(_BYTE *)(ccode + 0x456DC))
+#define loc_556E1 (*(_BYTE *)(ccode + 0x456E1))
+#define loc_556E8 (*(_BYTE *)(ccode + 0x456E8))
+#define loc_556EE (*(_BYTE *)(ccode + 0x456EE))
+#define loc_556F7 (*(_BYTE *)(ccode + 0x456F7))
+#define loc_5570C (*(_BYTE *)(ccode + 0x4570C))
+#define loc_5571C (*(_BYTE *)(ccode + 0x4571C))
+#define loc_5572F (*(_BYTE *)(ccode + 0x4572F))
+#define loc_55769 (*(_BYTE *)(ccode + 0x45769))
+#define loc_5576D (*(_BYTE *)(ccode + 0x4576D))
+#define loc_55771 (*(_BYTE *)(ccode + 0x45771))
+#define loc_55775 (*(_BYTE *)(ccode + 0x45775))
+#define loc_557A7 (*(_BYTE *)(ccode + 0x457A7))
+#define loc_557AD (*(_BYTE *)(ccode + 0x457AD))
+#define loc_557B1 (*(_BYTE *)(ccode + 0x457B1))
+#define loc_557B5 (*(_BYTE *)(ccode + 0x457B5))
+#define loc_557BB (*(_BYTE *)(ccode + 0x457BB))
+#define loc_557C5 (*(_BYTE *)(ccode + 0x457C5))
+#define loc_557CD (*(_BYTE *)(ccode + 0x457CD))
+#define loc_557D3 (*(_BYTE *)(ccode + 0x457D3))
+#define loc_557D7 (*(_BYTE *)(ccode + 0x457D7))
+#define loc_557DB (*(_BYTE *)(ccode + 0x457DB))
+#define loc_557E1 (*(_BYTE *)(ccode + 0x457E1))
+#define loc_557EB (*(_BYTE *)(ccode + 0x457EB))
+#define loc_557F3 (*(_BYTE *)(ccode + 0x457F3))
+#define loc_557F9 (*(_BYTE *)(ccode + 0x457F9))
+#define loc_557FD (*(_BYTE *)(ccode + 0x457FD))
+#define loc_55801 (*(_BYTE *)(ccode + 0x45801))
+#define loc_55807 (*(_BYTE *)(ccode + 0x45807))
+#define loc_55811 (*(_BYTE *)(ccode + 0x45811))
+#define loc_55819 (*(_BYTE *)(ccode + 0x45819))
+#define loc_5581F (*(_BYTE *)(ccode + 0x4581F))
+#define loc_55823 (*(_BYTE *)(ccode + 0x45823))
+#define loc_55827 (*(_BYTE *)(ccode + 0x45827))
+#define loc_5582D (*(_BYTE *)(ccode + 0x4582D))
+#define loc_55837 (*(_BYTE *)(ccode + 0x45837))
+#define loc_5583F (*(_BYTE *)(ccode + 0x4583F))
+#define loc_55845 (*(_BYTE *)(ccode + 0x45845))
+#define loc_5584C (*(_BYTE *)(ccode + 0x4584C))
+#define loc_55853 (*(_BYTE *)(ccode + 0x45853))
+#define loc_5585C (*(_BYTE *)(ccode + 0x4585C))
+#define loc_5586C (*(_BYTE *)(ccode + 0x4586C))
+#define loc_558B3 (*(_BYTE *)(ccode + 0x458B3))
+#define loc_558C7 (*(_BYTE *)(ccode + 0x458C7))
+#define loc_558F0 (*(_BYTE *)(ccode + 0x458F0))
+#define loc_558FE (*(_BYTE *)(ccode + 0x458FE))
+#define loc_5590C (*(_BYTE *)(ccode + 0x4590C))
+#define loc_55947 (*(_BYTE *)(ccode + 0x45947))
+#define loc_559CE (*(_BYTE *)(ccode + 0x459CE))
+#define loc_559FB (*(_BYTE *)(ccode + 0x459FB))
+#define loc_559FF (*(_BYTE *)(ccode + 0x459FF))
+#define loc_55A03 (*(_BYTE *)(ccode + 0x45A03))
+#define loc_55A07 (*(_BYTE *)(ccode + 0x45A07))
+#define loc_55A0F (*(_BYTE *)(ccode + 0x45A0F))
+#define loc_55A13 (*(_BYTE *)(ccode + 0x45A13))
+#define loc_55A19 (*(_BYTE *)(ccode + 0x45A19))
+#define loc_55A1D (*(_BYTE *)(ccode + 0x45A1D))
+#define loc_55A23 (*(_BYTE *)(ccode + 0x45A23))
+#define loc_55A27 (*(_BYTE *)(ccode + 0x45A27))
+#define loc_55A2B (*(_BYTE *)(ccode + 0x45A2B))
+#define loc_55A2F (*(_BYTE *)(ccode + 0x45A2F))
+#define loc_55A35 (*(_BYTE *)(ccode + 0x45A35))
+#define loc_55A39 (*(_BYTE *)(ccode + 0x45A39))
+#define loc_55A3F (*(_BYTE *)(ccode + 0x45A3F))
+#define loc_55A43 (*(_BYTE *)(ccode + 0x45A43))
+#define loc_55A47 (*(_BYTE *)(ccode + 0x45A47))
+#define loc_55A4B (*(_BYTE *)(ccode + 0x45A4B))
+#define loc_55A51 (*(_BYTE *)(ccode + 0x45A51))
+#define loc_55A55 (*(_BYTE *)(ccode + 0x45A55))
+#define loc_55A5B (*(_BYTE *)(ccode + 0x45A5B))
+#define loc_55A5F (*(_BYTE *)(ccode + 0x45A5F))
+#define loc_55A63 (*(_BYTE *)(ccode + 0x45A63))
+#define loc_55A67 (*(_BYTE *)(ccode + 0x45A67))
+#define loc_55A6D (*(_BYTE *)(ccode + 0x45A6D))
+#define loc_55A71 (*(_BYTE *)(ccode + 0x45A71))
+#define loc_55A77 (*(_BYTE *)(ccode + 0x45A77))
+#define loc_55A7B (*(_BYTE *)(ccode + 0x45A7B))
+#define loc_55A7F (*(_BYTE *)(ccode + 0x45A7F))
+#define loc_55A83 (*(_BYTE *)(ccode + 0x45A83))
+#define loc_55A89 (*(_BYTE *)(ccode + 0x45A89))
+#define loc_55A8D (*(_BYTE *)(ccode + 0x45A8D))
+#define loc_55A93 (*(_BYTE *)(ccode + 0x45A93))
+#define loc_55A98 (*(_BYTE *)(ccode + 0x45A98))
+#define loc_55A9F (*(_BYTE *)(ccode + 0x45A9F))
+#define loc_55AA5 (*(_BYTE *)(ccode + 0x45AA5))
+#define loc_55AAE (*(_BYTE *)(ccode + 0x45AAE))
 #define loc_55ACF (*(_BYTE *)(ccode + 0x45ACF))
 #define loc_55AD6 (*(_BYTE *)(ccode + 0x45AD6))
 #define loc_55ADD (*(_BYTE *)(ccode + 0x45ADD))
+#define loc_55AF0 (*(_BYTE *)(ccode + 0x45AF0))
+#define loc_55B43 (*(_BYTE *)(ccode + 0x45B43))
+#define loc_55B47 (*(_BYTE *)(ccode + 0x45B47))
+#define loc_55B4B (*(_BYTE *)(ccode + 0x45B4B))
+#define loc_55B4F (*(_BYTE *)(ccode + 0x45B4F))
+#define loc_55B81 (*(_BYTE *)(ccode + 0x45B81))
+#define loc_55B87 (*(_BYTE *)(ccode + 0x45B87))
+#define loc_55B8B (*(_BYTE *)(ccode + 0x45B8B))
+#define loc_55B8F (*(_BYTE *)(ccode + 0x45B8F))
+#define loc_55B95 (*(_BYTE *)(ccode + 0x45B95))
+#define loc_55B9F (*(_BYTE *)(ccode + 0x45B9F))
+#define loc_55BA7 (*(_BYTE *)(ccode + 0x45BA7))
+#define loc_55BAD (*(_BYTE *)(ccode + 0x45BAD))
+#define loc_55BB1 (*(_BYTE *)(ccode + 0x45BB1))
+#define loc_55BB5 (*(_BYTE *)(ccode + 0x45BB5))
+#define loc_55BBB (*(_BYTE *)(ccode + 0x45BBB))
+#define loc_55BC5 (*(_BYTE *)(ccode + 0x45BC5))
+#define loc_55BCD (*(_BYTE *)(ccode + 0x45BCD))
+#define loc_55BD3 (*(_BYTE *)(ccode + 0x45BD3))
+#define loc_55BD7 (*(_BYTE *)(ccode + 0x45BD7))
+#define loc_55BDB (*(_BYTE *)(ccode + 0x45BDB))
+#define loc_55BE1 (*(_BYTE *)(ccode + 0x45BE1))
+#define loc_55BEB (*(_BYTE *)(ccode + 0x45BEB))
+#define loc_55BF3 (*(_BYTE *)(ccode + 0x45BF3))
+#define loc_55BF9 (*(_BYTE *)(ccode + 0x45BF9))
+#define loc_55BFD (*(_BYTE *)(ccode + 0x45BFD))
+#define loc_55C01 (*(_BYTE *)(ccode + 0x45C01))
+#define loc_55C07 (*(_BYTE *)(ccode + 0x45C07))
+#define loc_55C11 (*(_BYTE *)(ccode + 0x45C11))
+#define loc_55C19 (*(_BYTE *)(ccode + 0x45C19))
+#define loc_55C1F (*(_BYTE *)(ccode + 0x45C1F))
+#define loc_55C26 (*(_BYTE *)(ccode + 0x45C26))
+#define loc_55C2D (*(_BYTE *)(ccode + 0x45C2D))
+#define loc_55C36 (*(_BYTE *)(ccode + 0x45C36))
+#define loc_55C46 (*(_BYTE *)(ccode + 0x45C46))
+#define loc_55C54 (*(_BYTE *)(ccode + 0x45C54))
+#define loc_55C5D (*(_BYTE *)(ccode + 0x45C5D))
+#define loc_55C64 (*(_BYTE *)(ccode + 0x45C64))
+#define loc_55C6B (*(_BYTE *)(ccode + 0x45C6B))
+#define loc_55C74 (*(_BYTE *)(ccode + 0x45C74))
+#define loc_55C84 (*(_BYTE *)(ccode + 0x45C84))
+#define loc_55CCB (*(_BYTE *)(ccode + 0x45CCB))
+#define loc_55CDF (*(_BYTE *)(ccode + 0x45CDF))
+#define loc_55CF3 (*(_BYTE *)(ccode + 0x45CF3))
+#define loc_55D07 (*(_BYTE *)(ccode + 0x45D07))
+#define loc_55D30 (*(_BYTE *)(ccode + 0x45D30))
+#define loc_55D3E (*(_BYTE *)(ccode + 0x45D3E))
+#define loc_55D4C (*(_BYTE *)(ccode + 0x45D4C))
+#define loc_55D87 (*(_BYTE *)(ccode + 0x45D87))
+#define loc_55E08 (*(_BYTE *)(ccode + 0x45E08))
+#define loc_55E35 (*(_BYTE *)(ccode + 0x45E35))
+#define loc_55E39 (*(_BYTE *)(ccode + 0x45E39))
+#define loc_55E3D (*(_BYTE *)(ccode + 0x45E3D))
+#define loc_55E41 (*(_BYTE *)(ccode + 0x45E41))
+#define loc_55E49 (*(_BYTE *)(ccode + 0x45E49))
+#define loc_55E4D (*(_BYTE *)(ccode + 0x45E4D))
+#define loc_55E53 (*(_BYTE *)(ccode + 0x45E53))
+#define loc_55E57 (*(_BYTE *)(ccode + 0x45E57))
+#define loc_55E5D (*(_BYTE *)(ccode + 0x45E5D))
+#define loc_55E61 (*(_BYTE *)(ccode + 0x45E61))
+#define loc_55E65 (*(_BYTE *)(ccode + 0x45E65))
+#define loc_55E69 (*(_BYTE *)(ccode + 0x45E69))
+#define loc_55E6F (*(_BYTE *)(ccode + 0x45E6F))
+#define loc_55E73 (*(_BYTE *)(ccode + 0x45E73))
+#define loc_55E79 (*(_BYTE *)(ccode + 0x45E79))
+#define loc_55E7D (*(_BYTE *)(ccode + 0x45E7D))
+#define loc_55E81 (*(_BYTE *)(ccode + 0x45E81))
+#define loc_55E85 (*(_BYTE *)(ccode + 0x45E85))
+#define loc_55E8B (*(_BYTE *)(ccode + 0x45E8B))
+#define loc_55E8F (*(_BYTE *)(ccode + 0x45E8F))
+#define loc_55E95 (*(_BYTE *)(ccode + 0x45E95))
+#define loc_55E99 (*(_BYTE *)(ccode + 0x45E99))
+#define loc_55E9D (*(_BYTE *)(ccode + 0x45E9D))
+#define loc_55EA1 (*(_BYTE *)(ccode + 0x45EA1))
+#define loc_55EA7 (*(_BYTE *)(ccode + 0x45EA7))
+#define loc_55EAB (*(_BYTE *)(ccode + 0x45EAB))
+#define loc_55EB1 (*(_BYTE *)(ccode + 0x45EB1))
+#define loc_55EB5 (*(_BYTE *)(ccode + 0x45EB5))
+#define loc_55EB9 (*(_BYTE *)(ccode + 0x45EB9))
+#define loc_55EBD (*(_BYTE *)(ccode + 0x45EBD))
+#define loc_55EC3 (*(_BYTE *)(ccode + 0x45EC3))
+#define loc_55EC7 (*(_BYTE *)(ccode + 0x45EC7))
+#define loc_55ECD (*(_BYTE *)(ccode + 0x45ECD))
+#define loc_55ED1 (*(_BYTE *)(ccode + 0x45ED1))
+#define loc_55ED5 (*(_BYTE *)(ccode + 0x45ED5))
+#define loc_55ED9 (*(_BYTE *)(ccode + 0x45ED9))
+#define loc_55EDF (*(_BYTE *)(ccode + 0x45EDF))
+#define loc_55EE3 (*(_BYTE *)(ccode + 0x45EE3))
+#define loc_55EE9 (*(_BYTE *)(ccode + 0x45EE9))
+#define loc_55EEE (*(_BYTE *)(ccode + 0x45EEE))
+#define loc_55EF5 (*(_BYTE *)(ccode + 0x45EF5))
+#define loc_55EFB (*(_BYTE *)(ccode + 0x45EFB))
+#define loc_55F04 (*(_BYTE *)(ccode + 0x45F04))
+#define loc_55F10 (*(_BYTE *)(ccode + 0x45F10))
+#define loc_55F1C (*(_BYTE *)(ccode + 0x45F1C))
 #define loc_55F3D (*(_BYTE *)(ccode + 0x45F3D))
 #define loc_55F44 (*(_BYTE *)(ccode + 0x45F44))
 #define loc_55F4B (*(_BYTE *)(ccode + 0x45F4B))
+#define loc_55F5E (*(_BYTE *)(ccode + 0x45F5E))
+#define loc_55F9B (*(_BYTE *)(ccode + 0x45F9B))
+#define loc_55F9F (*(_BYTE *)(ccode + 0x45F9F))
+#define loc_55FA3 (*(_BYTE *)(ccode + 0x45FA3))
+#define loc_55FA7 (*(_BYTE *)(ccode + 0x45FA7))
+#define loc_55FD9 (*(_BYTE *)(ccode + 0x45FD9))
+#define loc_55FDF (*(_BYTE *)(ccode + 0x45FDF))
+#define loc_55FE3 (*(_BYTE *)(ccode + 0x45FE3))
+#define loc_55FE7 (*(_BYTE *)(ccode + 0x45FE7))
+#define loc_55FED (*(_BYTE *)(ccode + 0x45FED))
+#define loc_55FF7 (*(_BYTE *)(ccode + 0x45FF7))
+#define loc_55FFF (*(_BYTE *)(ccode + 0x45FFF))
+#define loc_56005 (*(_BYTE *)(ccode + 0x46005))
+#define loc_56009 (*(_BYTE *)(ccode + 0x46009))
+#define loc_5600D (*(_BYTE *)(ccode + 0x4600D))
+#define loc_56013 (*(_BYTE *)(ccode + 0x46013))
+#define loc_5601D (*(_BYTE *)(ccode + 0x4601D))
+#define loc_56025 (*(_BYTE *)(ccode + 0x46025))
+#define loc_5602B (*(_BYTE *)(ccode + 0x4602B))
+#define loc_5602F (*(_BYTE *)(ccode + 0x4602F))
+#define loc_56033 (*(_BYTE *)(ccode + 0x46033))
+#define loc_56039 (*(_BYTE *)(ccode + 0x46039))
+#define loc_56043 (*(_BYTE *)(ccode + 0x46043))
+#define loc_5604B (*(_BYTE *)(ccode + 0x4604B))
+#define loc_56051 (*(_BYTE *)(ccode + 0x46051))
+#define loc_56055 (*(_BYTE *)(ccode + 0x46055))
+#define loc_56059 (*(_BYTE *)(ccode + 0x46059))
+#define loc_5605F (*(_BYTE *)(ccode + 0x4605F))
+#define loc_56069 (*(_BYTE *)(ccode + 0x46069))
+#define loc_56071 (*(_BYTE *)(ccode + 0x46071))
+#define loc_56077 (*(_BYTE *)(ccode + 0x46077))
+#define loc_5607E (*(_BYTE *)(ccode + 0x4607E))
+#define loc_56085 (*(_BYTE *)(ccode + 0x46085))
+#define loc_5608E (*(_BYTE *)(ccode + 0x4608E))
+#define loc_5609E (*(_BYTE *)(ccode + 0x4609E))
+#define loc_560AC (*(_BYTE *)(ccode + 0x460AC))
+#define loc_560B5 (*(_BYTE *)(ccode + 0x460B5))
+#define loc_560BC (*(_BYTE *)(ccode + 0x460BC))
+#define loc_560C3 (*(_BYTE *)(ccode + 0x460C3))
+#define loc_560CC (*(_BYTE *)(ccode + 0x460CC))
+#define loc_560DC (*(_BYTE *)(ccode + 0x460DC))
+#define loc_560EA (*(_BYTE *)(ccode + 0x460EA))
+#define loc_560F3 (*(_BYTE *)(ccode + 0x460F3))
+#define loc_560FA (*(_BYTE *)(ccode + 0x460FA))
+#define loc_56101 (*(_BYTE *)(ccode + 0x46101))
+#define loc_5610A (*(_BYTE *)(ccode + 0x4610A))
+#define loc_5611A (*(_BYTE *)(ccode + 0x4611A))
+#define loc_56128 (*(_BYTE *)(ccode + 0x46128))
+#define loc_56131 (*(_BYTE *)(ccode + 0x46131))
+#define loc_56138 (*(_BYTE *)(ccode + 0x46138))
+#define loc_5613F (*(_BYTE *)(ccode + 0x4613F))
+#define loc_56148 (*(_BYTE *)(ccode + 0x46148))
+#define loc_56158 (*(_BYTE *)(ccode + 0x46158))
+#define loc_5617C (*(_BYTE *)(ccode + 0x4617C))
+#define loc_56190 (*(_BYTE *)(ccode + 0x46190))
+#define loc_561A4 (*(_BYTE *)(ccode + 0x461A4))
+#define loc_561B8 (*(_BYTE *)(ccode + 0x461B8))
+#define loc_561E1 (*(_BYTE *)(ccode + 0x461E1))
+#define loc_561EF (*(_BYTE *)(ccode + 0x461EF))
+#define loc_561FD (*(_BYTE *)(ccode + 0x461FD))
+#define loc_56239 (*(_BYTE *)(ccode + 0x46239))
+#define loc_562BA (*(_BYTE *)(ccode + 0x462BA))
+#define loc_562F6 (*(_BYTE *)(ccode + 0x462F6))
+#define loc_562FA (*(_BYTE *)(ccode + 0x462FA))
+#define loc_562FE (*(_BYTE *)(ccode + 0x462FE))
+#define loc_56302 (*(_BYTE *)(ccode + 0x46302))
+#define loc_5630A (*(_BYTE *)(ccode + 0x4630A))
+#define loc_5630E (*(_BYTE *)(ccode + 0x4630E))
+#define loc_56314 (*(_BYTE *)(ccode + 0x46314))
+#define loc_56318 (*(_BYTE *)(ccode + 0x46318))
+#define loc_5631E (*(_BYTE *)(ccode + 0x4631E))
+#define loc_56322 (*(_BYTE *)(ccode + 0x46322))
+#define loc_56326 (*(_BYTE *)(ccode + 0x46326))
+#define loc_5632A (*(_BYTE *)(ccode + 0x4632A))
+#define loc_56330 (*(_BYTE *)(ccode + 0x46330))
+#define loc_56334 (*(_BYTE *)(ccode + 0x46334))
+#define loc_5633A (*(_BYTE *)(ccode + 0x4633A))
+#define loc_5633E (*(_BYTE *)(ccode + 0x4633E))
+#define loc_56342 (*(_BYTE *)(ccode + 0x46342))
+#define loc_56346 (*(_BYTE *)(ccode + 0x46346))
+#define loc_5634C (*(_BYTE *)(ccode + 0x4634C))
+#define loc_56350 (*(_BYTE *)(ccode + 0x46350))
+#define loc_56356 (*(_BYTE *)(ccode + 0x46356))
+#define loc_5635A (*(_BYTE *)(ccode + 0x4635A))
+#define loc_5635E (*(_BYTE *)(ccode + 0x4635E))
+#define loc_56362 (*(_BYTE *)(ccode + 0x46362))
+#define loc_56368 (*(_BYTE *)(ccode + 0x46368))
+#define loc_5636C (*(_BYTE *)(ccode + 0x4636C))
+#define loc_56372 (*(_BYTE *)(ccode + 0x46372))
+#define loc_56376 (*(_BYTE *)(ccode + 0x46376))
+#define loc_5637A (*(_BYTE *)(ccode + 0x4637A))
+#define loc_5637E (*(_BYTE *)(ccode + 0x4637E))
+#define loc_56384 (*(_BYTE *)(ccode + 0x46384))
+#define loc_56388 (*(_BYTE *)(ccode + 0x46388))
+#define loc_5638E (*(_BYTE *)(ccode + 0x4638E))
+#define loc_56392 (*(_BYTE *)(ccode + 0x46392))
+#define loc_56396 (*(_BYTE *)(ccode + 0x46396))
+#define loc_5639A (*(_BYTE *)(ccode + 0x4639A))
+#define loc_563A0 (*(_BYTE *)(ccode + 0x463A0))
+#define loc_563A4 (*(_BYTE *)(ccode + 0x463A4))
+#define loc_563AA (*(_BYTE *)(ccode + 0x463AA))
+#define loc_563AE (*(_BYTE *)(ccode + 0x463AE))
+#define loc_563B2 (*(_BYTE *)(ccode + 0x463B2))
+#define loc_563B6 (*(_BYTE *)(ccode + 0x463B6))
+#define loc_563BC (*(_BYTE *)(ccode + 0x463BC))
+#define loc_563C0 (*(_BYTE *)(ccode + 0x463C0))
+#define loc_563C6 (*(_BYTE *)(ccode + 0x463C6))
+#define loc_563CA (*(_BYTE *)(ccode + 0x463CA))
+#define loc_563CE (*(_BYTE *)(ccode + 0x463CE))
+#define loc_563D2 (*(_BYTE *)(ccode + 0x463D2))
+#define loc_563D8 (*(_BYTE *)(ccode + 0x463D8))
+#define loc_563DC (*(_BYTE *)(ccode + 0x463DC))
+#define loc_563E2 (*(_BYTE *)(ccode + 0x463E2))
+#define loc_563E7 (*(_BYTE *)(ccode + 0x463E7))
+#define loc_563EE (*(_BYTE *)(ccode + 0x463EE))
+#define loc_563F4 (*(_BYTE *)(ccode + 0x463F4))
+#define loc_563FD (*(_BYTE *)(ccode + 0x463FD))
+#define loc_56409 (*(_BYTE *)(ccode + 0x46409))
+#define loc_56415 (*(_BYTE *)(ccode + 0x46415))
+#define loc_56436 (*(_BYTE *)(ccode + 0x46436))
 #define loc_5643D (*(_BYTE *)(ccode + 0x4643D))
 #define loc_56444 (*(_BYTE *)(ccode + 0x46444))
+#define loc_56457 (*(_BYTE *)(ccode + 0x46457))
+#define loc_56502 (*(_BYTE *)(ccode + 0x46502))
+#define loc_565BB (*(_BYTE *)(ccode + 0x465BB))
+#define loc_56670 (*(_BYTE *)(ccode + 0x46670))
 #define loc_56780 (*(_BYTE *)(ccode + 0x46780))
 #define loc_5678A (*(_BYTE *)(ccode + 0x4678A))
 #define loc_56794 (*(_BYTE *)(ccode + 0x46794))
+#define loc_57A2A (*(_BYTE *)(ccode + 0x47A2A))
+#define loc_57A31 (*(_BYTE *)(ccode + 0x47A31))
+#define loc_57A3A (*(_BYTE *)(ccode + 0x47A3A))
+#define loc_57A50 (*(_BYTE *)(ccode + 0x47A50))
+#define loc_57A56 (*(_BYTE *)(ccode + 0x47A56))
+#define loc_57A5A (*(_BYTE *)(ccode + 0x47A5A))
+#define loc_57A60 (*(_BYTE *)(ccode + 0x47A60))
+#define loc_57A64 (*(_BYTE *)(ccode + 0x47A64))
+#define loc_57A68 (*(_BYTE *)(ccode + 0x47A68))
+#define loc_57A6F (*(_BYTE *)(ccode + 0x47A6F))
+#define loc_57A75 (*(_BYTE *)(ccode + 0x47A75))
+#define loc_57A79 (*(_BYTE *)(ccode + 0x47A79))
+#define loc_57A7F (*(_BYTE *)(ccode + 0x47A7F))
+#define loc_57A83 (*(_BYTE *)(ccode + 0x47A83))
+#define loc_57A87 (*(_BYTE *)(ccode + 0x47A87))
+#define loc_57AA0 (*(_BYTE *)(ccode + 0x47AA0))
 #define loc_57AA6 (*(_BYTE *)(ccode + 0x47AA6))
+#define loc_57AB2 (*(_BYTE *)(ccode + 0x47AB2))
+#define loc_57AB8 (*(_BYTE *)(ccode + 0x47AB8))
+#define loc_57ABC (*(_BYTE *)(ccode + 0x47ABC))
+#define loc_57AC2 (*(_BYTE *)(ccode + 0x47AC2))
+#define loc_57AC6 (*(_BYTE *)(ccode + 0x47AC6))
+#define loc_57ACA (*(_BYTE *)(ccode + 0x47ACA))
+#define loc_57ACE (*(_BYTE *)(ccode + 0x47ACE))
+#define loc_57AD4 (*(_BYTE *)(ccode + 0x47AD4))
+#define loc_57AD8 (*(_BYTE *)(ccode + 0x47AD8))
+#define loc_57ADC (*(_BYTE *)(ccode + 0x47ADC))
+#define loc_57AE0 (*(_BYTE *)(ccode + 0x47AE0))
+#define loc_57B06 (*(_BYTE *)(ccode + 0x47B06))
+#define loc_57B44 (*(_BYTE *)(ccode + 0x47B44))
+#define loc_57B48 (*(_BYTE *)(ccode + 0x47B48))
+#define loc_57B51 (*(_BYTE *)(ccode + 0x47B51))
+#define loc_57B71 (*(_BYTE *)(ccode + 0x47B71))
+#define loc_57B77 (*(_BYTE *)(ccode + 0x47B77))
+#define loc_57B7B (*(_BYTE *)(ccode + 0x47B7B))
+#define loc_57B81 (*(_BYTE *)(ccode + 0x47B81))
+#define loc_57B85 (*(_BYTE *)(ccode + 0x47B85))
+#define loc_57B8D (*(_BYTE *)(ccode + 0x47B8D))
+#define loc_57B98 (*(_BYTE *)(ccode + 0x47B98))
+#define loc_57BA3 (*(_BYTE *)(ccode + 0x47BA3))
+#define loc_57BB0 (*(_BYTE *)(ccode + 0x47BB0))
+#define loc_57BB6 (*(_BYTE *)(ccode + 0x47BB6))
+#define loc_57BBA (*(_BYTE *)(ccode + 0x47BBA))
+#define loc_57BBE (*(_BYTE *)(ccode + 0x47BBE))
+#define loc_57BC2 (*(_BYTE *)(ccode + 0x47BC2))
+#define loc_57BE8 (*(_BYTE *)(ccode + 0x47BE8))
+#define loc_57BEF (*(_BYTE *)(ccode + 0x47BEF))
+#define loc_57C34 (*(_BYTE *)(ccode + 0x47C34))
+#define loc_57C41 (*(_BYTE *)(ccode + 0x47C41))
+#define loc_57C54 (*(_BYTE *)(ccode + 0x47C54))
+#define loc_57C60 (*(_BYTE *)(ccode + 0x47C60))
+#define loc_57C66 (*(_BYTE *)(ccode + 0x47C66))
+#define loc_57C6A (*(_BYTE *)(ccode + 0x47C6A))
+#define loc_57C70 (*(_BYTE *)(ccode + 0x47C70))
+#define loc_57C74 (*(_BYTE *)(ccode + 0x47C74))
+#define loc_57C78 (*(_BYTE *)(ccode + 0x47C78))
+#define loc_57C7C (*(_BYTE *)(ccode + 0x47C7C))
+#define loc_57C82 (*(_BYTE *)(ccode + 0x47C82))
+#define loc_57C86 (*(_BYTE *)(ccode + 0x47C86))
+#define loc_57C8C (*(_BYTE *)(ccode + 0x47C8C))
+#define loc_57C90 (*(_BYTE *)(ccode + 0x47C90))
+#define loc_57C94 (*(_BYTE *)(ccode + 0x47C94))
+#define loc_57C9C (*(_BYTE *)(ccode + 0x47C9C))
 #define loc_57CA2 (*(_BYTE *)(ccode + 0x47CA2))
+#define loc_57CAA (*(_BYTE *)(ccode + 0x47CAA))
+#define loc_57CAE (*(_BYTE *)(ccode + 0x47CAE))
+#define loc_57CBE (*(_BYTE *)(ccode + 0x47CBE))
+#define loc_57CC4 (*(_BYTE *)(ccode + 0x47CC4))
+#define loc_57CC8 (*(_BYTE *)(ccode + 0x47CC8))
+#define loc_57CCC (*(_BYTE *)(ccode + 0x47CCC))
+#define loc_57CD0 (*(_BYTE *)(ccode + 0x47CD0))
+#define loc_57CD4 (*(_BYTE *)(ccode + 0x47CD4))
+#define loc_57CF8 (*(_BYTE *)(ccode + 0x47CF8))
+#define loc_57D41 (*(_BYTE *)(ccode + 0x47D41))
+#define loc_57D48 (*(_BYTE *)(ccode + 0x47D48))
+#define loc_57D58 (*(_BYTE *)(ccode + 0x47D58))
+#define loc_57D65 (*(_BYTE *)(ccode + 0x47D65))
+#define loc_57D78 (*(_BYTE *)(ccode + 0x47D78))
+#define loc_57D7F (*(_BYTE *)(ccode + 0x47D7F))
+#define loc_57D89 (*(_BYTE *)(ccode + 0x47D89))
+#define loc_57D8F (*(_BYTE *)(ccode + 0x47D8F))
+#define loc_57D93 (*(_BYTE *)(ccode + 0x47D93))
+#define loc_57D9B (*(_BYTE *)(ccode + 0x47D9B))
+#define loc_57DA9 (*(_BYTE *)(ccode + 0x47DA9))
 #define loc_57DAF (*(_BYTE *)(ccode + 0x47DAF))
+#define loc_57DB7 (*(_BYTE *)(ccode + 0x47DB7))
+#define loc_57DCB (*(_BYTE *)(ccode + 0x47DCB))
+#define loc_57DD1 (*(_BYTE *)(ccode + 0x47DD1))
+#define loc_57DD5 (*(_BYTE *)(ccode + 0x47DD5))
+#define loc_57DDB (*(_BYTE *)(ccode + 0x47DDB))
+#define loc_57DDF (*(_BYTE *)(ccode + 0x47DDF))
+#define loc_57DE8 (*(_BYTE *)(ccode + 0x47DE8))
+#define loc_57E05 (*(_BYTE *)(ccode + 0x47E05))
+#define loc_57E43 (*(_BYTE *)(ccode + 0x47E43))
+#define loc_57E47 (*(_BYTE *)(ccode + 0x47E47))
+#define loc_57E50 (*(_BYTE *)(ccode + 0x47E50))
+#define loc_57E70 (*(_BYTE *)(ccode + 0x47E70))
+#define loc_57E76 (*(_BYTE *)(ccode + 0x47E76))
+#define loc_57E7A (*(_BYTE *)(ccode + 0x47E7A))
+#define loc_57E80 (*(_BYTE *)(ccode + 0x47E80))
+#define loc_57E84 (*(_BYTE *)(ccode + 0x47E84))
+#define loc_57E88 (*(_BYTE *)(ccode + 0x47E88))
+#define loc_57E8C (*(_BYTE *)(ccode + 0x47E8C))
+#define loc_57E92 (*(_BYTE *)(ccode + 0x47E92))
+#define loc_57E96 (*(_BYTE *)(ccode + 0x47E96))
+#define loc_57E9C (*(_BYTE *)(ccode + 0x47E9C))
+#define loc_57EA0 (*(_BYTE *)(ccode + 0x47EA0))
+#define loc_57EA8 (*(_BYTE *)(ccode + 0x47EA8))
+#define loc_57EB3 (*(_BYTE *)(ccode + 0x47EB3))
 #define loc_57EB9 (*(_BYTE *)(ccode + 0x47EB9))
+#define loc_57EC9 (*(_BYTE *)(ccode + 0x47EC9))
+#define loc_57ECF (*(_BYTE *)(ccode + 0x47ECF))
+#define loc_57ED3 (*(_BYTE *)(ccode + 0x47ED3))
+#define loc_57ED7 (*(_BYTE *)(ccode + 0x47ED7))
+#define loc_57EDB (*(_BYTE *)(ccode + 0x47EDB))
+#define loc_57EDF (*(_BYTE *)(ccode + 0x47EDF))
+#define loc_57EE5 (*(_BYTE *)(ccode + 0x47EE5))
+#define loc_57EE9 (*(_BYTE *)(ccode + 0x47EE9))
+#define loc_57EED (*(_BYTE *)(ccode + 0x47EED))
+#define loc_57EF1 (*(_BYTE *)(ccode + 0x47EF1))
+#define loc_57F16 (*(_BYTE *)(ccode + 0x47F16))
+#define loc_57F53 (*(_BYTE *)(ccode + 0x47F53))
+#define loc_57F57 (*(_BYTE *)(ccode + 0x47F57))
+#define loc_57F5B (*(_BYTE *)(ccode + 0x47F5B))
+#define loc_57F5F (*(_BYTE *)(ccode + 0x47F5F))
+#define loc_57F63 (*(_BYTE *)(ccode + 0x47F63))
+#define loc_57F6B (*(_BYTE *)(ccode + 0x47F6B))
+#define loc_57F71 (*(_BYTE *)(ccode + 0x47F71))
+#define loc_57F75 (*(_BYTE *)(ccode + 0x47F75))
+#define loc_57F7B (*(_BYTE *)(ccode + 0x47F7B))
+#define loc_57F7F (*(_BYTE *)(ccode + 0x47F7F))
+#define loc_57F83 (*(_BYTE *)(ccode + 0x47F83))
+#define loc_57F87 (*(_BYTE *)(ccode + 0x47F87))
+#define loc_57F8D (*(_BYTE *)(ccode + 0x47F8D))
+#define loc_57F91 (*(_BYTE *)(ccode + 0x47F91))
+#define loc_57F97 (*(_BYTE *)(ccode + 0x47F97))
+#define loc_57F9B (*(_BYTE *)(ccode + 0x47F9B))
+#define loc_57F9F (*(_BYTE *)(ccode + 0x47F9F))
+#define loc_57FA3 (*(_BYTE *)(ccode + 0x47FA3))
+#define loc_57FA9 (*(_BYTE *)(ccode + 0x47FA9))
+#define loc_57FAD (*(_BYTE *)(ccode + 0x47FAD))
+#define loc_57FB3 (*(_BYTE *)(ccode + 0x47FB3))
+#define loc_57FB7 (*(_BYTE *)(ccode + 0x47FB7))
+#define loc_57FBB (*(_BYTE *)(ccode + 0x47FBB))
+#define loc_57FBF (*(_BYTE *)(ccode + 0x47FBF))
+#define loc_57FC5 (*(_BYTE *)(ccode + 0x47FC5))
+#define loc_57FC9 (*(_BYTE *)(ccode + 0x47FC9))
+#define loc_57FCF (*(_BYTE *)(ccode + 0x47FCF))
+#define loc_57FD3 (*(_BYTE *)(ccode + 0x47FD3))
+#define loc_57FD7 (*(_BYTE *)(ccode + 0x47FD7))
+#define loc_57FDB (*(_BYTE *)(ccode + 0x47FDB))
+#define loc_57FE1 (*(_BYTE *)(ccode + 0x47FE1))
+#define loc_57FE5 (*(_BYTE *)(ccode + 0x47FE5))
+#define loc_57FEB (*(_BYTE *)(ccode + 0x47FEB))
+#define loc_57FF0 (*(_BYTE *)(ccode + 0x47FF0))
+#define loc_57FF7 (*(_BYTE *)(ccode + 0x47FF7))
+#define loc_57FFD (*(_BYTE *)(ccode + 0x47FFD))
+#define loc_58006 (*(_BYTE *)(ccode + 0x48006))
+#define loc_58012 (*(_BYTE *)(ccode + 0x48012))
+#define loc_5801E (*(_BYTE *)(ccode + 0x4801E))
+#define loc_5802A (*(_BYTE *)(ccode + 0x4802A))
+#define loc_58036 (*(_BYTE *)(ccode + 0x48036))
+#define loc_58042 (*(_BYTE *)(ccode + 0x48042))
+#define loc_5804E (*(_BYTE *)(ccode + 0x4804E))
+#define loc_58075 (*(_BYTE *)(ccode + 0x48075))
 #define loc_583C1 (*(_BYTE *)(ccode + 0x483C1))
 #define loc_583C8 (*(_BYTE *)(ccode + 0x483C8))
+#define loc_583DD (*(_BYTE *)(ccode + 0x483DD))
+#define loc_583EA (*(_BYTE *)(ccode + 0x483EA))
 #define loc_583F1 (*(_BYTE *)(ccode + 0x483F1))
+#define loc_583FE (*(_BYTE *)(ccode + 0x483FE))
 #define loc_58405 (*(_BYTE *)(ccode + 0x48405))
+#define loc_584A5 (*(_BYTE *)(ccode + 0x484A5))
+#define loc_584A9 (*(_BYTE *)(ccode + 0x484A9))
+#define loc_584AD (*(_BYTE *)(ccode + 0x484AD))
+#define loc_584B1 (*(_BYTE *)(ccode + 0x484B1))
+#define loc_584BD (*(_BYTE *)(ccode + 0x484BD))
+#define loc_584C3 (*(_BYTE *)(ccode + 0x484C3))
+#define loc_584C7 (*(_BYTE *)(ccode + 0x484C7))
+#define loc_584CD (*(_BYTE *)(ccode + 0x484CD))
+#define loc_584D1 (*(_BYTE *)(ccode + 0x484D1))
+#define loc_584D8 (*(_BYTE *)(ccode + 0x484D8))
+#define loc_584DC (*(_BYTE *)(ccode + 0x484DC))
+#define loc_584E2 (*(_BYTE *)(ccode + 0x484E2))
+#define loc_584E6 (*(_BYTE *)(ccode + 0x484E6))
+#define loc_584EC (*(_BYTE *)(ccode + 0x484EC))
+#define loc_584F0 (*(_BYTE *)(ccode + 0x484F0))
+#define loc_584F4 (*(_BYTE *)(ccode + 0x484F4))
+#define loc_584FB (*(_BYTE *)(ccode + 0x484FB))
+#define loc_58501 (*(_BYTE *)(ccode + 0x48501))
+#define loc_58505 (*(_BYTE *)(ccode + 0x48505))
+#define loc_5850B (*(_BYTE *)(ccode + 0x4850B))
+#define loc_5850F (*(_BYTE *)(ccode + 0x4850F))
+#define loc_58513 (*(_BYTE *)(ccode + 0x48513))
+#define loc_5851A (*(_BYTE *)(ccode + 0x4851A))
+#define loc_58520 (*(_BYTE *)(ccode + 0x48520))
+#define loc_58524 (*(_BYTE *)(ccode + 0x48524))
+#define loc_5852A (*(_BYTE *)(ccode + 0x4852A))
+#define loc_5852E (*(_BYTE *)(ccode + 0x4852E))
+#define loc_58532 (*(_BYTE *)(ccode + 0x48532))
+#define loc_58539 (*(_BYTE *)(ccode + 0x48539))
+#define loc_5853F (*(_BYTE *)(ccode + 0x4853F))
+#define loc_58543 (*(_BYTE *)(ccode + 0x48543))
+#define loc_58549 (*(_BYTE *)(ccode + 0x48549))
+#define loc_5854D (*(_BYTE *)(ccode + 0x4854D))
+#define loc_58551 (*(_BYTE *)(ccode + 0x48551))
+#define loc_58558 (*(_BYTE *)(ccode + 0x48558))
+#define loc_5855E (*(_BYTE *)(ccode + 0x4855E))
+#define loc_58562 (*(_BYTE *)(ccode + 0x48562))
+#define loc_58568 (*(_BYTE *)(ccode + 0x48568))
+#define loc_5856C (*(_BYTE *)(ccode + 0x4856C))
+#define loc_58571 (*(_BYTE *)(ccode + 0x48571))
+#define loc_58578 (*(_BYTE *)(ccode + 0x48578))
+#define loc_58583 (*(_BYTE *)(ccode + 0x48583))
+#define loc_5858F (*(_BYTE *)(ccode + 0x4858F))
+#define loc_585A2 (*(_BYTE *)(ccode + 0x485A2))
+#define loc_58A9F (*(_BYTE *)(ccode + 0x48A9F))
+#define loc_58ABC (*(_BYTE *)(ccode + 0x48ABC))
+#define loc_58AD3 (*(_BYTE *)(ccode + 0x48AD3))
+#define loc_58AEE (*(_BYTE *)(ccode + 0x48AEE))
+#define loc_58B09 (*(_BYTE *)(ccode + 0x48B09))
+#define loc_58B24 (*(_BYTE *)(ccode + 0x48B24))
+#define loc_58B3F (*(_BYTE *)(ccode + 0x48B3F))
+#define loc_58B56 (*(_BYTE *)(ccode + 0x48B56))
+#define loc_58B6D (*(_BYTE *)(ccode + 0x48B6D))
+#define loc_58B88 (*(_BYTE *)(ccode + 0x48B88))
+#define loc_58BA6 (*(_BYTE *)(ccode + 0x48BA6))
+#define loc_58BC1 (*(_BYTE *)(ccode + 0x48BC1))
+#define loc_58BDF (*(_BYTE *)(ccode + 0x48BDF))
+#define loc_58BF6 (*(_BYTE *)(ccode + 0x48BF6))
+#define loc_58C10 (*(_BYTE *)(ccode + 0x48C10))
+#define loc_58C23 (*(_BYTE *)(ccode + 0x48C23))
+#define loc_58F9D (*(_BYTE *)(ccode + 0x48F9D))
+#define loc_5987A (*(_BYTE *)(ccode + 0x4987A))
+#define loc_59990 (*(_BYTE *)(ccode + 0x49990))
+#define loc_59BBC (*(_BYTE *)(ccode + 0x49BBC))
+#define loc_59C64 (*(_BYTE *)(ccode + 0x49C64))
+#define loc_59E30 (*(_BYTE *)(ccode + 0x49E30))
+#define loc_59E78 (*(_BYTE *)(ccode + 0x49E78))
+#define loc_5A5CD (*(_BYTE *)(ccode + 0x4A5CD))
+#define loc_5A669 (*(_BYTE *)(ccode + 0x4A669))
+#define loc_5A70B (*(_BYTE *)(ccode + 0x4A70B))
+#define loc_5B4C4 (*(_BYTE *)(ccode + 0x4B4C4))
+#define loc_5B6E6 (*(_BYTE *)(ccode + 0x4B6E6))
+#define loc_5B8F2 (*(_BYTE *)(ccode + 0x4B8F2))
+#define loc_5B922 (*(_BYTE *)(ccode + 0x4B922))
+#define loc_5BA10 (*(_BYTE *)(ccode + 0x4BA10))
+#define loc_5BA29 (*(_BYTE *)(ccode + 0x4BA29))
+#define loc_5BA31 (*(_BYTE *)(ccode + 0x4BA31))
+#define loc_5BB7C (*(_BYTE *)(ccode + 0x4BB7C))
+#define loc_5D96E (*(_BYTE *)(ccode + 0x4D96E))
 #define loc_5D97F (*(_BYTE *)(ccode + 0x4D97F))
+#define loc_5D9A3 (*(_BYTE *)(ccode + 0x4D9A3))
+#define loc_5D9C6 (*(_BYTE *)(ccode + 0x4D9C6))
+#define loc_5ECBF (*(_BYTE *)(ccode + 0x4ECBF))
+#define loc_5F555 (*(_BYTE *)(ccode + 0x4F555))
+#define loc_5F562 (*(_BYTE *)(ccode + 0x4F562))
+#define loc_5F5E8 (*(_BYTE *)(ccode + 0x4F5E8))
+#define loc_5F69E (*(_BYTE *)(ccode + 0x4F69E))
+#define loc_5F6AC (*(_BYTE *)(ccode + 0x4F6AC))
+#define loc_5F6BC (*(_BYTE *)(ccode + 0x4F6BC))
+#define loc_60048 (*(_BYTE *)(ccode + 0x50048))
+#define loc_606A6 (*(_BYTE *)(ccode + 0x506A6))
+#define loc_616E1 (*(_BYTE *)(ccode + 0x516E1))
+#define loc_61718 (*(_BYTE *)(ccode + 0x51718))
+#define loc_63F2D (*(_BYTE *)(ccode + 0x53F2D))
+#define loc_63F7A (*(_BYTE *)(ccode + 0x53F7A))
+#define loc_6455C (*(_BYTE *)(ccode + 0x5455C))
+#define loc_64563 (*(_BYTE *)(ccode + 0x54563))
+#define loc_64612 (*(_BYTE *)(ccode + 0x54612))
+#define loc_6462B (*(_BYTE *)(ccode + 0x5462B))
+#define loc_64639 (*(_BYTE *)(ccode + 0x54639))
+#define loc_64649 (*(_BYTE *)(ccode + 0x54649))
 #define loc_6464E (*(_BYTE *)(ccode + 0x5464E))
+#define loc_6465C (*(_BYTE *)(ccode + 0x5465C))
+#define loc_6466C (*(_BYTE *)(ccode + 0x5466C))
+#define loc_647D9 (*(_BYTE *)(ccode + 0x547D9))
+#define loc_647E7 (*(_BYTE *)(ccode + 0x547E7))
+#define loc_647F7 (*(_BYTE *)(ccode + 0x547F7))
+#define loc_64805 (*(_BYTE *)(ccode + 0x54805))
+#define loc_6481D (*(_BYTE *)(ccode + 0x5481D))
+#define loc_6482B (*(_BYTE *)(ccode + 0x5482B))
+#define loc_6483B (*(_BYTE *)(ccode + 0x5483B))
+#define loc_64849 (*(_BYTE *)(ccode + 0x54849))
+#define loc_66796 (*(_BYTE *)(ccode + 0x56796))
+#define loc_6679D (*(_BYTE *)(ccode + 0x5679D))
+#define loc_667A2 (*(_BYTE *)(ccode + 0x567A2))
+#define loc_66EDA (*(_BYTE *)(ccode + 0x56EDA))
 #define loc_69ABF (*(_BYTE *)(ccode + 0x59ABF))
+#define loc_6A7B8 (*(_BYTE *)(ccode + 0x5A7B8))
+#define loc_6AAF3 (*(_BYTE *)(ccode + 0x5AAF3))
+#define loc_6B27F (*(_BYTE *)(ccode + 0x5B27F))
+#define loc_6B286 (*(_BYTE *)(ccode + 0x5B286))
+#define loc_6B291 (*(_BYTE *)(ccode + 0x5B291))
+#define loc_6B296 (*(_BYTE *)(ccode + 0x5B296))
+#define loc_6B29D (*(_BYTE *)(ccode + 0x5B29D))
 #define loc_6B52E (*(_BYTE *)(ccode + 0x5B52E))
 #define loc_6B535 (*(_BYTE *)(ccode + 0x5B535))
 #define loc_6B53C (*(_BYTE *)(ccode + 0x5B53C))
 #define loc_6B543 (*(_BYTE *)(ccode + 0x5B543))
 #define loc_6B54A (*(_BYTE *)(ccode + 0x5B54A))
+#define loc_6B7F6 (*(_BYTE *)(ccode + 0x5B7F6))
+#define loc_6B912 (*(_BYTE *)(ccode + 0x5B912))
+#define loc_6C506 (*(_BYTE *)(ccode + 0x5C506))
+#define loc_6C50C (*(_BYTE *)(ccode + 0x5C50C))
+#define loc_6D1D1 (*(_BYTE *)(ccode + 0x5D1D1))
+#define loc_6D1D9 (*(_BYTE *)(ccode + 0x5D1D9))
+#define loc_6D1F1 (*(_BYTE *)(ccode + 0x5D1F1))
 #define loc_6D1F9 (*(_BYTE *)(ccode + 0x5D1F9))
 #define loc_6D200 (*(_BYTE *)(ccode + 0x5D200))
 #define loc_6D207 (*(_BYTE *)(ccode + 0x5D207))
 #define loc_6D20E (*(_BYTE *)(ccode + 0x5D20E))
 #define loc_6D215 (*(_BYTE *)(ccode + 0x5D215))
 #define loc_6D25B (*(_BYTE *)(ccode + 0x5D25B))
+#define loc_6D268 (*(_BYTE *)(ccode + 0x5D268))
+#define loc_6D628 (*(_BYTE *)(ccode + 0x5D628))
 #define loc_6E628 (*(_BYTE *)(ccode + 0x5E628))
 #define loc_6E62F (*(_BYTE *)(ccode + 0x5E62F))
 #define loc_6E636 (*(_BYTE *)(ccode + 0x5E636))
@@ -414,67 +1324,238 @@ void InitEseg150(void);
 #define loc_6E661 (*(_BYTE *)(ccode + 0x5E661))
 #define loc_6E668 (*(_BYTE *)(ccode + 0x5E668))
 #define loc_6E676 (*(_BYTE *)(ccode + 0x5E676))
+#define loc_6ECA9 (*(_BYTE *)(ccode + 0x5ECA9))
+#define loc_6ECB1 (*(_BYTE *)(ccode + 0x5ECB1))
+#define loc_6ECC9 (*(_BYTE *)(ccode + 0x5ECC9))
 #define loc_6ECD1 (*(_BYTE *)(ccode + 0x5ECD1))
 #define loc_6ECD8 (*(_BYTE *)(ccode + 0x5ECD8))
 #define loc_6ECDF (*(_BYTE *)(ccode + 0x5ECDF))
 #define loc_6ECE6 (*(_BYTE *)(ccode + 0x5ECE6))
 #define loc_6ECED (*(_BYTE *)(ccode + 0x5ECED))
 #define loc_6ED38 (*(_BYTE *)(ccode + 0x5ED38))
+#define loc_6ED45 (*(_BYTE *)(ccode + 0x5ED45))
+#define loc_6EEC8 (*(_BYTE *)(ccode + 0x5EEC8))
+#define loc_6EED0 (*(_BYTE *)(ccode + 0x5EED0))
+#define loc_6EEE8 (*(_BYTE *)(ccode + 0x5EEE8))
 #define loc_6EEF0 (*(_BYTE *)(ccode + 0x5EEF0))
 #define loc_6EEF7 (*(_BYTE *)(ccode + 0x5EEF7))
 #define loc_6EEFE (*(_BYTE *)(ccode + 0x5EEFE))
 #define loc_6EF05 (*(_BYTE *)(ccode + 0x5EF05))
 #define loc_6EF0C (*(_BYTE *)(ccode + 0x5EF0C))
 #define loc_6EF57 (*(_BYTE *)(ccode + 0x5EF57))
+#define loc_6EF64 (*(_BYTE *)(ccode + 0x5EF64))
+#define loc_6F1CF (*(_BYTE *)(ccode + 0x5F1CF))
+#define loc_6F1D7 (*(_BYTE *)(ccode + 0x5F1D7))
+#define loc_6F1F1 (*(_BYTE *)(ccode + 0x5F1F1))
 #define loc_6F1FB (*(_BYTE *)(ccode + 0x5F1FB))
 #define loc_6F204 (*(_BYTE *)(ccode + 0x5F204))
 #define loc_6F20D (*(_BYTE *)(ccode + 0x5F20D))
 #define loc_6F216 (*(_BYTE *)(ccode + 0x5F216))
 #define loc_6F21F (*(_BYTE *)(ccode + 0x5F21F))
 #define loc_72B33 (*(_BYTE *)(ccode + 0x62B33))
+#define loc_798DA (*(_BYTE *)(ccode + 0x698DA))
 #define loc_798E7 (*(_BYTE *)(ccode + 0x698E7))
 #define loc_798F7 (*(_BYTE *)(ccode + 0x698F7))
+#define loc_7F064 (*(_BYTE *)(ccode + 0x6F064))
+#define loc_85628 (*(_BYTE *)(ccode + 0x75628))
 #define loc_8CF23 (*(_BYTE *)(ccode + 0x7CF23))
+#define loc_8CF2C (*(_BYTE *)(ccode + 0x7CF2C))
+#define loc_8CF35 (*(_BYTE *)(ccode + 0x7CF35))
+#define loc_8CF3E (*(_BYTE *)(ccode + 0x7CF3E))
+#define loc_8CF47 (*(_BYTE *)(ccode + 0x7CF47))
+#define loc_8CF50 (*(_BYTE *)(ccode + 0x7CF50))
 #define loc_8CF5A (*(_BYTE *)(ccode + 0x7CF5A))
+#define loc_8CF63 (*(_BYTE *)(ccode + 0x7CF63))
+#define loc_8CF6C (*(_BYTE *)(ccode + 0x7CF6C))
+#define loc_8CF75 (*(_BYTE *)(ccode + 0x7CF75))
+#define loc_8CF7E (*(_BYTE *)(ccode + 0x7CF7E))
+#define loc_8CF87 (*(_BYTE *)(ccode + 0x7CF87))
 #define loc_8CF91 (*(_BYTE *)(ccode + 0x7CF91))
+#define loc_8CF9A (*(_BYTE *)(ccode + 0x7CF9A))
+#define loc_8CFA3 (*(_BYTE *)(ccode + 0x7CFA3))
+#define loc_8CFAC (*(_BYTE *)(ccode + 0x7CFAC))
+#define loc_8CFB5 (*(_BYTE *)(ccode + 0x7CFB5))
+#define loc_8CFBE (*(_BYTE *)(ccode + 0x7CFBE))
 #define loc_8CFC8 (*(_BYTE *)(ccode + 0x7CFC8))
+#define loc_8CFD1 (*(_BYTE *)(ccode + 0x7CFD1))
+#define loc_8CFDA (*(_BYTE *)(ccode + 0x7CFDA))
+#define loc_8CFE3 (*(_BYTE *)(ccode + 0x7CFE3))
+#define loc_8CFEC (*(_BYTE *)(ccode + 0x7CFEC))
+#define loc_8CFF5 (*(_BYTE *)(ccode + 0x7CFF5))
 #define loc_8DD57 (*(_BYTE *)(ccode + 0x7DD57))
 #define loc_8DD70 (*(_BYTE *)(ccode + 0x7DD70))
 #define loc_8DD89 (*(_BYTE *)(ccode + 0x7DD89))
 #define loc_8DD9B (*(_BYTE *)(ccode + 0x7DD9B))
+#define loc_925A6 (*(_BYTE *)(ccode + 0x825A6))
+#define loc_925A7 (*(_BYTE *)(ccode + 0x825A7))
+#define loc_925AA (*(_BYTE *)(ccode + 0x825AA))
 #define loc_93D54 (*(_BYTE *)(ccode + 0x83D54))
 #define loc_93D60 (*(_BYTE *)(ccode + 0x83D60))
 #define loc_93D6C (*(_BYTE *)(ccode + 0x83D6C))
 #define loc_93D78 (*(_BYTE *)(ccode + 0x83D78))
+#define loc_9470F (*(_BYTE *)(ccode + 0x8470F))
 #define loc_94716 (*(_BYTE *)(ccode + 0x84716))
+#define loc_9720F (*(_BYTE *)(ccode + 0x8720F))
+#define loc_9784B (*(_BYTE *)(ccode + 0x8784B))
+#define loc_978A3 (*(_BYTE *)(ccode + 0x878A3))
+#define loc_978BE (*(_BYTE *)(ccode + 0x878BE))
+#define loc_97A96 (*(_BYTE *)(ccode + 0x87A96))
+#define loc_97B45 (*(_BYTE *)(ccode + 0x87B45))
+#define loc_97B6F (*(_BYTE *)(ccode + 0x87B6F))
+#define loc_97B89 (*(_BYTE *)(ccode + 0x87B89))
+#define loc_97BD9 (*(_BYTE *)(ccode + 0x87BD9))
+#define loc_97BF7 (*(_BYTE *)(ccode + 0x87BF7))
+#define loc_97FF1 (*(_BYTE *)(ccode + 0x87FF1))
+#define loc_98104 (*(_BYTE *)(ccode + 0x88104))
+#define loc_98171 (*(_BYTE *)(ccode + 0x88171))
+#define loc_98184 (*(_BYTE *)(ccode + 0x88184))
+#define loc_9819E (*(_BYTE *)(ccode + 0x8819E))
+#define loc_981AD (*(_BYTE *)(ccode + 0x881AD))
+#define loc_990DC (*(_BYTE *)(ccode + 0x890DC))
+#define loc_990F5 (*(_BYTE *)(ccode + 0x890F5))
+#define loc_9922F (*(_BYTE *)(ccode + 0x8922F))
 #define loc_A93AA (*(_BYTE *)(ccode + 0x993AA))
 #define loc_A94A1 (*(_BYTE *)(ccode + 0x994A1))
+#define loc_ABA82 (*(_BYTE *)(ccode + 0x9BA82))
+#define loc_ABA8D (*(_BYTE *)(ccode + 0x9BA8D))
 #define loc_ACC0C (*(_BYTE *)(ccode + 0x9CC0C))
 #define loc_ACC15 (*(_BYTE *)(ccode + 0x9CC15))
+#define loc_AF3DB (*(_BYTE *)(ccode + 0x9F3DB))
 #define loc_B2542 (*(_BYTE *)(ccode + 0xA2542))
+#define loc_B9C63 (*(_BYTE *)(ccode + 0xA9C63))
+#define loc_BB739 (*(_BYTE *)(ccode + 0xAB739))
+#define loc_BB796 (*(_BYTE *)(ccode + 0xAB796))
+#define loc_C5C70 (*(_BYTE *)(ccode + 0xB5C70))
+#define loc_C6187 (*(_BYTE *)(ccode + 0xB6187))
+#define loc_C768B (*(_BYTE *)(ccode + 0xB768B))
+#define loc_CC5D3 (*(_BYTE *)(ccode + 0xBC5D3))
+#define loc_CC694 (*(_BYTE *)(ccode + 0xBC694))
+#define loc_CEE72 (*(_BYTE *)(ccode + 0xBEE72))
+#define loc_CF09C (*(_BYTE *)(ccode + 0xBF09C))
+#define loc_D1315 (*(_BYTE *)(ccode + 0xC1315))
+#define loc_D164E (*(_BYTE *)(ccode + 0xC164E))
+#define loc_D27C8 (*(_BYTE *)(ccode + 0xC27C8))
+#define loc_D2875 (*(_BYTE *)(ccode + 0xC2875))
+#define loc_D287B (*(_BYTE *)(ccode + 0xC287B))
+#define loc_D2881 (*(_BYTE *)(ccode + 0xC2881))
+#define loc_D2905 (*(_BYTE *)(ccode + 0xC2905))
 #define loc_D290D (*(_BYTE *)(ccode + 0xC290D))
 #define loc_D2915 (*(_BYTE *)(ccode + 0xC2915))
 #define loc_D291D (*(_BYTE *)(ccode + 0xC291D))
+#define loc_D2E38 (*(_BYTE *)(ccode + 0xC2E38))
+#define loc_D2E3E (*(_BYTE *)(ccode + 0xC2E3E))
+#define loc_D2E44 (*(_BYTE *)(ccode + 0xC2E44))
+#define loc_DB9B0 (*(_BYTE *)(ccode + 0xCB9B0))
 #define loc_DBA1E (*(_BYTE *)(ccode + 0xCBA1E))
+#define loc_DCEFA (*(_BYTE *)(ccode + 0xCCEFA))
+#define loc_DDBFF (*(_BYTE *)(ccode + 0xCDBFF))
+#define loc_DDC14 (*(_BYTE *)(ccode + 0xCDC14))
+#define loc_DDC29 (*(_BYTE *)(ccode + 0xCDC29))
 #define loc_DDCB2 (*(_BYTE *)(ccode + 0xCDCB2))
+#define loc_DDCC0 (*(_BYTE *)(ccode + 0xCDCC0))
+#define loc_DE064 (*(_BYTE *)(ccode + 0xCE064))
+#define loc_DE099 (*(_BYTE *)(ccode + 0xCE099))
+#define loc_DE0A0 (*(_BYTE *)(ccode + 0xCE0A0))
+#define loc_DE1DF (*(_BYTE *)(ccode + 0xCE1DF))
+#define loc_DE1EC (*(_BYTE *)(ccode + 0xCE1EC))
+#define loc_DE48D (*(_BYTE *)(ccode + 0xCE48D))
+#define loc_DE526 (*(_BYTE *)(ccode + 0xCE526))
+#define loc_DE52E (*(_BYTE *)(ccode + 0xCE52E))
+#define loc_DE57C (*(_BYTE *)(ccode + 0xCE57C))
+#define loc_DE584 (*(_BYTE *)(ccode + 0xCE584))
+#define loc_DE58C (*(_BYTE *)(ccode + 0xCE58C))
+#define loc_DE594 (*(_BYTE *)(ccode + 0xCE594))
+#define loc_DE708 (*(_BYTE *)(ccode + 0xCE708))
+#define loc_DE718 (*(_BYTE *)(ccode + 0xCE718))
+#define loc_DEDE5 (*(_BYTE *)(ccode + 0xCEDE5))
+#define loc_DEEB6 (*(_BYTE *)(ccode + 0xCEEB6))
+#define loc_DEECB (*(_BYTE *)(ccode + 0xCEECB))
+#define loc_DEEE0 (*(_BYTE *)(ccode + 0xCEEE0))
+#define loc_DFF2A (*(_BYTE *)(ccode + 0xCFF2A))
+#define loc_DFF35 (*(_BYTE *)(ccode + 0xCFF35))
+#define loc_DFFF9 (*(_BYTE *)(ccode + 0xCFFF9))
+#define loc_E000E (*(_BYTE *)(ccode + 0xD000E))
+#define loc_E0023 (*(_BYTE *)(ccode + 0xD0023))
+#define loc_E0035 (*(_BYTE *)(ccode + 0xD0035))
 #define loc_E05B1 (*(_BYTE *)(ccode + 0xD05B1))
 #define loc_E05BA (*(_BYTE *)(ccode + 0xD05BA))
+#define loc_E0A2A (*(_BYTE *)(ccode + 0xD0A2A))
+#define loc_E0BA2 (*(_BYTE *)(ccode + 0xD0BA2))
+#define loc_E0C5C (*(_BYTE *)(ccode + 0xD0C5C))
+#define loc_E0DB6 (*(_BYTE *)(ccode + 0xD0DB6))
+#define loc_E0E4E (*(_BYTE *)(ccode + 0xD0E4E))
 #define loc_E0F83 (*(_BYTE *)(ccode + 0xD0F83))
+#define loc_E16F8 (*(_BYTE *)(ccode + 0xD16F8))
+#define loc_E1BA1 (*(_BYTE *)(ccode + 0xD1BA1))
+#define loc_E1BA4 (*(_BYTE *)(ccode + 0xD1BA4))
+#define loc_E1BAF (*(_BYTE *)(ccode + 0xD1BAF))
+#define loc_E1BFC (*(_BYTE *)(ccode + 0xD1BFC))
+#define loc_E1C0C (*(_BYTE *)(ccode + 0xD1C0C))
+#define loc_E1C15 (*(_BYTE *)(ccode + 0xD1C15))
+#define loc_E1C3D (*(_BYTE *)(ccode + 0xD1C3D))
+#define loc_E1C41 (*(_BYTE *)(ccode + 0xD1C41))
+#define loc_E1CB4 (*(_BYTE *)(ccode + 0xD1CB4))
+#define loc_E1EBB (*(_BYTE *)(ccode + 0xD1EBB))
+#define loc_E2169 (*(_BYTE *)(ccode + 0xD2169))
+#define loc_E21B0 (*(_BYTE *)(ccode + 0xD21B0))
+#define loc_E21C9 (*(_BYTE *)(ccode + 0xD21C9))
+#define loc_E21E2 (*(_BYTE *)(ccode + 0xD21E2))
+#define loc_E21F1 (*(_BYTE *)(ccode + 0xD21F1))
+#define loc_E2206 (*(_BYTE *)(ccode + 0xD2206))
+#define loc_E2243 (*(_BYTE *)(ccode + 0xD2243))
+#define loc_E228F (*(_BYTE *)(ccode + 0xD228F))
+#define loc_E22C5 (*(_BYTE *)(ccode + 0xD22C5))
 #define loc_E31F9 (*(_BYTE *)(ccode + 0xD31F9))
+#define loc_E3B96 (*(_BYTE *)(ccode + 0xD3B96))
+#define loc_E4467 (*(_BYTE *)(ccode + 0xD4467))
+#define loc_E54B5 (*(_BYTE *)(ccode + 0xD54B5))
 #define loc_E557C (*(_BYTE *)(ccode + 0xD557C))
 #define loc_E55AC (*(_BYTE *)(ccode + 0xD55AC))
 #define loc_E55B5 (*(_BYTE *)(ccode + 0xD55B5))
+#define loc_E5F90 (*(_BYTE *)(ccode + 0xD5F90))
+#define loc_E5F99 (*(_BYTE *)(ccode + 0xD5F99))
 #define loc_E71FA (*(_BYTE *)(ccode + 0xD71FA))
 #define loc_E7269 (*(_BYTE *)(ccode + 0xD7269))
 #define loc_E938C (*(_BYTE *)(ccode + 0xD938C))
+#define loc_E99DB (*(_BYTE *)(ccode + 0xD99DB))
+#define loc_E9A08 (*(_BYTE *)(ccode + 0xD9A08))
+#define loc_E9A29 (*(_BYTE *)(ccode + 0xD9A29))
+#define loc_E9D52 (*(_BYTE *)(ccode + 0xD9D52))
+#define loc_EBAFE (*(_BYTE *)(ccode + 0xDBAFE))
+#define loc_EC196 (*(_BYTE *)(ccode + 0xDC196))
+#define loc_EC1A2 (*(_BYTE *)(ccode + 0xDC1A2))
+#define loc_EC1A6 (*(_BYTE *)(ccode + 0xDC1A6))
+#define loc_EC1B3 (*(_BYTE *)(ccode + 0xDC1B3))
+#define loc_EC1B7 (*(_BYTE *)(ccode + 0xDC1B7))
+#define loc_EC221 (*(_BYTE *)(ccode + 0xDC221))
+#define loc_EC230 (*(_BYTE *)(ccode + 0xDC230))
+#define loc_EC243 (*(_BYTE *)(ccode + 0xDC243))
 #define loc_EC25C (*(_BYTE *)(ccode + 0xDC25C))
+#define loc_EC25F (*(_BYTE *)(ccode + 0xDC25F))
+#define loc_EC263 (*(_BYTE *)(ccode + 0xDC263))
+#define loc_EC267 (*(_BYTE *)(ccode + 0xDC267))
+#define loc_EC26B (*(_BYTE *)(ccode + 0xDC26B))
+#define loc_EC375 (*(_BYTE *)(ccode + 0xDC375))
 #define loc_EC494 (*(_BYTE *)(ccode + 0xDC494))
 #define loc_EC4BB (*(_BYTE *)(ccode + 0xDC4BB))
 #define loc_EC4C2 (*(_BYTE *)(ccode + 0xDC4C2))
+#define loc_ED050 (*(_BYTE *)(ccode + 0xDD050))
+#define loc_ED067 (*(_BYTE *)(ccode + 0xDD067))
+#define loc_ED12C (*(_BYTE *)(ccode + 0xDD12C))
+#define loc_ED14E (*(_BYTE *)(ccode + 0xDD14E))
+#define loc_ED797 (*(_BYTE *)(ccode + 0xDD797))
+#define loc_EDDEE (*(_BYTE *)(ccode + 0xDDDEE))
+#define loc_FD403 (*(_BYTE *)(ccode + 0xED403))
 #define loc_FD40A (*(_BYTE *)(ccode + 0xED40A))
 #define loc_FD411 (*(_BYTE *)(ccode + 0xED411))
 #define loc_FD419 (*(_BYTE *)(ccode + 0xED419))
+#define loc_FD920 (*(_BYTE *)(ccode + 0xED920))
 #define loc_FE8BE (*(_BYTE *)(ccode + 0xEE8BE))
+#define loc_FEF2D (*(_BYTE *)(ccode + 0xEEF2D))
+#define loc_FF765 (*(_BYTE *)(ccode + 0xEF765))
+#define loc_FF776 (*(_BYTE *)(ccode + 0xEF776))
+#define loc_FFB0E (*(_BYTE *)(ccode + 0xEFB0E))
+#define loc_FFC7F (*(_BYTE *)(ccode + 0xEFC7F))
 #define off_17F803 (*(_UNKNOWN * *)(dseg + 0x07803))
 #define off_17F807 (*(_UNKNOWN * *)(dseg + 0x07807))
 #define off_18230E (*(_BYTE *)(dseg + 0x0A30E))
@@ -735,886 +1816,1224 @@ void InitEseg150(void);
 #define word_240768 (*(_WORD (*)[43])(eseg + 0x16168))
 #define word_DD4BA (*(int16_t *)(ccode + 0xCD4BA))
 
-extern int sub_1E0023();
-extern int sub_1E0062();
-extern int sub_1E0076();
-extern int sub_1E008A();
-extern int sub_1E009E();
-extern int sub_1E00B7();
-extern int sub_1E00D0();
-extern int sub_1E00E4();
-extern int sub_1E00F8();
-extern int sub_1E010C();
-extern int sub_1E011D();
-extern int sub_1E017D();
-extern int sub_1E018D();
-extern int sub_1E019F();
-extern int sub_1E01B0();
-extern int sub_1E01CA();
-extern int sub_1E020F();
-extern int sub_1E021C();
-extern int sub_1E0238();
-extern int sub_1E025A();
-extern int sub_2004B7();
-extern int sub_1E0276();
-extern int sub_1E028A();
-extern int sub_1E02A2();
-extern int sub_1E02BA();
-extern int sub_1E02CE();
-extern int sub_1E02E6();
-extern int sub_1E02FE();
-extern int sub_1E0316();
-extern int sub_1E034A();
-extern int sub_1E0358();
-extern int sub_1E0369();
-extern int sub_1E0372();
-extern int sub_1E038F();
-extern int sub_1E03A6();
-extern int sub_1E03B3();
-extern int sub_1E03C7();
-extern int sub_1E03DB();
-extern int sub_1E03ED();
-extern int sub_1E03FB();
-extern int sub_1E0415();
-extern int sub_1ED4E7();
-extern int sub_1E043F();
-extern int sub_1E0455();
-extern int sub_1E04A4();
-extern int sub_1E04B4();
-extern int sub_1E04C4();
-extern int sub_1E04DF();
-extern int sub_1E04EA();
-extern int sub_1E0513();
-extern int sub_1E0520();
-extern int sub_1E053C();
-extern int sub_1E0571();
-extern int sub_1E0622();
-extern int sub_1E0638();
-extern int sub_1E0646();
-extern int sub_1E0654();
-extern int sub_1E0662();
-extern int sub_1E0670();
-extern int sub_1E067E();
-extern int sub_1E0793();
-extern int sub_1E07A4();
-extern int sub_1E07DA();
-extern int sub_1E07E8();
-extern int sub_1E0802();
-extern int sub_1E0819();
-extern int sub_1E0824();
-extern int sub_1E085C();
-extern int sub_1E087B();
-extern int sub_1E08A9();
-extern int sub_1E08D8();
-extern int sub_1E0932();
-extern int sub_1E0943();
-extern int sub_1E097B();
-extern int sub_1E0A21();
-extern int sub_1E0A4A();
-extern int sub_1E0A95();
-extern int sub_1E0AB0();
-extern int sub_1E0ADF();
-extern int sub_1E0AF7();
-extern int sub_1E0B45();
-extern int sub_1E0B7D();
-extern int sub_1E0B92();
-extern int sub_1E0BAB();
-extern int sub_1E0C0C();
-extern int sub_1E0C54();
-extern int sub_1E0C69();
-extern int sub_1E0C7D();
-extern int sub_1E0C8D();
-extern int sub_1E0C9E();
-extern int sub_1E0D56();
-extern int sub_1E0D75();
-extern int sub_1E0D8C();
-extern int sub_1E0DA9();
-extern int sub_1E0DD1();
-extern int sub_1E0E0D();
-extern int sub_1E0E28();
-extern int sub_1E0E3C();
-extern int sub_1E0E43();
-extern int sub_1E0E59();
-extern int sub_1E0E8B();
-extern int sub_1FBD3B();
-extern int sub_1E0FB4();
-extern int sub_1E0FFA();
-extern int sub_1E1019();
-extern int sub_1E104F();
-extern int sub_1E1062();
-extern int sub_1E10BF();
-extern int sub_1E10DC();
-extern int sub_1E10F7();
-extern int sub_1E1116();
-extern int sub_1E1121();
-extern int sub_1E113C();
-extern int sub_1E1144();
-extern int sub_1E1164();
-extern int sub_1E116C();
-extern int sub_1E11CB();
-extern int sub_1E11E3();
-extern int sub_1E1207();
-extern int sub_1E124A();
-extern int sub_1E1266();
-extern int sub_1E127A();
-extern int sub_1E1295();
-extern int sub_1E12AC();
-extern int sub_1E12E1();
-extern int sub_1E12FB();
-extern int sub_1E1307();
-extern int sub_1E1313();
-extern int sub_1E1327();
-extern int sub_1E1345();
-extern int sub_1E1356();
-extern int sub_1E13A3();
-extern int sub_1E13C6();
-extern int sub_1E13F9();
-extern int sub_1E142B();
-extern int sub_1E145B();
-extern int sub_1E1477();
-extern int sub_1E14B6();
-extern int sub_1E14FF();
-extern int sub_1E1526();
-extern int sub_1E153C();
-extern int sub_1E1556();
-extern int sub_1E1567();
-extern int sub_1E15D4();
-extern int sub_1E15E6();
-extern int sub_1E15F8();
-extern int sub_1E1611();
-extern int sub_1E161B();
-extern int sub_1E1630();
-extern int sub_1E1651();
-extern int sub_1E166A();
-extern int sub_1E16C4();
-extern int sub_1E16F3();
-extern int sub_1E1741();
-extern int sub_1E175B();
-extern int sub_1E1788();
-extern int sub_1FB0DB();
-extern int sub_1FB0EB();
-extern int sub_1E17D1();
-extern int sub_1E17F0();
-extern int sub_1E180F();
-extern int sub_1F9EFF();
-extern int sub_1E185D();
-extern int sub_1E18BF();
-extern int sub_1E18D8();
-extern int sub_1E1914();
-extern int sub_1F9EC7();
-extern int sub_1E193B();
-extern int sub_1E1971();
-extern int sub_1E1992();
-extern int sub_1E19B1();
-extern int sub_1E19D3();
-extern int sub_1E19E2();
-extern int sub_1E1A34();
-extern int sub_1E1A44();
-extern int sub_1E1A50();
-extern int sub_1E1A5F();
-extern int sub_1E1A74();
-extern int sub_1E1B05();
-extern int sub_1E1B40();
-extern int sub_1E1B8A();
-extern int sub_1E1BAC();
-extern int sub_1E1BCA();
-extern int sub_1E1BF6();
-extern int sub_1E1C1B();
-extern int sub_1E1C33();
-extern int sub_1E1C4F();
-extern int sub_1E1C76();
-extern int sub_1E1CB2();
-extern int sub_1E1CD2();
-extern int sub_1E1CF1();
-extern int sub_1E1D04();
-extern int sub_1E1D17();
-extern int sub_1E1A7F();
-extern int sub_1E1D52();
-extern int sub_1E1D6E();
-extern int sub_1E1D7B();
-extern int sub_1E1D9D();
-extern int sub_1E1DB5();
-extern int sub_1E1DCD();
-extern int sub_1E1DF9();
-extern int sub_1E1E9F();
-extern int sub_1FBA8F();
-extern int sub_1E1EEF();
-extern int sub_1E1EFC();
-extern int sub_1E1F16();
-extern int sub_1E1F26();
-extern int sub_1E1F37();
-extern int sub_1E1F48();
-extern int sub_1E1F52();
-extern int sub_1E1F84();
-extern int sub_1E1FBC();
-extern int sub_1E1FE1();
-extern int sub_1E2032();
-extern int sub_1E207F();
-extern int sub_1E2BFA();
-extern int sub_1E2150();
-extern int sub_1E218C();
-extern int sub_1E21BF();
-extern int sub_1E21D7();
-extern int sub_1E21FA();
-extern int sub_1E229F();
-extern int sub_1E22C4();
-extern int sub_1E22FC();
-extern int sub_1E2340();
-extern int sub_1E2359();
-extern int sub_1E236F();
-extern int sub_1E239D();
-extern int sub_1E23B5();
-extern int sub_1E23CA();
-extern int sub_1E23D7();
-extern int sub_1E240E();
-extern int sub_1E242E();
-extern int sub_1E244E();
-extern int sub_1E2463();
-extern int sub_1E2490();
-extern int sub_1E24C5();
-extern int sub_1E24DF();
-extern int sub_1E253A();
-extern int sub_1E2546();
-extern int sub_1E2571();
-extern int sub_1E2589();
-extern int sub_1E2591();
-extern int sub_1E25A0();
-extern int sub_1E25B8();
-extern int sub_1E25C8();
-extern int sub_1E260F();
-extern int sub_1E2619();
-extern int sub_1E2716();
-extern int sub_1E282C();
-extern int sub_1E2837();
-extern int sub_1E2842();
-extern int sub_1E285E();
-extern int sub_1E2876();
-extern int sub_1E28E2();
-extern int sub_1E2906();
-extern int sub_1E293A();
-extern int sub_1E296A();
-extern int sub_1E29A4();
-extern int sub_1E29B1();
-extern int sub_1E07CB();
-extern int sub_1E2A07();
-extern int sub_1E2A48();
-extern int sub_1E2A50();
-extern int sub_1E2AE8();
-extern int sub_1E2B0B();
-extern int sub_1E2B50();
-extern int sub_1E2B6E();
-extern int sub_1E2BA1();
-extern int sub_1E2BA8();
-extern int sub_1E2BDA();
-extern int sub_1E2BE7();
-extern int sub_1E2BEC();
-extern int sub_1E2C4D();
-extern int sub_1E2C61();
-extern int sub_1E2C69();
-extern int sub_1E2C75();
-extern int sub_1E2C9D();
-extern int sub_1E2CA8();
-extern int sub_1E2CBA();
-extern int sub_1E2CD5();
-extern int sub_1E2CEE();
-extern int sub_1E2CF9();
-extern int sub_1E2D19();
-extern int sub_1E2D5C();
-extern int sub_1E2D82();
-extern int sub_1E2D9B();
-extern int sub_1E2DE7();
-extern int sub_1E2E96();
-extern int sub_1E2EAF();
-extern int sub_1E2F08();
-extern int sub_1E2F32();
-extern int sub_1E2F55();
-extern int sub_1E2F83();
-extern int sub_1E2FE7();
-extern int sub_1E305C();
-extern int sub_1E30A4();
-extern int sub_1E30C9();
-extern int sub_1E30F6();
-extern int sub_1E3119();
-extern int sub_1E312F();
-extern int sub_1E314F();
-extern int sub_1E316D();
-extern int sub_1E31A2();
-extern int sub_1E31B1();
-extern int sub_1E31F3();
-extern int sub_1E3200();
-extern int sub_1E3226();
-extern int sub_1E323F();
-extern int sub_1E3285();
-extern int sub_1E32CD();
-extern int sub_1E32E7();
-extern int sub_1E32F2();
-extern int sub_1E3321();
-extern int sub_1E333B();
-extern int sub_1E3380();
-extern int sub_1E33B9();
-extern int sub_1E33D1();
-extern int sub_1E33F7();
-extern int sub_1E3403();
-extern int sub_1E340F();
-extern int sub_1E341A();
-extern int sub_1E3426();
-extern int sub_1E3430();
-extern int sub_1E3448();
-extern int sub_1E3457();
-extern int sub_1E347B();
-extern int sub_1E3488();
-extern int sub_1E3498();
-extern int sub_1E34A4();
-extern int sub_1E34B8();
-extern int sub_1E34C9();
-extern int sub_1E34DF();
-extern int sub_1E3623();
-extern int sub_1E3633();
-extern int sub_1E3645();
-extern int sub_1E36DD();
-extern int sub_1E36F1();
-extern int sub_1E3705();
-extern int sub_1E373F();
-extern int sub_1E37A6();
-extern int sub_1E37F9();
-extern int sub_1E382C();
-extern int sub_1E3852();
-extern int sub_1E388C();
-extern int sub_1E3896();
-extern int sub_1E38A3();
-extern int sub_1E38D2();
-extern int sub_1E38F4();
-extern int sub_1E393E();
-extern int sub_1E3953();
-extern int sub_1E395F();
-extern int sub_1E39A1();
-extern int sub_1E39AC();
-extern int sub_1E39CC();
-extern int sub_1E3A0A();
-extern int sub_1E3A3A();
-extern int sub_1E3AAD();
-extern int sub_1E3ACE();
-extern int sub_1E3AEF();
-extern int sub_1E3B28();
-extern int sub_1E3B3D();
-extern int sub_1E3B52();
-extern int sub_1E3B5D();
-extern int sub_1E3B68();
-extern int sub_1E3B73();
-extern int sub_1E3B99();
-extern int sub_1E3BAC();
-extern int sub_1E3BC9();
-extern int sub_1E3BE6();
-extern int sub_1E3BF3();
-extern int sub_1E3C10();
-extern int sub_1EDD23();
-extern int sub_1E3C37();
-extern int sub_1E3C4D();
-extern int sub_1E3C65();
-extern int sub_1E3C70();
-extern int sub_1E3C7B();
-extern int sub_1E3C96();
-extern int sub_1E3CB3();
-extern int sub_1E3CCB();
-extern int sub_1E3CEB();
-extern int sub_1E3D13();
-extern int sub_1E3D5B();
-extern int sub_1E3D70();
-extern int sub_1E3D80();
-extern int sub_1E3D94();
-extern int sub_1E3DB6();
-extern int sub_1E3DC7();
-extern int sub_1E3E05();
-extern int sub_1E3E42();
-extern int sub_1E3E62();
-extern int sub_1E3E7C();
-extern int sub_1E3E8A();
-extern int sub_1E3E95();
-extern int sub_1E3EA0();
-extern int sub_1E3EAF();
-extern int sub_1E3EC4();
-extern int sub_1E3F2E();
-extern int sub_1E3FE1();
-extern int sub_1E4028();
-extern int sub_1E407B();
-extern int sub_1E40D2();
-extern int sub_1E40E1();
-extern int sub_1E410C();
-extern int sub_1E4118();
-extern int sub_1E4194();
-extern int sub_1E419C();
-extern int sub_1E41B8();
-extern int sub_1E41EE();
-extern int sub_1E4204();
-extern int sub_1E421B();
-extern int sub_1E4234();
-extern int sub_1E4247();
-extern int sub_1E4253();
-extern int sub_1E4282();
-extern int sub_1E42BC();
-extern int sub_1E42D6();
-extern int sub_1E42E3();
-extern int sub_1E42ED();
-extern int sub_1E42FE();
-extern int sub_1E4333();
-extern int sub_1E4346();
-extern int sub_1E437B();
-extern int sub_1E439C();
-extern int sub_1E43B0();
-extern int sub_1E43D8();
-extern int sub_1E2DA5();
-extern int sub_1E449D();
-extern int sub_1E44C1();
-extern int sub_1E44F2();
-extern int sub_1E4544();
-extern int sub_1E4561();
-extern int sub_1E190C();
-extern int sub_1E4598();
-extern int sub_1E45D8();
-extern int sub_1E4677();
-extern int sub_1E4681();
-extern int sub_1E469C();
-extern int sub_1E4717();
-extern int sub_1E4833();
-extern int sub_1E483D();
-extern int sub_1E487C();
-extern int sub_1E48C6();
-extern int sub_1E48F4();
-extern int sub_1E490B();
-extern int sub_1E4926();
-extern int sub_1E4941();
-extern int sub_1E495D();
-extern int sub_1E4971();
-extern int sub_1E4988();
-extern int sub_1E499C();
-extern int sub_1E49DD();
-extern int sub_1E49F7();
-extern int sub_1E4A16();
-extern int sub_1E4A26();
-extern int sub_1E4A69();
-extern int sub_1E4AA2();
-extern int sub_1E4AB0();
-extern int sub_1E4AC3();
-extern int sub_1E4ACB();
-extern int sub_1E4AD9();
-extern int sub_1E4AE8();
-extern int sub_1E4B27();
-extern int sub_1FA3DB();
-extern int sub_1E4B85();
-extern int sub_1E4BA7();
-extern int sub_1E4BEC();
-extern int sub_1E4C10();
-extern int sub_1E4C1A();
-extern int sub_1E4C28();
-extern int sub_1E4C3A();
-extern int sub_1E4C4F();
-extern int sub_1E4C64();
-extern int sub_1E4C79();
-extern int sub_1E4C95();
-extern int sub_1E4CD8();
-extern int sub_1E4D23();
-extern int sub_1E4D69();
-extern int sub_1E4EB2();
-extern int sub_1E4ECC();
-extern int sub_1E4EF2();
-extern int sub_1E4F58();
-extern int sub_1E4F46();
-extern int sub_1E4F6C();
-extern int sub_1E5063();
-extern int sub_1E507C();
-extern int sub_1E0DC1();
-extern int sub_1E50BF();
-extern int sub_1E511C();
-extern int sub_1E512C();
-extern int sub_1E5179();
-extern int sub_1E5198();
-extern int sub_1E51DF();
-extern int sub_1E5207();
-extern int sub_1E5229();
-extern int sub_1E5257();
-extern int sub_1E5281();
-extern int sub_1E52AB();
-extern int sub_1E52D3();
-extern int sub_1E52F7();
-extern int sub_1E530F();
-extern int sub_1E5363();
-extern int sub_1E5373();
-extern int sub_1E5383();
-extern int sub_1E54D3();
-extern int sub_1E54F3();
-extern int sub_1E54FF();
-extern int sub_1E5563();
-extern int sub_1E5643();
-extern int sub_1E567B();
-extern int sub_1E568B();
-extern int sub_1E56F7();
-extern int sub_1E5703();
-extern int sub_1E5753();
-extern int sub_1E57BB();
-extern int sub_1E582F();
-extern int sub_1E58BF();
-extern int sub_1E59AC();
-extern int sub_1E5A03();
-extern int sub_1E5C2B();
-extern int sub_1E5CF3();
-extern int sub_1E5D83();
-extern int sub_1E5EEF();
-extern int sub_1E5F33();
-extern int sub_1E5F57();
-extern int sub_1E5FB3();
-extern int sub_1E6083();
-extern int sub_1E61C7();
-extern int sub_1E6293();
-extern int sub_1E6790();
-extern int sub_1E6B33();
-extern int sub_1E67DB();
-extern int sub_1E6B83();
-extern int sub_1E6C28();
-extern int sub_1E6C40();
-extern int sub_1E6C5F();
-extern int sub_1E6CD3();
-extern int sub_1E6D55();
-extern int sub_1E6D6F();
-extern int sub_1E6DA5();
-extern int sub_1E6E0B();
-extern int sub_1E6E53();
-extern int sub_1E6E7B();
-extern int sub_1E6EA3();
-extern int sub_1E6EFF();
-extern int sub_1E6F3F();
-extern int sub_1E6F7F();
-extern int sub_1E700F();
-extern int sub_1E702B();
-extern int sub_1E70B7();
-extern int sub_1E711F();
-extern int sub_1E78C3();
-extern int sub_1E7937();
-extern int sub_1E7A09();
-extern int sub_1E7A4C();
-extern int sub_1E7B2B();
-extern int sub_1E7D47();
-extern int sub_1E7D97();
-extern int sub_1E7DDB();
-extern int sub_1E7E15();
-extern int sub_1E7E1F();
-extern int sub_1E7E53();
-extern int sub_1E7EB9();
-extern int sub_1E7EBC();
-extern int sub_1E7F27();
-extern int sub_1E7FFF();
-extern int sub_1E8053();
-extern int sub_1E80A3();
-extern int sub_1E80C7();
-extern int sub_1E80E3();
-extern int sub_1E8167();
-extern int sub_1E819B();
-extern int sub_1E81EB();
-extern int sub_1E823B();
-extern int sub_1E8397();
-extern int sub_1E83C3();
-extern int sub_1E83EB();
-extern int sub_1E841B();
-extern int sub_1E844B();
-extern int sub_1E847B();
-extern int sub_1E84A3();
-extern int sub_1E84FB();
-extern int sub_1E8587();
-extern int sub_1E8613();
-extern int sub_1E8663();
-extern int sub_1E8717();
-extern int sub_1E877D();
-extern int sub_1E87C3();
-extern int sub_1E87DF();
-extern int sub_1E8813();
-extern int sub_1E88EF();
-extern int sub_1E893F();
-extern int sub_1E89BF();
-extern int sub_1E89EC();
-extern int sub_1E8A58();
-extern int sub_1E8BCF();
-extern int sub_1E8CC7();
-extern int sub_1E8D9B();
-extern int sub_1E8DBF();
-extern int sub_1E8EB3();
-extern int sub_1E8F5F();
-extern int sub_1E901F();
-extern int sub_1E915F();
-extern int sub_1E91DB();
-extern int sub_1E9203();
-extern int sub_1E9277();
-extern int sub_1E92DD();
-extern int sub_1E9377();
-extern int sub_1E9397();
-extern int sub_1E9413();
-extern int sub_1E94C1();
-extern int sub_1E9557();
-extern int sub_1E966B();
-extern int sub_1E96EB();
-extern int sub_1E9727();
-extern int sub_1E99A7();
-extern int sub_1E9B67();
-extern int sub_1E9BB7();
-extern int sub_1E9D23();
-extern int sub_1E9D73();
-extern int sub_1E9E43();
-extern int sub_1E9EAF();
-extern int sub_1E9F4F();
-extern int sub_1EA007();
-extern int sub_1EA15B();
-extern int sub_1EA2DF();
-extern int sub_1EA31F();
-extern int sub_1EA743();
-extern int sub_1EA783();
-extern int sub_1EA82C();
-extern int sub_1EA883();
-extern int sub_1EA8D7();
-extern int sub_1EABAF();
-extern int sub_1EAD07();
-extern int sub_1EAD6B();
-extern int sub_1EADBB();
-extern int sub_1EAE2F();
-extern int sub_1EAE8B();
-extern int sub_1EAF3C();
-extern int sub_1EAF5B();
-extern int sub_1EAFEB();
-extern int sub_1EB0FC();
-extern int sub_1EB12F();
-extern int sub_1EB207();
-extern int sub_1EB293();
-extern int sub_1EB333();
-extern int sub_1EB393();
-extern int sub_1EB3B3();
-extern int sub_1EB423();
-extern int sub_1EB48B();
-extern int sub_1EB605();
-extern int sub_1EB663();
-extern int sub_1EB6A7();
-extern int sub_1EB6E7();
-extern int sub_1EB703();
-extern int sub_1EB753();
-extern int sub_1EB788();
-extern int sub_1EB7B1();
-extern int sub_1EB834();
-extern int sub_1EB84B();
-extern int sub_1EBA68();
-extern int sub_1EBA97();
-extern int sub_1EBBC1();
-extern int sub_1EBC03();
-extern int sub_1EBE0F();
-extern int sub_1EC090();
-extern int sub_1EC0B3();
-extern int sub_1EC11B();
-extern int sub_1EC257();
-extern int sub_1EC277();
-extern int sub_1EC2EF();
-extern int sub_1EC559();
-extern int sub_1EC708();
-extern int sub_1EC749();
-extern int sub_1EC829();
-extern int sub_1EC84F();
-extern int sub_1EC8EC();
-extern int sub_1EC97B();
-extern int sub_1ECAB3();
-extern int sub_1ECAC7();
-extern int sub_1ECB27();
-extern int sub_1ECB94();
-extern int sub_1ED20F();
-extern int sub_1ECFAF();
-extern int sub_1ED6D3();
-extern int sub_1ED773();
-extern int sub_1E004A();
-extern int sub_1EDE6F();
-extern int sub_1EDF9F();
-extern int sub_1EE083();
-extern int sub_1EE0DB();
-extern int sub_1EE127();
-extern int sub_1EE50F();
-extern int sub_1EE5AF();
-extern int sub_1EE75B();
-extern int sub_1EE7B7();
-extern int sub_1EE80F();
-extern int sub_1EB9A3();
-extern int sub_1F8EF7();
-extern int sub_1F90F7();
-extern int sub_1F9111();
-extern int sub_1F9147();
-extern int sub_1F920F();
-extern int sub_1F8D47();
-extern int sub_1F92E7();
-extern int sub_1F978F();
-extern int sub_1F99A3();
-extern int sub_1F9B77();
-extern int sub_1F9B9B();
-extern int sub_1F9CE3();
-extern int sub_1F9F2B();
-extern int sub_1FA13F();
-extern int sub_1FA191();
-extern int sub_1FA2C7();
-extern int sub_1FA333();
-extern int sub_1FA513();
-extern int sub_1FA9B3();
-extern int sub_1FB00F();
-extern int sub_1E513F();
-extern int sub_1FB0FB();
-extern int sub_1FB25F();
-extern int sub_1FB4A3();
-extern int sub_1FB5D3();
-extern int sub_1E2DF9();
-extern int sub_1FB91B();
-extern int sub_1F8EB3();
-extern int sub_1EE897();
-extern int sub_1FC7BB();
-extern int sub_1FC9A3();
-extern int sub_1FA0D3();
-extern int sub_1FCAFF();
-extern int sub_1FCB5B();
-extern int sub_1FCC27();
-extern int sub_1EBB0B();
-extern int sub_169551();
-extern int sub_1FD03B();
-extern int sub_1FD0EF();
-extern int sub_1FD123();
-extern int sub_1FD1A3();
-extern int sub_1FC66B();
-extern int sub_1FD3A7();
-extern int sub_1FD44F();
-extern int sub_1FD613();
-extern int sub_1FD877();
-extern int sub_1FDA1F();
-extern int sub_1FC79B();
-extern int sub_1ED423();
-extern int sub_1FE753();
-extern int sub_1FEADB();
-extern int sub_1EC897();
-extern int sub_1FF314();
-extern int sub_1EB447();
-extern int sub_1FF453();
-extern int sub_1EBF73();
-extern int sub_1FF89F();
-extern int sub_1FF333();
-extern int sub_1FFBE7();
-extern int sub_1EE77F();
-extern int sub_2002FB();
-extern int sub_1FFD7B();
-extern int sub_1FDA3F();
-extern int sub_2004F3();
-extern int sub_2014CF();
-extern int sub_1FB6BB();
-extern int sub_1FBE2B();
-extern int sub_20193F();
-extern int sub_1FB173();
-extern int sub_1FF103();
-extern int sub_2027EB();
-extern int sub_1EBC6B();
-extern int sub_202E2F();
-extern int sub_202F3D();
-extern int sub_202FF0();
-extern int sub_203047();
-extern int sub_203170();
-extern int sub_20322F();
-extern int sub_20326F();
-extern int sub_2032D5();
-extern int sub_203345();
-extern int sub_20338C();
-extern int sub_2033E7();
-extern int sub_203447();
-extern int sub_2034FF();
-extern int sub_203533();
-extern int sub_1EC7CF();
-extern int sub_2039EF();
-extern int sub_21504F();
-extern int sub_2151CB();
-extern int sub_215247();
-extern int sub_2152C7();
-extern int sub_215337();
-extern int sub_2153D0();
-extern int sub_215513();
-extern int sub_2158FB();
-extern int sub_214777();
-extern int sub_204293();
-extern int sub_2166B7();
-extern int sub_216CFB();
-extern int sub_216D6F();
-extern int sub_216023();
-extern int sub_217893();
-extern int sub_21540B();
-extern int sub_2188B5();
-extern int sub_20B00B();
-extern int sub_218C03();
-extern int sub_218D83();
-extern int sub_218E33();
-extern int sub_2195DF();
-extern int sub_2197CF();
-extern int sub_219B93();
-extern int sub_219BCF();
-extern int sub_219C03();
-extern int sub_219CF4();
-extern int sub_203C9B();
-extern int sub_20E753();
-extern int sub_1E5463();
-extern int sub_219F44();
-extern int sub_219FD7();
-extern int sub_21A067();
-extern int sub_21A26B();
-extern int sub_21A323();
-extern int sub_21A3AB();
-extern int sub_21A3D1();
-extern int sub_21A47F();
-extern int sub_21A4FF();
-extern int sub_21A5AF();
-extern int sub_21A633();
-extern int sub_1EC1E3();
-extern int sub_21A8A5();
-extern int sub_21A8EF();
-extern int sub_21A92F();
-extern int sub_2162DF();
-extern int sub_202F6B();
-extern int sub_21B25F();
-extern int sub_21B320();
-extern int sub_21B44B();
-extern int sub_21B640();
-extern int sub_21B659();
-extern int sub_21B6CB();
-extern int sub_21B967();
-extern int sub_21B9B1();
-extern int sub_21884B();
-extern int sub_21C3DB();
-extern int sub_21C477();
-extern int sub_21C6BB();
-extern int sub_21CBD7();
-extern int sub_21CC21();
-extern int sub_21D617();
-extern int sub_20A07B();
-extern int sub_21A1C3();
-extern int sub_21EDD3();
-extern int sub_21FE2B();
-extern int sub_21FECB();
-extern int sub_21FF83();
-extern int sub_215773();
-extern int sub_2163A7();
-extern int sub_1ECCDF();
-extern int sub_2217DF();
-extern int sub_2218F3();
-extern int sub_20A6E7();
-extern int sub_221A37();
-extern int sub_221B03();
-extern int sub_221BB5();
-extern int sub_221C45();
-extern int sub_221C53();
-extern int sub_221DC7();
-extern int sub_20B857();
-extern int sub_221E6F();
-extern int sub_2220E1();
-extern int sub_22212B();
-extern int sub_21A6CB();
-extern int sub_2223B7();
-extern int sub_215473();
-extern int sub_1EC907();
-extern int sub_202557();
-extern int sub_229EC7();
-extern int sub_22A0C3();
-extern int sub_22A267();
-extern int sub_22A3A7();
-extern int sub_22A40C();
+int sub_169551();
+int sub_169569();
+int sub_1E0000();
+int sub_1E0023();
+int sub_1E004A();
+int sub_1E0062();
+int sub_1E0076();
+int sub_1E008A();
+int sub_1E009E();
+_DWORD * sub_1E00B7();
+int sub_1E00D0();
+int sub_1E00E4();
+int sub_1E00F8();
+void sub_1E010C();
+void sub_1E011D();
+int64_t sub_1E0145();
+int sub_1E017D();
+int sub_1E018D();
+int sub_1E019F();
+void sub_1E01B0();
+int sub_1E01CA();
+int64_t sub_1E01E1();
+int sub_1E020F();
+void sub_1E021C();
+int sub_1E0238();
+int64_t sub_1E0249();
+int sub_1E025A();
+char sub_1E0265();
+int sub_1E0276();
+void sub_1E028A();
+int sub_1E02A2();
+void sub_1E02BA();
+void sub_1E02CE();
+void sub_1E02E6();
+void sub_1E02FE();
+void sub_1E0316();
+int sub_1E032E();
+int sub_1E034A();
+int sub_1E0358();
+unsigned int sub_1E0369();
+void sub_1E0372();
+int sub_1E0380();
+int sub_1E038F();
+int sub_1E0399();
+void sub_1E03A6();
+int sub_1E03B3();
+int sub_1E03C7();
+void sub_1E03DB();
+void sub_1E03ED();
+void sub_1E03FB();
+int sub_1E0415();
+int sub_1E0433();
+int sub_1E043F();
+void sub_1E0455();
+int sub_1E0465();
+int sub_1E0476();
+int sub_1E04A4();
+int sub_1E04B4();
+void sub_1E04C4();
+void sub_1E04DF();
+int sub_1E04EA();
+bool sub_1E04F5();
+void sub_1E0513();
+void sub_1E0520();
+int sub_1E053C();
+int sub_1E0571();
+int sub_1E05D8();
+void sub_1E0622();
+int sub_1E0638();
+_DWORD * sub_1E0646();
+_DWORD * sub_1E0654();
+int sub_1E0662();
+_DWORD * sub_1E0670();
+int16_t * sub_1E067E();
+char sub_1E0793();
+int sub_1E079A();
+void sub_1E07A4();
+_BOOL1 sub_1E07CB();
+_BOOL1 sub_1E07DA();
+void sub_1E07E8();
+void sub_1E0802();
+_DWORD * sub_1E0819();
+int sub_1E0824();
+int64_t sub_1E083D();
+void sub_1E085C();
+void sub_1E087B();
+void sub_1E08A9();
+int sub_1E08D8();
+int sub_1E08E6();
+void sub_1E0932();
+void sub_1E0943();
+int sub_1E095C();
+int16_t sub_1E097B();
+int sub_1E0994();
+int sub_1E09B0();
+int sub_1E09F4();
+int sub_1E0A09();
+int sub_1E0A21();
+int sub_1E0A32();
+_BOOL1 sub_1E0A4A();
+int sub_1E0A60();
+void sub_1E0A95();
+void sub_1E0AB0();
+void sub_1E0ADF();
+void sub_1E0AF7();
+int sub_1E0B25();
+void sub_1E0B45();
+void sub_1E0B7D();
+void sub_1E0B92();
+void sub_1E0BAB();
+_BOOL1 sub_1E0BDD();
+unsigned int sub_1E0C0C();
+unsigned int sub_1E0C29();
+int sub_1E0C54();
+void sub_1E0C69();
+void sub_1E0C7D();
+void sub_1E0C8D();
+void sub_1E0C9E();
+int sub_1E0CB6();
+int64_t sub_1E0CD0();
+int64_t sub_1E0CE0();
+int64_t sub_1E0CEE();
+int sub_1E0D2E();
+void sub_1E0D56();
+int sub_1E0D69();
+int sub_1E0D75();
+int16_t sub_1E0D7E();
+void sub_1E0D8C();
+void sub_1E0DA9();
+void sub_1E0DC1();
+void sub_1E0DD1();
+int16_t sub_1E0DF8();
+void sub_1E0E0D();
+void sub_1E0E28();
+int sub_1E0E3C();
+int64_t sub_1E0E43();
+int64_t sub_1E0E59();
+int sub_1E0E6F();
+int sub_1E0E8B();
+int64_t sub_1E0EF1();
+int64_t sub_1E0EF9();
+bool sub_1E0F06();
+_BYTE * sub_1E0F84();
+void sub_1E0FB4();
+void sub_1E0FFA();
+int sub_1E1019();
+void sub_1E104F();
+void sub_1E1062();
+_BYTE * sub_1E10BF();
+_BYTE * sub_1E10DC();
+void sub_1E10F7();
+int16_t sub_1E1116();
+void sub_1E1121();
+void sub_1E113C();
+int sub_1E1144();
+void sub_1E1164();
+void sub_1E116C();
+int sub_1E11CB();
+void sub_1E11E3();
+void sub_1E1207();
+int sub_1E1229();
+int sub_1E124A();
+char sub_1E1266();
+void sub_1E127A();
+int sub_1E1295();
+int sub_1E12AC();
+int sub_1E12C6();
+bool sub_1E12E1();
+void sub_1E12FB();
+int sub_1E1307();
+int sub_1E1313();
+void sub_1E1327();
+int sub_1E1345();
+char sub_1E1356();
+int64_t sub_1E1386();
+int64_t sub_1E1394();
+int sub_1E13A3();
+int sub_1E13C6();
+int sub_1E13DC();
+int sub_1E13F9();
+int sub_1E1411();
+int sub_1E142B();
+int sub_1E145B();
+void sub_1E1477();
+void sub_1E14B6();
+int sub_1E14CC();
+int sub_1E14FF();
+int sub_1E1526();
+int sub_1E153C();
+int sub_1E1556();
+int sub_1E1567();
+int sub_1E157B();
+void sub_1E15D4();
+void sub_1E15E6();
+int sub_1E15F8();
+void sub_1E1611();
+int sub_1E161B();
+void sub_1E1630();
+void sub_1E1651();
+void sub_1E166A();
+void sub_1E16C4();
+int sub_1E16F3();
+int sub_1E1700();
+int sub_1E1741();
+int sub_1E175B();
+int sub_1E1775();
+void sub_1E1788();
+int sub_1E179E();
+int sub_1E17BD();
+int sub_1E17C7();
+void sub_1E17D1();
+int sub_1E17F0();
+uint64_t sub_1E17F8();
+uint64_t sub_1E180F();
+int16_t sub_1E185D();
+int64_t sub_1E1893();
+int64_t sub_1E18A8();
+int64_t sub_1E18BF();
+int sub_1E18D8();
+int sub_1E18E4();
+int64_t sub_1E18EF();
+int sub_1E190C();
+uint64_t sub_1E1914();
+int64_t sub_1E1923();
+void sub_1E193B();
+void sub_1E1971();
+void sub_1E1992();
+void sub_1E19B1();
+void sub_1E19D3();
+int sub_1E19E2();
+int sub_1E1A24();
+void sub_1E1A34();
+int16_t sub_1E1A44();
+int sub_1E1A50();
+void sub_1E1A5F();
+void sub_1E1A74();
+_BOOL1 sub_1E1A7F();
+_BOOL1 sub_1E1AAF();
+void sub_1E1B05();
+_BOOL1 sub_1E1B65();
+int sub_1E1B8A();
+int16_t sub_1E1BAC();
+void sub_1E1BCA();
+int sub_1E1BF6();
+void sub_1E1C1B();
+void sub_1E1C33();
+void sub_1E1C4F();
+void sub_1E1C76();
+void sub_1E1CB2();
+void sub_1E1CD2();
+void sub_1E1CF1();
+void sub_1E1D04();
+void sub_1E1D17();
+int sub_1E1D2C();
+int sub_1E1D52();
+void sub_1E1D6E();
+void sub_1E1D7B();
+void sub_1E1D9D();
+int sub_1E1DB5();
+int sub_1E1DCD();
+int sub_1E1DE9();
+void sub_1E1DF9();
+int sub_1E1E11();
+int sub_1E1E5F();
+int sub_1E1E6E();
+int sub_1E1E9F();
+int sub_1E1ECB();
+int16_t sub_1E1ED8();
+void sub_1E1EEF();
+char sub_1E1EFC();
+int16_t sub_1E1F16();
+_DWORD * sub_1E1F26();
+_DWORD * sub_1E1F37();
+void sub_1E1F48();
+int sub_1E1F52();
+void sub_1E1F84();
+int sub_1E1FBC();
+void sub_1E1FE1();
+int sub_1E1FF4();
+int sub_1E2013();
+void sub_1E2032();
+int64_t sub_1E207F();
+int sub_1E2090();
+int sub_1E20C4();
+int sub_1E2150();
+int sub_1E218C();
+bool sub_1E21A1();
+void sub_1E21BF();
+int sub_1E21D7();
+int sub_1E21E5();
+int sub_1E21FA();
+void sub_1E229F();
+int sub_1E22C4();
+int sub_1E22E1();
+int sub_1E22FC();
+int sub_1E2318();
+int sub_1E2340();
+int sub_1E2359();
+void sub_1E236F();
+void sub_1E239D();
+void sub_1E23B5();
+void sub_1E23CA();
+void sub_1E23D7();
+void sub_1E240E();
+void sub_1E242E();
+void sub_1E244E();
+int sub_1E2463();
+int sub_1E2490();
+int sub_1E24A8();
+void sub_1E24C5();
+void sub_1E24DF();
+int sub_1E2502();
+int sub_1E2525();
+int16_t sub_1E253A();
+void sub_1E2546();
+int sub_1E2571();
+_BYTE * sub_1E2589();
+int sub_1E2591();
+void sub_1E25A0();
+unsigned int sub_1E25B8();
+unsigned int sub_1E25C8();
+int sub_1E25D8();
+void sub_1E260F();
+void sub_1E2619();
+int sub_1E264B();
+int sub_1E2672();
+bool sub_1E26B1();
+void sub_1E2716();
+int64_t sub_1E276E();
+int sub_1E27C6();
+int sub_1E27F2();
+void sub_1E282C();
+void sub_1E2837();
+int sub_1E2842();
+void sub_1E285E();
+int sub_1E2876();
+int sub_1E28A8();
+void sub_1E28E2();
+int sub_1E2906();
+char sub_1E293A();
+int sub_1E2945();
+void sub_1E296A();
+int sub_1E2985();
+void sub_1E29A4();
+int sub_1E29B1();
+char sub_1E29C4();
+int sub_1E29DD();
+int sub_1E29EF();
+void sub_1E2A07();
+int64_t sub_1E2A20();
+_BOOL1 sub_1E2A48();
+int64_t sub_1E2A50();
+int sub_1E2A62();
+int sub_1E2AE8();
+int sub_1E2B0B();
+int sub_1E2B50();
+void sub_1E2B6E();
+int sub_1E2B99();
+int sub_1E2BA1();
+void sub_1E2BA8();
+int sub_1E2BDA();
+int64_t sub_1E2BE7();
+int sub_1E2BEC();
+int sub_1E2BFA();
+void sub_1E2C4D();
+void sub_1E2C61();
+int sub_1E2C69();
+int sub_1E2C75();
+int sub_1E2C86();
+char * sub_1E2C9D();
+void sub_1E2CA8();
+int sub_1E2CBA();
+int sub_1E2CD5();
+int16_t sub_1E2CDF();
+unsigned int sub_1E2CEE();
+_BOOL1 sub_1E2CF9();
+int sub_1E2D19();
+int sub_1E2D5C();
+int16_t sub_1E2D82();
+int sub_1E2D9B();
+int16_t sub_1E2DA5();
+int sub_1E2DB4();
+int sub_1E2DC2();
+void sub_1E2DE7();
+int sub_1E2DF9();
+char sub_1E2E0D();
+char sub_1E2E52();
+char sub_1E2E68();
+uint16_t sub_1E2E7E();
+int sub_1E2E96();
+void sub_1E2EAF();
+int sub_1E2EE7();
+int sub_1E2F08();
+int sub_1E2F32();
+int sub_1E2F55();
+void sub_1E2F83();
+char sub_1E2FE7();
+int sub_1E300F();
+int sub_1E3046();
+int sub_1E305C();
+int sub_1E3081();
+int sub_1E3095();
+void sub_1E30A4();
+int sub_1E30C9();
+int sub_1E30EA();
+int sub_1E30F6();
+int sub_1E3103();
+void sub_1E3119();
+void sub_1E312F();
+void sub_1E314F();
+int sub_1E316D();
+int16_t sub_1E317C();
+int sub_1E3193();
+void sub_1E31A2();
+bool sub_1E31B1();
+int sub_1E31D3();
+int sub_1E31F3();
+void sub_1E3200();
+void sub_1E3226();
+void sub_1E323F();
+char * sub_1E3259();
+int sub_1E3273();
+int sub_1E3285();
+char sub_1E32B5();
+void sub_1E32CD();
+int64_t sub_1E32E7();
+int sub_1E32F2();
+void sub_1E3321();
+void sub_1E333B();
+char sub_1E3380();
+_BOOL1 sub_1E3383();
+_BOOL1 sub_1E3395();
+_BOOL1 sub_1E33A7();
+int sub_1E33B9();
+void sub_1E33D1();
+void sub_1E33F7();
+void sub_1E3403();
+void sub_1E340F();
+void sub_1E341A();
+void sub_1E3426();
+int sub_1E3430();
+void sub_1E3448();
+void sub_1E3457();
+int sub_1E3466();
+int16_t sub_1E347B();
+int sub_1E3488();
+void sub_1E3498();
+void sub_1E34A4();
+int sub_1E34B8();
+int sub_1E34C9();
+int sub_1E34DF();
+int sub_1E3623();
+int sub_1E3633();
+int sub_1E3645();
+int sub_1E3655();
+int sub_1E3667();
+int sub_1E3684();
+int sub_1E36A1();
+int sub_1E36B5();
+int sub_1E36C9();
+int sub_1E36DD();
+void sub_1E36F1();
+int sub_1E3705();
+int sub_1E3719();
+int sub_1E373F();
+int sub_1E374C();
+int sub_1E3786();
+void sub_1E37A6();
+_BOOL1 sub_1E37CD();
+char sub_1E37E4();
+void sub_1E37F9();
+void sub_1E382C();
+void sub_1E3852();
+int sub_1E3878();
+void sub_1E388C();
+void sub_1E3896();
+void sub_1E38A3();
+int sub_1E38B2();
+int sub_1E38D2();
+void sub_1E38F4();
+int sub_1E3906();
+int sub_1E3923();
+void sub_1E393E();
+int16_t sub_1E3953();
+int sub_1E395F();
+int sub_1E397E();
+void sub_1E39A1();
+void sub_1E39AC();
+void sub_1E39CC();
+void sub_1E3A0A();
+int sub_1E3A3A();
+int sub_1E3A57();
+int sub_1E3A6B();
+void sub_1E3AAD();
+void sub_1E3ACE();
+void sub_1E3AEF();
+int sub_1E3B10();
+int sub_1E3B28();
+int sub_1E3B3D();
+void sub_1E3B52();
+void sub_1E3B5D();
+void sub_1E3B68();
+void sub_1E3B73();
+int sub_1E3B7E();
+void sub_1E3B99();
+void sub_1E3BAC();
+void sub_1E3BC9();
+int sub_1E3BE6();
+void sub_1E3BF3();
+int sub_1E3C10();
+int sub_1E3C1D();
+void sub_1E3C37();
+void sub_1E3C4D();
+int64_t sub_1E3C65();
+unsigned int sub_1E3C70();
+unsigned int sub_1E3C7B();
+int64_t sub_1E3C86();
+unsigned int sub_1E3C96();
+int64_t sub_1E3CA3();
+int sub_1E3CB3();
+int sub_1E3CC0();
+void sub_1E3CCB();
+unsigned int sub_1E3CEB();
+int16_t sub_1E3CF5();
+int16_t sub_1E3D13();
+unsigned int sub_1E3D5B();
+int sub_1E3D70();
+int sub_1E3D80();
+void sub_1E3D94();
+int sub_1E3DB6();
+int16_t sub_1E3DC7();
+void sub_1E3E05();
+void sub_1E3E42();
+void sub_1E3E62();
+int64_t sub_1E3E7C();
+int sub_1E3E8A();
+unsigned int sub_1E3E95();
+void sub_1E3EA0();
+int16_t sub_1E3EAF();
+void sub_1E3EC4();
+_BOOL2 sub_1E3EE6();
+int sub_1E3EF3();
+int sub_1E3F24();
+void sub_1E3F2E();
+int sub_1E3F6B();
+void sub_1E3FE1();
+int sub_1E400A();
+int sub_1E401A();
+int sub_1E4028();
+void sub_1E407B();
+int sub_1E40A6();
+int sub_1E40BC();
+void sub_1E40D2();
+int sub_1E40E1();
+void sub_1E410C();
+void sub_1E4118();
+int sub_1E415C();
+int sub_1E4178();
+void sub_1E4194();
+void sub_1E419C();
+char sub_1E41B8();
+int sub_1E41CB();
+char sub_1E41EE();
+_BOOL1 sub_1E4204();
+void sub_1E421B();
+void sub_1E4234();
+void sub_1E4247();
+void sub_1E4253();
+int sub_1E4282();
+int sub_1E42BC();
+int sub_1E42D6();
+void sub_1E42E3();
+int sub_1E42ED();
+void sub_1E42FE();
+_BOOL1 sub_1E4308();
+int64_t sub_1E432A();
+void sub_1E4333();
+char * sub_1E4346();
+int sub_1E4370();
+void sub_1E437B();
+int sub_1E439C();
+void sub_1E43B0();
+int sub_1E43BC();
+int64_t sub_1E43D0();
+void sub_1E43D8();
+int sub_1E43E4();
+int sub_1E441A();
+uint8_t sub_1E445F();
+void sub_1E449D();
+void sub_1E44C1();
+int sub_1E44F2();
+unsigned int sub_1E4510();
+void sub_1E4544();
+int sub_1E4561();
+char * sub_1E4576();
+void sub_1E4598();
+int sub_1E45D8();
+int sub_1E4615();
+void sub_1E4677();
+void sub_1E4681();
+int sub_1E4692();
+void sub_1E469C();
+void sub_1E4717();
+int sub_1E4833();
+void sub_1E483D();
+int sub_1E487C();
+int sub_1E48B4();
+int sub_1E48C6();
+int sub_1E48E2();
+int sub_1E48F4();
+int sub_1E490B();
+int sub_1E4926();
+int sub_1E4941();
+int sub_1E495D();
+int sub_1E4971();
+int sub_1E4988();
+int sub_1E499C();
+int sub_1E49DD();
+int sub_1E49F7();
+int sub_1E4A16();
+int sub_1E4A26();
+int sub_1E4A69();
+int sub_1E4AA2();
+void sub_1E4AB0();
+int sub_1E4AC3();
+int sub_1E4ACB();
+int sub_1E4AD9();
+int sub_1E4AE8();
+void sub_1E4B27();
+uint64_t sub_1E4B3B();
+int sub_1E4B5A();
+void sub_1E4B85();
+void sub_1E4BA7();
+int sub_1E4BCB();
+int sub_1E4BE0();
+void sub_1E4BEC();
+int64_t sub_1E4C01();
+char * sub_1E4C10();
+void sub_1E4C1A();
+void sub_1E4C28();
+void sub_1E4C3A();
+void sub_1E4C4F();
+void sub_1E4C64();
+void sub_1E4C79();
+int sub_1E4C95();
+void sub_1E4CD8();
+int sub_1E4CFD();
+void sub_1E4D23();
+void sub_1E4D69();
+bool sub_1E4D9E();
+int sub_1E4EA9();
+int sub_1E4EB2();
+unsigned int sub_1E4ECC();
+char sub_1E4EDA();
+void sub_1E4EF2();
+int sub_1E4F03();
+int sub_1E4F16();
+int sub_1E4F46();
+void sub_1E4F58();
+int64_t sub_1E4F62();
+void sub_1E4F6C();
+int sub_1E4F76();
+int sub_1E5006();
+void sub_1E5063();
+_BOOL1 sub_1E507C();
+void sub_1E5097();
+void sub_1E50BF();
+void sub_1E511C();
+int sub_1E512C();
+int sub_1E513F();
+int sub_1E5179();
+int sub_1E519B();
+int sub_1E51DF();
+int sub_1E5207();
+_DWORD * sub_1E5229();
+int sub_1E5257();
+_DWORD * sub_1E5281();
+_DWORD * sub_1E52AB();
+_DWORD * sub_1E52D3();
+_BOOL1 sub_1E52F7();
+int16_t sub_1E530F();
+_BOOL1 sub_1E5363();
+_BOOL1 sub_1E5373();
+int sub_1E5383();
+unsigned int sub_1E5463();
+int sub_1E54D3();
+void sub_1E54F3();
+void sub_1E54FF();
+int sub_1E5563();
+int sub_1E5643();
+_BYTE * sub_1E567B();
+int sub_1E568B();
+void sub_1E56F7();
+int16_t * sub_1E5703();
+int sub_1E5753();
+int sub_1E57BB();
+int sub_1E582F();
+int sub_1E58BF();
+_DWORD * sub_1E59AC();
+int sub_1E5A03();
+int sub_1E5BC7();
+int sub_1E5C2B();
+void sub_1E5CF3();
+void sub_1E5D83();
+int sub_1E5DFF();
+int sub_1E5EEF();
+int sub_1E5F33();
+int sub_1E5F57();
+int sub_1E5FB3();
+int sub_1E6083();
+unsigned int sub_1E61C7();
+unsigned int sub_1E6293();
+int sub_1E6790();
+char * sub_1E67DB();
+char * sub_1E6B33();
+int sub_1E6B83();
+int (*sub_1E6C28(int (*a1)(int), int a2))(int);
+_WORD * sub_1E6C40();
+unsigned int sub_1E6C5F();
+void sub_1E6CD3();
+int sub_1E6D55();
+char * sub_1E6D6F();
+char sub_1E6DA5();
+int sub_1E6E0B();
+int sub_1E6E53();
+int sub_1E6E7B();
+int sub_1E6EA3();
+char sub_1E6EFF();
+int sub_1E6F3F();
+int sub_1E6F7F();
+int16_t sub_1E700F();
+unsigned int sub_1E702B();
+int sub_1E70B7();
+char sub_1E711F();
+int sub_1E78C3();
+int sub_1E7937();
+_WORD * sub_1E7A09();
+int sub_1E7A4C();
+char sub_1E7B2B();
+int sub_1E7D47();
+int sub_1E7D97();
+int sub_1E7DDB();
+int sub_1E7E15();
+char sub_1E7E1F();
+int sub_1E7E53();
+void sub_1E7EB9();
+void sub_1E7EBC();
+int sub_1E7EC3();
+int sub_1E7F27();
+char sub_1E7FFF();
+char sub_1E8053();
+char sub_1E80A3();
+int sub_1E80C7();
+int64_t sub_1E80E3();
+int64_t sub_1E8167();
+int sub_1E819B();
+char sub_1E81EB();
+int sub_1E823B();
+_BOOL1 sub_1E8397();
+int sub_1E83C3();
+int64_t sub_1E83EB();
+int64_t sub_1E841B();
+int64_t sub_1E844B();
+int sub_1E847B();
+int sub_1E84A3();
+int sub_1E84FB();
+uint16_t sub_1E8587();
+int sub_1E8613();
+int sub_1E8663();
+_BYTE * sub_1E8717();
+int sub_1E877D();
+int sub_1E87C3();
+int sub_1E87DF();
+int sub_1E8813();
+int sub_1E88EF();
+int sub_1E893F();
+int16_t sub_1E89BF();
+void sub_1E89EC();
+_BYTE * sub_1E8A58();
+int sub_1E8BCF();
+int sub_1E8CC7();
+int sub_1E8D9B();
+int (*sub_1E8DBF(int (*a1)(int)))(int);
+char sub_1E8EB3();
+unsigned int sub_1E8F5F();
+int sub_1E901F();
+int sub_1E915F();
+void sub_1E91DB();
+int sub_1E9203();
+int sub_1E9277();
+int sub_1E92DD();
+int sub_1E9377();
+unsigned int sub_1E9397();
+unsigned int sub_1E9413();
+int sub_1E94C1();
+int sub_1E9557();
+int sub_1E966B();
+int sub_1E96EB();
+int sub_1E9727();
+int sub_1E99A7();
+void sub_1E9B67();
+int sub_1E9BB7();
+int sub_1E9C6F();
+int sub_1E9D23();
+int sub_1E9D73();
+int sub_1E9E43();
+int sub_1E9EAF();
+int sub_1E9F4F();
+void sub_1EA007();
+int sub_1EA15B();
+int16_t sub_1EA223();
+unsigned int sub_1EA2DF();
+int sub_1EA31F();
+char sub_1EA36F();
+int sub_1EA743();
+int16_t * sub_1EA783();
+_BOOL1 sub_1EA82C();
+_BOOL1 sub_1EA883();
+int16_t sub_1EA8D7();
+int16_t sub_1EABAF();
+int sub_1EAD07();
+void sub_1EAD6B();
+void sub_1EADBB();
+int sub_1EAE2F();
+void sub_1EAE8B();
+int sub_1EAF3C();
+int sub_1EAF5B();
+int sub_1EAFEB();
+_BYTE * sub_1EB0FC();
+int sub_1EB12F();
+char * sub_1EB207();
+int sub_1EB293();
+unsigned int sub_1EB333();
+int sub_1EB393();
+int sub_1EB3B3();
+_BYTE * sub_1EB423();
+_BYTE * sub_1EB447();
+_BYTE * sub_1EB48B();
+_BYTE * sub_1EB607();
+_BYTE * sub_1EB663();
+int sub_1EB6A7();
+int sub_1EB6E7();
+char * sub_1EB703();
+int sub_1EB753();
+_BYTE * sub_1EB788();
+int sub_1EB7B1();
+int sub_1EB834();
+void sub_1EB84B();
+unsigned int sub_1EB8E3();
+int64_t sub_1EB947();
+_DWORD * sub_1EB9A3();
+char sub_1EBA68();
+int sub_1EBA97();
+int sub_1EBB0B();
+int sub_1EBBC1();
+_BYTE * sub_1EBC03();
+_BYTE * sub_1EBC6B();
+void sub_1EBE0F();
+char sub_1EBF73();
+char sub_1EC090();
+int sub_1EC0B3();
+_DWORD * sub_1EC11B();
+int sub_1EC1E3();
+int sub_1EC257();
+int sub_1EC277();
+int sub_1EC2EF();
+char sub_1EC55B();
+unsigned int sub_1EC708();
+void sub_1EC749();
+_BYTE * sub_1EC74C();
+int sub_1EC7CF();
+_BOOL1 sub_1EC829();
+_BOOL1 sub_1EC84F();
+char * sub_1EC897();
+int sub_1EC8EC();
+void sub_1EC907();
+int sub_1EC97B();
+char * sub_1ECAB3();
+int sub_1ECAC7();
+int sub_1ECAF0();
+int16_t sub_1ECB27();
+void sub_1ECB94();
+_WORD * sub_1ECCDF();
+_WORD * sub_1ECE8F();
+int sub_1ECFAF();
+int sub_1ED07B();
+void sub_1ED20F();
+char sub_1ED423();
+int sub_1ED4E7();
+int sub_1ED647();
+void sub_1ED6D3();
+int16_t sub_1ED72B();
+int16_t sub_1ED773();
+int16_t sub_1ED883();
+int16_t sub_1ED94F();
+unsigned int sub_1EDB4F();
+int sub_1EDBDF();
+int sub_1EDD23();
+int sub_1EDE3B();
+unsigned int sub_1EDE6F();
+void sub_1EDF9F();
+void sub_1EE083();
+void sub_1EE0DB();
+_BYTE * sub_1EE113();
+_BYTE * sub_1EE127();
+int * sub_1EE50F();
+int * sub_1EE553();
+int * sub_1EE5AF();
+int * sub_1EE677();
+_BYTE * sub_1EE75B();
+_BYTE * sub_1EE77F();
+_BYTE * sub_1EE7B7();
+unsigned int sub_1EE80F();
+char sub_1EE897();
+char sub_1EEAC3();
+char sub_1EEB13();
+char sub_1EEB4B();
+char sub_1EEBFB();
+char sub_1F8D47();
+char sub_1F8EB3();
+int sub_1F8EF7();
+int sub_1F90F7();
+int sub_1F9111();
+int sub_1F9147();
+char sub_1F920F();
+char sub_1F9273();
+char sub_1F92E7();
+char sub_1F9613();
+char sub_1F978F();
+_BOOL1 sub_1F99A3();
+_BOOL1 sub_1F9B77();
+void sub_1F9B9B();
+int sub_1F9CE3();
+int sub_1F9EC7();
+int sub_1F9ED9();
+int sub_1F9EFF();
+char sub_1F9F2B();
+int sub_1FA0D3();
+int sub_1FA13F();
+char sub_1FA191();
+char sub_1FA20F();
+unsigned int sub_1FA2C7();
+unsigned int sub_1FA333();
+int sub_1FA3DB();
+char sub_1FA43F();
+char sub_1FA513();
+char sub_1FA583();
+char sub_1FA623();
+char sub_1FA9B3();
+int sub_1FAB6F();
+int sub_1FACCB();
+int sub_1FB00F();
+int sub_1FB0DB();
+int sub_1FB0EB();
+int sub_1FB0FB();
+int sub_1FB160();
+void sub_1FB173();
+void sub_1FB25F();
+void sub_1FB4A3();
+void sub_1FB5D3();
+void sub_1FB6BB();
+int sub_1FB7E3();
+int sub_1FB857();
+void sub_1FB91B();
+char sub_1FB983();
+char sub_1FBA8F();
+char sub_1FBBBB();
+char sub_1FBC7F();
+char sub_1FBD3B();
+char sub_1FBE2B();
+char sub_1FBE8F();
+char sub_1FBEDB();
+char sub_1FC06F();
+char sub_1FC47B();
+int * sub_1FC66B();
+int * sub_1FC79B();
+int * sub_1FC7BB();
+int * sub_1FC7FB();
+int * sub_1FC9A3();
+int * sub_1FC9CB();
+int * sub_1FCAFF();
+char sub_1FCB5B();
+int sub_1FCC27();
+char sub_1FCCD7();
+int sub_1FCE67();
+int sub_1FD03B();
+int * sub_1FD0EF();
+void sub_1FD123();
+void sub_1FD1A3();
+int sub_1FD223();
+char sub_1FD2BB();
+int sub_1FD3A7();
+int sub_1FD44F();
+int sub_1FD613();
+void sub_1FD877();
+int * sub_1FDA1F();
+char sub_1FDA3F();
+char sub_1FDC3F();
+char sub_1FDD07();
+char sub_1FE753();
+int sub_1FE80F();
+void sub_1FEADB();
+void sub_1FF103();
+char sub_1FF23B();
+_BOOL1 sub_1FF314();
+char sub_1FF333();
+char sub_1FF429();
+char sub_1FF453();
+char sub_1FF4BF();
+char sub_1FF83F();
+char sub_1FF89F();
+char sub_1FFBE7();
+char sub_1FFCFF();
+_BOOL1 sub_1FFD7B();
+char sub_1FFE6F();
+int sub_200203();
+int sub_2002FB();
+int sub_2004B7();
+char sub_2004F3();
+char sub_200567();
+char sub_2014CF();
+char sub_20181F();
+char sub_201927();
+char sub_20193F();
+char sub_201DEB();
+char sub_202237();
+char sub_20228B();
+char sub_202557();
+void sub_2027EB();
+int sub_2029AB();
+void sub_202E2F();
+_BOOL1 sub_202F3D();
+char sub_202F6B();
+_DWORD * sub_202FF0();
+unsigned int sub_203047();
+signed int sub_203170();
+int sub_20322F();
+_BYTE * sub_20326F();
+char sub_2032D5();
+int sub_203345();
+_BOOL1 sub_20338C();
+int sub_2033E7();
+void sub_203447();
+int sub_2034FF();
+int sub_203533();
+_WORD * sub_203597();
+char sub_203657();
+char sub_2039EF();
+int sub_21504F();
+int sub_2151CB();
+int sub_215247();
+int sub_2152C7();
+int sub_215337();
+_DWORD * sub_2153D0();
+int sub_21540B();
+int sub_215473();
+int sub_215513();
+int sub_21558B();
+int sub_215773();
+int sub_2158FB();
+int sub_215C5F();
+int sub_215CD3();
+int sub_215D47();
+int sub_215DBF();
+int sub_215E2B();
+int sub_215E97();
+int sub_215F03();
+int sub_215F6B();
+int sub_215FD7();
+int sub_216023();
+int sub_2160DF();
+int sub_21611B();
+int sub_216173();
+int sub_21621F();
+int sub_2162DF();
+int sub_2163A7();
+int sub_21644F();
+int sub_216497();
+int sub_21662F();
+int sub_2166B7();
+int sub_2168F7();
+int sub_21696B();
+int sub_2169E3();
+int sub_216C83();
+void sub_216CFB();
+int sub_216D6F();
+int sub_2171CF();
+int sub_217223();
+int sub_217297();
+int sub_21730B();
+int sub_21737F();
+int sub_2173F3();
+int sub_217467();
+int sub_2174DB();
+int sub_21754F();
+unsigned int sub_2175C3();
+int sub_217617();
+int sub_217670();
+int sub_2176CC();
+int sub_217727();
+int sub_217893();
+int sub_217A03();
+int sub_217C0B();
+int sub_217E13();
+int sub_218673();
+int sub_2187DB();
+int sub_21884B();
+int sub_2188B5();
+int sub_21891B();
+_DWORD * sub_21898F();
+int sub_218AFF();
+int sub_218C03();
+int sub_218D83();
+char sub_218E33();
+int sub_218FFF();
+int sub_21927F();
+int sub_2195DF();
+int sub_2197CF();
+int sub_219B93();
+int sub_219BCF();
+int sub_219C03();
+_DWORD * sub_219CF4();
+int sub_219D37();
+int sub_219D5D();
+int sub_219E07();
+int sub_219E87();
+int sub_219F44();
+int sub_219FD7();
+int sub_21A067();
+int sub_21A107();
+int sub_21A1C3();
+int sub_21A26B();
+int sub_21A323();
+int sub_21A3AB();
+int sub_21A3D1();
+int sub_21A47F();
+int sub_21A4FF();
+int sub_21A5AF();
+int sub_21A633();
+int sub_21A6CB();
+int sub_21A8A5();
+int sub_21A8EF();
+int sub_21A92F();
+int sub_21A9FC();
+int sub_21AA87();
+int sub_21AB17();
+int sub_21AB63();
+int sub_21AC1F();
+int sub_21AEFB();
+int sub_21B083();
+int sub_21B210();
+int sub_21B25F();
+int sub_21B308();
+int sub_21B320();
+int sub_21B44B();
+int sub_21B640();
+int sub_21B659();
+int sub_21B6CB();
+int sub_21B967();
+int sub_21B9B1();
+int sub_21BEB8();
+char sub_21C3DB();
+int sub_21C477();
+int sub_21C6BB();
+int sub_21CBD7();
+int sub_21CC23();
+int sub_21CF47();
+int sub_21D617();
+int sub_21DB83();
+int sub_21DB9B();
+int sub_21EC47();
+int sub_21EC93();
+int sub_21EDD3();
+int sub_21F5E8();
+int sub_21F60F();
+int sub_21F65C();
+int sub_21F69F();
+int sub_21FE2B();
+int sub_21FECB();
+int sub_21FF83();
+int sub_2204BF();
+int sub_220863();
+int sub_220A87();
+int sub_220ACF();
+int sub_220B5F();
+int sub_220BD3();
+int sub_220C97();
+int sub_220CDF();
+int sub_220D27();
+int sub_220D6F();
+int sub_220DB7();
+int sub_220DF7();
+int sub_220FAB();
+int sub_22101F();
+int sub_221091();
+int sub_2217DF();
+unsigned int sub_2218F3();
+int sub_2219BC();
+int sub_221A37();
+int sub_221B03();
+int sub_221BB5();
+int sub_221C45();
+int sub_221C53();
+int sub_221DC7();
+int sub_221DD3();
+int sub_221E6F();
+int sub_2220E1();
+int sub_22212B();
+int sub_2223B7();
+int * sub_2227F7();
+int * sub_222841();
+int sub_22288F();
+int sub_22997F();
+char sub_229DBF();
+void sub_229EC7();
+void sub_22A0C3();
+void sub_22A267();
+void sub_22A3A7();
+int sub_22A40C();
 
 #endif
