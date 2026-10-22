@@ -16150,6 +16150,7 @@ extern void _no_support_loaded(void);
 #include "orion_dseg.h"   /* wave 180 */
 #include "orion_cseg.h"   /* wave 182 */
 #include "orion_blocks.h"   /* wave 179 */
+#include "../game150/orion150_hooks.h"   /* wave 185 */
 
 #ifdef __cplusplus
 }

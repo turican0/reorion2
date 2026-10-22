@@ -209,6 +209,7 @@
     <ClCompile Include="src\port\port_ctl.cpp" />
     <ClCompile Include="src\port\port_rec.cpp" />
     <ClCompile Include="src\port\port_qsort.c" />
+    <ClCompile Include="src\game150\orion150_hooks.c" />
     <ClCompile Include="src\game150\orion150_dos.c" />
     <ClCompile Include="src\game150\orion150_code_01.c" />
     <ClCompile Include="src\game150\orion150_code_02.c" />

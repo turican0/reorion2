@@ -10469,7 +10469,9 @@ void sub_5E1E3(int a1, int a2, int a3, int16_t *a4)
   }
   while ( (int16_t)v21 < 212 );
   ServiceAudioTick_FE8BE(0, v20, a3, a4);
-  v27 = sub_5DF0A(v20, a3, a4);
+  v27 = 0;
+  if ( !g_orion150 || Hook150_1E0638() )   /* 1.50 5E3EE: call sub_1E0638 */
+    v27 = sub_5DF0A(v20, a3, a4);
   ServiceAudioTick_FE8BE(v27, v20, a3, a4);
 }
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);

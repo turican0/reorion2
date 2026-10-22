@@ -30,6 +30,7 @@ extern "C" void InitDataSegment(void);   /* wave 180: pointer slots of the data 
 extern "C" void InitEseg150(void);       /* wave 185: pointer slots of the 1.50 block data (orion150_eseg.c) */
 extern "C" uint8_t eseg[], ecode[];
 extern "C" int sub_2029AB(char* a1, char* a2, int a3, uint32_t* a4, int a5, int a6, int a7, int a8);
+extern "C" int g_orion150;   /* wave 185: the game functions take the 1.50 hooks (orion150_hooks.h) */
 
 // Wave 185: the 1.50 patch block starts like in ORION150.EXE before main__0 (main_ 10018 -> 169725 ->
 // loader 169583 -> 169716 call entry 2029AB). Its arguments: argc, argv (32-bit pointers), block base,
@@ -41,6 +42,7 @@ static void Start150(int argc, char** argv)
     int n = argc < 63 ? argc : 63;
 
     InitEseg150();
+    g_orion150 = 1;
     for (int i = 0; i < n; ++i)
         argv32[i] = (uint32_t)(uintptr_t)argv[i];
     sub_2029AB(nullptr, nullptr, n, argv32, (int)(intptr_t)ecode, 0x7598E, (int)(intptr_t)dseg, 0x10000);

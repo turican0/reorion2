@@ -2732,7 +2732,10 @@ int sub_13174(int a1, int a2, int16_t *a3)
   ServiceAudioTick_FE8BE(v3, a1, a2, a3);
   v4 = sub_BBC16();
   ServiceAudioTick_FE8BE(v4, a1, a2, a3);
-  sub_5E1E3(0, a1, a2, a3);
+  if ( g_orion150 )
+    sub_1E0622();   /* 1.50 1318A: call sub_1E0622 */
+  else
+    sub_5E1E3(0, a1, a2, a3);
   ServiceAudioTick_FE8BE(0, a1, a2, a3);
   v7 = sub_111499(dword_192EF4);
   dword_192ED4 = (int)(_DWORD*)sub_110D3C(dword_192EF4, v7 - 12);
