@@ -527,6 +527,7 @@ def fix_asm(a, t):
 # Casts become 32-bit slot reads/writes, T ** variables become uint32_t * with converting uses.
 PP_CAST = re.compile(r'\*\(((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*{2,})\)\s*')
 STMT_START = r'(^|[;{}(,:]|\belse|\bdo)\s*$'      # an assignment that begins a statement
+BYTE_MACRO = r'\b(?:S?(?:LO|HI)BYTE|BYTE\d|(?:LO|HI)WORD|WORD\d|S?HIDWORD|S?LODWORD)\(\s*$'
 PP_FCAST = re.compile(r'(\*+)\(((?:const |unsigned |signed )*[A-Za-z_]\w*(?: \*)?) \((\*{2,})\)(\([^()]*\))\)\s*')
 PP_ARR = re.compile(r'(?m)^  ((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*+)(\w+)(\[\d+\]);')
 PP_DECL = re.compile(r'(?m)^  ((?:const |unsigned |signed )*[A-Za-z_]\w*) (\*{2,})(\w+);')
@@ -675,7 +676,7 @@ def fix_ptr32(t):
                     continue
                 acc = code[m.start() + len(pre):b1]
                 asg = pp_assign(code, b1)
-                if not pre and re.search(r'\b(?:S?(?:LO|HI)BYTE|BYTE\d|(?:LO|HI)WORD|WORD\d)\(\s*$', code[:m.start()][-12:]):
+                if not pre and re.search(BYTE_MACRO, code[:m.start()][-12:]):
                     continue     # BYTE1(v[2]) = 1: bits of the slot itself
                 if asg and asg[0] == '=' and not pre:
                     r1 = pp_rhs_end(code, asg[1])
@@ -782,7 +783,9 @@ def fix_frame(t):
                 rest = code[e:]
                 post = re.match(r'(\+\+|--)', rest)
                 asg = pp_assign(code, e)
-                if pre == '&' and not rest.lstrip().startswith('['):
+                if not pre and re.search(BYTE_MACRO, code[:m.start()][-12:]):
+                    new, end = slot, e     # BYTE1(v) = 1: bits of the slot itself
+                elif pre == '&' and not rest.lstrip().startswith('['):
                     new, end = '((uint32_t *)(frame150 + 0x%X))' % o, e
                 elif pre in ('++', '--'):
                     new, end = '((%s)(uintptr_t)(%s %s= %s))' % (typ, slot, pre[0], sz), e

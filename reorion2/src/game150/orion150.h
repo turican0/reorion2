@@ -14,6 +14,8 @@ extern uint8_t eseg[0x2B38E];
 extern uint8_t ecode[0x4A600];
 extern uint8_t ccode[0x160695];
 void InitEseg150(void);
+/* vsprintf on 32-bit argument slots (orion150_manual.c) */
+int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 
 #define a2222d (*(wchar_t (*)[5])(eseg + 0x13BD8))
 #define a2d2 (*(wchar_t (*)[3])(eseg + 0x127E4))

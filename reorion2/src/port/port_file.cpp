@@ -242,6 +242,7 @@ struct FindState {
     std::string wildcard;    // jen jmenna cast vzoru (bez adresare)
     std::vector<fs::directory_entry> entries; // predem nactene, aby FindNext nemusel znovu prochazet adresar
     size_t nextIndex = 0;
+    int attrMask = 0;        // DOS keeps the search attributes in the DTA for FindNext
 };
 
 std::mutex g_findMutex;
@@ -288,7 +289,9 @@ bool AdvanceFind(FindState& state, int attrMask, DosDta* dta)
         if (isDir && !(attrMask & 0x10))
             continue;
 
-        if (!WildcardMatch(state.wildcard.c_str(), name.c_str()))
+        // DOS: a name without an extension is "NAME." for the pattern ("*.*" finds the directory "120")
+        if (!WildcardMatch(state.wildcard.c_str(), name.c_str()) &&
+            !(name.find('.') == std::string::npos && WildcardMatch(state.wildcard.c_str(), (name + ".").c_str())))
             continue;
 
         FillDta(dta, entry);
@@ -323,6 +326,7 @@ bool FindFirst(const char* pattern, int attrMask, DosDta* dta)
 
     FindState state;
     state.wildcard = wildcardPart;
+    state.attrMask = attrMask;
     bool found = false;
     for (const std::string& cand : candidateDirs) {
         state.directory = ResolveCaseInsensitivePath(cand.empty() ? "." : cand.c_str());
@@ -368,7 +372,7 @@ bool FindNext(DosDta* dta)
     if (handle == 0 || handle >= g_findStates.size() || !g_findStates[handle])
         return false;
 
-    return AdvanceFind(*g_findStates[handle], /*attrMask=*/0, dta);
+    return AdvanceFind(*g_findStates[handle], g_findStates[handle]->attrMask, dta);
 }
 
 } // namespace Port::File
