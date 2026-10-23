@@ -2906,7 +2906,7 @@ int64_t sub_1E0EF9(int *a1, int a2, int a3, unsigned int *a4)
   uint32_t *v4; // eax
   int64_t v6; // [esp-20h] [ebp-20h]
 
-  v4 = (uint32_t *)((uint32_t *)sub_5AEF4());
+  v4 = (uint32_t *)((uint32_t *)sub_5AEF4_131());
   sub_1FBD3B((int)a1, a2, a3, v4, a1, a2, a4);
   return v6;
 }

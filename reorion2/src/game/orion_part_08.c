@@ -1754,7 +1754,7 @@ int sub_8A97A(int16_t *a1)
   byte_199BE0 = v10;
   word_199A08 = word_199A10;
   sub_11C2F0();
-  sub_119281();
+  Hook150_1E04DF();   /* 1.50 08AB32 */
   return sub_A20CD();
 }
 // 192248: using guessed type int16_t word_192248[500];
@@ -9529,7 +9529,7 @@ int sub_92D72( int a1)
 
 
 //----- (00092E72) --------------------------------------------------------
-int16_t sub_92E72()
+int16_t sub_92E72_131()
 {
   int16_t v0; // bx
   int v1; // eax
@@ -9709,7 +9709,7 @@ LABEL_29:
       sub_123E6C((int)unk_17CF00, 1);
       v12 = sub_97588(byte_199F15, 1);
       sprintf(v33, (char *)v32, v12);
-      if ( (uint16_t)sub_94B3A((int)v33, 1u, v7, v32, (int16_t)v10) )
+      if ( (uint16_t)Hook150_1E38B2((int)v33, 1u, v7, v32, (int16_t)v10) )   /* 1.50 09313C */
       {
         sub_98771(byte_199F15);
         byte_199F15 = -1;
@@ -9895,7 +9895,7 @@ void sub_934CF(int a1)
     if ( *(_BYTE *)(v2 + 57) == 4 )
     {
       if ( (char)++*(_BYTE *)(v2 + 55) >= 30 )
-        sub_933F2(i);
+        Hook150_1E31F3(i);   /* 1.50 0934F2 */
     }
     else if ( *(_BYTE *)(v2 + 57) == 1
            && *(char *)(v2 + 55) > 0

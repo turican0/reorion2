@@ -1547,7 +1547,7 @@ int16_t sub_B2501(int a1, int a2)
 
 
 //----- (000B2542) --------------------------------------------------------
-void sub_B2542(int16_t *a1, int16_t *a2, int a3)
+void sub_B2542_131(int16_t *a1, int16_t *a2, int a3)
 {
   int16_t v5; // ax
   int16_t v6; // ax

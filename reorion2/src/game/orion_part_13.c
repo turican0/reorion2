@@ -8653,7 +8653,7 @@ int sub_D1006( int a1)
 
 
 //----- (000D108B) --------------------------------------------------------
-int sub_D108B( int a1, int a2, int a3)
+int sub_D108B_131( int a1, int a2, int a3)
 {
   int v3; // ebx
   int v5; // [esp+0h] [ebp-4h] BYREF

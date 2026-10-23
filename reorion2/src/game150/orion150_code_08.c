@@ -2782,7 +2782,7 @@ void sub_229EC7(int a1, uint32_t *a2, int a3, int a4)
     BYTE1(((_DWORD *)(frame150 + 0x0))[2]) = 1;
   sub_22997F((int16_t)v9, 0, &((_BYTE *)(frame150 + 0x24))[3], (int)((_DWORD *)(frame150 + 0x0)));
 LABEL_11:
-  sub_82809(a1, (char *)a4);
+  sub_82809_131(a1, (char *)a4);
 }
 // 197F98: using guessed type int ((int)(intptr_t)dword_197F98);
 // 199998: using guessed type int16_t word_199998;

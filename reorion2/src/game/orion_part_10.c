@@ -4089,7 +4089,7 @@ void sub_A404E( int a1)
 
 
 //----- (000A432F) --------------------------------------------------------
-void sub_A432F( int a1, int a2, int a3, _WORD *a4, _WORD *a5, _WORD *a6, _WORD *a7, int a8)
+void sub_A432F_131( int a1, int a2, int a3, _WORD *a4, _WORD *a5, _WORD *a6, _WORD *a7, int a8)
 {
   int16_t i; // dx
   int v9; // eax
@@ -4675,7 +4675,7 @@ int64_t sub_A4E93( int a1, int a2, int a3, _BYTE *a4)
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   *a4 = 0;
-  sub_A432F(a1, a2, a3, &v10, &v12, &v13, &v11, (int)v9);
+  sub_A432F_131(a1, a2, a3, &v10, &v12, &v13, &v11, (int)v9);   /* 1.50 A4EB9: not hooked */
   v4 = v10 - (v13 + v11 + v12);
   strcpy(v8, (char *)sub_78477(a3));
   v7 = (int16_t)v10;

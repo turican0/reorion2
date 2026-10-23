@@ -5,9 +5,9 @@
 //----- (001E1144) --------------------------------------------------------
 int sub_1E1144(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-  sub_12479(a5, a6, 0, 0, 0, 0); return 0;
+  sub_12479_131(a5, a6, 0, 0, 0, 0); return 0;
 }
-// 12479: using guessed type _DWORD sub_12479(_DWORD, _DWORD, 0, 0, 0, 0);
+// 12479: using guessed type _DWORD sub_12479_131(_DWORD, _DWORD, 0, 0, 0, 0);
 
 //----- (001E1164) --------------------------------------------------------
 void sub_1E1164(int a1, int a2)

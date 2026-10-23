@@ -4471,7 +4471,7 @@ char sub_FAAD8(int16_t *a1)
   _BYTE v9[4]; // [esp+0h] [ebp-4h] BYREF
 
   /* vlna 69: asm: `movsx eax, word_19199C / imul eax, 0EA9h / add eax, dword_18FF98` */
-  sub_5C510(3753 * (int16_t)word_19999C + (int)(intptr_t)dword_197F98, a1);
+  sub_5C510_131(3753 * (int16_t)word_19999C + (int)(intptr_t)dword_197F98, a1);   /* 1.50 FAAF6: not hooked */
   *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 40) = 100;
   sub_F53CB();
   sub_8F1C4((void (*)(int, int))sub_F19C7, v9, 11);
@@ -6861,7 +6861,7 @@ LABEL_63:
   if ( v4 )
     return (int16_t)sub_FE96F((int)v19, 212);
   else
-    return sub_FC734();
+    return Hook150_1E40BC((int)(intptr_t)v23);   /* 1.50 FD5DE: call sub_1E40BC */
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
 // 17D916: using guessed type int dword_17D916;
@@ -9151,7 +9151,7 @@ LABEL_21:
   {
     if ( v38 < 0 )
     {
-      if ( sub_EB7FD(v28, v29, *(int16_t *)(v4 + 15), *(int16_t *)(v4 + 17)) )
+      if ( Hook150_1E37E4(sub_EB7FD(v28, v29, *(int16_t *)(v4 + 15), *(int16_t *)(v4 + 17)), a1, a2, a3) )   /* 1.50 FFAA1: call sub_1E37E4 */
         goto LABEL_55;
     }
     else

@@ -161,7 +161,7 @@ void GameMain_10057(int argc, char** argv, int16_t *a3)
       // 0102C6: debug switch only; sub_1202D ignores its eax and returns 0
       if ( sub_1202D() )
       {
-        sub_12479((uint8_t)byte_199CB0, (uint8_t)byte_199CB2,
+        sub_12479_131((uint8_t)byte_199CB0, (uint8_t)byte_199CB2,   /* 1.50 1030F: not hooked */
                      (uint8_t)byte_199CB3, (uint8_t)byte_199CB1,
                      (uint8_t)byte_199CB4, (uint8_t)byte_199CB5);
         word_199A08 = 0x27;
@@ -1151,7 +1151,7 @@ char sub_10E2F(int a1, int a2, int a3, int a4)
     v46 += 3753;
     ++v45;
   }
-  sub_7A7CF();
+  Hook150_1E1ED8();   /* 1.50 0115ED */
   sub_FE8C8(dword_192ED4, v45);
   return 1;
 }
@@ -1344,7 +1344,7 @@ void sub_1160B(int a1, int a2, int a3, int a4)
     fwrite(&word_19998C, 2, 1, v7);
     fwrite(&word_199990, 2, 1, v7);
     fwrite(v26, 1000 - (int16_t)v35, 1, v7);
-    fclose(v7);
+    Hook150_1E1ECB(v7);   /* 1.50 11BCB */
     LOWORD(v24) = sub_7A7CF();
     nullsub_14(v24);
     sub_11BE4();
@@ -1426,7 +1426,7 @@ char sub_11BE4_131()
   if ( !v0 )
     return 0;
   fwrite(&byte_199BDC, 553, 1, v0);
-  v2 = fclose(v1);
+  v2 = g_orion150 ? 0 : fclose(v1);   /* 1.50 11C1A: call nullsub_40 - the file is closed once */
   nullsub_14(v2);
   fclose(v1);
   return 1;
@@ -1451,7 +1451,7 @@ char LoadSettingsFile_11C39(int a1)
   if ( v1 )
   {
     fread(&byte_199BDC, 553, 1, v1);
-    v3 = fclose(v2);
+    v3 = fclose(v2);   /* 1.50 11C6F: call j_fclose_, the same */
     nullsub_14(v3);
   }
   return sub_7A06C();
@@ -1975,7 +1975,7 @@ int sub_1241A()
 //   eax = byte_199CB0, edx = byte_199CB2, ebx = byte_199CB3,
 //   ecx = byte_199CB1, push byte_199CB5, push byte_199CB4.
 // Dva zasobnikove argumenty (`retn 8`) telo NEPOUZIVA.
-void sub_12479(int a1, int a2, int a3, int a4, int a5, int a6)
+void sub_12479_131(int a1, int a2, int a3, int a4, int a5, int a6)
 {
   int16_t v8;   /* var_8  = spillnute eax */
   int16_t vC;   /* var_C  = spillnute edx */
@@ -12206,7 +12206,7 @@ LABEL_22:
           *(_DWORD *)(v10 + 3753 * byte_19ABA4[v8] + 491) -= v7;
           goto LABEL_93;
         case 4:
-          sub_4E3B5(-100, byte_19ABA4[9 * i], *(int16_t *)((char *)&word_19ABA7 + 9 * i), 0, 0, 0);
+          Hook150_1E0793(-100, byte_19ABA4[9 * i], *(int16_t *)((char *)&word_19ABA7 + 9 * i), 0, 0, 0);   /* 1.50 209E7 */
           goto LABEL_54;
         case 5:
           sub_4E3B5(100, byte_19ABA4[9 * i], *(int16_t *)((char *)&word_19ABA7 + 9 * i), 0, 0, 0);

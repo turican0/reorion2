@@ -2780,7 +2780,7 @@ char sub_56460( int a1, char *a2)
   char result; // al
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
-  sub_616A5(a1, (int)a2, 5);
+  Hook150_1E10F7(a1, (int)a2, 5);   /* 1.50 05646B */
   strcpy(a2, (char *)off_1800EE);
   return result;
 }
@@ -2812,7 +2812,7 @@ char sub_564CD( int a1, int a2)
   int v6; // edx
   char result; // al
 
-  sub_127776((_BYTE *)a2, 0x63u);
+  Hook150_1E10BF((_BYTE *)a2, 0x63u);   /* 1.50 0564E0 */
   strcpy((char *)a2, &aColonyShip[16 * (uint8_t)byte_199CAE]);
   *(_BYTE *)(a2 + 16) = 0;
   *(_BYTE *)(a2 + 17) = 1;
@@ -2844,7 +2844,7 @@ void sub_56586( int a1, int a2)
   char v5; // dl
   int v6; // edx
 
-  sub_127776((_BYTE *)a2, 0x63u);
+  Hook150_1E10BF((_BYTE *)a2, 0x63u);   /* 1.50 056599 */
   strcpy((char *)a2, &aOutpostShip[16 * (uint8_t)byte_199CAE]);
   *(_BYTE *)(a2 + 16) = 0;
   *(_BYTE *)(a2 + 17) = 4;
@@ -2880,7 +2880,7 @@ int sub_5663E( int a1, int a2)
   int v9; // eax
   int result; // eax
 
-  sub_127776((_BYTE *)a2, 0x63u);
+  Hook150_1E10BF((_BYTE *)a2, 0x63u);   /* 1.50 05664E */
   strcpy((char *)a2, &aTransport[16 * (uint8_t)byte_199CAE]);
   *(_BYTE *)(a2 + 16) = 0;
   *(_BYTE *)(a2 + 17) = 2;
@@ -3711,7 +3711,7 @@ void sub_572AB( int a1)
       v7[902] = byte_17FE90[v7[822] + v8] + v6;
     }
     v9 = 99 * v4++;
-    *(_WORD *)((uint8_t*)dword_197F98 + 3753 * a1 + v9 + 900) = sub_6B577(a1, v9 + 3753 * a1 + (uint8_t*)dword_197F98 + 806);
+    *(_WORD *)((uint8_t*)dword_197F98 + 3753 * a1 + v9 + 900) = Hook150_1E01B0(a1, v9 + 3753 * a1 + (uint8_t*)dword_197F98 + 806);   /* 1.50 0573A1 */
     if ( v4 >= 6 )
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x56A34 je epilog funkce */
   }
@@ -7278,7 +7278,7 @@ int sub_5AE38(int a1)
 
 
 //----- (0005AEF4) --------------------------------------------------------
-int sub_5AEF4()
+int sub_5AEF4_131()
 {
   _DWORD *v0; // esi
   int v1; // ebx
@@ -8629,7 +8629,7 @@ int sub_5C25B()
 // V asm konci vetev s vybranou rasou `mov edx, 1` a vetev ESC `xor edx, edx`,
 // spolecny konec je `loc_5CF30: mov eax, edx`. Volajici `sub_CD435` dela
 // `cmp ax, 1` a jen pri 1 pokracuje na generovani vesmiru.
-int sub_5C510(int base, int16_t *a1)
+int sub_5C510_131(int base, int16_t *a1)
 {
   int v1; // eax
   int v2; // ebx
@@ -11413,7 +11413,7 @@ int sub_5F5A3(int a1, int a2)
   if ( byte_199CB4 == 1 )
     return 120;
   a1 = (int16_t)a1;
-  v2 = sub_568EB(a1);
+  v2 = Hook150_1E3D80(a1);   /* 1.50 05F5CB */
   v3 = sub_6EE8E(a1, v2, 1, 1, 1u, 2);
   v4 = 225 / v3;   /* 0x5F5F2 ebx = quotient, edx = remainder is the 2nd arg */
   v5 = 3 * word_17F819[14 * v2] / 2 - (int16_t)sub_5F871((int16_t)a2, 225 % v3);
@@ -13497,7 +13497,7 @@ LABEL_41:
   }
   *(_BYTE *)(a2 + 96) = byte_17FE90[46 * *(uint8_t *)(a2 + 19) + *(uint8_t *)(a2 + 16)];
   *(_BYTE *)(a2 + 93) = a1;
-  *(_WORD *)(a2 + 94) = sub_6B577(a1, a2);
+  *(_WORD *)(a2 + 94) = Hook150_1E01B0(a1, a2);   /* 1.50 061B36 */
   result = dword_192FD8;
   *(_WORD *)(a2 + 97) = dword_192FD8;
   return result;

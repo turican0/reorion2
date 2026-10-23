@@ -3515,7 +3515,7 @@ char sub_27F9F(int a1)
     v5 = (int16_t *)(v4 + dword_192B14);
     if ( *(int16_t *)(v4 + dword_192B14) > 0
       && byte_17F80F[28 * *v5] != 2
-      && (int16_t)sub_286E8(v9, *(int16_t *)((char *)v5 + 9), *(int16_t *)((char *)v5 + 11)) < 3 )
+      && (int16_t)Hook150_1E25C8(v9, *(int16_t *)((char *)v5 + 9), *(int16_t *)((char *)v5 + 11)) < 3 )   /* 1.50 0280AD */
     {
       v6 = *(uint8_t *)(313 * v9 + dword_192864 + 32);
       if ( sub_3BB3D(v14) == v6 )
@@ -3652,7 +3652,7 @@ char sub_28168( int a1)
           v19 = *(int16_t *)((char *)v18 + 11);
           v20 = *(int16_t *)((char *)v18 + 9);
           v38 = a1;
-          if ( (int16_t)sub_286E8(a1, v20, v19) < 3 )
+          if ( (int16_t)Hook150_1E25C8(a1, v20, v19) < 3 )   /* 1.50 028404 */
           {
             v21 = *(uint8_t *)(dword_192864 + 313 * v38 + 32);
             if ( sub_3BB3D(v37) == v21 )
@@ -3766,7 +3766,7 @@ LABEL_74:
     if ( *(_BYTE *)(v39 + dword_192864 + 36) || i == a1 || sub_3E563(i) )
       continue;
     v34 = a1;
-    v13 = sub_2885A(a1, i);   /* wave 184: 282E8 result */
+    v13 = Hook150_1E0C69(a1, i);   /* 1.50 0282E8; wave 184: 282E8 result */
     v12 = 313 * v34;
     v46 = v13;
     v14 = sub_35CAD(i);   /* wave 184: 282FE add [var_24], eax */
@@ -3987,7 +3987,7 @@ int sub_286E8( int a1, int a2, int a3)
 int sub_28836( int a1, int a2)
 {
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  return sub_286E8(a1, *(_WORD *)(26 * a2 + dword_192B14 + 9), *(_WORD *)(26 * a2 + dword_192B14 + 11));
+  return Hook150_1E25C8(a1, *(_WORD *)(26 * a2 + dword_192B14 + 9), *(_WORD *)(26 * a2 + dword_192B14 + 11));   /* 1.50 028852 */
 }
 // 192B14: using guessed type int dword_192B14;
 
@@ -4492,7 +4492,9 @@ int sub_290DA( int a1, int a2, int a3, int a4, int a5, int a6)
     if ( v19 < 0 )
       v19 = 0;
   }
-  v23 = sub_EC0DE(v18, v19, v25, v16, v26);   /* 293CF imul eax, edx */
+  /* 1.50 293C6: call sub_1E3F2E, word [ebp-2Ch] = (int16_t)a1 from 291F8; without that branch the original reads
+       an unset stack word - taken as 0 here */
+    v23 = Hook150_1E3F2E(v18, v19, v25, v16, v26, byte_17F80F[28 * v30] ? 0 : (int16_t)a1);   /* 293CF imul eax, edx */
   return a4 * v23;
 }
 // 291B4: conditional instruction was optimized away because %arg_4.2==0
@@ -4791,6 +4793,7 @@ void sub_29837(void)
     {
       SHIP_29837(word_1998F8)[177] = (uint8_t)sub_2A545(word_1998F8, (int16_t)v_t);   /* 2998D */
       vC = (int16_t)sub_2A9A5(word_1998F8, (int16_t)v_t);
+          Hook150_1E24A8();   /* 1.50 29998: call sub_1E24A8 */
       if ( vC )
         v4 = 0;
       else
@@ -4846,7 +4849,7 @@ void sub_29837(void)
               v10 = 0;
               v18 = 0;
               if ( SHIP_29837(word_1998F8)[63] )   /* 29BD5 */
-                v_r = sub_286E8(
+                v_r = Hook150_1E25C8(   /* 1.50 029BFB */
                         word_1998F8,
                         *(int16_t *)(intptr_t)(dword_192B14 + 26 * v_di + 9),
                         *(int16_t *)(intptr_t)(dword_192B14 + 26 * v_di + 11));
@@ -4965,7 +4968,7 @@ int sub_29F1B( int a1, int a2, int a3)
   }
   else
   {
-    v16 = sub_286E8(a1, *(_WORD *)(26 * a2 + dword_192B14 + 9), *(_WORD *)(26 * a2 + dword_192B14 + 11));
+    v16 = Hook150_1E25C8(a1, *(_WORD *)(26 * a2 + dword_192B14 + 9), *(_WORD *)(26 * a2 + dword_192B14 + 11));   /* 1.50 029F4D */
     if ( v16 < 1 )
       v16 = 1;
   }
@@ -5060,7 +5063,7 @@ void sub_2A145(int a1)
   {
     v0 = v8;
     v1 = 26 * (int16_t)v8;
-    v2 = sub_286E8(v5, *(_WORD *)(v1 + dword_192B14 + 9), *(_WORD *)(v1 + dword_192B14 + 11));
+    v2 = Hook150_1E25C8(v5, *(_WORD *)(v1 + dword_192B14 + 9), *(_WORD *)(v1 + dword_192B14 + 11));   /* 1.50 02A180 */
     v3 = (int16_t *)(v1 + dword_192B14);
     if ( *(int16_t *)(v1 + dword_192B14) > 0
       && byte_17F80F[28 * *v3] != 2
@@ -6175,7 +6178,7 @@ int sub_2B7CC( int a1, int a2, int a3, int a4, int16_t *a5, int a6)
   if ( a6 <= -1 )
     v25 = 2;
   else
-    v25 = sub_286E8(a1, *(_WORD *)(dword_192B14 + 26 * a6 + 9), *(_WORD *)(dword_192B14 + 26 * a6 + 11));
+    v25 = Hook150_1E25C8(a1, *(_WORD *)(dword_192B14 + 26 * a6 + 9), *(_WORD *)(dword_192B14 + 26 * a6 + 11));   /* 1.50 02B827 */
   if ( *(uint8_t *)(dword_192864 + 313 * a1 + 32) == word_1998AC )
     v9 = word_19988E;
   else
@@ -6517,7 +6520,7 @@ int sub_2BF73(int a1, int a2, int a3)
 
   if ( !v_si )
     return a1;   /* 2BF82 jz locret_2C124 (eax = a1) */
-  v4 = sub_2885A(vC, v_di);
+  v4 = Hook150_1E0C69(vC, v_di);   /* 1.50 02BF90 */
   v_cx = sub_4B0D3(vC, 35) ? 4 : 1;   /* 2BF9F */
   v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * vC);
   v8 = (int16_t)(v_s[175] / 2);
@@ -6605,7 +6608,7 @@ int sub_2C129_131( int a1, int a2)
   v41 = v6;
   if ( v5 != -1 )
   {
-    v9 = sub_2885A(v36, v5);   /* wave 184: 2C16C result */
+    v9 = Hook150_1E0C69(v36, v5);   /* 1.50 02C16C; wave 184: 2C16C result */
     v38 = v9;
     if ( sub_4B0D3(v36, 35) )
       v40 = 4;
@@ -8699,7 +8702,7 @@ LABEL_2FFE0:
     result = sub_2F382();
   }
   if ( word_199900 == 1 )
-    result = sub_34921();
+    result = Hook150_1E3E95();   /* 1.50 030048 */
   return result;
 }
 
@@ -10929,7 +10932,7 @@ void sub_32D94( int a1)
   v34 = v6;
   if ( v3 != v7 )
     sub_3F628(a1, v3, (int16_t)((_WORD)v36 - 20 * word_1998F0), (int16_t)(v6 - 20 * word_1998F2));
-  if ( !(uint16_t)sub_3897A(a1) )
+  if ( !(uint16_t)Hook150_1E19E2(a1) )   /* 1.50 032EA1 */
   {
     v8 = (uint16_t *)sub_127C27((int)aCmbtsfxLbx_2, 42, dword_193174);
     v42 = *v8;
@@ -13259,7 +13262,7 @@ int sub_36139( int a1, int a2, int16_t *a3)
       v10 = (uint8_t *)(313 * i + dword_192864);
       if ( v10[32] == a1 && !v10[176] && !v10[36] )
       {
-        if ( sub_4B0D3(i, 38) )
+        if ( Hook150_1E22FC(i, 38) )   /* 1.50 036213 */
           *a3 = 70;
         v11 = *(int16_t *)(dword_192864 + 313 * i + 173);
         if ( v11 > -1 )
@@ -13355,7 +13358,7 @@ int sub_36266(int a1)
             v2 = v9;
         }
       }
-      if ( v14 && sub_4B0D3(i, 28) )
+      if ( v14 && Hook150_1E22FC(i, 28) )   /* 1.50 036362 */
         v13 = 20;
     }
   }
@@ -13960,8 +13963,8 @@ void sub_36ED1( int a1, int a2, int a3, int a4, int a5)
         if ( *(_BYTE *)(v20 + dword_192864 + 64) != 1 && *(_BYTE *)(v6 + 64) != 4 && *(_BYTE *)(v6 + 177) )
         {
           sub_49ED1(a1, &v27, &v25);
-          v7 = sub_286E8(i, v27 + a2, v25 + a3);
-          v8 = sub_286E8(i, v27 + a4, v25 + a5);
+          v7 = Hook150_1E25B8(i, v27 + a2, v25 + a3);   /* 1.50 036F90 */
+          v8 = Hook150_1E25B8(i, v27 + a4, v25 + a5);   /* 1.50 036FAB */
           if ( v7 < 1 )
             v7 = 1;
           if ( v7 <= 8 && v7 <= v8 )

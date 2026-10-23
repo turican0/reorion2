@@ -563,7 +563,7 @@ void sub_9453C(_BYTE *a1, int16_t *a2, int a3)
   word_19991C = -1;
   word_19990E = -1;
   word_1999C6 = -1;
-  sub_A20CD();
+  Hook150_1E30F6();   /* 1.50 09456D */
   if ( byte_199F1F == 1 )
   {
     if ( word_19C53E == -1 && byte_199F19 == 1 )
@@ -1066,7 +1066,7 @@ void sub_94C1D(int a1, int a2, int16_t *a3, int a4)
   word_19990E = -1;
   byte_199F29 = 0;
   word_199910 = -1;
-  sub_A20CD();
+  Hook150_1E30F6();   /* 1.50 094CF9 */
   sub_131922(0, 255);
   sub_C5BB9();
   if ( byte_199F19 == 1 )
@@ -1164,7 +1164,7 @@ void sub_94C1D(int a1, int a2, int16_t *a3, int a4)
     }
     v65 = byte_199F1F == 0;
     sub_12C2A0();
-    v14 = sub_1171AB(0, SHIDWORD(v11), v12, (int)v13);
+    v14 = Hook150_1E3103(0, SHIDWORD(v11), v12, (int)v13);   /* 1.50 094F73 */
     v15 = v14;
     v55 = v14;
     v41 = sub_114177();
@@ -3028,7 +3028,7 @@ int sub_9718F( int a1, int a2, int a3, int a4)
     result = v14;
     if ( v14 == -1 )
       return result;
-    sub_933F2(v14);
+    Hook150_1E31F3(v14);   /* 1.50 09721E */
   }
   v10 = dword_1930DC + 59 * a1;
   *(_BYTE *)(v10 + 55) = 0;
@@ -3512,7 +3512,7 @@ int sub_97A2D( int a1, int a2)
 
 
 //----- (00097A66) --------------------------------------------------------
-void sub_97A66( int a1)
+void sub_97A66_131( int a1)
 {
   int16_t v3; // ax
   int16_t v4; // si
@@ -3930,7 +3930,7 @@ char sub_97F8D(int16_t *a1, int a2, int a3, int16_t a4)
   }
   else
   {
-    sub_933F2(v4);
+    Hook150_1E31F3(v4);   /* 1.50 098015 */
   }
   return v14;
 }
@@ -4411,7 +4411,7 @@ void sub_98771( int a1)
   {
     *(_WORD *)(129 * v3 + dword_197F9C + 116) = -1;
   }
-  sub_933F2(a1);
+  Hook150_1E31F3(a1);   /* 1.50 0987DC */
   sub_92E72();
   sub_93DF7();
   sub_9872C();
@@ -7591,7 +7591,8 @@ LABEL_12:
     v10 = 113 * (int16_t)v64 + dword_19306C;
     if ( *(char *)(v10 + 40) > 0 && *(_BYTE *)(v10 + 40) != 11 )
       v5 = *(char *)(v10 + 40);
-    v11 = sub_78C5B(v5);
+    v5 = Hook150_1E4308((int16_t)v66, v5);   /* 1.50 9C0F8: call sub_1E4308 */
+        v11 = sub_78C5B(v5);
     v12 = v11;
     if ( v5 > 0 && v11 )
     {

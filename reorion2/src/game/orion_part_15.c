@@ -4860,7 +4860,7 @@ int16_t sub_EB87D(int a1)
 
 
 //----- (000EB9C8) --------------------------------------------------------
-_BOOL1 sub_EB9C8( int a1, int a2, int a3)
+_BOOL1 sub_EB9C8_131( int a1, int a2, int a3)
 {
   int v3; // esi
   int16_t *v4; // ebx

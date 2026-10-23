@@ -899,6 +899,25 @@ def fix_va(t):
     return head + copy + rest
 
 
+# Hex-Rays mistakes in single functions, fixed after the generic passes: address -> [(old, new, count)]; old
+# must be there exactly count times
+FIXES = {
+    # 1ED677 push [esp+20h+var_C] is arg_0 (IDA's stack delta is off there): the text, a3 like in 1ED693;
+    # the same after sub_8EBBB (1ED6CB)
+    0x1ED647: [('sub_1E00E4(*(_WORD *)(a4 + 6), *(_WORD *)(a4 + 8), v7)',
+                'sub_1E00E4(*(_WORD *)(a4 + 6), *(_WORD *)(a4 + 8), a3)', 2)],
+}
+
+
+def fix_single(a, t):
+    for old, new, count in FIXES.get(a, []):
+        if t.count(old) != count:
+            raise SystemExit('FIXES %06X: %r found %d times' % (a, old, t.count(old)))
+        t = t.replace(old, new)
+        stats['single fixes'] += 1
+    return t
+
+
 gen_head, reg_params = {}, {}
 # block code addresses kept in block data (callback tables)
 fix_c_targets = set()
@@ -929,6 +948,7 @@ for a, c in funcs:
     t = fix_frame(t)
     t = fix_gptr(t)
     t = fix_va(t)
+    t = fix_single(a, t)
     t = promote(t)
     fh = func_header(t)
     if fh and '...' not in fh[4] and '(' not in fh[2]:

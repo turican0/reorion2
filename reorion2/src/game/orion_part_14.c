@@ -6808,7 +6808,7 @@ void sub_DDB25(char *a1, char *a2)
   v21 = 0;
   v5 = *(char *)(v4 + 2207) / 2;
   v22 = 0;
-  v18 = sub_DDAD4((int)a1);
+  v18 = Hook150_1E2AE8((int)a1, (char *)(uintptr_t)v4);   /* 1.50 DDB8A: call sub_1E2AE8 */
   v16 = (char *)&unk_179F5F;
   a1[7] = byte_DD4C4[*(char *)(v4 + 2207)];
   if ( v5 == 3 )
@@ -11750,7 +11750,7 @@ void sub_E3456(char *a1)
 
 
 //----- (000E3616) --------------------------------------------------------
-char *sub_E3616(char *result)
+char *sub_E3616_131(char *result)
 {
   char *v1; // edx
 
@@ -11803,7 +11803,7 @@ _BOOL1 sub_E36B7(char *a1)
 
 
 //----- (000E36DF) --------------------------------------------------------
-void sub_E36DF(char *a1, int a2)
+void sub_E36DF_131(char *a1, int a2)
 {
   int v2; // ecx
   char *v3; // eax
@@ -12145,7 +12145,7 @@ LABEL_95:
     {
       v20 = v41;
       v15[100] = 0;
-      v21 = sub_6B577(*v20, (int)v15);
+      v21 = Hook150_1E01B0(*v20, (int)v15);   /* 1.50 0E3AEC */
       v60[47] = v21;
       goto LABEL_41;
     }

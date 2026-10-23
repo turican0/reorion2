@@ -1944,7 +1944,7 @@ int sub_7BBBC()
   *(_BYTE *)(dword_19306C + 40) = 11;
   strcpy(v8, "Orion");
   if ( *(_BYTE *)(v7 + 22) == 6 )
-    *(_BYTE *)(dword_19306C + 22) = sub_1247A0(6u) - 1;
+    *(_BYTE *)(dword_19306C + 22) = Hook150_1E41B8(6u) - 1;   /* 1.50 07BCAF */
   v9 = dword_19306C;
   v10 = dword_19306C + 113 * (int16_t)v16;
   qmemcpy(v15, (void *)v10, 0x71u);
@@ -2316,7 +2316,7 @@ int sub_7C3C4( int a1, int a2, int a3, int a4)
 
   v6 = 113 * a1;
   if ( a4 && *(uint8_t *)(v6 + dword_19306C + 22) >= 5u )
-    *(_BYTE *)(v6 + dword_19306C + 22) = sub_1247A0(5u) - 1;
+    *(_BYTE *)(v6 + dword_19306C + 22) = Hook150_1E41B8(5u) - 1;   /* 1.50 07C3F2 */
   byte_19C31A = a4;
   v7 = 17 * a2;
   memset(v7 + (uint8_t*)dword_1930D4, 0, 17);
@@ -6759,7 +6759,7 @@ LABEL_16:
   qmemcpy(v6, sub_8E5C5(1u, 210, 215), sizeof(v6));
   sub_120BB5(1, (int)v6);
   v5 = sub_122259();
-  sub_1210FD(517, 443 - (v5 + 1), (int)aVersion150);
+  Hook150_1EE553(517, 443 - (v5 + 1), (int)aVersion150);   /* 1.50 081521 */
   // PORT (vlna 26 pokr. 52): `locret_810C0` je SDILENY EPILOG sub_80DB4
   // (`leave / pop edi / pop esi / pop edx / pop ecx / pop ebx / retn`),
   // ktery Watcom sdili mezi funkcemi se shodnym prologem - skok tam
@@ -7273,7 +7273,7 @@ int sub_81D15(int a1, int a2)
   word_182159 = sub_11ADB4((int)aMoola, a2);
   word_18215B = sub_11ADB4((int)aMenlo, a2);
   word_18215D = sub_11ADB4((int)aIseeall, a2);
-  v2 = sub_11ADB4((int)aScore, a2);
+  v2 = Hook150_1E6F7F((int)aScore, a2);   /* 1.50 081D5A */
   word_182163 = v2;
   LOWORD(v2) = word_1B3E0E;
   result = v2 - 1;
@@ -7730,7 +7730,7 @@ LABEL_7:
 
 
 //----- (00082809) --------------------------------------------------------
-int16_t sub_82809(int a1, char *a2)
+int16_t sub_82809_131(int a1, char *a2)
 {
   int16_t v2; // cx
   int v3; // eax

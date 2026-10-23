@@ -1449,7 +1449,7 @@ void sub_73873()
   }
   sub_12B65C();
   sub_128BE7();
-  sub_12A478(v8, v9, dword_192B60);
+  Hook150_1E3488(v8, v9, dword_192B60);   /* 1.50 073976 */
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x734A2 je epilog funkce */
 }
 // 192B60: using guessed type int dword_192B60;
@@ -2422,7 +2422,7 @@ char sub_74AFE(int a1, int16_t *a2, int a3, int a4)
   if ( (char)a4 && v12 > 0 )
   {
     sprintf(v5, sub_7A990(a3 == 1 ? 0x80u : 0x81u), (int)v12);
-    if ( !(char)sub_7A25F((_BYTE *)&byte_199EFE, (int)(intptr_t)v5, 1) )
+    if ( !(char)Hook150_1E395F((_BYTE *)&byte_199EFE, (int)(intptr_t)v5, 1) )   /* 1.50 074CCB */
       goto LABEL_NO;
     if ( v8 )
     {
@@ -3399,7 +3399,7 @@ void sub_75D48( int a1)
     if ( byte_1992AD )
     {
       sub_FFD08((int16_t *)dword_192B6C, a1, &byte_1992A8);
-      sub_A0305();
+      Hook150_1E373F();   /* 1.50 075DAE */
       sub_77048(15, 52, 305, 182);
       word_1999BE = -1;
       byte_199EFE = 1;
