@@ -2090,7 +2090,7 @@ LABEL_20:
   {
     do
     {
-      sub_8E280(v5);
+      sub_8E280_131(v5);
       v16 = (int *)((char *)v16 + 1);
     }
     while ( v16 != (int *)v15 );

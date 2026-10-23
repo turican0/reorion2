@@ -14,7 +14,7 @@ for name in sys.argv[1:]:
         raw = open(p, 'rb').read()
         crlf = b'\r\n' in raw
         t = raw.replace(b'\r\n', b'\n').decode('latin-1')
-        if name + '_131(' in t or name + '_131 (' in t:
+        if re.search(r'(?m)^[^\n;/#]*?\b%s_131\s*\((?:[^()]|\([^()]*\))*\)\s*\n\{' % re.escape(name), t):
             print('%s already renamed (%s)' % (name, p))
             done = True
             break

@@ -322,7 +322,7 @@ void sub_1E3896()
 void sub_1E38A3()
 {
   if ( byte_23FF6E[0] != 1 )
-    sub_5D953();
+    sub_5D953_131();
 }
 // 23FF6E: using guessed type _BYTE byte_23FF6E[112];
 
@@ -472,7 +472,7 @@ void sub_1E3A0A(int a1, int a2, _WORD *a3)
   }
   if ( byte_199CB4 != 1 || byte_199F3A <= 1 )
     a2 = ((int)(intptr_t)(ecode + 0x39FE));
-  sub_980DB(a1, a2, a3);
+  sub_980DB_131(a1, a2, a3);
 }
 // 199CB4: using guessed type char byte_199CB4;
 // 199F3A: using guessed type char byte_199F3A;
@@ -484,7 +484,7 @@ int sub_1E3A3A(int a1, int a2, int a3)
   a3 = (int16_t)a3;
   if ( byte_199CB4 != 1 || byte_199F3A <= 1 )
     a2 = ((int)(intptr_t)(ecode + 0x39FE));
-  sub_98282(a1, a2, a3); return 0;
+  sub_98282_131(a1, a2, a3); return 0;
 }
 // 199CB4: using guessed type char byte_199CB4;
 // 199F3A: using guessed type char byte_199F3A;
@@ -958,7 +958,7 @@ int16_t sub_1E3D13(int a1, int a2)
 unsigned int sub_1E3D5B(unsigned int result)
 {
   if ( !LOWORD(dword_1998E0) && result <= 0x44 )
-    return sub_112399(result);
+    return sub_112399_131(result);
   return result;
 }
 // 1998E0: using guessed type int dword_1998E0;
@@ -1492,7 +1492,7 @@ void sub_1E419C(int a1, unsigned int a2)
   a1 = (int16_t)a1;
   v3 = sub_8C527(a1);
   for ( i = 0; (char)i < v3; ++i )
-    sub_8E280(a1);
+    sub_8E280_131(a1);
 }
 
 //----- (001E41B8) --------------------------------------------------------
@@ -1881,7 +1881,7 @@ void sub_1E43B0(int a1, int a2)
   a2 = (int16_t)a2;
   v2 = a1;
   sub_1EAE2F(a1, a2);
-  sub_E4B5F(v2, a2);
+  sub_E4B5F_131(v2, a2);
 }
 
 //----- (001E43BC) --------------------------------------------------------
@@ -1939,7 +1939,7 @@ void sub_1E43D8(int a1, int a2, _WORD *a3, _WORD *a4)
   a1 = (int16_t)a1;
   a2 = (int16_t)a2;
   sub_A20CD();
-  sub_E7CDB(a1, a2, a3, a4);
+  sub_E7CDB_131(a1, a2, a3, a4);
 }
 // 1E43D8: could not find valid save-restore pair for ebx
 

@@ -5813,7 +5813,7 @@ void sub_CCE2E()
 // `cmp cx, 1`. IDA z toho udelala `void` + `JUMPOUT(0xCCC36)` (= NO-OP),
 // takze volajici `sub_1049B` (case 13) testoval NEINICIALIZOVANE `a1`.
 // Zmereno: `locret_CCC36` je jen `leave / pop edi,esi,edx,ecx,ebx / retn`.
-int sub_CD435(int16_t *a1)
+int sub_CD435_131(int16_t *a1)
 {
   int v1; // eax
   int v2; // edx

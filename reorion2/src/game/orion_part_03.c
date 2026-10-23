@@ -4744,7 +4744,7 @@ int16_t sub_3E598( int a1, int a2, int a3)
 
 
 //----- (0003E7A9) --------------------------------------------------------
-int sub_3E7A9( int a1, _WORD *a2)
+int sub_3E7A9_131( int a1, _WORD *a2)
 {
   int v3; // edi
   int *v4; // edx
@@ -9738,7 +9738,7 @@ LABEL_180:
 
 
 //----- (00044EA4) --------------------------------------------------------
-void sub_44EA4( int a1)
+void sub_44EA4_131( int a1)
 {
   int16_t i; // si
   int v3; // eax
@@ -10298,7 +10298,7 @@ int sub_45964( int a1)
 //----- (000459E7) --------------------------------------------------------
 /* wave 184: written from asm 459E7-45EA6 (Hex-Rays failed) - the player's boarding / assault order:
    a1 = eax own ship, a2 = edx target ship */
-void sub_459E7(int a1, int a2)
+void sub_459E7_131(int a1, int a2)
 {
   int16_t v60 = (int16_t)a1;  // [ebp-60h] push eax
   int16_t v_si = (int16_t)a2; // esi
@@ -11610,7 +11610,7 @@ typedef struct {
   int a28;
 } frame47939_t;
 #pragma pack(pop)
-int sub_47939(int a1, int a2, int a3, int a4, int a29, int a30, int a31)
+int sub_47939_131(int a1, int a2, int a3, int a4, int a29, int a30, int a31)
 {
   int v31; // esi
   int16_t v32; // di

@@ -393,7 +393,9 @@ def fix_crt(a, t):
 
 
 # port functions returning void used as a value: "return f(..);" -> "f(..); return 0;"
-port_void = set(re.findall(r'(?m)^(?:extern\s+)?void\s+(\w+)\s*\(', common))
+port_void = set(re.findall(r'(?m)^(?:extern\s+)?void\s+(\w+)\s*\(', common)) | \
+    set(re.findall(r'(?m)^void\s+(\w+_131)\s*\(', open(os.path.join(GAME, '..', 'game150', 'orion150_hooks.h'),
+                                                       encoding='latin1').read()))
 
 
 def fix_void_return(t):

@@ -605,7 +605,7 @@ int64_t sub_7267D(
     byte_199EF7 = 0;
   }
   *v18 = v17;
-  sub_755D2();
+  sub_755D2_131();   /* 1.50 72940: not hooked */
   if ( word_1999D8 > -1 )
   {
     sub_75B80(a10, v24, v23, v21, v22);
@@ -2034,7 +2034,7 @@ _DWORD *sub_744CD(int a1, int a2, int a3, int a4)
 
 
 //----- (00074502) --------------------------------------------------------
-void sub_74502()
+void sub_74502_131()
 {
   int16_t v0; // cx
   char v1; // bl
@@ -2075,7 +2075,7 @@ void sub_74502()
 
 
 //----- (000745A5) --------------------------------------------------------
-void sub_745A5(int a1, int a2)
+void sub_745A5_131(int a1, int a2)
 {
   int16_t v2; // cx
   char v3; // bl
@@ -2945,7 +2945,7 @@ void sub_7545C( int a1)
 
 
 //----- (000755D2) --------------------------------------------------------
-void sub_755D2()
+void sub_755D2_131()
 {
   int16_t i; // di
   int v1; // esi
@@ -3088,7 +3088,7 @@ int sub_75802(int result)
 
 
 //----- (0007585D) --------------------------------------------------------
-int sub_7585D(int a1)
+int sub_7585D_131(int a1)
 {
   int v0; // edx
   int16_t v1; // cx
@@ -3393,7 +3393,7 @@ void sub_75D48( int a1)
   char v8[100]; // [esp+C8h] [ebp+7Eh] BYREF
 
   memset(dword_192B6C, -1, 500);
-  if ( (uint16_t)sub_7585D(dword_192B6C) )   /* 75D6D mov eax, dword_18AB6C */
+  if ( (uint16_t)sub_7585D_131(dword_192B6C) )   /* 1.50 75D72: not hooked;  75D6D mov eax, dword_18AB6C */
   {
     sub_FF799((int16_t *)dword_192B6C, a1, &byte_1992A8);
     if ( byte_1992AD )
@@ -7190,7 +7190,7 @@ int sub_799F7(int a1, int a2, _WORD *a3, int a4)
 
 
 //----- (00079AE8) --------------------------------------------------------
-char sub_79AE8( int a1)
+char sub_79AE8_131( int a1)
 {
   char v3; // dl
   int16_t i; // ax

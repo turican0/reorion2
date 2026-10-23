@@ -5857,7 +5857,7 @@ void sub_FC2D2(int16_t *a1)
 
 
 //----- (000FC470) --------------------------------------------------------
-void sub_FC470(int a1, int a2, int a3, int a4)
+void sub_FC470_131(int a1, int a2, int a3, int a4)
 {
   int v4; // ebx
   int v5; // eax
@@ -8462,7 +8462,7 @@ int sub_FED3F(int a1, int a2, int a3)
 
 
 //----- (000FED77) --------------------------------------------------------
-_BOOL1 sub_FED77(char *a1, int a2, int a3)
+_BOOL1 sub_FED77_131(char *a1, int a2, int a3)
 {
   int v4; // esi
   char *v5; // ebx

@@ -90,6 +90,15 @@ const std::vector<std::string>& DataDirPrefixes()
     return dirs;
 }
 
+// DOS: the game runs from the root of its drive, so "\150\lbx\NEWGAME.LBX" (the 1.50 config) names a
+// file of the game directory - relative from here on
+const char* DosRootRelative(const char* path)
+{
+    if (path && path[0] == '\\' && path[1] != '\\')
+        return path + 1;
+    return path;
+}
+
 // Fallback ma smysl jen pro relativni cesty (bez uvodniho lomitka a bez
 // "X:" prefixu) - absolutni cestu uz nekdo slozil vedome.
 bool IsRelativePath(const char* path)
@@ -307,7 +316,7 @@ bool FindFirst(const char* pattern, int attrMask, DosDta* dta)
     if (!pattern || !dta)
         return false;
 
-    std::string patternStr(pattern);
+    std::string patternStr(DosRootRelative(pattern));
     size_t slashPos = patternStr.find_last_of("/\\");
     std::string dirPart = (slashPos == std::string::npos) ? "." : patternStr.substr(0, slashPos);
     std::string wildcardPart = (slashPos == std::string::npos) ? patternStr : patternStr.substr(slashPos + 1);
@@ -400,6 +409,7 @@ int unknown_libname_2(struct DosDta* dta)
 
 int PortFile_Open(const char* path, const char* mode)
 {
+    path = Port::File::DosRootRelative(path);
     const char* resolved = Port::File::ResolveCaseInsensitivePath(path);
     FILE* f = std::fopen(resolved, mode);
     if (!f && Port::File::IsRelativePath(path)) {
@@ -555,6 +565,7 @@ int PortFile_Scanf(int handle, const char* fmt, ...)
 
 int PortFile_Access(const char* path, int mode)
 {
+    path = Port::File::DosRootRelative(path);
     const char* resolved = Port::File::ResolveCaseInsensitivePath(path);
 #ifdef _WIN32
     int rc = _access(resolved, mode);

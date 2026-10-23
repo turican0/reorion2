@@ -3609,7 +3609,7 @@ void sub_144A91()
     {
       v1 = (int)sub_10000 - v2;
       dword_188D90 = (int)sub_10000 - v2;
-      if ( (void (__noreturn *)())((char *)sub_10000 - v2) == (void (__noreturn *)())26 )
+      if ( (void (*)())((char *)sub_10000 - v2) == (void (*)())26 )
       {
         dword_188D90 = 0;
         ++dword_188D8C;
@@ -3814,7 +3814,7 @@ void sub_144EAC()
     if ( v2 < 0xFFFF )
     {
       dword_188D90 = (int)sub_10000 - v2;
-      if ( (void (__noreturn *)())((char *)sub_10000 - v2) == (void (__noreturn *)())26 )
+      if ( (void (*)())((char *)sub_10000 - v2) == (void (*)())26 )
       {
         dword_188D90 = 0;
         ++dword_188D8C;
@@ -4016,7 +4016,7 @@ void sub_14529D()
     if ( v2 < 0xFFFF )
     {
       dword_188D90 = (int)sub_10000 - v2;
-      if ( (void (__noreturn *)())((char *)sub_10000 - v2) == (void (__noreturn *)())26 )
+      if ( (void (*)())((char *)sub_10000 - v2) == (void (*)())26 )
       {
         dword_188D90 = 0;
         ++dword_188D8C;

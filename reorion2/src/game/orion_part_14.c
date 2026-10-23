@@ -7744,7 +7744,7 @@ void sub_DEB4B(uint8_t *a1)
 
 
 //----- (000DEC95) --------------------------------------------------------
-int sub_DEC95(int a1, int a2, int a3)
+int sub_DEC95_131(int a1, int a2, int a3)
 {
   int v4; // edx
 
@@ -8636,7 +8636,7 @@ LABEL_42:
 
 
 //----- (000DFDC6) --------------------------------------------------------
-int sub_DFDC6(int a1, int a2, int a3)
+int sub_DFDC6_131(int a1, int a2, int a3)
 {
   int v3; // edx
   uint8_t v4; // al
@@ -9478,7 +9478,7 @@ int sub_E0C6E(int a1, int a2)
 
 
 //----- (000E0C9B) --------------------------------------------------------
-int8_t sub_E0C9B(int a1, int a2)
+int8_t sub_E0C9B_131(int a1, int a2)
 {
   unsigned int v3; // edi
   int16_t v4; // ax
@@ -12308,7 +12308,7 @@ unsigned int sub_E3FDC(int a1)
 
 
 //----- (000E401D) --------------------------------------------------------
-int sub_E401D(int a1, int a2, int a3)
+int sub_E401D_131(int a1, int a2, int a3)
 {
   int v4; // edi
   int result; // eax
@@ -13009,7 +13009,7 @@ void sub_E4AB3( int a1, int a2, int a3)
 
 
 //----- (000E4B5F) --------------------------------------------------------
-void sub_E4B5F( int a1, int a2)
+void sub_E4B5F_131( int a1, int a2)
 {
   int v2; // esi
   int v3; // ecx

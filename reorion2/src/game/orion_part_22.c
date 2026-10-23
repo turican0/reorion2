@@ -1284,10 +1284,10 @@ LABEL_21:
 
 
 //----- (0014A1C0) --------------------------------------------------------
-void sub_14A1C0(void (__noreturn *a1)(), void (__noreturn *a2)(), int a3, int a4)
+void sub_14A1C0(void (*a1)(), void (*a2)(), int a3, int a4)
 {
-  void (__noreturn *v4)(); // esi
-  void (__noreturn *v5)(); // ebp
+  void (*v4)(); // esi
+  void (*v5)(); // ebp
   int v6; // eax
   uint8_t i; // dl
   int v8; // eax

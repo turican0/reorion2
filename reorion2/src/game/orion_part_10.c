@@ -8344,7 +8344,7 @@ int16_t sub_A9F9E( int a1)
   qmemcpy(v2, kA6606, sizeof(v2));
   return v2[a1 % 16];
 }
-// A6606: using guessed type void (__noreturn *off_A6606)();
+// A6606: using guessed type void (*off_A6606)();
 
 
 //----- (000A9FCB) --------------------------------------------------------

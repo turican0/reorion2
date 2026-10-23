@@ -141,7 +141,7 @@ char sub_1E1266(int a1, int a2, int a3)
   a2 = (int16_t)a2;
   a3 = (int16_t)a3;
   algn_1E1265 = 1;
-  result = sub_BA5DA(a1, a2, a3);
+  result = sub_BA5DA_131(a1, a2, a3);
   algn_1E1265 = 0;
   return result;
 }
@@ -279,7 +279,7 @@ char sub_1E1356(int a1, int a2, unsigned int a3)
   v3 = sub_1E81EB(a3);
   *((_BYTE *)&loc_1089A4 + 2) = v3;
   *((_BYTE *)&loc_1089A7 + 3) = v3;
-  return sub_1088A0(a1, a2, a3);
+  return sub_1088A0_131(a1, a2, a3);
 }
 // 1E1356: could not find valid save-restore pair for ebx
 
@@ -738,7 +738,7 @@ void sub_1E166A(int a1, _WORD *a2)
 //----- (001E16C4) --------------------------------------------------------
 void sub_1E16C4()
 {
-  sub_CD435();
+  sub_CD435_131(0);
   byte_23FF6E[1] = 0;
   if ( byte_199CB1 == 9 )
   {
@@ -1255,7 +1255,7 @@ int sub_1E190C(int a1, _DWORD *a2)
 //----- (001E1914) --------------------------------------------------------
 uint64_t sub_1E1914(unsigned int a1, unsigned int a2, int a3, int a4)
 {
-  sub_35821(a1, a2, a3, a4);
+  sub_35821_131(a1, a2, a3, a4);
   sub_1E893F(a1);
   return __PAIR64__(a2, a1);
 }
@@ -1583,7 +1583,7 @@ void sub_1E1971(int a1, int a2)
 //----- (001E1992) --------------------------------------------------------
 void sub_1E1992(int a1, int a2)
 {
-  sub_ECBF7(a1, a2);
+  sub_ECBF7_131(a1, a2);
   if ( algn_1E1932[0] == 2 )
     ((void (*)(_DWORD, _DWORD))loc_13FD9)(*(_DWORD *)&algn_1E1932[1], *(int *)((char *)&dword_1E1934 + 3));
 }

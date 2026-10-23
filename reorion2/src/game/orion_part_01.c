@@ -3466,7 +3466,7 @@ int sub_13FB8(int a1, int a2)
 
 
 //----- (00013FD9) --------------------------------------------------------
-void sub_13FD9( int a1, unsigned int a2)
+void sub_13FD9_131( int a1, unsigned int a2)
 {
   char *v4; // ebx
   int v5; // eax

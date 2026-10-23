@@ -3175,7 +3175,7 @@ int sub_56A3A( int a1, int a2)
 
 
 //----- (00056A78) --------------------------------------------------------
-int16_t sub_56A78(int a1)
+int16_t sub_56A78_131(int a1)
 {
   int16_t v1;
   int v2;
@@ -3264,7 +3264,7 @@ int16_t sub_56B26(int a1)
 
 
 //----- (00056BFA) --------------------------------------------------------
-int16_t sub_56BFA(int a1)
+int16_t sub_56BFA_131(int a1)
 {
   int16_t i;
   int16_t v2;
@@ -9677,7 +9677,7 @@ void sub_5D87C( int a1, int a2)
 
 
 //----- (0005D953) --------------------------------------------------------
-void sub_5D953()
+void sub_5D953_131()
 {
   int i; // esi
   int16_t v1; // di
@@ -12739,7 +12739,7 @@ signed int sub_60B59(
     else
     {
       v74 = 0;
-      v44 = sub_56A78(v67);   /* wave 182: result was dropped */
+      v44 = sub_56A78_131(v67);   /* 1.50 61034: not hooked;  wave 182: result was dropped */
       v45 = v44;
       for ( m = 0; (int16_t)v79 > v74 && (int16_t)v69[m] != v45; ++m )
         ++v74;
@@ -14842,7 +14842,7 @@ int sub_63DDA()
 
 
 //----- (00063E4C) --------------------------------------------------------
-int sub_63E4C()
+int sub_63E4C_131()
 {
   int result; // eax
 

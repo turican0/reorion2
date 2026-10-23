@@ -663,7 +663,7 @@ void RestoreKeyboardIsr_12C493()
 //----- (0012C4D8) --------------------------------------------------------
 void KeyboardIsr_12C4D8()
 {
-  ((void (__noreturn *)(void))_GETDS)();
+  ((void (*)(void))_GETDS)();
 }
 // 1BC2DC: invalid function type '?' has been ignored
 // 1BC2D4: using guessed type int dword_1BC2D4;
@@ -3596,7 +3596,7 @@ int sub_132614(int a1)
 
 
 //----- (00132646) --------------------------------------------------------
-_BOOL1 sub_132646(int a1, int a2, int a3)
+_BOOL1 sub_132646_131(int a1, int a2, int a3)
 {
   _DWORD v4[25]; // [esp+0h] [ebp-78h] BYREF
   int v5; // [esp+64h] [ebp-14h]
@@ -3630,7 +3630,7 @@ _BOOL1 sub_132646(int a1, int a2, int a3)
     PortDebug_Checkpoint("132646.after_14BC40_fallback", dword_1845F0);
   }
   if ( dword_1845F0 && v8 == 1 )
-    sub_14A1C0((void (__noreturn *)())0x8000, (void (__noreturn *)())0x8000, 1, dword_1845F0);
+    sub_14A1C0((void (*)())0x8000, (void (*)())0x8000, 1, dword_1845F0);
   return dword_1845F0 != 0;
 }
 // 13F220: using guessed type int strcat(_DWORD, _DWORD);
@@ -7421,7 +7421,7 @@ int sub_13AC01( int a1, int a2)
 
 
 //----- (0013AD33) --------------------------------------------------------
-int sub_13AD33(int16_t *a1, int a2)
+int sub_13AD33_131(int16_t *a1, int a2)
 {
   int result; // eax
   int i; // [esp+8h] [ebp-8h]

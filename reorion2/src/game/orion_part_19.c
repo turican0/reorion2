@@ -6048,7 +6048,7 @@ _DWORD *sub_126C91(int a1, int a2, int a3, unsigned int a4, unsigned int a5, int
 
 
 //----- (00126CEB) --------------------------------------------------------
-_DWORD *sub_126CEB(int a1, int a2, int a3, int a4)
+_DWORD *sub_126CEB_131(int a1, int a2, int a3, int a4)
 {
   int v4; // edx
   _BYTE v6[60]; // [esp+0h] [ebp-80h] BYREF
@@ -6135,7 +6135,7 @@ LABEL_28:
 
 
 //----- (00126F3B) --------------------------------------------------------
-_DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int a6, int a7)
+_DWORD *sub_126F3B_131(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int a6, int a7)
 {
   int v7; // ecx
   _BYTE v9[60]; // [esp+0h] [ebp-88h] BYREF
@@ -6244,7 +6244,7 @@ _DWORD *sub_126F3B(int a1, int a2, int a3, int a4, unsigned int a5, unsigned int
 
 
 //----- (00127233) --------------------------------------------------------
-int sub_127233(int a1, int a2, int a3, int a4)
+int sub_127233_131(int a1, int a2, int a3, int a4)
 {
   _BYTE v5[60]; // [esp+0h] [ebp-80h] BYREF
   int v6; // [esp+3Ch] [ebp-44h]
@@ -6641,7 +6641,7 @@ _DWORD *sub_1279AF(int a1, int a2)
     v5 = 4 * (v3 >> 2) + 4;
   v4 = PoolRawAlloc_110DFE(v5 + 12);
   if ( !v4 )
-    PoolAllocAbort_110EC3(v3);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(v3);       // noreturn - dale se nepokracuje
   *v4 = 0;
   v4[1] = v3;
   v4[2] = 0;
@@ -6650,7 +6650,7 @@ _DWORD *sub_1279AF(int a1, int a2)
   // 1BC288 tady i jinde v souboru; mimo rozsah teto opravy.
   dword_1BC28C = (int)(intptr_t)PoolRawAlloc_110DFE(226500);
   if ( !dword_1BC28C )
-    PoolAllocAbort_110EC3(226500);  // __noreturn
+    PoolAllocAbort_110EC3(226500);  // noreturn
   word_1BC290 = 0;
   for ( i = 0; i < 50; ++i )
   {
@@ -6780,7 +6780,7 @@ int sub_127C27(int a1, int a2, int a3)
 
 
 //----- (0012816C) --------------------------------------------------------
-_DWORD *sub_12816C(int a1, int a2, int a3, int *a4)
+_DWORD *sub_12816C_131(int a1, int a2, int a3, int *a4)
 {
   _BYTE v5[60]; // [esp+0h] [ebp-8Ch] BYREF
   int v6; // [esp+3Ch] [ebp-50h]

@@ -345,16 +345,6 @@ typedef int32_t  __int32;
 typedef int64_t  __int64;
 #endif
 
-/* ---- kalingove konvence (na urovni zdrojoveho textu nevyznamove) ---- */
-#define __fastcall
-#define __cdecl
-#define __stdcall
-#define __thiscall
-#define __usercall
-#define __userpurge
-#define __noreturn
-#define __spoils(x)
-
 /* ---- extrakce bajtu/slov z promennych (decompiler macros) ---- */
 #define LOBYTE(x)   (*((unsigned char*)&(x)))
 #define LOWORD(x)   (*((unsigned short*)&(x)))

@@ -375,9 +375,9 @@ int sub_890EF( int a1, int a2, int16_t *a3, int16_t *a4)
        push esi / push edi / enter 5ECh,0 / push eax,edx,ebx,ecx / sub ebp,66Ah
    so the saved register arguments and every local sit at POSITIVE offsets
    from the shifted EBP; Hex-Rays turned them into 27 arguments, 23 of which
-   do not exist. The real signature is fastcall(eax, edx, ebx, ecx) plus the
-   EDI value that flows in untouched from sub_86188 and is consumed by
-   sub_84555 (`__usercall sub_84555(_DWORD *@<edi>)`).
+   do not exist. The real arguments are eax, edx, ebx, ecx plus the EDI value
+   that flows in untouched from sub_86188 and is consumed by sub_84555 (its
+   only argument, a _DWORD * in edi).
 
      a1 = word_199976            (eax, saved as arg_6A)
      a2 = caller var_C           (edx, saved as arg_66) - the clicked element id
@@ -2611,7 +2611,7 @@ void sub_8BC03()
 
 
 //----- (0008BC39) --------------------------------------------------------
-void sub_8BC39(int a1)
+void sub_8BC39_131(int a1)
 {
   int16_t i; // ax
   int v2; // ecx
@@ -4877,7 +4877,7 @@ LABEL_13:
             if ( (int16_t)j >= (uint8_t)v58 )
               break;
             ServiceAudioTick_FE8BE(v59, j, v58, v26);
-            sub_8E280(i);
+            sub_8E280_131(i);   /* 1.50 8E0E6: not hooked */
           }
           if ( word_1999E0 )
             ++dword_19C20C[(uint8_t)v58];
@@ -5020,7 +5020,7 @@ LABEL_13:
 
 
 //----- (0008E280) --------------------------------------------------------
-int16_t sub_8E280( int a1)
+int16_t sub_8E280_131( int a1)
 {
   int8_t v3; // al
   int16_t v4; // cx

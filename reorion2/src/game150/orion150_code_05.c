@@ -62,7 +62,7 @@ int sub_1E4833(int a1, int a2, int a3)
 {
   a3 = (char)a3;
   if ( a2 )
-    return sub_E401D(a1, a2, a3);
+    return sub_E401D_131(a1, a2, a3);
   return a1;
 }
 
@@ -1371,7 +1371,7 @@ char sub_1E4EDA(int result, int a2)
 void sub_1E4EF2()
 {
   *(_DWORD *)algn_1E4EEE = dword_1B9E34;
-  sub_FC470(0, 0, 0, 0);
+  sub_FC470_131(0, 0, 0, 0);
 }
 // 1B9E34: using guessed type int dword_1B9E34;
 // 1E4EEE: using guessed type _BYTE algn_1E4EEE[2];

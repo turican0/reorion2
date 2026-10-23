@@ -6089,7 +6089,7 @@ LABEL_39:
 
 
 //----- (001088A0) --------------------------------------------------------
-char sub_1088A0( int a1, int a2, unsigned int a3)
+char sub_1088A0_131( int a1, int a2, unsigned int a3)
 {
   int v4; // ecx
   int16_t v5; // di
@@ -6146,8 +6146,8 @@ LABEL_14:
       ++word_1AD1FA;
       word_1ACFF2[v7 / 2] = v15;
       v10 = v14;
-      v4 += 13;
-      v14 += 13;
+      v4 += Hook150_CodeByte(0x1089A6, 13);
+      v14 += Hook150_CodeByte(0x1089AA, 13);
       word_1ACFF4[v7 / 2] = v10;
     }
     ++v13;

@@ -1854,7 +1854,7 @@ char sub_E7B79(int a1, int a2)
 
 
 //----- (000E7CDB) --------------------------------------------------------
-void sub_E7CDB(int16_t *a1, int a2, _WORD *a3, _WORD *a4)
+void sub_E7CDB_131(int16_t *a1, int a2, _WORD *a3, _WORD *a4)
 {
   void *v6; // eax
   int v7; // ecx
@@ -3199,7 +3199,7 @@ int sub_E98F2(int result)
 
 
 //----- (000E9927) --------------------------------------------------------
-void sub_E9927(_BYTE *a1)
+void sub_E9927_131(_BYTE *a1)
 {
   int16_t v2; // di
   int16_t v3; // ax
@@ -4058,7 +4058,7 @@ void sub_EA91B(int a1)
 
 
 //----- (000EAAA1) --------------------------------------------------------
-void sub_EAAA1(int a1, int a2, int a3)
+void sub_EAAA1_131(int a1, int a2, int a3)
 {
   int v3; // eax
   int16_t v4; // dx
@@ -5969,7 +5969,7 @@ int sub_ECB65(int a1, int a2)
 
 
 //----- (000ECBF7) --------------------------------------------------------
-void sub_ECBF7(int a1, int a2)
+void sub_ECBF7_131(int a1, int a2)
 {
   int v3; // edi
   char *v4; // ebx
@@ -6681,7 +6681,7 @@ int16_t sub_ED82F(int a1, int a2, int a3)
 
 
 //----- (000ED8BF) --------------------------------------------------------
-void sub_ED8BF(int a1)
+void sub_ED8BF_131(int a1)
 {
   int16_t v1; // cx
   _BYTE v2[72]; // [esp+0h] [ebp-90h] BYREF

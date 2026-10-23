@@ -90,9 +90,9 @@ typedef int bool;       // we want to use bool in our C programs
 
 // Non-returning function
 #if defined(__GNUC__)
-#define __noreturn  __attribute__((noreturn))
+#define noreturn  __attribute__((noreturn))
 #else
-#define __noreturn  __declspec(noreturn)
+#define noreturn  __declspec(noreturn)
 #endif
 
 
@@ -408,10 +408,10 @@ inline typename std::enable_if<sizeof(T) <= sizeof(F), T>::type __coerce(F f)
 
 #if defined(__MIPS__)
 // traps for MIPS arithmetic operation
-void __noreturn __integer_oveflow(void); // SIGFPE/FPE_INTOVF
-void __noreturn __divide_by_zero(void);  // SIGFPE/FPE_INTDIV
-void __noreturn __trap(uint16 trapcode); // SIGTRAP
-void __noreturn __break(uint16 code, uint16 subcode);
+void noreturn __integer_oveflow(void); // SIGFPE/FPE_INTOVF
+void noreturn __divide_by_zero(void);  // SIGFPE/FPE_INTDIV
+void noreturn __trap(uint16 trapcode); // SIGTRAP
+void noreturn __break(uint16 code, uint16 subcode);
 #endif
 
 #define __SETP__(x, y)   invalid_operation // Generate parity flag for (x-y)

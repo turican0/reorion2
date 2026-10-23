@@ -539,7 +539,7 @@ int sub_10DB69(int a1, int16_t *a2)
   v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7((int)v2);
   sub_10D1FC(word_19999C);
-  sub_10DC12(0, 255, a1, a2);
+  sub_10DC12_131(0, 255, a1, a2);   /* 1.50 10DB96: not hooked */
   sub_C5BB9();
   sub_1319A3();
   sub_102CDF();
@@ -573,7 +573,7 @@ int16_t sub_10DBCE(int a1, int16_t *a2)
 
 
 //----- (0010DC12) --------------------------------------------------------
-void sub_10DC12(int a1, int a2, int a3, int16_t *a4)
+void sub_10DC12_131(int a1, int a2, int a3, int16_t *a4)
 {
   int v4; // edx
   int16_t v5; // si
@@ -2609,7 +2609,7 @@ PoolMemType* PoolAlloc_110B89(int size)
   if ( !header)
       header = PoolAllocFallback_110C62(alignedSize + sizeof(PoolMemHeader));
   if ( !header)
-    PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(size);       // noreturn - dale se nepokracuje
   header->header.reservedSize = 0;
   header->header.requestedSize = size;
   header->header.flags = 0;
@@ -2637,7 +2637,7 @@ PoolMemType* PoolAllocFallback_110C62(int size)
       alignedSize = 4 * (size >> 2) + 4;
   PoolMemType* header = (PoolMemType *)sub_110E36(alignedSize + sizeof(PoolMemHeader));
   if ( !header)
-    PoolAllocAbort_110EC3(size);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(size);       // noreturn - dale se nepokracuje
   header->header.reservedSize = 0;
   header->header.requestedSize = size;
   header->header.flags = 0;
@@ -2722,7 +2722,7 @@ int sub_110E36(int a1)
 
 //----- (00110EC3) --------------------------------------------------------
 // Fatalni chyba "dosla pamet" - vypise diagnostiku a ukonci proces.
-// V .asm oznaceno primo jako "__noreturn" (viz sub_110EC3+... XREFs);
+// V .asm oznaceno primo jako "noreturn" (viz sub_110EC3+... XREFs);
 // puvodne dekompilovano jako exit(1, a2) se dvema parametry - overeno
 // v .asm (viz sub_110EC3+... "mov eax, 1 / call exit_"), ze se reálně
 // preda jen EAX=1: a2 byl falesny druhy parametr z chybneho odhadu
@@ -2842,7 +2842,7 @@ _DWORD *sub_111131(int a1, int a2)
   if ( !v4 )
     v4 = (_DWORD *)PoolAllocFallback_110C62(a1);
   if ( !v4 )
-    PoolAllocAbort_110EC3(a1);       // __noreturn - dale se nepokracuje
+    PoolAllocAbort_110EC3(a1);       // noreturn - dale se nepokracuje
   return v4;
 }
 
@@ -3599,7 +3599,7 @@ int sub_1122C0(int a1)
 
 
 //----- (00112399) --------------------------------------------------------
-int sub_112399(int a1)
+int sub_112399_131(int a1)
 {
   int v1; // eax
   int v2; // eax

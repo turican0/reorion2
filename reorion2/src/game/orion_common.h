@@ -8488,8 +8488,8 @@ extern void sub_149F20();
 char *sub_14A010(unsigned int a1, int a2, char *a3, char *a4, char *a5);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_14A090(int a1, int a2, int a3, int a4, _DWORD *a5);
 int sub_14A090(int a1, int a2, int a3, int a4, _DWORD *a5);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
-// plna signatura: void sub_14A1C0(void (__noreturn *a1)(), void (__noreturn *a2)(), int a3, int a4);
-void sub_14A1C0(void (__noreturn *a1)(), void (__noreturn *a2)(), int a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
+// plna signatura: void sub_14A1C0(void (*a1)(), void (*a2)(), int a3, int a4);
+void sub_14A1C0(void (*a1)(), void (*a2)(), int a3, int a4);   /* vlna 105: skutecny prototyp (ukazatelove argumenty) */
 // plna signatura: int sub_14A2D0(int a1, int a2, int a3, int a4, int a5, int a6);
 extern int sub_14A2D0();
 // plna signatura: int sub_14A580(int a1, void *a2, int a3);
@@ -14363,7 +14363,7 @@ unsigned int sub_149ED0(unsigned int *a1);
 void sub_149F20();
 char *sub_14A010(unsigned int a1, int a2, char *a3, char *a4, char *a5);
 int sub_14A090(int a1, int a2, int a3, int a4, _DWORD *a5);
-void sub_14A1C0(void (__noreturn *a1)(), void (__noreturn *a2)(), int a3, int a4);
+void sub_14A1C0(void (*a1)(), void (*a2)(), int a3, int a4);
 int sub_14A2D0(int a1, int a2, int a3, int a4, int a5, int a6);
 int sub_14A580(int a1, void *a2, int a3);
 void sub_14A6BC(char a1, unsigned int a2, int a3, int a4);
@@ -15300,7 +15300,7 @@ extern _UNKNOWN loc_81CB0;
 extern _UNKNOWN loc_925A6;
 extern _UNKNOWN loc_925AA;
 extern _UNKNOWN loc_9FFFD;
-extern void (__noreturn *off_A6606)();
+extern void (*off_A6606)();
 extern _UNKNOWN loc_BCD8B;
 extern _UNKNOWN loc_BFFF4;
 extern _UNKNOWN loc_E0002;
@@ -15484,7 +15484,7 @@ typedef struct { int64_t step; int stepPlus1; } MixStepBlock;
 extern MixStepBlock g_mixStepBlock;
 #define qword_18AD3C (g_mixStepBlock.step)
 #define dword_18AD44 (g_mixStepBlock.stepPlus1)
-extern void (__noreturn *off_18AD48)();
+extern void (*off_18AD48)();
 // PORT (vlna 26 pokr. 15): viz orion_data.c - navratove ukazatele mixeru.
 extern _BYTE *g_mixSrcAfter;
 extern _DWORD *g_mixDstAfter;

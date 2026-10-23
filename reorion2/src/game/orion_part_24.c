@@ -2720,7 +2720,7 @@ int16_t sub_1612E0(int a1, _WORD *a2, _WORD *a3, int *a4)
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161336@<eax>, <edi>, <esi>
+// asm: sub_161336: eax, edi, esi
 int sub_161336(
         int result,
         int mix_edx,
@@ -2756,7 +2756,7 @@ int sub_161336(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161357@<eax>, <edi>, <esi>
+// asm: sub_161357: eax, edi, esi
 int sub_161357(
         int result,
         int mix_edx,
@@ -2794,7 +2794,7 @@ int sub_161357(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16137B@<eax>, <edi>, <esi>
+// asm: sub_16137B: eax, edi, esi
 int sub_16137B(
         int result,
         int mix_edx,
@@ -2830,7 +2830,7 @@ int sub_16137B(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1613A7@<eax>, <ebx>, <edi>, <esi>
+// asm: sub_1613A7: eax, ebx, edi, esi
 int sub_1613A7(
         int result,
         int mix_edx,
@@ -2874,7 +2874,7 @@ int sub_1613A7(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1613D9@<eax>, <edi>, <esi>
+// asm: sub_1613D9: eax, edi, esi
 int sub_1613D9(
         int result,
         int mix_edx,
@@ -2910,7 +2910,7 @@ int sub_1613D9(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161405@<eax>, <ebx>, <edi>, <esi>
+// asm: sub_161405: eax, ebx, edi, esi
 int sub_161405(
         int result,
         int mix_edx,
@@ -2954,7 +2954,7 @@ int sub_161405(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161437@<edi>, <esi>
+// asm: sub_161437: edi, esi
 int16_t sub_161437(
         int mix_eax,
         int mix_edx,
@@ -2990,7 +2990,7 @@ int16_t sub_161437(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16145B@<edi>, <esi>
+// asm: sub_16145B: edi, esi
 int16_t sub_16145B(
         int mix_eax,
         int mix_edx,
@@ -3028,7 +3028,7 @@ int16_t sub_16145B(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161482@<edi>, <esi>
+// asm: sub_161482: edi, esi
 int16_t sub_161482(
         int mix_eax,
         int mix_edx,
@@ -3065,7 +3065,7 @@ int16_t sub_161482(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1614B0@<edi>, <esi>
+// asm: sub_1614B0: edi, esi
 int16_t sub_1614B0(
         int mix_eax,
         int mix_edx,
@@ -3106,7 +3106,7 @@ int16_t sub_1614B0(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1614E4@<edi>, <esi>
+// asm: sub_1614E4: edi, esi
 int16_t sub_1614E4(
         int mix_eax,
         int mix_edx,
@@ -3143,7 +3143,7 @@ int16_t sub_1614E4(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161512@<edi>, <esi>
+// asm: sub_161512: edi, esi
 int16_t sub_161512(
         int mix_eax,
         int mix_edx,
@@ -3184,7 +3184,7 @@ int16_t sub_161512(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161546@<eax>, <edi>, <esi>
+// asm: sub_161546: eax, edi, esi
 int16_t sub_161546(
         int result,
         int mix_edx,
@@ -3218,7 +3218,7 @@ int16_t sub_161546(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161562@<eax>, <edi>, <esi>
+// asm: sub_161562: eax, edi, esi
 int16_t sub_161562(
         int result,
         int mix_edx,
@@ -3254,7 +3254,7 @@ int16_t sub_161562(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161581@<eax>, <edi>, <esi>
+// asm: sub_161581: eax, edi, esi
 int16_t sub_161581(
         int result,
         int mix_edx,
@@ -3289,7 +3289,7 @@ int16_t sub_161581(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1615A2@<eax>, <ebx>, <edi>, <esi>
+// asm: sub_1615A2: eax, ebx, edi, esi
 int16_t sub_1615A2(
         int result,
         int mix_edx,
@@ -3331,7 +3331,7 @@ int16_t sub_1615A2(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1615C9@<eax>, <edi>, <esi>
+// asm: sub_1615C9: eax, edi, esi
 int16_t sub_1615C9(
         int result,
         int mix_edx,
@@ -3366,7 +3366,7 @@ int16_t sub_1615C9(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1615EA@<eax>, <ebx>, <edi>, <esi>
+// asm: sub_1615EA: eax, ebx, edi, esi
 int16_t sub_1615EA(
         int result,
         int mix_edx,
@@ -3408,7 +3408,7 @@ int16_t sub_1615EA(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161611@<edi>, <esi>
+// asm: sub_161611: edi, esi
 int16_t sub_161611(
         int mix_eax,
         int mix_edx,
@@ -3444,7 +3444,7 @@ int16_t sub_161611(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161630@<edi>, <esi>
+// asm: sub_161630: edi, esi
 int16_t sub_161630(
         int mix_eax,
         int mix_edx,
@@ -3482,7 +3482,7 @@ int16_t sub_161630(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161652@<edi>, <esi>
+// asm: sub_161652: edi, esi
 int16_t sub_161652(
         int mix_eax,
         int mix_edx,
@@ -3519,7 +3519,7 @@ int16_t sub_161652(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161675@<edi>, <esi>
+// asm: sub_161675: edi, esi
 int16_t sub_161675(
         int mix_eax,
         int mix_edx,
@@ -3560,7 +3560,7 @@ int16_t sub_161675(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16169E@<edi>, <esi>
+// asm: sub_16169E: edi, esi
 int16_t sub_16169E(
         int mix_eax,
         int mix_edx,
@@ -3597,7 +3597,7 @@ int16_t sub_16169E(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1616C1@<edi>, <esi>
+// asm: sub_1616C1: edi, esi
 int16_t sub_1616C1(
         int mix_eax,
         int mix_edx,
@@ -3638,7 +3638,7 @@ int16_t sub_1616C1(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1616EA@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_1616EA: eax, ecx, edi, esi
 int sub_1616EA(
         int result,
         int mix_edx,
@@ -3676,7 +3676,7 @@ int sub_1616EA(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161716@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_161716: eax, ecx, edi, esi
 int sub_161716(
         int result,
         int mix_edx,
@@ -3716,7 +3716,7 @@ int sub_161716(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161745@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_161745: eax, ecx, edi, esi
 int sub_161745(
         int result,
         int mix_edx,
@@ -3757,7 +3757,7 @@ int sub_161745(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16177F@<eax>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_16177F: eax, ecx, ebx, edi, esi
 int sub_16177F(
         int result,
         int mix_edx,
@@ -3830,7 +3830,7 @@ int sub_16177F(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1617BF@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_1617BF: eax, ecx, edi, esi
 int sub_1617BF(
         int result,
         int mix_edx,
@@ -3871,7 +3871,7 @@ int sub_1617BF(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1617F9@<eax>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_1617F9: eax, ecx, ebx, edi, esi
 int sub_1617F9(
         int result,
         int mix_edx,
@@ -3920,7 +3920,7 @@ int sub_1617F9(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161839@<ecx>, <edi>, <esi>
+// asm: sub_161839: ecx, edi, esi
 int16_t sub_161839(
         int mix_eax,
         int mix_edx,
@@ -3961,7 +3961,7 @@ int16_t sub_161839(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16186B@<ecx>, <edi>, <esi>
+// asm: sub_16186B: ecx, edi, esi
 int16_t sub_16186B(
         int mix_eax,
         int mix_edx,
@@ -4004,7 +4004,7 @@ int16_t sub_16186B(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1618A0@<ecx>, <edi>, <esi>
+// asm: sub_1618A0: ecx, edi, esi
 int16_t sub_1618A0(
         int mix_eax,
         int mix_edx,
@@ -4045,7 +4045,7 @@ int16_t sub_1618A0(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1618DC@<ecx>, <edi>, <esi>
+// asm: sub_1618DC: ecx, edi, esi
 int16_t sub_1618DC(
         int mix_eax,
         int mix_edx,
@@ -4090,7 +4090,7 @@ int16_t sub_1618DC(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16191E@<ecx>, <edi>, <esi>
+// asm: sub_16191E: ecx, edi, esi
 int16_t sub_16191E(
         int mix_eax,
         int mix_edx,
@@ -4131,7 +4131,7 @@ int16_t sub_16191E(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16195A@<ecx>, <edi>, <esi>
+// asm: sub_16195A: ecx, edi, esi
 int16_t sub_16195A(
         int mix_eax,
         int mix_edx,
@@ -4176,7 +4176,7 @@ int16_t sub_16195A(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_16199C@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_16199C: eax, ecx, edi, esi
 int16_t sub_16199C(
         int result,
         int mix_edx,
@@ -4213,7 +4213,7 @@ int16_t sub_16199C(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1619C3@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_1619C3: eax, ecx, edi, esi
 int16_t sub_1619C3(
         int result,
         int mix_edx,
@@ -4252,7 +4252,7 @@ int16_t sub_1619C3(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_1619ED@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_1619ED: eax, ecx, edi, esi
 int16_t sub_1619ED(
         int result,
         int mix_edx,
@@ -4292,7 +4292,7 @@ int16_t sub_1619ED(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161A1C@<eax>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161A1C: eax, ecx, ebx, edi, esi
 int16_t sub_161A1C(
         int result,
         int mix_edx,
@@ -4339,7 +4339,7 @@ int16_t sub_161A1C(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161A51@<eax>, <ecx>, <edi>, <esi>
+// asm: sub_161A51: eax, ecx, edi, esi
 int16_t sub_161A51(
         int result,
         int mix_edx,
@@ -4379,7 +4379,7 @@ int16_t sub_161A51(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161A80@<eax>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161A80: eax, ecx, ebx, edi, esi
 int16_t sub_161A80(
         int result,
         int mix_edx,
@@ -4426,7 +4426,7 @@ int16_t sub_161A80(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161AB5@<ecx>, <edi>, <esi>
+// asm: sub_161AB5: ecx, edi, esi
 int16_t sub_161AB5(
         int mix_eax,
         int mix_edx,
@@ -4467,7 +4467,7 @@ int16_t sub_161AB5(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161AE2@<ecx>, <edi>, <esi>
+// asm: sub_161AE2: ecx, edi, esi
 int16_t sub_161AE2(
         int mix_eax,
         int mix_edx,
@@ -4510,7 +4510,7 @@ int16_t sub_161AE2(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161B12@<ecx>, <edi>, <esi>
+// asm: sub_161B12: ecx, edi, esi
 int16_t sub_161B12(
         int mix_eax,
         int mix_edx,
@@ -4551,7 +4551,7 @@ int16_t sub_161B12(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161B43@<ecx>, <edi>, <esi>
+// asm: sub_161B43: ecx, edi, esi
 int16_t sub_161B43(
         int mix_eax,
         int mix_edx,
@@ -4596,7 +4596,7 @@ int16_t sub_161B43(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161B7A@<ecx>, <edi>, <esi>
+// asm: sub_161B7A: ecx, edi, esi
 int16_t sub_161B7A(
         int mix_eax,
         int mix_edx,
@@ -4637,7 +4637,7 @@ int16_t sub_161B7A(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161BAB@<ecx>, <edi>, <esi>
+// asm: sub_161BAB: ecx, edi, esi
 int16_t sub_161BAB(
         int mix_eax,
         int mix_edx,
@@ -4682,7 +4682,7 @@ int16_t sub_161BAB(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161BE2@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161BE2: eax, edx, edi, esi
 char sub_161BE2(
         int a1,
         int a2,
@@ -4716,7 +4716,7 @@ char sub_161BE2(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161BFE@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161BFE: eax, edx, edi, esi
 char sub_161BFE(
         int a1,
         int a2,
@@ -4752,7 +4752,7 @@ char sub_161BFE(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161C24@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161C24: eax, edx, edi, esi
 char sub_161C24(
         int a1,
         int a2,
@@ -4787,7 +4787,7 @@ char sub_161C24(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161C45@<eax>, <edx>, <ebx>, <edi>, <esi>
+// asm: sub_161C45: eax, edx, ebx, edi, esi
 char sub_161C45(
         int a1,
         int a2,
@@ -4825,7 +4825,7 @@ char sub_161C45(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161C70@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161C70: eax, edx, edi, esi
 char sub_161C70(
         int a1,
         int a2,
@@ -4860,7 +4860,7 @@ char sub_161C70(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161C91@<eax>, <edx>, <ebx>, <edi>, <esi>
+// asm: sub_161C91: eax, edx, ebx, edi, esi
 char sub_161C91(
         int a1,
         int a2,
@@ -4898,7 +4898,7 @@ char sub_161C91(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161CBC@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161CBC: eax, edx, edi, esi
 char sub_161CBC(
         int a1,
         int a2,
@@ -4933,7 +4933,7 @@ char sub_161CBC(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161CDB@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161CDB: eax, edx, edi, esi
 char sub_161CDB(
         int a1,
         int a2,
@@ -4970,7 +4970,7 @@ char sub_161CDB(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161D04@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161D04: eax, edx, edi, esi
 char sub_161D04(
         int a1,
         int a2,
@@ -5005,7 +5005,7 @@ char sub_161D04(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161D26@<eax>, <edx>, <ebx>, <edi>, <esi>
+// asm: sub_161D26: eax, edx, ebx, edi, esi
 char sub_161D26(
         int a1,
         int a2,
@@ -5043,7 +5043,7 @@ char sub_161D26(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161D52@<eax>, <edx>, <edi>, <esi>
+// asm: sub_161D52: eax, edx, edi, esi
 char sub_161D52(
         int a1,
         int a2,
@@ -5078,7 +5078,7 @@ char sub_161D52(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161D74@<eax>, <edx>, <ebx>, <edi>, <esi>
+// asm: sub_161D74: eax, edx, ebx, edi, esi
 char sub_161D74(
         int a1,
         int a2,
@@ -5116,7 +5116,7 @@ char sub_161D74(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161DA0@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161DA0: eax, edx, ecx, edi, esi
 char sub_161DA0(
         int a1,
         int a2,
@@ -5153,7 +5153,7 @@ char sub_161DA0(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161DC7@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161DC7: eax, edx, ecx, edi, esi
 char sub_161DC7(
         int a1,
         int a2,
@@ -5192,7 +5192,7 @@ char sub_161DC7(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161DF8@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161DF8: eax, edx, ecx, edi, esi
 char sub_161DF8(
         int a1,
         int a2,
@@ -5232,7 +5232,7 @@ char sub_161DF8(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161E27@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161E27: eax, edx, ecx, ebx, edi, esi
 char sub_161E27(
         int a1,
         int a2,
@@ -5275,7 +5275,7 @@ char sub_161E27(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161E60@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161E60: eax, edx, ecx, edi, esi
 char sub_161E60(
         int a1,
         int a2,
@@ -5315,7 +5315,7 @@ char sub_161E60(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161E8F@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161E8F: eax, edx, ecx, ebx, edi, esi
 char sub_161E8F(
         int a1,
         int a2,
@@ -5358,7 +5358,7 @@ char sub_161E8F(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161EC8@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161EC8: eax, edx, ecx, edi, esi
 char sub_161EC8(
         int a1,
         int a2,
@@ -5398,7 +5398,7 @@ char sub_161EC8(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161EF5@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161EF5: eax, edx, ecx, edi, esi
 char sub_161EF5(
         int a1,
         int a2,
@@ -5440,7 +5440,7 @@ char sub_161EF5(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161F2C@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161F2C: eax, edx, ecx, edi, esi
 char sub_161F2C(
         int a1,
         int a2,
@@ -5480,7 +5480,7 @@ char sub_161F2C(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161F5C@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161F5C: eax, edx, ecx, ebx, edi, esi
 char sub_161F5C(
         int a1,
         int a2,
@@ -5523,7 +5523,7 @@ char sub_161F5C(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161F96@<eax>, <edx>, <ecx>, <edi>, <esi>
+// asm: sub_161F96: eax, edx, ecx, edi, esi
 char sub_161F96(
         int a1,
         int a2,
@@ -5563,7 +5563,7 @@ char sub_161F96(
 // registry, ktere tahle varianta nepouziva, ale volajici (sub_162000) plni
 // VZDY vsechny, takze se argumenty trefovaly do spatnych parametru.
 // Doplneno na jednotny tvar; nepouzite parametry maji jmeno mix_<reg>.
-// asm: sub_161FC6@<eax>, <edx>, <ecx>, <ebx>, <edi>, <esi>
+// asm: sub_161FC6: eax, edx, ecx, ebx, edi, esi
 char sub_161FC6(
         int a1,
         int a2,
@@ -5893,7 +5893,7 @@ bool sub_1622BF()
 }
 // 1602F8: using guessed type int (*off_1602F8[2])();
 // 18AD28: using guessed type int dword_18AD28;
-// 18AD48: using guessed type void (__noreturn *off_18AD48)();
+// 18AD48: using guessed type void (*off_18AD48)();
 
 
 //----- (001622EE) --------------------------------------------------------
@@ -6827,7 +6827,7 @@ void sub_163C7A()
   /* asm: fnstenv byte ptr [ebp+0] - DOS/BIOS level, not needed in the port (wave 184) */;
   /* asm: fclex fdisi - DOS/BIOS level, not needed in the port (wave 184) */;
   _enable();
-  ((void (__noreturn *)(void))_GETDS)();
+  ((void (*)(void))_GETDS)();
 }
 
 

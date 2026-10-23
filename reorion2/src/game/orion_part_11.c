@@ -193,7 +193,7 @@ int sub_B08CA()
 
 
 //----- (000B094C) --------------------------------------------------------
-int sub_B094C()
+int sub_B094C_131()
 {
   int result; // eax
   int16_t i; // si
@@ -1386,7 +1386,7 @@ void sub_B2190()
 
 
 //----- (000B230D) --------------------------------------------------------
-void sub_B230D( int a1, int a2)
+void sub_B230D_131( int a1, int a2)
 {
   int16_t v2; // bx
   int16_t v3; // si
@@ -7687,7 +7687,7 @@ LABEL_28:
     }
     else
     {
-      LOBYTE(v3) = sub_BA5DA(word_182974, v5, v69);
+      LOBYTE(v3) = sub_BA5DA_131(word_182974, v5, v69);   /* 1.50 BA416: not hooked */
       if ( !(_BYTE)v3 )
         return v3;
     }
@@ -7748,7 +7748,7 @@ LABEL_72:
 
 
 //----- (000BA5DA) --------------------------------------------------------
-char sub_BA5DA( int a1, int a2, int a3)
+char sub_BA5DA_131( int a1, int a2, int a3)
 {
   int16_t v4; // ax
   int16_t v5; // ax

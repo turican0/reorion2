@@ -217,7 +217,7 @@ int sub_1E020F()
 {
   int v1; // [esp-20h] [ebp-20h]
 
-  v1 = sub_B094C();
+  v1 = sub_B094C_131();
   sub_1E6EA3();
   return v1;
 }
@@ -263,7 +263,7 @@ int64_t sub_1E0249(int64_t result, uint32_t *a2, int a3, unsigned int a4)
 //----- (001E025A) --------------------------------------------------------
 int sub_1E025A()
 {
-  sub_C2E4D();
+  sub_C2E4D_131();
   return sub_1E9203();
 }
 
@@ -277,7 +277,7 @@ char sub_1E0265(int16_t *a1, int16_t *a2, int a3, int a4)
   v4 = sub_2004B7(a1, a3) == 0;
   result = (char)a1;
   if ( v4 )
-    return sub_C4343(a1, a2, a4);
+    return sub_C4343_131(a1, a2, a4);
   return result;
 }
 
@@ -408,7 +408,7 @@ int sub_1E0358(int a1)
 {
   int v3; // [esp-Ch] [ebp-Ch]
 
-  sub_35C3A(a1);
+  sub_35C3A_131(a1);
   sub_1E7DDB(a1);
   return v3;
 }
@@ -454,7 +454,7 @@ int sub_1E0399(int a1)
   int v1; // eax
   int v3; // [esp-20h] [ebp-20h]
 
-  sub_7B631(a1);
+  sub_7B631_131();
   v3 = v1;
   sub_1EAD6B();
   return v3;
@@ -490,7 +490,7 @@ void sub_1E03DB(int a1)
   if ( (*(_BYTE *)&unk_23F18D & 1) != 0 )
     sub_56B26(a1);
   else
-    sub_56BFA(a1);
+    sub_56BFA_131(a1);
 }
 
 //----- (001E03ED) --------------------------------------------------------
@@ -505,7 +505,7 @@ void sub_1E03FB(int a1, int a2, int a3)
   a1 = (int16_t)a1;
   a2 = (int16_t)a2;
   if ( (sub_1E7B2B(a1, a2, a3, 0) & 1) != 0 )
-    sub_459E7(0, 0);
+    sub_459E7_131(0, 0);
 }
 
 //----- (001E0415) --------------------------------------------------------
@@ -513,7 +513,7 @@ int sub_1E0415(int a1, int a2, int a3)
 {
   a2 = (int16_t)a2;
   if ( (sub_1E7B2B(a1, a2, a3, 1) & 1) != 0 )
-    return sub_2C129(a1, a2);
+    return sub_2C129_131(a1, a2);
   else
     return 0;
 }
@@ -729,7 +729,7 @@ _DWORD * sub_1E0646(int a1, int a2, _DWORD *a3, int a4, unsigned int a5, unsigne
   a6 = (uint16_t)a6;
   a7 = (int16_t)a7;
   v7 = sub_1EC7CF(a1);
-  return sub_126F3B(v7, a2, a3, a4, a5, a6, a7);
+  return sub_126F3B_131(v7, a2, a3, a4, a5, a6, a7);
 }
 
 //----- (001E0654) --------------------------------------------------------
@@ -738,7 +738,7 @@ _DWORD * sub_1E0654(int a1, int a2, int a3, int a4)
   int v4; // eax
 
   v4 = sub_1EC7CF(a1);
-  return sub_126CEB(v4, a2, a3, a4);
+  return sub_126CEB_131(v4, a2, a3, a4);
 }
 
 //----- (001E0662) --------------------------------------------------------
@@ -747,7 +747,7 @@ int sub_1E0662(int a1, int a2)
   int v2; // eax
 
   v2 = sub_1EC7CF(a1);
-  return sub_127233(v2, a2, 0, 0);
+  return sub_127233_131(v2, a2, 0, 0);
 }
 
 //----- (001E0670) --------------------------------------------------------
@@ -756,7 +756,7 @@ _DWORD * sub_1E0670(int a1, int a2, int a3, int a4)
   int v4; // eax
 
   v4 = sub_1EC7CF(a1);
-  return sub_12816C(v4, a2, a3, a4);
+  return sub_12816C_131(v4, a2, a3, a4);
 }
 
 //----- (001E067E) --------------------------------------------------------
@@ -765,7 +765,7 @@ int16_t * sub_1E067E(int16_t *a1, int a2)
   int v2; // edx
 
   v2 = sub_1EC7CF(a2);
-  return sub_13AD33(a1, v2);
+  return sub_13AD33_131(a1, v2);
 }
 
 //----- (001E0793) --------------------------------------------------------
@@ -1276,7 +1276,7 @@ _BOOL1 sub_1E0A4A(int a1, int a2, unsigned int a3, int a4)
   a2 = (char)a2;
   if ( !byte_199BEF )
     a2 = byte_199BED;
-  return sub_132646(a1, a2, a3);
+  return sub_132646_131(a1, a2, a3);
 }
 // 199BED: using guessed type char byte_199BED;
 // 199BEF: using guessed type char byte_199BEF;

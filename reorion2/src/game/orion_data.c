@@ -50,7 +50,7 @@ _UNKNOWN loc_81CB0; // weak
 _UNKNOWN loc_925A6; // weak
 _UNKNOWN loc_925AA; // weak
 _UNKNOWN loc_9FFFD; // weak
-void (__noreturn *off_A6606)() = (void (__noreturn *)())&sub_10000; // weak (never called - see sub_10000 comment)
+void (*off_A6606)() = (void (*)())&sub_10000; // weak (never called - see sub_10000 comment)
 _UNKNOWN loc_BCD8B; // weak
 _UNKNOWN loc_BFFF4; // weak
 /* PORT (vlna 126): tabulka "produkce na delnika podle bohatosti nerostu".
@@ -1227,7 +1227,7 @@ int (*funcs_164C45[256])() =
 int (*off_18ACD4[2])() = { &sub_15E2F0, &sub_15E330 }; // weak
 int (*off_18ACD8)() = &sub_15E330; // weak
 MixStepBlock g_mixStepBlock = { 0, 0 }; // viz orion_common.h
-void (__noreturn *off_18AD48)() = &_terminate; // weak
+void (*off_18AD48)() = &_terminate; // weak
 double dbl_18ADBE = 1.7976931348623157e308; // weak
 float flt_18ADC6 = 3.4028235e38; // weak
 _UNKNOWN *off_18B018 = &loc_168636; // weak

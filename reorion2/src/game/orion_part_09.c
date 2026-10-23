@@ -3976,7 +3976,7 @@ int16_t sub_98062( int a1)
 
 
 //----- (000980DB) --------------------------------------------------------
-int sub_980DB( int a1, int a2, _WORD *a3)
+int sub_980DB_131( int a1, int a2, _WORD *a3)
 {
   int16_t v5; // ax
   int16_t v6; // dx
@@ -4077,7 +4077,7 @@ char sub_981D1(char *a1, int a2, int a3)
 
 
 //----- (00098282) --------------------------------------------------------
-void sub_98282(int a1, int a2, int a3)
+void sub_98282_131(int a1, int a2, int a3)
 {
   char v3[500]; // [esp+0h] [ebp-1F4h] BYREF
 
@@ -5375,7 +5375,7 @@ void sub_995D1()
 // 182308: using guessed type int16_t word_182308;
 // 18230A: using guessed type int16_t word_18230A;
 // 18230C: using guessed type int16_t word_18230C;
-// 18230E: using guessed type void (__noreturn *off_18230E)();
+// 18230E: using guessed type void (*off_18230E)();
 // 1975C4: using guessed type int dword_1975C4;
 // 199F09: using guessed type char byte_199F09;
 // 19C598: using guessed type int dword_19C598;
@@ -5984,7 +5984,7 @@ LABEL_31:
 // 182308: using guessed type int16_t word_182308;
 // 18230A: using guessed type int16_t word_18230A;
 // 18230C: using guessed type int16_t word_18230C;
-// 18230E: using guessed type void (__noreturn *off_18230E)();
+// 18230E: using guessed type void (*off_18230E)();
 // 192ED4: using guessed type int dword_192ED4;
 // 1930D4: using guessed type int (uint8_t*)dword_1930D4;
 // 19999C: using guessed type int16_t word_19999C;

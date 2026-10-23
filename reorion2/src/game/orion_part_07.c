@@ -1588,7 +1588,7 @@ int sub_7B5E4( int a1, int a2)
 
 
 //----- (0007B631) --------------------------------------------------------
-void sub_7B631()
+void sub_7B631_131()
 {
   int16_t v0; // si
   int16_t v1; // dx
@@ -7706,7 +7706,7 @@ LABEL_37:
       case 9:
         v7 = 1;
 LABEL_7:
-        sub_82DFF(&word_1999B8, (int16_t *)&v15, v7);
+        sub_82DFF_131(&word_1999B8, (int16_t *)&v15, v7);   /* 1.50 82607: not hooked */
         if ( (int16_t)v15 > -1 && (int16_t)v15 < word_1999F8 )
           sub_831B1((int16_t)v15, 0, v7, (int16_t *)0xFFFFFFFF);
         break;
@@ -8030,7 +8030,7 @@ int sub_82DC8(_WORD *a1, _WORD *a2)
 
 
 //----- (00082DFF) --------------------------------------------------------
-int16_t sub_82DFF(int16_t *a1, int16_t *a2, int a3)
+int16_t sub_82DFF_131(int16_t *a1, int16_t *a2, int a3)
 {
   int v5; // eax
   int v6; // edx
@@ -10601,7 +10601,7 @@ void sub_85F2F()
 
 
 //----- (00085FF2) --------------------------------------------------------
-void sub_85FF2(int a1)
+void sub_85FF2_131(int a1)
 {
   int16_t v1; // bx
   int16_t v2; // si

@@ -6555,7 +6555,7 @@ int sub_2BF73(int a1, int a2, int a3)
 
 
 //----- (0002C129) --------------------------------------------------------
-int sub_2C129( int a1, int a2)
+int sub_2C129_131( int a1, int a2)
 {
   int v4; // ebx
   int v5; // eax
@@ -12708,7 +12708,7 @@ LABEL_72:
 
 
 //----- (00035821) --------------------------------------------------------
-int sub_35821( int a1, int a2, int a3, int a4)
+int sub_35821_131( int a1, int a2, int a3, int a4)
 {
   int result; // eax
   int v7; // eax
@@ -12886,7 +12886,7 @@ LABEL_24:
 
 
 //----- (00035C3A) --------------------------------------------------------
-int sub_35C3A(int result)
+int sub_35C3A_131(int result)
 {
   qmemcpy((void *)(result + 256), (void *)(result + 202), 0x36u);
   return result;
