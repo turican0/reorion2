@@ -129,6 +129,8 @@ int sub_11A92E(
   int v16; // [esp+5Ch] [ebp-Ch]
   int v17; // [esp+60h] [ebp-8h]
 
+  if ( g_orion150 )   /* 1.50: every call goes through sub_1E02FE */
+    a9 = (_BYTE *)sub_1E6D6F((char *)a9);
   v13 = a1;
   v14 = a2;
   v15 = a3;

@@ -1093,7 +1093,7 @@ int sub_B1D57( int a1)
 
 
 //----- (000B1E19) --------------------------------------------------------
-int16_t sub_B1E19( int a1, int a2)
+int16_t sub_B1E19_131( int a1, int a2)
 {
   int16_t result; // ax
   int v4; // eax

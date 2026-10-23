@@ -5088,8 +5088,16 @@ char *sub_114177()
 // 1B3E14: using guessed type int dword_1B3E14;
 
 
-//----- (0011438B) --------------------------------------------------------
+/* 1.50: every call but EFB34 goes through sub_1E02A2 (the text through sub_1E6D6F first) */
 unsigned int sub_11438B( int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
+{
+  if ( g_orion150 )
+    a5 = (_BYTE *)sub_1E6D6F((char *)a5);
+  return sub_11438B_131(a1, a2, a3, a4, a5, a6);
+}
+
+//----- (0011438B) --------------------------------------------------------
+unsigned int sub_11438B_131( int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
 {
   unsigned int v6; // eax
 
@@ -5319,6 +5327,8 @@ unsigned int sub_114FBA( int a1, int a2, int a3, _WORD *a4, _BYTE *a5, int a6)
 {
   unsigned int result; // eax
 
+  if ( g_orion150 )   /* 1.50: every call goes through sub_1E028A */
+    a5 = (_BYTE *)sub_1E6D6F((char *)a5);
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = a1;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 2) = a2;
   *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 24) = a3;
@@ -5441,6 +5451,8 @@ unsigned int sub_115478( int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 {
   unsigned int v11; // eax
 
+  if ( g_orion150 )   /* 1.50: every call goes through sub_1E02CE */
+    a10 = (_BYTE *)sub_1E6D6F((char *)a10);
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aTooManyFields, a2);
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = a1;
@@ -5695,6 +5707,8 @@ char *sub_115E3B( int a1, int a2, int a3,
 {
   char *v11; // eax
 
+  if ( g_orion150 )   /* 1.50: every call goes through sub_1E02E6 */
+    a10 = (_BYTE *)sub_1E6D6F((char *)a10);
   if ( word_1B3E0E >= word_18447E )
     sub_126487(aTooManyFields, a2);
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E) = a1;

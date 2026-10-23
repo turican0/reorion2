@@ -536,7 +536,7 @@ void sub_12C2A0()
 
 
 //----- (0012C2C6) --------------------------------------------------------
-int sub_12C2C6(int result)
+int sub_12C2C6_131(int result)
 {
   // Cekej `result` BIOS ticku od posledniho snapshotu (sub_12C2A0). VLNA 15:
   // drive busy-wait na MEMORY[0x46C] - v portu mrtvy stub (nekonecna smycka).

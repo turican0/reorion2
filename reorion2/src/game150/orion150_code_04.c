@@ -1100,7 +1100,7 @@ int64_t sub_1E3E7C(int64_t a1)
 //----- (001E3E8A) --------------------------------------------------------
 int sub_1E3E8A(int a1)
 {
-  return sub_12C2C6(a1 - *(_DWORD *)&byte_23FA46[8]);
+  return sub_12C2C6_131(a1 - *(_DWORD *)&byte_23FA46[8]);
 }
 // 23FA46: using guessed type _BYTE byte_23FA46[532];
 

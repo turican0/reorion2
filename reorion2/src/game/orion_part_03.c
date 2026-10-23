@@ -4348,7 +4348,7 @@ LABEL_20:
 
 
 //----- (0003E095) --------------------------------------------------------
-int sub_3E095( unsigned int a1, int a2, int a3, int a4)
+int sub_3E095_131( unsigned int a1, int a2, int a3, int a4)
 {
   int16_t v4; // ax
   int16_t v5; // ax

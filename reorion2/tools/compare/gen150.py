@@ -218,12 +218,21 @@ stats = collections.Counter()
 used = set()
 
 
+# game functions the port wraps for the 1.50 hooks (X -> wrapper, body X_131): the block calls the bodies,
+# as in ORION150.EXE its own calls bypass the hooked call sites
+wrapped131 = set(re.findall(r'\b(\w+)_131\s*\(', open(os.path.join(GAME, '..', 'game150', 'orion150_hooks.h'),
+                                                      encoding='latin1').read()))
+for _m in re.finditer(r'\b(\w+_131)\s*\(([^;]*)\)\s*;', open(os.path.join(GAME, '..', 'game150', 'orion150_hooks.h'),
+                                                            encoding='latin1').read()):
+    nparams[_m.group(1)] = len([x for x in split_args(_m.group(2)) if x.strip() and x.strip() != 'void'])
+
+
 def rename_calls(text):
     def fn(m):
         n = m.group(1)
         a = int(n[4:], 16)
         if a < BB and a in portname:
-            return portname[a] + '('
+            return portname[a] + ('_131(' if portname[a] in wrapped131 else '(')
         if a < BB:
             stats['game function not in port: ' + n] += 1
         return n + '('

@@ -1414,7 +1414,7 @@ void sub_1160B(int a1, int a2, int a3, int a4)
 
 
 //----- (00011BE4) --------------------------------------------------------
-char sub_11BE4()
+char sub_11BE4_131()
 {
   int v0; // eax
   int v1; // esi

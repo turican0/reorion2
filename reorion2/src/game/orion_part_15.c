@@ -2927,7 +2927,7 @@ int sub_E9358(int a1)
 
 
 //----- (000E938C) --------------------------------------------------------
-int16_t sub_E938C(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
+int16_t sub_E938C_131(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
 {
   _BYTE *v6; // esi
   int v8; // eax
@@ -8565,7 +8565,10 @@ int sub_EFABA( int a1, int a2)
                           + 46
                           + *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * a1 + 38)),
                   dword_193174);
-  v6 = sub_11438B(v3 + 40, v4, v3 + 40 + *v5, v4 + v5[1], &unk_17A061, 41);
+  if ( g_orion150 )   /* 1.50 EFB34 call 1E0224: the player's 2-byte text from 23E686, no text hook */
+    v6 = sub_11438B_131(v3 + 40, v4, v3 + 40 + *v5, v4 + v5[1], (_BYTE *)Hook150_Eseg(0x23E686 + 2 * v2), 41);
+  else
+    v6 = sub_11438B(v3 + 40, v4, v3 + 40 + *v5, v4 + v5[1], &unk_17A061, 41);
   result = v2;
   *(_WORD *)(dword_192680 + 2 * v2 + 167) = v6;
   return result;

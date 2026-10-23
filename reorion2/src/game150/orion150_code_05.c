@@ -1384,7 +1384,7 @@ int sub_1E4F03(unsigned int a1, int a2, int a3)
   a1 = (uint16_t)a1;
   a2 = (int16_t)a2;
   a3 = (char)a3;
-  result = sub_3E095(a1, a2, 0, a3);
+  result = sub_3E095_131(a1, a2, 0, a3);
   if ( !result )
     return 1;
   return result;

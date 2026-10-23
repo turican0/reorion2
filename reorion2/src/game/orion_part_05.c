@@ -7995,7 +7995,7 @@ int16_t sub_6E091( int a1)
 
 
 //----- (0006E1A0) --------------------------------------------------------
-int sub_6E1A0( int a1, int *a2)
+int sub_6E1A0_131( int a1, int *a2)
 {
   int result; // eax
   int v3; // eax
@@ -8977,7 +8977,7 @@ int sub_6F07F( int a1, char *a2)
 
 
 //----- (0006F11C) --------------------------------------------------------
-char sub_6F11C( int a1)
+char sub_6F11C_131( int a1)
 {
   int16_t v2; // cx
   char v3; // dl

@@ -311,7 +311,7 @@ int sub_1E02A2(int a1, int a2, int a3, int a4, char *a5, int a6)
   a4 = (int16_t)a4;
   a6 = (int16_t)a6;
   v6 = sub_1E6D6F(a5);
-  return sub_11438B(a1, a2, a3, a4, v6, a6);
+  return sub_11438B_131(a1, a2, a3, a4, v6, a6);
 }
 
 //----- (001E02BA) --------------------------------------------------------
@@ -566,7 +566,7 @@ int sub_1E04A4(char *a1, int a2)
   int result; // eax
 
   a2 = (int16_t)a2;
-  result = sub_E0C1D(a1, a2);
+  result = sub_E0C1D_131(a1, a2);
   if ( result > 42 )
     return 42;
   return result;
@@ -577,7 +577,7 @@ int sub_1E04B4(int16_t *a1, int a2)
 {
   int result; // eax
 
-  result = sub_E0B4F(a1, a2);
+  result = sub_E0B4F_131(a1, a2);
   if ( result > 42 )
     return 42;
   return result;

@@ -9367,7 +9367,7 @@ LABEL_16:
 
 
 //----- (000E0B4F) --------------------------------------------------------
-int sub_E0B4F(int16_t *a1, int a2)
+int sub_E0B4F_131(int16_t *a1, int a2)
 {
   int v3; // edx
   int v4; // edx
@@ -9439,7 +9439,7 @@ int sub_E0B4F(int16_t *a1, int a2)
 
 
 //----- (000E0C1D) --------------------------------------------------------
-int sub_E0C1D(char *a1, int a2)
+int sub_E0C1D_131(char *a1, int a2)
 {
   int result; // eax
 

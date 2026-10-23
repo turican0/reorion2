@@ -8,7 +8,7 @@ char sub_1E80A3(int a1, int a2)
   int v2; // eax
 
   LOBYTE(v2) = sub_1E8053();
-  sub_11BE4(v2, a2);
+  sub_11BE4_131();
   return sub_1E7FFF();
 }
 // 1E80AB: variable 'v2' is possibly undefined

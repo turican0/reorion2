@@ -82,7 +82,7 @@ int16_t sub_93D0A( int a1)
 
 
 //----- (00093D4B) --------------------------------------------------------
-int sub_93D4B( int a1, int a2)
+int sub_93D4B_131( int a1, int a2)
 {
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   if ( a1 < 60 )
