@@ -11075,7 +11075,10 @@ LABEL_97:
             byte_199F33 = 1;
           else
             v84 = sub_7109B();
-          sub_A0305();
+          if ( g_orion150 )   /* 1.50 868E0 */
+            Hook150_1E3719(v65);
+          else
+            sub_A0305();
           sub_A07C8();
           if ( v28 == word_199BB8 )
             v29 = 0;
@@ -12083,7 +12086,7 @@ void sub_87BAE()
   sub_120DED(2, 1);
   sub_120D79(v86, (int)v82);
   sub_1210FD(v104 + (int16_t)v100 / 2, v110 + 1, (int)v76);
-  if ( sub_233FA() )
+  if ( Hook150_1E4D9E() )   /* 1.50 87CEC */
   {
     sub_8F6F8(3u, 73, 76, (char *)&v79);
     sub_120BB5(3, (int)&v79);

@@ -8038,9 +8038,9 @@ LABEL_20:
     sub_C5C44();
     byte_199F00 = 0;
     byte_183F42 = 1;
-    sub_11127C(dword_192ED4);
+    Hook150_1E1F26(dword_192ED4);   /* 1.50 10AC36 */
     v30 = sub_108073((int)v42, word_1AD204 + 1, v34);
-    v31 = sub_1112B4(dword_192ED4);
+    v31 = Hook150_1E1F37(dword_192ED4);   /* 1.50 10AC5B */
     ServiceAudioTick_FE8BE((int)v31, v30, v34, (int16_t *)a3);
     byte_183F42 = 0;
   }
@@ -9171,7 +9171,7 @@ int sub_10C4E9(
     v10 = sub_126B42((int)aRacesLbx, 6, dword_192ED4);
     *a6 = sub_11523B(429, 444, (int)&byte_17A356, v10, (int)a7, byte_17A382, 40);
     v11 = sub_126B42((int)aRacesLbx, 7, dword_192ED4);
-    v12 = sub_11523B(429, 423, (int)&byte_17A356, v11, (int)a5, aRad, 40);
+    v12 = Hook150_1E4C28(429, 423, (int)&byte_17A356, v11, (int)a5, aRad, 40);   /* 1.50 10C5CD */
     v13 = dword_192ED4;
     *a4 = v12;
     v14 = sub_126B42((int)aRacesLbx, 8, v13);

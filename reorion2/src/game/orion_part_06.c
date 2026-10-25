@@ -38,7 +38,7 @@ char sub_71CE7()
         }
       }
       if ( v0 )
-        result = sub_79D40(113 * v4 + dword_19306C);   /* asm `mov ch, al` */
+        result = g_orion150 ? sub_79D50(v3, 113 * v4 + dword_19306C) : sub_79D40(113 * v4 + dword_19306C);   /* asm `mov ch, al` */   /* 1.50 71DCA: call sub_1E1611 (sub_79D50(edi, eax)) */
     }
   }
   return result;   /* wave 163: asm `mov al, ch` at loc_71DD1 */
@@ -1629,6 +1629,8 @@ void sub_73980(int a1, int16_t *a2, char *a3)
     byte_19C195 = -1;
     sub_11C2F0();
     v11 = sub_7267D(&v86, &v92, &v82, &v93, &v81, &v80, &v75, &v87, &v88, &v85);
+    if ( g_orion150 )   /* 1.50 73C61: call sub_1E34A4 - on at 743B0 (if v94) */
+      goto LABEL_150_743B0;
     sub_12C2A0();
     byte_199F1E = 0;
     LODWORD(v11) = sub_1171AB(0, SHIDWORD(v11), (int)&v82, (int)&v93);
@@ -1914,6 +1916,7 @@ LABEL_53:
       byte_199EFE = 1;
       *(_WORD *)(v34 + 12) = -1;
     }
+LABEL_150_743B0:
     if ( v94 )
     {
       v25 = dword_1975C4;

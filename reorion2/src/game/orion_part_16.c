@@ -1753,7 +1753,7 @@ void sub_F74CD( int a1, int a2, int a3)
 
   v31 = a1;
   sub_1112EC(dword_192ED4, 0xE1000);
-  v28 = (int16_t *)(_DWORD*)sub_110D3C((PoolMemType*)dword_192ED4, 0xE1000);
+  v28 = (int16_t *)(_DWORD*)Hook150_1E0819((PoolMemType*)dword_192ED4, 0xE1000);   /* 1.50 0F74F7 */
   v25 = v28;
   qmemcpy(v28, &word_1AAF68, sizeof(int16_t));
   qmemcpy(v28 + 1, &dword_192FD8, 4u);
@@ -5362,7 +5362,7 @@ char sub_FB7E5(int16_t *a1)
           v23 = (uint8_t*)dword_197F98;
           *(_BYTE *)((uint8_t*)dword_197F98 + v22 + 40) = 100;
           ServiceAudioTick_FE8BE(v22, v23, (int)&v43, a1);
-          sub_F6816(32766, 0, (int)&v43, 0x60u);
+          Hook150_1E1386(32766, 0, (int)&v43, 0x60u);   /* 1.50 0FBC37 */
           sub_F551B();
           sub_8F1C4((void (*)(int, int))sub_F19C7, v58, 11);
           v24 = 0;
@@ -7394,7 +7394,7 @@ LABEL_57:
   {
     sub_E607F((int16_t)v30, (int16_t)v21);
     sub_A163A((v28 - dword_197F9C) / 129, a2);
-    v3 = sub_8A4C4();
+    v3 = Hook150_1E04EA();   /* 1.50 0FDE7B */
     goto LABEL_57;
   }
   sub_E6071(v30, v21);
@@ -7406,7 +7406,7 @@ LABEL_57:
   else
   {
     sub_A163A((int)(v26 - dword_197F9C) / 129, a2);
-    sub_8A4C4();
+    Hook150_1E04EA();   /* 1.50 0FDF60 */
   }
   if ( !(uint16_t)sub_E60C8(dword_19306C + 113 * (int16_t)a2, v21) )
   {
@@ -8077,7 +8077,7 @@ char sub_FE86B(int a1, int16_t *a2)
    (callers read it: sound off = a1 back) */
 int ServiceAudioTick_FE8BE(int a1, int a2, int a3, int16_t *a4)
 {
-  return sub_F69FE(sub_1131F0(a1, a2), a2, a3, a4);
+  return sub_F69FE(sub_1131F0(a1, a2), a2, a3, a4);   /* 1.50 FE8BE: call sub_1E010C - nullsub_41 first, the same */
 }
 
 

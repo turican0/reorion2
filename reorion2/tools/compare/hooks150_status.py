@@ -23,8 +23,9 @@ hooks_h = open('src/game150/orion150_hooks.h', encoding='latin-1').read()
 wrapped = set(re.findall(r'\b(\w+)_131\s*\(', hooks_h))
 marked = set()
 for p in glob.glob('src/game/*.c') + glob.glob('src/game150/*.c') + glob.glob('src/game150/*.h'):
-    for m in re.finditer(r'1\.50 ([0-9A-F]{5,6})\b', open(p, encoding='latin-1').read()):
-        marked.add(int(m.group(1), 16))
+    for m in re.finditer(r'1\.50 ([0-9A-F]{5,6}(?:, [0-9A-F]{5,6})*)\b', open(p, encoding='latin-1').read()):
+        for a in m.group(1).split(', '):
+            marked.add(int(a, 16))
     for m in re.finditer(r'//----- \((00[0-9A-F]{6})\)', open(p, encoding='latin-1').read()):
         pass
 # calls of wrapped functions 1.50 leaves alone are marked "1.50 <site>: not hooked" - they are not hooks anyway

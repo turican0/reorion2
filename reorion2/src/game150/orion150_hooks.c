@@ -1184,6 +1184,745 @@ int Hook150_1E3103(int a1, int a2, int a3, int a4)
   return r;
 }
 
+uint8_t *Hook150_Ecode(uint32_t addr)
+{
+  return ECODE150(addr);
+}
+
+//----- (001E0380) --------------------------------------------------------
+/* 1278A mov eax, offset dword_199CB6 / 1278F: call sub_1691E7 (LE code of 1.50, ends in sub_124820(value)),
+   then sub_1E711F */
+void Hook150_1E0380(void)
+{
+  sub_1691E7((int *)&dword_199CB6, 0);
+  sub_1E711F();
+}
+
+//----- (001E12FB) --------------------------------------------------------
+/* pusha / sub_1E80C7 / popa / jmp FE8BE */
+int Hook150_1E12FB(int a1, int a2, int a3, int16_t *a4)
+{
+  if ( g_orion150 )
+    sub_1E80C7();
+  return ServiceAudioTick_FE8BE(a1, a2, a3, a4);
+}
+
+//----- (001E19B1) --------------------------------------------------------
+/* 13F1F: byte 23F0E3 == 1 -> sub_56586(eax, edx), sub_AF7B4(ecx = eax, 5, ebx) before sub_564CD */
+char Hook150_1E19B1(int a1, int a2, int ebx)
+{
+  if ( g_orion150 && *ESEG150(0x23F0E3) == 1 )
+  {
+    sub_56586(a1, a2);
+    sub_AF7B4(a1, 5, ebx);
+  }
+  return sub_564CD(a1, a2);
+}
+
+//----- (001E0A60) --------------------------------------------------------
+/* 310F9: the number itoa gets is sub_575D6(byte_199A32, byte_199A43) when byte_199A32 < 8, word [ebp+5Ah]
+   != 1 and word_199A30 != -1 */
+int Hook150_1E0A60(int value, int var5A)
+{
+  if ( g_orion150 && (int8_t)byte_199A32 < 8 && (int16_t)var5A != 1 && word_199A30 != -1 )
+    return sub_575D6((uint8_t)byte_199A32, (uint8_t)byte_199A43);
+  return value;
+}
+
+//----- (001E0ADF) --------------------------------------------------------
+/* 31348: word_199A30 != -1 -> the byte_199A43 branch (3134F: byte_199A37), else sub_4A884 */
+int Hook150_1E0ADF(int a1)
+{
+  if ( g_orion150 && word_199A30 != -1 )
+    return (uint8_t)byte_199A37;
+  return sub_4A884(a1);
+}
+
+//----- (001E0B25) --------------------------------------------------------
+/* 31567, 3168A: sub_1210B7 only without byte_199CB4 == 1, word_199A3B == 1, word [ebp+5Ah] == 1 */
+int Hook150_1E0B25(int var5A)
+{
+  return !g_orion150 || !(byte_199CB4 == 1 || word_199A3B[0] == 1 || (int16_t)var5A == 1);
+}
+
+//----- (001E50BF) --------------------------------------------------------
+/* bx == 20: m = sub_494A8(di, edx) into [ebp-1Ch]; the 4 words +29h of record di at most m, word +27h = m */
+static void Hook150_1E50BF(int di, int bx, int16_t *var1C)
+{
+  uint8_t *rec;
+  int16_t m;
+  int b;
+
+  if ( (int16_t)bx != 20 )
+    return;
+  m = (int16_t)sub_494A8((int16_t)di, bx);
+  *var1C = m;
+  rec = (uint8_t *)(dword_192864 + 0x139 * (int16_t)di);
+  for ( b = 0; b < 4; ++b )
+    if ( *(int16_t *)(rec + 2 * b + 0x29) > m )
+      *(int16_t *)(rec + 2 * b + 0x29) = m;
+  *(int16_t *)(rec + 0x27) = m;
+}
+
+//----- (001E1DF9) --------------------------------------------------------
+/* 356DA: call sub_127712 / sub_1E8EB3(di, bx) / sub_1E50BF (bx = edx = the second argument) */
+int Hook150_1E1DF9(int a1, unsigned int a2, int di, int16_t *var1C)
+{
+  int r = sub_127712(a1, a2);
+
+  if ( g_orion150 )
+  {
+    sub_1E8EB3((int16_t)di, (int16_t)a2);
+    Hook150_1E50BF(di, (int)a2, var1C);
+  }
+  return r;
+}
+
+//----- (001E1B8A) --------------------------------------------------------
+/* 36F38: sub_42A27; ax and byte 1E1B04 == 1 -> sub_4B0D3(ecx = eax, 34) */
+_BOOL1 Hook150_1E1B8A(int a1)
+{
+  int r = sub_42A27(a1);
+
+  if ( g_orion150 && (int16_t)r && *ECODE150(0x1E1B04) == 1 )
+    r = sub_4B0D3(a1, 34);
+  return (_BOOL1)r;
+}
+
+//----- (001E2DF1) --------------------------------------------------------
+/* 37D4A replaces sub_A5EBC: mov edx, ebx / call sub_1FB857 */
+int Hook150_1E2DF1(int a1, int a3)
+{
+  return sub_1FB857(a1, a3, 0, 0, 0);
+}
+
+//----- (001FB7E3) --------------------------------------------------------
+/* 37D5D replaces sub_A5EB2 (its pushed ecx only pads the cdecl call of sub_1E2DF9) */
+int16_t Hook150_1FB7E3(int a1, int a2)
+{
+  return g_orion150 ? (int16_t)sub_1FB7E3(a1, 0, 0, 0) : sub_A5EB2(a1, a2);
+}
+
+//----- (001E21E5) --------------------------------------------------------
+/* 3A97B: call sub_3891E(si) / sub_4588C(si) / sub_2C601(its result, edx = a4) */
+void Hook150_1E21E5(int a4)
+{
+  sub_3891E(a4);
+  if ( g_orion150 )
+    sub_2C601(sub_4588C((int16_t)a4), a4);
+}
+
+//----- (001E1A24) --------------------------------------------------------
+/* 43078: pusha / sub_1E7F27(di) / popa / call FE8BE */
+int Hook150_1E1A24(int a1, int a2, int a3, int16_t *a4, int di)
+{
+  if ( g_orion150 )
+    sub_1E7F27((int16_t)di);
+  return ServiceAudioTick_FE8BE(a1, a2, a3, a4);
+}
+
+//----- (001E1788) --------------------------------------------------------
+/* 4319C: dword 23FDAA = lea [ebp+4Ah] (a local of sub_42F7F), sub_1E8717, jmp FE8BE */
+int Hook150_1E1788(int a1, int a2, int a3, int16_t *a4, uint8_t *var4A)
+{
+  if ( g_orion150 )
+  {
+    *(uint32_t *)ESEG150(0x23FDAA) = (uint32_t)(uintptr_t)var4A;
+    sub_1E8717();
+  }
+  return ServiceAudioTick_FE8BE(a1, a2, a3, a4);
+}
+
+//----- (001E1AAF) --------------------------------------------------------
+/* 4321A: sub_3E563; 0 -> (byte 1E1B04 and sub_4B0D3(a1, 34) == 0) or (!word_17D853 and byte +20h of
+   record a1 != di) */
+_BOOL1 Hook150_1E1AAF(int a1, int di)
+{
+  _BOOL1 r = sub_3E563(a1);
+
+  if ( !g_orion150 || r )
+    return r;
+  if ( *ECODE150(0x1E1B04) && !(int16_t)sub_4B0D3(a1, 34) )
+    return 1;
+  if ( word_17D853 )
+    return 0;
+  return *(uint8_t *)(dword_192864 + 0x139 * a1 + 0x20) != (uint16_t)di;
+}
+
+//----- (001E512C) --------------------------------------------------------
+/* 4350C after sub_127776: ebx = sub_1EB393(bx): 2721h -> 2719h with byte 23FDA6 = 1 */
+int Hook150_1E512C(int ebx)
+{
+  *ESEG150(0x23FDA6) = (int16_t)ebx == 0x2721;
+  return (int16_t)ebx == 0x2721 ? 0x2719 : (int16_t)ebx;
+}
+
+//----- (001E1FF4) --------------------------------------------------------
+/* 438BC, 4459A: a local of sub_42F7F ([ebp+46h] / [ebp+7Ah]) = movzx ax, byte +20h of record eax (the upper
+   half stays from the multiplication), then sub_3FA61 */
+void Hook150_1E1FF4(int a1, int a2, int a3, int *var)
+{
+  if ( g_orion150 )
+  {
+    int v = 0x139 * (int16_t)a1;
+
+    *var = (v & 0xFFFF0000) | *(uint8_t *)(dword_192864 + v + 0x20);
+  }
+  sub_3FA61(a1, a2, a3);
+}
+
+//----- (001E20C4) --------------------------------------------------------
+/* 3FADF in sub_3FA61 before sub_3F5F1: [ebp-4] = a2 * 20 (v16), [ebp-10h] = a3 * 20, [ebp-14h] = byte +23h of
+   record a1; sub_3EAA5(a1, &[ebp-4], &[ebp-10h], &[ebp-14h]) == 1 -> word_1998DA = 1 and dword 1E20BF =
+   word [ebp-14h]; [ebp-14h] is set back to 313 * a1 afterwards (v14) */
+void Hook150_1E20C4(int a1, int a2, int a3, int16_t *v16)
+{
+  int32_t var10, var14;
+
+  if ( !g_orion150 )
+    return;
+  if ( word_1998DA == 1 )
+    *ECODE150(0x1E20C3) = 1;
+  if ( word_1998C4 != 1 || word_1998C2 || word_1998DA == 2 )
+    return;
+  *v16 = (int16_t)(20 * (int16_t)a2);
+  var10 = 20 * (int16_t)a3;
+  var14 = (int32_t)(((uint32_t)(uintptr_t)dword_192864 & 0xFFFF0000) |
+                    *(uint8_t *)(dword_192864 + 313 * (int16_t)a1 + 0x23));
+  if ( (int16_t)sub_3EAA5((int16_t)a1, (_WORD *)v16, (_WORD *)&var10, (_WORD *)&var14) == 1 )
+  {
+    word_1998DA = 1;
+    *(int32_t *)ECODE150(0x1E20BF) = (int16_t)var14;
+  }
+}
+
+//----- (001E1B65) --------------------------------------------------------
+/* 4A623, 4A7BE, 4D093 (si = eax there): sub_3E563 0 and byte 1E1B04 == 1 -> sub_4B0D3(si, 34) ^ 1 */
+_BOOL1 Hook150_1E1B65(int a1)
+{
+  _BOOL1 r = sub_3E563(a1);
+
+  if ( g_orion150 && !r && *ECODE150(0x1E1B04) == 1 )
+    r = (sub_4B0D3((int16_t)a1, 34) ^ 1) & 1;
+  return r;
+}
+
+//----- (001E4941) --------------------------------------------------------
+/* 558BB: call sub_127712 / sub_127712(the same record, byte 23DFAE) */
+int Hook150_1E4941(int a1, unsigned int a2)
+{
+  int r = sub_127712(a1, a2);
+
+  return g_orion150 ? sub_127712(a1, *ESEG150(0x23DFAE)) : r;
+}
+
+//----- (001E495D) --------------------------------------------------------
+/* 55AA9: call sub_127712 / sub_127712(ecx = the same record, byte 23DF64) */
+int Hook150_1E495D(int a1, unsigned int a2)
+{
+  int r = sub_127712(a1, a2);
+
+  return g_orion150 ? sub_127712(a1, *ESEG150(0x23DF64)) : r;
+}
+
+//----- (001E1B41) --------------------------------------------------------
+/* 48BF9 in sub_47939 (jmp 1E1B41, back at 48C1A): sub_42F7F(0, byte 1E1B04), sub_1E8A58, sub_4A5CE (eax as
+   sub_42F7F left it - sub_4A5CE compares it only without word_17D853 == 1, 4A612 sub_1E1BAC), byte 1E1B04 ^= 1;
+   instead of 1.31's sub_42F7F(0, 0), sub_4A5CE(si), sub_4A5CE(di), sub_42F7F(0, 1) */
+void Hook150_1E1B41(int si, int ebx)
+{
+  sub_42F7F(0, *ECODE150(0x1E1B04), ebx);
+  sub_1E8A58();
+  sub_4A5CE(si);
+  *ECODE150(0x1E1B04) ^= 1;
+}
+
+//----- (001E07A4) --------------------------------------------------------
+/* 49AB3 in sub_49A41: with word 23DCE0 and sub_1E7E1F() == 0 back to the loop head (49CE0 jmp 49A51) */
+int Hook150_1E07A4(void)
+{
+  return g_orion150 && *(int16_t *)ESEG150(0x23DCE0) && !sub_1E7E1F();
+}
+
+//----- (001E0C29) --------------------------------------------------------
+/* 4785C in sub_4752F: byte 23F0F2 == 1 -> word_18C9A8 at [ebp-3Ch] (v20) = -1, byte 1E0C0B = 1 during
+   sub_1E9397 (replaces sub_286E8) */
+int Hook150_1E0C29(int a1, int a2, int a3, int v20)
+{
+  int r;
+
+  if ( !g_orion150 )
+    return sub_286E8(a1, a2, a3);
+  if ( *ESEG150(0x23F0F2) == 1 )
+  {
+    *(int16_t *)((char *)word_18C9A8 + v20) = -1;
+    *ECODE150(0x1E0C0B) = 1;
+  }
+  r = sub_1E9397(a1, a2, a3);
+  *ECODE150(0x1E0C0B) = 0;
+  return r;
+}
+
+//----- (001E4971) --------------------------------------------------------
+/* 56170 replaces sub_127776(record + 9Fh, 11): sub_127712(dword_192864 + ebx + 4Ch, byte 23DEA6) */
+void Hook150_1E4971(int ebx)
+{
+  sub_127712(ebx + dword_192864 + 0x4C, *ESEG150(0x23DEA6));
+}
+
+//----- (001E4988) --------------------------------------------------------
+/* 563F8: call sub_127712 / sub_127712(ecx = the same record, byte 23DE56) */
+int Hook150_1E4988(int a1, unsigned int a2)
+{
+  int r = sub_127712(a1, a2);
+
+  return g_orion150 ? sub_127712(a1, *ESEG150(0x23DE56)) : r;
+}
+
+//----- (001E0E59) --------------------------------------------------------
+/* 56541 / 565FA (1E0E43): call sub_127712, then sub_1E0E8B(ecx = the player) with byte 23F0ED / 23F0EE == 1 */
+int Hook150_1E0E59(int a1, unsigned int a2, int player, uint32_t flag)
+{
+  int r = sub_127712(a1, a2);
+
+  if ( g_orion150 && *ESEG150(flag) == 1 )
+    sub_1E0E8B(0, 0, 0, player);
+  return r;
+}
+
+//----- (001E1307) --------------------------------------------------------
+/* 5BCC4: pusha / sub_1E80C7 / popa / jmp fopen */
+int Hook150_1E1307(char *name, char *mode)
+{
+  if ( g_orion150 )
+    sub_1E80C7();
+  return fopen(name, mode);
+}
+
+//----- (001E0A09) --------------------------------------------------------
+/* 618E8: eax = word 17F0ED[byte +10h of [ebp-28h] (a2 of sub_616A5)] instead of word_17F0ED */
+int Hook150_1E0A09(int a2)
+{
+  if ( !g_orion150 )
+    return word_17F0ED;
+  return *(int16_t *)((char *)&word_17F0ED + 2 * *(uint8_t *)(intptr_t)(a2 + 16));
+}
+
+//----- (001E415C) --------------------------------------------------------
+/* 6A890: byte 23F0B3 -> movzx sub_77C78(eax, word [ebp-18h] = a2 of sub_6A7C8) instead of sub_5680D */
+int Hook150_1E415C(int a1, int a2)
+{
+  if ( g_orion150 && *ESEG150(0x23F0B3) )
+    return (uint8_t)sub_77C78(a1, (int16_t)a2);
+  return sub_5680D(a1);
+}
+
+//----- (001E4178) --------------------------------------------------------
+/* 6A8E6: byte 23F0B2 -> movzx sub_77CF4(eax, word [ebp-18h]) instead of sub_5679E */
+int Hook150_1E4178(int a1, int a2)
+{
+  if ( g_orion150 && *ESEG150(0x23F0B2) )
+    return (uint8_t)sub_77CF4(a1, (int16_t)a2);
+  return sub_5679E(a1);
+}
+
+//----- (001E17D1) --------------------------------------------------------
+/* 46936: byte 23CF00 == 2 and byte 2400A6 -> ax = -1 instead of sub_1151B0 */
+char *Hook150_1E17D1(int a1, int a2, int a3, _WORD *a4, _BYTE *a5, int a6)
+{
+  if ( g_orion150 && *ESEG150(0x23CF00) == 2 && *ESEG150(0x2400A6) )
+    return (char *)(intptr_t)((a1 & 0xFFFF0000) | 0xFFFF);
+  return sub_1151B0(a1, a2, a3, a4, a5, a6);
+}
+
+//----- (001E096A) --------------------------------------------------------
+/* 6B72E: pusha / sub_6E8DA(word [ebp+7Ah] = v23 of sub_6B577) / popa / call sub_6B86A */
+void Hook150_1E096A(int v23)
+{
+  if ( g_orion150 )
+    sub_6E8DA((int16_t)v23);
+}
+
+//----- (001E3719) --------------------------------------------------------
+/* 868E0 replaces sub_A0305: sub_1FD44F(lea [ebp-64Ah] = the ship list v65 of sub_86188) */
+void Hook150_1E3719(int16_t *v65)
+{
+  sub_1FD44F(v65);
+}
+
+//----- (001E4D9E) --------------------------------------------------------
+/* 87CEC before sub_233FA: with sub_234E5 a frame for the text 0C6h (sub_8F6F8 colours, sub_134D2D lines);
+   [ebp-16h] (2 colour bytes) and [ebp-36h] (the text) are scratch space of the caller */
+_BOOL1 Hook150_1E4D9E(void)
+{
+  char col[24], text[32];
+  int16_t x;
+
+  if ( g_orion150 && (int16_t)sub_234E5() )
+  {
+    sub_8F6F8(3, 0x49, 0x4C, col);
+    sub_120BB5(3, (int)(intptr_t)col);
+    sub_8F7DF((int16_t)((uint8_t)byte_199F07 * 5 / 9));
+    strcpy(text, (char *)(intptr_t)sub_CDF5C(0xC6));
+    x = (int16_t)(sub_12066F((int)(intptr_t)text) + 25);
+    sub_134D2D(x, 0x15, 0x19, 0x15, (uint8_t)col[0]);
+    sub_134D2D(x, 0x16, 0x19, 0x16, (uint8_t)col[1]);
+    sub_1212B3(0x19, 0x18, (int)(intptr_t)text);
+    {
+      int16_t c = (int16_t)(sub_122259() + 25);
+
+      sub_134D2D(x, (int16_t)(sub_122259() + 25), 0x19, c, (uint8_t)col[1]);
+      c = (int16_t)(sub_122259() + 26);
+      sub_134D2D(x, (int16_t)(sub_122259() + 26), 0x19, c, (uint8_t)col[0]);
+    }
+  }
+  return sub_233FA();
+}
+
+//----- (001E4B3B) --------------------------------------------------------
+/* 95E3E: dword 1E4B35 = edx, word 1E4B39 = word [ebp+5Ah] (v78 of sub_95BAA), call sub_1212B3, sub_1EE677 */
+int Hook150_1E4B3B(int a1, int a2, int a3, int v78)
+{
+  int r;
+
+  if ( !g_orion150 )
+    return sub_1212B3(a1, a2, a3);
+  *(int32_t *)ECODE150(0x1E4B35) = a2;
+  *(int16_t *)ECODE150(0x1E4B39) = (int16_t)v78;
+  r = sub_1212B3(a1, a2, a3);
+  sub_1EE677(0);
+  return r;
+}
+
+//----- (001E3A6B) --------------------------------------------------------
+/* 981C7 in sub_980DB: unless byte_199CB4 == 1 and byte_199F3A > 1, the positive words 1E39F8[0..2] are
+   appended to the list esi (a2) with the count [ecx] (a3); then sub_8A4C4 ([ebp-4] is the loop byte) */
+int Hook150_1E3A6B(int a2, uint16_t *a3)
+{
+  int b;
+
+  if ( g_orion150 && !(byte_199CB4 == 1 && (int8_t)byte_199F3A > 1) )
+    for ( b = 0; b <= 2; ++b )
+    {
+      int16_t w = *(int16_t *)ECODE150(0x1E39F8 + 2 * b);
+
+      if ( w > 0 )
+        *(int16_t *)(intptr_t)(a2 + 2 * (int16_t)(*a3)++) = w;
+    }
+  return sub_8A4C4();
+}
+
+//----- (001E3906) --------------------------------------------------------
+/* 9893F, 989F7 (1E3923): call sub_94B3A; ax -> sub_1FD613(ecx, word [ebp+14Eh] / -1) */
+int Hook150_1E3906(int a1, unsigned int a2, int a3, int16_t *a4, int a5, int ecx, int arg)
+{
+  int r = sub_94B3A(a1, a2, a3, a4, a5);
+
+  if ( g_orion150 && (int16_t)r )
+    sub_1FD613(ecx, arg);
+  return r;
+}
+
+//----- (001E41EE) --------------------------------------------------------
+/* 9BB72 replaces sub_A44FC(byte, player): sub_1E4204(player) (byte +8BAh of the player) or sub_79E32 */
+_BOOL1 Hook150_1E41EE(int a1, int a2)
+{
+  if ( !g_orion150 )
+    return sub_A44FC(a1, a2);
+  if ( sub_1E4204(a2) )
+    return 1;
+  return sub_79E32(a2, a1);
+}
+
+//----- (001E4544) --------------------------------------------------------
+/* A08AA: byte_199BDF == 1 -> 1 without sub_A1341 */
+char Hook150_1E4544(int a1)
+{
+  if ( g_orion150 && byte_199BDF == 1 )
+    return 1;
+  return sub_A1341(a1);
+}
+
+//----- (001E507C) --------------------------------------------------------
+/* A217E replaces sub_79E06(player): byte +8BAh of the player != 0 */
+_BOOL1 Hook150_1E507C(int a1)
+{
+  return g_orion150 ? sub_1E4204(a1) : sub_79E06(a1);
+}
+
+//----- (001E3DB6) --------------------------------------------------------
+/* A5F53: call sub_103CAF / at most 176h */
+int Hook150_1E3DB6(int a1, int a2)
+{
+  int r = sub_103CAF(a1, a2);
+
+  return g_orion150 && (int16_t)r > 0x176 ? 0x176 : r;
+}
+
+//----- (001E4CFD) --------------------------------------------------------
+/* ADF1F replaces sub_1247A0(10): byte +0ADh of record [ebp-2F8h] (v89 of sub_ADE18): > -1 -> 1, else it */
+unsigned int Hook150_1E4CFD(unsigned int a1, int v89)
+{
+  int8_t b;
+
+  if ( !g_orion150 )
+    return sub_1247A0(a1);
+  b = *(int8_t *)(dword_192864 + 0x139 * (int8_t)v89 + 0xAD);
+  return b > -1 ? 1 : b;
+}
+
+//----- (001E4D69) --------------------------------------------------------
+/* AEC50: call sub_147D7; byte 23F077 == 1 and byte +0ADh of record di > -1 -> sub_147D7(21h) */
+int Hook150_1E4D69(int a1, int di)
+{
+  int r = sub_147D7(a1);
+
+  if ( g_orion150 && *ESEG150(0x23F077) == 1 && *(int8_t *)(dword_192864 + 0x139 * (int16_t)di + 0xAD) > -1 )
+    r = sub_147D7(0x21);
+  return r;
+}
+
+//----- (001E0F84) --------------------------------------------------------
+/* AF895: call sub_12779E; byte 1E0F83 == 1 -> sub_12779E(player record + 515h ([ebp-8] = v20), 1E0F1F, 63h) */
+_BYTE *Hook150_1E0F84(_BYTE *a1, _BYTE *a2, unsigned int a3, int v20)
+{
+  _BYTE *r = sub_12779E(a1, a2, a3);
+
+  if ( g_orion150 && *ECODE150(0x1E0F83) == 1 )
+  {
+    sub_12779E((_BYTE *)dword_197F98 + v20 + 0x515, ECODE150(0x1E0F1F), 0x63);
+    *ECODE150(0x1E0F83) = 0;
+  }
+  return r;
+}
+
+//----- (001E4AB0) --------------------------------------------------------
+/* B0614 replaces sub_120CCB: sub_1EAF5B(eax, edx, ebx, ecx = word_1827CE[si]) */
+int Hook150_1E4AB0(int a1, int a2, int si)
+{
+  if ( !g_orion150 )
+    return sub_120CCB(a1, a2);
+  sub_1EAF5B(a1, a2, 0, word_1827CE[(int16_t)si]);
+  return a1;
+}
+
+//----- (001E25A0) --------------------------------------------------------
+/* B183E: call sub_77658; not 1 -> byte_1827BF = 0, sub_C0AF4 */
+int Hook150_1E25A0(int a1)
+{
+  int r = sub_77658(a1);
+
+  if ( g_orion150 && (uint8_t)r != 1 )
+  {
+    byte_1827BF = 0;
+    sub_C0AF4();
+  }
+  return r;
+}
+
+//----- (001E05D8) --------------------------------------------------------
+/* B2296 in sub_B2190: the new reserve of the ship (word +5Eh): m = a (the maximum) less sub_1E88EF's share;
+   byte 23F186 < 1 -> max(2 * (x - v8), m), else max(x - v8, 0) + m */
+int Hook150_1E05D8(int a, int x, int v8)
+{
+  int m = a, r;
+
+  if ( (int8_t)*ESEG150(0x23F186) < 1 )
+  {
+    r = 2 * (x - v8);
+    sub_1E88EF(word_19999C, (_DWORD *)&m);
+    if ( r < m )
+      r = m;
+  }
+  else
+  {
+    r = x - v8;
+    if ( r < 0 )
+      r = 0;
+    sub_1E88EF(word_19999C, (_DWORD *)&m);
+    r += m;
+  }
+  return r;
+}
+
+//----- (001E1019) --------------------------------------------------------
+/* B2303 before sub_8A4C4: byte 1E0F83 == 1 -> sub_12779E(dword 1E0FF6, 1E0F1F, 63h), dword 1E0FF6 = 0;
+   byte 1E0F83 = 0 */
+void Hook150_1E1019(void)
+{
+  if ( !g_orion150 )
+    return;
+  if ( *ECODE150(0x1E0F83) == 1 )
+  {
+    sub_12779E((_BYTE *)(uintptr_t)*(uint32_t *)ECODE150(0x1E0FF6), ECODE150(0x1E0F1F), 0x63);
+    *(uint32_t *)ECODE150(0x1E0FF6) = 0;
+  }
+  *ECODE150(0x1E0F83) = 0;
+}
+
+//----- (001E1EFC) --------------------------------------------------------
+/* B25E9: sub_B09CE only with byte_199BE6 == 1 or byte 23CEF4, else 0 */
+char Hook150_1E1EFC(void)
+{
+  if ( g_orion150 && byte_199BE6 != 1 && !*ESEG150(0x23CEF4) )
+    return 0;
+  return sub_B09CE();
+}
+
+//----- (001E10DC) --------------------------------------------------------
+/* B2998, C1F25: byte 1E0F83 = 1, sub_12779E(1E0F1F, eax, ebx), then the call */
+_BYTE *Hook150_1E10DC(_BYTE *a1, _BYTE *a2, unsigned int a3)
+{
+  if ( g_orion150 )
+  {
+    *ECODE150(0x1E0F83) = 1;
+    sub_12779E(ECODE150(0x1E0F1F), a1, a3);
+  }
+  return sub_12779E(a1, a2, a3);
+}
+
+//----- (001E4561) --------------------------------------------------------
+/* B3731: call sub_1212B3 / sub_120CCB(3, 1827ADh) */
+int Hook150_1E4561(int a1, int a2, int a3)
+{
+  int r = sub_1212B3(a1, a2, a3);
+
+  return g_orion150 ? sub_120CCB(3, (int)(intptr_t)unk_1827AD) : r;
+}
+
+//----- (001E23CA) --------------------------------------------------------
+/* B4B46 replaces sub_A5EB2(eax, edx): sub_A5EBF(eax, edx, word 23CDFE) */
+int16_t Hook150_1E23CA(int a1, int a2)
+{
+  return g_orion150 ? sub_A5EBF(a1, a2, *(int16_t *)ESEG150(0x23CDFE)) : sub_A5EB2(a1, a2);
+}
+
+//----- (001E23B5) --------------------------------------------------------
+/* E8609, E8696, E94BA replace sub_77423(eax): sub_A5EBF(0, eax, word 23CDFE) */
+int16_t Hook150_1E23B5(int a1)
+{
+  return g_orion150 ? sub_A5EBF(0, a1, *(int16_t *)ESEG150(0x23CDFE)) : sub_77423(a1);
+}
+
+//----- (001E4346) --------------------------------------------------------
+/* C782B: byte_1831C5 == 1 -> sub_7A990(125h); word_1A1238 == 2 -> sub_CDF5C(5) */
+int Hook150_1E4346(int a1)
+{
+  if ( !g_orion150 )
+    return sub_CDF5C(a1);
+  if ( byte_1831C5 == 1 )
+    return (int)(intptr_t)sub_7A990(0x125);
+  return sub_CDF5C(word_1A1238 == 2 ? 5 : a1);
+}
+
+//----- (001E490B) --------------------------------------------------------
+/* EC2CF: call sub_94951; byte 23F08B == 1 -> (r + 1) * 15 / 2 (sar), else (r + 1) * 3 */
+int Hook150_1E490B(int a1)
+{
+  int r = sub_94951(a1);
+
+  if ( !g_orion150 )
+    return r;
+  return *ESEG150(0x23F08B) == 1 ? (((int16_t)r + 1) * 15) >> 1 : (r + 1) * 3;
+}
+
+//----- (001E48F4) --------------------------------------------------------
+/* EC2E0: call sub_94951; byte 23F08B == 1 -> (r + 1) * 5, else (r + 1) * 2 */
+int Hook150_1E48F4(int a1)
+{
+  int r = sub_94951(a1);
+
+  if ( !g_orion150 )
+    return r;
+  return *ESEG150(0x23F08B) == 1 ? (r + 1) * 5 : (r + 1) * 2;
+}
+
+//----- (001E0819) --------------------------------------------------------
+/* F74F7: call sub_110D3C / dword 240296 = the result */
+PoolMemType *Hook150_1E0819(PoolMemType *a1, int a2)
+{
+  PoolMemType *r = sub_110D3C(a1, a2);
+
+  if ( g_orion150 )
+    *(uint32_t *)ESEG150(0x240296) = (uint32_t)(uintptr_t)r;
+  return r;
+}
+
+//----- (001E1386) --------------------------------------------------------
+/* FBC37 replaces sub_F6816: sub_1FB4A3(eax, edx, ebx, ecx pushed); eax unchanged */
+int Hook150_1E1386(int a1, int a2, int a3, unsigned int a4)
+{
+  if ( !g_orion150 )
+    return sub_F6816(a1, a2, a3, a4);
+  sub_1FB4A3(0, (uint32_t *)(intptr_t)a1, a2, (_BYTE *)(intptr_t)a3, (int)a4);
+  return a1;
+}
+
+//----- (001E04EA) --------------------------------------------------------
+/* FDE7B, FDF60: sub_1E04C4 / call sub_8A4C4 */
+int Hook150_1E04EA(void)
+{
+  if ( g_orion150 )
+    sub_1E04C4();
+  return sub_8A4C4();
+}
+
+//----- (001E1F26) --------------------------------------------------------
+/* 10AC36: dword 1E1F22 = dword_184378 / jmp sub_11127C */
+uint32_t *Hook150_1E1F26(int a1)
+{
+  if ( g_orion150 )
+    *(int32_t *)ECODE150(0x1E1F22) = dword_184378;
+  return (uint32_t *)sub_11127C(a1);
+}
+
+//----- (001E1F37) --------------------------------------------------------
+/* 10AC5B: dword_184378 = dword 1E1F22 / jmp sub_1112B4 */
+uint32_t *Hook150_1E1F37(int a1)
+{
+  if ( g_orion150 )
+    dword_184378 = *(int32_t *)ECODE150(0x1E1F22);
+  return (uint32_t *)sub_1112B4(a1);
+}
+
+//----- (001E4C28) --------------------------------------------------------
+/* 10C5CD: byte 23F191 == 1 -> 0 instead of sub_11523B */
+int Hook150_1E4C28(int a1, int a2, int a3, _WORD *a4, int a5, _BYTE *a6, int a7)
+{
+  if ( g_orion150 && *ESEG150(0x23F191) == 1 )
+    return 0;
+  return sub_11523B(a1, a2, a3, a4, a5, a6, a7);
+}
+
+//----- (001E700F) --------------------------------------------------------
+/* 11C347: the words 24071E..240766 = -1, then sub_123C48 */
+int16_t Hook150_1E700F(void)
+{
+  if ( g_orion150 )
+  {
+    uint32_t a;
+
+    for ( a = 0x24071E; a != 0x240768; a += 2 )
+      *(uint16_t *)ESEG150(a) = 0xFFFF;
+  }
+  return sub_123C48();
+}
+
+//----- (001E1893) --------------------------------------------------------
+/* E2266, E2279 (1E1893: ebx), E22B2 (1E18A8: eax >> 1), E22E4 (1E18BF: the second value): the first value of
+   the sprintf becomes mult * the signed byte at addr */
+int Hook150_Mul8(int value, int mult, uint32_t addr)
+{
+  return g_orion150 ? mult * (int8_t)*ESEG150(addr) : value;
+}
+
+//----- (001E18EF) --------------------------------------------------------
+/* E24BD, E24D4: the first value = byte 23CDF0[byte 23F0DB] * [ebp-10h] */
+int Hook150_1E18EF(int value, int var10)
+{
+  return g_orion150 ? *ESEG150(0x23CDF0 + *ESEG150(0x23F0DB)) * var10 : value;
+}
+
 /* ===== hooks that read the caller's frame or registers (one call site each) ===== */
 
 //----- (001E37E4) --------------------------------------------------------

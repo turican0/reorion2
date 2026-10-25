@@ -2434,7 +2434,7 @@ void sub_E85F7(int a1)
 
   if ( *(_BYTE *)(a1 + 12) )
   {
-    sub_77423(dword_1AA3D8);
+    Hook150_1E23B5(dword_1AA3D8);   /* 1.50 0E8609 */
   }
   else if ( *(_BYTE *)(a1 + 630) )
   {
@@ -2455,7 +2455,7 @@ void sub_E85F7(int a1)
     sub_124820(v2);
   }
   if ( *(_BYTE *)(a1 + 1741) )
-    sub_77423(dword_1AA3B8);
+    Hook150_1E23B5(dword_1AA3B8);   /* 1.50 0E8696 */
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xEA8C4 je epilog funkce */
 }
 // 183578: using guessed type char byte_183578;
@@ -3002,7 +3002,7 @@ int16_t sub_E938C_131(int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
       v22 = v10;
       v11 = sub_E5DE8((int16_t)v37);
       sprintf(v25, (char *)dword_1AA3BC, v11, v22);
-      sub_77423((int)v25);
+      Hook150_1E23B5((int)v25);   /* 1.50 0E94BA */
     }
   }
   v26 = (int16_t)v39;
@@ -5426,13 +5426,13 @@ char sub_EC2AF(char *a1, int a2)
   v4 = 59 * v3 + dword_1930DC;
   if ( (*(_BYTE *)(v4 + 38) & 8) != 0 )
   {
-    v3 = 3 * (sub_94951(v3) + 1);
+    v3 = 3 * (Hook150_1E490B(v3) + 1);   /* 1.50 0EC2CF */
   }
   else
   {
     if ( (*(_BYTE *)(v4 + 38) & 4) == 0 )
       goto LABEL_7;
-    v3 = 2 * (sub_94951(v3) + 1);
+    v3 = 2 * (Hook150_1E48F4(v3) + 1);   /* 1.50 0EC2E0 */
   }
   *(_WORD *)(a2 + 16) = v3;
 LABEL_7:

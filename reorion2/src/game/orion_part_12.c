@@ -5085,7 +5085,7 @@ int sub_C1E74(int16_t *a1, _WORD *a2)
       v19 = 3753 * word_19999C + (uint8_t*)dword_197F98;
       if ( *(_BYTE *)(dword_197F9C + 129 * word_19FA26 + 16) == *(_BYTE *)(v18 + v19 + 822) )
       {
-        sub_12779E((_BYTE *)(v19 + 1301), (_BYTE *)(v18 + v19 + 806), 0x63u);
+        Hook150_1E10DC((_BYTE *)(v19 + 1301), (_BYTE *)(v18 + v19 + 806), 0x63u);   /* 1.50 0C1F25 */
         word_199838 = 5;
         word_1830D0 = 1;
         return -3;   /* wave 184: C1F3C mov eax, 0FFFFFFFDh */

@@ -15,8 +15,13 @@ L131 = open('C:/prenos/reorion2Data/diss/Orion2.exe.lst', encoding='latin-1').re
 rows = {l.split('\t')[0]: l.rstrip('\n').split('\t') for l in open(DISS + 'hooks.tsv', encoding='latin-1')
         if l[:1] != 's' and l.strip()}
 files = sorted(glob.glob('src/game/orion_part_*.c'))
-dry = '--dry' in sys.argv
-args = [a for a in sys.argv[1:] if a != '--dry']
+dry = '--dry' in sys.argv or '--show' in sys.argv
+show = '--show' in sys.argv
+args = [a for a in sys.argv[1:] if a not in ('--dry', '--show')]
+if show:      # --show SITE...: context only (C lines around the call, 1.31 asm before it)
+    args = [x for a in args for x in (a, 'X')]
+    sys.stdout.reconfigure(errors='replace')
+asm_idx = {l[7:15]: i for i, l in enumerate(L131) if re.match(r'^cseg01:[0-9A-F]{8}\s+\S', l)}
 
 
 def asm_calls(func, callee):
@@ -78,6 +83,19 @@ for k in range(0, len(args), 2):
             done = True
             break
         c = calls[ordinal]
+        if show:
+            i0 = asm_idx.get(site.zfill(8))
+            asm = [l[9:].rstrip() for l in L131[max(0, i0 - 40):i0 + 1]
+                   if re.match(r'^cseg01:[0-9A-F]{8}\s+\S', l) and 'XREF' not in l] if i0 else []
+            ln = t.count('\n', 0, m.end() + c.start()) + 1
+            lines = t.split('\n')
+            print('==== %s %s %s (%s:%d)' % (site, func, row[2], p.split('\\')[-1], ln))
+            for x in asm[-9:]:
+                print('   | ' + x)
+            for q in range(ln - 4, ln + 3):
+                print('   %s%6d %s' % ('>' if q == ln else ' ', q, lines[q - 1]))
+            done = True
+            break
         if '1.50 %s' % site in body:
             print('%s: already wired' % site)
             done = True

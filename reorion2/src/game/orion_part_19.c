@@ -660,7 +660,7 @@ int16_t sub_11C2F0()
   word_1844CA = 0;
   HIWORD(dword_1844CE) = -1;
   word_1844DC = 0;
-  sub_123C48();
+  Hook150_1E700F();   /* 1.50 11C347 */
   return sub_123C84();
 }
 // 18448E: using guessed type int dword_18448E;

@@ -10673,9 +10673,9 @@ void sub_E2000(int a1, int a2)
     if ( v9 )
     {
       if ( v9 == 1 )
-        v14 = sprintf(v13, (char *)dword_1AA2B4, 1);
+        v14 = sprintf(v13, (char *)dword_1AA2B4, Hook150_Mul8(1, 1, 0x23CEF9));   /* 1.50 E2266 */
       else
-        v14 = sprintf(v13, (char *)dword_1AA2F0, v9, v9);
+        v14 = sprintf(v13, (char *)dword_1AA2F0, Hook150_Mul8(v9, v9, 0x23CEF9), v9);   /* 1.50 E2279 */
       v13 += v14;
     }
     if ( v39 )
@@ -10683,7 +10683,7 @@ void sub_E2000(int a1, int a2)
       if ( v39 == 1 )
         v15 = sprintf(v13, (char *)dword_1AA288, 2);
       else
-        v15 = sprintf(v13, (char *)dword_1AA260, 2 * v39, v39);
+        v15 = sprintf(v13, (char *)dword_1AA260, Hook150_Mul8(2 * v39, (int)((uint32_t)(2 * v39) >> 1), 0x23CEFA), v39);   /* 1.50 E22B2 */
       v13 += v15;
     }
     if ( v10 )
@@ -10691,7 +10691,7 @@ void sub_E2000(int a1, int a2)
       if ( v10 == 1 )
         v16 = sprintf(v13, (char *)dword_1AA28C, 3);
       else
-        v16 = sprintf(v13, (char *)dword_1AA258, 3 * v10, v10);
+        v16 = sprintf(v13, (char *)dword_1AA258, Hook150_Mul8(3 * v10, v10, 0x23CEFB), v10);   /* 1.50 E22E4 */
       v13 += v16;
     }
     if ( v40 )
@@ -10758,9 +10758,9 @@ void sub_E2000(int a1, int a2)
     if ( v46 )
     {
       if ( v46 == 1 )
-        v24 = sprintf(a2, (char *)dword_1AA26C, 1);
+        v24 = sprintf(a2, (char *)dword_1AA26C, Hook150_1E18EF(1, v46));   /* 1.50 E24BD */
       else
-        v24 = sprintf(a2, (char *)dword_1AA280, v46, v46);
+        v24 = sprintf(a2, (char *)dword_1AA280, Hook150_1E18EF(v46, v46), v46);   /* 1.50 E24D4 */
       a2 += v24;
     }
     if ( *(_WORD *)(a1 + 60) == 1 )

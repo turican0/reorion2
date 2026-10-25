@@ -2141,7 +2141,10 @@ void sub_12479_131(int a1, int a2, int a3, int a4, int a5, int a6)
   sub_1279F(0);
   if ( !byte_199F3A )
     nullsub_1();
-  sub_124820(dword_199CB6);
+    if ( g_orion150 )
+      Hook150_1E0380();   /* 1.50 1278A, 1278F */
+    else
+      sub_124820(dword_199CB6);
 }
 
 
@@ -2348,7 +2351,7 @@ void sub_12983(int16_t *a1)
     ServiceAudioTick_FE8BE((int)v6, 7, v5, v4);
   }
   while ( (int16_t)v2 < 13 );
-  ServiceAudioTick_FE8BE(0, 7, v5, v4);
+  Hook150_1E12FB(0, 7, v5, v4);   /* 1.50 0129E7 */
   for ( i = 0; (int16_t)i < word_199998; ++i )
   {
     v8 = (_BYTE *)((uint8_t*)dword_197F98 + 3753 * (int16_t)i);
@@ -3416,7 +3419,7 @@ LABEL_56:
     *(_BYTE *)(dword_197F9C + 129 * word_199994 + 99) = a2;
     sub_AF7B4(a2, 0, v3);
     *(_BYTE *)(129 * word_199994 + dword_197F9C + 99) = a2;
-    sub_564CD(a2, (uint8_t*)dword_197F98 + 3753 * a2 + 1301);
+    Hook150_1E19B1(a2, (int)(intptr_t)((uint8_t*)dword_197F98 + 3753 * a2 + 1301), v3);   /* 1.50 13F1F */
     sub_AF7B4(a2, 5, v3);
   }
   v25 = 361 * v3;

@@ -1132,7 +1132,7 @@ void sub_A080D()
     v5 = sub_77FF5(v2) == word_19999C
       && (uint16_t)sub_78E07(*(int16_t *)(dword_197F9C + 129 * v2 + 101)) != word_19999A;
     v21 = v5;
-    v6 = v4 && *(_BYTE *)(dword_197F9C + 129 * v2 + 100) && sub_A1341(word_1906C2[6 * v0]);
+    v6 = v4 && *(_BYTE *)(dword_197F9C + 129 * v2 + 100) && Hook150_1E4544(word_1906C2[6 * v0]);   /* 1.50 A08AA */
     v7 = v6;
     v9 = 0;
     if ( sub_918D5(2) )
@@ -2517,7 +2517,7 @@ int sub_A2123(int a1, int a2, int a3, int a4, int16_t a5, int a6, int a7, int16_
   loc_46 = 0;
   if ( byte_199F26
     || sub_79D1C(word_19999C, *(uint8_t *)(17 * a5 + (uint8_t*)dword_1930D4 + 2))
-    || (v25 = sub_79E06(word_19999C)) )
+    || (v25 = Hook150_1E507C(word_19999C)) )   /* 1.50 A217E */
   {
     v25 = 1;
   }
@@ -5576,7 +5576,7 @@ int16_t sub_A5EBF(int a1, int a2, int a3)
   qmemcpy(v17, sub_8E5C5(5u, v31[0], v29[0]), sizeof(v17));
   qmemcpy(v18, sub_8E5C5(3u, v31[0], v29[0]), sizeof(v18));
   sub_120BB5(3, (int)v17);
-  v21 = sub_103CAF(339, a2);
+  v21 = Hook150_1E3DB6(339, a2);   /* 1.50 A5F53 */
   if ( sub_103D0C() >= 339 )
     v3 = 339;
   else
@@ -11380,7 +11380,7 @@ LABEL_15:
     sub_147D7(47);
     sub_147D7(8);
     v115 = 0;
-    if ( sub_1247A0(0xAu) != 1 )
+    if ( Hook150_1E4CFD(0xAu, v89) != 1 )   /* 1.50 ADF1F */
       goto LABEL_16;
     v9 = 33;
     goto LABEL_15;
@@ -11845,7 +11845,7 @@ LABEL_153:
 
 
 //----- (000AEC0B) --------------------------------------------------------
-int sub_AEC0B( int a1)
+int sub_AEC0B( int a1, int di)   /* 1.50 AEC50: di of the caller (its a1) */
 {
   int v1; // eax
 
@@ -11868,7 +11868,7 @@ int sub_AEC0B( int a1)
       v1 = 24;
       break;
   }
-  return sub_147D7(v1);
+  return Hook150_1E4D69(v1, di);   /* 1.50 AEC50 */
 }
 
 
@@ -12179,7 +12179,7 @@ LABEL_20:
             v14 = dword_192864;
             v15 = *(uint8_t *)(dword_192864 + 313 * a1 + 37);
             LOWORD(v65) = 0;
-            sub_AEC0B(v15);
+            sub_AEC0B(v15, a1);
             while ( 1 )
             {
               if ( (int16_t)v65 >= (int16_t)v64 )
@@ -12615,7 +12615,7 @@ int sub_AF7B4(int a1, int a2, int a3)
   v6 = 129 * (int16_t)v21;
   memset(v6 + dword_197F9C, 0, 129);
   v20 = 3753 * v18;
-  sub_12779E((_BYTE *)(v6 + dword_197F9C), (_BYTE *)(v20 + (uint8_t*)dword_197F98 + 806 + 99 * a2), 0x63u);
+  Hook150_1E0F84((_BYTE *)(v6 + dword_197F9C), (_BYTE *)(v20 + (uint8_t*)dword_197F98 + 806 + 99 * a2), 0x63u, v20);   /* 1.50 AF895 */
   v7 = v6 + dword_197F9C;
   *(_BYTE *)(v7 + 99) = v18;
   *(_BYTE *)(v7 + 93) = v18;

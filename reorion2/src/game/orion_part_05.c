@@ -5151,14 +5151,14 @@ int sub_6A7C8( int a1, int a2)
   if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 368) == 3 )
     v7 = 125 * v7 / 100;
   *(_DWORD *)(dword_1927A8 + 233) = v7;
-  *(_WORD *)(dword_1927A8 + 43) = sub_5680D(a1);
+  *(_WORD *)(dword_1927A8 + 43) = Hook150_1E415C(a1, a2);   /* 1.50 6A890 */
   *(_WORD *)(dword_1927A8 + 231) = (uint8_t)sub_77CD5(a1, a2);
   v8 = sub_5685F(a1);   /* wave 182: result was dropped */
   *(_WORD *)(dword_1927A8 + 49) = v8;
   v9 = sub_5709F(a1);   /* vlna 150: asm `mov ebx, eax` -> [dword_1927A8+47] */
   *(_WORD *)(dword_1927A8 + 47) = v9;
   v10 = 0;
-  *(_WORD *)(dword_1927A8 + 17) = sub_5679E(word_19999C);
+  *(_WORD *)(dword_1927A8 + 17) = Hook150_1E4178(word_19999C, a2);   /* 1.50 6A8E6 */
   do
   {
     v11 = dword_1927A8;
@@ -5949,6 +5949,7 @@ int sub_6B577(int a1, int a2)
     }
   }
   v20 = dword_1927A8;
+  Hook150_1E096A(v23);   /* 1.50 6B72E: call 1E096A */
   v21 = sub_6B86A(dword_1927A8, 2, i, dword_1927A8);
   if ( (uint8_t)sub_6B7FF(v20, 2) && byte_19B9B8 )
     v21 += 5;

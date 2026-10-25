@@ -1379,7 +1379,7 @@ LABEL_15:
         v6 = (int16_t)sub_94A9D(word_1831B0, word_1831C6);
         v5 = (int16_t)sub_97A29(word_1831B0, word_1831C6);
         v4 = sub_97588(word_1831C6, 0);
-        v0 = (char *)sub_CDF5C(2);
+        v0 = (char *)Hook150_1E4346(2);   /* 1.50 0C782B */
         sprintf(v11, v0, v4, v5, v6, &v9);
 LABEL_14:
         /* vlna 122: asm sub_C76FA - eax=word_1A123A+0Eh, edx=word_1A123C+95h,
