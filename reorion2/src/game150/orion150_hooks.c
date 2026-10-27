@@ -1007,6 +1007,13 @@ int sub_5AEF4(void)
   return r;
 }
 
+//----- (001E0EF1) --------------------------------------------------------
+/* 058F6E in sub_58F4A: pusha / sub_1FBD3B / popa instead of the store to dword_19B710 */
+void Hook150_1FBD3B(void)
+{
+  sub_1FBD3B(0, 0, 0, 0, 0, 0, 0);
+}
+
 //----- (001E01E1) --------------------------------------------------------
 /* sub_2027EB(eax), call sub_B2542, sub_AFF9E; a changed word_1828A8 -> sub_11C2F0, sub_B3E7A */
 void sub_B2542(int16_t *a1, int16_t *a2, int a3)
@@ -1284,6 +1291,290 @@ int Hook150_1E1C76(int rec)
 int Hook150_1E1CB2(void)
 {
   return !g_orion150 || *ECODE150(0x1E1B04) != 1;
+}
+
+//----- (001E2D19) --------------------------------------------------------
+/* 04978C in sub_4954A: byte +71h of leader record rec, + 1 with byte +80h, level < 2, word +72h = word_17D16E or
+   word_17D176 and owner +63h < 8 with player byte +8BDh (sub_1E2CF9) */
+uint8_t Hook150_1E2D19(int rec)
+{
+  uint8_t dl = *(uint8_t *)(rec + 0x71);
+  int owner;
+
+  if ( *(uint8_t *)(rec + 0x80) && *(int8_t *)(rec + 0x71) < 2
+    && (*(int16_t *)(rec + 0x72) == word_17D16E[0] || *(int16_t *)(rec + 0x72) == word_17D176[0]) )
+  {
+    owner = *(int8_t *)(rec + 0x63);
+    if ( Hook150_1E2CF9(owner) )
+      ++dl;
+  }
+  return dl;
+}
+
+//----- (001E193B) --------------------------------------------------------
+/* 04B1FB in sub_4B184 (si = v4): for the side word_1998AC the jump to 4B26F is gone, an own ship with byte
+   23F0E4 sets byte 1E1932 = 1 (sub_1E1971 then keeps the retreat for 13FD9); else owner == word_19988E */
+int Hook150_1E193B(int owner, int v4)
+{
+  if ( (int16_t)v4 == word_1998AC )
+  {
+    if ( (int16_t)owner == (int16_t)v4 && *ESEG150(0x23F0E4) )
+      *ECODE150(0x1E1932) = 1;
+    return 0;
+  }
+  return (int16_t)owner == word_19988E;
+}
+
+//----- (001E3285) --------------------------------------------------------
+/* 04B2CC in sub_4B184: owner byte +20h == byte +138h; with byte 23F0D2 = 1 always true and for owner 11 the
+   leader of word +1Eh gets byte +14h = 0 */
+int Hook150_1E3285(int rec)
+{
+  int16_t leader;
+
+  if ( *ESEG150(0x23F0D2) != 1 )
+    return *(uint8_t *)(rec + 32) == *(uint8_t *)(rec + 312);
+  if ( *(uint8_t *)(rec + 32) == 11 )
+  {
+    leader = *(int16_t *)(rec + 30);
+    if ( leader >= 0 )
+      *(uint8_t *)(dword_197F9C + 129 * leader + 0x14) = 0;
+    else
+      Dbg150("1E3285: leader %d of an owner 11 ship - the original writes before dword_197F9C\n", leader);
+  }
+  return 1;
+}
+
+//----- (001E1DE9) --------------------------------------------------------
+/* 04BB4B in sub_4B9E1: sub_1E8CC7(ship, leader), then the end of the function */
+void Hook150_1E1DE9(int ship, int leader)
+{
+  sub_1E8CC7((int16_t)ship, (int16_t)leader);
+}
+
+//----- (001E13DC) --------------------------------------------------------
+/* 04BCE1, 04BDA9, 04BE71 in sub_4BBD5: the planet base strength w, with the tech (byte +170h == 3) word 23D0FA %
+   more (sub_1E13C6) instead of 5/4; a2 gets the bigger half, v80 the smaller (swapped against 1.31) */
+void Hook150_1E13DC(int16_t w, int tech, int *a2, int16_t *v80)
+{
+  int v = w;
+
+  if ( tech )
+    v = v * (*(uint16_t *)ESEG150(0x23D0FA) + 100) / 100;
+  *a2 = v - v / 2;
+  *v80 = (int16_t)(v / 2);
+}
+
+//----- (001EA2DF) --------------------------------------------------------
+/* v * 2 * word 23CD58[mode] / (the sum of the four words 23CD58..23CD5E), unsigned */
+unsigned int Hook150_1EA2DF(int v, int mode)
+{
+  uint16_t *w = (uint16_t *)ESEG150(0x23CD58);
+  unsigned int sum = (unsigned int)w[0] + w[1] + w[2] + w[3];
+
+  if ( !sum )
+    return 0;
+  return (unsigned int)(w[mode] * v * 2) / sum;
+}
+
+//----- (001EDE3B) --------------------------------------------------------
+/* the weapon mod bits of weapon w at the tech level of player word_19988E */
+int Hook150_1EDE3B(int w, int mode)
+{
+  int16_t wi = (int16_t)w;
+
+  return Hook150_1EDD23(sub_6D048(word_19988E, word_17F80D[14 * wi]), wi, mode);
+}
+
+/* special id of the 47-byte record at 17EEE0: the player has its tech (byte 117h + word +6 == 3) */
+static int Special150_Has(int player, int id)
+{
+  uint8_t *pl = (uint8_t *)dword_197F98 + 3753 * (int16_t)player;
+
+  return pl[0x117 + *(uint16_t *)DSEG150(0x17EEE0 + 47 * id + 6)] == 3;
+}
+
+//----- (001E4598) --------------------------------------------------------
+/* 04C14F in sub_4BBD5: the first of the specials bytes 23E1A3..23E1A5 the player has goes to the base (sub_1E45D8
+   returns into 4C188), instead of special 25h; returns the new count */
+int Hook150_1E4598(int player, int count)
+{
+  int k, id;
+
+  for ( k = 0; k < 3; ++k )
+  {
+    id = *ESEG150(0x23E1A3 + k);
+    if ( Special150_Has(player, id) && (int16_t)count < 8 )
+    {
+      sub_127712(dword_192864 + 313 * word_1998C0 + 76, id);
+      return count + 1;
+    }
+  }
+  return count;
+}
+
+//----- (001E4615) --------------------------------------------------------
+/* 04C31C in sub_4BBD5: special byte 23E1AC for the base before the check of 1D5h */
+int Hook150_1E4615(int player, int count)
+{
+  int id = *ESEG150(0x23E1AC);
+
+  if ( Special150_Has(player, id) && (int16_t)count < 8 )
+  {
+    sub_127712(dword_192864 + 313 * word_1998C0 + 76, id);
+    return count + 1;
+  }
+  return count;
+}
+
+//----- (001E3D13) --------------------------------------------------------
+/* 04C81E in sub_4BBD5: the cap of one weapon slot; the first time (state -1) the total v is split in 1 / 2 / 3
+   parts, cx = the part (+1 with remainder 2), state = the remainder left for the cap */
+int Hook150_1E3D13(int16_t v, int *state, int16_t *cx)
+{
+  int n, q, r;
+
+  if ( *state != -1 )
+    return (int16_t)(*cx + *state);
+  n = v < 4 ? 1 : v == 4 ? 2 : 3;
+  q = v / n;
+  r = v % n;
+  *cx = (int16_t)q;
+  if ( r >= 2 )
+  {
+    ++*cx;
+    r = 0;
+  }
+  *state = r;
+  return (int16_t)(q + r);
+}
+
+//----- (001E142B) --------------------------------------------------------
+/* 04C993 in sub_4BBD5: special 7 -> byte +26h = 0; size byte +25h - 4 (+ 1 with byte 23F09F) */
+void Hook150_1E142B(int ship)
+{
+  uint8_t *s = (uint8_t *)(intptr_t)(dword_192864 + 313 * (int16_t)ship);
+
+  if ( (int16_t)sub_4B0D3((int16_t)ship, 7) )
+    s[38] = 0;
+  s[37] -= 4;
+  if ( *ESEG150(0x23F09F) )
+    ++s[37];
+}
+
+//----- (001E21D7) --------------------------------------------------------
+/* 04CA3C in sub_4C9F6: pusha / sub_1E915F(ecx = ship) / popa, then 4CA8A */
+void Hook150_1E21D7(int ship)
+{
+  sub_1E915F((int16_t)ship, 0);
+}
+
+//----- (001E84FB) --------------------------------------------------------
+/* 04CE57 in sub_4CB1E: word_199A39 of the combat record 199A12 - the crew table by level byte_199A38 times word
+   table 23CF08 by size byte_199A37; with byte_199CB4 only the crew value + byte 23E2B2 for special 13 */
+void Hook150_1E84FB(void)
+{
+  int b = (int8_t)byte_199A38;
+
+  if ( !byte_199CB4 )
+  {
+    uint16_t idx = (uint16_t)(int8_t)byte_199A37;
+
+    word_199A39 = (int16_t)(*(uint16_t *)((char *)&word_17F6C1 + 59 * (uint16_t)b)
+                * *(uint16_t *)ESEG150(0x23CF08 + 2 * idx));
+    return;
+  }
+  word_199A39 = *(int16_t *)((char *)&word_17F6C1 + 59 * b);
+  if ( sub_5D393(word_199A30, 13) )
+    word_199A39 += *ESEG150(0x23E2B2);
+}
+
+//----- (001E0E8B) --------------------------------------------------------
+/* 0566F7 in sub_5663E (byte 23F0EF): one special for the transport by the player's techs - 1Fh (word 23DD4E),
+   6 (word 23DD50) or 17h (word 23DD52); c starts as 3753 * player like in the original */
+void Hook150_1E0E8B(int specials, int player)
+{
+  uint8_t *p = (uint8_t *)dword_197F98 + 3753 * player + 0x117;
+  int c = 3753 * player;
+  int sp = 0;
+
+  if ( p[0xAC] == 3 )
+  {
+    c = *(int16_t *)ESEG150(0x23DD4E);
+    sp = 31;
+  }
+  if ( p[0x26] == 3 && c <= *(int16_t *)ESEG150(0x23DD50) )
+  {
+    sp = 6;
+    c = *(int16_t *)ESEG150(0x23DD50);
+  }
+  if ( p[0x7E] == 3 && c <= *(int16_t *)ESEG150(0x23DD52) )
+    sp = 23;
+  if ( sp )
+    sub_127712(specials, sp);
+}
+
+/* sub_1E4A69, sub_1E4A26, sub_1E499C: a weapon slot (8 bytes) of a monster design from the eseg record at addr:
+   weapon = byte +0, arc = byte +1, mods = word +2, ammo = byte +4, count = byte +5 twice */
+void Hook150_Slot(uint8_t *slot, uint32_t addr)
+{
+  uint8_t *e = ESEG150(addr);
+
+  *(uint16_t *)(slot + 0) = e[0];
+  slot[4] = e[1];
+  *(uint16_t *)(slot + 5) = *(uint16_t *)(e + 2);
+  slot[7] = e[4];
+  slot[2] = e[5];
+  slot[3] = e[5];
+}
+
+//----- (001E2CF9) --------------------------------------------------------
+/* player owner < 8 with byte +8BDh */
+int Hook150_1E2CF9(int owner)
+{
+  return owner < 8 && *((uint8_t *)dword_197F98 + 3753 * owner + 0x8BD);
+}
+
+//----- (001EDD23) --------------------------------------------------------
+/* the weapon mod bits of weapon w at tech level t, mode 0 / 2 / 3 (replaces word_17F81D[14 * w] & the bits by
+   level in sub_4AA36); w > 45 only asserts in 1.50 */
+int Hook150_1EDD23(int t, int w, int mode)
+{
+  return sub_1EDD23((unsigned int)t, (unsigned int)w, mode, 0);
+}
+
+//----- (001E4717) --------------------------------------------------------
+/* 04AF7E, 04AF95 in sub_4AA36 (ships > 0): extra specials of ship 0 by design byte +151h / +160h, the eseg
+   switches 23F094, 23F091, 23F092, 23F093, 23F0E0 and the player's techs */
+void Hook150_1E4717(int design)
+{
+  uint8_t *rec = (uint8_t *)dword_192B18 + 361 * (int16_t)design;
+  uint8_t *pl = (uint8_t *)dword_197F98 + 3753 * word_19988E;
+  int sp = dword_192864 + 76;
+
+  if ( rec[0x151] == 1 )
+  {
+    if ( *ESEG150(0x23F094) == 1 && pl[0x1AE] == 3 )
+      sub_127712(sp, 25);
+    if ( *ESEG150(0x23F091) == 1 && pl[0x16C] == 3 )
+      sub_127712(sp, 15);
+  }
+  if ( rec[0x151] == 1 || rec[0x160] )
+  {
+    if ( *ESEG150(0x23F092) == 1 && pl[0x1C6] == 3 )
+      sub_127712(sp, 32);
+    if ( *ESEG150(0x23F093) == 1 && pl[0x118] == 3 )
+      sub_127712(sp, 1);
+  }
+  if ( *ESEG150(0x23F0E0) == 1 && pl[0x144] == 3 )
+    sub_127712(sp, 7);
+}
+
+//----- (001E316D) --------------------------------------------------------
+/* 04A5BE in sub_4A575: instead of word +58h = 1 sub_1E9E43(0, weapon slot) */
+void Hook150_1E316D(int slot)
+{
+  sub_1E9E43(0, (int16_t)slot);
 }
 
 //----- (001E17F0) --------------------------------------------------------
