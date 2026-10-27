@@ -23,9 +23,14 @@ hooks_h = open('src/game150/orion150_hooks.h', encoding='latin-1').read()
 wrapped = set(re.findall(r'\b(\w+)_131\s*\(', hooks_h))
 marked = set()
 for p in glob.glob('src/game/*.c') + glob.glob('src/game150/*.c') + glob.glob('src/game150/*.h'):
-    for m in re.finditer(r'1\.50 ([0-9A-F]{5,6}(?:, [0-9A-F]{5,6})*)\b', open(p, encoding='latin-1').read()):
-        for a in m.group(1).split(', '):
-            marked.add(int(a, 16))
+    for line in open(p, encoding='latin-1'):
+        i = line.find('1.50 ')
+        if i < 0:
+            continue
+        # every address after "1.50 " on the line: "1.50 029080, 029085: sub_1E3F6B; 0290A7: ..."
+        for a in re.findall(r'\b([0-2][0-9A-F]{5}|[1-9A-F][0-9A-F]{4})\b', line[i + 5:]):
+            if not re.fullmatch(r'\d{5}', a) or a.startswith(('1', '2', '3', '4', '5', '6', '7', '8', '9')):
+                marked.add(int(a, 16))
     for m in re.finditer(r'//----- \((00[0-9A-F]{6})\)', open(p, encoding='latin-1').read()):
         pass
 # calls of wrapped functions 1.50 leaves alone are marked "1.50 <site>: not hooked" - they are not hooks anyway
@@ -47,3 +52,58 @@ if '--list' in sys.argv:
     n = int(sys.argv[sys.argv.index('--list') + 1])
     for r in todo[:n]:
         print('  %s %-12s %-28s -> %s' % (r[0], r[1], r[2], r[4]))
+
+# changed ranges of the 1.31 functions (funcdiff.tsv): done when a marker or a wired hook lies in the range
+# (or up to 8 bytes before it - the nop padding after a hook call), or when 1.50 has only nops there
+sys.path.insert(0, 'tools/compare')
+from inlsite import LST131, LST150, load, index_of   # noqa: E402
+l131, l150 = load(LST131), load(LST150)
+# calls 1.50 redirects to a function of its own that the port handles inside the called function
+COVERED_CALLS = {
+    ('sub_126487', 'sub_16957E'),   # sub_126487 (orion_part_19.c) -> Hook150_Exit
+}
+COVERED_RANGES = {
+    '10018-1001B',   # main_ -> the loader of the block: Start150 (reorion2.cpp)
+}
+
+
+def call_at(lst, a):
+    i = index_of(lst, a)
+    while i > 0 and (lst[i][0] > a or not re.match(r'^\s+[a-z]', lst[i][1])):
+        i -= 1
+    m = re.match(r'^\s+call\s+(\w+)', lst[i][1])
+    return m.group(1) if m else None
+
+
+def only_nops(a, b):
+    i = index_of(l150, a)
+    seen = False
+    while i < len(l150) and l150[i][0] <= b:
+        t = l150[i][1].strip()
+        if t and not re.match(r'^(nop|align\b|db\s+90h|xchg\s+(\w+),\s*\2$)', t) and not re.match(r'^(loc_|sub_)\w+:?$|\w+\s+endp$', t):
+            return False
+        seen = seen or bool(t)
+        i += 1
+    return seen
+
+
+wired = {int(r[0], 16) for r in done}
+rdone, rtodo = 0, []
+for l in open(DISS + 'funcdiff.tsv', encoding='latin-1'):
+    r = l.rstrip('\n').split('\t')
+    if len(r) < 6 or not r[5] or r[5] == 'edit_ranges':
+        continue
+    for x in r[5].split():
+        a, b = (int(v, 16) for v in x.split('-'))
+        if (any(a - 8 <= m <= b for m in marked) or any(a - 8 <= w <= b for w in wired)
+                or only_nops(a, b) or x in COVERED_RANGES
+                or (call_at(l131, a), call_at(l150, a)) in COVERED_CALLS):
+            rdone += 1
+        else:
+            rtodo.append((r[0], x))
+print('changed ranges %d: wired %d, open %d (in %d functions)' %
+      (rdone + len(rtodo), rdone, len(rtodo), len({f for f, _ in rtodo})))
+if '--ranges' in sys.argv:
+    n = int(sys.argv[sys.argv.index('--ranges') + 1])
+    for f, x in rtodo[:n]:
+        print('  %-12s %s' % (f, x))

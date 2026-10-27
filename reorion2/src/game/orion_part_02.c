@@ -3614,7 +3614,9 @@ char sub_28168( int a1)
   v2 = 313 * a1 + dword_192864;
   v43 = 0;
   v3 = 0;
-  if ( *(_BYTE *)(v2 + 32) > 8u || !a1 || !*(_BYTE *)(v2 + 49) )
+  if ( *(_BYTE *)(v2 + 32) > 8u
+    || g_orion150 && sub_3E57C(a1) && *Hook150_Eseg(0x23DD80) != 1   /* 1.50 0281C3, 0281C8: sub_1E397E */
+    || !a1 || !*(_BYTE *)(v2 + 49) )
     goto LABEL_74;
   if ( *(uint8_t *)(v2 + 32) == word_1998AC )
     LOWORD(v2) = word_19988E;
@@ -3777,7 +3779,7 @@ LABEL_74:
     {
       if ( (int16_t)v46 > 1 )
       {
-        if ( (_WORD)v46 == 2 )
+        if ( (_WORD)v46 == (g_orion150 ? (uint16_t)(2 * *(int8_t *)Hook150_Eseg(0x23DCDE)) : 2) )   /* 1.50 02832D: sub_1E0C7D */
           ++v49;
       }
       else
@@ -3789,12 +3791,12 @@ LABEL_74:
     v15 = sub_4B0D3(i, 35);
     if ( (int16_t)v46 <= 1 )
       break;
-    if ( (_WORD)v46 == 2 )
+    if ( (_WORD)v46 == (g_orion150 ? (uint16_t)(2 * *(int8_t *)Hook150_Eseg(0x23DCDE)) : 2) )   /* 1.50 028383: sub_1E0C7D */
     {
       ++v50;
       goto LABEL_20;
     }
-    if ( (int16_t)v46 < 7 && v15 )
+    if ( (int16_t)v46 < (g_orion150 ? (int16_t)(7 * *(int8_t *)Hook150_Eseg(0x23DCDE)) : 7) && v15 )   /* 1.50 02838F: sub_1E0C8D */
     {
       v16 = *(uint8_t *)(v39 + dword_192864 + 175);
       goto LABEL_28;
@@ -4100,12 +4102,31 @@ int sub_2885A( int a1, int a2)
       LOWORD(v16) = v17;
   }
   /* wave 184: 289AF - the distance in hexes, (d + 2) / 3 */
-  return ((int16_t)sub_134637(v12, (int16_t)v13, v21, (int16_t)v16) + 2) / 3;
+  v17 = sub_134637(v12, (int16_t)v13, v21, (int16_t)v16);
+  if ( g_orion150 && *(int8_t *)Hook150_Ecode(0x1E0C0B) >= 1 )   /* 1.50 0289B4, 0289B9: sub_1E0C54 - the distance itself */
+    return v17;
+  return ((int16_t)v17 + 2) / 3;
 }
 // 192864: using guessed type int dword_192864;
 
 
 //----- (000289C4) --------------------------------------------------------
+//----- (001E4028) --------------------------------------------------------
+/* 1.50: avg - def with the modifiers of 1.50 - avg less byte 23D0F3 % (sub_1E1295) when a3 has special 10,
+   def + byte 23E2B2 when a3 has special 13, else def 0 when word_1998CA */
+static int sub_1E4028(int a3, int avg, int def)
+{
+  if ( !g_orion150 )
+    return avg - def;
+  if ( (int16_t)sub_4B0D3((int16_t)a3, 10) )
+    avg -= avg * *Hook150_Eseg(0x23D0F3) / 100;
+  if ( (int16_t)sub_4B0D3((int16_t)a3, 13) )
+    def += *Hook150_Eseg(0x23E2B2);
+  else if ( word_1998CA )
+    def = 0;
+  return avg - def;
+}
+
 unsigned int sub_289C4( int a1, int a2, int a3, int a4, int a5)
 {
   int v5; // eax
@@ -4191,7 +4212,8 @@ LABEL_48:
           goto LABEL_56;
         v13 = (int16_t)sub_3E095(
                          *(_WORD *)(dword_192B14 + 26 * a3),
-                         *(uint8_t *)(313 * *(int16_t *)(dword_192B14 + 26 * a3 + 4) + dword_192864 + 32),
+                         g_orion150 ? *(uint16_t *)(dword_192B14 + 26 * a3 + 2)   /* 1.50 028CD0: the word +2 */
+                                    : *(uint8_t *)(313 * *(int16_t *)(dword_192B14 + 26 * a3 + 4) + dword_192864 + 32),
                          *(int16_t *)(dword_192B14 + 26 * a3 + 17),
                          HIBYTE(*(_WORD *)(dword_192B14 + 26 * a3 + 17)));
         v14 = (int16_t)((v23 * (70 - 10 * (v24 - 1)) + 50) / 100);
@@ -4226,8 +4248,8 @@ LABEL_46:
   if ( (uint16_t)v6 <= 0x24u )
   {
     v16 = dword_192864 + 313 * a3;
-    v13 = ((word_17F819[14 * v6] + word_17F817[14 * v6]) / 2
-         - *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(v16 + 38)))
+    v13 = sub_1E4028(a3, (word_17F819[14 * v6] + word_17F817[14 * v6]) / 2,   /* 1.50 028E35, 028E3A: sub_1E400A */
+                     *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(v16 + 38)))
         * v23;
     v15 = *(uint8_t *)(v16 + 37);
     goto LABEL_46;
@@ -4252,8 +4274,8 @@ LABEL_53:
   {
     v8 = 4
        * (*(uint8_t *)(dword_192864 + 313 * a3 + 37) + 1)
-       * ((word_17F819[14 * v6] + word_17F817[14 * v6]) / 2
-        - *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(dword_192864 + 313 * a3 + 38)))
+       * sub_1E4028(a3, (word_17F819[14 * v6] + word_17F817[14 * v6]) / 2,   /* 1.50 028DE4, 028DE9: sub_1E400A */
+                    *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(dword_192864 + 313 * a3 + 38)))
        * v23;
     goto LABEL_56;
   }
@@ -4261,14 +4283,19 @@ LABEL_53:
   {
 LABEL_50:
     v12 = 4
-        * ((word_17F819[14 * v6] + word_17F817[14 * v6]) / 2
-         - *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(dword_192864 + 313 * a3 + 38)))
+        * sub_1E4028(a3, (word_17F819[14 * v6] + word_17F817[14 * v6]) / 2,   /* 1.50 028D9A, 028D9F: sub_1E401A */
+                     *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(dword_192864 + 313 * a3 + 38)))
         * v23;
     goto LABEL_48;
   }
 LABEL_56:
   if ( sub_4B0D3(a3, 7) )
+  {
+    if ( g_orion150 )   /* 1.50 028E7B: sub_1E12C6 */
+      v8 = (int)v8 * *Hook150_Eseg(0x23D0F2) / 100;
+    else
     v8 >>= 2;
+  }
   if ( !byte_17F80F[28 * v6] || byte_17F80F[28 * v6] == 3 )
     return (v8 + 99) / 0x64;
   return v8;
@@ -4302,7 +4329,8 @@ int sub_28EAE( int a1, int a2, int a3, int a4, int a5, int a6)
   if ( v14 )
   {
     v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * v14);
-    if ( *(int16_t *)(v_s + 308) > 0 )   /* 28ED0 */
+    /* 1.50 028ED0, 028ED5: sub_1E3EF3 ends with xor ebx, ebx - the jle after it always jumps, no armour */
+    if ( !g_orion150 && *(int16_t *)(v_s + 308) > 0 )   /* 28ED0 */
       v_bx = *(int16_t *)((char *)&word_17F6C1 + 59 * v_s[38]);
     if ( (uint16_t)sub_4B0D3(v14, 13) )
       v_bx += 3;
@@ -4332,7 +4360,7 @@ int sub_28EAE( int a1, int a2, int a3, int a4, int a5, int a6)
     v_si = word_17F819[14 * v_di];   /* 28FA7 */
     if ( (v_cx & 0x4000) != 0 )
       v_si = (int16_t)(3 * v_si / 2);
-    if ( (v_cx & 0x200) != 0 )
+    if ( (v_cx & 0x200) != 0 && !g_orion150 )   /* 1.50 028FC3: in sub_1E3F6B */
       v_si = (int16_t)(v_si << 2);
     v_si = (int16_t)(v_si * word_199224[v_arg] / 100);   /* 28FC8 */
     v_bx = *(int16_t *)(intptr_t)(dword_192864 + 313 * v14 + 56);
@@ -4359,9 +4387,38 @@ int sub_28EAE( int a1, int a2, int a3, int a4, int a5, int a6)
       v_bx /= 2;
     if ( (v_di == 20 || v_di == 40) && (v_cx & 0x20) == 0 )   /* 29063 */
       v_si /= 2;
+    if ( g_orion150 )   /* 1.50 029080, 029085: sub_1E3F6B; 0290A7, 0290AC: sub_1E3FE1 */
+    {
+      int s = v_si;
+      int m = v4;
+      int half;
+
+      if ( !v14 && byte_17F80F[28 * v_di] == 2 )
+        s >>= 1;
+      if ( (int16_t)sub_4B0D3(v14, 10) )
+        s -= s * *Hook150_Eseg(0x23D0F3) / 100;
+      half = *(_BYTE *)(dword_192864 + 313 * v14 + 64) == 1;
+      if ( *Hook150_Eseg(0x23E1EE) && half )
+      {
+        v_bx = (int16_t)(v_bx + *(int32_t *)Hook150_Eseg(0x23E1EE));   /* add ebx, dword 23E1EE */
+        half = 0;
+      }
+      s -= v8;
+      if ( (v_cx & 0x200) != 0 )
+        m <<= 2;
+      s = (100 - v_bx) * (int16_t)(s * m) / 100;
+      if ( (v_cx & 0x100) != 0 )
+        s <<= 2;
+      if ( half )
+        s = s * *(int8_t *)Hook150_Eseg(0x23E1EF) / 100;
+      v_si = (int16_t)s;
+    }
+    else
+    {
     v_si = (int16_t)((100 - v_bx) * (int16_t)((v_si - v8) * v4) / 100);   /* 29080 */
     if ( *(_BYTE *)(dword_192864 + 313 * v14 + 64) == 1 )
       v_si /= 2;
+    }
   }
   return v_si > 0 ? v_si : 0;   /* 290C6 */
 }
@@ -4405,7 +4462,7 @@ int sub_290DA( int a1, int a2, int a3, int a4, int a5, int a6)
   v32 = 0;
   v30 = v9;
   v31 = 0;
-  if ( a6 || !sub_4B0D3(a3, 13) && (v11 & 0x40) != 0 )
+  if ( a6 || !sub_4B0D3(a3, 13) && (v11 & 0x40) != 0 && !g_orion150 )   /* 1.50 029133 */
   {
     v26 = 0;
   }
@@ -4418,6 +4475,12 @@ int sub_290DA( int a1, int a2, int a3, int a4, int a5, int a6)
         v10 = *(int16_t *)((char *)&word_17F6C1 + 59 * *(uint8_t *)(v12 + 38));
       if ( sub_4B0D3(a3, 13) )
         v10 += 3;
+      if ( g_orion150 )   /* 1.50 0291A8: sub_1E3EC4 */
+      {
+        if ( ((word_17F815[14 * v30] & 0x100) != 0 || (v11 & 0x40) != 0 || word_1998CA) && !sub_4B0D3(a3, 13) )
+          v10 = 0;
+      }
+      else
       if ( (word_17F815[14 * v30] & 0x100) != 0 || (v11 & 0x40) != 0 && !sub_4B0D3(a3, 13) )
         v10 = 0;
     }
@@ -4471,6 +4534,31 @@ int sub_290DA( int a1, int a2, int a3, int a4, int a5, int a6)
          + 50)
         / 100;
   v19 = v17;
+  if ( g_orion150 )   /* 1.50 029359, 029366, 029380: sub_1E407B */
+  {
+    if ( (_WORD)v32 )
+    {
+      v27 = sub_5679E(word_19988E);
+      if ( !byte_17F80F[28 * v30] )
+      {
+        if ( (word_17F815[14 * v30] & 8) != 0 )
+        {
+          v18 = 0;
+          v17 = 0;
+        }
+        v18 /= 2;
+        v17 /= 2;
+      }
+      v22 = *(int16_t *)((char *)&word_17F6C1 + 59 * v27);
+      v18 -= v22;
+      v19 = v17 - v22;
+      if ( v18 < 0 )
+        v18 = 0;
+      if ( v19 < 0 )
+        v19 = 0;
+    }
+  }
+  else
   if ( (_WORD)v32 && !byte_17F80F[28 * v30] )
   {
     v27 = sub_5679E(word_19988E);
@@ -4492,9 +4580,8 @@ int sub_290DA( int a1, int a2, int a3, int a4, int a5, int a6)
     if ( v19 < 0 )
       v19 = 0;
   }
-  /* 1.50 293C6: call sub_1E3F2E, word [ebp-2Ch] = (int16_t)a1 from 291F8; without that branch the original reads
-       an unset stack word - taken as 0 here */
-    v23 = Hook150_1E3F2E(v18, v19, v25, v16, v26, byte_17F80F[28 * v30] ? 0 : (int16_t)a1);   /* 293CF imul eax, edx */
+  /* 1.50 293C6: call sub_1E3F2E with word [ebp-2Ch] - 1.50 0292AB (sub_1E3F24) sets it to esi = a3 on both paths */
+    v23 = Hook150_1E3F2E(v18, v19, v25, v16, v26, (int16_t)a3);   /* 293CF imul eax, edx */
   return a4 * v23;
 }
 // 291B4: conditional instruction was optimized away because %arg_4.2==0
@@ -4572,6 +4659,8 @@ int sub_294DF( int a1)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v2 = 1;
+  if ( g_orion150 && *(int16_t *)(dword_192864 + 313 * a1 + 173) > -1 )   /* 1.50 0294EB: sub_1E4F16 */
+    return 0;
   if ( sub_4B0D3(a1, 37) || sub_4B0D3(a1, 38) )
     return 0;
   for ( i = 0; i < 8 && (_WORD)v2 == 1; ++i )
@@ -4791,7 +4880,13 @@ void sub_29837(void)
       sub_29616();
     if ( (int16_t)v_t != -1 )
     {
-      SHIP_29837(word_1998F8)[177] = (uint8_t)sub_2A545(word_1998F8, (int16_t)v_t);   /* 2998D */
+      {
+        uint8_t v177 = (uint8_t)sub_2A545(word_1998F8, (int16_t)v_t);
+
+        if ( g_orion150 )   /* 1.50 02998D, 029992: sub_1E2490 - the old byte into byte 1E248C for sub_1E24A8 */
+          *Hook150_Ecode(0x1E248C) = SHIP_29837(word_1998F8)[177];
+        SHIP_29837(word_1998F8)[177] = v177;   /* 2998D */
+      }
       vC = (int16_t)sub_2A9A5(word_1998F8, (int16_t)v_t);
           Hook150_1E24A8();   /* 1.50 29998: call sub_1E24A8 */
       if ( vC )
@@ -4924,6 +5019,8 @@ void sub_29837(void)
   v_s[49] = 1;
   v_r = (int16_t)sub_3897A(word_1998F8);
   v_s = SHIP_29837(word_1998F8);
+  if ( g_orion150 )   /* 1.50 029ECE: sub_1E0D69 - byte +31h back before sub_39E15 */
+    v_s[49] = (uint8_t)v8;
   sub_39E15(word_1998F8, (int16_t)(20 * v_s[33]), (int16_t)(20 * v_s[34]), v_r);   /* 29EE6 */
   SHIP_29837(word_1998F8)[49] = (uint8_t)v8;
   word_19296C[word_1998D8] = -1;
@@ -4982,7 +5079,8 @@ int sub_29F1B( int a1, int a2, int a3)
   v6 = v4
      / (int16_t)sub_3E095(
                   *(_WORD *)(26 * a2 + dword_192B14),
-                  *(uint8_t *)(313 * *(int16_t *)(26 * a2 + dword_192B14 + 4) + dword_192864 + 32),
+                  g_orion150 ? *(uint16_t *)(26 * a2 + dword_192B14 + 2)   /* 1.50 029FBC: the word +2 */
+                             : *(uint8_t *)(313 * *(int16_t *)(26 * a2 + dword_192B14 + 4) + dword_192864 + 32),
                   26 * a2,
                   HIBYTE(*(_WORD *)(26 * a2 + dword_192B14 + 17)));
   if ( (int16_t)v6 > *(int16_t *)(26 * a2 + dword_192B14 + 15) )
@@ -5024,7 +5122,12 @@ LABEL_22:
   else
     v11 = v10 - *(_WORD *)(dword_192864 + 41);
   if ( sub_4B0D3(a1, 7) )
+  {
+    if ( g_orion150 )   /* 1.50 02A0CC, 02A0D1: sub_1E12AC */
+      v6 = (uint16_t)v6 * *Hook150_Eseg(0x23D0F2) / 100;
+    else
     LOWORD(v6) = (int16_t)(v6 - (__CFSHL__((int16_t)v6 >> 15, 2) + 4 * ((int16_t)v6 >> 15))) >> 2;
+  }
   v12 = v11 * v6;
   if ( byte_17F80F[28 * *(int16_t *)(dword_192B14 + 26 * a2)] != 4 )
     v12 /= 2;
@@ -5562,6 +5665,8 @@ int sub_2A9A5( int a1, int a2)
       {
         v35 = 1;
         *(_WORD *)(313 * word_1998F8 + dword_192864 + 61) -= v24;
+        if ( g_orion150 && *(int16_t *)(313 * word_1998F8 + dword_192864 + 61) < 0 )   /* 1.50 02AC7F: sub_1E3B28 */
+          *(_WORD *)(313 * word_1998F8 + dword_192864 + 61) = 0;
       }
     }
   }
@@ -5668,7 +5773,7 @@ int sub_2ACF9( int a1, int a2, int a3, int *a4, int a5)
 
 
 //----- (0002AED2) --------------------------------------------------------
-_BOOL2 sub_2AED2( int a1, int a2)
+_BOOL2 sub_2AED2_131( int a1, int a2)
 {
   uint16_t *v3; // eax
   uint16_t v4; // cx
@@ -5742,7 +5847,8 @@ int sub_2AFA9( int a1, int *a2)
     v4 = v8 + dword_192B14;
     if ( *(int16_t *)(v8 + dword_192B14) > 0
       && *(int16_t *)(v4 + 15) > 0
-      && *(_BYTE *)(dword_192864 + 313 * *(int16_t *)(v4 + 4) + 32) != *(_BYTE *)(313 * v7 + dword_192864 + 32)
+      && (g_orion150 ? (uint8_t)sub_3BB3D(v3)   /* 1.50 02B022, 02B027: sub_1E1116 */
+                     : *(_BYTE *)(dword_192864 + 313 * *(int16_t *)(v4 + 4) + 32)) != *(_BYTE *)(313 * v7 + dword_192864 + 32)
       && sub_2AED2(v7, v3)
       && (byte_17F80F[28 * *(int16_t *)(v8 + dword_192B14)] == 1
        || byte_17F80F[28 * *(int16_t *)(v8 + dword_192B14)] == 4) )
@@ -6309,7 +6415,8 @@ int sub_2BB06( int a1, int a2)
   else
   {
     v4 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
-    v5 = 100 * (*(int16_t *)((char *)&word_17F642 + 15 * v4) + 100) / 100;
+    v5 = (g_orion150 ? *(int16_t *)Hook150_Eseg(0x23CD3E) : 100)   /* 1.50 02BB65, 02BB6A: sub_1E4ACB */
+       * (*(int16_t *)((char *)&word_17F642 + 15 * v4) + 100) / 100;
     v6 = sub_3A142(100, a2);
     for ( i = 0; i < 4; ++i )
     {
@@ -6528,7 +6635,7 @@ int sub_2BF73(int a1, int a2, int a3)
     v8 = 1;
   v_s[175] -= (uint8_t)v8;   /* 2BFF7 */
   if ( v_cx == 4
-    && ((int16_t)v4 != 1 || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_di + 59) > 0)
+    && ((g_orion150 ? (int16_t)v4 > 1 : (int16_t)v4 != 1) || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_di + 59) > 0)   /* 1.50 02C008 */
     && (uint16_t)sub_4B0D3(v_di, 7) )
   {
     v8 = (int16_t)((int16_t)v8 / 3);   /* 2C035 cwd; idiv bx */
@@ -6646,7 +6753,7 @@ int sub_2C129_131( int a1, int a2)
     }
     if ( !*(_BYTE *)(dword_192864 + 313 * word_1998F8 + 175)
       || (_WORD)v40 == 4
-      && ((_WORD)v38 != 1 || *(int16_t *)(dword_192864 + 313 * a2 + 59) > 0)
+      && ((g_orion150 ? (int16_t)v38 > 1 : (_WORD)v38 != 1) || *(int16_t *)(dword_192864 + 313 * a2 + 59) > 0)   /* 1.50 02C298 */
       && ((v32 = a2,
            v31 = 313 * a2 + dword_192864,
            v12 = sub_32A20(a2, a1),
@@ -7071,7 +7178,8 @@ int16_t sub_2CBCC( int a1, int a2, int a3)
     v9 = sub_127C27((int)aCombatLbx_0, 88, dword_193174);
     sub_12A478(v46, v44, v9);
     v10 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
-    v39 = (int16_t)(88 * v8 / (100 * (*(int16_t *)((char *)&word_17F642 + 15 * v10) + 100) / 0x64u)) / 2;
+    v39 = (int16_t)(88 * v8 / ((g_orion150 ? *(int16_t *)Hook150_Eseg(0x23CD3E) : 100)   /* 1.50 02CCE6, 02CCEB: sub_1E4AD9 */
+                               * (*(int16_t *)((char *)&word_17F642 + 15 * v10) + 100) / 0x64u)) / 2;
     sub_128AB6(0, 0, v39 + v42, 479);
     sub_12B634();
     v11 = sub_127C27((int)aCombatLbx_0, 87, dword_193174);
@@ -7127,7 +7235,7 @@ LABEL_27:
   }
   else
   {
-    if ( *(_BYTE *)(v18 + 49) )
+    if ( g_orion150 ? *(_BYTE *)(v18 + 31) != 0xFF : *(_BYTE *)(v18 + 49) )   /* 1.50 02CDC1: byte +1Fh == -1 */
     {
       v19 = *(uint8_t *)(v18 + 37);
     }
@@ -7811,7 +7919,11 @@ LABEL_8:
       goto LABEL_23;
     }
     if ( *(_BYTE *)(v49 + dword_192864 + 313 * word_1998F8 + 90) )
+    {
       v6 = 3;
+      if ( g_orion150 )   /* 1.50 02E4FF: sub_1E260F - straight to loc_2E5D2 */
+        goto LABEL_2E5D2;
+    }
     else
       v6 = 2;
 LABEL_23:
@@ -7832,6 +7944,7 @@ LABEL_32:
     }
     else
     {
+LABEL_2E5D2:
       switch ( (int16_t)v6 )
       {
         case 0:
@@ -9173,6 +9286,8 @@ void sub_30631()
 
   dword_19292C = sub_127C27((int)aCombatLbx_0, 5, dword_193174);
   v144 = 320 - *(int16_t *)dword_19292C / 2 + 9;
+  if ( g_orion150 && byte_199A32 > 8 )   /* 1.50 03067A: sub_1E0A95 */
+    byte_199A32 = byte_199B4A;
   v153 = 240 - *(int16_t *)(dword_19292C + 2) / 2 + 9;
   v150 = word_199B12 == -666;
   if ( !word_199A08 || word_199A08 == 4 || word_199A08 == 29 )
@@ -9385,7 +9500,7 @@ LABEL_28:
         sub_1210FD(v144 + 166, v154, (int)v105);
       }
       v154 += 14;
-      if ( byte_199AC1 != -1 )
+      if ( byte_199AC1 != -1 && !(g_orion150 && (int16_t)v150 == 1) )   /* 1.50 030D76: sub_1E0B7D */
       {
         v24 = (int16_t)v154;
         sub_58F1E(12, v106, 80);
@@ -9416,7 +9531,8 @@ LABEL_28:
         v26 = 14;
       sub_58F1E(v26, v106, 80);
       sub_1212B3(v155, v139, (int)v106);
-      if ( !v150 && byte_199A43 )
+      if ( !v150 && (g_orion150 ? byte_199CB4 != 1 && word_199A3B[0] != 1 && word_199A30 != -1   /* 1.50 030F13: sub_1E0AF7 */
+                                : byte_199A43 != 0) )
       {
         sub_120CCB(1, (int)&v118);
         strcpy(v105, "(");
@@ -9511,7 +9627,8 @@ LABEL_28:
       if ( v150 )
       {
         v41 = sub_5685F(*(uint8_t *)(dword_192864 + 32));
-        itoa((int16_t)(100 * (*(int16_t *)((char *)&word_17F642 + 15 * v41) + 100) / 100), v109, 10, v39);
+        itoa((int16_t)((g_orion150 ? *(int16_t *)Hook150_Eseg(0x23CD3E) : 100)   /* 1.50 0311D7, 0311DC: sub_1E4AD9 */
+                       * (*(int16_t *)((char *)&word_17F642 + 15 * v41) + 100) / 100), v109, 10, v39);
         strcpy(v105, "^ ");
         /* vlna 73: puvodne `v104 = v105; v42 = (char *)&v104 + 3;` -
            v asm lezi v104 tesne pred bufferem v105, takze &v104+4 je
@@ -9597,6 +9714,8 @@ LABEL_28:
           }
           v49 = word_180024[18 * v48]
               + *(int16_t *)((char *)&word_17F642 + 15 * (uint8_t)byte_199A45) * word_180024[18 * v48] / 100;
+          if ( g_orion150 && byte_199CB4 )   /* 1.50 031382: sub_1E1556 */
+            v49 = 0;
           if ( (uint16_t)sub_1276F0((int)&byte_199A5E, 0xEu) )
             v49 *= 3;
           itoa(word_199AD4, v109, 10, v49);
@@ -9737,8 +9856,14 @@ LABEL_28:
           if ( byte_199A32 == 8 )
             v104 = 0;
           else
-            v104 = (char *)(*(int16_t *)((char *)&word_17F6C1 + 59 * (int16_t)sub_5679E((uint8_t)byte_199A32))
-                          + word_199A39);
+          {
+            int def = *(int16_t *)((char *)&word_17F6C1 + 59 * (int16_t)sub_5679E((uint8_t)byte_199A32));
+
+            if ( g_orion150 && !((int16_t)sub_3A142(0, 0) && !(int16_t)sub_4B0D3(0, 7)) )   /* 1.50 0317F3: sub_1E0B45 */
+              v104 = (char *)(intptr_t)(byte_199A38 > 0 ? word_199A39 : 0);
+            else
+            v104 = (char *)(intptr_t)(def + word_199A39);
+          }
           sprintf(v105, v106, v104);
           v71 = v152;
           v70 = v139;
@@ -10123,6 +10248,8 @@ void sub_31F25( int a1)
   if ( !v1 )
   {
     word_1998D2 = -1;
+    if ( g_orion150 )   /* 1.50 031F9D: sub_1E29EF - byte_199A12 cleared (313 bytes) first */
+      sub_127776((_BYTE *)byte_199A12, 0x139);
     sub_4CB1E(v14, (int)&word_199A48, (int)&word_199A4A, (int16_t)&word_199A46);
     strcpy(v13, byte_199A12);
     sub_54E5B(v14, &word_199A48, &word_199A4A, &word_199A46);
@@ -12523,10 +12650,17 @@ int16_t sub_35251( int a1, int16_t *a2, int a3, int a4, int a5)
           ++v15;
         }
         while ( v15 < 4 );
+        if ( g_orion150 )   /* 1.50 03535A: sub_1E5097 */
+          *(_WORD *)(dword_192864 + 313 * a1 + 39) = v53;
 LABEL_72:
         *a2 = 0;
         break;
       case 3:
+        if ( g_orion150 )   /* 1.50 035373, 035378: sub_1E0E28 - sub_1F9F2B, then loc_3579C */
+        {
+          Hook150_1E0E28(a1, a4, a2);
+          break;
+        }
         v17 = 313 * a1 + dword_192864 + 2 * a4;
         v18 = *(_WORD *)(v17 + 260);
         v19 = *(_WORD *)(v17 + 276);
@@ -12608,7 +12742,8 @@ LABEL_72:
         v33 = sub_4528F(a1);   /* wave 184: 35573 result */
         v34 = v33;
         v35 = (_WORD *)(dword_192864 + 313 * a1);
-        *(_WORD *)((char *)v35 + 59) = v34;
+        if ( !g_orion150 )   /* 1.50 035588 */
+          *(_WORD *)((char *)v35 + 59) = v34;
         if ( *a2 > 0 )
         {
           v35[96] += *a2;
@@ -12636,7 +12771,7 @@ LABEL_72:
         v40 = v52 + v39 + dword_192864;
         v41 = *(_WORD *)(v40 + 292) - v56;
         *(_WORD *)(v40 + 292) = v41;
-        if ( v41 >= 0 )
+        if ( g_orion150 ? v41 > 0 : v41 >= 0 )   /* 1.50 035662 */
           goto LABEL_72;
         *a2 = abs16(v41);
         v59 = 0;
@@ -12684,6 +12819,7 @@ LABEL_72:
   }
   LOWORD(v48) = *a2;
   v57 = v56 - *a2;
+  Hook150_1E0DC1(a1);   /* 1.50 0357A2 */
   if ( a5 == 1 )
   {
     v48 = 313 * a1;
@@ -12764,6 +12900,9 @@ LABEL_27:
         if ( (int16_t)a4 < *(int16_t *)(v18 + 194) )
           *(_WORD *)(v18 + 194) = a4;
       }
+      if ( g_orion150 )   /* 1.50 035A43, 035A48: sub_1E207F - word 23CE04 / 10000 instead of / 200 */
+        result = sub_36BE2(a1) * a2 * *(uint16_t *)Hook150_Eseg(0x23CE04) / 10000;
+      else
       result = sub_36BE2(a1) * a2 / 200;
       if ( result <= 1 )
         result = 1;
@@ -12796,6 +12935,9 @@ LABEL_27:
             v23 = result;
           v25 = 2 * i + dword_192864 + 313 * a1;
           result -= v23;
+          if ( g_orion150 )   /* 1.50 035B58, 035B5D: sub_1E034A - sub_1E7D97 adds and recounts the weapons */
+            Hook150_1E034A(v25, i, v23);
+          else
           *(_WORD *)(v25 + 260) += v23;
         }
       }
@@ -12808,6 +12950,8 @@ LABEL_27:
           v26 = result;
         result -= v26;
         *(_WORD *)(dword_192864 + 313 * a1 + 308) += v26;
+        if ( g_orion150 )   /* 1.50 035BB7, 035BBC: sub_1E032E */
+          *(_WORD *)(dword_192864 + 313 * a1 + 39) = sub_494A8(a1, 0);
       }
       for ( j = 0; j < 8 && (int16_t)result > 0; ++j )
       {
@@ -12820,12 +12964,15 @@ LABEL_27:
             v29 = result;
           v31 = 313 * a1 + dword_192864 + 2 * j;
           result -= v29;
+          if ( g_orion150 )   /* 1.50 035C22 */
+            *(_WORD *)(v31 + 292) += v29;
+          else
           *(_WORD *)(v31 + 292) = *(_WORD *)(v31 + 238);
         }
       }
       return result;
     }
-    if ( *(_BYTE *)(v10 + 49) )
+    if ( g_orion150 ? *(uint8_t *)(v10 + 31) != 0xFF : *(_BYTE *)(v10 + 49) != 0 )   /* 1.50 0358E2: byte +1Fh == -1 */
     {
       v16 = word_180024[18 * *(uint8_t *)(v10 + 37)];
       v14 = v16 + v16 * *(int16_t *)((char *)&word_17F642 + 15 * *(uint8_t *)(v10 + 51)) / 100;
@@ -12972,7 +13119,7 @@ int sub_35D0D( int a1, int a2)
     v14 = v4 - v8;
   else
     v_bx -= vC;
-  if ( v_s[49] && v_s[32] < 8u )   /* 35DD2 */
+  if ( (g_orion150 ? v_s[31] != 0xFF : v_s[49] != 0) && v_s[32] < 8u )   /* 35DD2; 1.50 035DD4: byte +1Fh == -1 */
     v18 = *(int8_t *)(intptr_t)(dword_197F98 + 3753 * v_s[32] + 2213);
   return v_di + v10 + v14 + v_bx + v18;   /* 35DFA */
 }
@@ -13329,6 +13476,25 @@ int sub_36266(int a1)
     v5 = (uint8_t *)(313 * i + dword_192864);
     if ( v5[32] == v11 && !v5[176] && !v5[36] )
     {
+      if ( g_orion150 )   /* 1.50 0362E0, 0362E4: sub_1E2318; 0362F3, 0362F8: sub_1E43BC */
+      {
+        if ( v5[31] == 0xFF && !sub_3E563(i) )
+        {
+          v6 = v5[37];
+          if ( *Hook150_Eseg(0x23F09F) == 1 )
+            --v6;
+          if ( v6 < 3u )
+          {
+            if ( v6 == 2 )
+              v1 = *Hook150_Eseg(0x23E20E);
+          }
+          else if ( v6 <= 3u )
+            v1 = 10;
+          else if ( v6 == 4 )
+            v1 = 20;
+        }
+      }
+      else
       if ( !v5[49] )
       {
         v6 = v5[37];
@@ -13397,6 +13563,8 @@ void sub_36470(int a1)
     *(_WORD *)(a1 + 202) *= 3;
   v11 = 0;
   *(_WORD *)(a1 + 204) = word_180028[18 * v10];
+  if ( g_orion150 && *(int8_t *)(a1 + 50) <= 0 )   /* 1.50 0364F1, 0364F6: sub_1E317C */
+    *(_WORD *)(a1 + 204) = 0;
   do
   {
     v3 = a1 + 11 * v11;
@@ -13447,10 +13615,24 @@ void sub_36470(int a1)
       }
       else
       {
+        if ( g_orion150 )   /* 1.50 03661F, 036624: sub_1E1411; 036640: sub_1E0E3C */
+        {
+          int c = (int16_t)v10;
+
+          if ( c >= 6 )
+            c = c - 4 + (*Hook150_Eseg(0x23F09F) != 0);
+          v9 = *(int16_t *)((char *)&word_17EEE8 + 47 * v8 + 2 * c) / 10;
+          if ( v9 <= 1 )
+            v9 = 1;
+          *(_WORD *)(a1 + 2 * v7 + 238) = v9 + 1;
+        }
+        else
+        {
         v9 = *(int16_t *)((char *)&word_17EEE8 + 47 * v8 + 2 * v10) / 10;
         if ( v9 <= 1 )
           LOWORD(v9) = 1;
         *(_WORD *)(a1 + 2 * v7 + 238) = v9;
+        }
       }
       if ( ++v7 >= 8 )
         v12 = 1;
@@ -13696,6 +13878,9 @@ int sub_36A63( int a1, int a2, _WORD *a3)
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v4 = 0;
+  if ( g_orion150 )   /* 1.50 036A83, 036A87, 036A8C: sub_1E8F5F */
+    v4 = Hook150_1E8F5F(a1, a2);
+  else
   if ( *(_BYTE *)(313 * a1 + dword_192864 + 64) == 1 && !a2 )
     v4 = 80;
   if ( sub_4B0D3(a1, 38) )
@@ -13762,6 +13947,13 @@ int16_t sub_36B64( int a1)
   int v7; // esi
 
   v2 = 0;
+  if ( g_orion150 )   /* 1.50 036B80: sub_1E0369 - 1 counts as 2, then shr 1 */
+  {
+    int x = *(int16_t *)(313 * a1 + dword_192864 + 256);
+
+    v3 = *(_WORD *)(313 * a1 + dword_192864 + 258) + (uint16_t)((uint32_t)(x == 1 ? 2 : x) >> 1);
+  }
+  else
   v3 = *(_WORD *)(313 * a1 + dword_192864 + 258) + *(int16_t *)(313 * a1 + dword_192864 + 256) / 2;
   do
   {
@@ -13895,7 +14087,7 @@ int16_t sub_36C9C( int a1, int a2, int a3, int a4)
         else
           v13 = sub_27F9F(a1);   /* wave 184: 36D60 result (eax = movsx si = a1) */
         v14 = v12 != -1;
-        v15 = v11 == 13 && v14 && v13;
+        v15 = v11 == 13 && v14 && (v13 || g_orion150);   /* 1.50 036D76: al not tested */
         v16 = v15;
         v26 = 313 * a1;
         v17 = dword_192864 + v26 + 11 * i;
@@ -13904,7 +14096,7 @@ int16_t sub_36C9C( int a1, int a2, int a3, int a4)
         {
           v29 = v32 - v30;
           v28 = v34 - v33;
-          if ( v11 != 13
+          if ( g_orion150 || v11 != 13   /* 1.50 036DDA: always loc_36E3D */
             || (v25 = (int16_t)v29, !((int16_t)v29 % 20))
             && !((int16_t)v28 % 20)
             && (v18 = 313 * a1 + dword_192864, v24 = *(uint8_t *)(v18 + 33), v27 = 20, v25 / 20 == v24)
@@ -13963,6 +14155,8 @@ void sub_36ED1( int a1, int a2, int a3, int a4, int a5)
   int v27; // [esp+3Ch] [ebp-4h] BYREF
 
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
+  if ( g_orion150 && word_17D853 && *Hook150_Eseg(0x23F0DE) != 1 )   /* 1.50 036EE8: sub_1E24DF */
+    return;
   if ( *(_BYTE *)(dword_192864 + 313 * a1 + 64) != 4 )
   {
     for ( i = 0; i < word_1998C0 && !(uint16_t)sub_3897A(a1); ++i )
@@ -13971,16 +14165,30 @@ void sub_36ED1( int a1, int a2, int a3, int a4, int a5)
       if ( *(_BYTE *)(dword_192864 + v20 + 32) != *(_BYTE *)(313 * a1 + dword_192864 + 32) && Hook150_1E1B8A(i) )   /* 1.50 036F38 */
       {
         v6 = v20 + dword_192864;
-        if ( *(_BYTE *)(v20 + dword_192864 + 64) != 1 && *(_BYTE *)(v6 + 64) != 4 && *(_BYTE *)(v6 + 177) )
+        if ( *(_BYTE *)(v20 + dword_192864 + 64) != 1 && *(_BYTE *)(v6 + 64) != 4
+          && (g_orion150 ? *(int8_t *)(v6 + 177) > 0 : *(_BYTE *)(v6 + 177) != 0) )   /* 1.50 036F6A */
         {
           sub_49ED1(a1, &v27, &v25);
           v7 = Hook150_1E25B8(i, v27 + a2, v25 + a3);   /* 1.50 036F90 */
           v8 = Hook150_1E25B8(i, v27 + a4, v25 + a5);   /* 1.50 036FAB */
           if ( v7 < 1 )
             v7 = 1;
-          if ( v7 <= 8 && v7 <= v8 )
+          if ( v7 <= 8 && (g_orion150 || v7 <= v8) )   /* 1.50 036FC8: sub_1E24C5 drops v7 <= v8 */
           {
-            v9 = (int16_t)(100 * (9 - v7) / (9 - (*(uint8_t *)(dword_192864 + 313 * i + 177) + 2) / 3));
+            if ( g_orion150 && *Hook150_Eseg(0x23F0D7) == 1 )   /* 1.50 036FC8: sub_1E24C5 - the chance from byte 23CDBF[v7] */
+              v9 = *Hook150_Eseg(0x23CDBF + v7);
+            else
+            {
+              int b = *(uint8_t *)(dword_192864 + 313 * i + 177);
+
+              if ( g_orion150 && !word_199890 )   /* 1.50 036FDD, 036FE2: sub_1E2463 */
+              {
+                b /= 3;
+                if ( b <= 0 )
+                  b = 1;
+              }
+              v9 = (int16_t)(100 * (9 - v7) / (9 - (b + 2) / 3));
+            }
             if ( (int)sub_1247A0(0x64u) <= v9 )
             {
               v26 = 0;
@@ -14145,6 +14353,14 @@ int sub_372BD( int a1, _WORD *a2)
    sub ebp, 82h). Hit-and-run raid of marines: a1 = eax attacker ship, a2 = edx target ship,
    a3 = ebx -> troops (word, written back). Each trooper rolls rng(100) against the defence;
    over 20 hits two systems (sub_384A8), over 50 kills a defender, under -50 is lost. */
+/* 1.50 sub_37308 (31 hooks, sub_1E2DE7): every strcpy/strcat into the text goes to the combat log
+   (sub_1FC9A3) instead, the text stays empty; the display hooks of 1.50 do not read it
+   1.50 0375C2, 0375ED, 037614, 037634, 03765F, 03767B, 0376F5, 037732
+   1.50 037794, 0377D1, 0377ED, 03784F, 037898, 0378B4, 037924, 03794B
+   1.50 037972, 0379C9, 0379E8, 037A1D, 037A3E, 037A65, 037AA6, 037AEA
+   1.50 037B04, 037B20, 037B74, 037BD4, 037BEE, 037C0A, 037C65 */
+#define CAT_37308(s) ( g_orion150 ? Hook150_1E2DE7(s) : (void)strcat(v2F2, (s)) )
+#define CPY_37308(s) ( g_orion150 ? Hook150_1E2DE7(s) : (void)strcpy(v2F2, (s)) )
 void sub_37308(int a1, int a2, int a3, int a4)
 {
   int16_t v2F6 = (int16_t)a1;   // [ebp-2F6h]
@@ -14227,15 +14443,15 @@ void sub_37308(int a1, int a2, int a3, int a4)
   strcpy(vAE, vFE);
   strcat(vAE, (char *)v_s2);   /* + the target ship name */
   sub_58F1E(92, vFE, 80);
-  strcpy(v2F2, vFE);
-  sprintf(v26, "%d", (int16_t)v56);
-  strcat(v2F2, v26);
-  strcat(v2F2, (char *)&asc_178CD8);
+  CPY_37308(vFE);
+  sprintf(v26, "%d", (int16_t)v56);   /* 1.50 0375E6: the text cut to "" - it is not used */
+  CAT_37308(v26);
+  CAT_37308((char *)&asc_178CD8);
   sub_58F1E(93, vFE, 80);
-  strcpy(v2F2, vFE);   /* 37633: the original copies over the line built above */
+  CPY_37308(vFE);   /* 37633: the original copies over the line built above */
   sprintf(v26, "%d", (int16_t)v6A);
-  strcat(v2F2, v26);
-  strcat(v2F2, (char *)&asc_178CE3);
+  CAT_37308(v26);
+  CAT_37308((char *)&asc_178CE3);
   if ( (int16_t)v4A > 0 )   /* 37684 */
   {
     v_n = (int16_t)sub_3897A(v2FA);
@@ -14244,70 +14460,71 @@ void sub_37308(int a1, int a2, int a3, int a4)
     if ( v_cnt[0] > 0 )
     {
       sub_58F1E(43, vFE, 80);
-      strcat(v2F2, vFE);
+      CAT_37308(vFE);
     }
     if ( v_cnt[1] > 0 )   /* 376FE */
     {
       sub_58F1E(44, vFE, 80);
-      strcat(v2F2, vFE);
+      CAT_37308(vFE);
       sub_58F1E(*(int16_t *)(v_s2 + 308) > 0 ? 45 : 46, vFE, 80);
-      strcat(v2F2, vFE);
+      CAT_37308(vFE);
     }
     if ( v_cnt[2] > 0 )   /* 3779D */
     {
       sub_58F1E(21, vFE, 80);
-      strcat(v2F2, vFE);
-      strcat(v2F2, (char *)&off_178CE6);
+      CAT_37308(vFE);
+      CAT_37308((char *)&off_178CE6);
       sub_58F1E(*(int16_t *)(v_s2 + 258) > 0 ? 45 : 46, vFE, 80);
-      strcat(v2F2, vFE);
+      CAT_37308(vFE);
     }
     for ( i = 0; i < 8; ++i )   /* 3785F: weapon slots */
     {
       if ( v_cnt[3 + i] <= 0 )
         continue;
       sprintf(v26, "%d", v_cnt[3 + i]);
-      strcat(v2F2, v26);
-      strcat(v2F2, (char *)&off_178CE6);
-      strcat(v2F2, WEAPON_NAME(v_cnt[3 + i] > 1 ? 0x7807 : 0x7803, *(int16_t *)(v_s2 + 11 * i + 82)));
-      strcat(v2F2, (char *)&off_178CE6);
+      CAT_37308(v26);
+      CAT_37308((char *)&off_178CE6);
+      CAT_37308(WEAPON_NAME(v_cnt[3 + i] > 1 ? 0x7807 : 0x7803, *(int16_t *)(v_s2 + 11 * i + 82)));
+      CAT_37308((char *)&off_178CE6);
       sub_58F1E(46, vFE, 80);
-      strcat(v2F2, vFE);
+      CAT_37308(vFE);
     }
     for ( i = 0; i < 8; ++i )   /* 37990: specials */
     {
       if ( v_cnt[11 + i] <= 0 )
         continue;
-      sprintf(v26, "%d", v_cnt[11 + i]);
-      strcat(v2F2, v26);
-      strcat(v2F2, (char *)&off_178CE6);
-      strcat(v2F2, (char *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * (int16_t)sub_37254(v2FA, i)));
-      strcat(v2F2, (char *)&off_178CE6);
-      sub_58F1E(46, vFE, 80);
-      strcat(v2F2, vFE);
+      sprintf(v26, "%d", g_orion150 ? 1 : v_cnt[11 + i]);   /* 1.50 0379B1: mov eax, 1 */
+      CAT_37308(v26);
+      CAT_37308((char *)&off_178CE6);
+      CAT_37308((char *)(intptr_t)*(int *)((char *)&off_17EEE0 + 47 * (int16_t)sub_37254(v2FA, i)));
+      CAT_37308((char *)&off_178CE6);
+      /* 1.50 037A47: sub_1E2DC2 - 45 while the special still works */
+      sub_58F1E(g_orion150 && *(int16_t *)(v_s2 + 292 + 2 * i) > 0 ? 45 : 46, vFE, 80);
+      CAT_37308(vFE);
     }
   }
   else
   {
     sub_58F1E(47, vFE, 80);   /* 37A7D */
-    strcat(v2F2, vFE);
+    CAT_37308(vFE);
   }
   if ( v62 < *v2FE )   /* 37AAF: attackers lost */
   {
     sprintf(v26, "%d", *v2FE - v62);
-    strcat(v2F2, (char *)&off_178CE6 + 2);
-    strcat(v2F2, v26);
-    strcat(v2F2, (char *)&off_178CE6);
+    CAT_37308((char *)&off_178CE6 + 2);
+    CAT_37308(v26);
+    CAT_37308((char *)&off_178CE6);
     sub_58F1E(*v2FE - v62 > 1 ? 95 : 94, vFE, 80);
-    strcat(v2F2, vFE);
+    CAT_37308(vFE);
   }
   if ( v_s2[175] > v66 )   /* 37B7D: defenders lost */
   {
     sprintf(v26, "%d", v_s2[175] - v66);
-    strcat(v2F2, (char *)&off_178CE6 + 2);
-    strcat(v2F2, v26);
-    strcat(v2F2, (char *)&off_178CE6);
+    CAT_37308((char *)&off_178CE6 + 2);
+    CAT_37308(v26);
+    CAT_37308((char *)&off_178CE6);
     sub_58F1E(v_s2[175] - v66 > 1 ? 97 : 96, vFE, 80);
-    strcat(v2F2, vFE);
+    CAT_37308(vFE);
   }
   v_snd = sub_147D7(67);   /* 37C6E */
   v_side = (int16_t)v_s1[32] == word_1998AC ? word_192B12 : word_192B10;
@@ -14331,6 +14548,8 @@ void sub_37308(int a1, int a2, int a3, int a4)
   *v2FE = v62;
   sub_2C601(0, 0);
 }
+#undef CAT_37308
+#undef CPY_37308
 // 37863: inconsistent variable size for '^3D4.16'
 // 378BD: inconsistent variable size for '^3D4.16'
 // 3742B: inconsistent variable size for '^3E8.16'
@@ -14383,6 +14602,11 @@ void sub_37DA8(int a1, int a2, int a3, int a4, int a5)
   v4E = v56;
   v_edi = sub_35FDA(v_s1[32]);
   v_dx = sub_35FDA(v_s2[32]) + sub_360AA(v_s2[32]);   /* 37E28 */
+  if ( g_orion150 )   /* 1.50 037DFD, 037E02, 037E0D, 037E10, 037E15: sub_1E7D47 adds sub_35CAD of the ship */
+  {
+    v_edi += (int16_t)sub_35CAD(v2AE);
+    v_dx += (int16_t)sub_35CAD(v2B2);
+  }
   v_dx += 20 * sub_4B0D3(v2B2, 29);
   sub_EC767(v_s1[32], v2B6, (int16_t)v_edi, v_s2[32], v56, (int16_t)v_dx, (int16_t *)v_A, (int)(intptr_t)v_B);
   while ( v56 > 0 && v2B6 > 0 )   /* 37E72: one round per call */
@@ -14400,10 +14624,13 @@ void sub_37DA8(int a1, int a2, int a3, int a4, int a5)
   sub_58F1E(48, vB6, 80);
   strcpy(v66s, vB6);
   strcat(v66s, (char *)v_s2);   /* 37F11: + the target ship name */
+  if ( !g_orion150 )   /* 1.50 037F29: jmp loc_37FA7 */
+  {
   if ( v_s1[32] >= 8u || *(uint8_t *)(intptr_t)(dword_197F98 + 3753 * v_s1[32] + 40) != 100 )
     *(int16_t *)&v_A[4] -= (int8_t)v_A[51];   /* 37F5B */
   if ( v_s2[32] >= 8u || *(uint8_t *)(intptr_t)(dword_197F98 + 3753 * v_s2[32] + 40) != 100 )
     *(int16_t *)&v_B[4] -= (int8_t)v_B[51];
+  }
   sub_103C5B(0, (int)(intptr_t)&v62);   /* 37FA7 */
   sub_103C5B(1, (int)(intptr_t)&v5E);
   sub_103C5B(2, (int)(intptr_t)&v5A);
@@ -14437,6 +14664,15 @@ void sub_37DA8(int a1, int a2, int a3, int a4, int a5)
   {
     v2B6 -= v56;
     v_s2[175] = (uint8_t)v2B6;
+    if ( g_orion150 && *Hook150_Eseg(0x23F09C) == 1 )   /* 1.50 038225, 03822A: sub_1E2032 - the crew capped by the hull */
+    {
+      int8_t cap = (int8_t)dseg[0x180022 - 0x178000 + 36 * (v_s2[37] + (*(int16_t *)(v_s2 + 30) == -1 ? 4 : 0))];
+
+      if ( (int16_t)sub_4B0D3(v2B2, 36) )
+        cap = (int8_t)(cap * 2);
+      if ( cap < (int8_t)v_s2[175] )
+        v_s2[175] = (uint8_t)cap;
+    }
     sub_38312(v2B2, (int16_t)a4, (int16_t)a5);
     sub_58F1E(v_s2[36] ? 49 : 50, vB6, 80);
   }
@@ -14447,6 +14683,9 @@ void sub_37DA8(int a1, int a2, int a3, int a4, int a5)
   }
   strcat(v2AA, vB6);   /* 382A8 */
   v_snd = sub_147D7(67);
+  if ( g_orion150 && word_1998E0 )   /* 1.50 0382CE: sub_1E21BF - no report (esi keeps an old value there, v_snd here) */
+    ;
+  else
   if ( v_cx )
     sub_A5EBC((int)(intptr_t)v66s, (int)(intptr_t)v2AA, 54);
   else
@@ -14482,6 +14721,16 @@ int sub_38312( int a1, int a2, int a3)
   int16_t v13; // bx
 
   v5 = 313 * a1;
+  if ( g_orion150 )   /* 1.50 038334: jle loc_38342; 038367, 03836C: sub_1E27F2 */
+  {
+    if ( *(int16_t *)(v5 + dword_192864 + 173) > -1 )
+      sub_941C6(*(_WORD *)(v5 + dword_192864 + 173), a2);
+    *(_WORD *)(v5 + dword_192864 + 173) = -1;
+    v7 = *(int16_t *)(v5 + dword_192864 + 30);
+    if ( v7 != -1 && *(int16_t *)(dword_197F9C + 129 * v7 + 116) != -1 )
+      sub_944A3(*(int16_t *)(dword_197F9C + 129 * v7 + 116), 0);
+  }
+  else
   if ( *(int16_t *)(v5 + dword_192864 + 173) > -1 )
   {
     sub_941C6(*(_WORD *)(v5 + dword_192864 + 173), a2);
@@ -14500,12 +14749,22 @@ int sub_38312( int a1, int a2, int a3)
     v9 = word_1998AC;
   *(_BYTE *)(dword_192864 + 313 * a1 + 32) = v9;
   sub_3891E(a1);
-  sub_4588C(a1);
+  if ( !g_orion150 )   /* 1.50 03840C: nop - sub_4588C comes in sub_1E0E0D below */
+    sub_4588C(a1);
   if ( v9 >= 8 || !*(_BYTE *)(3753 * v9 + (uint8_t*)dword_197F98 + 2232) )
     *(_BYTE *)(dword_192864 + 313 * a1 + 176) = 1;
+  else if ( g_orion150 && *Hook150_Eseg(0x23F07F) == 1 )   /* 1.50 038425, 03842A: sub_1E4C95 */
+    *(_BYTE *)(dword_192864 + 313 * a1 + 176) = 0;
   v10 = 313 * a1;
   v11 = dword_192864;
   *(_BYTE *)(dword_192864 + v10 + 75) = 0;
+  if ( g_orion150 )   /* 1.50 03845A: sub_1E1F48 - sub_1E0E0D (sub_4588C with word 23E564 = a1), then the end */
+  {
+    *(int16_t *)Hook150_Eseg(0x23E564) = (int16_t)a1;
+    sub_4588C(a1);
+    *(int16_t *)Hook150_Eseg(0x23E564) = -1;
+    return v10;
+  }
   *(_BYTE *)(v11 + v10 + 66) = -1;
   for ( i = 0; ; ++i )
   {
@@ -14562,6 +14821,13 @@ int sub_384A8( int a1, _WORD *a2, _WORD *a3)
   v18 = sub_36B64(v4);
   memset(v17, 0, 38);
   v5 = dword_192864 + 313 * v4;
+  if ( g_orion150 )   /* 1.50 0384F5: sub_1E0369 - 1 counts as 2, then shr 1 */
+  {
+    int x = *(int16_t *)(v5 + 256);
+
+    v17[0] = (int16_t)((uint32_t)(x == 1 ? 2 : x) >> 1);
+  }
+  else
   v17[0] = *(int16_t *)(v5 + 256) / 2;
   v17[1] = *(_WORD *)(v5 + 258);
   v6 = 0;
@@ -14586,7 +14852,7 @@ int sub_384A8( int a1, _WORD *a2, _WORD *a3)
   do
   {
     if ( v17[v12] )
-      v17[v12] = 100 - 100 * (uint16_t)v17[v12] / v18;
+      v17[v12] = (g_orion150 ? 101 : 100) - 100 * (uint16_t)v17[v12] / v18;   /* 1.50 03858C */
     ++v12;
   }
   while ( v12 < 19 );
@@ -14651,6 +14917,12 @@ int16_t sub_38656( int a1)
   v1 = 313 * a1;
   v2 = sub_4B0D3(a1, 24);
   result = 5 * word_18002A[18 * *(uint8_t *)(v1 + dword_192864 + 37)];
+  if ( g_orion150 && *(uint16_t *)(v1 + dword_192864 + 69) == 0x7FFF )   /* 1.50 038674, 038684: sub_1E2359, sub_1E236F */
+  {
+    result = (int16_t)(result * 77);
+    Hook150_1E91DB(result);
+    return result;
+  }
   if ( v2 )
     return 15 * word_18002A[18 * *(uint8_t *)(v1 + dword_192864 + 37)];
   return result;
@@ -14681,6 +14953,8 @@ char sub_3868F( int a1)
   char v16; // [esp+10h] [ebp-8h]
   char v17; // [esp+14h] [ebp-4h]
 
+  if ( g_orion150 )   /* 1.50 038698, 03869D: sub_1E4EDA - the RNG back to its value at sub_FC470 (dword 1E4EEE) */
+    dword_1B9E34 = *(int32_t *)Hook150_Ecode(0x1E4EEE);
   v17 = a1;
   v16 = 1;
   for ( i = 1; ; ++i )

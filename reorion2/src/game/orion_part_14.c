@@ -829,7 +829,12 @@ char sub_D7078(int a1, int a2)
       if ( v3 == -1 )
       {
         LOWORD(v3) = sub_97287((int)(v5 - dword_197F9C) / 129, v8);
-        if ( (_WORD)v3 )
+        if ( (_WORD)v3 && g_orion150 && *(uint8_t *)Hook150_Ecode(0x1E39AB) )   /* 1.50 D710F: called from sub_1E39CC - the first ship */
+        {
+          *(uint8_t *)Hook150_Ecode(0x1E39AB) = 0;
+          v4 = v5;
+        }
+        else if ( (_WORD)v3 )
         {
           LOBYTE(v3) = *(_BYTE *)(v4 + 16);
           if ( (uint8_t)v3 <= *(_BYTE *)(v5 + 16) )

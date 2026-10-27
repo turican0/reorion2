@@ -5,6 +5,7 @@
 #define ESEG150(a) (eseg + (a) - 0x22A600)
 #define EINT150(a) ((int)(intptr_t)ESEG150(a))
 #define ECODE150(a) (ecode + (a) - 0x1E0000)
+#define DSEG150(a) (dseg + (a) - 0x178000)
 #define CCODE150(a) (ccode + (a) - 0x10000)
 
 void Dos150_GetTime(uint16_t *cx, uint16_t *dx);
@@ -432,19 +433,6 @@ char sub_C4343(int16_t *a1, int16_t *a2, int a3)
   return sub_C4343_131(a1, a2, a3);
 }
 
-//----- (001E2CEE) --------------------------------------------------------
-/* replaces sub_ED8BF: sub_100828, sub_14A27 */
-void sub_ED8BF(int a1)
-{
-  if ( !g_orion150 )
-  {
-    sub_ED8BF_131(a1);
-    return;
-  }
-  sub_100828();
-  sub_14A27();
-}
-
 //----- (001E1992) --------------------------------------------------------
 /* call sub_ECBF7; byte 1E1932 == 2 -> 13FD9(dword 1E1933, dword 1E1937) */
 void sub_ECBF7(int a1, int a2)
@@ -471,6 +459,270 @@ void sub_E9927(uint8_t *a1)
   sub_E9927_131(a1);
   if ( g_orion150 )
     *(uint32_t *)ECODE150(0x1E2A1C) = 0xFFFFFFFF;
+}
+
+//----- (001E2FE7) --------------------------------------------------------
+/* 0136BD in sub_136B3, byte_199F3A <= 1: al == 1 -> word [dword 1E2FE3 + 19ABA7h] = -1 once */
+void Hook150_1E2FE7(int al)
+{
+  int32_t *p = (int32_t *)ECODE150(0x1E2FE3);
+
+  if ( g_orion150 && al == 1 && *p != -1 )
+  {
+    *(int16_t *)DSEG150(0x19ABA7 + *p) = -1;
+    *p = -1;
+  }
+}
+
+//----- (001E3193) --------------------------------------------------------
+/* 014605 in sub_145EA: sub_1E9D23(the record, a2) */
+void Hook150_1E3193(void *rec, int a2)
+{
+  if ( g_orion150 )
+    sub_1E9D23((int)(uintptr_t)rec, a2);
+}
+
+//----- (001E053C) --------------------------------------------------------
+/* 01513D in sub_150FB: the random number (1.31 sub_1247A0(3)) by byte 23F18A */
+int Hook150_1E053C(void)
+{
+  uint8_t b;
+
+  if ( !g_orion150 )
+    return sub_1247A0(3);
+  b = *ESEG150(0x23F18A);
+  if ( b < 1 )
+    return sub_1247A0(3);
+  if ( (int8_t)b > 1 )
+    return sub_1247A0(5);
+  return sub_1247A0(2) + 3;
+}
+
+//----- (001E0E28) --------------------------------------------------------
+/* 035373 in sub_35251, damage type 3: sub_1F9F2B(ax = di, dx = cx, ebx = 3, ecx = esi) */
+void Hook150_1E0E28(int a1, int a4, int16_t *a2)
+{
+  sub_1F9F2B((int16_t)a1, (int16_t)a4, 3, a2);
+}
+
+//----- (001E4282) --------------------------------------------------------
+/* 042808 in sub_42781: word_1998AC = ax; for a player also word_199254 / word_199242 of it (sub_5699C, sub_56CA2) */
+void Hook150_1E4282(int ax)
+{
+  word_1998AC = (int16_t)ax;
+  if ( (int16_t)ax > 8 )
+    return;
+  word_199254[(int16_t)ax] = (int16_t)sub_5699C((int16_t)ax);
+  word_199242[word_1998AC] = (int16_t)sub_56CA2(word_1998AC);
+}
+
+//----- (001E2D82) --------------------------------------------------------
+/* 040436 in sub_40148: with byte 23F088 == 1 sub_1EA783 (pusha / popa) */
+void Hook150_1EA783(void)
+{
+  if ( g_orion150 && *ESEG150(0x23F088) == 1 )
+    sub_1EA783(0);
+}
+
+//----- (001E2150) --------------------------------------------------------
+/* 03FAF5 in sub_3FA61: the direction sub_1E20C4 left in dword 1E20BF (-1000 = none); with byte 1E20C3 == 1
+   no turn at all; both are reset */
+void Hook150_1E2150(int b35, int16_t *dir, int16_t *diff)
+{
+  int32_t *d;
+
+  if ( !g_orion150 )
+    return;
+  d = (int32_t *)ECODE150(0x1E20BF);
+  if ( *d != -1000 )
+  {
+    *dir = (int16_t)*d;
+    *diff = (int16_t)(b35 - *d);
+    if ( *ECODE150(0x1E20C3) == 1 )
+    {
+      *dir = (int16_t)b35;
+      *diff = 0;
+    }
+  }
+  *ECODE150(0x1E20C3) = 0;
+  *d = -1000;
+}
+
+//----- (001E8587) --------------------------------------------------------
+/* 03D402 in sub_3D2DF: the losses of the missiles (ax = the record) by byte 23CF06 */
+void Hook150_1E8587(int a1)
+{
+  sub_1E8587((uint16_t)a1);
+}
+
+//----- (001E0372) --------------------------------------------------------
+/* 03CB98 in sub_3C892: sub_1EAE8B(ax = the missile) */
+void Hook150_1EAE8B(int a1)
+{
+  sub_1EAE8B((uint16_t)a1);
+}
+
+//----- (001E1A44) --------------------------------------------------------
+/* 03C3AA in sub_3C2DC: the ship behind a chain of missiles (sub_1E89BF) */
+int Hook150_1E89BF(int rec)
+{
+  return sub_1E89BF(rec);
+}
+
+//----- (001E2672) --------------------------------------------------------
+/* 03ACA1 in sub_3AC20: sub_1E9377(the damage, the word +2 of the missile) */
+int Hook150_1E9377(int a1, int a2)
+{
+  return sub_1E9377(a1, a2);
+}
+
+//----- (001E42BC) --------------------------------------------------------
+/* sub_3A3C3: the points of one damage step of the planet - word 23E2B4[sub_5685F(the owner of record 0)] */
+int Hook150_1E42BC(void)
+{
+  int r = (uint8_t)sub_5685F(*(uint8_t *)(dword_192864 + 32));
+
+  return *(uint16_t *)ESEG150(0x23E2B4 + 2 * r);
+}
+
+//----- (001E26B1) --------------------------------------------------------
+/* 039F56 in sub_39F1D: sub_1E9557 / sub_1E966B(ship, target, ecx = the weapon); -1 = the 1.31 range check */
+int Hook150_1E9557(int ship, int target, int weapon)
+{
+  return sub_1E9557((int16_t)ship, (int16_t)target, 0, (int16_t)weapon);
+}
+
+int Hook150_1E966B(int ship, int target, int weapon)
+{
+  return sub_1E966B((int16_t)ship, (int16_t)target, 0, (int16_t)weapon);
+}
+
+//----- (001E14CC) --------------------------------------------------------
+/* 039FF1 in sub_39F1D: sub_1E8397(ship, target, ecx = the range) */
+int Hook150_1E8397(int ship, int target, int range)
+{
+  return (uint8_t)sub_1E8397((int16_t)ship, (int16_t)target, 0, range);
+}
+
+//----- (001E1923) --------------------------------------------------------
+/* 038DAC in sub_38B5E: after state 2 pusha / sub_1F9EC7(the record) / popa */
+void Hook150_1F9EC7(int rec)
+{
+  if ( g_orion150 )
+    sub_1F9EC7(rec, 0);
+}
+
+//----- (001E236F) --------------------------------------------------------
+/* 038684 in sub_38656: pusha / sub_1E91DB(eax = the result, edx = sub_4B0D3 result) / popa */
+void Hook150_1E91DB(int a1)
+{
+  sub_1E91DB(a1, 0);
+}
+
+//----- (001E2DE7) --------------------------------------------------------
+/* sub_37308: pusha / sub_1FC9A3(esi) / popa - the text part goes to the combat log */
+void Hook150_1E2DE7(const char *s)
+{
+  sub_1FC9A3((int *)(uintptr_t)s);
+}
+
+//----- (001E8F5F) --------------------------------------------------------
+/* 036A87 in sub_36A63: the bonus of 1.50 instead of 80 for the state 1 */
+int Hook150_1E8F5F(int a1, int a2)
+{
+  return (int)sub_1E8F5F((int16_t)a1, (int16_t)a2);
+}
+
+//----- (001E034A) --------------------------------------------------------
+/* 035B58 in sub_35821: sub_1E7D97(the record + 2 * i, i, the repair) - cdecl, pushed edx, ecx, esi */
+void Hook150_1E034A(int rec2, int i, int add)
+{
+  sub_1E7D97(rec2, i, add);
+}
+
+//----- (001E0DC1) --------------------------------------------------------
+/* 0357A2 in sub_35251: sub_1F9EFF(di) */
+void Hook150_1E0DC1(int a1)
+{
+  if ( g_orion150 )
+    sub_1F9EFF((int16_t)a1, 0);
+}
+
+//----- (001EA36F) --------------------------------------------------------
+/* 1.50 02AED2, 02AED3, 02AEE3: sub_2AED2 is push ecx / call sub_1EA36F / movzx eax, al - the 1.31 body (with the hook
+   02AEE3) is dead code */
+_BOOL2 sub_2AED2(int a1, int a2)
+{
+  if ( !g_orion150 )
+    return sub_2AED2_131(a1, a2);
+  return (uint8_t)sub_1EA36F(a1, a2, 0);
+}
+
+//----- (001E2F08) --------------------------------------------------------
+/* 021785 in sub_21371 (eax = 9 * event): byte 1E30E9 = 1, the colony word_19ABA7 is returned and cleared -
+   with byte_199F3A == 1 only later (dword 1E2FE3, sub_1E2FE7) */
+int Hook150_1E2F08(int off)
+{
+  int16_t *w = (int16_t *)DSEG150(0x19ABA7 + off);
+  int16_t v = *w;
+
+  *ECODE150(0x1E30E9) = 1;
+  if ( *DSEG150(0x199F3A) == 1 )
+    *(int32_t *)ECODE150(0x1E2FE3) = off;
+  else
+    *w = -1;
+  return v;
+}
+
+//----- (001E300F) --------------------------------------------------------
+/* 02181F in sub_21371: as sub_1E2F08, returns var_2C = byte_19ABA6 - 10 (- 20 more above 7) */
+int Hook150_1E300F(int off)
+{
+  int v = *(int8_t *)DSEG150(0x19ABA6 + off) - 10;
+
+  if ( v > 7 )
+    v -= 20;
+  *ECODE150(0x1E30E9) = 1;
+  if ( *DSEG150(0x199F3A) == 1 )
+    *(int32_t *)ECODE150(0x1E2FE3) = off;
+  else
+    *(int16_t *)DSEG150(0x19ABA7 + off) = -1;
+  return v;
+}
+
+/* a byte at a flat address of the game; 1.50 sometimes reads the DOS low memory (IVT, 04A581)
+   - not emulated yet, 0 and a note on stderr (TODO: the bytes from DOSBox) */
+uint8_t Hook150_Byte(uint32_t addr)
+{
+  if ( addr >= 0x10000 )
+    return *(uint8_t *)(uintptr_t)addr;
+  Dbg150("Hook150_Byte: low memory %05X read as 0\n", addr);
+  return 0;
+}
+
+//----- (001E1345) --------------------------------------------------------
+/* 108B8B in sub_1089C6: the font of sub_120BB5 (2 in 1.31) = sub_1E819B(bx) */
+int Hook150_1E1345(int player)
+{
+  return g_orion150 ? sub_1E819B(player) : 2;
+}
+
+//----- (001E2A62) --------------------------------------------------------
+/* FE3B0 in sub_FE359, message type 3: sub_10D167(word_19999C, byte +5) with dword 1E2A5E = word +4 */
+void Hook150_1E2A62(int value, int tech)
+{
+  *(int32_t *)ECODE150(0x1E2A5E) = value;
+  sub_10D167((int16_t)word_19999C, tech);
+  *(int32_t *)ECODE150(0x1E2A5E) = -1;
+}
+
+//----- (001E2A20) --------------------------------------------------------
+/* E9CA2 in sub_E9927 after sub_E4204: sub_1E96EB(word [ebp-8], byte [esi+ebp-39h],
+   the monster of the planet dword 1E2A1C (sub_E9871 with sub_1E2A48)) */
+void Hook150_1E2A20(int player, int b)
+{
+  if ( g_orion150 )
+    sub_1E96EB(player, b, 0, (uint16_t)sub_E9871(dword_1E2A1C, (uint8_t (*)(int))sub_1E2A48, 0, 0));
 }
 
 //----- (001E43B0) --------------------------------------------------------
@@ -979,6 +1231,66 @@ _BOOL1 Hook150_1E1A7F(int a1)
   if ( g_orion150 && !r && *ECODE150(0x1E1B04) )
     r = !sub_4B0D3(a1, 34);
   return r;
+}
+
+//----- (001E16F3) --------------------------------------------------------
+/* 043552, 044615 in sub_42F7F: after the owner byte pusha / sub_1E8663(owner) / popa */
+void Hook150_1E16F3(int owner)
+{
+  if ( g_orion150 )
+    sub_1E8663(owner);
+}
+
+//----- (001E1C4F) --------------------------------------------------------
+/* 044EBB in sub_44EA4: once the loop has settled, one more pass with byte 1E1C32 = 1; 1 = leave the loop */
+int Hook150_1E1C4F(int done)
+{
+  if ( !done )
+    return 0;
+  if ( !g_orion150 )
+    return 1;
+  if ( !*ECODE150(0x1E1C32) )
+  {
+    *ECODE150(0x1E1C32) = 1;
+    return 0;
+  }
+  *ECODE150(0x1E1C32) = 0;
+  return 1;
+}
+
+//----- (001E1C33) --------------------------------------------------------
+/* 044F03 in sub_44EA4: byte +8 of the missile is not checked in the extra pass (byte 1E1C32 = 1) */
+int Hook150_1E1C33(int rec)
+{
+  return !*(_BYTE *)(rec + 8) || g_orion150 && *ECODE150(0x1E1C32) == 1;
+}
+
+//----- (001E1C76) --------------------------------------------------------
+/* 044F13 in sub_44EA4 (word_17D853 set): byte +17h != FFh, with byte 1E1B04 = 1 also weapon type 4 or the
+   code byte 3C9F1 (the FFh of mov [+17h], 0FFh in sub_3C892) = 0 */
+int Hook150_1E1C76(int rec)
+{
+  if ( *(_BYTE *)(rec + 23) == 0xFF )
+    return 0;
+  if ( !g_orion150 || *ECODE150(0x1E1B04) != 1 )
+    return 1;
+  if ( byte_17F80F[28 * *(int16_t *)rec] == 4 )
+    return 1;
+  return !(uint8_t)Hook150_CodeByte(0x3C9F1, 0xFF);
+}
+
+//----- (001E1CB2) --------------------------------------------------------
+/* 04520A in sub_44EA4 (word_17D853 set): byte +17h is not counted up with byte 1E1B04 = 1 */
+int Hook150_1E1CB2(void)
+{
+  return !g_orion150 || *ECODE150(0x1E1B04) != 1;
+}
+
+//----- (001E17F0) --------------------------------------------------------
+/* 4315F in sub_42F7F: the qsort comparator sub_42E9C becomes sub_1E87C3 */
+int Hook150_1E17F0(int16_t *a1, int16_t *a2)
+{
+  return sub_1E87C3(a1, a2);
 }
 
 //----- (001E079A) --------------------------------------------------------
@@ -1921,6 +2233,28 @@ int Hook150_Mul8(int value, int mult, uint32_t addr)
 int Hook150_1E18EF(int value, int var10)
 {
   return g_orion150 ? *ESEG150(0x23CDF0 + *ESEG150(0x23F0DB)) * var10 : value;
+}
+
+//----- (001E07E8) --------------------------------------------------------
+/* F786D in sub_F74CD (save): sub_1FB25F(&[ebp-0Ch]) appends the data of 1.50 at the write pointer (v29) */
+void Hook150_1E07E8(uint32_t *ptr)
+{
+  sub_1FB25F(0, 0, 0, ptr, 0, 0, 0);
+}
+
+//----- (001E0802) --------------------------------------------------------
+/* F7E89 in sub_F79F6 (load): sub_1FA623(&[ebp-8]) reads the data of 1.50 at the read pointer (v22) */
+void Hook150_1E0802(uint32_t *ptr)
+{
+  sub_1FA623(0, 0, 0, ptr);
+}
+
+//----- (001E4BBB) --------------------------------------------------------
+/* F88CD in sub_F83D8: sub_1FA583(dword 1E4BA3 - the read pointer F8894 kept) before FE8BE */
+void Hook150_1E4BBB(void)
+{
+  if ( g_orion150 )
+    sub_1FA583(*(uint32_t *)ECODE150(0x1E4BA3), 0, 0, 0, 0);
 }
 
 /* ===== hooks that read the caller's frame or registers (one call site each) ===== */

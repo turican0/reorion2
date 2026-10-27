@@ -6254,7 +6254,7 @@ int sub_1089C6(int a1, int a2)
       strupr(v32);
       sub_1229C5(91, 0, (int)v32, *(_DWORD *)&v32[v6 + 32]);
       v7 = v36;
-      sub_120BB5(2, dword_1ACFC0[v36]);
+      sub_120BB5(Hook150_1E1345((uint16_t)v36), dword_1ACFC0[v36]);   /* 1.50 108B8B */
       sub_1086D6(0, 22, v7, *(_DWORD *)&v32[v6 + 32]);   /* wave 179: asm 0x108B90 */
     }
     ++v40;

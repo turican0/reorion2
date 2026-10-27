@@ -171,9 +171,18 @@ int sub_10D167(int a1, int a2)
   v3 = a2;
   sub_1112EC(dword_192ED4, 0x7C830);
   sub_12D7B7((int)(intptr_t)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830));
+  if ( g_orion150 && *Hook150_Eseg(0x23F0DA) != 1 )   /* 1.50 10D1A3: sub_1E2A9D - record 3, the value dword 1E2A5E */
+  {
+    sub_249F9(aBilltextLbx_2, 3, v2, 256);
+    sub_24E27(v2, *(int32_t *)Hook150_Ecode(0x1E2A5E), 100);
+    sub_10D31C(sub_103521(), 1, &v3, v2);
+  }
+  else
+  {
   sub_249F9(aBilltextLbx_2, 0, v2, 256);
   sub_24D83(v2, word_19999C, v3, 256);
   sub_10D31C(sub_103428((int16_t)a1), 1, &v3, v2);
+  }
   sub_12D78E();
   sub_1113CC(dword_192ED4, 1);
   sub_C0AF4();

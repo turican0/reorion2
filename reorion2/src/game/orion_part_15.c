@@ -1371,6 +1371,11 @@ LABEL_28:
       if ( v23 >= 0xBu )
         break;
       v24 = v23 == 10;
+      if ( v24 && g_orion150 )   /* 1.50 E71FF: only a monster sub_E87D2 killed (flag 1E3045) */
+      {
+        v24 = *(uint8_t *)Hook150_Ecode(0x1E3045) != 0;
+        *(uint8_t *)Hook150_Ecode(0x1E3045) = 0;
+      }
 LABEL_50:
       if ( v24 )
       {
@@ -2621,15 +2626,27 @@ void sub_E87D2(int16_t *a1, int a2, int a3, char *a4)
     }
     sub_4267B((int)(intptr_t)(a4 + 15));
     sub_DD2F2((int)(intptr_t)(a4 + 15));
+    if ( g_orion150 && v6 == 10 )   /* 1.50 E88C1, E8948, E896C: the planet is freed for every player, not only the human one */
+    {
+      v27[8] = 0;
+      v27[11] = 0;
+      *(uint8_t *)Hook150_Ecode(0x1E3045) = 1;
+      if ( !a4[81] )
+      {
+        sub_E1CED(v5);
+        sub_EC97C(v5);
+        sub_E2A70((int16_t)((v5 - (char *)dword_192B18) / 361), (int)(intptr_t)dword_1930D4);
+      }
+    }
     if ( PL_E87D2(v7)[40] == 100
       && (!byte_199CB4 || byte_199F3A != 2 && byte_199F3A != 3 || *(int16_t *)(PL_E87D2(v7) + 43) == word_1AAF86)
-      && (uint8_t)a4[80] )
+      && (g_orion150 || (uint8_t)a4[80]) )
     {
       if ( v6 == 10 )
       {
         sub_C64AB();
         byte_183578 = 1;
-        if ( !a4[81] )
+        if ( !g_orion150 && !a4[81] )
         {
           v27[8] = 0;
           v27[11] = 0;
@@ -2638,7 +2655,8 @@ void sub_E87D2(int16_t *a1, int a2, int a3, char *a4)
           sub_E2A70((int16_t)((v5 - (char *)dword_192B18) / 361), (int)(intptr_t)dword_1930D4);   /* E896C: edx = dword_18B0D4 */
         }
       }
-      sub_B4D02((_BYTE *)(a4 + 15));
+      if ( !g_orion150 || a4[80] )   /* 1.50 E8929 */
+        sub_B4D02((_BYTE *)(a4 + 15));
     }
     if ( a4[81] )
       sub_DCDAC(v5, 1);
@@ -3313,7 +3331,10 @@ void sub_E9927_131(_BYTE *a1)
               }
               while ( v20 < 204 );
               if ( v22 )
+              {
                 sub_E4204(3753 * v32 + (uint8_t*)dword_197F98, *((uint8_t *)v23 + v19 + 3), v21);
+                Hook150_1E2A20((int16_t)v32, *((uint8_t *)v23 + v19 + 3));   /* 1.50 E9CA2 */
+              }
             }
             if ( HIBYTE(v23[0]) )
               sub_EF629(v23[0], v23[1], v23[2], v23[3], v24, v32);
@@ -6681,7 +6702,7 @@ int16_t sub_ED82F(int a1, int a2, int a3)
 
 
 //----- (000ED8BF) --------------------------------------------------------
-void sub_ED8BF_131(int a1)
+void sub_ED8BF(int a1)
 {
   int16_t v1; // cx
   _BYTE v2[72]; // [esp+0h] [ebp-90h] BYREF
@@ -7143,6 +7164,17 @@ int sub_EDDF7(int a1, int a2, int a3, int a4)
       *(_BYTE *)(v6 + 100) = 7;
       if ( v13 != -1 )
       {
+        if ( g_orion150 )   /* 1.50 EDF79: sub_1E39CC - first sub_D7078 (D710F takes the first ship), sub_944A3 only if none */
+        {
+          *(uint8_t *)Hook150_Ecode(0x1E39AB) = 1;
+          sub_D7078((int16_t)v22, v13);
+          if ( *(uint8_t *)Hook150_Ecode(0x1E39AB) )
+          {
+            *(uint8_t *)Hook150_Ecode(0x1E39AB) = 0;
+            sub_944A3(v13, (int)&v14);
+          }
+        }
+        else
         sub_944A3(v13, (int)&v14);
         *(_WORD *)(v6 + 116) = -1;
       }

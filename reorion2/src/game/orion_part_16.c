@@ -1826,6 +1826,13 @@ void sub_F74CD( int a1, int a2, int a3)
   v5 = (int16_t *)v29;
   v29 += 12;
   qmemcpy(v5, &word_17D634, 0xCu);
+  if ( g_orion150 )   /* 1.50 F786D: call sub_1E07E8 - the data of 1.50 after word_17D634 */
+  {
+    uint32_t p = (uint32_t)(uintptr_t)v29;
+
+    Hook150_1E07E8(&p);
+    v29 = (char *)(uintptr_t)p;
+  }
   v6 = v29;
   ServiceAudioTick_FE8BE(v4, 0xE1000, (int)v29, v5);
   v7 = (int16_t *)(v6 - (char *)v28);
@@ -2085,6 +2092,13 @@ char sub_F79F6(char *a1, int16_t *a2, int a3)
   qmemcpy(&word_19ACEC, v22, sizeof(word_19ACEC));
   v22 += 2;
   qmemcpy(&word_17D634, v22, 0xCu);
+  if ( g_orion150 )   /* 1.50 F7E89: call sub_1E0802 - the data of 1.50 after word_17D634 */
+  {
+    uint32_t p = (uint32_t)(uintptr_t)v22;
+
+    Hook150_1E0802(&p);
+    v22 = (char *)(uintptr_t)p;
+  }
   ServiceAudioTick_FE8BE(v18, (int)v20, (int)v3, &word_17D634);
   return 1;
 }
@@ -2611,6 +2625,8 @@ void sub_F83D8(char *a1, int a2, int a3)
     }
   }
   while ( v41 != -1 );
+  if ( g_orion150 )   /* 1.50 F8894: jmp sub_1E4BA7 - the read pointer into dword 1E4BA3 */
+    *(uint32_t *)Hook150_Ecode(0x1E4BA3) = (uint32_t)(uintptr_t)v23;
   for ( i = 59 * v30; i < 3953; i += 59 )
   {
     v23 = i + dword_1930DC;
@@ -2623,6 +2639,7 @@ void sub_F83D8(char *a1, int a2, int a3)
     }
     ++v30;
   }
+  Hook150_1E4BBB();   /* 1.50 F88CD */
   ServiceAudioTick_FE8BE(v30, v23, i, v31);
 }
 // 192B18: using guessed type int (uint8_t*)dword_192B18;
@@ -7281,6 +7298,12 @@ char sub_FDB01( int a1, int a2)
     v27 = sub_FDAA7(v21, 1, v29, 0);
     v26 = v27;
     v3 = sub_FDAA7(v21, 4, v29, 0);
+    if ( g_orion150 && *Hook150_Eseg(0x23F0D3) == 1 )   /* 1.50 FDB90: sub_1E4510 */
+    {
+      if ( !(int16_t)sub_E60C8(113 * v29 + dword_19306C, v25) )
+        v27 = 0;
+      v3 = 0;
+    }
     v28 = v3;
     v4 = v27 || v3;
     if ( v2 )
@@ -7746,11 +7769,16 @@ char sub_FE359( int a1, int a2)
     if ( !(char)a2 )
       continue;
     v4 = 0;
-    if ( byte_1AB14C[19 * i] == 1 && !byte_1AB14F[19 * i] )
+    if ( g_orion150 && byte_1AB14C[19 * i] == 3 )   /* 1.50 FE38A: sub_1E2A50 - type 3 too (cl = 3) */
+      v3 = 3;
+    if ( byte_1AB14C[19 * i] == v3 && !byte_1AB14F[19 * i] )
     {
       nullsub_5(0);
-      v3 = 2;
+      if ( v3 == 3 )   /* 1.50 FE3B0: sub_1E2A62 */
+        Hook150_1E2A62(*(uint16_t *)&byte_1AB14C[19 * i + 4], (uint8_t)byte_1AB14C[19 * i + 5]);
+      else
       sub_10D041(*(int16_t *)&byte_1AB14C[19 * i + 6], (uint8_t)byte_1AB14C[19 * i + 5]);   /* 0xFE3A2 */
+      v3 = 2;
       v4 = 1;
     }
     if ( !v4 )
