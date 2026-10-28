@@ -2732,7 +2732,7 @@ int sub_13174(int a1, int a2, int16_t *a3)
   v4 = sub_BBC16();
   ServiceAudioTick_FE8BE(v4, a1, a2, a3);
   if ( g_orion150 )
-    sub_1E0622();   /* 1.50 1318A: call sub_1E0622 */
+    sub_1E0622(0, 0, 0, 0);   /* 1.50 1318A: call sub_1E0622 */
   else
     sub_5E1E3(0, a1, a2, a3);
   ServiceAudioTick_FE8BE(0, a1, a2, a3);

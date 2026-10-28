@@ -1,4 +1,5 @@
 /* Wave 185: hooks of the 1.50 patch the 1.31 game functions call (orion150_hooks.h). */
+#include <string.h>
 #include "orion150.h"
 #include "orion150_hooks.h"
 
@@ -56,7 +57,7 @@ void Hook150_Exit(char *msg, int normal)
     sub_1ECCDF(0, 1, EINT150(0x246DB8), (int)(intptr_t)msg, 0);   /* "MOO2 internal error:\n%s" */
   Dos150_GetTime(&cx, &dx);
   sub_1EC907(0, EINT150(0x251F8D), cx >> 8, cx & 0xFF, dx >> 8, dx & 0xFF);
-  sub_1FB983(0, 0, 0, 0, 0);
+  sub_1FB983();
   if ( !*ESEG150(0x2407BE) )
     sub_1E5643();
   sub_1EB84B((int64_t)(uint32_t)(uintptr_t)msg << 32, (int64_t)0, 0, 0, 0, (char *)0);
@@ -160,7 +161,7 @@ char sub_34454(int a1, uint16_t *a2, uint16_t *a3)
 {
   if ( !g_orion150 || (int16_t)a1 )
     return sub_34454_131(a1, a2, a3);
-  return (char)sub_1ED94F(a3, a2, 0, 0, 0, 0, 0);
+  return (char)sub_1ED94F(a3, a2);
 }
 
 //----- (001E253A) --------------------------------------------------------
@@ -191,7 +192,7 @@ char sub_11BE4(void)
 {
   if ( !g_orion150 )
     return sub_11BE4_131();
-  sub_1E80A3(0, 0);
+  sub_1E80A3();
   return 0;
 }
 
@@ -428,7 +429,7 @@ int16_t sub_8E280(int a1)
 /* sub_2004B7(eax) != 0 -> return (eax unchanged), else call sub_C4343 */
 char sub_C4343(int16_t *a1, int16_t *a2, int a3)
 {
-  if ( g_orion150 && sub_2004B7(a1, 0) )
+  if ( g_orion150 && sub_2004B7(a1) )
     return (char)(uintptr_t)a1;
   return sub_C4343_131(a1, a2, a3);
 }
@@ -609,14 +610,14 @@ int Hook150_1E8397(int ship, int target, int range)
 void Hook150_1F9EC7(int rec)
 {
   if ( g_orion150 )
-    sub_1F9EC7(rec, 0);
+    sub_1F9EC7(rec);
 }
 
 //----- (001E236F) --------------------------------------------------------
 /* 038684 in sub_38656: pusha / sub_1E91DB(eax = the result, edx = sub_4B0D3 result) / popa */
-void Hook150_1E91DB(int a1)
+void Hook150_1E91DB(int a1, int a2)
 {
-  sub_1E91DB(a1, 0);
+  sub_1E91DB(a1, a2);
 }
 
 //----- (001E2DE7) --------------------------------------------------------
@@ -645,7 +646,7 @@ void Hook150_1E034A(int rec2, int i, int add)
 void Hook150_1E0DC1(int a1)
 {
   if ( g_orion150 )
-    sub_1F9EFF((int16_t)a1, 0);
+    sub_1F9EFF((int16_t)a1);
 }
 
 //----- (001EA36F) --------------------------------------------------------
@@ -655,7 +656,7 @@ _BOOL2 sub_2AED2(int a1, int a2)
 {
   if ( !g_orion150 )
     return sub_2AED2_131(a1, a2);
-  return (uint8_t)sub_1EA36F(a1, a2, 0);
+  return (uint8_t)sub_1EA36F(a1, a2);
 }
 
 //----- (001E2F08) --------------------------------------------------------
@@ -740,7 +741,7 @@ void sub_C2E4D(void)
 {
   sub_C2E4D_131();
   if ( g_orion150 )
-    sub_1E9203();
+    sub_1E9203(0, 0);   /* edx only reaches the error path of sub_114C72 */
 }
 
 //----- (001E1266) --------------------------------------------------------
@@ -764,7 +765,7 @@ int sub_B094C(void)
   int r = sub_B094C_131();
 
   if ( g_orion150 )
-    sub_1E6EA3();
+    sub_1E6EA3(0, 0);   /* edx only reaches the error path of sub_114C72 / sub_11ADB4 */
   return r;
 }
 
@@ -942,7 +943,7 @@ int sub_3CD21(unsigned int a1, int a2, int a3)
 {
   if ( !g_orion150 )
     return sub_3CD21_131(a1, a2, a3);
-  return sub_1ED4E7(a1, a2, a3, 0, 0, 0);
+  return sub_1ED4E7(a1, a2, a3, a3);   /* ecx = ebx */
 }
 
 //----- (001E34EF) --------------------------------------------------------
@@ -962,7 +963,7 @@ void sub_A432F(int a1, int a2, int a3, uint16_t *a4, uint16_t *a5, uint16_t *a6,
 int sub_5C510(int base, int16_t *a1)
 {
   if ( g_orion150 )
-    sub_22A3A7(0);
+    sub_22A3A7(0, 0, 0);
   return sub_5C510_131(base, a1);
 }
 
@@ -1003,15 +1004,122 @@ int sub_5AEF4(void)
   int r = sub_5AEF4_131();
 
   if ( g_orion150 )
-    sub_1FBD3B(0, 0, 0, 0, 0, 0, 0);
+    sub_1FBD3B();
   return r;
+}
+
+//----- (001E1313) --------------------------------------------------------
+/* 05BF41 in sub_5BD97: the race description string of 1.50 (sub_1FC7FB), its 32-bit address */
+int Hook150_1E1313(void)
+{
+  return (int)(intptr_t)sub_1FC7FB();
+}
+
+//----- (001E419C) --------------------------------------------------------
+/* pusha / sub_8E280(star) sub_8C527(star) times / popa */
+void Hook150_1E419C(int star)
+{
+  int8_t n = (int8_t)sub_8C527((int16_t)star);
+  int8_t i;
+
+  for ( i = 0; i < n; ++i )
+    sub_8E280((int16_t)star);
+}
+
+//----- (00169245) --------------------------------------------------------
+/* the LE cave of 1.50 at the end of sub_7B8CD: sub_1691A0 (sub_7BBBC unless byte 1784DD), then star 0 (the dword
+   at 1784DD + 1AB8Fh = dword_19306C) byte +0Eh = flags +2 | +2E4h & 2 | +2DBh & 4, byte +0Dh = 0 */
+void Hook150_169245(void)
+{
+  uint8_t *f = DSEG150(0x1784DD);
+  uint8_t *star = (uint8_t *)dword_19306C;
+
+  if ( !f[0] )
+    sub_7BBBC();
+  star[14] = f[2] | (f[0x2E4] & 2) | (f[0x2DB] & 4);
+  star[13] = 0;
+}
+
+//----- (001E38D2) --------------------------------------------------------
+/* 09318D in sub_9301E: sub_1FD613(byte_199F15, -1) - 0 = go to 931A4 */
+int Hook150_1E38D2(int b)
+{
+  return sub_1FD613((int8_t)b, -1);
+}
+
+//----- (001E32F2) --------------------------------------------------------
+/* the level 0..4 of v by the five word thresholds at 925A4 (code, Lua may change them), scanned from the top;
+   5 -> 4, + 1 with dl (only for levels below 5 when byte 23F0D0 == 1) */
+int Hook150_1E32F2(int16_t v, int dl)
+{
+  int n;
+
+  for ( n = 5; n > 0; --n )
+    if ( v >= *(int16_t *)CCODE150(0x925A4 + 2 * (n - 1)) )
+      break;
+  if ( n >= 5 )
+    n = 4;
+  else if ( *ESEG150(0x23F0D0) != 1 )
+    return n;
+  if ( (uint8_t)dl )
+    ++n;
+  return n;
+}
+
+//----- (001E3DC7) --------------------------------------------------------
+/* 0A1C3B in sub_A1C0D: 1 = leader rec keeps its target planet - its location word +65h is the planet's star
+   (+ 0 / 500 / 1000) */
+int Hook150_1E3DC7(int rec)
+{
+  int16_t p = *(int16_t *)(rec + 0x1C);
+  uint16_t s, loc;
+
+  if ( p == -1 )
+    return 0;
+  s = ((uint8_t *)dword_1930D4)[17 * p + 2];
+  loc = *(uint16_t *)(rec + 0x65);
+  return loc == s || loc == (uint16_t)(s + 500) || loc == (uint16_t)(s + 1000);
+}
+
+//----- (001E0DA9) --------------------------------------------------------
+/* 0AD561 in sub_AD3CA: pusha / byte 2400A7 = 1 / sub_1F9EC7(ship) / byte 2400A7 = 0 / popa */
+void Hook150_1E0DA9(int ship)
+{
+  *ESEG150(0x2400A7) = 1;
+  sub_1F9EC7(ship);
+  *ESEG150(0x2400A7) = 0;
+}
+
+/* repne scasw: w is among the first n words of list */
+int Hook150_InList(const uint16_t *list, int n, uint16_t w)
+{
+  int i;
+
+  for ( i = 0; i < n; ++i )
+    if ( list[i] == w )
+      return 1;
+  return 0;
+}
+
+//----- (001E4BEC) --------------------------------------------------------
+/* 05E843 in sub_5E55F: pusha / sub_1EB12F(player, field) / popa when the field has no tech yet */
+void Hook150_1E4BEC(int player, int field)
+{
+  sub_1EB12F((int16_t)player, (int16_t)field);
+}
+
+//----- (001E0455) --------------------------------------------------------
+/* 05DC41 in sub_5D953: the value of leader l by sub_1E901F, then 5DD1E */
+int Hook150_1E0455(int l)
+{
+  return sub_1E901F((int16_t)l);
 }
 
 //----- (001E0EF1) --------------------------------------------------------
 /* 058F6E in sub_58F4A: pusha / sub_1FBD3B / popa instead of the store to dword_19B710 */
 void Hook150_1FBD3B(void)
 {
-  sub_1FBD3B(0, 0, 0, 0, 0, 0, 0);
+  sub_1FBD3B();
 }
 
 //----- (001E01E1) --------------------------------------------------------
@@ -1045,7 +1153,7 @@ void sub_97A66(int a1)
     sub_97A66_131(a1);
     return;
   }
-  sub_1EDF9F(a1, 0, 0, 0, 0, 0, 0);
+  sub_1EDF9F(a1);
 }
 
 //----- (00229EC7) --------------------------------------------------------
@@ -1055,7 +1163,7 @@ int16_t sub_82809(int a1, char *a2)
 {
   if ( !g_orion150 )
     return sub_82809_131(a1, a2);
-  sub_229EC7(a1, 0, 0, (int)(intptr_t)a2);
+  sub_229EC7((char *)(intptr_t)a1, (int)(intptr_t)a2, 0, 0);   /* edx = the text, back to sub_82809 */
   return 0;
 }
 
@@ -1068,7 +1176,7 @@ void sub_E36DF(char *a1, int a2)
     sub_E36DF_131(a1, a2);
     return;
   }
-  sub_1EADBB((int)(intptr_t)a1);
+  sub_1EADBB((int16_t *)a1, a2, 0, 0);
 }
 
 //----- (001E21FA) --------------------------------------------------------
@@ -1097,7 +1205,7 @@ int16_t Hook150_1E1ED8(void)
 {
   if ( g_orion150 )
   {
-    sub_1FEADB(0, 0, 0, 0);
+    sub_1FEADB();
     fclose(*(int32_t *)ESEG150(0x23FC5A));
   }
   return sub_7A7CF();
@@ -1108,7 +1216,7 @@ int16_t Hook150_1E1ED8(void)
 int Hook150_1E1ECB(int handle)
 {
   if ( g_orion150 )
-    sub_1FBA8F(handle, 0, 0, 0, 0, 0, 0, 0);
+    sub_1FBA8F(handle);
   return fclose(handle);
 }
 
@@ -1207,14 +1315,14 @@ _BOOL1 Hook150_1E22FC(int a1, int a2)
 /* replaces sub_455A4: sub_1FB0DB (no register arguments) */
 int Hook150_1E17BD(int a1, int a2)
 {
-  return g_orion150 ? sub_1FB0DB(0, 0, 0, 0) : sub_455A4(a1, a2);
+  return g_orion150 ? sub_1FB0DB(a1, a2) : sub_455A4(a1, a2);
 }
 
 //----- (001E17C7) --------------------------------------------------------
 /* replaces sub_455A4: sub_1FB0EB */
 int Hook150_1E17C7(int a1, int a2)
 {
-  return g_orion150 ? sub_1FB0EB(0, 0, 0, 0) : sub_455A4(a1, a2);
+  return g_orion150 ? sub_1FB0EB(a1, a2) : sub_455A4(a1, a2);
 }
 
 //----- (001E0249) --------------------------------------------------------
@@ -1588,7 +1696,7 @@ int Hook150_1E17F0(int16_t *a1, int16_t *a2)
 /* replaces sub_4545B: sub_1FA9B3 */
 int Hook150_1E079A(int a1, int a2)
 {
-  return g_orion150 ? sub_1FA9B3(0, 0, 0, 0) : sub_4545B(a1, a2);
+  return g_orion150 ? sub_1FA9B3((char *)(intptr_t)a1, (char *)(intptr_t)a2) : sub_4545B(a1, a2);
 }
 
 //----- (001E0238) --------------------------------------------------------
@@ -1598,7 +1706,7 @@ unsigned int Hook150_1E0238(uint8_t *a1, int a2)
   unsigned int r = sub_114C72(a1, a2);
 
   if ( g_orion150 )
-    sub_1E6F3F();
+    sub_1E6F3F(0, a2);
   return r;
 }
 
@@ -1728,14 +1836,14 @@ unsigned int Hook150_1E41B8(unsigned int a1)
 /* replaces sub_1210FD */
 int Hook150_1EE553(int a1, int a2, int a3)
 {
-  return g_orion150 ? (int)(intptr_t)sub_1EE553(0) : sub_1210FD(a1, a2, a3);
+  return g_orion150 ? (int)(intptr_t)sub_1EE553() : sub_1210FD(a1, a2, a3);
 }
 
 //----- (001E6F7F) --------------------------------------------------------
 /* replaces sub_11ADB4 */
 int Hook150_1E6F7F(int a1, int a2)
 {
-  return g_orion150 ? sub_1E6F7F() : sub_11ADB4(a1, a2);
+  return g_orion150 ? sub_1E6F7F(0, a2) : sub_11ADB4(a1, a2);
 }
 
 //----- (001E04DF) --------------------------------------------------------
@@ -1783,7 +1891,7 @@ int Hook150_1E3103(int a1, int a2, int a3, int a4)
   int r = sub_1171AB(a1, a2, a3, a4);
 
   if ( g_orion150 && *ESEG150(0x23F0D6) )
-    sub_1E9C6F(r, 0);
+    sub_1E9C6F(r, 0, 0, 0);
   return r;
 }
 
@@ -1896,14 +2004,14 @@ _BOOL1 Hook150_1E1B8A(int a1)
 /* 37D4A replaces sub_A5EBC: mov edx, ebx / call sub_1FB857 */
 int Hook150_1E2DF1(int a1, int a3)
 {
-  return sub_1FB857(a1, a3, 0, 0, 0);
+  return sub_1FB857(a1, a3);
 }
 
 //----- (001FB7E3) --------------------------------------------------------
 /* 37D5D replaces sub_A5EB2 (its pushed ecx only pads the cdecl call of sub_1E2DF9) */
 int16_t Hook150_1FB7E3(int a1, int a2)
 {
-  return g_orion150 ? (int16_t)sub_1FB7E3(a1, 0, 0, 0) : sub_A5EB2(a1, a2);
+  return g_orion150 ? (int16_t)sub_1FB7E3(a1) : sub_A5EB2(a1, a2);
 }
 
 //----- (001E21E5) --------------------------------------------------------
@@ -2193,7 +2301,7 @@ int Hook150_1E4B3B(int a1, int a2, int a3, int v78)
   *(int32_t *)ECODE150(0x1E4B35) = a2;
   *(int16_t *)ECODE150(0x1E4B39) = (int16_t)v78;
   r = sub_1212B3(a1, a2, a3);
-  sub_1EE677(0);
+  sub_1EE677();
   return r;
 }
 
@@ -2283,6 +2391,45 @@ int Hook150_1E4D69(int a1, int di)
   if ( g_orion150 && *ESEG150(0x23F077) == 1 && *(int8_t *)(dword_192864 + 0x139 * (int16_t)di + 0xAD) > -1 )
     r = sub_147D7(0x21);
   return r;
+}
+
+/* sub_1E2716, sub_1E276E: the weapon for the range test by the class [ebp-304h]: 3+ = 32h, 2 = 0Dh, 1 = 24h,
+   else 2Ch */
+int Hook150_ClassWeapon(int cls)
+{
+  int16_t c = (int16_t)cls;
+
+  if ( c >= 3 )
+    return 0x32;
+  if ( c >= 2 )
+    return 0x0D;
+  if ( c >= 1 )
+    return 0x24;
+  return 0x2C;
+}
+
+//----- (001E1062) --------------------------------------------------------
+/* 0B25A1 in sub_B2542 (no sub_B2190): byte 1E0F83 == 1 -> sub_12779E(the colony owner's record + 515h, 1E0F1F,
+   63h); the caller clears byte 1E0F83 */
+void Hook150_1E1062(void)
+{
+  int owner;
+
+  if ( *ECODE150(0x1E0F83) != 1 )
+    return;
+  owner = *((int8_t *)dword_192B18 + 361 * dword_19F7A8);
+  sub_12779E((_BYTE *)dword_197F98 + 3753 * owner + 0x515, ECODE150(0x1E0F1F), 0x63);
+}
+
+//----- (001E0FB4) --------------------------------------------------------
+/* 0AF9DD in sub_AF7B4 (no free slot): byte 1E0F83 == 1 -> sub_12779E(player record + 515h, 1E0F1F, 63h) */
+void Hook150_1E0FB4(int player)
+{
+  if ( *ECODE150(0x1E0F83) == 1 )
+  {
+    sub_12779E((_BYTE *)dword_197F98 + 3753 * (int16_t)player + 0x515, ECODE150(0x1E0F1F), 0x63);
+    *ECODE150(0x1E0F83) = 0;
+  }
 }
 
 //----- (001E0F84) --------------------------------------------------------
@@ -2457,7 +2604,7 @@ int Hook150_1E1386(int a1, int a2, int a3, unsigned int a4)
 {
   if ( !g_orion150 )
     return sub_F6816(a1, a2, a3, a4);
-  sub_1FB4A3(0, (uint32_t *)(intptr_t)a1, a2, (_BYTE *)(intptr_t)a3, (int)a4);
+  sub_1FB4A3(a1, a2, (_BYTE *)(intptr_t)a3, (int)a4);
   return a1;
 }
 
@@ -2530,14 +2677,14 @@ int Hook150_1E18EF(int value, int var10)
 /* F786D in sub_F74CD (save): sub_1FB25F(&[ebp-0Ch]) appends the data of 1.50 at the write pointer (v29) */
 void Hook150_1E07E8(uint32_t *ptr)
 {
-  sub_1FB25F(0, 0, 0, ptr, 0, 0, 0);
+  sub_1FB25F((unsigned int *)ptr);
 }
 
 //----- (001E0802) --------------------------------------------------------
 /* F7E89 in sub_F79F6 (load): sub_1FA623(&[ebp-8]) reads the data of 1.50 at the read pointer (v22) */
 void Hook150_1E0802(uint32_t *ptr)
 {
-  sub_1FA623(0, 0, 0, ptr);
+  sub_1FA623((int *)ptr);
 }
 
 //----- (001E4BBB) --------------------------------------------------------
@@ -2545,7 +2692,7 @@ void Hook150_1E0802(uint32_t *ptr)
 void Hook150_1E4BBB(void)
 {
   if ( g_orion150 )
-    sub_1FA583(*(uint32_t *)ECODE150(0x1E4BA3), 0, 0, 0, 0);
+    sub_1FA583(*(uint32_t *)ECODE150(0x1E4BA3));
 }
 
 /* ===== hooks that read the caller's frame or registers (one call site each) ===== */
@@ -2598,7 +2745,7 @@ void Hook150_1E24A8(void)
 void Hook150_1E0DF8(uint8_t b)
 {
   if ( g_orion150 && b != 0xFF )
-    sub_1F9EFF(b, 0);
+    sub_1F9EFF(b);
 }
 
 //----- (001E3259) --------------------------------------------------------
@@ -2630,7 +2777,7 @@ int Hook150_1E011D(int *var56)
 void Hook150_1E0CD0(int cx)
 {
   if ( g_orion150 )
-    sub_1F9B9B((int16_t)cx, 0, 0, 0);
+    sub_1F9B9B((int16_t)cx);
 }
 
 //----- (001E4308) --------------------------------------------------------
@@ -2698,4 +2845,47 @@ int sub_13AD33(int16_t *a1, int a2)
 int Hook150_1E0638(void)
 {
   return ecode[0x1E0621 - 0x1E0000] == 1;
+}
+
+//----- (001ED883) --------------------------------------------------------
+/* Hex-Rays made 1ED883 / 1ED773 return a word. Appends to the turn data at pos (buffer base, at most
+   350000 bytes): the 4 bytes at 23E5E4, then (sub_1ED773) 1, the player, the word race +40h and the
+   race's 4-byte list from the pointer table 23F9FE, then a 0. Returns the new end. */
+uint8_t *Hook150_1ED883(uint8_t *base, uint8_t *pos)
+{
+  uint8_t *limit = base + 350000;
+  int player = (int8_t)word_19999C;
+  unsigned int count, size;
+  uint8_t *q;
+
+  if ( limit - pos <= 3 || player < 0 || player >= (uint16_t)word_199998 )
+  {
+    PortDebug_Message("1.50: sub_1ED883 - no room for the extra turn data");
+    return pos;
+  }
+  memcpy(pos, ESEG150(0x23E5E4), 4);
+  q = pos + 4;
+  if ( limit - q < 4 )
+    return q;
+  count = *(uint16_t *)((uint8_t *)dword_197F98 + 3753 * player + 0x40);
+  size = 4 * count;
+  q[0] = 1;
+  q[1] = (uint8_t)player;
+  *(uint16_t *)(q + 2) = (uint16_t)count;
+  q += 4;
+  if ( (unsigned int)(limit - q) < size + 1 )
+    return q;
+  memcpy(q, (void *)(uintptr_t)*(uint32_t *)ESEG150(0x23F9FE + 8 * player), size);
+  q += size;
+  *q = 0;
+  return q + 1;
+}
+//----- (001EE083) --------------------------------------------------------
+/* Hex-Rays lost the result: the 4-byte list of a race (1.31: race +42h) lives in the table 23F9FE
+   (pointer, capacity per race) */
+uint32_t *Hook150_RaceList(uint8_t *race)
+{
+  int player = (int)(race - (uint8_t *)dword_197F98) / 3753;
+
+  return (uint32_t *)(uintptr_t)*(uint32_t *)ESEG150(0x23F9FE + 8 * player);
 }

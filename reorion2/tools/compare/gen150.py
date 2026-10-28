@@ -107,7 +107,10 @@ def split_args(s):
 
 
 # ---------------------------------------------------------------- input
-full = open(DISS + 'ORION150.full.c', encoding='latin1').read()
+# ORION150.full_w.c: the same database with Watcom register prototypes of the called game functions
+# (tools/compare/watcom150.py); without it Hex-Rays loses register arguments and results of those calls
+_src = 'ORION150.full_w.c' if os.path.exists(DISS + 'ORION150.full_w.c') else 'ORION150.full.c'
+full = open(DISS + _src, encoding='latin1').read()
 d0, d1 = full.index('// Function declarations'), full.index('// Data declarations')
 f0 = full.index('//----- (')
 fdecl, ddecl, impl = full[d0:d1], full[d1:f0], full[f0:]
@@ -236,6 +239,8 @@ def rename_calls(text):
         if a < BB:
             stats['game function not in port: ' + n] += 1
         return n + '('
+    # loc_: game code labels IDA did not make functions (called by the block like functions)
+    text = re.sub(r'\bloc_([0-9A-F]{5,6})\s*\(', lambda m: ('sub_' + m.group(1) + '(') if int(m.group(1), 16) in portname else m.group(0), text)
     return re.sub(r'\b(sub_[0-9A-F]{5,6})\s*\(', fn, text)
 
 
@@ -737,7 +742,8 @@ def fix_ptr32(t):
             if rest.lstrip().startswith('['):
                 b0 = e + len(rest) - len(rest.lstrip())
                 b1 = pp_close(code, b0, '[', ']')
-                if b1 is None or pre == '&':
+                # &v[i][j]: the address of an element behind the slot - the slot itself is only read
+                if b1 is None or (pre == '&' and not code[b1:].lstrip().startswith('[')):
                     continue
                 acc = code[m.start() + len(pre):b1]
                 asg = pp_assign(code, b1)
@@ -902,11 +908,24 @@ def fix_va(t):
 # Hex-Rays mistakes in single functions, fixed after the generic passes: address -> [(old, new, count)]; old
 # must be there exactly count times
 FIXES = {
-    # 1ED677 push [esp+20h+var_C] is arg_0 (IDA's stack delta is off there): the text, a3 like in 1ED693;
-    # the same after sub_8EBBB (1ED6CB)
-    0x1ED647: [('sub_1E00E4(*(_WORD *)(a4 + 6), *(_WORD *)(a4 + 8), v7)',
-                'sub_1E00E4(*(_WORD *)(a4 + 6), *(_WORD *)(a4 + 8), a3)', 2)],
+    # (the Watcom pass fixed 1ED647: its text argument comes out right now)
 }
+
+
+def fix_partial(t):
+    """'variable is possibly undefined' when Hex-Rays only set a part of it (LOBYTE(v) = call() / LOWORD(v) =
+    call(), the whole register used afterwards): the whole variable is set - a byte zero-extended, a word
+    sign-extended (movsx), as the callers use them"""
+    for v in sorted(set(re.findall(r"^// [0-9A-F]+: variable '(\w+)' is possibly undefined", t, re.M))):
+        if re.search(r'(?<![\w.>])%s\s*=(?!=)' % v, t):
+            continue
+        n0 = t
+        t = re.sub(r'(?m)^(\s*)LOBYTE\(%s\) = (.*);$' % v, r'\1%s = (uint8_t)(\2);' % v, t)
+        t = re.sub(r'(?m)^(\s*)LOWORD\(%s\) = (.*);$' % v, r'\1%s = (int16_t)(\2);' % v, t)
+        if t != n0:
+            t = re.sub(r"(?m)^(// [0-9A-F]+: variable '%s') is possibly undefined" % v, r'\1 was only partly set (gen150: widened)', t)
+            stats['partly set variables widened'] += 1
+    return t
 
 
 def fix_single(a, t):
@@ -948,6 +967,7 @@ for a, c in funcs:
     t = fix_frame(t)
     t = fix_gptr(t)
     t = fix_va(t)
+    t = fix_partial(t)
     t = fix_single(a, t)
     t = promote(t)
     fh = func_header(t)
@@ -1092,7 +1112,9 @@ h.append('')
 for n, a in sorted(own.items(), key=lambda kv: kv[1]):
     if n not in common_names:
         if own[n] in manual:
-            mm = re.search(r'(?m)^([A-Za-z_][\w \*]*?)\s*\b' + n + r'\s*\(', open(mp, encoding='latin1').read())
+            mm = re.search(r'(?m)^([A-Za-z_][\w \*]*?)\s*\b' + n + r'\s*\(([^;{]*)\)\s*$', open(mp, encoding='latin1').read())
+            # without a parameter list: Hex-Rays' calls may still carry register arguments the hand written
+            # function does not take
             h.append('%s %s();' % (mm.group(1).strip() if mm else 'int', n))
         elif n in own_full:
             h.append(own_full[n] + ';')

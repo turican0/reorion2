@@ -14920,7 +14920,7 @@ int16_t sub_38656( int a1)
   if ( g_orion150 && *(uint16_t *)(v1 + dword_192864 + 69) == 0x7FFF )   /* 1.50 038674, 038684: sub_1E2359, sub_1E236F */
   {
     result = (int16_t)(result * 77);
-    Hook150_1E91DB(result);
+    Hook150_1E91DB(result, v2);   /* edx = the sub_4B0D3 result */
     return result;
   }
   if ( v2 )

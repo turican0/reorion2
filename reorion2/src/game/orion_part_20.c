@@ -131,8 +131,8 @@ int sub_12B753(int a1, int a2)
   int v4; // [esp+4h] [ebp-4h]
 
   v4 = a2;
-  if ( *(int *)(a1 + 4) >> 16 <= a2 )
-    v4 = (*(int *)(a1 + 4) >> 16) - 1;
+  if ( g_orion150 ? (*(uint32_t *)(a1 + 4) >> 16) <= (uint32_t)a2 : *(int *)(a1 + 4) >> 16 <= a2 )   /* 1.50 12B777, 12B77C, 12B785: shr / ja */
+    v4 = (g_orion150 ? (int)(*(uint32_t *)(a1 + 4) >> 16) : *(int *)(a1 + 4) >> 16) - 1;
   result = v4;
   *(_WORD *)(a1 + 4) = v4;
   return result;
@@ -599,6 +599,8 @@ char sub_12C392()
     if ( code )
     {
       dword_1BC2AC[(uint8_t)byte_1BC2E2] = code;
+      if ( g_orion150 )   /* 1.50 12C52B, 12C52C: sub_1E3E7C - sub_1EA31F (PgUp / PgDn: the speed step 23FA4E) */
+        sub_1EA31F(code);
       byte_1BC2E2 = ((uint8_t)byte_1BC2E2 + 1) % 10;
       byte_1BC2E4 = 1;
     }
@@ -5909,7 +5911,7 @@ int sub_13743E(int a1, int a2)
 //----- (001376CF) --------------------------------------------------------
 void sub_1376CF(int a1, int a2)
 {
-  sub_126487(aCannotColorRep, a2);
+  sub_126487(aCannotColorRep, a2);   /* 1.50 1376ED: sub_16957E - Hook150_Exit inside sub_126487 */
 }
 
 

@@ -5556,6 +5556,9 @@ int sub_107E95(int a1, int a2, int a3)
   sub_1210FD(416, 31, (int)v15);
   sub_109FBA(a1);
   byte_199BA3[0] = word_19999C;
+  if ( g_orion150 )   /* 1.50 107EE7: call sub_102597 */
+    sub_102597(1, 0);
+  else
   sub_102633(1, 0);
   v4 = 0;
   do
@@ -6013,7 +6016,9 @@ LABEL_40:
       ++v29;
     while ( *v29 );
     strcpy(v29, v28);
-    if ( !(uint16_t)v45 || (uint16_t)v45 >= 0xAu )
+    if ( g_orion150 && (uint16_t)v45 && (uint16_t)v45 < 0xAu )   /* 1.50 1087A7: sub_1E1327 - sub_1E8167, jmp loc_108871 */
+      sub_1E8167((_BYTE *)v43, (uint16_t)v45, v27);
+    if ( !(uint16_t)v45 || (uint16_t)v45 >= 0xAu || g_orion150 )
     {
       v34 = v39;
       v35 = v40;

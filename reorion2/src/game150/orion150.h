@@ -31,13 +31,12 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define algn_178755 (*(_BYTE *)(dseg + 0x00755))
 #define algn_1787AD (*(_BYTE *)(dseg + 0x007AD))
 #define algn_17E083 (*(_BYTE *)(dseg + 0x06083))
-#define algn_181747 (*(_BYTE *)(dseg + 0x09747))
+#define algn_181747 (*(_DWORD (*)[2])(dseg + 0x09747))
 #define algn_1E0621 (*(_BYTE *)(ecode + 0x00621))
 #define algn_1E0857 (*(_BYTE *)(ecode + 0x00857))
 #define algn_1E08D4 (*(_BYTE (*)[4])(ecode + 0x008D4))
 #define algn_1E098E (*(_BYTE (*)[2])(ecode + 0x0098E))
 #define algn_1E0C0B (*(_BYTE *)(ecode + 0x00C0B))
-#define algn_1E0F1F (*(_BYTE *)(ecode + 0x00F1F))
 #define algn_1E0FF6 (*(_BYTE (*)[2])(ecode + 0x00FF6))
 #define algn_1E1265 (*(_BYTE *)(ecode + 0x01265))
 #define algn_1E1932 (*(_BYTE (*)[2])(ecode + 0x01932))
@@ -47,7 +46,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define algn_1E2969 (*(_BYTE *)(ecode + 0x02969))
 #define algn_1E3045 (*(_BYTE *)(ecode + 0x03045))
 #define algn_1E30E9 (*(_BYTE *)(ecode + 0x030E9))
-#define algn_1E34F7 (*(_BYTE *)(ecode + 0x034F7))
 #define algn_1E39AB (*(_BYTE *)(ecode + 0x039AB))
 #define algn_1E3D7F (*(_BYTE *)(ecode + 0x03D7F))
 #define algn_1E4233 (*(_BYTE *)(ecode + 0x04233))
@@ -61,9 +59,8 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_178513 (*(char *)(dseg + 0x00513))
 #define byte_1787C1 (*(_BYTE (*)[33])(dseg + 0x007C1))
 #define byte_17D81E (*(_BYTE (*)[6])(dseg + 0x0581E))
-#define byte_180ECA (*(_BYTE (*)[10])(dseg + 0x08ECA))
+#define byte_180ED2 (*(_BYTE (*)[2])(dseg + 0x08ED2))
 #define byte_181735 (*(_BYTE (*)[8])(dseg + 0x09735))
-#define byte_18173E (*(_BYTE (*)[8])(dseg + 0x0973E))
 #define byte_181748 (*(_BYTE (*)[8])(dseg + 0x09748))
 #define byte_199BDF (*(char *)(dseg + 0x21BDF))
 #define byte_199BE6 (*(char *)(dseg + 0x21BE6))
@@ -79,6 +76,7 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_199CB5 (*(char *)(dseg + 0x21CB5))
 #define byte_1E1B04 (*(char *)(ecode + 0x01B04))
 #define byte_1E1C32 (*(char *)(ecode + 0x01C32))
+#define byte_1E20C1 (*(char (*)[3])(ecode + 0x020C1))
 #define byte_1E2FE3 (*(char *)(ecode + 0x02FE3))
 #define byte_1E3951 (*(char (*)[2])(ecode + 0x03951))
 #define byte_1E4B38 (*(char (*)[3])(ecode + 0x04B38))
@@ -191,6 +189,8 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_23F0B8 (*(uint8_t (*)[2])(eseg + 0x14AB8))
 #define byte_23F0EE (*(_BYTE (*)[2])(eseg + 0x14AEE))
 #define byte_23F990 (*(_BYTE (*)[2])(eseg + 0x15390))
+#define byte_23F9E3 (*(_BYTE (*)[27])(eseg + 0x153E3))
+#define byte_23FA3E (*(_BYTE (*)[8])(eseg + 0x1543E))
 #define byte_23FA46 (*(_BYTE (*)[532])(eseg + 0x15446))
 #define byte_23FC77 (*(_BYTE (*)[3])(eseg + 0x15677))
 #define byte_23FDA6 (*(_BYTE (*)[8])(eseg + 0x157A6))
@@ -199,30 +199,58 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_2400A6 (*(_BYTE (*)[501])(eseg + 0x15AA6))
 #define byte_24029B (*(_BYTE (*)[1155])(eseg + 0x15C9B))
 #define byte_2407BE (*(_BYTE (*)[8])(eseg + 0x161BE))
+#define byte_241D0A (*(_BYTE (*)[48])(eseg + 0x1770A))
+#define byte_241D3A (*(_BYTE (*)[76])(eseg + 0x1773A))
 #define byte_246549 (*(_BYTE (*)[2])(eseg + 0x1BF49))
 #define byte_246568 (*(_BYTE (*)[7])(eseg + 0x1BF68))
 #define byte_24657E (*(_BYTE (*)[54])(eseg + 0x1BF7E))
 #define byte_2465D8 (*(_BYTE (*)[63])(eseg + 0x1BFD8))
-#define byte_246617 (*(_BYTE (*)[26])(eseg + 0x1C017))
 #define byte_246667 (*(_BYTE (*)[4])(eseg + 0x1C067))
-#define byte_24666B (*(_BYTE (*)[395])(eseg + 0x1C06B))
+#define byte_24666B (*(_BYTE (*)[314])(eseg + 0x1C06B))
+#define byte_2467D9 (*(_BYTE (*)[18])(eseg + 0x1C1D9))
 #define byte_24685F (*(_BYTE (*)[49])(eseg + 0x1C25F))
-#define byte_246890 (*(_BYTE (*)[180])(eseg + 0x1C290))
-#define byte_24696F (*(_BYTE (*)[797])(eseg + 0x1C36F))
+#define byte_246890 (*(_BYTE (*)[75])(eseg + 0x1C290))
+#define byte_246953 (*(_BYTE (*)[28])(eseg + 0x1C353))
+#define byte_24696F (*(_BYTE (*)[205])(eseg + 0x1C36F))
+#define byte_246A53 (*(_BYTE (*)[18])(eseg + 0x1C453))
+#define byte_246A65 (*(_BYTE (*)[162])(eseg + 0x1C465))
+#define byte_246B07 (*(_BYTE (*)[389])(eseg + 0x1C507))
 #define byte_246CAA (*(_BYTE (*)[210])(eseg + 0x1C6AA))
-#define byte_246D7C (*(_BYTE (*)[498])(eseg + 0x1C77C))
-#define byte_247157 (*(_BYTE (*)[26])(eseg + 0x1CB57))
+#define byte_246D7C (*(_BYTE (*)[60])(eseg + 0x1C77C))
+#define byte_246DD0 (*(_BYTE (*)[128])(eseg + 0x1C7D0))
+#define byte_246E8B (*(_BYTE (*)[11])(eseg + 0x1C88B))
+#define byte_246EA4 (*(_BYTE (*)[202])(eseg + 0x1C8A4))
+#define byte_2470A0 (*(_BYTE (*)[54])(eseg + 0x1CAA0))
+#define byte_247115 (*(_BYTE (*)[92])(eseg + 0x1CB15))
 #define byte_2477DF (*(_BYTE (*)[2])(eseg + 0x1D1DF))
-#define byte_247A39 (*(_BYTE (*)[3])(eseg + 0x1D439))
+#define byte_2478F3 (*(_BYTE (*)[329])(eseg + 0x1D2F3))
 #define byte_247BAF (*(_BYTE (*)[8])(eseg + 0x1D5AF))
 #define byte_247C18 (*(_BYTE (*)[54])(eseg + 0x1D618))
 #define byte_247C55 (*(_BYTE (*)[6])(eseg + 0x1D655))
 #define byte_247C60 (*(_BYTE (*)[41])(eseg + 0x1D660))
 #define byte_247C91 (*(_BYTE (*)[6])(eseg + 0x1D691))
 #define byte_247D7F (*(_BYTE (*)[49])(eseg + 0x1D77F))
+#define byte_247DEA (*(_BYTE (*)[21])(eseg + 0x1D7EA))
+#define byte_248370 (*(_BYTE (*)[192])(eseg + 0x1DD70))
+#define byte_248567 (*(_BYTE (*)[137])(eseg + 0x1DF67))
 #define byte_248BCD (*(_BYTE (*)[48])(eseg + 0x1E5CD))
-#define byte_250119 (*(_BYTE (*)[13424])(eseg + 0x25B19))
-#define byte_362FC (*(_BYTE (*)[4])(ccode + 0x262FC))
+#define byte_250271 (*(_BYTE (*)[40])(eseg + 0x25C71))
+#define byte_2503A9 (*(_BYTE (*)[36])(eseg + 0x25DA9))
+#define byte_2505AD (*(_BYTE (*)[96])(eseg + 0x25FAD))
+#define byte_25064D (*(_BYTE (*)[36])(eseg + 0x2604D))
+#define byte_2506D1 (*(_BYTE (*)[36])(eseg + 0x260D1))
+#define byte_251699 (*(_BYTE (*)[36])(eseg + 0x27099))
+#define byte_2516BD (*(_BYTE (*)[72])(eseg + 0x270BD))
+#define byte_2518D9 (*(_BYTE (*)[40])(eseg + 0x272D9))
+#define byte_251951 (*(_BYTE (*)[36])(eseg + 0x27351))
+#define byte_2519A9 (*(_BYTE (*)[64])(eseg + 0x273A9))
+#define byte_251BE5 (*(_BYTE (*)[268])(eseg + 0x275E5))
+#define byte_251D15 (*(_BYTE (*)[40])(eseg + 0x27715))
+#define byte_251D3D (*(_BYTE (*)[160])(eseg + 0x2773D))
+#define byte_251DDD (*(_BYTE (*)[256])(eseg + 0x277DD))
+#define byte_251F69 (*(_BYTE (*)[84])(eseg + 0x27969))
+#define byte_25218D (*(_BYTE (*)[40])(eseg + 0x27B8D))
+#define byte_2521F1 (*(_BYTE (*)[208])(eseg + 0x27BF1))
 #define byte_4C30F (*(_BYTE (*)[13])(ccode + 0x3C30F))
 #define byte_5DB82 (*(_BYTE (*)[26])(ccode + 0x4DB82))
 #define byte_649D5 (*(char (*)[3])(ccode + 0x549D5))
@@ -237,6 +265,8 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define def_6E659 (*(_BYTE *)(ccode + 0x5E66F))
 #define dword_17D853 (*(int *)(dseg + 0x05853))
 #define dword_17FDF2 (*(int *)(dseg + 0x07DF2))
+#define dword_180ECA (*(_DWORD (*)[2])(dseg + 0x08ECA))
+#define dword_18173E (*(_DWORD (*)[2])(dseg + 0x0973E))
 #define dword_1828A8 (*(int *)(dseg + 0x0A8A8))
 #define dword_19296C (*(int *)(dseg + 0x1A96C))
 #define dword_192B10 (*(int *)(dseg + 0x1AB10))
@@ -271,7 +301,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define dword_1E2A1C (*(int *)(ecode + 0x02A1C))
 #define dword_1E39F8 (*(int (*)[4])(ecode + 0x039F8))
 #define dword_22C6B0 (*(_DWORD *)(eseg + 0x020B0))
-#define dword_22CFB4 (*(_DWORD *)(eseg + 0x029B4))
 #define dword_22DD04 (*(_DWORD *)(eseg + 0x03704))
 #define dword_234C54 (*(_DWORD (*)[11])(eseg + 0x0A654))
 #define dword_238FF0 (*(_DWORD (*)[12])(eseg + 0x0E9F0))
@@ -302,24 +331,26 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define dword_23E782 (*(_DWORD (*)[55])(eseg + 0x14182))
 #define dword_23F0C6 (*(uint32_t *)(eseg + 0x14AC6))
 #define dword_23F0CA (*(uint32_t *)(eseg + 0x14ACA))
-#define dword_23F16A (*(uint32_t *)(eseg + 0x14B6A))
-#define dword_23F16E (*(uint32_t *)(eseg + 0x14B6E))
-#define dword_23F172 (*(uint32_t *)(eseg + 0x14B72))
-#define dword_23F176 (*(uint32_t *)(eseg + 0x14B76))
+#define dword_23F16A (*(_DWORD *)(eseg + 0x14B6A))
+#define dword_23F16E (*(_DWORD *)(eseg + 0x14B6E))
+#define dword_23F172 (*(_DWORD *)(eseg + 0x14B72))
+#define dword_23F176 (*(_DWORD *)(eseg + 0x14B76))
 #define dword_23F17A (*(_DWORD *)(eseg + 0x14B7A))
 #define dword_23F17E (*(_DWORD *)(eseg + 0x14B7E))
-#define dword_23F182 (*(uint32_t *)(eseg + 0x14B82))
-#define dword_23F992 (*(_DWORD (*)[45])(eseg + 0x15392))
+#define dword_23F182 (*(_DWORD *)(eseg + 0x14B82))
+#define dword_23F992 (*(_DWORD (*)[3])(eseg + 0x15392))
+#define dword_23F99E (*(int (*)[16])(eseg + 0x1539E))
+#define dword_23F9DE (*(_DWORD *)(eseg + 0x153DE))
 #define dword_23FC5A (*(int *)(eseg + 0x1565A))
 #define dword_23FC5E (*(_DWORD *)(eseg + 0x1565E))
 #define dword_23FC7A (*(_DWORD (*)[75])(eseg + 0x1567A))
 #define dword_23FF66 (*(_DWORD *)(eseg + 0x15966))
 #define dword_23FF6A (*(_DWORD *)(eseg + 0x1596A))
-#define dword_246FA0 (*(_DWORD (*)[63])(eseg + 0x1C9A0))
-#define dword_2477EB (*(_DWORD (*)[54])(eseg + 0x1D1EB))
-#define dword_2478CD (*(_DWORD (*)[91])(eseg + 0x1D2CD))
-#define dword_247DEA (*(_DWORD (*)[5])(eseg + 0x1D7EA))
-#define dword_2539F5 (*(_DWORD (*)[34])(eseg + 0x293F5))
+#define dword_246FA0 (*(_DWORD (*)[48])(eseg + 0x1C9A0))
+#define dword_2522FD (*(_DWORD (*)[29])(eseg + 0x27CFD))
+#define dword_2523B1 (*(_DWORD (*)[203])(eseg + 0x27DB1))
+#define dword_2526DD (*(_DWORD (*)[139])(eseg + 0x280DD))
+#define dword_362FC (*(_DWORD *)(ccode + 0x262FC))
 #define dword_3EFAC (*(_BYTE *)(ccode + 0x2EFAC))
 #define dword_45210 (*(_BYTE *)(ccode + 0x35210))
 #define dword_45234 (*(_BYTE *)(ccode + 0x35234))
@@ -383,12 +414,18 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_132B49 (*(_BYTE *)(ccode + 0x122B49))
 #define loc_13BA0 (*(_BYTE *)(ccode + 0x03BA0))
 #define loc_13F7F (*(_BYTE *)(ccode + 0x03F7F))
-#define loc_13FD9 (*(_BYTE *)(ccode + 0x03FD9))
 #define loc_149F9 (*(_BYTE *)(ccode + 0x049F9))
 #define loc_1690B (*(_BYTE *)(ccode + 0x0690B))
 #define loc_169480 (*(_BYTE *)(ccode + 0x159480))
 #define loc_16949 (*(_BYTE *)(ccode + 0x06949))
 #define loc_1E20BF (*(_BYTE *)(ecode + 0x020BF))
+#define loc_1E519B (*(_BYTE *)(ecode + 0x0519B))
+#define loc_1EC55B (*(_BYTE *)(ecode + 0x0C55B))
+#define loc_1F9613 (*(_BYTE *)(ecode + 0x19613))
+#define loc_1FBE8F (*(_BYTE *)(ecode + 0x1BE8F))
+#define loc_1FC06F (*(_BYTE *)(ecode + 0x1C06F))
+#define loc_1FC47B (*(_BYTE *)(ecode + 0x1C47B))
+#define loc_203707 (*(_BYTE *)(ecode + 0x23707))
 #define loc_2091D (*(_BYTE *)(ccode + 0x1091D))
 #define loc_20941 (*(_BYTE *)(ccode + 0x10941))
 #define loc_20B7F (*(_BYTE *)(ccode + 0x10B7F))
@@ -397,6 +434,9 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_21207 (*(_BYTE *)(ccode + 0x11207))
 #define loc_21257 (*(_BYTE *)(ccode + 0x11257))
 #define loc_21260 (*(_BYTE *)(ccode + 0x11260))
+#define loc_21CC23 (*(_BYTE *)(ecode + 0x3CC23))
+#define loc_21EC47 (*(_BYTE *)(ecode + 0x3EC47))
+#define loc_21F60F (*(_BYTE *)(ecode + 0x3F60F))
 #define loc_22337 (*(_BYTE *)(ccode + 0x12337))
 #define loc_22366 (*(_BYTE *)(ccode + 0x12366))
 #define loc_2237D (*(_BYTE *)(ccode + 0x1237D))
@@ -1362,7 +1402,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_6F20D (*(_BYTE *)(ccode + 0x5F20D))
 #define loc_6F216 (*(_BYTE *)(ccode + 0x5F216))
 #define loc_6F21F (*(_BYTE *)(ccode + 0x5F21F))
-#define loc_72B33 (*(_BYTE *)(ccode + 0x62B33))
 #define loc_798DA (*(_BYTE *)(ccode + 0x698DA))
 #define loc_798E7 (*(_BYTE *)(ccode + 0x698E7))
 #define loc_798F7 (*(_BYTE *)(ccode + 0x698F7))
@@ -1431,7 +1470,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_ACC0C (*(_BYTE *)(ccode + 0x9CC0C))
 #define loc_ACC15 (*(_BYTE *)(ccode + 0x9CC15))
 #define loc_AF3DB (*(_BYTE *)(ccode + 0x9F3DB))
-#define loc_B2542 (*(_BYTE *)(ccode + 0xA2542))
 #define loc_B9C63 (*(_BYTE *)(ccode + 0xA9C63))
 #define loc_BB739 (*(_BYTE *)(ccode + 0xAB739))
 #define loc_BB796 (*(_BYTE *)(ccode + 0xAB796))
@@ -1526,7 +1564,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_E5F99 (*(_BYTE *)(ccode + 0xD5F99))
 #define loc_E71FA (*(_BYTE *)(ccode + 0xD71FA))
 #define loc_E7269 (*(_BYTE *)(ccode + 0xD7269))
-#define loc_E938C (*(_BYTE *)(ccode + 0xD938C))
 #define loc_E99DB (*(_BYTE *)(ccode + 0xD99DB))
 #define loc_E9A08 (*(_BYTE *)(ccode + 0xD9A08))
 #define loc_E9A29 (*(_BYTE *)(ccode + 0xD9A29))
@@ -1560,7 +1597,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_FD411 (*(_BYTE *)(ccode + 0xED411))
 #define loc_FD419 (*(_BYTE *)(ccode + 0xED419))
 #define loc_FD920 (*(_BYTE *)(ccode + 0xED920))
-#define loc_FE8BE (*(_BYTE *)(ccode + 0xEE8BE))
 #define loc_FEF2D (*(_BYTE *)(ccode + 0xEEF2D))
 #define loc_FF765 (*(_BYTE *)(ccode + 0xEF765))
 #define loc_FF776 (*(_BYTE *)(ccode + 0xEF776))
@@ -1601,7 +1637,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define off_23D0F8 (*(uint32_t *)(eseg + 0x12AF8))
 #define off_23E080 (*(uint32_t *)(eseg + 0x13A80))
 #define off_23E188 (*(uint32_t *)(eseg + 0x13B88))
-#define off_23E2E0 (*(uint32_t *)(eseg + 0x13CE0))
 #define off_23E600 (*(_BYTE *)(eseg + 0x14000))
 #define off_23E668 (*(uint32_t (*)[2])(eseg + 0x14068))
 #define off_23E66C (*(uint32_t *)(eseg + 0x1406C))
@@ -1609,7 +1644,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_1784DE (*(_BYTE *)(dseg + 0x004DE))
 #define unk_17D81D (*(_BYTE *)(dseg + 0x0581D))
 #define unk_17F829 (*(_BYTE *)(dseg + 0x07829))
-#define unk_1E20C3 (*(_BYTE *)(ecode + 0x020C3))
 #define unk_234C40 (*(_BYTE *)(eseg + 0x0A640))
 #define unk_23CBE8 (*(_BYTE *)(eseg + 0x125E8))
 #define unk_23CBE9 (*(_BYTE *)(eseg + 0x125E9))
@@ -1617,7 +1651,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_23CC02 (*(_BYTE *)(eseg + 0x12602))
 #define unk_23CC03 (*(_BYTE *)(eseg + 0x12603))
 #define unk_23CC42 (*(_BYTE *)(eseg + 0x12642))
-#define unk_23CC43 (*(_BYTE *)(eseg + 0x12643))
 #define unk_23CD1C (*(_BYTE *)(eseg + 0x1271C))
 #define unk_23CD1D (*(_BYTE *)(eseg + 0x1271D))
 #define unk_23CD1E (*(_BYTE *)(eseg + 0x1271E))
@@ -1763,6 +1796,8 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_23F190 (*(_BYTE *)(eseg + 0x14B90))
 #define unk_23F191 (*(_BYTE *)(eseg + 0x14B91))
 #define unk_23F98F (*(_BYTE *)(eseg + 0x1538F))
+#define unk_23F9E2 (*(_BYTE *)(eseg + 0x153E2))
+#define unk_23F9FE (*(_BYTE *)(eseg + 0x153FE))
 #define unk_23FC6E (*(_BYTE *)(eseg + 0x1566E))
 #define unk_23FDAE (*(_BYTE *)(eseg + 0x157AE))
 #define unk_23FDBD (*(_BYTE *)(eseg + 0x157BD))
@@ -1776,11 +1811,11 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_2465B6 (*(_BYTE *)(eseg + 0x1BFB6))
 #define unk_2465B8 (*(_BYTE *)(eseg + 0x1BFB8))
 #define unk_2465C4 (*(_BYTE *)(eseg + 0x1BFC4))
+#define unk_24661D (*(_BYTE *)(eseg + 0x1C01D))
+#define unk_246629 (*(_BYTE *)(eseg + 0x1C029))
 #define unk_246665 (*(_BYTE *)(eseg + 0x1C065))
+#define unk_2467EB (*(_BYTE *)(eseg + 0x1C1EB))
 #define unk_246F6E (*(_BYTE *)(eseg + 0x1C96E))
-#define unk_247109 (*(_BYTE *)(eseg + 0x1CB09))
-#define unk_247115 (*(_BYTE *)(eseg + 0x1CB15))
-#define unk_247135 (*(_BYTE *)(eseg + 0x1CB35))
 #define unk_38683 (*(_BYTE *)(ccode + 0x28683))
 #define word_178C7C (*(int16_t *)(dseg + 0x00C7C))
 #define word_1828B0 (*(_WORD (*)[4])(dseg + 0x0A8B0))
@@ -1793,6 +1828,7 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define word_23CD3E (*(int16_t *)(eseg + 0x1273E))
 #define word_23CD5A (*(uint16_t (*)[3])(eseg + 0x1275A))
 #define word_23CDFA (*(uint16_t *)(eseg + 0x127FA))
+#define word_23CDFE (*(_WORD *)(eseg + 0x127FE))
 #define word_23D102 (*(uint16_t *)(eseg + 0x12B02))
 #define word_23D104 (*(uint16_t *)(eseg + 0x12B04))
 #define word_23DCAC (*(_WORD (*)[2])(eseg + 0x136AC))
@@ -1829,7 +1865,7 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 int sub_169551(int a1, int a2, int a3, int a4);
 int sub_169569();
 int sub_1E0000(_DWORD *a1, int a2, int a3, int a4, int a5, int a6, int a7);
-int sub_1E0023(uint32_t *a1, int a2);
+void sub_1E0023(int *a1, int a2);
 int sub_1E004A(int a1, int a2, int a3, int a4);
 int sub_1E0062(int a1, int a2, int a3);
 int sub_1E0076();
@@ -1839,37 +1875,37 @@ _DWORD * sub_1E00B7(_DWORD *result, int a2);
 int sub_1E00D0(int a1, int a2, int a3);
 int sub_1E00E4(int a1, int a2, int a3);
 int sub_1E00F8(int a1, int a2, int a3);
-void sub_1E010C(int a1, int a2);
-void sub_1E011D(int a1);
+int sub_1E010C(int a1, int a2, int a3, int a4);
+char sub_1E011D(int a1, int a2);
 int64_t sub_1E0145(int64_t result, _WORD *a2, int16_t *a3, int a4);
 int sub_1E017D(int a1);
 int sub_1E018D(int a1, int a2, int a3, int a4);
 int sub_1E019F(int64_t a1, int a2);
-void sub_1E01B0(int a1, int a2);
+int sub_1E01B0(int a1, int a2);
 int sub_1E01CA(int result);
-int64_t sub_1E01E1(int64_t a1, uint32_t *a2, int a3, int a4, unsigned int a5);
-int sub_1E020F(void);
+int64_t sub_1E01E1(int64_t a1, uint32_t *a2, int a3, unsigned int a4);
+int sub_1E020F(int a1, int a2);
 void sub_1E021C(_BYTE *a1, int a2, _BYTE *a3);
-int sub_1E0238(_BYTE *a1);
-int64_t sub_1E0249(int64_t result, uint32_t *a2, int a3, unsigned int a4);
-int sub_1E025A(void);
-char sub_1E0265(int16_t *a1, int16_t *a2, int a3, int a4);
-int sub_1E0276(char *a1);
-void sub_1E028A(int a1, int a2, int a3, _WORD *a4, char *a5, int a6);
+int sub_1E0238(int a1, int a2);
+uint64_t sub_1E0249(uint64_t result, uint32_t *a2, int a3, unsigned int a4);
+int sub_1E025A(int a1, int a2);
+char sub_1E0265(int16_t *a1, int a2, int a3);
+int sub_1E0276(char *a1, int a2);
+int sub_1E028A(int a1, int a2, int a3, int a4, char *a5, int a6);
 int sub_1E02A2(int a1, int a2, int a3, int a4, char *a5, int a6);
-void sub_1E02BA(int a1, int a2, int a3, char *a4, int a5);
-void sub_1E02CE(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char *a10, int a11);
-void sub_1E02E6(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char *a10, int a11);
-void sub_1E02FE(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, char *a9, int a10);
-void sub_1E0316(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, char *a12, _BYTE *a13, int a14);
+int sub_1E02BA(int a1, int a2, int a3, char *a4, int a5);
+int sub_1E02CE(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char *a10, int a11);
+int sub_1E02E6(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char *a10, int a11);
+int sub_1E02FE(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, char *a9, int a10);
+int sub_1E0316(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, char *a12, int a13, int a14);
 int sub_1E032E(int a1, int a2, int a3, int a4);
 int sub_1E034A(int a1, int a2, int a3, int a4);
 int sub_1E0358(int a1);
 unsigned int sub_1E0369(unsigned int a1);
 void sub_1E0372(int a1);
-int sub_1E0380(int *a1, int a2);
+uint64_t sub_1E0380(int a1, unsigned int a2);
 int sub_1E038F(int a1);
-int sub_1E0399(int a1);
+int sub_1E0399(void);
 void sub_1E03A6(int a1);
 int sub_1E03B3(int a1, int a2, int a3);
 int sub_1E03C7(int a1, int a2, unsigned int a3);
@@ -1877,13 +1913,13 @@ void sub_1E03DB(int a1);
 void sub_1E03ED(void);
 void sub_1E03FB(int a1, int a2, int a3);
 int sub_1E0415(int a1, int a2, int a3);
-int sub_1E0433(int a1, int a2, int a3, int a4, int a5);
+int sub_1E0433(unsigned int a1, int a2, int a3);
 int sub_1E043F(int result, int a2, int a3);
 void sub_1E0455(int a1);
 int sub_1E0465(int a1, int a2);
-int sub_1E0476(int a1);
-int sub_1E04A4(char *a1, int a2);
-int sub_1E04B4(int16_t *a1, int a2);
+char sub_1E0476(int a1);
+int sub_1E04A4(int a1, int a2);
+int sub_1E04B4(int a1, int a2);
 void sub_1E04C4(void);
 void sub_1E04DF(void);
 int sub_1E04EA(void);
@@ -1893,23 +1929,23 @@ void sub_1E0520(void);
 int sub_1E053C(void);
 int sub_1E0571(int a1, int a2, int a3);
 int sub_1E05D8(int a1, int a2, int a3, int a4);
-void sub_1E0622(void);
-int sub_1E0638(void);
-_DWORD * sub_1E0646(int a1, int a2, _DWORD *a3, int a4, unsigned int a5, unsigned int a6, int a7);
-_DWORD * sub_1E0654(int a1, int a2, int a3, int a4);
-int sub_1E0662(int a1, int a2);
-_DWORD * sub_1E0670(int a1, int a2, int a3, int a4);
-int16_t * sub_1E067E(int16_t *a1, int a2);
+void sub_1E0622(int a1, int a2, int a3, int a4);
+int sub_1E0638(int a1, int a2, int a3, int a4);
+int sub_1E0646(int a1, int a2, int a3, int a4, int a5, unsigned int a6, int a7);
+int sub_1E0654(int a1, int a2, int a3, int a4);
+int sub_1E0662(int a1, int a2, int a3, int a4);
+int sub_1E0670(int a1, int a2, int a3, int a4);
+int sub_1E067E(int a1, int a2);
 char sub_1E0793(int a1, int a2, int a3, int a4, int a5, int a6);
-int sub_1E079A(int a1, int a2, unsigned int a3, int a4);
+char sub_1E079A(char *a1, char *a2);
 void sub_1E07A4(void);
 _BOOL1 sub_1E07CB(char *a1, int a2);
 _BOOL1 sub_1E07DA(char *a1, int a2);
-void sub_1E07E8(int a1, _BYTE *a2, int a3, uint32_t *a4);
-void sub_1E0802(int a1, int a2, int a3, signed int a4, unsigned int a5);
-_DWORD * sub_1E0819(int a1, int a2);
-int sub_1E0824(void);
-int64_t sub_1E083D(int a1, int a2);
+int sub_1E07E8(int a1, int a2, int a3, int a4);
+int sub_1E0802(int a1, int a2, int a3, int a4, int a5);
+int sub_1E0819(int a1, int a2);
+int64_t sub_1E0824(int64_t a1);
+int64_t sub_1E083D(int a1, int a2, int a3);
 void sub_1E085C(int a1, int a2);
 void sub_1E087B(int a1, int a2);
 void sub_1E08A9(void);
@@ -1925,14 +1961,14 @@ int sub_1E09F4(int a1, int a2);
 int sub_1E0A09(int a1, int a2, int a3);
 int sub_1E0A21(int result, int a2, int a3, int a4);
 int sub_1E0A32(int a1, int a2, int a3);
-_BOOL1 sub_1E0A4A(int a1, int a2, unsigned int a3, int a4);
+char sub_1E0A4A(int a1, int a2, int a3);
 int sub_1E0A60(int a1, int a2, int a3, int a4);
 void sub_1E0A95(void);
 void sub_1E0AB0(int a1, int a2);
 void sub_1E0ADF(int a1, int a2);
 void sub_1E0AF7(int a1);
 int sub_1E0B25(int result, int a2, int a3, int a4);
-void sub_1E0B45(int a1, int a2, int a3, int a4, int a5);
+void sub_1E0B45(int a1, int a2, int a3);
 void sub_1E0B7D(int a1);
 void sub_1E0B92(int a1, int a2, int a3, int a4);
 void sub_1E0BAB(int a1, int a2, int a3, int a4);
@@ -1940,48 +1976,48 @@ _BOOL1 sub_1E0BDD(int a1);
 unsigned int sub_1E0C0C(int a1, int a2);
 unsigned int sub_1E0C29(int a1, int a2, int a3);
 int sub_1E0C54(int result);
-void sub_1E0C69(int a1, int a2);
+int sub_1E0C69(int a1, int a2);
 void sub_1E0C7D(void);
 void sub_1E0C8D(void);
-void sub_1E0C9E(void);
+void sub_1E0C9E(int a1);
 int sub_1E0CB6(int a1, int a2, int a3, int a4);
-int64_t sub_1E0CD0(int a1, int a2, int a3, int a4);
-int64_t sub_1E0CE0(int64_t a1, int a2);
-int64_t sub_1E0CEE(int a1, int64_t a2, int a3, int a4);
-int sub_1E0D2E(int a1, int a2, int a3, int a4);
-void sub_1E0D56(int a1, int a2);
+int sub_1E0CD0(int a1, int a2, int a3, int a4);
+int64_t sub_1E0CE0(int64_t a1);
+int64_t sub_1E0CEE(int a1, int64_t a2, int a3);
+int sub_1E0D2E(int a1, int a2, int a3);
+void sub_1E0D56(int a1);
 int sub_1E0D69(int result, int a2);
 int sub_1E0D75(int result, int a2, int a3);
 int16_t sub_1E0D7E(int a1, int a2, int a3);
-void sub_1E0D8C(int a1, int a2, int a3);
+void sub_1E0D8C(int a1, int a2);
 void sub_1E0DA9(int a1, int a2, int a3);
-void sub_1E0DC1(int a1, int a2);
+void sub_1E0DC1(int a1);
 void sub_1E0DD1(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
-int16_t sub_1E0DF8(int a1, int a2, unsigned int a3, int a4);
-void sub_1E0E0D(int a1, int a2);
+void sub_1E0DF8(int a1, int a2, unsigned int a3);
+void sub_1E0E0D(int a1, int a2, int a3, int a4);
 void sub_1E0E28(int a1, int a2, int a3, int16_t *a4);
 int sub_1E0E3C(int a1, int a2, int a3);
 int64_t sub_1E0E43(int64_t a1, int a2, int a3);
 int64_t sub_1E0E59(int64_t a1, int a2, int a3);
 int sub_1E0E6F(int a1, int a2, int a3);
 int sub_1E0E8B(int result, int a2, int a3, int a4);
-int64_t sub_1E0EF1(uint32_t *a1, int *a2, int a3, int a4, unsigned int *a5);
-int64_t sub_1E0EF9(int *a1, int a2, int a3, unsigned int *a4);
+void sub_1E0EF1(void);
+int sub_1E0EF9(void);
 bool sub_1E0F06(int a1, int a2, int a3);
-_BYTE * sub_1E0F84(_BYTE *a1, _BYTE *a2, unsigned int a3, int a4);
+int sub_1E0F84(int a1, int a2, int a3, int a4);
 void sub_1E0FB4(int a1);
-void sub_1E0FFA(_BYTE *a1, _BYTE *a2, int a3, unsigned int a4, int a5, int a6, int a7);
+void sub_1E0FFA(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
 int sub_1E1019(void);
 void sub_1E104F(int a1, int a2, int a3, int a4);
 void sub_1E1062(int a1);
-_BYTE * sub_1E10BF(_BYTE *a1, unsigned int a2);
-_BYTE * sub_1E10DC(_BYTE *a1, _BYTE *a2, unsigned int a3);
-void sub_1E10F7(int a1, char *a2, int a3);
-int16_t sub_1E1116(int a1, int a2);
+int sub_1E10BF(int a1, int a2);
+int sub_1E10DC(int a1, int edx0, int a3);
+int16_t sub_1E10F7(int a1, int a2, int bx0);
+int16_t sub_1E1116(int eax0, int a2);
 void sub_1E1121(int a1, int a2);
-void sub_1E113C(int64_t a1, int a2, int esi0, int a3, int a4);
-int sub_1E1144(int a1, int a2, int a3, int a4, int a5, int a6);
-void sub_1E1164(int a1, int a2);
+void sub_1E113C(int a1, int a2, int a3, int a4, int a5, int a6);
+void sub_1E1144(int a1, int a2, int a3, int a4, int a5, int a6);
+void sub_1E1164(void);
 void sub_1E116C(int a1, int a2, int a3, int a4, int a5);
 int sub_1E11CB(int a1);
 void sub_1E11E3(int a1, int16_t *a2);
@@ -1994,52 +2030,54 @@ int sub_1E1295(int a1);
 int sub_1E12AC(unsigned int a1);
 int sub_1E12C6(int a1, int a2);
 bool sub_1E12E1(int a1, int a2);
-void sub_1E12FB(int a1, int a2);
+int sub_1E12FB(int a1, int a2, int a3, int a4);
 int sub_1E1307();
 int sub_1E1313();
 void sub_1E1327(int a1);
 int sub_1E1345(int a1, int a2, unsigned int a3);
 char sub_1E1356(int a1, int a2, unsigned int a3);
-int64_t sub_1E1386(uint32_t *a1, int a2, int a3);
-int64_t sub_1E1394(uint32_t *a1, _WORD *a2, int a3, int a4);
+int sub_1E136E();
+int64_t sub_1E1386(int a1, int a2);
+int sub_1E1394(int a1, int a2, _WORD *a3);
 int sub_1E13A3(void);
 int sub_1E13C6(int a1);
 int sub_1E13DC(int a1, int a2);
 int sub_1E13F9(int a1);
 int sub_1E1411(int a1);
-int sub_1E142B(int a1, int a2, int a3);
+int sub_1E142B(int eax0, int a2, int a3);
 int sub_1E145B(int result, int a2);
 void sub_1E1477(void);
 void sub_1E14B6(int a1, int a2, int a3, int a4);
 int sub_1E14CC(int a1, int a2, int a3, int a4, int a5);
-int sub_1E14FF(int a1, _WORD *a2, _WORD *a3);
+int sub_1E14FF(int a1, int a2, int a3);
+char sub_1E1513(int a1, _WORD *a2, _WORD *a3);
 int sub_1E1526(int a1, int a2, int a3, int a4);
 int sub_1E153C(int a1, int a2, int a3);
 int sub_1E1556(void);
 int sub_1E1567(void);
 int sub_1E157B(int a1, int a2, int a3, int a4);
-void sub_1E15D4(_BYTE *a1, int a2, int edi0);
+void sub_1E15D4(_BYTE *a1, int a2, int a3);
 void sub_1E15E6(int a1, int a2, int a3);
 int sub_1E15F8(void);
-void sub_1E1611(void);
+int sub_1E1611(int a1, int edi0);
 int sub_1E161B(int result, int a2, int a3, int a4);
 void sub_1E1630(unsigned int a1, int a2, int a3, int a4);
 void sub_1E1651(int a1, int a2, int a3);
 void sub_1E166A(int a1, _WORD *a2);
-void sub_1E16C4(void);
+int sub_1E16C4(int a1);
 int sub_1E16F3(int a1, int a2);
 int sub_1E1700(int a1, int a2, int a3, unsigned int a4);
 int sub_1E1741(int a1, int a2, int a3);
 int sub_1E175B(int a1, int a2, int a3);
 int sub_1E1775(int a1, int a2);
-void sub_1E1788(int a1, int a2);
+int sub_1E1788(int a1, int a2, int a3, int a4);
 int sub_1E179E(int a1, int a2);
-int sub_1E17BD(int a1, unsigned int a2, int a3, int a4);
-int sub_1E17C7(int a1, unsigned int a2, int a3, int a4);
-void sub_1E17D1(int a1, int a2);
+int sub_1E17BD(int a1, int a2);
+int sub_1E17C7(int a1, int a2);
+int16_t sub_1E17D1(void);
 int sub_1E17F0(int16_t *a1, int16_t *a2);
-uint64_t sub_1E17F8(uint64_t a1, int a2, int a3, int a4);
-uint64_t sub_1E180F(uint64_t result, int a2, int a3, int a4);
+uint64_t sub_1E17F8(uint64_t a1, int a2, int a3);
+uint64_t sub_1E180F(uint64_t result, int a2, int a3);
 int16_t sub_1E185D(int a1);
 int64_t sub_1E1893(int a1, int a2, char *a3);
 int64_t sub_1E18A8(unsigned int a1, int a2, char *a3);
@@ -2049,63 +2087,63 @@ int sub_1E18E4(int a1, int a2);
 int64_t sub_1E18EF(int a1, int a2, char *a3);
 int sub_1E190C(int a1, _DWORD *a2);
 uint64_t sub_1E1914(unsigned int a1, unsigned int a2, int a3, int a4);
-int64_t sub_1E1923(int64_t a1, int a2);
-void sub_1E193B(int a1, int a2, int a3, int a4, int a5);
-void sub_1E1971(int a1, int a2);
+int64_t sub_1E1923(int64_t a1);
+void sub_1E193B(int a1, int a2, int a3, int a4, int a5, int a6);
+void sub_1E1971(int a1, int a2, int a3);
 void sub_1E1992(int a1, int a2);
-void sub_1E19B1(void);
+char sub_1E19B1(int a1, int a2, int a3, int a4);
 void sub_1E19D3(int a1, int a2, int a3, int a4);
-int sub_1E19E2(int a1, int a2, int a3);
+int sub_1E19E2(int a1);
 int sub_1E1A24(int a1, int a2, int a3, int a4, int a5);
 void sub_1E1A34(void);
 int16_t sub_1E1A44(int a1, int a2);
 int sub_1E1A50(int a1);
 void sub_1E1A5F(void);
 void sub_1E1A74(int a1, int a2, int a3);
-_BOOL1 sub_1E1A7F(int a1);
-_BOOL1 sub_1E1AAF(int a1, int a2);
+char sub_1E1A7F(int a1);
+char sub_1E1AAF(int a1, int a2);
 void sub_1E1B05(void);
-_BOOL1 sub_1E1B65(int a1, int a2);
-int sub_1E1B8A(int a1, int a2, int a3, int a4);
+char sub_1E1B65(int a1, int a2);
+char sub_1E1B8A(int a1, int a2, int a3, int a4);
 int16_t sub_1E1BAC(int a1);
-void sub_1E1BCA(int a1, int a2, int a3, int a4);
+void sub_1E1BCA(int a1, int a2);
 int sub_1E1BF6(int result);
-void sub_1E1C1B(int a1, int a2, int a3);
-void sub_1E1C33(int a1, int a2, int a3, int a4, int a5);
-void sub_1E1C4F(int a1, int a2, int a3);
-void sub_1E1C76(int16_t *a1, int a2, int a3, int a4);
+void sub_1E1C1B(int a1, int a2, int a3, int a4);
+void sub_1E1C33(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
+void sub_1E1C4F(int a1, int a2, int a3, int a4, int a5);
+void sub_1E1C76(int16_t *a1, int a2, int a3, int a4, int a5, int a6);
 void sub_1E1CB2(void);
 void sub_1E1CD2(int a1, int a2, int a3, int a4, int a5);
 void sub_1E1CF1(void);
 void sub_1E1D04(int a1, int a2);
 void sub_1E1D17(int a1);
-int sub_1E1D2C(int a1, int a2);
+int sub_1E1D2C(int a1, int a2, int a3, int a4);
 int sub_1E1D52(void);
 void sub_1E1D6E(void);
 void sub_1E1D7B(void);
-void sub_1E1D9D(int a1, int a2, int a3);
+int sub_1E1D9D(int a1, int a2, int a3, int a4);
 int sub_1E1DB5(int result, int a2);
 int sub_1E1DCD(int result);
 int sub_1E1DE9(int a1, int a2);
-void sub_1E1DF9(int a1, unsigned int a2, int a3, int a4, int a5);
-int sub_1E1E11(int a1, int a2, int a3);
-int sub_1E1E5F(int a1, int a2, int a3, int a4, int a5);
-int sub_1E1E6E(int a1, int a2, int a3, int a4, int a5, int a6);
+void sub_1E1DF9(int a1, int a2, int a3, int a4, int a5);
+int sub_1E1E11(int a1, int a2, int a3, int a4);
+int sub_1E1E5F(int a1, int a2, int a3, int a4);
+int sub_1E1E6E(int a1, int a2, int a3, int a4, int a5);
 int sub_1E1E9F(int result, int a2, int a3, int a4);
-int sub_1E1ECB(uint32_t *a1, int *a2, void (*a3)(_DWORD *, int), int a4, unsigned int *a5);
-int16_t sub_1E1ED8(unsigned int *a1, int a2, int a3, int a4);
+int sub_1E1ECB(int a1);
+int16_t sub_1E1ED8(void);
 void sub_1E1EEF(void);
 char sub_1E1EFC(void);
 int16_t sub_1E1F16(int a1);
-_DWORD * sub_1E1F26(int a1);
-_DWORD * sub_1E1F37(int a1);
-void sub_1E1F48(int a1, int a2);
+int sub_1E1F26(int a1);
+int sub_1E1F37(int a1);
+void sub_1E1F48(int result, int a2, int a3, int a4);
 int sub_1E1F52(int result, int a2);
 void sub_1E1F84(int a1, int a2, int a3, int16_t *a4);
 int sub_1E1FBC(void);
 void sub_1E1FE1(void);
-int sub_1E1FF4(int a1, int a2);
-int sub_1E2013(int a1, int a2);
+void sub_1E1FF4(int a1, int a2, int a3, int a4);
+void sub_1E2013(int a1, int a2, int a3, int a4);
 void sub_1E2032(int a1, int a2, int a3, int a4);
 int64_t sub_1E207F(int a1);
 int sub_1E2090(int a1, int a2, int a3, int a4, int a5, char *a6);
@@ -2115,27 +2153,27 @@ int sub_1E218C(int a1, int a2, int a3, int a4);
 bool sub_1E21A1(int a1);
 void sub_1E21BF(int a1, int a2, int a3, int a4);
 int sub_1E21D7();
-int sub_1E21E5(int a1, int a2, int a3, int a4);
+int sub_1E21E5(int a1, int a2, int a3);
 int sub_1E21FA(int a1);
 void sub_1E229F(int a1);
 int sub_1E22C4(int a1);
 int sub_1E22E1(int a1, int a2, int a3);
-int sub_1E22FC(int a1, int a2);
+char sub_1E22FC(int a1, int a2);
 int sub_1E2318(int a1, int a2, int a3, int a4, int a5, int a6);
 int sub_1E2340(int a1, int a2, int a3, int a4);
 int sub_1E2359(int result, int a2, int a3);
 void sub_1E236F(int a1, int a2);
 void sub_1E239D(int a1);
-void sub_1E23B5(void);
-void sub_1E23CA(int a1);
+int16_t sub_1E23B5(int a1);
+int16_t sub_1E23CA(int a1, int a2);
 void sub_1E23D7(void);
-void sub_1E240E(int a1, int a2, int a3);
-void sub_1E242E(int a1, int a2, int a3);
-void sub_1E244E(int a1, int a2, int a3);
+void sub_1E240E(int a1, int a2, int a3, int a4, int a5);
+void sub_1E242E(int a1, int a2, int a3, int a4, int a5);
+int sub_1E244E(int a1, int a2, int a3);
 int sub_1E2463(int a1, int a2);
 int sub_1E2490(int result, int a2, int a3);
-int sub_1E24A8(int a1, int a2, int a3);
-void sub_1E24C5(int a1, int a2, int a3);
+int sub_1E24A8(int a1, int a2, int a3, int a4);
+void sub_1E24C5(int a1, unsigned int a2, int a3);
 void sub_1E24DF(void);
 int sub_1E2502(int a1, int a2, int a3, int a4, int a5, int a6);
 int sub_1E2525(int result, int a2, int a3);
@@ -2144,7 +2182,7 @@ void sub_1E2546(int a1, int a2, int a3);
 int sub_1E2571(int a1, int a2, unsigned int a3);
 _BYTE * sub_1E2589(int a1, int a2);
 int sub_1E2591(void);
-void sub_1E25A0(void);
+int sub_1E25A0(int a1);
 unsigned int sub_1E25B8(int a1, int a2);
 unsigned int sub_1E25C8(int a1, int a2);
 int sub_1E25D8(int a1, int a2);
@@ -2156,15 +2194,15 @@ bool sub_1E26B1(int a1, int a2, int a3, int a4, int a5, int a6);
 void sub_1E2716(int a1, int a2);
 int64_t sub_1E276E(int a1, int a2, int a3, int a4);
 int sub_1E27C6(int a1, int result, int a3);
-int sub_1E27F2(int a1, int a2, int a3);
+int sub_1E27F2(int a1, int a2);
 void sub_1E282C(void);
 void sub_1E2837(void);
 int sub_1E2842(int result, int a2);
 void sub_1E285E(int a1, int a2, int a3, int a4);
-int sub_1E2876(int a1, int a2, int a3, int a4);
-int sub_1E28A8(int a1, int result, int a3, int a4);
+int sub_1E2876(int eax0, int a2, int a3, int a4);
+int sub_1E28A8(int eax0, int result, int a3, int a4);
 void sub_1E28E2(void);
-int sub_1E2906(void);
+int sub_1E2906(int a1, int a2, int a3);
 char sub_1E293A(int result, int a2, int a3);
 int sub_1E2945(int a1);
 void sub_1E296A(int a1);
@@ -2175,14 +2213,14 @@ char sub_1E29C4(int a1, int a2, int a3, char *a4, unsigned int a5, _BYTE *a6);
 int sub_1E29DD(unsigned int a1, int a2);
 int sub_1E29EF(int a1);
 void sub_1E2A07(int a1);
-int64_t sub_1E2A20(int64_t a1, int a2, int a3, int a4, int a5, int a6);
+int64_t sub_1E2A20(int64_t a1, int a2, int a3, int a4, int a5);
 _BOOL1 sub_1E2A48(int a1);
 int64_t sub_1E2A50(int64_t a1);
-int sub_1E2A62(int a1, int a2, unsigned int a3);
+int sub_1E2A62(int a1, int edx0, int a3, unsigned int a4);
 int sub_1E2AE8(int a1, int a2, int a3, int a4);
-int sub_1E2B0B(int a1, int a2, int a3);
+int sub_1E2B0B(int eax0, int a2, int a3);
 int sub_1E2B50(int a1, int a2);
-void sub_1E2B6E(int a1, int a2, int a3);
+void sub_1E2B6E(int a1, int a2);
 int sub_1E2B99(int a1);
 int sub_1E2BA1(int a1);
 void sub_1E2BA8(void);
@@ -2195,12 +2233,12 @@ void sub_1E2C61(void);
 int sub_1E2C69(int a1, int a2, int a3, int a4);
 int sub_1E2C75(int result, int a2);
 int sub_1E2C86(int a1, int a2, int a3);
-char * sub_1E2C9D(int a1);
+int sub_1E2C9D(int a1);
 void sub_1E2CA8(int a1, int a2, int a3, int a4);
 int sub_1E2CBA(int result, int a2);
 int sub_1E2CD5(int a1, int a2, _WORD *a3);
 int16_t sub_1E2CDF(int a1, int a2);
-unsigned int sub_1E2CEE(void);
+int sub_1E2CEE(void);
 _BOOL1 sub_1E2CF9(int a1);
 int sub_1E2D19(int result, int a2, int a3, int a4);
 int sub_1E2D5C(int result);
@@ -2210,43 +2248,44 @@ int16_t sub_1E2DA5(int a1, int a2);
 int sub_1E2DB4(int a1, int a2);
 int sub_1E2DC2(int a1, int a2);
 void sub_1E2DE7(int *a1);
+int sub_1E2DF1(int a1, int a2, unsigned int a3);
 int sub_1E2DF9(int a1, int a2, int a3);
 char sub_1E2E0D(int a1, int a2, int a3);
 char sub_1E2E52(int a1, int a2, int a3);
 char sub_1E2E68(int a1, int a2, int a3);
 uint16_t sub_1E2E7E(int a1, int a2, int a3);
-int sub_1E2E96(int a1, int a2, int a3);
+int sub_1E2E96(int a1, unsigned int a2);
 void sub_1E2EAF(void);
-int sub_1E2EE7(int a1, int a2, int a3, int a4);
+int sub_1E2EE7(int a1, int a2, int a3, int a4, int a5);
 int sub_1E2F08(int a1);
 int sub_1E2F32(int result);
 int sub_1E2F55(int result, int a2, int a3, int a4);
 void sub_1E2F83(int a1, int a2, int a3, int a4);
 char sub_1E2FE7(int result);
 int sub_1E300F(int result, int a2);
-int sub_1E3046(int a1, char *a2, _BYTE *a3, int a4, int a5);
-int sub_1E305C(int a1, int a2, int a3, int a4, char *a5, _BYTE *a6);
-int sub_1E3081(int a1, int a2, char *a3, _BYTE *a4);
-int sub_1E3095(int a1, char *a2, _BYTE *a3);
+int sub_1E3046(int a1, int a2, int a3, int a4);
+int sub_1E305C(int a1, int a2, int a3, char *a4, int a5);
+int sub_1E3081(int a1, int a2, int a3, int a4, int a5);
+int sub_1E3095(int a1, int a2, int a3);
 void sub_1E30A4(int a1);
 int sub_1E30C9(int a1, int a2);
-int sub_1E30EA(int a1, int a2, int a3, int a4, int a5);
+int sub_1E30EA(int a1, int a2, int a3, int a4, int a5, int a6);
 int sub_1E30F6(void);
-int sub_1E3103(int a1, int a2, int a3);
+int sub_1E3103(int a1, int a2, int a3, int a4);
 void sub_1E3119(void);
-void sub_1E312F(int a1, int a2, int a3, int a4, int a5, int a6);
+int sub_1E312F(int a1, int a2, int a3, int a4, int a5, int a6);
 void sub_1E314F(void);
 int sub_1E316D(int a1, int a2);
 int16_t sub_1E317C(int result, int a2);
 int sub_1E3193(int a1, int a2, int a3);
 void sub_1E31A2(char *a1, int a2, int a3, int a4);
-bool sub_1E31B1(void);
-int sub_1E31D3(int a1, int a2, int ebp0, int edi0, int a5);
+char sub_1E31B1(void);
+int sub_1E31D3(int a1, int a2, int a3, int ebp0, int a5, int a6);
 int sub_1E31F3(int a1);
 void sub_1E3200(void);
 void sub_1E3226(void);
 void sub_1E323F(void);
-char * sub_1E3259(int a1, int a2);
+int sub_1E3259(int a1, int a2);
 int sub_1E3273(int a1, int a2, int a3);
 int sub_1E3285(int result, int a2);
 char sub_1E32B5(int a1, int a2, int a3);
@@ -2265,7 +2304,7 @@ void sub_1E33F7(int a1, int a2);
 void sub_1E3403(int a1);
 void sub_1E340F(int result);
 void sub_1E341A(void);
-void sub_1E3426(int16_t *a1, int16_t *a2, int a3);
+void sub_1E3426(int a1, int a2, int a3);
 int sub_1E3430(void);
 void sub_1E3448(void);
 void sub_1E3457(int eax0, unsigned int a1);
@@ -2273,8 +2312,8 @@ int sub_1E3466(int a1);
 int16_t sub_1E347B(int result);
 int sub_1E3488(int result, int a2, int a3);
 void sub_1E3498(void);
-void sub_1E34A4(_WORD *a1, _WORD *a2, _WORD *a3, _WORD *a4, int a5);
-int sub_1E34B8(void);
+void sub_1E34A4(int a1, int a2, int a3, int a4, int a5);
+int sub_1E34B8(int a1);
 int sub_1E34C9(void);
 int sub_1E34DF(int result);
 int sub_1E3623(int a1, int a2, int a3);
@@ -2286,10 +2325,11 @@ int sub_1E3684(int a1);
 int sub_1E36A1(int result, int a2);
 int sub_1E36B5(int result, int a2);
 int sub_1E36C9(int a1);
-int sub_1E36DD(int16_t *a1, int a2, _BYTE *a3);
-void sub_1E36F1(int16_t *a1, int a2, _BYTE *a3);
-int sub_1E3705(_BYTE *a1, int a2, int a3);
+int sub_1E36DD(int a1, int a2, int a3);
+char sub_1E36F1(int a1, int a2, int a3);
+int sub_1E3705(int a1, int a2, int a3);
 int sub_1E3719(int a1);
+int sub_1E3727();
 int sub_1E373F(void);
 int sub_1E374C(int a1, int a2, int a3);
 int sub_1E3786(int result, int a2);
@@ -2303,20 +2343,17 @@ int sub_1E3878(int a1, int a2, int a3);
 void sub_1E388C(int a1, int a2, int a3);
 void sub_1E3896(void);
 void sub_1E38A3(void);
-int sub_1E38B2(int a1, unsigned int a2, int a3);
 int sub_1E38D2(int a1, int a2, int a3);
 void sub_1E38F4(void);
-int sub_1E3906(int a1, unsigned int a2, int a3, int a4, int a5);
-int sub_1E3923(int a1, unsigned int a2, int a3, int a4);
 void sub_1E393E(int a1);
 int16_t sub_1E3953(int result);
-int sub_1E395F(_BYTE *a1, int a2, int a3);
+int sub_1E395F(int a1, int a2, int a3);
 int sub_1E397E(int a1, int a2);
 void sub_1E39A1(int a1, int a2, int a3, int a4);
 void sub_1E39AC(void);
-void sub_1E39CC(int a1, int a2, int a3);
-void sub_1E3A0A(int a1, int a2, _WORD *a3);
-int sub_1E3A3A(int a1, int a2, int a3);
+char sub_1E39CC(int a1, int a2);
+int sub_1E3A0A(int a1, int a2, int a3);
+void sub_1E3A3A(int a1, int a2, int a3);
 int sub_1E3A57(int a1, int a2, int a3);
 int sub_1E3A6B(_WORD *a1, int a2, int a3);
 void sub_1E3AAD(int a1, int a2, int a3);
@@ -2331,14 +2368,14 @@ void sub_1E3B68(void);
 void sub_1E3B73(void);
 int sub_1E3B7E(unsigned int a1, int a2, unsigned int a3);
 void sub_1E3B99(int a1);
-void sub_1E3BAC(int a1, int a2);
-void sub_1E3BC9(int a1, int a2);
+void sub_1E3BAC(int a1, int a2, int a3);
+void sub_1E3BC9(int a1, int a2, int a3);
 int sub_1E3BE6(int result, int a2, int a3);
-void sub_1E3BF3(int a1, int a2);
+void sub_1E3BF3(int a1, int a2, int a3);
 int sub_1E3C10(int result, int a2, int a3, int a4);
-int sub_1E3C1D(unsigned int a1, int a2, unsigned int a3);
-void sub_1E3C37(unsigned int a1, int a2, unsigned int a3, int a4);
-void sub_1E3C4D(unsigned int a1, int a2, unsigned int a3);
+int sub_1E3C1D(unsigned int a1, int a2, int a3, unsigned int a4);
+void sub_1E3C37(unsigned int a1, int a2, int a3, unsigned int a4, int a5);
+void sub_1E3C4D(unsigned int a1, int a2, int a3, unsigned int a4);
 int64_t sub_1E3C65(int a1);
 unsigned int sub_1E3C70(int a1);
 unsigned int sub_1E3C7B(int a1);
@@ -2347,13 +2384,13 @@ unsigned int sub_1E3C96(int a1);
 int64_t sub_1E3CA3(int a1);
 int sub_1E3CB3(void);
 int sub_1E3CC0(int result, int a2);
-void sub_1E3CCB(int a1, int a2, int a3, int a4, int a5, int a6);
+int sub_1E3CCB(int a1, int a2, int a3, int a4, unsigned int a5, int a6);
 unsigned int sub_1E3CEB(int a1);
 int16_t sub_1E3CF5(int a1, int a2, int a3, int a4);
 int16_t sub_1E3D13(int a1, int a2);
 unsigned int sub_1E3D5B(unsigned int result);
 int sub_1E3D70(void);
-int sub_1E3D80(int a1);
+int16_t sub_1E3D80(int a1);
 void sub_1E3D94(void);
 int sub_1E3DB6(int a1, int a2);
 int16_t sub_1E3DC7(int a1, int16_t *a2);
@@ -2369,7 +2406,7 @@ void sub_1E3EC4(int a1, int a2, int a3, int a4, int a5, int a6);
 _BOOL2 sub_1E3EE6(int a1, int a2, int a3);
 int sub_1E3EF3(int result, int a2);
 int sub_1E3F24(int a1, int a2, int a3);
-void sub_1E3F2E(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
+int sub_1E3F2E(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 int sub_1E3F6B(int a1, int a2, int a3, int a4);
 void sub_1E3FE1(int a1);
 int sub_1E400A(int a1, int a2, int a3, int a4);
@@ -2385,12 +2422,12 @@ void sub_1E4118(void);
 int sub_1E415C(int a1, int a2);
 int sub_1E4178(int a1, int a2);
 void sub_1E4194(void);
-void sub_1E419C(int a1, unsigned int a2);
+void sub_1E419C(int a1);
 char sub_1E41B8(void);
 int sub_1E41CB(int result, int a2, int a3);
 char sub_1E41EE(int a1, int a2);
 _BOOL1 sub_1E4204(int a1);
-void sub_1E421B(unsigned int a1, int16_t *a2, int a3, int a4, _WORD *a5, int a6);
+void sub_1E421B(int a1, int16_t *ecx0, int a3, int a4, _WORD *a5, int a6);
 void sub_1E4234(int a1, int a2);
 void sub_1E4247(int a1, int a2);
 void sub_1E4253(int a1, int a2, int a3, int a4);
@@ -2400,24 +2437,24 @@ int sub_1E42D6(void);
 void sub_1E42E3(void);
 int sub_1E42ED(void);
 void sub_1E42FE(void);
-_BOOL1 sub_1E4308(int a1, int a2);
+char sub_1E4308(int a1, int a2);
 int64_t sub_1E432A(int a1);
 void sub_1E4333(void);
-char * sub_1E4346(int a1);
+int sub_1E4346(int a1);
 int sub_1E4370(int a1);
 void sub_1E437B(int a1, int a2, int a3, int a4);
-int sub_1E439C(int a1, int a2, int a3);
+char sub_1E439C(int a1, int a2, int a3);
 void sub_1E43B0(int a1, int a2);
 int sub_1E43BC(int a1, int a2, int a3, int a4, int a5, int a6);
-int64_t sub_1E43D0(unsigned int *a1, _BYTE *a2, int a3, _BYTE *a4, int a5);
-void sub_1E43D8(int a1, int a2, _WORD *a3, _WORD *a4);
+void sub_1E43D0(int a1);
+void sub_1E43D8(int a1, int a2, int a3, int a4);
 int sub_1E43E4(int a1, unsigned int a2, int a3, int a4, int a5);
 int sub_1E441A(unsigned int a1, int a2, int a3, int a4, int a5, int a6);
 uint8_t sub_1E445F(unsigned int a1, _WORD *a2, uint8_t *a3, _BYTE *a4);
 void sub_1E449D(int a1, int a2, int a3, int a4);
 void sub_1E44C1(int a1);
 int sub_1E44F2(int a1, int a2, int a3);
-unsigned int sub_1E4510(int a1, int a2, int a3, int a4, int a5);
+int sub_1E4510(int a1, int a2, int a3, int a4, int a5);
 void sub_1E4544(int a1, int a2, int a3, int a4, int a5);
 int sub_1E4561(int a1, int a2, int a3);
 char * sub_1E4576(char *result, int a2);
@@ -2438,10 +2475,10 @@ int sub_1E48E2(int result, int a2, int a3);
 int sub_1E48F4(int a1);
 int sub_1E490B(int a1);
 int sub_1E4926(int a1);
-int sub_1E4941(int a1, unsigned int a2, int a3);
-int sub_1E495D(int a1, unsigned int a2, int a3, int a4);
+int sub_1E4941(int a1, int a2, int a3);
+int sub_1E495D(int a1, int a2, int a3, int a4);
 int sub_1E4971(int a1, int a2, int a3);
-int sub_1E4988(int a1, unsigned int a2, int a3, int a4);
+int sub_1E4988(int a1, int a2, int a3, int a4);
 int sub_1E499C(int a1, int a2, int a3);
 int sub_1E49DD(int a1, int a2, int a3);
 int sub_1E49F7(int a1, int a2, int a3);
@@ -2453,16 +2490,19 @@ void sub_1E4AB0(int a1, int a2, int a3, int a4);
 int sub_1E4AC3(int16_t *a1, int16_t *a2);
 int sub_1E4ACB(int a1);
 int sub_1E4AD9(int a1);
-int sub_1E4AE8(int a1, int a2, int a3, int a4, int a5, int a6);
+int16_t sub_1E4AE8(int a1, int a2, int a3, int a4, int a5, int a6);
 void sub_1E4B27(void);
 uint64_t sub_1E4B3B(int a1, unsigned int a2, int a3, int a4);
-int sub_1E4B5A(int a1, int a2, int a3);
+int sub_1E4B5A(int a1, int a2);
+int sub_1E4B6C(int a1);
 void sub_1E4B85(void);
-void sub_1E4BA7(int a1, int a2, int a3, int a4);
+_BYTE * sub_1E4B93(unsigned int a1, int a2);
+void sub_1E4BA7(int a1, int a2, int a3, int a4, int a5);
+int sub_1E4BBB();
 int sub_1E4BCB(int a1);
-int sub_1E4BE0(int a1);
+int sub_1E4BE0(int a1, int a2, int a3);
 void sub_1E4BEC(int a1, int a2, int a3);
-int64_t sub_1E4C01(uint32_t *a1, int *a2, int a3, int a4, unsigned int *a5);
+void sub_1E4C01(void);
 char * sub_1E4C10(unsigned int a1, unsigned int a2, int a3);
 void sub_1E4C1A(int a1, int a2, int a3);
 void sub_1E4C28(int a1, int a2, int a3);
@@ -2471,17 +2511,17 @@ void sub_1E4C4F(int a1, int a2, int a3, int a4);
 void sub_1E4C64(int a1, int a2, int a3, int a4);
 void sub_1E4C79(void);
 int sub_1E4C95(int result, int a2, int a3, int a4);
-void sub_1E4CD8(int16_t *a1, int a2, int16_t *a3, int a4, int a5, int a6);
+int sub_1E4CD8(int16_t *a1, int a2, int16_t *a3, int a4, int a5, int a6);
 int sub_1E4CFD(int a1);
 void sub_1E4D23(int a1, int a2, int a3);
-void sub_1E4D69(int a1);
-bool sub_1E4D9E(int a1);
+int sub_1E4D69(int a1, int a2);
+char sub_1E4D9E(int a1);
 int sub_1E4EA9(int result, int a2, int a3);
 int sub_1E4EB2(int a1, char *a2, int a3, int a4, unsigned int a5);
 unsigned int sub_1E4ECC(unsigned int a1);
 char sub_1E4EDA(int result, int a2);
-void sub_1E4EF2(void);
-int sub_1E4F03(unsigned int a1, int a2, int a3);
+void sub_1E4EF2(int a1, int a2, int a3, int a4);
+int sub_1E4F03(int a1, int a2, int a3);
 int sub_1E4F16(int a1, int a2);
 int sub_1E4F46(int a1);
 void sub_1E4F58(int a1, int a2, int a3);
@@ -2494,10 +2534,10 @@ _BOOL1 sub_1E507C(int a1);
 void sub_1E5097(int a1, int a2, int a3, _WORD *a4, int a5);
 void sub_1E50BF(int a1, int a2, int a3, int a4);
 void sub_1E511C(void);
-int sub_1E512C(_BYTE *a1, unsigned int a2, int a3);
-int sub_1E513F(int a1, int a2, int a3, unsigned int a4, int a5);
+int sub_1E512C(int a1, int a2, int a3);
+int sub_1E513F(int a1, int a2, int a3, int a4, int a5);
 int sub_1E5179(int a1, int a2);
-int sub_1E519B(uint32_t *a1);
+int sub_1E5198(uint32_t *a1);
 int sub_1E51DF(int a1);
 int sub_1E5207(int a1);
 _DWORD * sub_1E5229(int a1, int a2);
@@ -2512,13 +2552,13 @@ _BOOL1 sub_1E5373(int a1, int a2);
 int sub_1E5383(int a1, int a2, int a3, int a4);
 unsigned int sub_1E5463(_DWORD *a1, int a2);
 int sub_1E54D3(int a1, _DWORD *a2, _DWORD *a3);
-void sub_1E54F3(void);
-void sub_1E54FF(int a1, int a2, int a3, int a4);
+int16_t sub_1E54F3(int a1);
+void sub_1E54FF(int _10, int a2, int a3, int a1);
 int sub_1E5563(int a1, int a2);
 int sub_1E5643(void);
 _BYTE * sub_1E567B(_BYTE *result);
 int sub_1E568B(int a1, int a2, int a3, int a4);
-void sub_1E56F7(void);
+int16_t sub_1E56F7(int a1);
 int16_t * sub_1E5703(int16_t *result, int a2);
 int sub_1E5753(int a1, int a2);
 int sub_1E57BB(int result, int a2);
@@ -2528,8 +2568,8 @@ _DWORD * sub_1E59AC(int a1, _DWORD *a2);
 int sub_1E5A03(int a1, int a2);
 int sub_1E5BC7();
 int sub_1E5C2B(int a1, int a2);
-void sub_1E5CF3(int a1, unsigned int a2, unsigned int a3, int a4, int a5);
-void sub_1E5D83(int a1, unsigned int a2, unsigned int a3, int a4, int a5);
+void sub_1E5CF3(int _20, unsigned int a2, unsigned int a3, int a4, int a1);
+void sub_1E5D83(int _20, unsigned int a2, unsigned int a3, int a4, int a1);
 int sub_1E5DFF(int a1, int *a2, int a3, _DWORD *a4);
 int sub_1E5EEF(uint32_t *a1, uint32_t *a2);
 int sub_1E5F33(int a1);
@@ -2545,17 +2585,17 @@ int sub_1E6B83(int a1);
 int (*sub_1E6C28(int (*a1)(int), int a2))(int);
 _WORD * sub_1E6C40(void);
 unsigned int sub_1E6C5F(void);
-void sub_1E6CD3(void);
-int sub_1E6D55(void);
+void sub_1E6CD3(int a1, int a2, int a3, int a4);
+int sub_1E6D55(int a1, int a2);
 char * sub_1E6D6F(char *result);
 char sub_1E6DA5(int a1);
-int sub_1E6E0B(void);
-int sub_1E6E53(void);
-int sub_1E6E7B(void);
-int sub_1E6EA3(void);
+int sub_1E6E0B(int a1, int a2);
+int sub_1E6E53(int a1, int a2);
+int sub_1E6E7B(int a1, int a2);
+int sub_1E6EA3(int a1, int a2);
 char sub_1E6EFF(void);
-int sub_1E6F3F(void);
-int sub_1E6F7F(void);
+int sub_1E6F3F(int a1, int a2);
+int sub_1E6F7F(int a1, int a2);
 int16_t sub_1E700F(void);
 unsigned int sub_1E702B(_WORD *a1, uint16_t *a2, _WORD *a3);
 int sub_1E70B7(unsigned int a1, unsigned int a2, int a3, unsigned int a4);
@@ -2577,7 +2617,7 @@ int sub_1E7EC3(int a1, int a2);
 int sub_1E7F27(int result);
 char sub_1E7FFF(void);
 char sub_1E8053(void);
-char sub_1E80A3(int a1, int a2);
+char sub_1E80A3(void);
 int sub_1E80C7(void);
 int64_t sub_1E80E3(_BYTE *a1, int a2, int a3, char *a4);
 int64_t sub_1E8167(_BYTE *a1, int a2, int a3);
@@ -2591,7 +2631,7 @@ int64_t sub_1E841B(int a1, unsigned int a2);
 int64_t sub_1E844B(int a1, unsigned int a2);
 int sub_1E847B(unsigned int a1, unsigned int a2);
 int sub_1E84A3(int a1);
-int sub_1E84FB(void);
+char sub_1E84FB(void);
 uint16_t sub_1E8587(unsigned int a1);
 int sub_1E8613(int16_t *a1, int a2);
 int sub_1E8663(int result);
@@ -2614,7 +2654,7 @@ unsigned int sub_1E8F5F(int a1, int a2);
 int sub_1E901F(int a1);
 int sub_1E915F(int a1, int a2);
 void sub_1E91DB(int a1, int a2);
-int sub_1E9203(void);
+int sub_1E9203(int a1, int a2);
 int sub_1E9277(void);
 int sub_1E92DD(int a1, int a2, int a3, int a4);
 int sub_1E9377(int a1, int a2);
@@ -2623,12 +2663,12 @@ unsigned int sub_1E9413(int a1, int a2, int a3);
 int sub_1E94C1(int a1, int a2, int a3);
 int sub_1E9557(int a1, int a2, int a3, int a4);
 int sub_1E966B(int a1, int a2, int a3, int a4);
-int sub_1E96EB(int a1, int a2, int a3, int a4);
+int sub_1E96EB(int ax0, int a2, int a3, int a4);
 int sub_1E9727(int a1, int a2, int a3, _WORD *a4);
 int sub_1E99A7(int a1, int a2, int a3, _WORD *a4);
-void sub_1E9B67(void);
+int sub_1E9B67(void);
 int sub_1E9BB7(void);
-int sub_1E9C6F(int a1, int a2);
+int sub_1E9C6F(int a1, int a2, int a3, int a4);
 int sub_1E9D23(int a1, int a2);
 int sub_1E9D73(int a1, int a2, int a3, int a4);
 int sub_1E9E43(int a1, int a2);
@@ -2639,7 +2679,7 @@ int sub_1EA15B(int result);
 int16_t sub_1EA223(int a1, _WORD *a2, int a3, _WORD *a4, _WORD *a5, _WORD *a6, _BYTE *a7);
 unsigned int sub_1EA2DF(int a1, int a2);
 int sub_1EA31F(int result);
-char sub_1EA36F(int a1, int a2, int a3);
+char sub_1EA36F(int a1, int a2);
 int sub_1EA743(int a1, int a2);
 int16_t * sub_1EA783(int16_t *result);
 _BOOL1 sub_1EA82C(int a1, int a2);
@@ -2648,14 +2688,14 @@ int16_t sub_1EA8D7(int a1);
 int16_t sub_1EABAF(void);
 int sub_1EAD07(int a1);
 void sub_1EAD6B(void);
-void sub_1EADBB(int a1);
+void sub_1EADBB(int16_t *a1, int a2, int a3, int a4);
 int sub_1EAE2F(int result, int a2);
 void sub_1EAE8B(unsigned int a1);
 int sub_1EAF3C(int a1);
 int sub_1EAF5B(int a1, int a2, int a3, int a4);
 int sub_1EAFEB(int16_t *a1, int16_t *a2);
 _BYTE * sub_1EB0FC(void);
-int sub_1EB12F(int a1, int a2);
+int sub_1EB12F(int eax0, int a2);
 char * sub_1EB207(unsigned int a1, unsigned int a2, int a3, unsigned int a4);
 int sub_1EB293(int a1);
 unsigned int sub_1EB333(unsigned int a1);
@@ -2664,7 +2704,7 @@ int sub_1EB3B3(char *a1, char *a2, int a3);
 _BYTE * sub_1EB423(_BYTE *a1, int a2, int a3);
 _BYTE * sub_1EB447(_BYTE *a1, _BYTE *a2, int a3);
 _BYTE * sub_1EB48B(int a1, int a2);
-_BYTE * sub_1EB607(int a1, _BYTE *a2, int a3, int a4);
+_BYTE * sub_1EB605(int a1, _BYTE *a2, int a3, int a4);
 _BYTE * sub_1EB663(_BYTE *a1, _BYTE *a2, int a3);
 int sub_1EB6A7(char *a1, char *a2);
 int sub_1EB6E7(int a1, int a2);
@@ -2692,7 +2732,7 @@ int sub_1EC1E3(int a1, _DWORD *a2);
 int sub_1EC257(int a1);
 int sub_1EC277(_BYTE *a1, int a2);
 int sub_1EC2EF(_BYTE *a1, int a2, int a3);
-char sub_1EC55B(_DWORD *a1);
+char sub_1EC559(_DWORD *a1);
 unsigned int sub_1EC708(int a1);
 void sub_1EC749(void);
 _BYTE * sub_1EC74C(_BYTE *a1, _BYTE *a2, int a3, int a4, _BYTE *a5, int a6, int a7);
@@ -2702,177 +2742,176 @@ _BOOL1 sub_1EC84F(char *a1, int a2);
 char * sub_1EC897(char *a1);
 int sub_1EC8EC();
 void sub_1EC907();
-int sub_1EC97B(char *a1);
+int sub_1EC97B();
 char * sub_1ECAB3(char *a1);
 int sub_1ECAC7(int result, int a2);
 int sub_1ECAF0(int a1, uint8_t *a2, int a3);
 int16_t sub_1ECB27(int a1, int a2);
 void sub_1ECB94(int a1, int a2);
 _WORD * sub_1ECCDF();
-_WORD * sub_1ECE8F(int a1, int a2, int a3, int a4);
-int sub_1ECFAF(int a1, int a2);
-int sub_1ED07B(int a1, int a2);
-void sub_1ED20F(int a1, int a2, int a3, int a4);
-char sub_1ED423(int a1, int cx0, int a3, int a4);
-int sub_1ED4E7(int a1, int a2, int a3, int a4, int a5, int a6);
-int sub_1ED647(int a1, int a2, int a3, int a4);
-void sub_1ED6D3(_BYTE *ebp0, signed int edx0, char *a3, _BYTE *a4, unsigned int a5, int a6);
-int16_t sub_1ED72B(int a1, _BYTE *a2, signed int edx0, _BYTE *a4, _BYTE *a5, unsigned int a6, int a7);
-int16_t sub_1ED773(_BYTE *a1, signed int edx0, _BYTE *a3, _BYTE *a4, unsigned int a5, int a6);
-int16_t sub_1ED883(int a1, unsigned int a2, int a3, _BYTE *a4, int a5, int a6, void (**a7)(_DWORD *, int), unsigned int a8);
-int16_t sub_1ED94F(_WORD *a1, _WORD *a2, int a3, int ebp0, int a5, void (**a6)(_DWORD *, int), unsigned int a7);
-unsigned int sub_1EDB4F(unsigned int edx0, void (*ecx0)(_DWORD *, int), int a3, void (**a4)(_DWORD *, int), unsigned int a5);
-int sub_1EDBDF(unsigned int a1, void (*a2)(_DWORD *, int), int a3, int a4, void (*a5)(_DWORD *, int), unsigned int a6);
-int sub_1EDD23(unsigned int a1, unsigned int a2, int i, int a4);
-int sub_1EDE3B(unsigned int a1, int a2, int a3);
-unsigned int sub_1EDE6F(int a1);
-void sub_1EDF9F(int a1, int ebp0, unsigned int *a3, _BYTE *a4, _BYTE *a5, int a6, unsigned int *a7);
-void sub_1EE083(int a1, int ebp0, unsigned int *a3, _BYTE *a4, _BYTE *a5, int a6, unsigned int *a7);
-void sub_1EE0DB(int ebp0, unsigned int *a2, _BYTE *a3, _BYTE *a4, int a5, unsigned int *a6);
-_BYTE * sub_1EE113(int ebp0, unsigned int *a2, _BYTE *a3, _BYTE *a4, int a5, unsigned int *a6);
-_BYTE * sub_1EE127(unsigned int *a1, _BYTE *a2, _BYTE *a3, int a4, unsigned int *a5);
+_WORD * sub_1ECE8F(int a1, int a2);
+int sub_1ECFAF(int a1);
+int sub_1ED07B(int a1);
+void sub_1ED20F(int a1, int a2, int a3);
+_BOOL1 sub_1ED423(int a1, int a2);
+int sub_1ED4E7(unsigned int a1, int a2, int a3, int a4);
+int sub_1ED647(int a1, int a2);
+void sub_1ED6D3(int a1, int a2, int a3, unsigned int a4);
+void sub_1ED72B(char *a1);
+_BYTE * sub_1ED773(_BYTE *a1, _BYTE *a2, int a3, char *a4);
+_BYTE * sub_1ED883(int a1, unsigned int a2);
+int16_t sub_1ED94F(_WORD *a1, _WORD *a2);
+unsigned int sub_1EDB4F(int a1, int a2, unsigned int a3);
+int sub_1EDBDF(int a1, int a2, int a3, unsigned int a4);
+int sub_1EDD23(unsigned int a1, unsigned int a2, int a3, int i);
+int sub_1EDE3B(unsigned int a1, int a2);
+unsigned int sub_1EDE6F(int al0);
+void sub_1EDF9F(int a1);
+int sub_1EE083(int a1);
+void sub_1EE0DB(int a1);
+void sub_1EE113(void);
+_BYTE * sub_1EE127(_BYTE *a1, _BYTE *a2, _BYTE *a3, int a4, uint32_t *a5);
 int * sub_1EE50F();
-int * sub_1EE553(int a1);
-int * sub_1EE5AF(unsigned int a1);
-int * sub_1EE677(int a1);
+int * sub_1EE553(void);
+int * sub_1EE5AF();
+int * sub_1EE677(void);
 _BYTE * sub_1EE75B();
 _BYTE * sub_1EE77F();
-_BYTE * sub_1EE7B7(unsigned int *a1, _BYTE *a2, int a3, _BYTE *a4, unsigned int a5);
+_BYTE * sub_1EE7B7(_BYTE *a1, _BYTE *a2, int a3, _BYTE *a4, unsigned int a5);
 unsigned int sub_1EE80F(void);
-char sub_1EE897(char *a1, char *a2, uint8_t (*a3)(_DWORD *), _DWORD *a4);
-char sub_1EEAC3(int a1, int a2, int a3, int a4, int a5, int a6, int a7, char *a8, char *a9, uint8_t (*a10)(_DWORD *), _DWORD *a11);
-char sub_1EEB13(int a1, int ecx0, char *a3, char *a4, uint8_t (*a5)(_DWORD *), _DWORD *a6);
-char sub_1EEB4B(int a1, int a2, char *a3, char *a4, uint8_t (*a5)(_DWORD *), _DWORD *a6);
-char sub_1EEBFB(int a1, int a2, char *a3, int a4, unsigned int a5, int a6, uint8_t (*a7)(_DWORD *), int a8);
-char sub_1F8D47(unsigned int a1, int a2, uint8_t (*a3)(_DWORD *), int a4);
+int sub_1EE897(int a1, unsigned int a2);
+int sub_1EEAC3(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
+void sub_1EEB13(void);
+_DWORD * sub_1EEB4B(int *a1, char *a2, unsigned int a3, _DWORD *a4);
+char sub_1EEBFB(void);
+uint8_t sub_1F8D47(unsigned int a1, int a2, uint8_t (*a3)(_DWORD *), int a4);
 char sub_1F8EB3(_DWORD *a1);
 int sub_1F8EF7(int *a1);
-int sub_1F90F7(int a1);
+int sub_1F8F2B();
+int sub_1F90F7(int a1, int a2, int a3);
 int sub_1F9111(int a1);
 int sub_1F9147(void);
-char sub_1F920F(_BYTE *a1, int a2);
-char sub_1F9273(int a1, int *a2, int16_t *a3, _DWORD *a4, int a5);
-char sub_1F92E7(int a1, int16_t *a2, _DWORD *a3, int a4);
-char sub_1F9613(int a1);
-char sub_1F978F(char *a1, int a2, int a3);
-_BOOL1 sub_1F99A3(char *a1, int a2, int a3);
+uint8_t sub_1F920F(_BYTE *a1, int a2);
+int sub_1F9273(int *a1, int a2);
+int64_t sub_1F92E7(int a1, int16_t *a2, _DWORD *a3, int a4);
+char * sub_1F978F(int a1);
+int sub_1F99A3(char *a1, int a2, int a3);
 _BOOL1 sub_1F9B77(char *a1, int a2, int a3);
-void sub_1F9B9B(int a1, int a2, int a3, int a4);
-int sub_1F9CE3(int a1, int a2, int a3);
-int sub_1F9EC7(int a1, int a2);
-int sub_1F9ED9(int a1, int a2, int a3);
-int sub_1F9EFF(int a1, int a2);
+char sub_1F9B9B(int a1);
+int sub_1F9CE3(int a1, char *a2);
+int sub_1F9EC7(int a1);
+int sub_1F9ED9(int a1, char *a2);
+int sub_1F9EFF(int a1);
 char sub_1F9F2B(int a1, int a2, int a3, int16_t *a4);
-int sub_1FA0D3(_BYTE *a1, int a2);
-int sub_1FA13F(int a1, int a2);
-char sub_1FA191(unsigned int *a1, unsigned int a2, int a3);
-char sub_1FA20F(int a1, unsigned int *a2, unsigned int a3, int a4);
-unsigned int sub_1FA2C7(unsigned int *a1, unsigned int a2, int a3);
-unsigned int sub_1FA333(int a1, unsigned int *a2, unsigned int a3, int a4);
-int sub_1FA3DB(int a1, int a2, unsigned int a3, int a4);
-char sub_1FA43F(int a1, char *edx0, int ecx0, char *a4, char *a5, int a6);
-char sub_1FA513(int a1, int a2, int ecx0, uint32_t *a4, char *a5, int a6);
-char sub_1FA583(unsigned int a1, int a2, int a3, unsigned int a4, uint32_t *a5);
-char sub_1FA623(int a1, int a2, unsigned int a3, uint32_t *a4);
-char sub_1FA9B3(int a1, unsigned int a2, int a3, int a4);
-int sub_1FAB6F(unsigned int a1, int a2, int a3);
-int sub_1FACCB(int a1, int a2, int a3, unsigned int a4);
-int sub_1FB00F(int a1, unsigned int a2, int a3, int a4, int a5);
-int sub_1FB0DB(int a1, unsigned int a2, int a3, int a4);
-int sub_1FB0EB(int a1, unsigned int a2, int a3, int a4);
-int sub_1FB0FB(int a1, unsigned int a2, int a3, int a4);
-int sub_1FB160(int a1, unsigned int a2, int a3, int a4);
-void sub_1FB173(uint32_t *a1, int a2, _BYTE *a3, int a4);
-void sub_1FB25F(int a1, int a2, signed int edx0, uint32_t *a4, int a5, _BYTE *a6, int a7);
-void sub_1FB4A3(int a1, uint32_t *a2, int a3, _BYTE *a4, int a5);
-void sub_1FB5D3(int a1, int a2, uint32_t *a3, int a4);
-void sub_1FB6BB(int a1, uint32_t *a2, int a3);
-int sub_1FB7E3(int a1, int a2, int a3, int a4);
-int sub_1FB857(int a1, unsigned int a2, int a3, int a4, int a5);
-void sub_1FB91B(int a1, uint32_t *a2, int *a3, int a4, unsigned int *a5);
-char sub_1FB983(int a1, uint32_t *a2, int *a3, int a4, unsigned int *a5);
-char sub_1FBA8F(int a1, int a2, void (*a3)(_DWORD *, int), int a4, uint32_t *a5, int *a6, int a7, unsigned int *a8);
-char sub_1FBBBB(uint32_t *a1, int a2, int a3, uint32_t *a4, int *a5, int a6, unsigned int *a7);
-char sub_1FBC7F(int a1, int a2, int edx0, int ecx0, uint32_t *a5, int *a6, int a7, unsigned int *a8);
-char sub_1FBD3B(int a1, int a2, int a3, uint32_t *a4, int *a5, int a6, unsigned int *a7);
-char sub_1FBE2B(int a1, int a2, int ebp0, int a4, uint32_t *a5, int *a6, int a7, unsigned int *a8);
-char sub_1FBE8F(int a1, int esi0, int a2, _BYTE *a4, int a5, unsigned int *a6);
-char sub_1FBEDB(int a1, int esi0, uint32_t *a2, _BYTE *a4, int a5, unsigned int *a6);
-char sub_1FC06F(int a1, uint32_t *a2, _BYTE *a3, int a4, unsigned int *a5);
-char sub_1FC47B(int a1, int a2, int a3, uint32_t *a4, _BYTE *a5, int a6, unsigned int *a7);
-int * sub_1FC66B(uint32_t *a1, _BYTE *a2, int a3, unsigned int *a4);
+int sub_1FA0D3(_BYTE *a1);
+int sub_1FA13F(void);
+int sub_1FA191(_BYTE *a1);
+char sub_1FA20F(int a1, int a2);
+int sub_1FA2C7(_BYTE *a1, int a2);
+unsigned int sub_1FA333(unsigned int *a1, unsigned int a2, char *a3);
+int sub_1FA3DB(int a1, unsigned int a2, int a3);
+_BYTE * sub_1FA43F(char *a1, char *a2, char *a3);
+char * sub_1FA513(char *a1, char *a2, char *a3);
+char * sub_1FA583(unsigned int a1);
+int * sub_1FA623(int *a1);
+char sub_1FA9B3(char *a1, char *a2);
+int sub_1FAB6F(int a1);
+int sub_1FACCB(char *a1, int a2, int a3);
+int sub_1FB00F(int a1, int a2, int a3);
+int sub_1FB0DB(int a1, int a2);
+int sub_1FB0EB(int a1, int a2);
+int sub_1FB0FB(int a1, int a2);
+int sub_1FB160(int a1, int a2);
+int sub_1FB173(int *a1);
+unsigned int * sub_1FB25F(unsigned int *a1);
+int sub_1FB4A3(int a1, int a2, _BYTE *a3, int a4);
+int sub_1FB5D3(int a1, int a2);
+void sub_1FB6BB(uint32_t *a1);
+int sub_1FB7E3(int a1);
+int sub_1FB857(int a1, unsigned int a2);
+int sub_1FB8CF();
+int16_t sub_1FB91B(void);
+int sub_1FB983(void);
+unsigned int sub_1FBA8F(int a1);
+int * sub_1FBBBB(int *a1, _BYTE *a2);
+int sub_1FBC7F(int *a1, int a2);
+int sub_1FBD3B(void);
+int sub_1FBE2B(int a1, int *a2, int a3);
+_BYTE * sub_1FBEDB(void);
+int * sub_1FC66B(uint32_t *a1, _BYTE *a2, int a3, uint32_t *a4);
 int * sub_1FC79B();
 int * sub_1FC7BB();
-int * sub_1FC7FB(int a1, int a2);
+int sub_1FC7FB(void);
 int * sub_1FC9A3(int *result);
-int * sub_1FC9CB(int a1, int a2, _DWORD *a3, int a4, int a5);
+int * sub_1FC9CB(_DWORD *a1, int a2, int a3);
 int * sub_1FCAFF(_DWORD *a1, int a2);
 char sub_1FCB5B(uint32_t *a1);
 int sub_1FCC27(_DWORD *a1);
-char sub_1FCCD7(int **edx0, int ecx0, int a3, uint32_t *a4, uint32_t *a5);
-int sub_1FCE67(uint32_t *a1, int a2, int a3, uint32_t *a4);
+char sub_1FCCD7(int a1, uint32_t *a2, uint32_t *a3);
+int sub_1FCE67(int a1);
 int sub_1FD03B(uint32_t *a1);
 int * sub_1FD0EF();
-void sub_1FD123(int a1, _BYTE *a2, int16_t *a3, _BYTE *a4, int a5);
-void sub_1FD1A3(int a1, _BYTE *a2, int16_t *a3, _BYTE *a4, int a5);
-int sub_1FD223(int a1, int a2, int16_t *a3, _BYTE *a4, int a5);
+int16_t sub_1FD123();
+int sub_1FD1A3();
+int sub_1FD223(int a1, int a2, int a3, int a4);
 char sub_1FD2BB();
-int sub_1FD3A7(int a1, int16_t *a2, _BYTE *a3, int a4, int16_t *a5);
+int sub_1FD3A7(int a1, int a2, int a3, int a4, int a5);
 int sub_1FD44F(int16_t *a1);
-int sub_1FD613(int a1, int a2);
-void sub_1FD877(int a1, uint32_t *a2, _BYTE *a3, int *a4, unsigned int *a5);
+int sub_1FD613(int eax0, int a2);
+void sub_1FD877();
+int * sub_1FD8FF();
 int * sub_1FDA1F();
-char sub_1FDA3F(int *a1, uint32_t *a2, char *a3, char *a4, uint32_t *a5);
-char sub_1FDC3F(int a1, int *a2, uint32_t *a3, char *a4);
-char sub_1FDD07(int a1, int a2, int a3);
-char sub_1FE753(int a1, int a2, int a3);
-int sub_1FE80F(int64_t a1, uint32_t *a2, unsigned int a3, void (*a4)(int *));
-void sub_1FEADB(unsigned int *a1, int a2, int a3, int a4);
-void sub_1FF103(int a1, int a2, int a3);
-char sub_1FF23B(int a1, int *a2, char *a3, int a4, uint32_t *a5);
+char sub_1FDA3F(_BYTE *a1, int a2, char *a3, uint32_t *a4);
+char sub_1FDC3F(uint32_t *a1, char *a2);
+char sub_1FDD07(int arg0, int a2);
+char sub_1FE753(int a1, int a2, int a3, int a4);
+int * sub_1FE80F(int *a1, uint32_t *a2, unsigned int a3, void (*a4)(int *));
+void sub_1FEADB(void);
+void sub_1FF103(int a1, int a2);
+char sub_1FF23B(int *a1, char *a2, int a3, uint32_t *a4);
 _BOOL1 sub_1FF314(_DWORD *a1);
-char sub_1FF333(int a1, int *a2);
-char sub_1FF429(int a1, int *a2);
-char sub_1FF453(int a1, int *a2, int a3);
-char sub_1FF4BF(int a1, int *a2, uint32_t *a3);
-char sub_1FF83F(int a1, int a2, unsigned int a3, _DWORD *a4, int a5);
-char sub_1FF89F(int a1, int *a2, int a3, int *a4);
+_BOOL1 sub_1FF333(int *a1);
+_BOOL1 sub_1FF429(int *a1);
+char sub_1FF453(int *a1, int a2);
+char sub_1FF4BF(int *a1, int *a2);
+char sub_1FF83F(int a1, unsigned int a2, _DWORD *a3, int a4);
+char sub_1FF89F(int a1, int *a2, int a3, int a4);
 char sub_1FFBE7(int *a1, char *a2, int a3, uint32_t *a4);
-char sub_1FFCFF(int a1, int *a2);
+char sub_1FFCFF(int *a1);
 _BOOL1 sub_1FFD7B(int *a1);
 char sub_1FFE6F(int a1, int a2, int a3);
-int sub_200203(int a1, char *a2, int a3);
-int sub_2002FB(int a1, int a2, int a3);
-int sub_2004B7(int16_t *a1, int a2);
+int sub_200203(char *a1, int a2);
+int sub_2002FB(int a1, int a2);
+int sub_2004B7(int16_t *a1);
 char sub_2004F3();
-char sub_200567(int a1, int a2);
-char sub_2014CF(char *a1, int *a2, uint32_t *a3, uint32_t *a4, _DWORD *a5, int a6);
-char sub_20181F(int *a1, char *edx0, int a3, uint32_t *a4);
-char sub_201927(char *a1, int *a2, uint32_t *a3, uint32_t *a4);
-char sub_20193F(int a1, int a2, uint32_t *a3, uint32_t *a4);
-char sub_201DEB(uint32_t *a1, int a2, int a3);
-char sub_202237(int a1, int a2, uint32_t *a3, uint32_t *a4);
-char sub_20228B(char *a1, uint32_t *a2, int a3, int16_t *a4, int *a5, int *a6, int a7);
-char sub_202557(int64_t a1, uint32_t *a2, int a3, unsigned int a4, int a5, void (*a6)(int *));
-void sub_2027EB(int64_t a1, uint32_t *a2, int a3, unsigned int a4);
+char sub_200567(int a1);
+char sub_2014CF(char *a1, _BYTE *a2, uint32_t *a3, _DWORD *a4, int a5);
+char sub_20181F(char *edx0, int a2, uint32_t *a3);
+char sub_201927(char *a1, _BYTE *a2, uint32_t *a3);
+char sub_20193F(uint32_t *a1, uint32_t *a2);
+char sub_201DEB(uint32_t *a1);
+char sub_202237(uint32_t *a1, uint32_t *a2);
+char sub_20228B(char *a1, uint32_t *a2, int a3, int a4, int *a5, int a6, int a7);
+char sub_202557(char *a1, uint32_t *a2, int a3, unsigned int a4, int a5, void (*a6)(int *));
+void sub_2027EB(int16_t *eax0, char *a2, uint32_t *a3, unsigned int a4);
 int sub_2029AB();
 void sub_202E2F();
 _BOOL1 sub_202F3D(int a1, int a2);
-char sub_202F6B(int a1, int a2, _DWORD *a3, unsigned int a4);
-_DWORD * sub_202FF0(int a1, int64_t a2);
+int sub_202F6B(char *a1, _DWORD *a2, unsigned int a3);
+_DWORD * sub_202FF0(int arg0, int64_t a1);
 unsigned int sub_203047(int a1, int a2);
 signed int sub_203170(int a1);
-int sub_20322F(int a1, unsigned int a2);
+int sub_20322F(int a1, int a2);
 _BYTE * sub_20326F(int a1, int a2, _BYTE *a3);
 char sub_2032D5(int a1, unsigned int a2);
 int sub_203345(unsigned int a1);
 _BOOL1 sub_20338C(int a1, int a2);
 int sub_2033E7(int a1);
-void sub_203447();
+int sub_203447();
 int sub_2034FF(int a1);
 int sub_203533(unsigned int a1);
-_WORD * sub_203597(int a1, int a2, int a3);
-char sub_203657(int a1, int a2, int a3, uint16_t *a4, int a5, uint16_t *a6, unsigned int a7);
+int sub_203597(char *a1);
+int sub_203657(uint16_t *a1, unsigned int a2);
 char sub_2039EF(int a1, int a2, int *a3);
 int sub_21504F();
 int sub_2151CB(_DWORD *a1, int a2);
@@ -2882,9 +2921,9 @@ int sub_215337(_DWORD *a1, int a2);
 _DWORD * sub_2153D0(int a1, int a2);
 int sub_21540B();
 int sub_215473();
-int sub_215513(int *a1, int a2, int *a3, int a4);
+int sub_215513(int a1, int a2, int a3, int a4, int a5);
 int sub_21558B();
-int sub_215773();
+int sub_215773(int a1, char *a2, int a3, int a4);
 int sub_2158FB();
 int sub_215C5F(int a1, int a2);
 int sub_215CD3(int a1, int a2);
@@ -2894,55 +2933,55 @@ int sub_215E2B(int a1, int a2);
 int sub_215E97(int a1, int a2);
 int sub_215F03(int a1, int a2);
 int sub_215F6B(int a1, int a2);
-int sub_215FD7(int result, int *a2, int a3, int a4, char *a5, int *a6);
+int sub_215FD7(int result, int a2, int a3, char *a4, int a5);
 int sub_216023();
-int sub_2160DF(int *a1, int a2);
-int sub_21611B(int *a1, int *a2, int *a3, int a4, int a5, int a6, int a7);
+int sub_2160DF(int a1);
+int sub_21611B(int a1, int a2, _DWORD *a3, int a4, int a5, int a6, int a7);
 int sub_216173();
 int sub_21621F();
 int sub_2162DF();
 int sub_2163A7();
-int sub_21644F(uint32_t *a1, int *a2);
+int sub_21644F(int a1, int a2, int a3, int *a4);
 int sub_216497();
 int sub_21662F();
 int sub_2166B7();
-int sub_2168F7(int a1, int *a2);
-int sub_21696B(int a1, int *a2);
+int sub_2168F7(int a1, int a2);
+int sub_21696B(int a1, int a2);
 int sub_2169E3();
-int sub_216C83(int a1, int a2, int *a3);
-void sub_216CFB(int *a1, int *a2, int *a3, int a4, int a5, int a6);
+int sub_216C83(int a1, int a2);
+void sub_216CFB(int arg0, int a2, int a3, int a1);
 int sub_216D6F();
-int sub_2171CF(int *a1, int a2);
-int sub_217223(int *a1, int a2, int *a3, int a4);
-int sub_217297(int *a1, int a2, int *a3, int a4);
-int sub_21730B(int *a1, int a2, int *a3, int a4);
-int sub_21737F(int *a1, int a2, int *a3, int a4);
-int sub_2173F3(int *a1, int a2, int *a3, int a4);
-int sub_217467(int *a1, int a2, int *a3, int a4);
-int sub_2174DB(int *a1, int a2, int *a3, int a4);
-int sub_21754F(int *a1, int a2, int *a3, int a4);
-unsigned int sub_2175C3(int a1, int *a2, int *a3, int *a4, int a5);
-int sub_217617(int *a1, int *a2, int *a3, int a4);
-int sub_217670(int *a1, int *a2, int *a3, int a4);
-int sub_2176CC(int a1, uint32_t *a2, int *a3);
-int sub_217727(int a1, uint32_t *a2, int *a3);
-int sub_217893(int *a1);
+int sub_2171CF(int a1);
+int sub_217223(int a1, int a2, int a3, int a4);
+int sub_217297(int a1, int a2, int a3, int a4);
+int sub_21730B(int a1, int a2, int a3, int a4);
+int sub_21737F(int a1, int a2, int a3, int a4);
+int sub_2173F3(int a1, int a2, int a3, int a4);
+int sub_217467(int a1, int a2, int a3, int a4);
+int sub_2174DB(int a1, int a2, int a3, int a4);
+int sub_21754F(int a1, int a2, int a3, int a4);
+unsigned int sub_2175C3(int a1, _DWORD *a2, int a3);
+int sub_217617(int a1, int a2, _DWORD *a3, int a4);
+int sub_217670(int a1, int a2, _DWORD *a3, int a4);
+int sub_2176CC(int a1, int a2, int a3, int *a4);
+int sub_217727(int a1, int a2, int a3, int *a4);
+int sub_217893(_DWORD *a1);
 int sub_217A03();
 int sub_217C0B();
 int sub_217E13();
 int sub_218673();
-int sub_2187DB(int a1, int a2, int *a3, char *a4, int *a5);
+int sub_2187DB(char *a1, int a2, _BYTE *a3);
 int sub_21884B();
 int sub_2188B5();
-int sub_21891B(int *a1, int a2);
-_DWORD * sub_21898F(_DWORD *a1, int *a2, int *a3, int a4);
+int sub_21891B(int a1);
+_DWORD * sub_21898F(int a1, int a2);
 int sub_218AFF();
 int sub_218C03();
 int sub_218D83();
-char sub_218E33(int *a1, _BYTE *a2);
+char sub_218E33(_DWORD *a1, _BYTE *a2);
 int sub_218FFF();
 int sub_21927F();
-int sub_2195DF(int *a1);
+int sub_2195DF(_DWORD *a1);
 int sub_2197CF();
 int sub_219B93();
 int sub_219BCF();
@@ -2966,61 +3005,60 @@ int sub_21A4FF();
 int sub_21A5AF();
 int sub_21A633();
 int sub_21A6CB();
-int sub_21A8A5(int *a1, char *a2, unsigned int *a3);
-int sub_21A8EF(int *a1, char *a2, int a3);
+int sub_21A8A5(int a1, char *a2, char *a3, unsigned int *a4);
+int sub_21A8EF(int a1, _DWORD *a2, char *a3, int a4);
 int sub_21A92F(int a1, int a2, char *a3, void (*a4)(void));
-int sub_21A9FC(int a1, int a2, int a3);
-int sub_21AA87(int a1, int a2, int a3);
-int sub_21AB17(int *a1, int *a2);
-int sub_21AB63(int *a1, int *a2);
-int sub_21AC1F(int *a1, int a2, int *a3, _DWORD *a4, int a5);
-int sub_21AEFB(int *a1, int *a2, int a3, int a4);
-int sub_21B083(int *a1, int *a2, int a3, int a4);
-int sub_21B210(int a1, int *a2, char *a3, unsigned int a4, int a5);
-int sub_21B25F(uint32_t *a1, int a2, int *a3, int a4);
-int sub_21B308(uint32_t *a1, int a2);
+int sub_21A9FC(int a1, int a2);
+int sub_21AA87(int a1, int a2);
+int sub_21AB17(_DWORD *a1);
+int sub_21AB63(_DWORD *a1);
+unsigned int sub_21AC1F(_DWORD *a1, int a2, int a3);
+int sub_21AEFB(int a1, int a2);
+int sub_21B083(int a1, int a2);
+int sub_21B210(_DWORD *a1, char *a2, unsigned int a3, int a4);
+int sub_21B25F(int *edx0, _DWORD *a2, int a1);
+int sub_21B308(int a1, int *a2, int a3, int a4);
 int sub_21B320();
 int sub_21B44B();
-int sub_21B640(int *a1, int a2);
-int sub_21B659(int *a1, char *a2, int a3);
+int sub_21B640(char *a1, int a2);
+int sub_21B659(_DWORD *a1, char *a2, int a3);
 int sub_21B6CB();
-int sub_21B967(int *a1, int a2);
+int sub_21B967(int a1, int a2);
 int sub_21B9B1();
-int sub_21BEB8();
+int sub_21BEB8(int a1, _DWORD *a2, _DWORD *a3, unsigned int a4);
 char sub_21C3DB(int a1, int a2);
 int sub_21C477();
 int sub_21C6BB();
-int sub_21CBD7(int *a1, int a2);
-int sub_21CC23();
+int sub_21CBD7(int a1, int a2);
+int sub_21CC21();
 int sub_21CF47();
 int sub_21D617();
-int sub_21DB83(int a1, int a2);
+int sub_21DB83(int a1, int a2, int a3, int a4);
 int sub_21DB9B();
-int sub_21EC47(int a1, int *a2, int a3);
-int sub_21EC93(int *a1, int *a2, int a3, int a4);
+int sub_21EC93(int *a1, int a2, int a3);
 int sub_21EDD3();
-int sub_21F5E8(int a1, int *a2, int a3);
-int sub_21F60F(int a1, int *a2, int a3);
-int sub_21F65C(int a1, int a2, int *a3, int a4);
+int sub_21F5E8(int *a1, int a2);
+int sub_21F60D(int *a1, int a2);
+int sub_21F65C(int *a1, int a2);
 int sub_21F69F();
 int sub_21FE2B();
-int sub_21FECB(int a1, void (*a2)(int, int), int a3);
+int sub_21FECB(int *a1, int a2, void (*a3)(int, int), int a4);
 int sub_21FF83();
-int sub_2204BF(int *a1, int *a2);
+int sub_2204BF(int a1, char *a2);
 int sub_220863();
-int sub_220A87(int *a1, int *a2, int a3);
-int sub_220ACF(int *a1, int a2);
-int sub_220B5F(int a1, int *a2, int *a3, int a4);
-int sub_220BD3(int *a1, int a2);
-int sub_220C97(int *a1, int *a2, int a3);
-int sub_220CDF(int *a1, int *a2, int a3);
-int sub_220D27(int *a1, int *a2, int a3);
-int sub_220D6F(int *a1, int *a2, int a3);
-int sub_220DB7(int *a1, int *a2, int a3);
+int sub_220A87(int a1);
+int sub_220ACF(int a1);
+int sub_220B5F(int *a1, int a2);
+int sub_220BD3(int a1);
+int sub_220C97(int a1);
+int sub_220CDF(int a1);
+int sub_220D27(int a1);
+int sub_220D6F(int a1);
+int sub_220DB7(int a1);
 int sub_220DF7();
-int sub_220FAB(int *a1, int a2);
-int sub_22101F(int *a1, int a2);
-int sub_221091();
+int sub_220FAB(int a1);
+int sub_22101F(int a1);
+_DWORD * sub_221091(_DWORD *arg0, int a2, int a1);
 int sub_2217DF();
 unsigned int sub_2218F3(_DWORD *a1, int a2);
 int sub_2219BC();
@@ -3033,20 +3071,18 @@ int sub_221DC7();
 int sub_221DD3();
 int sub_221E6F();
 int sub_2220E1(int a1, uint32_t *a2);
-int sub_22212B(int a1, int a2);
+int sub_22212B(int a1);
 int sub_2223B7();
-int * sub_2227F7(int a1, int *a2, int *a3, int a4);
-int * sub_222841(int *a1, int a2);
+int * sub_2227F7(int a1, int a2, int a3);
+int * sub_222841(int a1, int a2, int a3, int *a4);
 int sub_22288F();
 int sub_22997F();
-char sub_229DBF(int64_t a1, uint32_t *a2, int a3, unsigned int a4);
-void sub_229EC7(int a1, uint32_t *a2, int a3, int a4);
-void sub_22A0C3(_DWORD *a1, unsigned int a2);
-void sub_22A267(int64_t a1, int a2, int a3);
-void sub_22A3A7(int a1);
+char sub_229DBF(int a1, char *a2, uint32_t *a3, unsigned int a4);
+int16_t sub_229EC7(char *a1, int edx0, uint32_t *a3, unsigned int a4);
+_DWORD * sub_22A0C3(_DWORD *a1, unsigned int a2);
+void sub_22A267(int a1, int a2, int a3);
+void sub_22A3A7(int a1, int a2, int a3);
 int sub_22A40C();
-char sub_1FBE8F_cb(int a2, _BYTE *a4, int a5, unsigned int *a6);
-char sub_1FC06F_cb(uint32_t *a2, _BYTE *a3, int a4, unsigned int *a5);
 int sub_215C5F_cb(int a2);
 int sub_215CD3_cb(int a2);
 int sub_215D47_cb(int a2);
@@ -3055,12 +3091,9 @@ int sub_215E2B_cb(int a2);
 int sub_215E97_cb(int a2);
 int sub_215F03_cb(int a2);
 int sub_215F6B_cb(int a2);
-int sub_2160DF_cb(int a2);
-int sub_2168F7_cb(int *a2);
-int sub_21696B_cb(int *a2);
-int sub_216C83_cb(int *a3);
-void sub_216CFB_cb(int *a3, int a4, int a5, int a6);
-int sub_2171CF_cb(int a2);
+int sub_2168F7_cb(int a2);
+int sub_21696B_cb(int a2);
+int sub_216C83_cb(int a2);
 int sub_217223_cb(int a4);
 int sub_217297_cb(int a4);
 int sub_21730B_cb(int a4);
@@ -3069,26 +3102,10 @@ int sub_2173F3_cb(int a4);
 int sub_217467_cb(int a4);
 int sub_2174DB_cb(int a4);
 int sub_21754F_cb(int a4);
-int sub_2187DB_cb(int *a3, char *a4, int *a5);
-int sub_21AB17_cb(int *a2);
-int sub_21AB63_cb(int *a2);
-int sub_21AC1F_cb(int *a3, _DWORD *a4, int a5);
-int sub_21AEFB_cb(int a4);
-int sub_21B083_cb(int a4);
-int sub_21EC47_cb(int *a2, int a3);
-int sub_21EC93_cb(int a4);
-int sub_21F60F_cb(int *a2, int a3);
-int sub_2204BF_cb(int *a2);
-int sub_220A87_cb(int a3);
-int sub_220ACF_cb(int a2);
-int sub_220B5F_cb(int a4);
-int sub_220BD3_cb(int a2);
-int sub_220C97_cb(int a3);
-int sub_220CDF_cb(int a3);
-int sub_220D27_cb(int a3);
-int sub_220D6F_cb(int a3);
-int sub_220DB7_cb(int a3);
-int sub_220FAB_cb(int a2);
-int sub_22101F_cb(int a2);
+int sub_21AEFB_cb(int a2);
+int sub_21B083_cb(int a2);
+int sub_21EC93_cb(int a3);
+int sub_2204BF_cb(char *a2);
+int sub_220B5F_cb(int a2);
 
 #endif

@@ -548,6 +548,11 @@ int sub_10DB69(int a1, int16_t *a2)
   v2 = (_DWORD*)sub_110CEE((PoolMemType*)dword_192ED4, 0x7C830);
   sub_12D7B7((int)v2);
   sub_10D1FC(word_19999C);
+  if ( g_orion150 )   /* 1.50 10DB91: sub_1E28E2 */
+  {
+    *((uint8_t *)dword_197F98 + 3753 * word_19999C + 801) = 0;
+    *((uint8_t *)dword_197F98 + 3753 * word_19999C + 48) = 0;
+  }
   sub_10DC12_131(0, 255, a1, a2);   /* 1.50 10DB96: not hooked */
   sub_C5BB9();
   sub_1319A3();
@@ -663,6 +668,7 @@ void sub_10DC12_131(int a1, int a2, int a3, int16_t *a4)
   while ( (int16_t)v4 < 8 );
   v8 = word_19999C;
   v9 = 0;
+  if ( !g_orion150 )   /* 1.50 10DC7D: jmp loc_10DCA1 */
   do
   {
     v10 = 3753 * v8 + (uint8_t*)dword_197F98;
@@ -1917,7 +1923,7 @@ char *sub_10F7A1( int a1, int a2)
 
   if ( a1 < 204 )
     return (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * a1);
-  v3 = *(uint8_t *)(a1 + (uint8_t*)dword_197F98 + 3753 * a2 + 336);
+  v3 = *(uint8_t *)(a1 + (uint8_t*)dword_197F98 + 3753 * a2 + 336) + (g_orion150 ? 1 : 0);   /* 1.50 10F7C5..10F7D8: inc dx */
   strcpy(byte_17D640, (char *)(intptr_t)*(int *)((char *)&off_17E079 + 13 * a1));
   v4 = &byte_17D640[-1];
   do
@@ -5129,7 +5135,7 @@ unsigned int sub_11438B_131( int a1, int a2, int a3, int a4, _BYTE *a5, int a6)
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 53) = a6;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a5;
   HIWORD(v6) = HIWORD(off_184480);
-  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u )
+  if ( !g_orion150 && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u )   /* 1.50 1144B5: jmp - the hotkey letter stays lower case */
   {
     v6 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
     if ( v6 < 0x7B )
@@ -5189,7 +5195,7 @@ int sub_1146FD( int a1, int a2, int a3, _BYTE *a4, int a5)
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 53) = a5;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a4;
   v6 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
-  if ( v6 > 0x60 )
+  if ( !g_orion150 && v6 > 0x60 )   /* 1.50 114992: jmp - the hotkey letter stays lower case */
   {
     v6 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
     if ( v6 < 0x7B )
@@ -5276,7 +5282,7 @@ unsigned int sub_114C72(_BYTE *a1, int a2)
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 8) = 7;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a1;
   v2 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
-  if ( v2 > 0x60 )
+  if ( !g_orion150 && v2 > 0x60 )   /* 1.50 114D5B: jmp - the hotkey letter stays lower case */
   {
     v2 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
     if ( v2 < 0x7B )
@@ -5354,7 +5360,7 @@ unsigned int sub_114FBA( int a1, int a2, int a3, _WORD *a4, _BYTE *a5, int a6)
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 36) = sub_12B6D4((int)a4);
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a5;
   result = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
-  if ( result > 0x60 )
+  if ( !g_orion150 && result > 0x60 )   /* 1.50 115156: jmp - the hotkey letter stays lower case */
   {
     result = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
     if ( result < 0x7B )
@@ -5480,7 +5486,7 @@ unsigned int sub_115478( int a1, int a2, int a3, int a4, int a5, int a6, int a7,
   *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 32) = a9;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a10;
   v11 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
-  if ( v11 > 0x60 )
+  if ( !g_orion150 && v11 > 0x60 )   /* 1.50 115674: jmp - the hotkey letter stays lower case */
   {
     v11 = *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52);
     if ( v11 < 0x7B )
@@ -5729,7 +5735,7 @@ char *sub_115E3B( int a1, int a2, int a3,
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 6) = sub_122259() + a2;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 44) = a5;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a10;
-  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u
+  if ( !g_orion150 && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u   /* 1.50 115F8D: jmp - the hotkey letter stays lower case */
     && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) < 0x7Bu )
   {
     *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) -= 32;

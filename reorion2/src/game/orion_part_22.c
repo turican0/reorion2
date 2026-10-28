@@ -221,7 +221,7 @@ char *sub_148605(char *a1, int a2, int a3)
   while ( 1 )
   {
     ++v4;
-    if ( !a3 )
+    if ( g_orion150 ? a3 <= 0 : !a3 )   /* 1.50 14860F: jle */
       break;
     --a3;
     v5 = *v3++;

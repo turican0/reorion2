@@ -122,7 +122,7 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
   sub_1EBC6B();
   for ( i = 0x24071E; i != 0x240768; i += 2 )
     *(uint16_t *)ESTR150(i) = 0xFFFF;
-  r = sub_1FA13F(EINT150(0x240768), 0);   /* 202A26: eax = end of the loop above */
+  r = sub_1FA13F();   /* 202A26: eax = end of the loop above */
   Dos150_GetTime(&cx, &dx);
   sub_1EC907(0, EINT150(0x2528B5), cx >> 8, cx & 0xFF, dx >> 8, dx & 0xFF, argv[0],
              (int)(intptr_t)(ccode + 0x169549 - 0x10000), r);   /* "starting %s, version %s" */
@@ -138,7 +138,7 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
     *ESTR150(0x2407BE) = 0;
   }
   sub_1E8BCF();
-  sub_1FB173((uint32_t *)ESTR150(0x23E6A8), 0, 0, 0);
+  sub_1FB173((int *)ESTR150(0x23E6A8));
   n = *(int16_t *)ESTR150(0x24068E);
   for ( i = 0; i < argc; ++i )
   {
@@ -176,10 +176,10 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
     sub_1ECCDF(0, 0, EINT150(0x247060), 0, 0);
   }
   sub_1F8F2B();
-  sub_1FB173((uint32_t *)ESTR150(0x23E698), 0, 0, 0);
+  sub_1FB173((int *)ESTR150(0x23E698));
   Dos150_GetTime(&cx, &dx);
   sub_1EC907(0, EINT150(0x247049), Ms150(cx, dx) - t0);   /* "config loaded in %ums" */
-  sub_1FF103(0, 0, 0);
+  sub_1FF103(0, 0);
   if ( !sub_1FD03B((uint32_t *)&res) )
   {
     /* 202D2C..202E2D: the original lists the languages the config works with ($AVAIL$ in 25292D);
@@ -344,7 +344,7 @@ int sub_1E3727(int a1, int a2, int a3, int a4)
 /* 1E4BBB eax = dword 1E4BA3 (kept in the block code), call sub_1FA583, call ServiceAudioTick (eax kept) */
 int sub_1E4BBB()
 {
-  int r = (uint8_t)sub_1FA583(*(uint32_t *)(ecode + 0x4BA3), 0, 0, 0, 0);
+  int r = (uint8_t)sub_1FA583(*(uint32_t *)(ecode + 0x4BA3));
 
   return ServiceAudioTick_FE8BE(r, 0, 0, 0);
 }
@@ -355,7 +355,7 @@ int sub_1F8F2B()
 {
   int src, dst, k;
 
-  sub_1EEBFB(0, 0, 0, 0, 0, 0, 0, 0);   /* 1F8F2F: its register arguments are scratch */
+  sub_1EEBFB();   /* 1F8F2F: its register arguments are scratch */
   dseg[0x485] = eseg[0x137D6];
   dseg[0x3D3] = (uint8_t)-eseg[0x137DC];   /* the switch flag bytes after "/nowh" ... */
   dseg[0x3DA] = (uint8_t)-eseg[0x137DB];
@@ -379,7 +379,7 @@ int sub_1F8F2B()
   /* 1F9040: every second byte of 0x23D121 -> 0x17D1FD..0x17D218 */
   for ( k = 0; k < 0x17D218 - 0x17D1FD; ++k )
     dseg[0x17D1FD - 0x178000 + k] = eseg[0x23D121 - 0x22A600 + 2 * k];
-  sub_1E6CD3();
+  sub_1E6CD3(0, 0, 0, 0);   /* register pass-through to sub_5E1E3, no effect */
   if ( *(uint32_t *)(eseg + 0x13DE8) )   /* dword 23E3E8 */
   {
     sub_1F8EB3((int)(intptr_t)(eseg + 0x13DE8));
@@ -478,7 +478,7 @@ int sub_1E1307(int a1, int a2)
    eax = 2, edx = ebp+66h - the game function continues there (wired at the hook site) */
 int sub_1E1313(int a1, int a2)
 {
-  return sub_1FC7FB(a1, a2);
+  (void)a1;
 }
 
 //----- (001E21D7) --------------------------------------------------------
@@ -527,4 +527,104 @@ void sub_1EB84B(int64_t a1, int64_t a2, int a3, int a4, int a5, char *a6)
 int sub_1EC8EC(char *a1, char *a2)
 {
   return fopen((char *)sub_1EC897(a1), a2);
+}
+
+//----- (001EC97B) --------------------------------------------------------
+/* Hex-Rays lost the result of sub_E0DD6 (1EC990 movzx edx, ax). Refund of the bought production
+   (+12Ch) to the owner's treasury (+32h) - first half at 2 BC, then up to a tenth at 5, the rest at 10 */
+int sub_1EC97B(char *a1)
+{
+  unsigned int v3, w12C, w125, total;
+  int half, cnt, rest, refund;
+  uint8_t *result;
+
+  v3 = (uint16_t)sub_E0DD6(a1, *(int16_t *)(a1 + 277));
+  w12C = *(uint16_t *)(a1 + 300);
+  w125 = *(uint16_t *)(a1 + 293);
+  if ( v3 != w12C + w125 )
+  {
+    sub_1EC907(0, EINT150(0x2500A9), (int)((uint8_t *)a1 - (uint8_t *)dword_192B18) / 361, w125, w12C, v3);
+    if ( !byte_2407BE[0] )
+    {
+      byte_2407BE[0] = 1;
+      if ( dword_23F992[0] )
+      {
+        fclose(dword_23F992[0]);
+        dword_23F992[0] = 0;
+      }
+      byte_2407BE[0] = 0;
+    }
+    w12C = *(uint16_t *)(a1 + 300);
+    w125 = *(uint16_t *)(a1 + 293);
+  }
+  total = w12C + w125;
+  refund = 0;
+  if ( (int)w125 < (int)total )
+  {
+    half = (int)total >> 1;
+    cnt = half > (int)w12C ? (int)w12C : half;
+    refund = 2 * cnt;
+    rest = (int)w12C - cnt;
+    if ( rest )
+    {
+      cnt = half - (int)(total / 10);
+      if ( cnt > rest )
+        cnt = rest;
+      refund += 5 * cnt;
+      rest -= cnt;
+      if ( rest )
+        refund += 10 * rest;
+    }
+  }
+  *(_WORD *)(a1 + 300) = 0;
+  result = (uint8_t *)dword_197F98 + 3753 * *a1;
+  *(_DWORD *)(result + 50) += refund;
+  return (int)(intptr_t)result;
+}
+
+//----- (001EE5AF) --------------------------------------------------------
+/* Hex-Rays lost the result of sub_E0DD6 (1EE5DF movzx edi, ax). Two texts (23DD14, 23DD1E) with the
+   keys 24683A = a1, 24682C = +125h, 24681E = +12Ch, 246811 = sum, 246802 = sub_E0DD6 */
+int *sub_1EE5AF(unsigned int a1)
+{
+  uint8_t *v2;
+  unsigned int v3, w125, w12C;
+  unsigned int v6[32];
+
+  a1 = (uint16_t)a1;
+  v2 = (uint8_t *)dword_192B18 + 361 * dword_19F7A8;
+  v3 = (uint16_t)sub_E0DD6((char *)v2, *(int16_t *)(v2 + 277));
+  w125 = *(uint16_t *)(v2 + 293);
+  w12C = *(uint16_t *)(v2 + 300);
+  sub_1EE50F((int)(intptr_t)v6, v6, (_BYTE *)0x64, (uint32_t *)dword_23DD14,
+             (int)(intptr_t)(eseg + 0x1C23A), a1, (int)(intptr_t)(eseg + 0x1C22C), w125,
+             (int)(intptr_t)(eseg + 0x1C21E), w12C, (int)(intptr_t)(eseg + 0x1C211), w125 + w12C,
+             (int)(intptr_t)(eseg + 0x1C202), v3, 0);
+  return sub_1EE50F((int)(intptr_t)v6, v6, (_BYTE *)0x64, (uint32_t *)dword_23DD1E,
+                    (int)(intptr_t)(eseg + 0x1C23A), a1, (int)(intptr_t)(eseg + 0x1C22C), w125,
+                    (int)(intptr_t)(eseg + 0x1C21E), w12C, (int)(intptr_t)(eseg + 0x1C211), w125 + w12C,
+                    (int)(intptr_t)(eseg + 0x1C202), v3, 0);
+}
+
+//----- (001ECCDF) --------------------------------------------------------
+/* the block's fatal error (arg_0 kind, arg_4 format, the arguments): Hex-Rays lost most of it. The original
+   writes the message to the log and either raises it as a Lua error or ends the game - the port reports it
+   and ends the game */
+void Hook150_Exit(char *msg, int normal);
+_WORD *sub_1ECCDF(int a1, const char *a2, ...)
+{
+  char buf[4000];
+  uint32_t va32[32];
+  va_list va;
+  int i;
+
+  (void)a1;
+  va_start(va, a2);
+  for ( i = 0; i < 32; ++i )
+    va32[i] = (uint32_t)va_arg(va, uintptr_t);
+  va_end(va);
+  Vsnprintf150(buf, sizeof(buf), a2, va32);
+  PortDebug_Message(buf);
+  Hook150_Exit(buf, 0);
+  return 0;
 }

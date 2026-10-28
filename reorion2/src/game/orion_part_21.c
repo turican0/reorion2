@@ -4655,7 +4655,7 @@ bool sub_145FD2()
   // test AX==0x004F). int386x je v portu stub, takze by vzdy vratila false.
   // Port ale VESA-linearni framebuffer POSKYTUJE (Port::Vga pres SDL), takze
   // hlasime "VESA dostupne" -> sub_1252C2 vrati mod 5 (linearni). Viz vlna 16.
-  (void)v1.status;
+  (void)v1.status;   /* 1.50 14609F: cmp byte (AL = 4Fh) - no effect, VESA is forced */
   return true;
 }
 // 144A4A: using guessed type int int386x(_DWORD, _DWORD);
@@ -4701,7 +4701,7 @@ int sub_1460C1()
   // For the forced linear mode 5 the correct value is 2048 (word_1BBA62 = 0x800,
   // verified via dosbox DUMPMEM). Return it directly so the downstream banking
   // config matches the original. Consistent with wave 16 (VESA forced true).
-  (void)v4;
+  (void)v4;   /* 1.50 1461C6: cmp byte (AL = 4Fh) - no effect, the value is forced */
   return 2048;
 }
 // 13F253: using guessed type int int386(_DWORD, _DWORD, _DWORD);

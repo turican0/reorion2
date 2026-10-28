@@ -556,7 +556,7 @@ LABEL_40:
           }
           v39 = textBuf_456;
           v40 = textBuf_456;
-          v41 = sub_7A990(0x20u);
+          v41 = sub_7A990(g_orion150 ? 0xE3u : 0x20u);   /* 1.50 894C8: 0E3h */
           v42 = 0;
           goto LABEL_66;
         }
@@ -1985,7 +1985,7 @@ void sub_8AF4E(int a1)
         sub_85B93(word_199838, &v13, &v10);
         v2 = sub_EBEB7(v1, word_199838);   /* wave 182: result was dropped */
         v3 = v2;
-        if ( (uint16_t)sub_1276F0(113 * v1 + dword_19306C + 31, word_199838) )
+        if ( (uint16_t)sub_1276F0(113 * v1 + dword_19306C + 31, word_199838) && !g_orion150 )   /* 1.50 8B06E: jmp */
         {
           sub_120DED(0, 0);
           sub_120D79(2, (int)v7);
@@ -2308,7 +2308,7 @@ void sub_8B519()
   }
   else
   {
-    strcpy(v23, sub_7A990(0xE6u));
+    strcpy(v23, sub_7A990(g_orion150 ? 0xECu : 0xE6u));   /* 1.50 8B548: 0ECh */
     sub_7A25F(&byte_199F28, (int)v23, 3);
   }
   word_199A08 = word_199A10;
@@ -3481,7 +3481,7 @@ char sub_8C840( int a1, _WORD *a2, _BYTE *a3, int a4, int a5)
   }
   do
   {
-    LOBYTE(v14) = sub_F4D24((int)v23, 12);
+    LOBYTE(v14) = sub_F4D24((int)v23, 12);   /* 1.50 8C9E6: call sub_F4D24 - the 1.40 source already has it */
     *a3 = v14;
     if ( (uint8_t)v14 < 6u )
     {
@@ -3604,7 +3604,7 @@ int sub_8CB93( int a1, _WORD *a2, int a3)
 
   v6[0] = 0;
   if ( (int16_t)sub_1247A0(0x64u) > (uint8_t)byte_17D826 )
-    sub_F4D39(a1, a2, v6, 1, 0);
+    sub_F4D39(a1, a2, v6, 1, 0);   /* 1.50 8CBCC: call sub_F4D39 - the 1.40 source already has it */
   else
     v6[0] = 0;
   if ( (uint8_t)byte_199CB0 < 3u )
@@ -3947,6 +3947,8 @@ LABEL_11:
           /* wave 184: 8D18E movsx eax, word [var_38] (a3) / call sub_8C807 / imul eax, ebx, 71h /
              mov [dword_18B06C+eax+16h], dl - IDA read an uninitialised v40 and a phantom sub_F4B41 */
           v14 = sub_8C807((int16_t)a3);
+          if ( g_orion150 && (uint8_t)v14 == 6 && *(uint8_t *)(dseg + 0x3DA) == 0xFF )   /* 1.50 8D197: sub_F4B41 / loc_169148 */
+            v14 = Hook150_1E41B8(6u) - 1;   /* 1.50 16914F: call sub_1E41B8 / dec al */
           *(_BYTE *)(dword_19306C + 113 * (int16_t)i + 22) = v14;
         }
         if ( a5 )
@@ -4317,7 +4319,13 @@ int sub_8D6D6( int a1, int a2)
   if ( v24 <= -1 )
   {
     result = 113 * a1;
-    *(_BYTE *)(dword_19306C + result + 41) = 0;
+    *(_BYTE *)(dword_19306C + result + 41) = g_orion150 ? -1 : 0;   /* 1.50 8D89A: 0FFh */
+  }
+  else if ( g_orion150 && *(uint8_t *)(dseg + 0x3D3) )   /* 1.50 8D871..8D877: loc_F4B56 - byte_1783D3: no link */
+  {
+    *(_BYTE *)(dword_19306C + 113 * v24 + 41) = -1;
+    result = 113 * a1;
+    *(_BYTE *)(dword_19306C + result + 41) = -1;
   }
   else
   {
@@ -4482,7 +4490,19 @@ void sub_8DA07(int a1, int a2, int16_t *a3)
 // volajici predava, se NEPOUZIVAJI - velikost si funkce zjisti sama.
 int sub_8CF09()
 {
-  switch ( (uint16_t)sub_798D2() )
+  int v = sub_798D2();
+
+  if ( g_orion150 && (*(uint8_t *)(dseg + 0x4DD + 2) & 1) )   /* 1.50 8CF09..8CF0D: jmp sub_1693B6 */
+  {
+    word_199A0C = 1011;
+    word_199A0A = 800;
+    word_199992 = 15;
+    word_1999A0 = 20;
+    word_19999E = 3;
+    word_19997C = 3;
+    return 0;
+  }
+  switch ( (uint16_t)v )
   {
     case 0:
       word_199A0C = 0x1FA;
@@ -4747,6 +4767,8 @@ LABEL_13:
   ServiceAudioTick_FE8BE(v43, SHIDWORD(v43), v73, v26);
   word_1999A2 = 0;
   sub_8C4D3(v73);   /* wave 183: 8DDF6 call sub_8C4D3 (sub_16933A was an IDA artifact) */
+  if ( g_orion150 && *(uint8_t *)(dseg + 0x4DD + 620) )   /* 1.50 8DDF7..8DDFA: call sub_16933A (a 1.50 cave) */
+    byte_199F0D = 0;
   if ( byte_199F0D )
     sub_8C099(v73, (unsigned int)v26);
   sub_7926C(word_199A0C);
@@ -8909,7 +8931,14 @@ char sub_922C2( int a1, int a2, int a3, int a4, char *a5)
   // z neprelozene oblasti orion_part_26, stejny jako `sub_169245` ve vlne 84.
   // Cetlo se pritom pres CTYRBAJTOVY slot, ktery je nulovy, takze to sahalo
   // na adresu 0x0E (zmereno: SEH v sub_922C2+0x19d).
+  if ( g_orion150 )   /* 1.50 9237B..9237F: jmp loc_16920D - star 0 byte +0Eh kept in byte 1784DC around sub_91F14 */
+    *(uint8_t *)(dseg + 0x4DC) = dword_19306C[14];
   v22 = sub_91F14(v18, 15, v8, v11, v19, v20, v21);
+  if ( g_orion150 )
+  {
+    dword_19306C[14] = *(uint8_t *)(dseg + 0x4DC);
+    dword_19306C[13] = 0;
+  }
   v12 = (char *)(dword_19306C + 113 * a3);
   if ( !*v12 )
     strcpy(v12, v26);
@@ -9717,6 +9746,8 @@ LABEL_16:
         byte_199F11 = 1;
         return;
       }
+      if ( g_orion150 )   /* 1.50 93145: jz 931A4 */
+        goto LABEL_931A4;
       v13 = unk_18228C;
 LABEL_15:
       sub_123E6C((int)v13, 1);
@@ -9725,11 +9756,13 @@ LABEL_15:
     if ( byte_19C544 == 1 )
     {
       v14 = 59 * byte_199F15 + dword_1930DC;
-      if ( *(_BYTE *)(v14 + 57) && *(_BYTE *)(v14 + 57) != 2 )
+      if ( !(g_orion150 && !Hook150_1E38D2(byte_199F15))   /* 1.50 09318D: sub_1E38D2 */
+        && *(_BYTE *)(v14 + 57) && *(_BYTE *)(v14 + 57) != 2 )
       {
         sub_943A0(byte_199F15);
         goto LABEL_16;
       }
+LABEL_931A4:
       byte_199F15 = -1;
       v13 = unk_17CF00;
       byte_19C544 = -1;

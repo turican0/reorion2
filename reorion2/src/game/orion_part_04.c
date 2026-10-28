@@ -8302,7 +8302,7 @@ void sub_5BD97()
     }
   }
   HIBYTE(v23) = HIBYTE(v3);
-  word_19B858 = word_19B85A;
+  word_19B858 = word_19B85A;   /* 1.50 5BED8, 5BEDE: cmp 0Dh / jge in loc_F4FAA - the 1.40 source already has < 13 */
   if ( (word_19B85A < 13 || !dword_19B810) && (word_19B85A == 13 || byte_19B848[word_19B85A])
     || (word_19B856 || word_19B85A == 13) && (word_19B856 != 1 || word_19B85A != 13) )
   {
@@ -8316,6 +8316,21 @@ LABEL_61:
     // epilog funkce (`lea esp, [ebp+82h] / pop ebp / jmp loc_5BD91`, kde
     // loc_5BD91 = `pop edi/esi/edx/ecx/ebx / retn`), tedy proste navrat.
     return;
+  }
+  if ( g_orion150 )   /* 1.50 05BF41: sub_1E1313 - the race text from sub_1FC7FB, then 5C187 */
+  {
+    int d = Hook150_1E1313();
+
+    sub_120CCB(2, (int)v26);
+    sub_120DED(0, 0);
+    sub_103915(0, 50, 391, d, 295);
+    if ( word_19B85A == 13 )
+    {
+      sub_120CCB(4, (int)v26);
+      sub_120DED(0, 0);
+      sub_1210FD(197, 42, (int)(intptr_t)unk_19B85C);
+    }
+    goto LABEL_61;
   }
   v7 = 0;
   v8 = 1;
@@ -9153,7 +9168,7 @@ LABEL_59:
           v36 = 477;
           v6 = dword_19B840;
           v7 = (int)&word_199A08;
-          if ( (char)word_199A08 < 15 )
+          if ( (char)word_199A08 < 15 )   /* 1.50 5CC51: loc_F4F8D - the 1.40 source already has it */
           {
             v7 = (int)&unk_178F8A;
             v36 = sub_11523B(477, 378, (int)&unk_178F8A, (_WORD *)dword_19B840, (int)&unk_19B83A, &unk_178F8A, 40);
@@ -9746,6 +9761,8 @@ void sub_5D953_131()
   int16_t v23; // [esp+28h] [ebp-4h]
 
   v20 = 2;
+  if ( g_orion150 && *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 436) == 3 )   /* 1.50 05D975: sub_1E483D */
+    v20 = *Hook150_Eseg(0x23CC11);
   if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 460) == 3 )
     v20 = 4;
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 395) == 3 )
@@ -9786,7 +9803,7 @@ LABEL_61:
       {
         v4 = v20;
         if ( *(_BYTE *)(v17 + (uint8_t*)dword_192B18 + 350) )
-          v4 = v20 + 2;
+          v4 = v20 + (g_orion150 ? *(uint16_t *)Hook150_Eseg(0x23CC0C) : 2);   /* 1.50 05D9D0: sub_1E0465 */
         if ( *(_BYTE *)((uint8_t*)dword_192B18 + 361 * j + 318) )
           v4 += 4;
         if ( *(_BYTE *)((uint8_t*)dword_192B18 + 361 * j + 351) )
@@ -9817,7 +9834,9 @@ LABEL_61:
       {
         v8 = v20 - v7;
         if ( sub_5D393(k, 5) )
-          v8 += 2;
+          v8 += g_orion150 ? *(uint16_t *)Hook150_Eseg(0x23CC08) : 2;   /* 1.50 05DB9C: sub_1E0476 */
+        if ( g_orion150 && sub_5D393(k, 28) )
+          v8 += *(uint16_t *)Hook150_Eseg(0x23CC0A);
         if ( v8 > v1 )
           v1 = v8;
       }
@@ -9843,12 +9862,17 @@ LABEL_61:
     v10 = 129 * v18 + dword_197F9C;
     if ( *(char *)(v10 + 99) > 8 && !*(_BYTE *)(v10 + 20) )
       break;
+    if ( g_orion150 )   /* 1.50 05DC41: sub_1E0455 - the value by sub_1E901F */
+    {
+      v13 = Hook150_1E0455(v18);
+      goto LABEL_5DD1E;
+    }
     v12 = 129 * v18;
     if ( *(_BYTE *)(v12 + dword_197F9C + 99) == 8 )
     {
       LOWORD(v13) = -5;
     }
-    else if ( *(char *)(v12 + dword_197F9C + 99) < 8
+    else if ( *(char *)(v12 + dword_197F9C + 99) < 8   /* 1.50 5DC67, 5DC6D: loc_F4D5C / 169357 - not reached */
            && (*(_BYTE *)(3753 * *(char *)(v12 + dword_197F9C + 99) + (uint8_t*)dword_197F98 + 2235) == 1
             || (v16 = (_BYTE *)(dword_197F9C + 129 * v18), (char)v16[26] < 0)
             || (v16[23] & 0x40) != 0
@@ -9875,6 +9899,7 @@ LABEL_61:
       LOWORD(v13) = v13 + 500;
     if ( (uint16_t)sub_1276F0(dword_197F9C + 129 * v18 + 118, 0x17u) )
       LOWORD(v13) = v13 + 500;
+LABEL_5DD1E:
     if ( (int16_t)v13 <= v1 )
     {
       v22 = m;
@@ -10559,6 +10584,8 @@ int sub_5E481( int a1, int a2)
   LOWORD(result) = 1;
   if ( *(_BYTE *)(v3 + (uint8_t*)dword_197F98 + 2207) == 6 && (a2 == 86 || a2 == 195 || a2 == 141) )
     LOWORD(result) = 0;
+  if ( g_orion150 && *(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 2224) && (int16_t)a2 == 4 )   /* 1.50 05E4C9: sub_1E22E1 */
+    LOWORD(result) = 0;
   if ( *(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 2230) && (a2 == 142 || a2 == 19 || a2 == 50 || a2 == 113) )
     LOWORD(result) = 0;
   if ( *(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 2225)
@@ -10649,6 +10676,7 @@ void sub_5E55F( int a1)
       if ( *(int16_t *)((char *)&word_17E07F + 13 * v4) )
       {
         if ( (!*(_BYTE *)(3753 * a1 + (uint8_t*)dword_197F98 + 2228)
+           || g_orion150 && sub_E41DB(*(int16_t *)((char *)&word_17E07F + 13 * v4)) == 1   /* 1.50 05E652: sub_1E27C6 */
            || (v5 = *(int16_t *)((char *)&word_17E07F + 13 * v4), v5 == -1)
            || *(int *)((char *)&dword_17D916 + 23 * v5) == 50
            || *(int16_t *)((char *)&word_17E07F + 13 * v4) == 23)
@@ -10722,7 +10750,9 @@ void sub_5E55F( int a1)
             ++v29;
           }
         }
-        if ( !v33 )
+        if ( !v33 && g_orion150 )   /* 1.50 05E843, 5E848: sub_1E4BEC - sub_1EB12F instead of the random pick */
+          Hook150_1E4BEC(a1, v10);
+        else if ( !v33 )
         {
           do
           {
@@ -10929,6 +10959,20 @@ int sub_5EB72( int a1, int a2, int a3)
       v12 = word_180020[v11];
       WORD2(v12) = word_180020[v11];
       v25 = HIDWORD(v12) - SWORD2(v12) / 2;
+      if ( g_orion150 )   /* 1.50 05EC5D, 05EC90, 05ECD6, 5EC72, 5EC98, 5ECBB: sub_1EA2DF instead of / 4, / 2, ecx 10h */
+      {
+        int h = SWORD2(v12) / 2;
+        int t;
+
+        v27 = (int)Hook150_1EA2DF(h, 1) / sub_6EE8E(v4, v6, 1, 16, 0, 0);
+        v31 = (int)Hook150_1EA2DF(h, 0) / sub_6EE8E(v4, v6, 1, 16, 0, 2);
+        t = (int)Hook150_1EA2DF((int16_t)v25, 3);
+        LODWORD(v12) = sub_6EE8E(v4, v29, 1, 16, 0x14u, 0);
+        v9 = t % (int)v12;
+        v10 = t / (int)v12;
+      }
+      else
+      {
       v27 = ((int)(SWORD2(v12) / 2
                  - (__CFSHL__((uint64_t)(SWORD2(v12) / 2) >> 32, 2)
                   + 4 * ((uint64_t)(SWORD2(v12) / 2) >> 32))) >> 2)
@@ -10937,6 +10981,7 @@ int sub_5EB72( int a1, int a2, int a3)
       LODWORD(v12) = sub_6EE8E(v4, v29, 1, 15, 0x14u, 0);
       v9 = (int16_t)v25 % (int)v12;
       v10 = (int16_t)v25 / (int)v12;
+      }
     }
     v13 = sub_5F871(v23, (uint16_t)v9);
     v14 = word_17F819[14 * v28] - v13;
@@ -11455,7 +11500,7 @@ int sub_5F5A3(int a1, int a2)
     return 120;
   a1 = (int16_t)a1;
   v2 = Hook150_1E3D80(a1);   /* 1.50 05F5CB */
-  v3 = sub_6EE8E(a1, v2, 1, 1, 1u, 2);
+  v3 = sub_6EE8E(a1, v2, 1, g_orion150 ? 16 : 1, 1u, 2);   /* 1.50 05F5DA: sub_1E3CC0 */
   v4 = 225 / v3;   /* 0x5F5F2 ebx = quotient, edx = remainder is the 2nd arg */
   v5 = 3 * word_17F819[14 * v2] / 2 - (int16_t)sub_5F871((int16_t)a2, 225 % v3);
   if ( v5 < 0 )
@@ -11505,7 +11550,7 @@ int sub_5F64C(int a1, int a2)
     v6 = 6;
     v7 = 0;
   }
-  v8 = (int16_t)(4 * (2 * v5 + v7));
+  v8 = (int16_t)(4 * ((g_orion150 ? v5 + v6 : 2 * v5) + v7));   /* 1.50 5F6C6: add eax, edi */
   v9 = (int16_t)(4 * (3 * v5 / 2 + v6));
   v10 = word_17F819[14 * v2] - v4;
   if ( v10 < 0 )
@@ -12075,7 +12120,7 @@ LABEL_11:
       *(_BYTE *)(a2 + 8 * *a3 + 31) = v5;
     }
     ++*a3;
-    return sub_6EE8E(v8, 31, 1, 16, 1u, 0) * v9;
+    return sub_6EE8E(v8, g_orion150 ? v11 : 31, 1, 16, 1u, 0) * v9;   /* 1.50 60345: edx = [ebp-8] */
   }
   return v10;
 }
@@ -12250,12 +12295,19 @@ int16_t sub_60362(int a1, int16_t *a2, int a3, int a4, int a5, uint16_t *a6)
         v26 = *((_WORD *)v35 + v29) & 0x7FF9;
       }
       *(_WORD *)a3 = v26;
+LABEL_6066B:
       v30 = a5 / sub_6EE8E(v34, *a2, 1, 1, *a6, *(_WORD *)a3);
       LOWORD(v9) = v45;
       if ( (int16_t)v30 < word_1812A4[(int16_t)v45] )
       {
         if ( (int16_t)*a6 > 5 )
+        {
           *a6 = 5;
+          if ( g_orion150 )   /* 1.50 0606B2: sub_1E4CD8 - again from 6066B */
+            goto LABEL_6066B;
+        }
+        else if ( g_orion150 && (int16_t)*a6 == 5 && *Hook150_Eseg(0x23F079) == 1 )
+          *a6 = 3;
         v31 = a5 / sub_6EE8E(v34, *a2, 1, 1, *a6, *(_WORD *)a3);
         LOWORD(v9) = v45;
         if ( (int16_t)v31 < word_1812A4[(int16_t)v45] )
@@ -12816,8 +12868,8 @@ signed int sub_60B59(
               else
                 v50 = word_17F819[14 * (int16_t)v69[v48]] - (int16_t)v82;
               v51 = 10 * v50 / v49;
-              if ( (word_17F815[14 * (int16_t)v69[v48]] & 0x20) != 0 )
-                v51 = 3 * v51 / 2;
+              if ( (word_17F815[14 * (int16_t)v69[v48]] & 0x20) != 0 )   /* 1.50 061123: sub_1E124A, word 23D0FC % more */
+                v51 = g_orion150 ? v51 + v51 * *(uint16_t *)Hook150_Eseg(0x23D0FC) / 100 : 3 * v51 / 2;
               if ( (word_17F815[14 * (int16_t)v69[v48]] & 4) != 0 )
                 v51 = (5 * v51 - (__CFSHL__((5 * v51) >> 31, 2) + 4 * ((5 * v51) >> 31))) >> 2;
               if ( (word_17F815[14 * (int16_t)v69[v48]] & 0x400) != 0 )
@@ -12849,19 +12901,19 @@ signed int sub_60B59(
         v42 = a6;
         goto LABEL_62;
       }
-      if ( (_WORD)v79 == 1 )
+      if ( (_WORD)v79 == 1 && !g_orion150 )   /* 1.50 611F8: jmp */
       {
         v84 = v79 - 1;
       }
       else
       {
-        v73 = 0;
+        v73 = g_orion150 ? -1 : 0;   /* 1.50 61205: -1 */
         v84 = 0;
         v74 = 0;
         v53 = 0;
         while ( (int16_t)v79 > v74 )
         {
-          if ( v69[v53] )
+          if ( v69[v53] && (!g_orion150 || (word_17F81D[14 * (int16_t)v69[v53]] & 2)) )   /* 1.50 061224: sub_1E3E42 */
           {
             v54 = sub_6EE8E(v67, v69[v53], 1, 1, 1u, 2);
             if ( (word_17F815[14 * (int16_t)v69[v53]] & 0x100) != 0 )
@@ -12869,13 +12921,16 @@ signed int sub_60B59(
             else
               v55 = 3 * word_17F819[14 * (int16_t)v69[v53]] / 2 - (int16_t)v82;
             v56 = 10 * v55 / v54;
-            if ( (word_17F815[14 * (int16_t)v69[v53]] & 0x20) != 0 )
-              v56 = 3 * v56 / 2;
+            if ( (word_17F815[14 * (int16_t)v69[v53]] & 0x20) != 0 )   /* 1.50 061296: sub_1E124A */
+              v56 = g_orion150 ? v56 + v56 * *(uint16_t *)Hook150_Eseg(0x23D0FC) / 100 : 3 * v56 / 2;
             if ( (word_17F815[14 * (int16_t)v69[v53]] & 4) != 0 )
               v56 = (5 * v56 - (__CFSHL__((5 * v56) >> 31, 2) + 4 * ((5 * v56) >> 31))) >> 2;
             if ( (word_17F815[14 * (int16_t)v69[v53]] & 0x400) != 0 )
               v56 = (5 * v56 - (__CFSHL__((5 * v56) >> 31, 2) + 4 * ((5 * v56) >> 31))) >> 2;
             if ( (word_17F815[14 * (int16_t)v69[v53]] & 0x200) != 0 )
+              v56 *= 2;
+            if ( g_orion150 && (word_17F815[14 * (int16_t)v69[v53]] & 0x10) != 0
+              && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v67 + 518) == 1 )   /* 1.50 0612EB: sub_1E3E05 */
               v56 *= 2;
             if ( v56 > v73 )
             {
@@ -12886,6 +12941,11 @@ signed int sub_60B59(
           ++v74;
           ++v53;
         }
+      }
+      if ( g_orion150 && v73 < 0 )   /* 1.50 061315: sub_1E3E62 - nothing found */
+      {
+        *a9 = 0;
+        goto LABEL_126;
       }
       v57 = (int16_t)v84;
       *a9 = v69[(int16_t)v84];
@@ -13188,7 +13248,7 @@ int16_t sub_616A5( int a1, int a2, int a3)
     *(_BYTE *)(a2 + 92) = 43;
   else
     *(_BYTE *)(a2 + 92) = 8 * a3 + sub_1247A0(8u) - 1;
-  if ( a3 == 5 )
+  if ( a3 == 5 && !g_orion150 )   /* 1.50 61760: nop - the name generator for the base too */
     strcpy((char *)a2, (char *)off_1800EE);
   else
     sub_6C897(*(uint8_t *)((uint8_t*)dword_197F98 + 3753 * a1 + 37), a3, *(char *)(a2 + 92) % 8, (char *)a2);
@@ -13206,11 +13266,18 @@ int16_t sub_616A5( int a1, int a2, int a3)
   v6 = sub_5685F(a1);
   *(_BYTE *)(a2 + 22) = v6;
   LOWORD(v7) = word_180020[18 * a3];
+  if ( g_orion150 )   /* 1.50 061836: sub_1E0994 */
+    byte_19B9B8 = 0;
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 304) == 3 )
   {
-    v7 = (int16_t)v7 + (int16_t)v7 / 2;
+    if ( g_orion150 )   /* 1.50 061843: sub_1E09F4 - minus word table 17EFA4 by size */
+      v7 = word_180020[18 * a3] - *(int16_t *)(dseg + 0x6FA4 + 2 * *(uint8_t *)(a2 + 16));
+    else
+      v7 = (int16_t)v7 + (int16_t)v7 / 2;
     sub_127712(a2 + 23, 4u);
   }
+  if ( g_orion150 && *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * a1 + 368) == 3 )   /* 1.50 06185E: sub_1E09B0 */
+    v7 += word_180020[18 * a3] * (*(uint16_t *)Hook150_Eseg(0x23D0FA) + 100) / 100 - word_180020[18 * a3];
   v125 = a1;
   v8 = 0;
   v9 = sub_6E38E(*(uint8_t *)(a2 + 18), *(uint8_t *)(a2 + 16), a1);
@@ -13541,6 +13608,8 @@ LABEL_41:
   *(_WORD *)(a2 + 94) = Hook150_1E01B0(a1, a2);   /* 1.50 061B36 */
   result = dword_192FD8;
   *(_WORD *)(a2 + 97) = dword_192FD8;
+  if ( g_orion150 )   /* 1.50 061B48: sub_1E097B - byte 1E0969 */
+    *(_BYTE *)(a2 + 96) = *Hook150_Ecode(0x1E0969);
   return result;
 }
 // 17F0ED: using guessed type int16_t word_17F0ED;

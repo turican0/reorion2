@@ -152,7 +152,7 @@ int sub_11A92E(
   *(_DWORD *)((char *)off_184480 + 55 * word_1B3E0E + 44) = a6;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 36) = sub_12B6D4(a6);
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a9;
-  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u
+  if ( !g_orion150 && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u   /* 1.50 11AACD: jmp - the hotkey letter stays lower case */
     && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) < 0x7Bu )
   {
     *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) -= 32;
@@ -915,7 +915,7 @@ char *sub_11C83D( int a1, int a2, int a3,
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 28) = a7;
   *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) = *a12;
   *(_WORD *)((char *)off_184480 + 55 * word_1B3E0E + 18) = a5;
-  if ( *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u
+  if ( !g_orion150 && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) > 0x60u   /* 1.50 11C9B0: jmp - the hotkey letter stays lower case */
     && *((uint8_t *)off_184480 + 55 * word_1B3E0E + 52) < 0x7Bu )
   {
     *((_BYTE *)off_184480 + 55 * word_1B3E0E + 52) -= 32;
@@ -1032,7 +1032,7 @@ int sub_11CACE(int16_t *a1)
       v7 = (int16_t)v6 % 256;
       if ( !(_WORD)v7 )
         v7 = v8;
-      if ( (int16_t)v7 > 96 && (int16_t)v7 < 123 )
+      if ( !g_orion150 && (int16_t)v7 > 96 && (int16_t)v7 < 123 )   /* 1.50 11CD2D: jmp - the hotkey letter stays lower case */
         v7 -= 32;
       *a1 = *a1;
       for ( i = 0; i < word_1B3E0E; ++i )
@@ -1770,7 +1770,10 @@ LABEL_234:
           // vyberu rasy (typ 1), zatimco ACCEPT (typ 0) fungoval, protoze
           // tudy vubec nechodi.
           /* wave 183: 11E66C mov word ptr [eax], 1 (sub_16937A was an IDA artifact) */
-          *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) = 1;
+          /* 1.50 11E66C: jmp sub_16937A (cave) - word_1998D4 stays 0 while bit 1 of [dword_19306C + 0Eh] is set */
+          *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) =
+            !(g_orion150 && (*((uint8_t *)dword_19306C + 14) & 2)
+              && PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) == (uint16_t *)(dseg + 0x218D4));
           goto LABEL_SPOLECNY_KONEC;
         }
         *PORT_PTR32(uint16_t *, (char *)off_184480 + 55 * (int16_t)v47 + 32) = 0;
@@ -4864,6 +4867,8 @@ unsigned int sub_1247A0(unsigned int a1)
 {
   if ( g_rngLogArmed )
     PortDebug_RngLog(a1, dword_1B9E34, _ReturnAddress());
+  if ( g_orion150 && !a1 )   /* 1.50 1247A0: jmp sub_1E4ECC -> sub_1EB333 - the same generator, 0 gives 1 */
+    return 1;
   do
     dword_1B9E34 = 1103515245 * dword_1B9E34 + 12345;
   while ( a1 * (0xFFFFFFFF / a1) <= dword_1B9E34 );
@@ -5592,7 +5597,7 @@ void *sub_125814()
   {
     v0 = *(_WORD *)(4 * i + dword_1BB908);
     if ( v0 != -1 )
-      result = sub_1694D9(
+      result = sub_1694D9(   /* 1.50 1258CB, 1258FC, 125930, 1259C6, 1259FD, 125A32, 125ACA, 125B01, 125B36, 125BCE, 125C05, 125C3A, 125CD2: sub_1694D9 (the port always clips) */
         &v17[4 * v0 + 4 * v6],
         (void *)(v18 + 4 * (v0 + v6)),
         (*(int *)(4 * i + dword_1BB908) >> 16) - v0 + 1);
@@ -5681,6 +5686,17 @@ int sub_125D4F()
       // presne projev "obcas se spatne vykresluje pozadi". Navic tim
       // vznikala neshoda mezi cilem a zdrojem.
       v2 = (void *)(destBase + 4 * (v6 + v3));
+      if ( g_orion150 )   /* 1.50 125DFD..125E02: call sub_1694B7 (cave) - the destination is clipped to 640x480 */
+      {
+        int off = 4 * (v6 + v3);
+
+        if ( off < 0 || off >= 0x4B000 || v1 < 0 || off + 4 * v1 >= 0x4B000 )
+        {
+          off = 0;
+          v1 = 1;
+        }
+        v2 = (void *)(intptr_t)(destBase + off);
+      }
       sub_1276BD(v2, (void *)(v7 + 4 * (v6 + v3)), v1);
     }
     v3 += v5;
@@ -5995,7 +6011,7 @@ void sub_126487(char *a1, int a2)
   // hlasila chybu LBX, ale videt byl jen pad v sub_155E62). Vypis jde ted
   // primo na stderr a hned se flushne.
   if ( g_orion150 )
-    Hook150_Exit(a1, 0);   /* 1.50: every call goes to sub_16957E (1E2BA8 -> 1FEA6F) */
+    Hook150_Exit(a1, 0);   /* 1.50 16957E: every call goes to sub_16957E (1E2BA8 -> 1FEA6F) */
   PortDebug_Message(a1);
   sub_113DBD();
   printf("%s\n", a1);
@@ -6380,7 +6396,7 @@ void sub_1273DC(int a1, unsigned int a2, int a3, int a4)
     v4 = aVgaFileAnimati;
     strcat(v5, aVgaFileAnimati);
   }
-  sub_126487(v5, (int)v4);
+  sub_126487(v5, (int)v4);   /* 1.50 127588: sub_16957E - Hook150_Exit inside sub_126487 */
 }
 // 1288C0: using guessed type int itoa(_DWORD, _DWORD, _DWORD, _DWORD);
 // 13F220: using guessed type int strcat(_DWORD, _DWORD);

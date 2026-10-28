@@ -5097,7 +5097,7 @@ void sub_6A6A1(int a1)
       *(_WORD *)(a1 + 94) = *(_WORD *)(v9 + 241);
       *(_WORD *)(a1 + 97) = dword_192FD8;
       v11 = sub_6B86A(v9, v7, a1, v9);
-      if ( (uint8_t)sub_6B7FF(v9, 2) && byte_19B9B8 )
+      if ( !g_orion150 && (uint8_t)sub_6B7FF(v9, 2) && byte_19B9B8 )   /* 1.50 6A7B6: jmp */
         v11 += 5;
       *(_BYTE *)(a1 + 96) = v11;
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x6A3DE je epilog funkce */
@@ -5148,8 +5148,8 @@ int sub_6A7C8( int a1, int a2)
   v6 = sub_77D13(a1, a2);
   *(_WORD *)(dword_1927A8 + 229) = v6;
   v7 = word_180020[18 * v6];
-  if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 368) == 3 )
-    v7 = 125 * v7 / 100;
+  if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 368) == 3 )   /* 1.50 06A873: sub_1E13C6 */
+    v7 = g_orion150 ? v7 * (*(uint16_t *)Hook150_Eseg(0x23D0FA) + 100) / 100 : 125 * v7 / 100;
   *(_DWORD *)(dword_1927A8 + 233) = v7;
   *(_WORD *)(dword_1927A8 + 43) = Hook150_1E415C(a1, a2);   /* 1.50 6A890 */
   *(_WORD *)(dword_1927A8 + 231) = (uint8_t)sub_77CD5(a1, a2);
@@ -5901,9 +5901,11 @@ int sub_6B577(int a1, int a2)
   *(_WORD *)(v3 + 29) = word_17FE9C[23 * v4];
   v5 = *(uint8_t *)(a2 + 16);
   *(_WORD *)(v3 + 229) = v5;
+  if ( g_orion150 )   /* 1.50 06B5D2: sub_1E0A21 */
+    *(_WORD *)(v3 + 17) = *(uint8_t *)(a2 + 18);
   v6 = word_180020[18 * v5];
-  if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 368) == 3 )
-    v6 = 125 * v6 / 100;
+  if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 368) == 3 )   /* 1.50 06B605, 6B603: sub_1E13C6 */
+    v6 = g_orion150 ? v6 * (*(uint16_t *)Hook150_Eseg(0x23D0FA) + 100) / 100 : 125 * v6 / 100;
   v7 = dword_1927A8;
   *(_DWORD *)(dword_1927A8 + 233) = v6;
   *(_WORD *)(v7 + 43) = *(uint8_t *)(a2 + 21);
@@ -5954,7 +5956,10 @@ int sub_6B577(int a1, int a2)
   if ( (uint8_t)sub_6B7FF(v20, 2) && byte_19B9B8 )
     v21 += 5;
   *(_WORD *)(dword_1927A8 + 37) = v21;
-  sub_6E8DA(v23);
+  if ( g_orion150 )   /* 1.50 6B75B: byte 1E0969 = the level instead of sub_6E8DA */
+    *Hook150_Ecode(0x1E0969) = v21;
+  else
+    sub_6E8DA(v23);
   return *(_DWORD *)(dword_1927A8 + 241);
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -6034,6 +6039,23 @@ int sub_6B86A(int a1, int a2, int a3, int a4)
   v5 = 46 * *(int16_t *)(a1 + 27);
   v6 = *(int16_t *)(a1 + 229);
   LOWORD(a4) = (uint8_t)byte_17FE90[v6 + v5];
+  if ( g_orion150 )   /* 1.50 06B89B, 06B8C3: sub_1E2B0B, sub_1E2B50 */
+  {
+    int num = 100 * *(_DWORD *)(a1 + 237);
+
+    if ( *Hook150_Eseg(0x23CDEB) != 1 && (uint8_t)sub_6B7FF(a1, 4) )
+    {
+      num = (*(_DWORD *)(a1 + 237) - *(int16_t *)(dseg + 0x6FA4 + 2 * v6)) * 100;
+      if ( num < 0 )
+        num = 0;
+    }
+    result = (uint8_t)byte_17FE96[v6 + v5]
+           - (int16_t)((uint8_t)byte_17FE96[v6 + v5] - (_WORD)a4) * (num / *(_DWORD *)(a1 + 233)) / 100;
+    if ( *Hook150_Eseg(0x23CDEB) != 1 && (uint8_t)a4 > *Hook150_Eseg(0x23CDEA) )
+      LOWORD(a4) = *Hook150_Eseg(0x23CDEA);
+  }
+  else
+
   result = (uint8_t)byte_17FE96[v6 + v5]
          - (int16_t)((uint8_t)byte_17FE96[v6 + v5] - (_WORD)a4)
          * (100
@@ -6175,7 +6197,7 @@ void sub_6B9B2(int a1, int a2, int16_t *a3)
     sub_6C98D(0, 1, a2, a3);
     sub_6A7C8(word_19999C, word_199838);
     dword_19274C = sub_6E777();   /* wave 183: 6BA58 mov dword_18A74C, eax */
-    if ( byte_199EF1 )
+    if ( byte_199EF1 && !g_orion150 )   /* 1.50 6BA64: jmp */
       *(_DWORD *)(dword_1927A8 + 241) = 0;
     dword_19B9A4 = *(_DWORD *)(dword_1927A8 + 233) - *(_DWORD *)(dword_1927A8 + 237);
     v6 = *(_WORD *)(dword_1927A8 + 229);
@@ -7632,8 +7654,14 @@ void sub_6D29C()
   sub_120BB5(2, (int)v70);
   sub_120E8C(1);
   v62 = (char *)word_17FE00[11 * *(int16_t *)(dword_1927A8 + 43)];
-  v16 = sub_7A990(0x5Bu);
-  sprintf(v65, v16);
+  {
+    int v = word_17FE00[11 * *(int16_t *)(dword_1927A8 + 43)];   /* 6D6ED push eax - the sprintf argument */
+
+    if ( g_orion150 && (uint8_t)sub_6B7FF(dword_1927A8, 5) )   /* 1.50 06D6ED: sub_1E0AB0 */
+      v += *Hook150_Eseg(0x23E20C);
+    v16 = sub_7A990(0x5Bu);
+    sprintf(v65, v16, v);
+  }
   sub_1212B3(453, 112, (int)v65);
   sub_120BB5(3, (int)v71);
   sub_120E8C(1);
@@ -8160,8 +8188,11 @@ int sub_6E3D3(int a1, int a2, int a3)
   v3 = 59 * *(int16_t *)(dword_1927A8 + 17);
   LOWORD(v3) = 5 * *(int16_t *)((char *)&word_17F6C1 + v3);
   v4 = v3 * (a3 + 1);
-  if ( (uint8_t)sub_6B7FF(dword_1927A8, 20) )
-    return 3 * (int16_t)v4 / 2;
+  if ( g_orion150 )   /* 1.50 06E3E7, 6E3DA, 6E3EC: sub_1E847B - crew table times word table 23CF08 by size */
+    v4 = *(uint16_t *)((char *)&word_17F6C1 + 59 * *(uint16_t *)(dword_1927A8 + 17))
+       * *(uint16_t *)Hook150_Eseg(0x23CF08 + 2 * *(uint16_t *)(dword_1927A8 + 229));
+  if ( (uint8_t)sub_6B7FF(dword_1927A8, 20) )   /* 1.50 06E41F: sub_1E11CB */
+    return g_orion150 ? (int16_t)v4 * (*(uint16_t *)Hook150_Eseg(0x23D100) + 100) / 100 : 3 * (int16_t)v4 / 2;
   return v4;
 }
 // 17F6C1: using guessed type int16_t word_17F6C1;
@@ -8502,8 +8533,8 @@ int sub_6E8DA( int a1)
   v7 = dword_1927A8;
   *(_DWORD *)(dword_1927A8 + 237) = v6;
   v8 = word_180020[18 * *(int16_t *)(v7 + 229)];
-  if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 368) == 3 )
-    v8 = 125 * v8 / 100;
+  if ( *(_BYTE *)(3753 * word_19999C + (uint8_t*)dword_197F98 + 368) == 3 )   /* 1.50 06E95E: sub_1E13C6 */
+    v8 = g_orion150 ? v8 * (*(uint16_t *)Hook150_Eseg(0x23D0FA) + 100) / 100 : 125 * v8 / 100;
   v9 = dword_1927A8;
   *(_DWORD *)(dword_1927A8 + 233) = v8;
   v10 = 0;

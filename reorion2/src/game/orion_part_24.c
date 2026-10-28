@@ -6346,7 +6346,7 @@ void sub_163233(int a1, int a2)
   sprintf(v2, aFatalError);
   vsprintf(v2, a1, &v3);
   v3 = 0;
-  sub_126487(v2, a1);
+  sub_126487(v2, a1);   /* 1.50 16327C: sub_16957E - Hook150_Exit inside sub_126487 */
 }
 // 1265F2: using guessed type _DWORD sprintf(_DWORD, char *, ...);
 // 13C8F0: using guessed type int vsprintf(_DWORD, _DWORD, _DWORD);

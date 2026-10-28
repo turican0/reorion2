@@ -703,7 +703,7 @@ void sub_7A816()
       break;
     case 4:
       strcpy(v7, "HISTRNGS.LBX");
-      v1 = 14031;
+      v1 = g_orion150 ? 14064 : 14031;   /* 1.50 7A8C8: 36F0h */
       v2 = 370;
       break;
     default:
@@ -765,9 +765,12 @@ void sub_7A9B1(int a1, char *a2, int16_t *a3)
   int v4; // eax
   char v5[20]; // [esp+0h] [ebp-14h] BYREF
 
-  if ( byte_199CAE == 1 )
+  if ( !g_orion150 )   /* 1.50 7A9BC: jmp 7A9CC - the race byte stays */
+  {
+    if ( byte_199CAE == 1 )
+      byte_199CAE = 0;
     byte_199CAE = 0;
-  byte_199CAE = 0;
+  }
   sub_7A816();
   v3 = sub_FECDA();
   sub_CDF65(v3, a1, a2);
@@ -1278,6 +1281,35 @@ int sub_7B0FB( int a1, int a2, int a3, int a4)
 }
 
 
+//----- (0007B175) --------------------------------------------------------
+/* one pass of the loop 7B175..7B1F3 of sub_7B11A: a planet for star a1 (1.50 also runs it from sub_7C107) */
+static void sub_7B11A_body(int a1)
+{
+  int16_t v4, v5, v8;
+  char v6;
+  uint8_t *pStar, *pPlanet;
+
+  v4 = sub_7CCB5(a1);
+  v5 = v4;
+  v6 = v4;
+  pStar = dword_19306C + 113 * a1 + 2 * v4;
+  if ( *(int16_t *)(pStar + 74) == -1 )
+  {
+    sub_7C3C4(a1, word_1999A2, v5, 0);
+    ++word_1999A2;
+  }
+  else
+  {
+    v8 = word_1999A2;
+    word_1999A2 = *(_WORD *)(pStar + 74);
+    pPlanet = (uint8_t*)dword_1930D4 + 17 * word_1999A2;
+    *(_BYTE *)(pPlanet + 4) = 3;
+    *(_BYTE *)(pPlanet + 3) = v6;
+    sub_8C5D7(a1);
+    word_1999A2 = v8;
+  }
+}
+
 //----- (0007B11A) --------------------------------------------------------
 void sub_7B11A( int a1)
 {
@@ -1303,6 +1335,19 @@ void sub_7B11A( int a1)
   // (zmereno hlidacem: sub_79B2D <- sub_7B11A <- sub_7C4AF <- sub_7B8CD).
   // Tez `v4` je navratova hodnota `sub_7CCB5` (asm `call sub_7CCB5 / movsx
   // ebx, ax`), kterou IDA zahodila.
+  if ( g_orion150 )   /* 1.50 7B123..7B13C, 7B148, 7B165, 07B168, 07B202, 7B1F6..7B20C: sub_1E419C, sub_F4D0E, sub_1E4253 */
+  {
+    if ( !sub_792A9(a1) )
+    {
+      do
+        *(_BYTE *)(dword_19306C + 113 * a1 + 22) = sub_8C807((uint8_t)byte_199CB3);
+      while ( !sub_792A9(a1) );
+      Hook150_1E419C(a1);
+    }
+    while ( (int8_t)sub_79B2D(a1) < *(int8_t *)(dseg + 0x485) )   /* byte_178485 */
+      sub_7B11A_body(a1);
+    return;
+  }
   pocet = (int8_t)sub_79B2D(a1);
   if ( pocet < 3 )
   {
@@ -1627,6 +1672,8 @@ void sub_7B631_131()
   {
     v2 = (char *)((uint8_t*)dword_192B18 + 361 * (int16_t)v23);
     v0 = -1;
+    if ( g_orion150 )   /* 1.50 07B675: sub_1E03A6 */
+      v18 = 0;
     v1 = *((_WORD *)v2 + 1);
     LOWORD(v2) = *v2;
     v22 = v2;
@@ -1863,7 +1910,10 @@ int sub_7B8CD()
   // orion_part_26 (adresa 0x169245 v asm dumpu vubec neni). Ta funkce
   // navic zapisovala pres `sub_16945B`, ktera vracela 0, takze to psalo
   // na adresu 0x0E (zmereno: SEH 0xC0000005, zapis na 0xE).
-  sub_7BBBC();
+  if ( g_orion150 )   /* 1.50 7BBA8: call sub_169245 (the cave exists in 1.50) */
+    Hook150_169245();
+  else
+    sub_7BBBC();
   return 1;   /* vlna 79: asm `mov eax, 1 / jmp locret_7BF57` */
 }
 // 129C70: using guessed type int memset(_DWORD, _DWORD, _DWORD);
@@ -2221,6 +2271,11 @@ void sub_7C107( int a1, int a2, int a3)
     {
       v14 = 113 * v12;
       *(_BYTE *)(dword_19306C + v14 + 22) = 4;
+      if ( g_orion150 && !sub_792A9(v12) )   /* 1.50 07C23E: sub_1E41CB */
+      {
+        *(_BYTE *)(dword_19306C + v14 + 22) = sub_8C807((uint8_t)byte_199CB3) - 1;
+        Hook150_1E419C(v12);
+      }
       v15 = sub_1247A0(0xAu) - 1;
       if ( v15 >= 3 )
       {
@@ -2234,6 +2289,16 @@ void sub_7C107( int a1, int a2, int a3)
         *(_BYTE *)(v14 + dword_19306C + 19) = 0;
       }
       *(_BYTE *)(dword_19306C + 113 * v12 + 21) = sub_1247A0(3u) - 1;
+      if ( g_orion150 )   /* 1.50 07C29F, 07C2A4, 7C31F: sub_1E4234, sub_1E4247 - the planets by the loop of sub_7B11A */
+      {
+        for ( v28 = (int16_t)sub_79B2D(v12); (int16_t)v28 < 2; ++v28 )
+        {
+          sub_7B11A_body(v12);
+          ++v31;   /* 7B1F3 inc [ebp-4] in this frame */
+          v29 = 0;
+        }
+        goto LABEL_7C320;
+      }
       v16 = 0;
       do
       {
@@ -2258,6 +2323,7 @@ void sub_7C107( int a1, int a2, int a3)
       }
       while ( (int16_t)v28 < 2 );
     }
+LABEL_7C320:
     if ( v9 < word_19999A )
     {
       do
@@ -2424,7 +2490,7 @@ LABEL_32:
   if ( *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * v7 + 2219) )
     v8 = 5;
   sub_7B22B(i, v8, (int16_t *)&v26, i);
-  sub_7C73D(i);
+  sub_7C73D(i);   /* 1.50 7C577: jmp loc_F4B94 - the 1.40 source already has the code after it */
   v24 = v7;
   v23 = i;
   v18 = v26;
@@ -2856,7 +2922,7 @@ char sub_7CB7C(uint8_t* a1, int a2)
   {
     v8 = (char *)(a1 + 40);
     do
-      LOBYTE(v5) = sub_F4D46(v13, &v14, v8, 1, v4);
+      LOBYTE(v5) = sub_F4D46(v13, &v14, v8, 1, v4);   /* 1.50 7CCA0: call sub_F4D46 - the 1.40 source already has it */
     while ( *v8 <= 0 );
   }
   return v5;
@@ -2889,7 +2955,7 @@ int16_t sub_7CCB5( int a1)
     if ( v4 > -1 && v4 < 5 )
     {
       v5 = *(_WORD *)(113 * a1 + dword_19306C + 2 * v4 + 74);
-      if ( v5 == -1 || v5 > -1 && v5 < word_1999A2 && *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * word_1999A2 + 4) != 3 )
+      if ( v5 == -1 || v5 > -1 && v5 < word_1999A2 && *(_BYTE *)((uint8_t*)dword_1930D4 + 17 * (g_orion150 ? v5 : word_1999A2) + 4) != 3 )   /* 1.50 7CD1A: cwde */
       {
         v3 = 1;
         v1 = v4;
@@ -3919,6 +3985,8 @@ LABEL_36:
     byte_199F3A = 0;
     word_199A10 = 13;
     v5 = 1;
+    if ( g_orion150 )   /* 1.50 07DE02: sub_1E1EEF - pusha / sub_1E8053 / popa */
+      sub_1E8053();
     *v15 = 1;
     goto LABEL_36;
   }
@@ -8423,7 +8491,7 @@ int16_t sub_83411(_WORD *a1, int a2, int a3)
   v4 = word_19999C;
   byte_199F33 = 0;
   word_199988 = -1;
-  byte_19C19F = 1 << word_19999C;
+  byte_19C19F = g_orion150 ? 0xFF : 1 << word_19999C;   /* 1.50 83425: mov al, 0FFh, no shl */
   if ( byte_199F3A == 1 )
     sub_88F5D();
   if ( byte_199F3A == 1 )
@@ -10879,6 +10947,8 @@ void sub_86188(char *a1)
   }
   byte_19C19B = 0;
   byte_19C18F = 1;
+  if ( g_orion150 )   /* 1.50 0863FD: sub_1E4C01 - pusha / sub_1FB91B / popa */
+    sub_1FB91B();
   if ( !byte_190488[word_19999C] )
   {
     if ( dword_192FD8 == 35000 )
@@ -11190,7 +11260,7 @@ LABEL_115:
       {
         v5 = 3;
         v37 = (int)v71;
-        strcpy(v71, sub_7A990(0x20u));
+        strcpy(v71, sub_7A990(0x20u));   /* the 1.50 change is in sub_89183 (894C8) */
         a1 = v71;
         sub_7A25F(&byte_199F28, (int)v71, 3);
       }

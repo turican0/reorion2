@@ -1765,6 +1765,11 @@ int sub_BDCD8()
 
   v0 = sub_BDC93(dword_19F7A8);
   sub_120CCB(0, (int)&unk_182C2E);
+  if ( g_orion150 )   /* 1.50 0BDCFB: sub_1EE5AF, the rest nop */
+  {
+    sub_1EE5AF((uint16_t)v0);
+    return 0;
+  }
   v1 = (char *)sub_CDF5C(32);
   v2 = sprintf(v4, v1, v0);
   return sub_1210B7(624, (int16_t)(103), (int)v4);
@@ -2738,15 +2743,15 @@ unsigned int sub_BF01B(int a1, int a2)
   word_182AE1 = -1000;
   v2 = (_BYTE *)sub_CDF5C(135);
   word_182AD3 = sub_114C72(v2, a2);
-  v3 = (_BYTE *)sub_CDF5C(139);
+  v3 = g_orion150 ? (_BYTE *)Hook150_Ecode(0x1E021C) : (_BYTE *)sub_CDF5C(139);   /* 1.50 BF04A: "," */
   word_182ADB = sub_114C72(v3, a2);
-  v4 = (_BYTE *)sub_CDF5C(140);
+  v4 = g_orion150 ? (_BYTE *)Hook150_Ecode(0x1E021E) : (_BYTE *)sub_CDF5C(140);   /* 1.50 BF05F: "." */
   word_182ADD = sub_114C72(v4, a2);
   v5 = sub_CDF5C(245);
   word_182AF5 = sub_11ADB4(v5, a2);
   v6 = sub_CDF5C(536);
   word_182AF7 = sub_11ADB4(v6, a2);
-  v29 = (_BYTE *)sub_CDF5C(12);
+  v29 = g_orion150 ? (_BYTE *)Hook150_Ecode(0x1E0220) : (_BYTE *)sub_CDF5C(12);   /* 1.50 BF09B: " " */
   v7 = (_WORD *)sub_BBA8E(21);
   v8 = sub_CDF5C(12);
   word_182AD1 = (uint16_t)sub_1151B0(556, 459, v8, v7, v29, 40);
@@ -3347,6 +3352,8 @@ int sub_BFC0B( int a1)
   v4 = v3 + (uint8_t*)dword_192B18;
   if ( *(_WORD *)(v3 + (uint8_t*)dword_192B18 + 300) )
   {
+    if ( g_orion150 )   /* 1.50 0BFDB1: sub_1ECAB3, jmp loc_BFDE9 */
+      return (int)(intptr_t)sub_1ECAB3((char *)(intptr_t)v4);
     v14 = (_BYTE *)sub_CDF5C(586);
     goto LABEL_20;
   }
@@ -4879,17 +4886,17 @@ void sub_C19D6()
     }
     ++v2;
     --v10;
-    if ( v2 >= 5 )
+    if ( v2 >= (g_orion150 ? 6 : 5) )   /* 1.50 C1AA7: 6 */
     {
       v6 = v2 + 1;
       v7 = (_BYTE *)sub_CDF5C(12);
-      word_19FA12 = sub_11438B(
+      word_19FA12 = sub_11438B(   /* 1.50 C1AEB: +18h, C1AD3: +17h */
                       161,
                       ((179 * (v6 + 1) - (__CFSHL__((179 * (v6 + 1)) >> 31, 3) + 8 * ((179 * (v6 + 1)) >> 31))) >> 3)
-                    + 49,
+                    + (g_orion150 ? 24 : 49),
                       478,
                       ((179 * (v6 + 2) - (__CFSHL__((179 * (v6 + 2)) >> 31, 3) + 8 * ((179 * (v6 + 2)) >> 31))) >> 3)
-                    + 48,
+                    + (g_orion150 ? 23 : 48),
                       v7,
                       41);
       v8 = (_BYTE *)sub_CDF5C(12);
@@ -4968,7 +4975,7 @@ void sub_C1B68()
     }
     ++v1;
     --v0;
-    if ( v1 >= 5 )
+    if ( v1 >= (g_orion150 ? 6 : 5) )   /* 1.50 C1CB3: 6 */
     {
       v7 = 1;
       v8 = v1 + 1;
@@ -4978,7 +4985,8 @@ void sub_C1B68()
       v9 = sub_CDF5C(800);
       sub_1210FD(
         320,
-        ((179 * (v8 + 1) - (__CFSHL__((179 * (v8 + 1)) >> 31, 3) + 8 * ((179 * (v8 + 1)) >> 31))) >> 3) + 49,
+        ((179 * (v8 + 1) - (__CFSHL__((179 * (v8 + 1)) >> 31, 3) + 8 * ((179 * (v8 + 1)) >> 31))) >> 3)
+      + (g_orion150 ? 24 : 49),   /* 1.50 C1D04: +18h */
         v9);
       v12 = dword_197F9C + 129 * word_19FA26;
       v10 = (char *)sub_CDF5C(801);
@@ -5033,7 +5041,7 @@ void sub_C1D6B()
   }
   if ( word_19FA12 == word_1830E6 )
   {
-    sub_BAFC9(4u, 1);
+    sub_BAFC9(g_orion150 ? 3u : 4u, 1);   /* 1.50 C1E40: 3 */
     v1 = sub_CDF5C(802);
     /* vlna 121: asm 0xC1E26 - eax=0A8h, edx=0F8h, ebx=131h, ecx=0A9h
        (ecx zustava z drivejsiho `mov ecx, 0A9h` pred sub_BAFC9) */
@@ -5072,7 +5080,7 @@ int sub_C1E74(int16_t *a1, _WORD *a2)
 
   word_1830E4 = -1;
   word_1830E6 = -1000;
-  for ( i = 0; i < 5; ++i )
+  for ( i = 0; i < (g_orion150 ? 6 : 5); ++i )   /* 1.50 C1FDF: 6 */
   {
     if ( word_19FA06[i] == *a2 )
     {
@@ -5177,7 +5185,7 @@ int sub_C20AF( int a1, int16_t *a2)
   dword_19FA14 = (int)(intptr_t)v9;   /* wave 183: 1000 B buffers, were 1 byte */
   v3 = 0;
   dword_19FA20 = (int)(intptr_t)v10;
-  for ( i = 0; i < 5; ++i )
+  for ( i = 0; i < (g_orion150 ? 6 : 5); ++i )   /* 1.50 C2138: 6 */
   {
     if ( *(_BYTE *)(dword_197F9C + 129 * word_19FA26 + 16) == *(_BYTE *)(99 * i + 3753 * word_19999C + (uint8_t*)dword_197F98 + 822) )
       ++v3;
@@ -5442,14 +5450,56 @@ int sub_C26F4()
   v6 = *(int16_t *)(base + 0xB2);
   v1 = sub_CDF5C(106);
   sub_C5AC8(v7, 1, (const char *)v1, unk_179E03, unk_179E00, sub_C603D(v6), v6);
+  if ( g_orion150 && *(int16_t *)(base + 0x40) )   /* 1.50 0C279B: sub_1E5006 */
+  {
+    int a6 = *(int16_t *)(base + 0xA6), b40 = *(int16_t *)(base + 0x40);
+    v2 = sub_CDF5C((b40 < 10 && a6 < 1000) || (b40 < 100 && a6 < 100) ? 358 : 359);
+    sub_C5AC8(v7, 2, (const char *)v2, unk_179E03, unk_179E00, a6, b40);
+  }
+  else
+  {
   v2 = sub_CDF5C(114);
   sub_C5AC8(v7, 2, (const char *)v2, unk_179E03, unk_179E00, *(int16_t *)(base + 0xA6));
+  }
   v3 = sub_CDF5C(103);
   sub_C5AC8(v7, 3, (const char *)v3, unk_179E03, unk_179E00, *(int16_t *)(base + 0x38));
   v4 = sub_CDF5C(102);
   sub_C5AC8(v7, 4, (const char *)v4, unk_179E03, unk_179E00, *(int16_t *)(base + 0xB0));
+  if ( g_orion150 )   /* 1.50 0C2853: sub_1E4F76, research line by the mode byte 23F071 */
+  {
+    int mode = *Hook150_Eseg(0x23F071), val = *(int16_t *)(base + 0xAC), pct;
+
+    if ( mode != 0 && mode != 3 )
+    {
+      val += *(int32_t *)(base + 0x1EB);
+      if ( mode != 1 )
+      {
+        int cost = sub_E1E96((int)(intptr_t)base, *(uint8_t *)(base + 0x321));
+        val = mode == 4 ? cost - val : 2 * cost - val;
+      }
+    }
+    if ( mode == 3 || mode == 4 )
+    {
+      pct = sub_E1EF4((int)(intptr_t)base);
+      if ( pct > 0 )
+      {
+        v5 = sub_CDF5C(126);
+        sub_C5AC8(v7, 5, (const char *)v5, unk_179E03, unk_179E00, pct);
+        goto LABEL_150;
+      }
+      if ( mode == 3 )
+        val = *(int16_t *)(base + 0xAC);
+    }
+    v5 = sub_CDF5C(117);
+    sub_C5AC8(v7, 5, (const char *)v5, unk_179E03, unk_179E00, val);
+LABEL_150:
+    ;
+  }
+  else
+  {
   v5 = sub_CDF5C(117);
   sub_C5AC8(v7, 5, (const char *)v5, unk_179E03, unk_179E00, *(int16_t *)(base + 0xAC));
+  }
   sub_103BC4(0x208u, 0x162u, 104, (int)v7, 3);
   return sub_BAEFE();
 }
@@ -5822,7 +5872,7 @@ void sub_C2E4D_131()
   v16 = (_WORD *)dword_183112;
   v17 = sub_CDF5C(12);
   word_1830EC = (uint16_t)sub_1151B0(619, 316, v17, v16, v39, 40);
-  v40 = (_BYTE *)sub_CDF5C(12);
+  v40 = g_orion150 ? (_BYTE *)Hook150_Ecode(0x1E0220) : (_BYTE *)sub_CDF5C(12);   /* 1.50 C2EF3: " " */
   v18 = (_WORD *)dword_18310A;
   v19 = sub_CDF5C(12);
   word_1830EE = (uint16_t)sub_1151B0(531, 445, v19, v18, v40, 40);
@@ -6593,6 +6643,26 @@ void sub_C3B3C()
       v9 = (char *)&unk_179E17;
     v11 = v9;
     v10 = (char *)sub_CDF5C(74);
+    if ( g_orion150 )   /* 1.50 0C3BCF, 0C3BE8, 0C3BF8, 0C3C0F, C3C14, C3CD3: sub_1E4677, 1E4681, 1E4692, 1E469C - six more arguments */
+    {
+      uint8_t *col = (uint8_t *)dword_192B18 + 361 * word_182AB7;
+      int16_t sB4 = 0;
+      int e9, f0, w125, diff, sum, k;
+
+      for ( k = 0; k < 10; ++k )
+        sB4 += *(int16_t *)(col + 2 * k + 180);
+      e9 = *(int16_t *)(col + 233);
+      f0 = *(int16_t *)(col + 240);
+      if ( e9 < f0 )
+        e9 = f0;
+      diff = (e9 & 0xFFFF0000) | (uint16_t)(e9 - f0);
+      w125 = *(int16_t *)(col + 293);
+      sum = (w125 & 0xFFFF0000) | (uint16_t)(w125 + *(uint16_t *)(col + 300));
+      k = sB4 + v0;
+      sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, sub_1E7E53(), (int)sB4, (int)v0,
+              k / 1000 - (k < 0), sum, sub_E0F95((int)(intptr_t)col), diff, a0_1);
+    }
+    else
     sprintf(v19, v10, v11, v12, v13, v14, v15, v16, v17, v18, v0, a0_0);
     /* vlna 95: asm 0xC3CF1 - eax=00Dh, edx=162h, ebx=050h, ecx=058h.
        Tohle je popis kolonie pod portretem planety. */

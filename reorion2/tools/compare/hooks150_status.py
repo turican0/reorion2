@@ -64,6 +64,12 @@ COVERED_CALLS = {
 }
 COVERED_RANGES = {
     '10018-1001B',   # main_ -> the loader of the block: Start150 (reorion2.cpp)
+    # dead 1.31 code reused by 1.50 as caves, each ported at its jump site:
+    'F4F6F-F4FF6',   # F4F74 (sub_E98F2), F4F8D (sub_5C510), F4FAA (sub_5BD97), F4FD5 (MarkCheatPatternFlag_F4FD5)
+}
+# 1.31 functions 1.50 overwrote as a whole (caves, ported at the jump site)
+COVERED_FUNCS = {
+    'sub_F4AC8',     # F4ACA..F4D09: the 1.40 switches from sub_107E6 (109A9), orion_part_01.c
 }
 
 
@@ -96,7 +102,7 @@ for l in open(DISS + 'funcdiff.tsv', encoding='latin-1'):
     for x in r[5].split():
         a, b = (int(v, 16) for v in x.split('-'))
         if (any(a - 8 <= m <= b for m in marked) or any(a - 8 <= w <= b for w in wired)
-                or only_nops(a, b) or x in COVERED_RANGES
+                or only_nops(a, b) or x in COVERED_RANGES or r[0] in COVERED_FUNCS
                 or (call_at(l131, a), call_at(l150, a)) in COVERED_CALLS):
             rdone += 1
         else:
