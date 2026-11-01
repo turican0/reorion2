@@ -700,13 +700,13 @@ _BYTE * sub_1E8A58()
   int i; // eax
   _BYTE *result; // eax
 
-  v0 = (_BYTE *)(((int)(intptr_t)dword_23FC7A) + 100);
+  v0 = ((int)(intptr_t)byte_23FC77) + 103;
   do
     *v0++ = 0;
   while ( v0 != byte_23FDA6 );
   if ( SLOWORD(dword_1998C0) <= 1 )
   {
-    result = (_BYTE *)(((int)(intptr_t)dword_23FC7A) + 100);
+    result = ((int)(intptr_t)byte_23FC77) + 103;
     do
       *result++ = 0;
     while ( result != byte_23FDA6 );
@@ -765,7 +765,7 @@ _BYTE * sub_1E8A58()
         }
       }
     }
-    result = (_BYTE *)(((int)(intptr_t)dword_23FC7A) + 100);
+    result = ((int)(intptr_t)byte_23FC77) + 103;
     do
       *result++ = 0;
     while ( result != byte_23FDA6 );
@@ -775,7 +775,7 @@ _BYTE * sub_1E8A58()
 // 1998C0: using guessed type int dword_1998C0;
 // 1998F8: using guessed type int dword_1998F8;
 // 1E1B04: using guessed type char byte_1E1B04;
-// 23FC7A: using guessed type _DWORD dword_23FC7A[75];
+// 23FC77: using guessed type _BYTE byte_23FC77[303];
 // 23FDA6: using guessed type _BYTE byte_23FDA6[8];
 
 //----- (001E8BCF) --------------------------------------------------------
@@ -3479,8 +3479,8 @@ LABEL_10:
 }
 // 1828A8: using guessed type int dword_1828A8;
 
-//----- (001EB605) --------------------------------------------------------
-_BYTE * sub_1EB605(int a1, _BYTE *a2, int a3, int a4)
+//----- (001EB607) --------------------------------------------------------
+_BYTE * sub_1EB607(int a1, _BYTE *a2, int a3, int a4)
 {
   int v4; // ebx
   _BYTE *v5; // eax
@@ -4640,8 +4640,8 @@ LABEL_39:
 }
 // 246667: using guessed type _BYTE byte_246667[4];
 
-//----- (001EC559) --------------------------------------------------------
-char sub_1EC559(_DWORD *a1)
+//----- (001EC55B) --------------------------------------------------------
+char sub_1EC55B(_DWORD *a1)
 {
   int v1; // esi
   int v2; // edi
@@ -5688,7 +5688,7 @@ int16_t sub_1ED94F(_WORD *a1, _WORD *a2)
   int v4; // eax
   int v5; // eax
   int16_t result; // ax
-  _DWORD v7[9]; // [esp+6Ch] [ebp-24h] BYREF
+  _DWORD v7[9]; // [esp+8h] [ebp-24h] BYREF
 
   v3 = SHIWORD(dword_199876);
   if ( (_WORD)v3 == 0xFFFF )
@@ -5710,6 +5710,69 @@ int16_t sub_1ED94F(_WORD *a1, _WORD *a2)
 }
 // 199876: using guessed type int dword_199876;
 // 24666B: using guessed type _BYTE byte_24666B[314];
+
+//----- (001ED9D3) --------------------------------------------------------
+int sub_1ED9D3(int a1, int a2, int a3)
+{
+  if ( *(_BYTE *)(a2 + 4) )
+  {
+    if ( sub_1E004A(a3 + 4, 4, 1, *(_DWORD *)a2) != 1 )
+      sub_1ECCDF(1, "failed check '%s', %s short write", byte_250455, &byte_241D3A[64]);
+    if ( sub_1E004A(*(_DWORD *)(a3 + 8), *(_DWORD *)(a3 + 4), 1, *(_DWORD *)a2) != 1 )
+      sub_1ECCDF(1, "failed check '%s', %s short write", byte_25049D, &byte_241D3A[64]);
+  }
+  else if ( sub_169551(*(_DWORD *)(a3 + 8), *(_DWORD *)(a3 + 4), 1, *(_DWORD *)a2) != 1 )
+  {
+    sub_1ECCDF(1, "failed check '%s', %s short read", &byte_25049D[36], &byte_241D3A[64]);
+  }
+  return a1;
+}
+// 241D3A: using guessed type _BYTE byte_241D3A[76];
+// 250455: using guessed type _BYTE byte_250455[36];
+// 25049D: using guessed type _BYTE byte_25049D[72];
+
+//----- (001EDA6B) --------------------------------------------------------
+int sub_1EDA6B(int a1, int a2)
+{
+  int result; // eax
+  int v3[4]; // [esp+Ch] [ebp-10h] BYREF
+
+  if ( *(_BYTE *)(a1 + 4) )
+  {
+    v3[0] = 0;
+    if ( *(_DWORD *)&byte_23FA46[524] == dword_192FD8 )
+      v3[0] = 500;
+    if ( sub_1E004A((int)v3, 4, 1, *(_DWORD *)a1) != 1 )
+      sub_1ECCDF(1, "failed check '%s', %s short write", byte_250509, &byte_241D3A[36]);
+    result = v3[0];
+    if ( v3[0] )
+    {
+      result = sub_1E004A(((int)(intptr_t)(eseg + 0x1545E)), v3[0], 1, *(_DWORD *)a1) - 1;
+      if ( result )
+        sub_1ECCDF(1, "failed check '%s', %s short write", &byte_250509[36], &byte_241D3A[36]);
+    }
+  }
+  else
+  {
+    result = *(_DWORD *)(a1 + 8);
+    if ( result )
+    {
+      if ( sub_169551(((int)(intptr_t)(eseg + 0x1545E)), result, 1, *(_DWORD *)a1) != 1 )
+        sub_1ECCDF(
+          1,
+          "failed check '%s', %s short read pdu=%s",
+          &byte_250509[76],
+          &byte_241D3A[36],
+          ((char *)(uintptr_t)*(uint32_t *)(a2 + 16)));
+      result = dword_192FD8;
+      *(_DWORD *)&byte_23FA46[524] = dword_192FD8;
+    }
+  }
+  return result;
+}
+// 23FA46: using guessed type _BYTE byte_23FA46[532];
+// 241D3A: using guessed type _BYTE byte_241D3A[76];
+// 250509: using guessed type _BYTE byte_250509[124];
 
 //----- (001EDB4F) --------------------------------------------------------
 unsigned int sub_1EDB4F(int a1, int a2, unsigned int a3)
@@ -6271,40 +6334,4 @@ LABEL_30:
   return v31;
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
-
-//----- (001EE50F) --------------------------------------------------------
-int * sub_1EE50F(_BYTE *a1, _BYTE *a2, uint32_t *a3, ...)
-{
-  int *result; // eax
-  va_list va; // [esp+1Ch] [ebp+10h] BYREF
-
-  va_start(va, a3);
-
-  uint32_t va32[32];   // the 32-bit argument slots of the original
-
-  for ( int va32i = 0; va32i < 32; ++va32i )
-
-    va32[va32i] = (uint32_t)va_arg(va, uintptr_t);
-  result = ((int *)(uintptr_t)*a3);
-  if ( ((int *)(uintptr_t)*a3) )
-  {
-    sub_1EE127(a1, a2, (_BYTE *)((int *)(uintptr_t)*a3) + 8, *((int *)(uintptr_t)*a3), (uint32_t *)va32);
-    a2[(_DWORD)a1 - 1] = 0;
-    return (int *)sub_1ED647((int)a1, (int)a3);
-  }
-  return result;
-}
-
-//----- (001EE553) --------------------------------------------------------
-int * sub_1EE553()
-{
-  _BYTE v1[112]; // [esp+Ch] [ebp-70h] BYREF
-
-  if ( dword_23F16E )
-    sub_1EE50F(v1, (_BYTE *)0x64, (uint32_t *)dword_23DD00, ((int)(intptr_t)(eseg + 0x1C1F6)), dword_23F16E + 8, 0);
-  return sub_1EE50F(v1, (_BYTE *)0x64, (uint32_t *)dword_23DD0A, ((int)(intptr_t)(eseg + 0x1C1FA)), ((int)(intptr_t)(ccode + 0x159549)), 0);
-}
-// 23DD00: using guessed type _DWORD dword_23DD00[2];
-// 23DD0A: using guessed type _DWORD dword_23DD0A[2];
-// 23F16E: using guessed type _DWORD dword_23F16E;
 

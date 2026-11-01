@@ -3777,7 +3777,7 @@ LABEL_74:
     v33 = v12;
     if ( *(_BYTE *)(v39 + dword_192864 + 32) == *(_BYTE *)(v12 + dword_192864 + 32) )
     {
-      if ( (int16_t)v46 > 1 )
+      if ( (int16_t)v46 > Hook150_CodeByte(0x28321, 1) )
       {
         if ( (_WORD)v46 == (g_orion150 ? (uint16_t)(2 * *(int8_t *)Hook150_Eseg(0x23DCDE)) : 2) )   /* 1.50 02832D: sub_1E0C7D */
           ++v49;
@@ -3789,7 +3789,7 @@ LABEL_74:
       continue;
     }
     v15 = sub_4B0D3(i, 35);
-    if ( (int16_t)v46 <= 1 )
+    if ( (int16_t)v46 <= Hook150_CodeByte(0x28350, 1) )
       break;
     if ( (_WORD)v46 == (g_orion150 ? (uint16_t)(2 * *(int8_t *)Hook150_Eseg(0x23DCDE)) : 2) )   /* 1.50 028383: sub_1E0C7D */
     {
@@ -6628,14 +6628,14 @@ int sub_2BF73(int a1, int a2, int a3)
   if ( !v_si )
     return a1;   /* 2BF82 jz locret_2C124 (eax = a1) */
   v4 = Hook150_1E0C69(vC, v_di);   /* 1.50 02BF90 */
-  v_cx = sub_4B0D3(vC, 35) ? 4 : 1;   /* 2BF9F */
+  v_cx = sub_4B0D3(vC, 35) ? Hook150_CodeDw(0x2BFAA, 4) : Hook150_CodeDw(0x2BFB1, 1);   /* 2BF9F */
   v_s = (uint8_t *)(intptr_t)(dword_192864 + 313 * vC);
   v8 = (int16_t)(v_s[175] / 2);
   if ( !(int16_t)v8 )
     v8 = 1;
   v_s[175] -= (uint8_t)v8;   /* 2BFF7 */
-  if ( v_cx == 4
-    && ((g_orion150 ? (int16_t)v4 > 1 : (int16_t)v4 != 1) || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_di + 59) > 0)   /* 1.50 02C008 */
+  if ( v_cx == Hook150_CodeByte(0x2C000, 4)
+    && ((g_orion150 ? (int16_t)v4 > Hook150_CodeByte(0x2C007, 1) : (int16_t)v4 != 1) || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_di + 59) > 0)   /* 1.50 02C008 */
     && (uint16_t)sub_4B0D3(v_di, 7) )
   {
     v8 = (int16_t)((int16_t)v8 / 3);   /* 2C035 cwd; idiv bx */
@@ -6718,9 +6718,9 @@ int sub_2C129_131( int a1, int a2)
     v9 = Hook150_1E0C69(v36, v5);   /* 1.50 02C16C; wave 184: 2C16C result */
     v38 = v9;
     if ( sub_4B0D3(v36, 35) )
-      v40 = 4;
+      v40 = Hook150_CodeDw(0x2C189, 4);
     else
-      v40 = 1;
+      v40 = Hook150_CodeDw(0x2C192, 1);
     v37 = 313 * a2;
     v27 = dword_192864;
     if ( *(_BYTE *)(v37 + dword_192864 + 32) > 8u )
@@ -6745,15 +6745,15 @@ int sub_2C129_131( int a1, int a2)
       goto LABEL_21;
     if ( (int16_t)v38 > (int16_t)v40 )
       goto LABEL_21;
-    if ( (_WORD)v40 != 4 )
+    if ( (int16_t)v40 != Hook150_CodeByte(0x2C25C, 4) )
     {
       v11 = sub_4528F(a2);   /* wave 184: 2C261 result */
       if ( v11 > 0 )
         goto LABEL_21;
     }
     if ( !*(_BYTE *)(dword_192864 + 313 * word_1998F8 + 175)
-      || (_WORD)v40 == 4
-      && ((g_orion150 ? (int16_t)v38 > 1 : (_WORD)v38 != 1) || *(int16_t *)(dword_192864 + 313 * a2 + 59) > 0)   /* 1.50 02C298 */
+      || (int16_t)v40 == Hook150_CodeByte(0x2C290, 4)
+      && ((g_orion150 ? (int16_t)v38 > Hook150_CodeByte(0x2C297, 1) : (_WORD)v38 != 1) || *(int16_t *)(dword_192864 + 313 * a2 + 59) > 0)   /* 1.50 02C298 */
       && ((v32 = a2,
            v31 = 313 * a2 + dword_192864,
            v12 = sub_32A20(a2, a1),
@@ -8846,6 +8846,13 @@ typedef struct {
   int64_t a23;
 } frame30062_t;
 #pragma pack(pop)
+/* the frame fields are 8 and 16 bytes wide: Hex-Rays HIWORD is their top word, not the second word */
+#pragma push_macro("HIWORD")
+#pragma push_macro("SHIWORD")
+#undef HIWORD
+#undef SHIWORD
+#define HIWORD(x)  (*((unsigned short*)&(x) + sizeof(x) / 2 - 1))
+#define SHIWORD(x) (*((short*)&(x) + sizeof(x) / 2 - 1))
 void sub_30062(int a1, int a2, int a3, int a4)
 {
   int v23; // ebx
@@ -9119,6 +9126,9 @@ LABEL_38:
 // 19999C: using guessed type int16_t word_19999C;
 // 199F3A: using guessed type char byte_199F3A;
 
+
+#pragma pop_macro("HIWORD")
+#pragma pop_macro("SHIWORD")
 
 //----- (00030631) --------------------------------------------------------
 void sub_30631()

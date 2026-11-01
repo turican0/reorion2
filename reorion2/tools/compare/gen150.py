@@ -447,6 +447,7 @@ for _r in range(_rs, _cs, 11):
     if _tb == 0:
         v = BB + _add
         reloc_vals[v] = '((int)(intptr_t)(eseg + 0x%X))' % (v - DATA) if v >= DATA else \
+            '((int)(intptr_t)sub_%X)' % v if 'sub_%X' % v in own else \
             '((int)(intptr_t)(ecode + 0x%X))' % (v - BB)
     elif _tb == 1:
         v = 0x178000 + _add

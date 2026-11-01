@@ -2270,10 +2270,11 @@ void sub_7C107( int a1, int a2, int a3)
     if ( !sub_7C8E6(v12) )
     {
       v14 = 113 * v12;
-      *(_BYTE *)(dword_19306C + v14 + 22) = 4;
-      if ( g_orion150 && !sub_792A9(v12) )   /* 1.50 07C23E: sub_1E41CB */
+      if ( !g_orion150 )
+        *(_BYTE *)(dword_19306C + v14 + 22) = 4;
+      else if ( !sub_792A9(v12) )   /* 1.50 07C23E: sub_1E41CB replaces the store of 4 */
       {
-        *(_BYTE *)(dword_19306C + v14 + 22) = sub_8C807((uint8_t)byte_199CB3) - 1;
+        *(_BYTE *)(dword_19306C + v14 + 22) = Hook150_1E41B8(6u) - 1;
         Hook150_1E419C(v12);
       }
       v15 = sub_1247A0(0xAu) - 1;
@@ -7873,7 +7874,7 @@ LABEL_12:
     v13 = *(int *)((char *)&off_17E079 + 13 * *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 802));
     v10 = sub_7A990(0xD8u);
     sprintf(v16, v10, v13);
-    *(_DWORD *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 491) = 9999;
+    *(_DWORD *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 491) = Hook150_CodeDw(0x82A2A, 9999);
     sub_7A25F(&byte_199F28, (int)v16, 0);
     a1 = 3753 * word_19999C;
     v7 = (uint8_t*)dword_197F98;

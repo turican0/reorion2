@@ -1560,9 +1560,9 @@ int sub_956E2( int a1, int a2, int a3, int a4)
   v7 = sub_7A990(0x12Fu);
   v8 = sprintf(v13, v7, v5);
   v9 = sub_12066F((int)v13);
-  v16 = HIDWORD(v8);
+  v16 = a3 + 45 - (int16_t)v15 / 2;   /* 95724: edx survives sprintf_ */
   v10 = a4 / 2 + a2 - v9 / 2;
-  sub_1212B3(v10, SWORD2(v8), (int)v13);
+  sub_1212B3(v10, (int16_t)v16, (int)v13);
   v11 = (int16_t)(v9 + v10);
   sub_134D2D((int16_t)v10, (int16_t)(v16 - 4), v11, (int16_t)(v16 - 4), 129);
   sub_134D2D((int16_t)v10, (int16_t)(v16 - 3), v11, (int16_t)(v16 - 3), 75);
@@ -1932,7 +1932,7 @@ _BOOL1 sub_95BAA( int a1,
       sub_7ABA6((int)v52);
       v18 = a9 + v72 - 2;
       v19 = sprintf(v50, "%d %s", v59, v52);
-      sub_1210B7(v18, SWORD2(v19), (int)v50);
+      sub_1210B7(v18, (int16_t)v79, (int)v50);   /* 95D57 */
       v20 = sub_7A990(0x108u);
       v21 = v79 + sub_122259();
       v22 = v18 - v17;
@@ -4100,7 +4100,7 @@ void sub_98282_131(int a1, int a2, int a3)
   char v3[500]; // [esp+0h] [ebp-1F4h] BYREF
 
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
-  if ( a3 > 0 )
+  if ( g_orion150 || a3 > 0 )   /* 1.50 98289: nop */
   {
     sub_981D1(v3, a2, a3);
     sub_7A25F(&byte_199F28, (int)v3, 0);
@@ -4945,7 +4945,7 @@ void sub_98FEE(int16_t *a1)
     sprintf(v18, v1, v14);
     v2 = sub_C9EB0(0, 66, (int)v18, 0, a1, 0);
     v3 = v2;
-    if ( v2 <= 0 )
+    if ( !g_orion150 && v2 <= 0 )   /* 1.50 9905E: nop */
     {
       v19 = 1;
     }
@@ -9811,6 +9811,13 @@ typedef struct {
   hr_int128_t a25;
 } frame9EC4A_t;
 #pragma pack(pop)
+/* the frame fields are 8 and 16 bytes wide: Hex-Rays HIWORD is their top word, not the second word */
+#pragma push_macro("HIWORD")
+#pragma push_macro("SHIWORD")
+#undef HIWORD
+#undef SHIWORD
+#define HIWORD(x)  (*((unsigned short*)&(x) + sizeof(x) / 2 - 1))
+#define SHIWORD(x) (*((short*)&(x) + sizeof(x) / 2 - 1))
 int sub_9EC4A(int a1, int a2, int a3, int a4)
 {
   char *v25; // eax
@@ -9900,6 +9907,9 @@ int sub_9EC4A(int a1, int a2, int a3, int a4)
 // 179BCB: using guessed type int16_t word_179BCB;
 // 19C7C0: using guessed type int dword_19C7C0;
 
+
+#pragma pop_macro("HIWORD")
+#pragma pop_macro("SHIWORD")
 
 //----- (0009ED88) --------------------------------------------------------
 int16_t sub_9ED88( int a1)

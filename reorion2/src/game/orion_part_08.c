@@ -1482,7 +1482,8 @@ void sub_8A571()
     }
     LOWORD(v6) = v6 + 1;
   }
-  *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 3703) = 0;
+  if ( !g_orion150 )   /* 1.50 8A6B5: nop */
+    *(_BYTE *)((uint8_t*)dword_197F98 + 3753 * word_19999C + 3703) = 0;
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x83CFF je epilog funkce */
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
@@ -7725,7 +7726,7 @@ LABEL_61:
       a3 = 10;
       goto LABEL_35;
     }
-    if ( *(_BYTE *)(v25 + 22) == 5 )
+    if ( !g_orion150 && *(_BYTE *)(v25 + 22) == 5 )   /* 1.50 90EB0: nop */
       goto LABEL_34;
     if ( (int16_t)v44 > -1 && (int16_t)v44 < 8 )
     {
@@ -9532,7 +9533,8 @@ int sub_92D72( int a1)
   v6 = v10;
   v5 = v9;
   v3 = sub_97588(a1, 1);
-  v4 = sprintf(v7, v8, v3, v5, v6);
+  v7[0] = 0;
+  v4 = g_orion150 ? (int64_t)(int16_t)a1 << 32 : sprintf(v7, v8, v3, v5, v6);   /* 1.50 92DEF: nop, edx = a1, the text stays unset */
   if ( sub_C7AB8(word_19999C, SWORD2(v4), (int)v7) )
   {
     sub_9412B(word_19999C, a1);

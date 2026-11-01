@@ -192,7 +192,7 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_23F9E3 (*(_BYTE (*)[27])(eseg + 0x153E3))
 #define byte_23FA3E (*(_BYTE (*)[8])(eseg + 0x1543E))
 #define byte_23FA46 (*(_BYTE (*)[532])(eseg + 0x15446))
-#define byte_23FC77 (*(_BYTE (*)[3])(eseg + 0x15677))
+#define byte_23FC77 (*(_BYTE (*)[303])(eseg + 0x15677))
 #define byte_23FDA6 (*(_BYTE (*)[8])(eseg + 0x157A6))
 #define byte_23FF63 (*(_BYTE (*)[3])(eseg + 0x15963))
 #define byte_23FF6E (*(_BYTE (*)[112])(eseg + 0x1596E))
@@ -236,19 +236,25 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define byte_248BCD (*(_BYTE (*)[48])(eseg + 0x1E5CD))
 #define byte_250271 (*(_BYTE (*)[40])(eseg + 0x25C71))
 #define byte_2503A9 (*(_BYTE (*)[36])(eseg + 0x25DA9))
+#define byte_250455 (*(_BYTE (*)[36])(eseg + 0x25E55))
+#define byte_25049D (*(_BYTE (*)[72])(eseg + 0x25E9D))
+#define byte_250509 (*(_BYTE (*)[124])(eseg + 0x25F09))
 #define byte_2505AD (*(_BYTE (*)[96])(eseg + 0x25FAD))
 #define byte_25064D (*(_BYTE (*)[36])(eseg + 0x2604D))
 #define byte_2506D1 (*(_BYTE (*)[36])(eseg + 0x260D1))
 #define byte_251699 (*(_BYTE (*)[36])(eseg + 0x27099))
 #define byte_2516BD (*(_BYTE (*)[72])(eseg + 0x270BD))
+#define byte_2517C5 (*(_BYTE (*)[144])(eseg + 0x271C5))
 #define byte_2518D9 (*(_BYTE (*)[40])(eseg + 0x272D9))
 #define byte_251951 (*(_BYTE (*)[36])(eseg + 0x27351))
 #define byte_2519A9 (*(_BYTE (*)[64])(eseg + 0x273A9))
+#define byte_251B8D (*(_BYTE (*)[88])(eseg + 0x2758D))
 #define byte_251BE5 (*(_BYTE (*)[268])(eseg + 0x275E5))
 #define byte_251D15 (*(_BYTE (*)[40])(eseg + 0x27715))
 #define byte_251D3D (*(_BYTE (*)[160])(eseg + 0x2773D))
 #define byte_251DDD (*(_BYTE (*)[256])(eseg + 0x277DD))
 #define byte_251F69 (*(_BYTE (*)[84])(eseg + 0x27969))
+#define byte_2520A1 (*(_BYTE (*)[188])(eseg + 0x27AA1))
 #define byte_25218D (*(_BYTE (*)[40])(eseg + 0x27B8D))
 #define byte_2521F1 (*(_BYTE (*)[208])(eseg + 0x27BF1))
 #define byte_4C30F (*(_BYTE (*)[13])(ccode + 0x3C30F))
@@ -343,7 +349,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define dword_23F9DE (*(_DWORD *)(eseg + 0x153DE))
 #define dword_23FC5A (*(int *)(eseg + 0x1565A))
 #define dword_23FC5E (*(_DWORD *)(eseg + 0x1565E))
-#define dword_23FC7A (*(_DWORD (*)[75])(eseg + 0x1567A))
 #define dword_23FF66 (*(_DWORD *)(eseg + 0x15966))
 #define dword_23FF6A (*(_DWORD *)(eseg + 0x1596A))
 #define dword_246FA0 (*(_DWORD (*)[48])(eseg + 0x1C9A0))
@@ -419,12 +424,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_169480 (*(_BYTE *)(ccode + 0x159480))
 #define loc_16949 (*(_BYTE *)(ccode + 0x06949))
 #define loc_1E20BF (*(_BYTE *)(ecode + 0x020BF))
-#define loc_1E519B (*(_BYTE *)(ecode + 0x0519B))
-#define loc_1EC55B (*(_BYTE *)(ecode + 0x0C55B))
-#define loc_1F9613 (*(_BYTE *)(ecode + 0x19613))
-#define loc_1FBE8F (*(_BYTE *)(ecode + 0x1BE8F))
-#define loc_1FC06F (*(_BYTE *)(ecode + 0x1C06F))
-#define loc_1FC47B (*(_BYTE *)(ecode + 0x1C47B))
 #define loc_203707 (*(_BYTE *)(ecode + 0x23707))
 #define loc_2091D (*(_BYTE *)(ccode + 0x1091D))
 #define loc_20941 (*(_BYTE *)(ccode + 0x10941))
@@ -434,9 +433,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define loc_21207 (*(_BYTE *)(ccode + 0x11207))
 #define loc_21257 (*(_BYTE *)(ccode + 0x11257))
 #define loc_21260 (*(_BYTE *)(ccode + 0x11260))
-#define loc_21CC23 (*(_BYTE *)(ecode + 0x3CC23))
-#define loc_21EC47 (*(_BYTE *)(ecode + 0x3EC47))
-#define loc_21F60F (*(_BYTE *)(ecode + 0x3F60F))
 #define loc_22337 (*(_BYTE *)(ccode + 0x12337))
 #define loc_22366 (*(_BYTE *)(ccode + 0x12366))
 #define loc_2237D (*(_BYTE *)(ccode + 0x1237D))
@@ -1651,6 +1647,7 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_23CC02 (*(_BYTE *)(eseg + 0x12602))
 #define unk_23CC03 (*(_BYTE *)(eseg + 0x12603))
 #define unk_23CC42 (*(_BYTE *)(eseg + 0x12642))
+#define unk_23CC43 (*(_BYTE *)(eseg + 0x12643))
 #define unk_23CD1C (*(_BYTE *)(eseg + 0x1271C))
 #define unk_23CD1D (*(_BYTE *)(eseg + 0x1271D))
 #define unk_23CD1E (*(_BYTE *)(eseg + 0x1271E))
@@ -2537,7 +2534,7 @@ void sub_1E511C(void);
 int sub_1E512C(int a1, int a2, int a3);
 int sub_1E513F(int a1, int a2, int a3, int a4, int a5);
 int sub_1E5179(int a1, int a2);
-int sub_1E5198(uint32_t *a1);
+int sub_1E519B(uint32_t *a1);
 int sub_1E51DF(int a1);
 int sub_1E5207(int a1);
 _DWORD * sub_1E5229(int a1, int a2);
@@ -2704,7 +2701,7 @@ int sub_1EB3B3(char *a1, char *a2, int a3);
 _BYTE * sub_1EB423(_BYTE *a1, int a2, int a3);
 _BYTE * sub_1EB447(_BYTE *a1, _BYTE *a2, int a3);
 _BYTE * sub_1EB48B(int a1, int a2);
-_BYTE * sub_1EB605(int a1, _BYTE *a2, int a3, int a4);
+_BYTE * sub_1EB607(int a1, _BYTE *a2, int a3, int a4);
 _BYTE * sub_1EB663(_BYTE *a1, _BYTE *a2, int a3);
 int sub_1EB6A7(char *a1, char *a2);
 int sub_1EB6E7(int a1, int a2);
@@ -2732,7 +2729,7 @@ int sub_1EC1E3(int a1, _DWORD *a2);
 int sub_1EC257(int a1);
 int sub_1EC277(_BYTE *a1, int a2);
 int sub_1EC2EF(_BYTE *a1, int a2, int a3);
-char sub_1EC559(_DWORD *a1);
+char sub_1EC55B(_DWORD *a1);
 unsigned int sub_1EC708(int a1);
 void sub_1EC749(void);
 _BYTE * sub_1EC74C(_BYTE *a1, _BYTE *a2, int a3, int a4, _BYTE *a5, int a6, int a7);
@@ -2761,6 +2758,8 @@ void sub_1ED72B(char *a1);
 _BYTE * sub_1ED773(_BYTE *a1, _BYTE *a2, int a3, char *a4);
 _BYTE * sub_1ED883(int a1, unsigned int a2);
 int16_t sub_1ED94F(_WORD *a1, _WORD *a2);
+int sub_1ED9D3(int a1, int a2, int a3);
+int sub_1EDA6B(int a1, int a2);
 unsigned int sub_1EDB4F(int a1, int a2, unsigned int a3);
 int sub_1EDBDF(int a1, int a2, int a3, unsigned int a4);
 int sub_1EDD23(unsigned int a1, unsigned int a2, int a3, int i);
@@ -2791,9 +2790,10 @@ int sub_1F8F2B();
 int sub_1F90F7(int a1, int a2, int a3);
 int sub_1F9111(int a1);
 int sub_1F9147(void);
-uint8_t sub_1F920F(_BYTE *a1, int a2);
+uint8_t sub_1F920F();
 int sub_1F9273(int *a1, int a2);
 int64_t sub_1F92E7(int a1, int16_t *a2, _DWORD *a3, int a4);
+char sub_1F9613(int a1);
 char * sub_1F978F(int a1);
 int sub_1F99A3(char *a1, int a2, int a3);
 _BOOL1 sub_1F9B77(char *a1, int a2, int a3);
@@ -2814,8 +2814,9 @@ _BYTE * sub_1FA43F(char *a1, char *a2, char *a3);
 char * sub_1FA513(char *a1, char *a2, char *a3);
 char * sub_1FA583(unsigned int a1);
 int * sub_1FA623(int *a1);
+int sub_1FA807(int a1, int a2);
 char sub_1FA9B3(char *a1, char *a2);
-int sub_1FAB6F(int a1);
+int sub_1FAB6F();
 int sub_1FACCB(char *a1, int a2, int a3);
 int sub_1FB00F(int a1, int a2, int a3);
 int sub_1FB0DB(int a1, int a2);
@@ -2837,7 +2838,11 @@ int * sub_1FBBBB(int *a1, _BYTE *a2);
 int sub_1FBC7F(int *a1, int a2);
 int sub_1FBD3B(void);
 int sub_1FBE2B(int a1, int *a2, int a3);
+int sub_1FBE8F(int a1);
 _BYTE * sub_1FBEDB(void);
+char sub_1FC06F(int a1);
+char sub_1FC47B(uint32_t *a1);
+int sub_1FC4FB(int a1, int a2);
 int * sub_1FC66B(uint32_t *a1, _BYTE *a2, int a3, uint32_t *a4);
 int * sub_1FC79B();
 int * sub_1FC7BB();
@@ -2846,7 +2851,7 @@ int * sub_1FC9A3(int *result);
 int * sub_1FC9CB(_DWORD *a1, int a2, int a3);
 int * sub_1FCAFF(_DWORD *a1, int a2);
 char sub_1FCB5B(uint32_t *a1);
-int sub_1FCC27(_DWORD *a1);
+int sub_1FCC27();
 char sub_1FCCD7(int a1, uint32_t *a2, uint32_t *a3);
 int sub_1FCE67(int a1);
 int sub_1FD03B(uint32_t *a1);
@@ -2867,6 +2872,7 @@ char sub_1FDD07(int arg0, int a2);
 char sub_1FE753(int a1, int a2, int a3, int a4);
 int * sub_1FE80F(int *a1, uint32_t *a2, unsigned int a3, void (*a4)(int *));
 void sub_1FEADB(void);
+int sub_1FEE7F(int a1, int a2, int a3, int a4, int a5);
 void sub_1FF103(int a1, int a2);
 char sub_1FF23B(int *a1, char *a2, int a3, uint32_t *a4);
 _BOOL1 sub_1FF314(_DWORD *a1);
@@ -3030,15 +3036,16 @@ char sub_21C3DB(int a1, int a2);
 int sub_21C477();
 int sub_21C6BB();
 int sub_21CBD7(int a1, int a2);
-int sub_21CC21();
+int sub_21CC23();
 int sub_21CF47();
 int sub_21D617();
 int sub_21DB83(int a1, int a2, int a3, int a4);
 int sub_21DB9B();
+int sub_21EC47(int *a1, _DWORD *a2, int a3);
 int sub_21EC93(int *a1, int a2, int a3);
 int sub_21EDD3();
 int sub_21F5E8(int *a1, int a2);
-int sub_21F60D(int *a1, int a2);
+int sub_21F60F(int *a1, int a2);
 int sub_21F65C(int *a1, int a2);
 int sub_21F69F();
 int sub_21FE2B();
@@ -3083,6 +3090,8 @@ _DWORD * sub_22A0C3(_DWORD *a1, unsigned int a2);
 void sub_22A267(int a1, int a2, int a3);
 void sub_22A3A7(int a1, int a2, int a3);
 int sub_22A40C();
+int sub_1ED9D3_cb(int a2, int a3);
+int sub_1FEE7F_cb(int a4, int a5);
 int sub_215C5F_cb(int a2);
 int sub_215CD3_cb(int a2);
 int sub_215D47_cb(int a2);
@@ -3104,6 +3113,7 @@ int sub_2174DB_cb(int a4);
 int sub_21754F_cb(int a4);
 int sub_21AEFB_cb(int a2);
 int sub_21B083_cb(int a2);
+int sub_21EC47_cb(_DWORD *a2, int a3);
 int sub_21EC93_cb(int a3);
 int sub_2204BF_cb(char *a2);
 int sub_220B5F_cb(int a2);

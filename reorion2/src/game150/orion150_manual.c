@@ -150,7 +150,7 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
     if ( len > 2 && !strncmp(s, ESTR150(0x247030), 3) )   /* "/c=" */
     {
       if ( n == 25 )
-        sub_1ECCDF(0, 0, EINT150(0x252909), 25);   /* "at most %d configs" */
+        sub_1ECCDF(0, (const char *)(intptr_t)EINT150(0x252909), 25);   /* "at most %d configs" */
       *(int16_t *)ESTR150(0x24068E) = n + 1;
       *(uint32_t *)ESTR150(0x24069E + 4 * n) = (uint32_t)(uintptr_t)(s + 3);
       n = n + 1;
@@ -172,8 +172,8 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
   {
     /* 202BD3: "failed to load config:\n%.*s" */
     if ( res )
-      sub_1ECCDF(0, 0, EINT150(0x247060), *res, (int)(intptr_t)(res + 2));
-    sub_1ECCDF(0, 0, EINT150(0x247060), 0, 0);
+      sub_1ECCDF(0, (const char *)(intptr_t)EINT150(0x247060), *res, (int)(intptr_t)(res + 2));
+    sub_1ECCDF(0, (const char *)(intptr_t)EINT150(0x247060), 0, 0);
   }
   sub_1F8F2B();
   sub_1FB173((int *)ESTR150(0x23E698));
@@ -185,7 +185,7 @@ int sub_2029AB(char *a1, char *a2, int argc, uint32_t *argv, int base, int size,
     /* 202D2C..202E2D: the original lists the languages the config works with ($AVAIL$ in 25292D);
        here only the "configuration is broken" message (252A05) - not ported yet */
     sub_1FC7BB(&msg, ESTR150(0x252A05), ESTR150(0x246E2C), res);
-    sub_1ECCDF(0, 0, EINT150(0x246E50), msg ? *msg : 0, (int)(intptr_t)(msg ? msg + 2 : 0));
+    sub_1ECCDF(0, (const char *)(intptr_t)EINT150(0x246E50), msg ? *msg : 0, (int)(intptr_t)(msg ? msg + 2 : 0));
   }
   if ( !*ESTR150(0x2407BE) )
   {
@@ -397,7 +397,7 @@ static void SetRefString150(uint32_t *slot, int *s)
 
   if ( !slot )
   {
-    sub_1ECCDF(0, 1, (int)(intptr_t)ESTR150(0x250759), (int)(intptr_t)ESTR150(0x2467E7));   /* 1FB902 call sub_1EE113 (fatal) */
+    sub_1ECCDF(1, (const char *)(intptr_t)(int)(intptr_t)ESTR150(0x250759), (int)(intptr_t)ESTR150(0x2467E7));   /* 1FB902 call sub_1EE113 (fatal) */
     return;
   }
   old = (int *)(uintptr_t)*slot;
@@ -406,7 +406,7 @@ static void SetRefString150(uint32_t *slot, int *s)
   if ( old )
   {
     if ( !old[1] )
-      sub_1ECCDF(0, 1, (int)(intptr_t)ESTR150(0x25071D), (int)(intptr_t)ESTR150(0x2467D9), old[1]);
+      sub_1ECCDF(1, (const char *)(intptr_t)(int)(intptr_t)ESTR150(0x25071D), (int)(intptr_t)ESTR150(0x2467D9), old[1]);
     if ( !--old[1] )
       nfree((int)(intptr_t)old);
   }
@@ -596,11 +596,11 @@ int *sub_1EE5AF(unsigned int a1)
   v3 = (uint16_t)sub_E0DD6((char *)v2, *(int16_t *)(v2 + 277));
   w125 = *(uint16_t *)(v2 + 293);
   w12C = *(uint16_t *)(v2 + 300);
-  sub_1EE50F((int)(intptr_t)v6, v6, (_BYTE *)0x64, (uint32_t *)dword_23DD14,
+  sub_1EE50F((_BYTE *)v6, (_BYTE *)0x64, (uint32_t *)dword_23DD14,
              (int)(intptr_t)(eseg + 0x1C23A), a1, (int)(intptr_t)(eseg + 0x1C22C), w125,
              (int)(intptr_t)(eseg + 0x1C21E), w12C, (int)(intptr_t)(eseg + 0x1C211), w125 + w12C,
              (int)(intptr_t)(eseg + 0x1C202), v3, 0);
-  return sub_1EE50F((int)(intptr_t)v6, v6, (_BYTE *)0x64, (uint32_t *)dword_23DD1E,
+  return sub_1EE50F((_BYTE *)v6, (_BYTE *)0x64, (uint32_t *)dword_23DD1E,
                     (int)(intptr_t)(eseg + 0x1C23A), a1, (int)(intptr_t)(eseg + 0x1C22C), w125,
                     (int)(intptr_t)(eseg + 0x1C21E), w12C, (int)(intptr_t)(eseg + 0x1C211), w125 + w12C,
                     (int)(intptr_t)(eseg + 0x1C202), v3, 0);
@@ -625,6 +625,129 @@ _WORD *sub_1ECCDF(int a1, const char *a2, ...)
   va_end(va);
   Vsnprintf150(buf, sizeof(buf), a2, va32);
   PortDebug_Message(buf);
-  Hook150_Exit(buf, 0);
+  exit(1);
   return 0;
+}
+
+/* GCC nested functions: the block builds a trampoline on the stack (mov ecx, frame / jmp) and hands it over as a
+   callback. In the port the frame of the parent goes through a static pointer. */
+static uint8_t *g_frame1FAB6F;
+static _DWORD *g_frame1F920F;
+
+/* 1E515B: marks which side of the battle a ship of this fleet is on */
+static uint8_t Nested150_1E515B(int a1, int a2)
+{
+  g_frame1FAB6F[2 + (*(char *)(intptr_t)(a2 + 32) == (int16_t)dword_19988E)] = 1;
+  return 0;
+}
+
+/* 1E517B */
+static uint8_t Nested150_1E517B(int a1, int a2)
+{
+  return g_frame1FAB6F[*(char *)(intptr_t)(a2 + 32) == (int16_t)dword_19988E] ^ 1;
+}
+
+//----- (001FAB6F) --------------------------------------------------------
+int sub_1FAB6F(int a1)
+{
+  uint8_t f[4];
+  int v1, v4;
+  int16_t v2;
+
+  g_frame1FAB6F = f;
+  if ( sub_1FA9B3(0, 0) )
+    return 1;
+  if ( a1 == 1 )
+  {
+    v4 = SHIWORD(dword_1998D6);
+    if ( (_WORD)v4 != 0xFFFF && *(int16_t *)(2 * v4 + (dseg + 0x1A96C)) >= 0 )
+      *(_WORD *)(2 * v4 + (dseg + 0x1A96C)) = -1;
+  }
+  f[0] = *(_BYTE *)(SLOWORD(dword_1998AC) + (eseg + 0x157AE)) != 0;
+  f[1] = *(_BYTE *)(SLOWORD(dword_19988E) + (eseg + 0x157AE)) != 0;
+  f[2] = f[3] = 0;
+  sub_1E8813(0, Nested150_1E515B);
+  if ( f[0] && f[1] && f[2] )
+    f[0] = 0;
+  else
+  {
+    if ( !f[2] )
+      f[1] = 0;
+    if ( !f[3] )
+      f[0] = 0;
+  }
+  v1 = sub_1E8813((a1 != 3) + SHIWORD(dword_1998D6), Nested150_1E517B);
+  if ( v1 != -1 )
+  {
+    v2 = *(_WORD *)(2 * v1 + (dseg + 0x1A96C));
+    if ( v2 >= 0 )
+    {
+      HIWORD(dword_1998D6) = v1;
+      LOWORD(dword_1998F8) = v2;
+      return 0;
+    }
+  }
+  return 1;
+}
+
+//----- (001FCC27) --------------------------------------------------------
+int sub_1FCC27(_DWORD *a1)
+{
+  _DWORD *v1 = g_frame1F920F;
+  int *v3;
+  unsigned int *v4;
+  unsigned int v5;
+  _BYTE *v6, *v7, *v8;
+  int *v9;
+  int *v10 = 0;
+
+  if ( a1[2] == (int)(intptr_t)(eseg + 0x11EC0) && (*(_BYTE *)(intptr_t)(*(_DWORD *)(intptr_t)(4 * a1[3] + (int)(intptr_t)(eseg + 0x184C6)) + 32) & 2) == 0 )
+  {
+    v3 = (int *)(intptr_t)a1[1];
+    v4 = (unsigned int *)(intptr_t)*v3;
+    if ( *v3 )
+    {
+      v5 = v1[2];
+      if ( *v4 >= v5 )
+      {
+        v6 = (_BYTE *)(v4 + 2);
+        v7 = (_BYTE *)(intptr_t)v1[1];
+        if ( v5 )
+        {
+          v8 = &v7[v5];
+          while ( *v6 == *v7 )
+          {
+            ++v6;
+            if ( ++v7 == v8 )
+              goto LABEL_10;
+          }
+        }
+        else
+        {
+LABEL_10:
+          v10 = 0;
+          sub_1FC7BB(&v10, &byte_246B07[287], (int)(intptr_t)(eseg + 0x1C622), *v1, (int)(intptr_t)(eseg + 0x1C61B), *(_DWORD *)(intptr_t)*v3 - v5, *v3 + v5 + 8, v6);
+          v9 = v10;
+          if ( v10 != (int *)(intptr_t)*v3 )
+          {
+            sub_1EE0DB(*v3);
+            *v3 = (int)(intptr_t)v9;
+          }
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+//----- (001F920F) --------------------------------------------------------
+uint8_t sub_1F920F(_BYTE *a1, int a2)
+{
+  _DWORD chain[3];
+
+  chain[0] = a2;
+  chain[1] = (int)(intptr_t)a1;
+  chain[2] = (int)strlen((char *)a1);
+  g_frame1F920F = chain;
+  return sub_1F8D47(0, 16, (uint8_t (*)(_DWORD *))sub_1FCC27, 0);
 }

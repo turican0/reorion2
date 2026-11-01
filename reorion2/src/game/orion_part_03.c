@@ -1114,7 +1114,7 @@ int sub_39E15( int a1, int a2, int a3, int a4)
   *(_BYTE *)(v6 + dword_192864 + 75) = 0;
   sub_3891E(a1);
   sub_4588C(a1);
-  if ( word_1998F6 != 1 || word_1998E0 )
+  if ( word_1998F6 != 1 || !g_orion150 && word_1998E0 )   /* 1.50 39E81: nop */
   {
     *(_BYTE *)(dword_192864 + 313 * a1 + 36) = 5;
   }
@@ -2128,7 +2128,8 @@ int sub_3AFB3( int a1)
   {
     result = dword_192864 + 313 * a1;
     v4 = 11 * (int16_t)v2++;
-    *(_BYTE *)(v4 + result + 91) = 0;
+    if ( !g_orion150 )   /* 1.50 3AFD2: nop */
+      *(_BYTE *)(v4 + result + 91) = 0;
   }
   while ( (int16_t)v2 < 8 );
   *(_BYTE *)(result + 74) = -1;
@@ -2978,6 +2979,7 @@ void sub_3C2DC( int a1, int a2, int a3, int a4)
   v25 = a2;
   v27 = a3;
   v30 = a4;
+  a1 = (int16_t)a1;   /* 3C2ED cwde */
   if ( *(int16_t *)(26 * a1 + dword_192B14) > 0 && (sub_3CE4F(a1) || (_WORD)a4) )
   {
     v5 = 26 * a1;
@@ -3809,6 +3811,13 @@ int sub_3D299( int a1)
 
 
 //----- (0003D2DF) --------------------------------------------------------
+/* the frame fields are 8 and 16 bytes wide: Hex-Rays HIWORD is their top word, not the second word */
+#pragma push_macro("HIWORD")
+#pragma push_macro("SHIWORD")
+#undef HIWORD
+#undef SHIWORD
+#define HIWORD(x)  (*((unsigned short*)&(x) + sizeof(x) / 2 - 1))
+#define SHIWORD(x) (*((short*)&(x) + sizeof(x) / 2 - 1))
 int sub_3D2DF(int a1, int a2, int a3)
 {
   int16_t v4; // di
@@ -4227,6 +4236,9 @@ LABEL_116:
 // 1998F6: using guessed type int16_t word_1998F6;
 // 1998FC: using guessed type int16_t word_1998FC;
 
+
+#pragma pop_macro("HIWORD")
+#pragma pop_macro("SHIWORD")
 
 //----- (0003DB8F) --------------------------------------------------------
 int sub_3DB8F( int a1)
@@ -10757,7 +10769,7 @@ void sub_459E7_131(int a1, int a2)
 
   vC = (int16_t)Hook150_1E0C69(v60, v_si);   /* 1.50 0459FA */
   v_cl = 1;
-  v8 = sub_4B0D3(v60, 35) ? 4 : 1;   /* 45A0B */
+  v8 = sub_4B0D3(v60, 35) ? Hook150_CodeDw(0x45A18, 4) : Hook150_CodeDw(0x45A21, 1);   /* 45A0B */
   v_t = (uint8_t *)(intptr_t)(dword_192864 + 313 * v_si);
   v_msg = 0;
   if ( v_t[32] > 8u )
@@ -10768,7 +10780,7 @@ void sub_459E7_131(int a1, int a2)
     v_msg = v_t[176] ? 65 : 64;   /* 45A8D own side */
   else if ( vC > v8 )
     v_msg = 66;   /* 45AC3 too far */
-  else if ( v8 != 4 && (int16_t)sub_4528F(v_si) > 0 )
+  else if ( v8 != Hook150_CodeByte(0x45AE2, 4) && (int16_t)sub_4528F(v_si) > 0 )
     v_msg = 67;   /* 45AE7 */
   else if ( !*(uint8_t *)(dword_192864 + 313 * word_1998F8 + 175) )
     v_msg = 68;   /* 45B03 no marines */
@@ -10780,7 +10792,7 @@ void sub_459E7_131(int a1, int a2)
     sub_2C601(0, 0);   /* 45BDB */
     return;   /* 45BE0 cl = 0 */
   }
-  if ( v8 == 4 && (vC > 1 || *(int16_t *)(v_t + 59) > 0) )   /* 45B32 */
+  if ( v8 == Hook150_CodeByte(0x45B36, 4) && (vC > Hook150_CodeByte(0x45B41, 1) || *(int16_t *)(v_t + 59) > 0) )   /* 45B32 */
   {
     v_ax = (int16_t)sub_39DE0((int16_t)sub_32A20(v_si, v60));
     if ( *(int16_t *)(v_t + 2 * v_ax + 41) > 0 )   /* 45B7A shields in that direction */
@@ -10806,7 +10818,7 @@ void sub_459E7_131(int a1, int a2)
   if ( !v_di )
     return;
   *(uint8_t *)(dword_192864 + 313 * word_1998F8 + 175) -= (uint8_t)v4;
-  if ( v8 == 4 && ((g_orion150 ? vC > 1 : vC != 1) || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_si + 59) > 0) )   /* 45C1F; 1.50 45C2B: jg */
+  if ( v8 == Hook150_CodeByte(0x45C23, 4) && ((g_orion150 ? vC > Hook150_CodeByte(0x45C2A, 1) : vC != 1) || *(int16_t *)(intptr_t)(dword_192864 + 313 * v_si + 59) > 0) )   /* 45C1F; 1.50 45C2B: jg */
   {
     if ( (uint16_t)sub_4B0D3(v_si, 7) )
       v4 = (v4 & ~0xFFFF) | (uint16_t)((int16_t)v4 / 3);   /* 45C58 cwd; idiv bx */
@@ -14935,7 +14947,7 @@ void sub_4AA36( int a1, int a2)
     if ( v21 >= (uint8_t)byte_17FD5F )
       LOBYTE(v52) = v52 | 0x20;
     v53 = g_orion150 ? Hook150_1EDD23(v21, v20, 0) : word_17F81D[14 * v20] & v52;   /* 1.50 04AC39: sub_1E3C37 */
-    v22 = 225 / sub_6EE8E(word_19988E, v20, 1, g_orion150 ? 16 : 1, 1u, v53);   /* 1.50 04AC5A, 4AC58: sub_1E3CB3 */
+    v22 = Hook150_CodeDw(0x4AC67, 225) / sub_6EE8E(word_19988E, v20, 1, g_orion150 ? 16 : 1, 1u, v53);   /* 1.50 04AC5A, 4AC58: sub_1E3CB3 */
     v23 = dword_192864;
     *(_BYTE *)(dword_192864 + 85) = 15;
     *(_WORD *)(v23 + 88) = -1;
@@ -14954,7 +14966,7 @@ void sub_4AA36( int a1, int a2)
     if ( v26 >= (uint8_t)byte_17FD6E )
       LOBYTE(v54) = v54 | 0x40;
     v55 = g_orion150 ? Hook150_1EDD23(v26, v25, 2) : word_17F81D[14 * v25] & v54;   /* 1.50 04ACFF: sub_1E3C4D */
-    v27 = 75 / sub_6EE8E(word_19988E, v25, 1, g_orion150 ? 16 : 1, 1u, v55);   /* 1.50 04AD20, 4AD1E: sub_1E3CB3 */
+    v27 = Hook150_CodeDw(0x4AD2D, 75) / sub_6EE8E(word_19988E, v25, 1, g_orion150 ? 16 : 1, 1u, v55);   /* 1.50 04AD20, 4AD1E: sub_1E3CB3 */
     v28 = dword_192864 + 11;
     *(_BYTE *)(dword_192864 + 96) = 15;
     *(_WORD *)(v28 + 88) = -1;

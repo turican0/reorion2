@@ -4113,7 +4113,7 @@ void sub_CADC8( int a1, _WORD *a2)
                                     40);
   if ( a1 == 1 )
   {
-    if ( *(int16_t *)(dword_1A11AC + 43) < 0 || !*a2 || *a2 == 3 || *(int16_t *)(dword_1A11AC + 21) <= 0 || *a2 == 2 )
+    if ( *(int16_t *)(dword_1A11AC + 43) < 0 || !*a2 || *a2 == 3 || !g_orion150 && *(int16_t *)(dword_1A11AC + 21) <= 0 || *a2 == 2 )   /* 1.50 CAE52: nop */
     {
       word_1A11E8 = -1000;
     }
@@ -4134,7 +4134,7 @@ void sub_CADC8( int a1, _WORD *a2)
     if ( *(int16_t *)(dword_1A11AC + 43) <= 0
       || *a2 == 1
       || *a2 == 3
-      || *(int16_t *)(dword_1A11AC + 21) <= 0
+      || !g_orion150 && *(int16_t *)(dword_1A11AC + 21) <= 0   /* 1.50 CAEE1: nop */
       || *a2 == 2 )
     {
       word_1A11E6 = -1000;
@@ -4147,7 +4147,7 @@ void sub_CADC8( int a1, _WORD *a2)
       v10 = *(_WORD *)(dword_1A1120 + 2) + word_1A123C - 39 - 25 * v5++;
       word_1A11E6 = (uint16_t)sub_1151B0(word_1A123A + 221, v10, v9, v8, v29, 40);
     }
-    if ( *(int16_t *)(dword_1A11AC + 43) <= 0 || *a2 == 2 || *a2 == 3 || *(int16_t *)(dword_1A11AC + 21) <= 0 )
+    if ( *(int16_t *)(dword_1A11AC + 43) <= 0 || *a2 == 2 || *a2 == 3 || !g_orion150 && *(int16_t *)(dword_1A11AC + 21) <= 0 )   /* 1.50 CAF63: nop */
     {
       word_1A11E4 = -1000;
     }
@@ -4160,7 +4160,7 @@ void sub_CADC8( int a1, _WORD *a2)
       word_1A11E4 = (uint16_t)sub_1151B0(word_1A123A + 221, v13, v12, v11, v30, 40);
     }
   }
-  if ( *(int16_t *)(dword_1A11AC + 43) < 0 || a1 == 1 || a1 == 2 || *(int16_t *)(dword_1A11AC + 21) <= 0 )
+  if ( *(int16_t *)(dword_1A11AC + 43) < 0 || a1 == 1 || a1 == 2 || !g_orion150 && *(int16_t *)(dword_1A11AC + 21) <= 0 )   /* 1.50 CAFE7: nop */
   {
     if ( word_1A11DE != -1000 )
     {
@@ -7150,7 +7150,7 @@ int64_t sub_CEE50(int a1, int a2, int16_t *a3)
     v4 = (int16_t)v29;
     v26 = sub_BB723(*a3, v29, *(uint8_t *)((uint8_t*)dword_197F98 + 3753 * *a3 + 37));
     sub_BAF3C(1u, *(_BYTE *)a3);
-    v15 = a3[v4 + 1] - *((char *)a3 + 51);
+    v15 = a3[v4 + 1] - (g_orion150 ? 0 : *((char *)a3 + 51));   /* 1.50 CEEB7: nop */
     v5 = (char *)sub_CDF5C(13);
     v6 = sprintf(v20, v5, v15);
     LODWORD(v6) = *(int16_t *)sub_127C27((int)aColgcbtLbx, 21, dword_193174);
@@ -9850,7 +9850,8 @@ void sub_D2754(int a1)
 //----- (000D2783) --------------------------------------------------------
 void sub_D2783(char *a1, int a2)
 {
-  sub_E2A70((int)((uint8_t*)a1 - (uint8_t*)dword_192B18) / 361, a2);
+  if ( !g_orion150 )   /* 1.50 D2797: nop */
+    sub_E2A70((int)((uint8_t*)a1 - (uint8_t*)dword_192B18) / 361, a2);
   sub_D0B08(a1);
 }
 // 192B18: using guessed type int (uint8_t*)dword_192B18;

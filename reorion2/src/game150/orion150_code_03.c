@@ -1122,7 +1122,7 @@ int64_t sub_1E2A20(int64_t a1, int a2, int a3, int a4, int a5)
 
   a1 = (uint8_t)(sub_E4204(a1, SHIDWORD(a1), a3));
   v7 = a1;
-  v5 = sub_E9871(dword_1E2A1C, ((int)(intptr_t)(ecode + 0x2A48)), a3, a2);
+  v5 = sub_E9871(dword_1E2A1C, ((int)(intptr_t)sub_1E2A48), a3, a2);
   sub_1E96EB(*(_WORD *)(a4 - 8), *(uint8_t *)(a5 + a4 - 57), a3, v5);
   return v7;
 }

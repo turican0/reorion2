@@ -8288,7 +8288,7 @@ void sub_C5C44()
   if ( byte_18319C )
   {
     sub_124B65();
-    for ( i = (uint8_t)byte_18319C; i >= 0; i -= 10 )
+    for ( i = (uint8_t)byte_18319C; i >= 0; i -= Hook150_CodeByte(0xC5C72, 10) )
     {
       v1 = sub_132C80(i);
       byte_18319C = i;

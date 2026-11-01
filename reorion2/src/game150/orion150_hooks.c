@@ -54,7 +54,7 @@ void Hook150_Exit(char *msg, int normal)
 
   PortDebug_Message(msg);
   if ( !normal )
-    sub_1ECCDF(0, 1, EINT150(0x246DB8), (int)(intptr_t)msg, 0);   /* "MOO2 internal error:\n%s" */
+    sub_1ECCDF(1, (const char *)(intptr_t)EINT150(0x246DB8), (int)(intptr_t)msg, 0);   /* "MOO2 internal error:\n%s" */
   Dos150_GetTime(&cx, &dx);
   sub_1EC907(0, EINT150(0x251F8D), cx >> 8, cx & 0xFF, dx >> 8, dx & 0xFF);
   sub_1FB983();
@@ -138,7 +138,7 @@ int16_t sub_E938C(int a1, int a2, int a3, int a4, uint8_t *a5, int a6)
     return sub_E938C_131(a1, a2, a3, a4, a5, a6);
   *ECODE150(0x1E1932) = 0;
   if ( *ECODE150(0x1E4AE7) )
-    sub_1ECCDF(0, 1, EINT150(0x2467C1));
+    sub_1ECCDF(1, (const char *)(intptr_t)EINT150(0x2467C1));
   *ECODE150(0x1E4AE7) = 1;
   nullsub_42();
   r = sub_E938C_131(a1, a2, a3, a4, a5, a6);
@@ -1690,6 +1690,29 @@ void Hook150_1E316D(int slot)
 int Hook150_1E17F0(int16_t *a1, int16_t *a2)
 {
   return sub_1E87C3(a1, a2);
+}
+
+//----- (001E4AC3) --------------------------------------------------------
+/* AFF78: the qsort comparator sub_AFEE0 becomes sub_1EAFEB */
+int Hook150_1E4AC3(int16_t *a1, int16_t *a2)
+{
+  return sub_1E4AC3(a1, a2);
+}
+
+/* immediate operands of the game code the config rewrites at run time (ccode) */
+int Hook150_CodeDword(uint32_t addr)
+{
+  return *(int32_t *)CCODE150(addr);
+}
+
+int Hook150_CodeDw(uint32_t addr, int value131)
+{
+  return g_orion150 ? *(int32_t *)CCODE150(addr) : value131;
+}
+
+int Hook150_CodeWord(uint32_t addr, int value131)
+{
+  return g_orion150 ? *(int16_t *)CCODE150(addr) : value131;
 }
 
 //----- (001E079A) --------------------------------------------------------

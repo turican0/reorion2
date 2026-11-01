@@ -1743,7 +1743,7 @@ int sub_A13B0( int a1, int a2, int a3)
   v8 = sub_7A990(0x133u);
   v9 = v15 + a3;
   v10 = sprintf(v13, v8, v12);
-  return sub_1210B7(v9, SWORD2(v10), (int)v13);
+  return sub_1210B7(v9, (int16_t)(a4 + (int)(intptr_t)v16), (int)v13);   /* A143E movsx edx, cx */
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
 // 1975D4: using guessed type int16_t word_1975D4;
@@ -6872,6 +6872,13 @@ typedef struct {
   int a15;
 } frameA8197_t;
 #pragma pack(pop)
+/* the frame fields are 8 and 16 bytes wide: Hex-Rays HIWORD is their top word, not the second word */
+#pragma push_macro("HIWORD")
+#pragma push_macro("SHIWORD")
+#undef HIWORD
+#undef SHIWORD
+#define HIWORD(x)  (*((unsigned short*)&(x) + sizeof(x) / 2 - 1))
+#define SHIWORD(x) (*((short*)&(x) + sizeof(x) / 2 - 1))
 int sub_A8197(int a1, int a2, int a3, int a4, int a16, int a17, int a18, int a19)
 {
   int v19; // ecx
@@ -7481,6 +7488,8 @@ LABEL_113:
 #undef a13
 #undef a14
 #undef a15
+#pragma pop_macro("HIWORD")
+#pragma pop_macro("SHIWORD")
 }
 // A8197: variables would overlap: ^1C2.2 and ^1C2.4
 // A83E3: inconsistent variable size for '^1C8.16'
@@ -10327,9 +10336,9 @@ LABEL_12:
     v14 = 20 * v6;
     v13 = 20 * v7;
     if ( word_19987E == 1 || word_1998CE )
-      v15 = 2;
+      v15 = Hook150_CodeDw(0xACC0F, 2);
     else
-      v15 = 1;
+      v15 = Hook150_CodeDw(0xACC18, 1);
     v16 = 0;
     v19 = sub_147D7(10);   /* ACC2D mov [var_28], eax */
     while ( (int16_t)v16 < (int16_t)v17 )
@@ -13033,7 +13042,7 @@ int sub_AFEFC(int a1, int a2, int a3)
     ++a3;
   }
   while ( a3 < 49 );
-  return qsort(&unk_1827D2, word_18283A - 2, 2, sub_AFEE0);   /* vlna 84: komparator z asm */
+  return qsort(g_orion150 ? (void *)word_1827CE : (void *)&unk_1827D2, g_orion150 ? word_18283A : word_18283A - 2, 2, g_orion150 ? Hook150_1E4AC3 : sub_AFEE0);   /* vlna 84: komparator z asm; 1.50 AFF78, AFF89, AFF8E */
 }
 // 1827CE: using guessed type int16_t word_1827CE[];
 // 1827D0: using guessed type int16_t word_1827D0;

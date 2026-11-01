@@ -2404,7 +2404,9 @@ LABEL_17:
       v40 = sub_CDF5C(490);
       v38 = sub_CDF5C(243);
       v11 = (char *)sub_CDF5C(84);
-      sprintf(&v42, v11, (char *)(intptr_t)v38, (char *)(intptr_t)v40);
+      v42 = 0;
+      if ( !g_orion150 )   /* 1.50 B34DA: nop, the text stays unset */
+        sprintf(&v42, v11, (char *)(intptr_t)v38, (char *)(intptr_t)v40);
       v12 = 13 * v70++ + 21;
       sub_1212B3(306, v12, (int)&v42);
       v13 = sub_B2FFA(v0);
@@ -2464,7 +2466,8 @@ LABEL_10:
       sub_102F10(306, v8, (int)v7, 156);
       ++v70;
       v5 = 13;
-      sub_B3B56(dword_19F7A8, v6, &v70);
+      if ( !g_orion150 )   /* 1.50 B344B: nop */
+        sub_B3B56(dword_19F7A8, v6, &v70);
       sub_B0A9C(14);
       goto LABEL_6;
     case -2:
@@ -2477,7 +2480,8 @@ LABEL_10:
       v4 = sub_BBC46(3, 1, 0);
       sub_12A478(235, 54, v4);
       v5 = 12;
-      sub_B3B56(dword_19F7A8, v1, &v70);
+      if ( !g_orion150 )   /* 1.50 B33DF: nop */
+        sub_B3B56(dword_19F7A8, v1, &v70);
 LABEL_6:
       sub_AFA5C(209, 119, 248, v5);
       break;
@@ -3462,7 +3466,7 @@ void sub_B4B51()
       ++v4;
       v10 = sprintf(v18, v9, (char *)(intptr_t)v17);
       v8 += 20;
-      sub_1212B3(20, SWORD2(v10), (int)v18);
+      sub_1212B3(20, (int16_t)(v8 - 20), (int)v18);   /* B4CD7 movsx edx, di before add edi, 14h */
     }
     if ( ++v7 >= 49 )
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xB44D9 je epilog funkce */
@@ -6352,7 +6356,7 @@ int sub_B896D(int a1, int a2, int16_t *a3)
       v26 = *a3;
       v28 = sub_BB723(v26, v31, *(uint8_t *)(3753 * v26 + (uint8_t*)dword_197F98 + 37));
       sub_BAF3C(1u, *(_BYTE *)dword_19F378);
-      v19 = *((int16_t *)v29 + 1) - *((char *)a3 + 51);
+      v19 = *((int16_t *)v29 + 1) - (g_orion150 ? 0 : *((char *)a3 + 51));   /* 1.50 B89EF: nop */
       v8 = (char *)sub_CDF5C(13);
       v9 = (int16_t)v32;
       sprintf(v25, v8, v19);
@@ -6366,7 +6370,7 @@ int sub_B896D(int a1, int a2, int16_t *a3)
       v11 = (char *)sub_CDF5C(v10);
       v12 = sprintf(v25, v11, v20);
       v33 = 2;
-      sub_1210FD(v30, SWORD2(v12), (int)v25);
+      sub_1210FD(v30, 167, (int)v25);   /* B8A71 */
       if ( byte_199CAE == 4 )
       {
         v21 = a3[i + 5];

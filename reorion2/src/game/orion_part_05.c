@@ -609,6 +609,7 @@ void sub_64B94(int a1, int a2, int a3)
 
   v39 = a2;   /* wave 181: v39 saved by the prologue (push edx) */
   v41 = a1;   /* wave 181: v41 saved by the prologue (push eax) */
+  v40 = (_WORD *)(intptr_t)a2;   /* 64B9D push edx = var_108 */
   v47[0] = 327682;
   v47[1] = 983050;
   v48 = 20;
@@ -2328,7 +2329,7 @@ LABEL_13:
       {
         v11 = sub_6EDAE(v48);
         if ( v11 )
-          v11 = 5;
+          v11 = Hook150_CodeDw(0x66EDB, 5);
         v12 = v48;
         v13 = v11;
         v39 = sub_6EC74(v48, 1, 1, v11, 0);
@@ -2792,7 +2793,7 @@ void sub_6767F(int a1, int a2)
           if ( (_WORD)v42 )
           {
             sub_8F64C();
-            sprintf(v25, "%d", v31);
+            sprintf(v25, "%d", (int16_t)v31);   /* sub_68D3D sets the low word */
             v17 = i;
             sprintf(v24, "%d", (int16_t)v30);
             sub_120E8C(1);
@@ -4467,7 +4468,7 @@ LABEL_24:
               word_19B976 = 16;
             else
               word_19B976 = 1;
-            word_19B978 = 1;
+            word_19B978 = Hook150_CodeWord(0x69AC6, 1);
             word_19B966 = 0;
             for ( j = 1; j < 15; ++j )
             {
@@ -7586,11 +7587,11 @@ void sub_6D29C()
   sub_120E8C(1);
   v62 = (char *)word_17FE9C[23 * *(int16_t *)(dword_1927A8 + 27)];
   v2 = sub_7A990(0x17Eu);
-  sprintf(v65, v2);
+  sprintf(v65, v2, (int)(intptr_t)v62);
   sub_1212B3(251, 71, (int)v65);
   v62 = (char *)(uint8_t)sub_6B7CF(dword_1927A8, 71, (int)v65, 0);
   v3 = sub_7A990(0x54u);
-  sprintf(v65, v3);
+  sprintf(v65, v3, (int)(intptr_t)v62);
   sub_1212B3(251, 86, (int)v65);
   sub_120BB5(3, (int)v71);
   sub_120E8C(1);
@@ -7601,11 +7602,11 @@ void sub_6D29C()
   v5 = sub_6B7FF(dword_1927A8, 27);
   v62 = (char *)(int16_t)sub_58330(*(_WORD *)(dword_1927A8 + 229), v5, v4);
   v6 = sub_7A990(0x55u);
-  sprintf(v65, v6);
+  sprintf(v65, v6, (int)(intptr_t)v62);
   sub_1212B3(251, 122, (int)v65);
   v62 = (char *)(int16_t)sub_6B77B();
   v7 = sub_7A990(0x56u);
-  sprintf(v65, v7);
+  sprintf(v65, v7, (int)(intptr_t)v62);
   sub_1212B3(251, 137, (int)v65);
   sub_120BB5(3, (int)v71);
   sub_120E8C(1);
@@ -7620,7 +7621,7 @@ void sub_6D29C()
     LOWORD(v11) = sub_120E8C(1);
     v62 = (char *)(int16_t)sub_6E3D3(v11, (int)v70, (int)v65);
     v12 = sub_7A990(0x59u);
-    sprintf(v65, v12);
+    sprintf(v65, v12, (int)(intptr_t)v62);
     sub_1212B3(453, 71, (int)v65);
     v13 = *(int16_t *)((char *)&word_17F6C1 + 59 * *(int16_t *)(dword_1927A8 + 17));
     if ( (uint8_t)sub_6B7FF(dword_1927A8, 13) )
@@ -7633,7 +7634,7 @@ void sub_6D29C()
     v61[26] = v13;
     v15 = sub_7A990(0x5Au);
     v10 = v65;
-    sprintf(v65, v15);
+    sprintf(v65, v15, v13, v14);
   }
   else
   {
@@ -7781,7 +7782,7 @@ void sub_6D29C()
           v34 = 0;
       }
       v35 = sprintf(v65, "%d", v34);
-      sub_1210FD(436, SWORD2(v35), (int)v65);
+      sub_1210FD(436, (int16_t)v81, (int)v65);   /* edx survives sprintf_ */
       v36 = dword_1927A8 + 2 * (int16_t)v84;
       if ( *(_WORD *)(v36 + 69) )
         v37 = *(_DWORD *)(dword_1927A8 + 4 * (int16_t)v84 + 109) / *(int16_t *)(v36 + 69);
@@ -8694,6 +8695,7 @@ int sub_6EC74( int a1, int a2, int a3, unsigned int a4, int a5)
 
   v19 = a2;
   v18 = a3;
+  a1 = (int16_t)a1;   /* 6EC83 cwde */
   v6 = word_17F813[14 * a1];
   if ( sub_6EFEB(a1) == 1 )
   {
@@ -8829,6 +8831,7 @@ int sub_6EE8E(int a1, int a2, int a3, int a4, unsigned int a5, int a6)
 
   v17 = a1;   /* wave 181: v17 saved by the prologue (push eax) */
   v20 = a4;
+  a2 = (int16_t)a2;   /* 6EEA0 movsx eax, si */
   v7 = word_17F811[14 * a2];
   if ( sub_6EFEB(a2) == 1 )
   {

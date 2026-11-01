@@ -2773,6 +2773,13 @@ typedef struct {
   int64_t a26;
 } frameD94B3_t;
 #pragma pack(pop)
+/* the frame fields are 8 and 16 bytes wide: Hex-Rays HIWORD is their top word, not the second word */
+#pragma push_macro("HIWORD")
+#pragma push_macro("SHIWORD")
+#undef HIWORD
+#undef SHIWORD
+#define HIWORD(x)  (*((unsigned short*)&(x) + sizeof(x) / 2 - 1))
+#define SHIWORD(x) (*((short*)&(x) + sizeof(x) / 2 - 1))
 void sub_D94B3(int a1, int a2, int a3, int a4)
 {
   _WORD *v26; // edi
@@ -2999,6 +3006,9 @@ LABEL_21:
 // 1AA214: using guessed type int dword_1AA214;
 // 1AA24C: using guessed type int16_t word_1AA24C;
 
+
+#pragma pop_macro("HIWORD")
+#pragma pop_macro("SHIWORD")
 
 //----- (000D97EE) --------------------------------------------------------
 /* wave 184: from asm (Hex-Rays failed) - sub_D94B3(star, 0, a1, a2) for every star with an
@@ -7023,7 +7033,7 @@ int sub_DE03E(int a1, int a2, int a3)
 
   v4 = 17 * *(int16_t *)(a1 + 2);
   LOWORD(v4) = *(uint8_t *)(v4 + (uint8_t*)dword_1930D4 + 11);
-  v5 = 2 * v4;
+  v5 = g_orion150 ? v4 : 2 * v4;   /* 1.50 DE056: nop */
   if ( a3 )
     *(_DWORD *)a3 = (int16_t)v5;
   if ( !(_WORD)v5 && *(_BYTE *)(3753 * a2 + (uint8_t*)dword_197F98 + 308) == 3 )
@@ -7080,7 +7090,7 @@ int sub_DE0C6(char *a1, int a2, int a3, int a4)
       dword_183568 = (int)a1;
       byte_18356C = a2;
     }
-    if ( byte_1AA358[a3] != 99 )
+    if ( !g_orion150 && byte_1AA358[a3] != 99 )   /* 1.50 DE14B: nop */
     {
       LOWORD(v14) = byte_1AA358[a3];
       return v14;
@@ -7123,7 +7133,7 @@ LABEL_19:
         v11 = (uint8_t)byte_17D81C[*(uint8_t *)(dword_183568 + 226)];
         v12 = (uint8_t)byte_17D824;
 LABEL_20:
-        v8 = 2 * (v12 - v11);
+        v8 = (g_orion150 ? 1 : 2) * (v12 - v11);   /* 1.50 DE1BC: nop */
         goto LABEL_26;
       }
       if ( v10 == 4 )
@@ -7409,7 +7419,7 @@ LABEL_60:
         v34 = byte_DD4D7[(uint8_t)byte_199CB0];
         *(_DWORD *)((char *)&v36[147] + 2) += v34;
       }
-      v19 = v24 + v32 + v31 + v29 + v30 + v28 + v33 + v27 + v26 + v34;
+      v19 = (g_orion150 ? 0 : v24) + v32 + v31 + v29 + v30 + v28 + v33 + v27 + v26 + v34;   /* 1.50 DE609: nop */
       v35 = v19;
       if ( v19 > 0 )
         *(_DWORD *)((char *)&v36[148] + 2) += v19;
@@ -7853,7 +7863,7 @@ int sub_DED47(char *a1, int a2, int a3, int a4)
     dword_18356D = (int)a1;
     byte_183571 = a2;
   }
-  if ( byte_1AA362[a3] == 99 )
+  if ( g_orion150 || byte_1AA362[a3] == 99 )   /* 1.50 DEDC3: nop */
   {
     v6 = 0;
     if ( a3 >= 8 )
@@ -8792,7 +8802,7 @@ int sub_DFE77(char *a1, int a2, int a3, int a4)
     dword_183572 = (int)a1;
     byte_183576 = a2;
   }
-  if ( byte_1AA36C[a3] == 99 )
+  if ( g_orion150 || byte_1AA36C[a3] == 99 )   /* 1.50 DFEF3: nop */
   {
     v6 = 0;
     v8 = 0;
@@ -9645,7 +9655,7 @@ int sub_E0D98(unsigned int a1, int a2)
 {
   int v3; // [esp+0h] [ebp-4h] BYREF
 
-  v3 = 0;
+  v3 = Hook150_CodeDw(0xE0D9F, 0);
   if ( a1 < 2 )
   {
     if ( a1 == 1 )
@@ -10390,8 +10400,8 @@ LABEL_88:
     v24 = (uint8_t*)dword_197F98 + 3753 * *a1;
     v31 = 0;
     /* wave 183: sub_16946E() removed - IDA artifact, not in the original */
-    if ( g_orion150 )   /* 1.50 E1B98: call sub_16946E (cave) - add esi, 96h */
-      v23 += 150;
+    if ( g_orion150 )   /* 1.50 E1B98: call sub_16946E (cave) - add esi, imm at 169482 set by the config (1F689E) */
+      v23 += Hook150_CodeDword(0x169482);
     if ( *(_BYTE *)(v24 + 472) == 3 )   /* wave 184: E1B98 cmp byte [eax+1D8h], 3 - v25 was never set */
     {
       v23 += 50;
@@ -12100,7 +12110,8 @@ LABEL_99:
     v10 = *(int16_t *)(v41 + 277);
     a2 = (int16_t)v10;
     sub_13FD9((int)((uint8_t*)v41 - (uint8_t*)dword_192B18) / 361, v10);
-    *(_DWORD *)(v2 + 50) += *(int16_t *)((char *)&word_17EB49 + 19 * v10);
+    if ( !g_orion150 )   /* 1.50 E392E: nop */
+      *(_DWORD *)(v2 + 50) += *(int16_t *)((char *)&word_17EB49 + 19 * v10);
     if ( *(int16_t *)(v41 + 279) != -10 )
       goto LABEL_25;
     v11 = 361 * (int16_t)((int)((uint8_t*)v41 - (uint8_t*)dword_192B18) / 361);
@@ -12147,7 +12158,7 @@ LABEL_95:
       if ( v24 == 0xFFF1 )
       {
         *(_WORD *)((uint8_t*)dword_197F98 + 3753 * *v41 + 54) += 5;
-        *(_DWORD *)(v2 + 50) += 5;
+        *(_DWORD *)(v2 + 50) += Hook150_CodeByte(0xE3B99, 5);
       }
     }
     else if ( v24 <= 0xFFF9u )
@@ -12158,7 +12169,8 @@ LABEL_95:
         *(_DWORD *)(v2 + 50) += g_orion150 ? *(uint16_t *)Hook150_Eseg(0x23E1E0) >> 1 : 100;   /* 1.50 0E3BC7: sub_1E19D3 */
         sub_B206F(v25, -7);
       }
-      ++*(_DWORD *)(v2 + 50);
+      if ( !g_orion150 )   /* 1.50 E3BD1: nop */
+        ++*(_DWORD *)(v2 + 50);
     }
     else if ( v24 <= 0xFFFCu )
     {
@@ -12845,7 +12857,8 @@ void sub_E44E0(int a1, int a2)
   if ( *(_BYTE *)(a1 + 801) )
   {
     v4 = sub_E1EF4(a1);
-    *(_BYTE *)(a1 + 48) = 0;
+    if ( !g_orion150 )   /* 1.50 E44F5: nop */
+      *(_BYTE *)(a1 + 48) = 0;
     *(_DWORD *)(a1 + 491) += *(int16_t *)(a1 + 172);
     if ( v3 > 0 && (int)sub_1247A0(0x64u) <= v4 )
     {
@@ -13497,7 +13510,8 @@ void sub_E4F49(int16_t *a1)
         byte_1AB124[v8] = 1;
     }
   }
-  sub_100828();
+  if ( !g_orion150 )   /* 1.50 E5020: nop */
+    sub_100828();
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xE1F97 je epilog funkce */
 #undef v3
 #undef v4
@@ -13753,7 +13767,7 @@ uint8_t sub_E5430(_BYTE *a1, _BYTE *a2, _WORD *a3)
 
   memset(a3, 0, 14);
   *a3 = (char)a1[2208];
-  if ( !a1[2230] )
+  if ( g_orion150 || !a1[2230] )   /* 1.50 E5459: nop */
     a3[1] += *((uint8_t *)&word_DD4BA + (uint8_t)a2[8]);
   v4 = a2[6];
   if ( !v4 )
@@ -13774,9 +13788,10 @@ LABEL_8:
     a3[3] = -50;
 LABEL_13:
   v5 = (uint8_t)a2[11];
-  a3[4] = 2 * v5;
-  if ( !(2 * v5) && a1[308] == 3 )
-    a3[4] = g_orion150 ? *Hook150_Eseg(0x23CDDD) : 2;   /* 1.50 0E54C0: sub_1E2C69 */
+  a3[4] = g_orion150 ? v5 : 2 * v5;   /* 1.50 E54AE: nop */
+  /* without the add 1.50 E54B5 tests the zero flag left by the cmp of a2[6] above */
+  if ( (g_orion150 ? (v4 <= 1u ? !a1[2217] : v4 == 2 && !a1[2218]) : !(2 * v5)) && a1[308] == 3 )
+    a3[4] = g_orion150 ? a3[4] + *Hook150_Eseg(0x23CDDD) : 2;   /* 1.50 0E54C0: sub_1E2C69 */
   if ( (int16_t)a3[4] > 0 )
   {
     a3[4] += (char)a1[2209];
@@ -13789,7 +13804,7 @@ LABEL_13:
         goto LABEL_26;
       if ( g_orion150 && *Hook150_Eseg(0x23F0A2) == 1 )   /* 1.50 0E54E9: sub_1E445F - byte_17D822 */
       {
-        a3[4] += 2 * ((uint8_t)byte_17D81C[6] - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);
+        a3[4] += (g_orion150 ? 1 : 2) * ((uint8_t)byte_17D81C[6] - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);
         goto LABEL_26;
       }
     }
@@ -13807,11 +13822,11 @@ LABEL_26:
           goto LABEL_28;
         }
 LABEL_25:
-        a3[4] += 2 * ((uint8_t)byte_17D825 - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);
+        a3[4] += (g_orion150 ? 1 : 2) * ((uint8_t)byte_17D825 - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);   /* 1.50 E5533: nop */
         goto LABEL_26;
       }
     }
-    a3[4] += 2 * ((uint8_t)byte_17D824 - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);
+    a3[4] += (g_orion150 ? 1 : 2) * ((uint8_t)byte_17D824 - (uint8_t)byte_17D81C[(uint8_t)a2[8]]);   /* 1.50 E5513: nop */
     goto LABEL_26;
   }
 LABEL_28:

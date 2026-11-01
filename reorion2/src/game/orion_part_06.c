@@ -615,7 +615,7 @@ int64_t sub_7267D(
   }
   sub_9023B(15, 52, 305, 182, 0, 0, 0, 0, 1, &v20, (int)word_190178, &word_19997A);
   word_19C18C = sub_11438B(0, 470, 10, 479, &unk_1792C8, 41);
-  if ( word_19BECE <= 0 )
+  if ( !g_orion150 && word_19BECE <= 0 )   /* 1.50 729D7: nop */
   {
     word_19BEC8 = -1000;
     word_19BECA = -1000;
@@ -1599,14 +1599,14 @@ void sub_73980(int a1, int16_t *a2, char *a3)
   sub_C5BB9();
   sub_1205E6(8, 0, 255);
   sub_1318D4(0, 255);
-  if ( word_19BECE > 0 )
+  if ( g_orion150 || word_19BECE > 0 )   /* 1.50 73B76: nop */
     sub_585E0(
       *(char *)(129 * *(int16_t *)(dword_192B24 + 11) + dword_197F9C + 99),
       129 * *(int16_t *)(dword_192B24 + 11));
   sub_132C80(100);
   sub_124D41();
   sub_72F92((int16_t)a3);
-  if ( word_19BECE > 0 )
+  if ( g_orion150 || word_19BECE > 0 )   /* 1.50 73BB2: nop */
   {
     sub_12B753(dword_19BEC4, 1);
     sub_12A478(425, 435, dword_19BEC4);

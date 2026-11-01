@@ -9063,7 +9063,9 @@ char sub_FF666(int a1, int a2)
 char sub_FF68A(int a1, int a2)
 {
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
-  return sub_FF5F8(a1, a2, 3 * *(int16_t *)((uint8_t*)dword_197F98 + 3753 * a2 + 804) / 2);
+  int v = *(int16_t *)((uint8_t*)dword_197F98 + 3753 * a2 + 804);
+
+  return sub_FF5F8(a1, a2, g_orion150 ? (3 * v + 1) >> 1 : 3 * v / 2);   /* 1.50 FF6A6: lea eax, [eax+eax*2+1], no cdq / sub */
 }
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 
@@ -9101,7 +9103,7 @@ char sub_FF6BE(int a1)
           v6 = *(_WORD *)(v4 - 98);
           v4 -= 113;
           v7 = sub_EBE79(v6, v5, *(_WORD *)(a1 + 103), *(_WORD *)(a1 + 105));   /* wave 182: result was dropped */
-          if ( v7 <= 5 && ((v9 & *(_BYTE *)(v4 + 60)) != 0 || v7 <= 2 && (v9 & *(_BYTE *)(v4 + 59)) != 0) )
+          if ( v7 <= Hook150_CodeByte(0xFF767, 5) && ((v9 & *(_BYTE *)(v4 + 60)) != 0 || v7 <= Hook150_CodeByte(0xFF778, 2) && (v9 & *(_BYTE *)(v4 + 59)) != 0) )
             return 1;
         }
       }
@@ -9475,7 +9477,7 @@ int sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
       if ( !v13 && (*(_BYTE *)(v9 + 17) == 1 || *(_BYTE *)(v9 + 17) == 4) )
         v13 = 1;
       if ( g_orion150 )   /* 1.50 0FFD92: sub_1E3878 */
-        sub_1E9F4F(v9, v4, (int)(intptr_t)a3, 0);
+        sub_1E9F4F(v9, v4, (int)(intptr_t)a3, (int)(intptr_t)a3);
       *(_WORD *)(v9 + 101) = v4;
       *(_BYTE *)(v9 + 109) = a3[4];
       *(_BYTE *)(v9 + 107) = a3[7];
@@ -11044,7 +11046,7 @@ void sub_1014A4(int a1)
             sub_10130A(v29, v27, (int16_t)v34);
           }
         }
-        else if ( (v7 >= 60 || v5 == 100) && (v7 >= 80 || v5 == 100) )
+        else if ( (v7 >= Hook150_CodeByte(0x1015DB, 60) || v5 == 100) && (v7 >= 80 || v5 == 100) )
         {
           v9 = 0;
           if ( v7 >= 90 || v5 == 100 )

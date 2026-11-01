@@ -1725,8 +1725,8 @@ int sub_1E5179(int a1, int a2)
 // 1E5191: variable 'v2' is possibly undefined
 // 19988E: using guessed type int dword_19988E;
 
-//----- (001E5198) --------------------------------------------------------
-int sub_1E5198(uint32_t *a1)
+//----- (001E519B) --------------------------------------------------------
+int sub_1E519B(uint32_t *a1)
 {
   int *v1; // ecx
   int *v2; // eax

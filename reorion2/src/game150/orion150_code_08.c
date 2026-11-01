@@ -2,6 +2,192 @@
    hand fixes go to orion150_manual.c */
 #include "orion150.h"
 
+//----- (00215D47) --------------------------------------------------------
+int sub_215D47(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x1763E));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D208)));
+  ((int (*)())off_22C6C0)(a2, -1, ((int)(intptr_t)(eseg + 0x20B0)), ((int)(intptr_t)dword_193068));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  *(_BYTE *)(v2 + 18) = 1;
+  *(_WORD *)(v2 + 24) = 257;
+  *(_BYTE *)(v2 + 26) = 1;
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22C6C0: using guessed type int (*off_22C6C0)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215DBF) --------------------------------------------------------
+int sub_215DBF(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x17606));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D212)));
+  ((int (*)())off_22AF90)(a2, -1, ((int)(intptr_t)(eseg + 0x980)), ((int)(intptr_t)(dseg + 0x6079)));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  *(_BYTE *)(v2 + 27) = 1;
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22AF90: using guessed type int (*off_22AF90)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215E2B) --------------------------------------------------------
+int sub_215E2B(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x175EE));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D21A)));
+  ((int (*)())off_22BD80)(a2, -1, ((int)(intptr_t)(eseg + 0x1770)), ((int)(intptr_t)(dseg + 0x5904)));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  *(_BYTE *)(v2 + 27) = 1;
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22BD80: using guessed type int (*off_22BD80)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215E97) --------------------------------------------------------
+int sub_215E97(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x175BE));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D223)));
+  ((int (*)())off_22AEE0)(a2, -1, ((int)(intptr_t)(eseg + 0x8D0)), ((int)(intptr_t)(dseg + 0x4F18)));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  *(_BYTE *)(v2 + 27) = 1;
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22AEE0: using guessed type int (*off_22AEE0)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215F03) --------------------------------------------------------
+int sub_215F03(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x175A6));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D235)));
+  ((int (*)())off_22A870)(a2, -1, ((int)(intptr_t)(eseg + 0x260)), ((int)(intptr_t)(eseg + 0x12B20)));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22A870: using guessed type int (*off_22A870)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215F6B) --------------------------------------------------------
+int sub_215F6B(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x17586));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D23D)));
+  ((int (*)())off_22ADB0)(a2, -1, ((int)(intptr_t)(eseg + 0x7A0)), ((int)(intptr_t)dword_197F98));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22ADB0: using guessed type int (*off_22ADB0)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
 //----- (00215FD7) --------------------------------------------------------
 int sub_215FD7(int result, int a2, int a3, char *a4, int a5)
 {
@@ -1469,6 +1655,22 @@ int sub_21DB83(int a1, int a2, int a3, int a4)
   return sub_21D617(((int *)(uintptr_t)*(uint32_t *)a4), *(_DWORD *)(a4 + 4), (char *)*(uint8_t *)(a4 + 8));
 }
 
+//----- (0021EC47) --------------------------------------------------------
+int sub_21EC47(int *a1, _DWORD *a2, int a3)
+{
+  char *v3; // edi
+  int result; // eax
+
+  if ( a3 || HIWORD(dword_199876) != 0xFFFF )
+  {
+    v3 = (char *)(dword_192864 + 313 * a3);
+    sub_21A1C3(a1, a2, 0, 41);
+    return sub_21DB9B((int)a1, (int)a2, v3, a3);
+  }
+  return result;
+}
+// 199876: using guessed type int dword_199876;
+
 //----- (0021EC93) --------------------------------------------------------
 int sub_21EC93(int *a1, int a2, int a3)
 {
@@ -1532,8 +1734,8 @@ int sub_21F5E8(int *a1, int a2)
   return result;
 }
 
-//----- (0021F60D) --------------------------------------------------------
-int sub_21F60D(int *a1, int a2)
+//----- (0021F60F) --------------------------------------------------------
+int sub_21F60F(int *a1, int a2)
 {
   int result; // eax
   int v3; // edx
@@ -1778,7 +1980,7 @@ int sub_220A87(int a1)
     sub_215473(v2, a1, ((int)(intptr_t)(eseg + 0x1D247)), v1, v1);
   return sub_21FECB((int *)(uint16_t)word_199998,
            a1,
-           (void (*)(int, int))&loc_21CC23,
+           (void (*)(int, int))sub_21CC23,
            (uint16_t)word_199998);
 }
 // 220AC8: variable 'v1' is possibly undefined
@@ -1820,7 +2022,7 @@ int sub_220B5F(int *a1, int a2)
   if ( *(_DWORD *)(a2 + 12) != *((_DWORD *)(uintptr_t)*(uint32_t *)(a2 + 20)) + 8 )
     sub_215473((int)a1, a2, ((int)(intptr_t)(eseg + 0x1D247)), a1, a1);
   sub_21A1C3(a1, (_DWORD *)a2, 0, SLOWORD(dword_1998C0) + 1);
-  sub_21FECB(a1, a2, (void (*)(int, int))&loc_21EC47, SLOWORD(dword_1998C0));
+  sub_21FECB(a1, a2, (void (*)(int, int))sub_21EC47_cb, SLOWORD(dword_1998C0));
   return 1;
 }
 // 1998C0: using guessed type int dword_1998C0;
@@ -1857,7 +2059,7 @@ int sub_220C97(int a1)
   v2 = *((_DWORD *)(uintptr_t)*(uint32_t *)(a1 + 20)) + 8;
   if ( *(_DWORD *)(a1 + 12) != v2 )
     sub_215473(v2, a1, ((int)(intptr_t)(eseg + 0x1D247)), v1, v1);
-  return sub_21FECB((int *)SLOWORD(dword_199994), a1, (void (*)(int, int))&loc_21F60F, SLOWORD(dword_199994));
+  return sub_21FECB((int *)SLOWORD(dword_199994), a1, (void (*)(int, int))sub_21F60F, SLOWORD(dword_199994));
 }
 // 220CD8: variable 'v1' is possibly undefined
 // 199994: using guessed type int dword_199994;
@@ -2280,7 +2482,7 @@ char sub_229DBF(int a1, char *a2, uint32_t *a3, unsigned int a4)
   sub_1EE77F(((char *)(frame150 + 0x27)), (_BYTE *)0x105, v9, ((int)(intptr_t)(eseg + 0x1C251)), ((_DWORD *)(frame150 + 0x0)), 0);
   ((char *)(frame150 + 0x27))[260] = 0;
   memset(&((_DWORD *)(frame150 + 0x0))[1], 0, 0x20u);
-  ((_DWORD *)(frame150 + 0x0))[0] = ((int)(intptr_t)(ecode + 0x56F7));
+  ((_DWORD *)(frame150 + 0x0))[0] = ((int)(intptr_t)sub_1E56F7);
   LOBYTE(((_DWORD *)(frame150 + 0x0))[2]) = 1;
   BYTE1(((_DWORD *)(frame150 + 0x0))[2]) = byte_2400A6[500];
   BYTE2(((_DWORD *)(frame150 + 0x0))[2]) = 1;
@@ -2375,7 +2577,7 @@ int16_t sub_229EC7(char *a1, int edx0, uint32_t *a3, unsigned int a4)
   sub_1EE77F(((char *)(frame150 + 0x27)), (_BYTE *)0x105, v12, ((int)(intptr_t)(eseg + 0x1C251)), ((_DWORD *)(frame150 + 0x0)), 0);
   ((char *)(frame150 + 0x27))[260] = 0;
   memset(&((_DWORD *)(frame150 + 0x0))[1], 0, 0x20u);
-  ((_DWORD *)(frame150 + 0x0))[0] = ((int)(intptr_t)(ecode + 0x54F3));
+  ((_DWORD *)(frame150 + 0x0))[0] = ((int)(intptr_t)sub_1E54F3);
   LOBYTE(((_DWORD *)(frame150 + 0x0))[2]) = 1;
   if ( byte_2400A6[500] )
     BYTE1(((_DWORD *)(frame150 + 0x0))[2]) = 1;
@@ -2576,7 +2778,7 @@ LABEL_5:
     (uint8_t)byte_199CB4,
     (uint8_t)byte_199CB5);
   memset(&v9[1], 0, 0x20u);
-  v9[0] = ((int)(intptr_t)(ecode + 0x54F3));
+  v9[0] = ((int)(intptr_t)sub_1E54F3);
   BYTE1(v9[2]) = 1;
   LOBYTE(v9[4]) = 1;
   sub_22A0C3(((_DWORD *)(uintptr_t)dword_23F0CA), (unsigned int)v9);
@@ -2608,7 +2810,7 @@ void sub_22A3A7(int a1, int a2, int a3)
     sub_1F8F2B(v3, a2, a3);
     algn_1E0621 = 0;
     memset(&v4[1], 0, 0x20u);
-    v4[0] = ((int)(intptr_t)(ecode + 0x54F3));
+    v4[0] = ((int)(intptr_t)sub_1E54F3);
     HIBYTE(v4[2]) = 1;
     LOBYTE(v4[4]) = 1;
     sub_22A0C3(((_DWORD *)(uintptr_t)dword_23F0C6), (unsigned int)v4);
@@ -2625,6 +2827,18 @@ int sub_169551(int a1, int a2, int a3, int a4)
   return fread(a1, a2, a3, a4);
 }
 // 1288DB: using guessed type int fread(_DWORD, _DWORD, _DWORD, _DWORD);
+
+//----- wrapper: sub_1ED9D3_cb called through a pointer (stack arguments only)
+int sub_1ED9D3_cb(int a2, int a3)
+{
+  return sub_1ED9D3(0, a2, a3);
+}
+
+//----- wrapper: sub_1FEE7F_cb called through a pointer (stack arguments only)
+int sub_1FEE7F_cb(int a4, int a5)
+{
+  return sub_1FEE7F(0, 0, 0, a4, a5);
+}
 
 //----- wrapper: sub_215C5F_cb called through a pointer (stack arguments only)
 int sub_215C5F_cb(int a2)
@@ -2750,6 +2964,12 @@ int sub_21AEFB_cb(int a2)
 int sub_21B083_cb(int a2)
 {
   return sub_21B083(0, a2);
+}
+
+//----- wrapper: sub_21EC47_cb called through a pointer (stack arguments only)
+int sub_21EC47_cb(_DWORD *a2, int a3)
+{
+  return sub_21EC47(0, a2, a3);
 }
 
 //----- wrapper: sub_21EC93_cb called through a pointer (stack arguments only)

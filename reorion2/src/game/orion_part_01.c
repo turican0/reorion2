@@ -2140,7 +2140,8 @@ void sub_12479_131(int a1, int a2, int a3, int a4, int a5, int a6)
   sub_E4E54();
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
-  sub_1160B(9, 0, 0, 0);
+  if ( !g_orion150 )   /* 1.50 12759: nop */
+    sub_1160B(9, 0, 0, 0);
   ServiceAudioTick_FE8BE(0, 0, 0, 0);
   sub_11BE4();
   ServiceAudioTick_FE8BE(0, 0, 0, 0);

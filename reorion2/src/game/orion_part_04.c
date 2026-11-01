@@ -1721,7 +1721,7 @@ int sub_54E5B(int a1, _WORD *a2, _WORD *a3, _WORD *a4)
     v9 = 3753 * *(char *)(v8 + 99);
     LOWORD(v9) = *(char *)((uint8_t*)dword_197F98 + v9 + 2213);
     v17 += v9;
-    v18 = *(char *)((uint8_t*)dword_197F98 + 3753 * *(char *)(v8 + 99) + 2213) / 2 + (int16_t)v18;
+    v18 = *(char *)((uint8_t*)dword_197F98 + 3753 * *(char *)(v8 + 99) + 2213) / (g_orion150 ? 1 : 2) + (int16_t)v18;   /* 1.50 54F62: nop */
     v10 = 3753 * *(char *)(v8 + 99);
     LOWORD(v10) = *(char *)((uint8_t*)dword_197F98 + v10 + 2214);
     v19 += v10;
@@ -1845,7 +1845,7 @@ char sub_5514C(int a1, int a2)
       *(_BYTE *)(a1 + 30) = 2;
       *(_BYTE *)(a1 + 31) = 2;
       *(_WORD *)(a1 + 36) = 24;
-      *(_BYTE *)(a1 + 40) = 15;
+      *(_BYTE *)(a1 + 40) = Hook150_CodeByte(0x553C1, 15);
       *(_WORD *)(a1 + 41) = 0;
       *(_BYTE *)(a1 + 43) = 0;
       *(_BYTE *)(a1 + 38) = 1;
@@ -1881,7 +1881,7 @@ char sub_5514C(int a1, int a2)
       *(_BYTE *)(a1 + 38) = 1;
       *(_BYTE *)(a1 + 39) = 1;
       *(_WORD *)(a1 + 44) = 24;
-      *(_BYTE *)(a1 + 48) = 15;
+      *(_BYTE *)(a1 + 48) = Hook150_CodeByte(0x556D5, 15);
       *(_WORD *)(a1 + 49) = 0;
       *(_BYTE *)(a1 + 51) = 10;
       *(_BYTE *)(a1 + 46) = 1;
@@ -1933,19 +1933,19 @@ LABEL_5:
       *(_BYTE *)(a1 + 38) = 2;
       *(_BYTE *)(a1 + 39) = 2;
       *(_WORD *)(a1 + 44) = 24;
-      *(_BYTE *)(a1 + 48) = 15;
+      *(_BYTE *)(a1 + 48) = Hook150_CodeByte(0x55A54, 15);
       *(_WORD *)(a1 + 49) = 0;
       *(_BYTE *)(a1 + 51) = 10;
       *(_BYTE *)(a1 + 46) = 5;
       *(_BYTE *)(a1 + 47) = 5;
       *(_WORD *)(a1 + 52) = 13;
-      *(_BYTE *)(a1 + 56) = 15;
+      *(_BYTE *)(a1 + 56) = Hook150_CodeByte(0x55A70, 15);
       *(_WORD *)(a1 + 57) = 0;
       *(_BYTE *)(a1 + 59) = 0;
       *(_BYTE *)(a1 + 54) = 2;
       *(_BYTE *)(a1 + 55) = 2;
       *(_WORD *)(a1 + 60) = 31;
-      *(_BYTE *)(a1 + 64) = 15;
+      *(_BYTE *)(a1 + 64) = Hook150_CodeByte(0x55A8C, 15);
       *(_WORD *)(a1 + 65) = 0;
       *(_BYTE *)(a1 + 67) = 0;
       *(_BYTE *)(a1 + 62) = 3;
@@ -1997,13 +1997,13 @@ LABEL_21:
       *(_BYTE *)(a1 + 38) = 4;
       *(_BYTE *)(a1 + 39) = 4;
       *(_WORD *)(a1 + 44) = 24;
-      *(_BYTE *)(a1 + 48) = 1;
+      *(_BYTE *)(a1 + 48) = Hook150_CodeByte(0x55E8E, 1);
       *(_WORD *)(a1 + 49) = 0;
       *(_BYTE *)(a1 + 51) = 10;
       *(_BYTE *)(a1 + 46) = 15;
       *(_BYTE *)(a1 + 47) = 15;
       *(_WORD *)(a1 + 52) = 13;
-      *(_BYTE *)(a1 + 56) = 15;
+      *(_BYTE *)(a1 + 56) = Hook150_CodeByte(0x55EAA, 15);
       *(_WORD *)(a1 + 57) = 0;
       *(_BYTE *)(a1 + 59) = 0;
       *(_BYTE *)(a1 + 54) = 2;
@@ -2069,13 +2069,13 @@ LABEL_32:
       *(_BYTE *)(a1 + 38) = 5;
       *(_BYTE *)(a1 + 39) = 5;
       *(_WORD *)(a1 + 44) = 24;
-      *(_BYTE *)(a1 + 48) = 1;
+      *(_BYTE *)(a1 + 48) = Hook150_CodeByte(0x5634F, 1);
       *(_WORD *)(a1 + 49) = 0;
       *(_BYTE *)(a1 + 51) = 10;
       *(_BYTE *)(a1 + 46) = 30;
       *(_BYTE *)(a1 + 47) = 30;
       *(_WORD *)(a1 + 52) = 13;
-      *(_BYTE *)(a1 + 56) = 15;
+      *(_BYTE *)(a1 + 56) = Hook150_CodeByte(0x5636B, 15);
       *(_WORD *)(a1 + 57) = 0;
       *(_BYTE *)(a1 + 59) = 0;
       *(_BYTE *)(a1 + 54) = 3;
@@ -2093,13 +2093,13 @@ LABEL_32:
       *(_BYTE *)(a1 + 70) = 5;
       *(_BYTE *)(a1 + 71) = 5;
       *(_WORD *)(a1 + 76) = 37;
-      *(_BYTE *)(a1 + 80) = 15;
+      *(_BYTE *)(a1 + 80) = Hook150_CodeByte(0x563BF, 15);
       *(_WORD *)(a1 + 81) = 0;
       *(_BYTE *)(a1 + 83) = 0;
-      *(_BYTE *)(a1 + 78) = 1;
-      *(_BYTE *)(a1 + 79) = 1;
-      *(_WORD *)(a1 + 84) = 37;
-      *(_BYTE *)(a1 + 88) = 15;
+      *(_BYTE *)(a1 + 78) = Hook150_CodeByte(0x563CD, 1);
+      *(_BYTE *)(a1 + 79) = Hook150_CodeByte(0x563D1, 1);
+      *(_WORD *)(a1 + 84) = Hook150_CodeWord(0x563D6, 37);
+      *(_BYTE *)(a1 + 88) = Hook150_CodeByte(0x563DB, 15);
       *(_WORD *)(a1 + 89) = 0;
       *(_BYTE *)(a1 + 91) = 0;
       *(_BYTE *)(a1 + 86) = 12;
@@ -2189,7 +2189,7 @@ void sub_55161( int a1)
   *(_BYTE *)(v5 + 95) = 1;
   *(_BYTE *)(v5 + 96) = 15;
   *(_WORD *)(v5 + 97) = 0;
-  *(_WORD *)(v5 + 99) = -1;
+  *(_WORD *)(v5 + 99) = Hook150_CodeWord(0x5520F, -1);
   *(_BYTE *)(v5 + 101) = 1;
   *(_BYTE *)(v5 + 102) = 1;
   v6 = g_orion150 ? 2 : 1;   /* 1.50 5521A: the second slot stays */
@@ -2417,7 +2417,7 @@ void sub_55738( int a1)
   *(_BYTE *)(v5 + 128) = 3;
   *(_BYTE *)(v5 + 129) = 15;
   *(_WORD *)(v5 + 130) = 0;
-  *(_WORD *)(v5 + 132) = -1;
+  *(_WORD *)(v5 + 132) = Hook150_CodeWord(0x55863, -1);
   *(_BYTE *)(v5 + 134) = 1;
   *(_BYTE *)(v5 + 135) = 3;
   v6 = g_orion150 ? 5 : 4;   /* 1.50 55874: the fifth slot stays */
@@ -2721,7 +2721,7 @@ void sub_55F67( int a1)
   *(_BYTE *)(v5 + 161) = 6;
   *(_BYTE *)(v5 + 162) = 15;
   *(_WORD *)(v5 + 163) = 0;
-  *(_WORD *)(v5 + 165) = -1;
+  *(_WORD *)(v5 + 165) = Hook150_CodeWord(0x5614F, -1);
   *(_BYTE *)(v5 + 167) = 1;
   *(_BYTE *)(v5 + 168) = 6;
   *(_BYTE *)(v5 + 169) = 0;
@@ -2832,7 +2832,7 @@ char sub_564CD( int a1, int a2)
   *(_BYTE *)(a2 + 21) = 0;
   v4 = sub_5685F(a1);
   v5 = v4;
-  if ( v4 > 1 )
+  if ( v4 > 1 && !g_orion150 )   /* 1.50 56535: nop */
     v5 = v4 - 1;
   *(_BYTE *)(a2 + 22) = v5;
   Hook150_1E0E59(a2 + 23, 0xBu, a1, 0x23F0ED);   /* 1.50 56541 */
@@ -2864,7 +2864,7 @@ void sub_56586( int a1, int a2)
   *(_BYTE *)(a2 + 21) = 0;
   v4 = sub_5685F(a1);
   v5 = v4;
-  if ( v4 > 1 )
+  if ( v4 > 1 && !g_orion150 )   /* 1.50 565EE: nop */
     v5 = v4 - 1;
   *(_BYTE *)(a2 + 22) = v5;
   Hook150_1E0E59(a2 + 23, 0xBu, a1, 0x23F0EE);   /* 1.50 565FA */
@@ -2900,7 +2900,7 @@ int sub_5663E( int a1, int a2)
   *(_BYTE *)(a2 + 21) = 0;
   v3 = sub_5685F(a1);
   v4 = v3;
-  if ( v3 > 1 )
+  if ( v3 > 1 && !g_orion150 )   /* 1.50 5669D: nop */
     v4 = v3 - 1;
   v5 = 0;
   *(_BYTE *)(a2 + 22) = v4;
@@ -4822,7 +4822,7 @@ void sub_58487(int a1)
   *(_BYTE *)(a1 + 46) = 10;
   *(_BYTE *)(a1 + 47) = 10;
   *(_WORD *)(a1 + 52) = 13;
-  *(_BYTE *)(a1 + 56) = 15;
+  *(_BYTE *)(a1 + 56) = Hook150_CodeByte(0x58523, 15);
   *(_WORD *)(a1 + 57) = 0;
   *(_BYTE *)(a1 + 59) = 0;
   *(_BYTE *)(a1 + 54) = 2;
@@ -4834,7 +4834,7 @@ void sub_58487(int a1)
   *(_BYTE *)(a1 + 62) = 10;
   *(_BYTE *)(a1 + 63) = 10;
   *(_WORD *)(a1 + 68) = 24;
-  *(_BYTE *)(a1 + 72) = 1;
+  *(_BYTE *)(a1 + 72) = Hook150_CodeByte(0x58561, 1);
   *(_WORD *)(a1 + 73) = 0;
   *(_BYTE *)(a1 + 75) = 10;
   *(_BYTE *)(a1 + 70) = 15;
@@ -5254,13 +5254,13 @@ int sub_589D6()
       v46 += 100;
       v43 += 100;
     }
-    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2209) == 1 )
+    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2209) == Hook150_CodeByte(0x58ADA, 1) )
     {
       v46 += 3;
       v45 += 3;
       v44 += 3;
     }
-    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2209) == 2 )
+    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2209) == Hook150_CodeByte(0x58AF5, 2) )
     {
       v46 += 100;
       v45 += 100;
@@ -5288,19 +5288,19 @@ int sub_589D6()
       v45 += 10;
       v44 += 100;
     }
-    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2213) == 20 )
+    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2213) == Hook150_CodeByte(0x58B74, 20) )
     {
       v42 += 10;
       v31[13] += 100;
       v31[1 + 0] += 10;
     }
-    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2213) == 40 )
+    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2213) == Hook150_CodeByte(0x58B8F, 40) )
     {
       v42 += 100;
       v31[13] += 1000;
       v31[1 + 0] += 100;
     }
-    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2214) == 25 )
+    if ( *(_BYTE *)(i + (uint8_t*)dword_197F98 + 2214) == Hook150_CodeByte(0x58BAD, 25) )
     {
       v42 += 10;
       v31[14] += 3;
@@ -9814,7 +9814,7 @@ LABEL_61:
       }
       else
       {
-        v1 = 1000;
+        v1 = Hook150_CodeDw(0x5DAA0, 1000);
       }
     }
   }
@@ -9842,7 +9842,7 @@ LABEL_61:
       }
       else
       {
-        v1 = 1000;
+        v1 = Hook150_CodeDw(0x5DB82, 1000);
       }
     }
   }
@@ -11501,8 +11501,8 @@ int sub_5F5A3(int a1, int a2)
   a1 = (int16_t)a1;
   v2 = Hook150_1E3D80(a1);   /* 1.50 05F5CB */
   v3 = sub_6EE8E(a1, v2, 1, g_orion150 ? 16 : 1, 1u, 2);   /* 1.50 05F5DA: sub_1E3CC0 */
-  v4 = 225 / v3;   /* 0x5F5F2 ebx = quotient, edx = remainder is the 2nd arg */
-  v5 = 3 * word_17F819[14 * v2] / 2 - (int16_t)sub_5F871((int16_t)a2, 225 % v3);
+  v4 = Hook150_CodeDw(0x5F5E9, 225) / v3;   /* 0x5F5F2 ebx = quotient, edx = remainder is the 2nd arg */
+  v5 = 3 * word_17F819[14 * v2] / 2 - (int16_t)sub_5F871((int16_t)a2, Hook150_CodeDw(0x5F5E9, 225) % v3);
   if ( v5 < 0 )
     v5 = 0;
   v5 *= (int16_t)v4;
@@ -11538,16 +11538,16 @@ int sub_5F64C(int a1, int a2)
     return 120;
   v5 = 0;
   v6 = 0;
-  v7 = 10;
+  v7 = Hook150_CodeDw(0x5F69F, 10);
   v12 = (uint8_t *)dword_197F98 + 3753 * a1;
   if ( v12[362] == 3 )
   {
-    v5 = 4;
+    v5 = Hook150_CodeDw(0x5F6AD, 4);
     v7 = 0;
   }
   else if ( v12[310] == 3 )
   {
-    v6 = 6;
+    v6 = Hook150_CodeDw(0x5F6BD, 6);
     v7 = 0;
   }
   v8 = (int16_t)(4 * ((g_orion150 ? v5 + v6 : 2 * v5) + v7));   /* 1.50 5F6C6: add eax, edi */
@@ -15073,7 +15073,7 @@ int16_t sub_63F9C()
 int16_t sub_63FCB()
 {
   strcpy((char *)&word_18FF78, "offensive");
-  return sub_63FF0(&word_199176, (int)word_19918C, (int)byte_18173D, 1);
+  return sub_63FF0(&word_199176, (int)word_19918C, g_orion150 ? (int)(intptr_t)Hook150_Eseg(0x23FC62) : (int)byte_18173D, 1);   /* 1.50 63FD5 */
 }
 
 
@@ -15108,14 +15108,18 @@ int16_t sub_63FF0(int16_t *a1, int a2, int a3, int a4)
   int v34; // [esp+48h] [ebp-Ch]
   int v35; // [esp+4Ch] [ebp-8h]
   char v36; // [esp+50h] [ebp-4h]
+  /* 1.50 64017, 64076, 64083, 6421D, 6428C, 642FB: working copy of byte_181734, sub_1FBEDB fills it */
+  char *cost = g_orion150 ? (char *)Hook150_Eseg(0x23FC6E) : byte_181734;
+  /* 1.50 64272, 6427F: working copy of byte_18173D */
+  char *max_off = g_orion150 ? (char *)Hook150_Eseg(0x23FC62) : byte_18173D;
 
   HIDWORD(v6) = dword_192FD8;
   v5 = 0;
   v34 = HIDWORD(v6) - 35000 - (int16_t)sub_63E4C();
   HIWORD64(v6) = HIWORD(a1);
-  LOWORD(v6) = (uint8_t)byte_181734[0];
+  LOWORD(v6) = (uint8_t)cost[0];
   v36 = 0;
-  if ( (uint8_t)byte_181734[0] > *a1 )
+  if ( (uint8_t)cost[0] > *a1 )
 LABEL_2:
     v5 = 1;
   while ( !v5 )
@@ -15126,8 +15130,8 @@ LABEL_2:
     {
       v9 = (v8 || (int16_t)sub_647D7() >= v34) && (v8 != 1 || (int16_t)sub_6481B() >= v34);
       if ( v9
-        && byte_181734[v8]
-        && (WORD2(v6) = (uint8_t)byte_181734[v8], v35 = HIDWORD(v6),
+        && cost[v8]
+        && (WORD2(v6) = (uint8_t)cost[v8], v35 = HIDWORD(v6),
                                                           HIWORD64(v6) = HIWORD(a1),
                                                           *a1 >= (int16_t)v35)
         && (HIDWORD(v6) = a2 + 2 * v8, *(uint8_t *)(a3 + v8) > (int16_t)*(_WORD *)HIDWORD(v6)) )
@@ -15202,7 +15206,7 @@ LABEL_2:
                "-------- n_max_ships[%d] = %d, cost = %d",
                HIDWORD(v20),
                *(uint8_t *)(HIDWORD(v20) + a3),
-               (uint8_t)byte_181734[HIDWORD(v20)]);
+               (uint8_t)cost[HIDWORD(v20)]);
       }
       else
       {
@@ -15216,9 +15220,9 @@ LABEL_2:
       goto LABEL_2;
     v21 = (_WORD *)(a2 + 2 * v7);
     ++*v21;
-    if ( v7 <= 2 && (uint8_t)byte_18173D[v7] == *v21 )
-      byte_18173D[v7] = 0;
-    *a1 -= (uint8_t)byte_181734[v7];
+    if ( v7 <= 2 && (uint8_t)max_off[v7] == *v21 )
+      max_off[v7] = 0;
+    *a1 -= (uint8_t)cost[v7];
     v6 = sprintf(
            &word_18FF78,
            "-------- after build: resources = %3d, n_ships[%d] = %2d",
@@ -15234,7 +15238,7 @@ LABEL_2:
         v23 = (int16_t)v22;
         LODWORD(v6) = 90 * (uint8_t)byte_181734[(int16_t)v22] / 100;
         HIDWORD(v6) = 90 * (uint8_t)byte_181734[(int16_t)v22++] % 100;
-        byte_181734[v23] = v6;
+        cost[v23] = v6;
       }
       while ( (int16_t)v22 < 9 );
     }

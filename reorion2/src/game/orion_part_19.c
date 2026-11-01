@@ -1,5 +1,9 @@
 #include "orion_common.h"
 
+/* 1.50 126D2B, 126D56, 126DA1, 126F7B, 126FA6, 126FF4, 12726F, 12729A, 1272E5, 1281AC, 1281D7, 128225: the last LBX
+   name moved from a 16 byte buffer to 261 bytes at 1E068E, the names returned by sub_1EC7CF can be longer */
+#define LBX_LAST_NAME (g_orion150 ? (char *)Hook150_Ecode(0x1E068E) : (char *)unk_1BC270)
+
 /* Adresni rozsah: 0x11A558 - 0x12B3E0  (200 funkci) */
 
 //----- (0011A558) --------------------------------------------------------
@@ -6083,18 +6087,18 @@ _DWORD *sub_126CEB_131(int a1, int a2, int a3, int a4)
   v9 = a4;
   if ( a2 < 0 )
     sub_1273DC(v7, 4u, v10, a4);
-  if ( !dword_184576 || stricmp(v7, &unk_1BC270) )
+  if ( !dword_184576 || stricmp(v7, LBX_LAST_NAME) )
   {
     if ( dword_184576 )
       fclose(dword_1BC26C);
-    strcpy(&unk_1BC270, v7);
+    strcpy(LBX_LAST_NAME, v7);
     dword_1BC26C = fopen(v7, aRb_3);
     if ( !dword_1BC26C )
     {
       if ( !byte_184544[0] )
         sub_1273DC(v7, 1u, v10, a4);
       strcpy(v6, byte_184544);
-      strcat(v6, &unk_1BC270);
+      strcat(v6, LBX_LAST_NAME);
       dword_1BC26C = fopen(v6, aRb_3);
       if ( !dword_1BC26C )
         sub_1273DC(v7, 1u, v10, a4);
@@ -6172,18 +6176,18 @@ _DWORD *sub_126F3B_131(int a1, int a2, int a3, int a4, unsigned int a5, unsigned
   v14 = a4;
   if ( a2 < 0 )
     sub_1273DC(v12, 4u, v10, a4);
-  if ( !dword_184576 || stricmp(v12, &unk_1BC270) )
+  if ( !dword_184576 || stricmp(v12, LBX_LAST_NAME) )
   {
     if ( dword_184576 )
       fclose(dword_1BC26C);
-    strcpy(&unk_1BC270, v12);
+    strcpy(LBX_LAST_NAME,v12);
     dword_1BC26C = fopen(v12, aRb_3);
     if ( !dword_1BC26C )
     {
       if ( !byte_184544[0] )
         sub_1273DC(v12, 1u, v10, a4);
       strcpy(v9, byte_184544);
-      strcat(v9, &unk_1BC270);
+      strcat(v9, LBX_LAST_NAME);
       dword_1BC26C = fopen(v9, aRb_3);
       if ( !dword_1BC26C )
         sub_1273DC(v12, 1u, v10, a4);
@@ -6274,18 +6278,18 @@ int sub_127233_131(int a1, int a2, int a3, int a4)
   v7 = a2;
   if ( a2 < 0 )
     sub_1273DC(v6, 4u, v7, a4);
-  if ( !dword_184576 || stricmp(v6, &unk_1BC270) )
+  if ( !dword_184576 || stricmp(v6, LBX_LAST_NAME) )
   {
     if ( dword_184576 )
       fclose(dword_1BC26C);
-    strcpy(&unk_1BC270, v6);
+    strcpy(LBX_LAST_NAME,v6);
     dword_1BC26C = fopen(v6, aRb);
     if ( !dword_1BC26C )
     {
       if ( !byte_184544[0] )
         sub_1273DC(v6, 1u, v7, a4);
       strcpy(v5, byte_184544);
-      strcat(v5, &unk_1BC270);
+      strcat(v5, LBX_LAST_NAME);
     dword_1BC26C = fopen(v5, aRb);
       if ( !dword_1BC26C )
         sub_1273DC(v6, 1u, v7, a4);
@@ -6825,18 +6829,18 @@ _DWORD *sub_12816C_131(int a1, int a2, int a3, int *a4)
   v8 = a4;
   if ( a2 < 0 )
     sub_1273DC(v6, 4u, v12, (int)a4);
-  if ( !dword_184576 || stricmp(v6, &unk_1BC270) )
+  if ( !dword_184576 || stricmp(v6, LBX_LAST_NAME) )
   {
     if ( dword_184576 )
       fclose(dword_1BC26C);
-    strcpy(&unk_1BC270, v6);
+    strcpy(LBX_LAST_NAME,v6);
     dword_1BC26C = fopen(v6, aRb_4);
     if ( !dword_1BC26C )
     {
       if ( !byte_184544[0] )
         sub_1273DC(v6, 1u, v12, (int)a4);
       strcpy(v5, byte_184544);
-      strcat(v5, &unk_1BC270);
+      strcat(v5, LBX_LAST_NAME);
       dword_1BC26C = fopen(v5, aRb_4);
       if ( !dword_1BC26C )
         sub_1273DC(v6, 1u, v12, (int)a4);

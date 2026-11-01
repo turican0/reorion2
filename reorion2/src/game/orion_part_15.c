@@ -10471,7 +10471,7 @@ void sub_F22D5(int a1, int a2)
       v29 += 15;
       v30 += 15;
       v17 = sprintf(v23, "COM%d", (int16_t)v32++ + 1);
-      sub_1212B3(v37, SWORD2(v17), (int)v23);
+      sub_1212B3(v37, (int16_t)(v30 - 15), (int)v23);   /* F25BF: var_20 before the add */
     }
     while ( (int16_t)v32 < 8 );
   }
@@ -10677,7 +10677,7 @@ int sub_F28B4(int a1, int a2)
       v24 += 15;
       v25 += 15;
       v11 = sprintf(v18, "COM:%d", (int16_t)v29++ + 1);
-      result = sub_1212B3(v31, SWORD2(v11), (int)v18);
+      result = sub_1212B3(v31, (int16_t)(v25 - 15), (int)v18);   /* F2AFD: var_1C before the add */
     }
     while ( (int16_t)v29 < 8 );
   }
