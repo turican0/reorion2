@@ -1946,7 +1946,7 @@ int16_t sub_165C44(int a1, int a2)
 {
   int16_t result; // ax
 
-  LOBYTE(result) = HIBYTE(a2);
+  LOBYTE(result) = BYTE1(a2);
   HIBYTE(result) = a2;
   return result;
 }
@@ -2429,7 +2429,7 @@ int16_t sub_165EE4(int a1, int a2)
 {
   int16_t result; // ax
 
-  LOBYTE(result) = HIBYTE(a2);
+  LOBYTE(result) = BYTE1(a2);
   HIBYTE(result) = a2;
   return result;
 }

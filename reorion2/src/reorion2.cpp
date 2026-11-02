@@ -549,7 +549,7 @@ extern "C" void PortDebug_GrTrace(int src, unsigned value)
         if (const char* p = std::getenv("REORION2_GR_TRACE"); p && *p) f = std::fopen(p, "w");
         else if ((p = std::getenv("REORION2_GR_RING")) && *p) g_grRingPath = p;
     }
-    if (g_grRingPath && src >= 8 && src <= 18 && g_grRingN < (1u << 18)) {
+    if (g_grRingPath && ((src >= 8 && src <= 18) || src == 22) && g_grRingN < (1u << 18)) {
         void* fr[9] = {};
         RtlCaptureStackBackTrace(0, 9, fr, nullptr);
         g_grRing[g_grRingN++] = GrRingEntry{ src, value, { fr[3], fr[4], fr[5], fr[6], fr[7], fr[8] } };

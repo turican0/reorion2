@@ -3204,43 +3204,6 @@ int sub_1EB12F(int eax0, int a2)
   return result;
 }
 
-//----- (001EB207) --------------------------------------------------------
-char * sub_1EB207(unsigned int a1, unsigned int a2, int a3, unsigned int a4)
-{
-  int v5; // edx
-  uint16_t *v6; // ecx
-  int v7; // esi
-  int v8; // ecx
-  uint16_t *v9; // edi
-  int v10; // ebp
-  int v11; // esi
-  char *result; // eax
-  int v13; // [esp+0h] [ebp-14h]
-
-  a1 = (uint16_t)a1;
-  a2 = (uint16_t)a2;
-  a4 = (uint16_t)a4;
-  v5 = 4 * a4;
-  v6 = (uint16_t *)(((int)(intptr_t)dword_193068) + 5 * a4);
-  v7 = *v6;
-  if ( (uint16_t)v7 > a1 )
-    return 0;
-  v8 = v6[1];
-  if ( (uint16_t)v8 > a2 )
-    return 0;
-  v9 = ((uint16_t *)(uintptr_t)*(uint32_t *)(4 * v5 + ((int)(intptr_t)(dseg + 0x182A4))));
-  v10 = *v9;
-  v13 = (a1 - v7) / 3;
-  if ( v10 <= v13 )
-    return 0;
-  v11 = (a2 - v8) / 3;
-  if ( v9[1] <= v11 )
-    return 0;
-  result = (char *)v9 + v13;
-  LOBYTE(result) = *((_BYTE *)v9 + v13 + v11 * v10 + *((_DWORD *)v9 + 3)) > 5u;
-  return result;
-}
-
 //----- (001EB293) --------------------------------------------------------
 int sub_1EB293(int a1)
 {

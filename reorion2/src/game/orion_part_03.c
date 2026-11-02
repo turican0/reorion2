@@ -4047,7 +4047,7 @@ LABEL_41:
             if ( (BYTE1(v53) & 0x40) != 0 )
               v18 += 50;
             HIDWORD(v52) = word_17F819[14 * SWORD6((int)LODWORD(v53))] * v18 / 100;
-            if ( (WORD6(v53) == 20 || WORD6(v53) == 40) && (v53 & 0x20) == 0 )
+            if ( (WORD6(v53) == 20 || WORD6(v53) == 40) && (LODWORD(v53) & 0x20) == 0 )
             {
               if ( WORD6(v53) == 20 )
               {
@@ -4079,7 +4079,7 @@ LABEL_41:
               HIDWORD(v52) = v23;
             }
             HIDWORD(v54) = 0;
-            LODWORD(v52) = v53 & 0xFFFF2000;
+            LODWORD(v52) = LODWORD(v53) & 0xFFFF2000;
             while ( 1 )
             {
               v17 = HIDWORD(v54);

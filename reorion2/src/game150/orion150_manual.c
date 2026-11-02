@@ -751,3 +751,33 @@ uint8_t sub_1F920F(_BYTE *a1, int a2)
   g_frame1F920F = chain;
   return sub_1F8D47(0, 16, (uint8_t (*)(_DWORD *))sub_1FCC27, 0);
 }
+
+//----- (001EB207) --------------------------------------------------------
+/* dword_190298 holds port pointers (8 bytes each): the table is not in dseg */
+char * sub_1EB207(unsigned int a1, unsigned int a2, int a3, unsigned int a4)
+{
+  extern void *dword_190298[48];
+  uint16_t *v6; // ecx
+  uint16_t *v9; // edi
+  int v10; // ebp
+  int v11; // esi
+  int v13; // [esp+0h] [ebp-14h]
+
+  a1 = (uint16_t)a1;
+  a2 = (uint16_t)a2;
+  a4 = (uint16_t)a4;
+  v6 = (uint16_t *)(((int)(intptr_t)dword_193068) + 5 * a4);
+  if ( v6[0] > a1 )
+    return 0;
+  if ( v6[1] > a2 )
+    return 0;
+  v9 = (uint16_t *)dword_190298[4 * a4 + 3];
+  v10 = v9[0];
+  v13 = (int)(a1 - v6[0]) / 3;
+  if ( v10 <= v13 )
+    return 0;
+  v11 = (int)(a2 - v6[1]) / 3;
+  if ( v9[1] <= v11 )
+    return 0;
+  return (char *)(intptr_t)(*((_BYTE *)v9 + v13 + v11 * v10 + *((_DWORD *)v9 + 3)) > 5u);
+}

@@ -883,7 +883,7 @@ void sub_1035AF( int a1, int a2, int a3, int a4, unsigned int a5, int a6, int a7
     if ( a6 )
     {
       if ( a7 )
-        HIBYTE(v9) = HIBYTE(a5) | 8;
+        HIBYTE(v9) = BYTE1(a5) | 8;
       v10 = v9;
       v11 = 9;
       v12 = byte_10357B;   /* vlna 65: uz je to pole, ne jeden bajt */

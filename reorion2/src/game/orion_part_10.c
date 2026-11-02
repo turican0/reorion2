@@ -12136,7 +12136,7 @@ LABEL_87:
       }
       if ( *(uint8_t *)(dword_192864 + 313 * a1 + 32) == word_19988E )
         sub_137D86(dword_19283C, (int)v55, 32, 32);
-      v14 = (int16_t)v61;
+      v14 = (int16_t)LODWORD(v61);
       sub_12A478(SWORD4(v61),(int)LODWORD(v61), dword_19283C);
       sub_12B65C();
       LOWORD(v48) = sub_128BE7();

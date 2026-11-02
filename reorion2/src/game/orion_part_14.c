@@ -1617,7 +1617,7 @@ int sub_D7F34(int a1, unsigned int a2, int a3)
       }
     }
   }
-  if ( HIBYTE(a2) )
+  if ( BYTE1(a2) )
   {
     for ( i = 8; i < 15; ++i )
     {

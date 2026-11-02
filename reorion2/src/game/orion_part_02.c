@@ -11130,7 +11130,7 @@ void sub_32D94( int a1)
     v31 = v43 * v49;
     v20 = 0;
     v48 = v43 * v41;
-    while ( v20 < (int16_t)v39 )
+    while ( v20 < (int16_t)LODWORD(v39) )
     {
       if ( v20 >= 5 )
         v21 = v48;

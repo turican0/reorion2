@@ -215,7 +215,7 @@ int16_t sub_1661F4(int a1, int a2)
 {
   int16_t result; // ax
 
-  LOBYTE(result) = HIBYTE(a2);
+  LOBYTE(result) = BYTE1(a2);
   HIBYTE(result) = a2;
   return result;
 }
@@ -383,7 +383,7 @@ int16_t sub_1662D4(int a1, int a2)
 {
   int16_t result; // ax
 
-  LOBYTE(result) = HIBYTE(a2);
+  LOBYTE(result) = BYTE1(a2);
   HIBYTE(result) = a2;
   return result;
 }
@@ -546,7 +546,7 @@ int16_t sub_1663B8(int a1, int a2)
 {
   int16_t result; // ax
 
-  LOBYTE(result) = HIBYTE(a2);
+  LOBYTE(result) = BYTE1(a2);
   HIBYTE(result) = a2;
   return result;
 }
@@ -3096,7 +3096,7 @@ int sub_1690F9(int a1, int a2, uint16_t *a3, int a4)
 //----- (0016915C) --------------------------------------------------------
 int sub_16915C(int result, int a2)
 {
-  *(_BYTE *)(result + 108) = HIBYTE(a2);
+  *(_BYTE *)(result + 108) = BYTE1(a2);
   if ( *(_BYTE *)(result + 100) != 5 )
     *(_BYTE *)(result + 100) = a2;
   return result;

@@ -353,15 +353,18 @@ typedef int64_t  __int64;
    byte 1 of an int16). It was always byte 1 here, so every HIBYTE on an int
    wrote/read the wrong byte (e.g. the turn report in sub_E2DCA). 8-byte
    variables are pointers in the port that were 4-byte in the original. */
-#define PORT_HIBYTE_OFF(x) (sizeof(x) >= 8 ? 3 : sizeof(x) - 1)
+#define PORT_HIBYTE_OFF(x) (sizeof(x) == 16 ? 15 : sizeof(x) >= 8 ? 3 : sizeof(x) - 1)
 #define HIBYTE(x)   (*((unsigned char*)&(x) + PORT_HIBYTE_OFF(x)))
 #define HIWORD64(x) (*((unsigned short*)&(x) + 3))   /* wave 183: HIWORD of a real int64 */
-#define HIWORD(x)   (*((unsigned short*)&(x)+1))
-#define HIDWORD(x)  (*((unsigned int*)&(x)+1))
-#define SHIDWORD(x) (*((int*)&(x)+1))
+/* wave 185: on a 16-byte hr_int128_t these are its top word / dword, as in IDA */
+#define PORT_HIWORD_IDX(x)  (sizeof(x) == 16 ? 7 : 1)
+#define PORT_HIDWORD_IDX(x) (sizeof(x) == 16 ? 3 : 1)
+#define HIWORD(x)   (*((unsigned short*)&(x) + PORT_HIWORD_IDX(x)))
+#define HIDWORD(x)  (*((unsigned int*)&(x) + PORT_HIDWORD_IDX(x)))
+#define SHIDWORD(x) (*((int*)&(x) + PORT_HIDWORD_IDX(x)))
 #define SLODWORD(x) (*((int*)&(x)))
 #define SLOWORD(x)  (*((short*)&(x)))
-#define SHIWORD(x)  (*((short*)&(x)+1))
+#define SHIWORD(x)  (*((short*)&(x) + PORT_HIWORD_IDX(x)))
 #define SLOBYTE(x)  (*((signed char*)&(x)))
 #define SHIBYTE(x)  (*((signed char*)&(x) + PORT_HIBYTE_OFF(x)))   /* wave 183: top byte, see HIBYTE */
 
@@ -478,10 +481,10 @@ typedef struct { unsigned char b[16]; } _OWORD;
    kazde HOLE predani takove promenne jako argumentu volani do LODWORD(...).
    Pokud i presto narazis na chybu "argument nekompatibilni s int" u
    nejakeho hr_int128_t, oznac mi presny soubor+radek. */
-/* Syntakticka nahrada: dekompilovany kod pouziva tyto hodnoty pouze jako
-   docasne registry. 64 bitu zachova nizsi cast a na rozdil od structu se
-   chova jako cislo v aritmetickych vyrazech i pri navratove hodnote. */
-typedef uint64_t hr_int128_t;
+/* wave 185: the variables of this type are 16-byte stack blocks reached by
+   offset (WORD5, HIDWORD, (char *)&x + 14, frame fields); as a uint64_t the
+   upper half lay in the neighbouring locals. */
+typedef struct { uint64_t lo, hi; } hr_int128_t;
 #else
 /* GCC/Clang maji __int128 jako vestavany typ - hr_int128_t je na nej jen alias. */
 typedef __int128 hr_int128_t;

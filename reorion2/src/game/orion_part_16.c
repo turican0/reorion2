@@ -9481,8 +9481,8 @@ int sub_FFD08(int16_t *a1, int a2, _BYTE *a3)
       *(_WORD *)(v9 + 101) = v4;
       *(_BYTE *)(v9 + 109) = a3[4];
       *(_BYTE *)(v9 + 107) = a3[7];
-      HIBYTE(a2) = a3[8];
-      *(_BYTE *)(v9 + 108) = HIBYTE(a2);   /* wave 183: FFDA5/FFDA8 mov [eax+6Ch], dh / mov [eax+64h], dl (sub_16915C was an IDA artifact) */
+      BYTE1(a2) = a3[8];
+      *(_BYTE *)(v9 + 108) = BYTE1(a2);   /* wave 183: FFDA5/FFDA8 mov [eax+6Ch], dh / mov [eax+64h], dl (sub_16915C was an IDA artifact) */
       if ( !g_orion150 || *(_BYTE *)(v9 + 100) != 5 )   /* 1.50 FFDA5: call sub_16915C (cave) - status 5 is kept */
         *(_BYTE *)(v9 + 100) = (uint8_t)a2;
     }

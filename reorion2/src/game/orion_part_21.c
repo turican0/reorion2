@@ -4846,8 +4846,8 @@ char sub_1475EB( int a1, char *a2, unsigned int a3, int a4)
   {
     memset(a2, a1, a3);
     a2 += v6 + a3;
-    v7 = HIBYTE(a1);
-    HIBYTE(a1) = a1;
+    v7 = BYTE1(a1);
+    BYTE1(a1) = a1;
     LOBYTE(a1) = v7;
     --a4;
   }

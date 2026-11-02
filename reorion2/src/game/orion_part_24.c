@@ -3197,7 +3197,7 @@ int16_t sub_161546(
   {
     if ( (unsigned int)a3 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a3++;
+    BYTE1(result) = *a3++;
     *a2++ += result;
   }
   while ( (unsigned int)a2 < dword_18AD38 );
@@ -3231,7 +3231,7 @@ int16_t sub_161562(
   {
     if ( (unsigned int)a3 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a3++;
+    BYTE1(result) = *a3++;
     *a2 += result;
     a2[1] += result;
     a2 += 2;
@@ -3267,7 +3267,7 @@ int16_t sub_161581(
   {
     if ( (unsigned int)a3 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a3;
+    BYTE1(result) = *a3;
     a3 += 2;
     *a2++ += result;
   }
@@ -3302,7 +3302,7 @@ int16_t sub_1615A2(
   {
     if ( (unsigned int)a4 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a4;
+    BYTE1(result) = *a4;
     // PORT (vlna 26 pokr. 26): asm dela `mov ?h, [..]` = bity 8..15, tedy
     // BYTE1, ne HIBYTE (bity 24..31), a pred pricitanim je `movsx ebp, bx`,
     // tedy orez na 16 bitu. Stejna dvojice chyb jako v sub_16177F, ktera
@@ -3344,7 +3344,7 @@ int16_t sub_1615C9(
   {
     if ( a3 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *(_BYTE *)(a3 + 1);
+    BYTE1(result) = *(_BYTE *)(a3 + 1);
     a3 += 2;
     *a2++ += result;
   }
@@ -3384,7 +3384,7 @@ int16_t sub_1615EA(
     // tedy orez na 16 bitu. Stejna dvojice chyb jako v sub_16177F, ktera
     // zpusobovala stejnosmernou slozku a orezavani (prumer 165 misto 128).
     BYTE1(a2) = *a4;
-    HIBYTE(result) = a4[1];
+    BYTE1(result) = a4[1];
     a4 += 2;
     *a3 += result;
     a3[1] += (int16_t)a2;
@@ -4189,7 +4189,7 @@ int16_t sub_16199C(
   {
     if ( (unsigned int)a4 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a4;
+    BYTE1(result) = *a4;
     a4 = (_BYTE *)((qword_18AD3C + __PAIR64__((unsigned int)a4, a2)) >> 32);
     a2 += qword_18AD3C;
     *a3++ += result;
@@ -4226,7 +4226,7 @@ int16_t sub_1619C3(
   {
     if ( (unsigned int)a4 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a4;
+    BYTE1(result) = *a4;
     a4 = (_BYTE *)((qword_18AD3C + __PAIR64__((unsigned int)a4, a2)) >> 32);
     a2 += qword_18AD3C;
     *a3 += result;
@@ -4267,7 +4267,7 @@ int16_t sub_1619ED(
   {
     if ( (unsigned int)a4 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a4;
+    BYTE1(result) = *a4;
     v4 = ((unsigned int)qword_18AD3C + (uint64_t)a2) >> 32;
     a2 += qword_18AD3C;
     a4 += *((_DWORD *)&qword_18AD3C + v4 + 1);
@@ -4307,7 +4307,7 @@ int16_t sub_161A1C(
   {
     if ( (unsigned int)a5 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *a5;
+    BYTE1(result) = *a5;
     // PORT (vlna 26 pokr. 26): asm dela `mov ?h, [..]` = bity 8..15, tedy
     // BYTE1, ne HIBYTE (bity 24..31), a pred pricitanim je `movsx ebp, bx`,
     // tedy orez na 16 bitu. Stejna dvojice chyb jako v sub_16177F, ktera
@@ -4354,7 +4354,7 @@ int16_t sub_161A51(
   {
     if ( a4 >= dword_18AD30 )
       break;
-    HIBYTE(result) = *(_BYTE *)(a4 + 1);
+    BYTE1(result) = *(_BYTE *)(a4 + 1);
     v4 = ((unsigned int)qword_18AD3C + (uint64_t)a2) >> 32;
     a2 += qword_18AD3C;
     a4 += *((_DWORD *)&qword_18AD3C + v4 + 1);
@@ -4399,7 +4399,7 @@ int16_t sub_161A80(
     // tedy orez na 16 bitu. Stejna dvojice chyb jako v sub_16177F, ktera
     // zpusobovala stejnosmernou slozku a orezavani (prumer 165 misto 128).
     BYTE1(a3) = *a5;
-    HIBYTE(result) = a5[1];
+    BYTE1(result) = a5[1];
     v5 = ((unsigned int)qword_18AD3C + (uint64_t)a2) >> 32;
     a2 += qword_18AD3C;
     a5 += *((_DWORD *)&qword_18AD3C + v5 + 1);
@@ -6864,7 +6864,7 @@ void sub_163E0D( int a1, int a2, double *a3, int a4, double a5)
   {
     if ( (a1 & 0x110) == 0x110 )
     {
-      v5 = sub_163E5F(SHIBYTE(a1), a2, a4, a5);
+      v5 = sub_163E5F(SBYTE1(a1), a2, a4, a5);
       if ( (a1 & 0xC0) != 0xC0 )
         sub_163EAA(a1, a3, v5);
       if ( (a1 & 8) != 0 )
@@ -6876,7 +6876,7 @@ void sub_163E0D( int a1, int a2, double *a3, int a4, double a5)
     }
     else
     {
-      sub_163E5F(SHIBYTE(a1), a2, a4, a5);
+      sub_163E5F(SBYTE1(a1), a2, a4, a5);
     }
   }
 }
