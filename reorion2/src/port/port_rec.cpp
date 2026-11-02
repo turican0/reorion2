@@ -881,13 +881,15 @@ void PortRec_Flush(void) { FlushEvents(); }
 // 0-7 tick reads (0 sub_12C2A0, 3 the wait loop of sub_12C2C6), 8 mouse x, 9 y,
 // 10 click x, 11 click y, 12 click buttons, 13 click flag 2, 14 click flag,
 // 15 buttons now, 16 key ready, 17 key read, 18 key peek, 19/20 AIL ms, 21 time,
-// 22 clock (old records have none: REORION2_GAMEPLAY_CLOCK=<clock.txt of a replay>).
+// 22 clock (old records have none: REORION2_GAMEPLAY_CLOCK=<clock.txt of a replay>),
+// 23 BIOS tick read by the 1.50 block (old records: the tick the game saw last).
 // REORION2_GAMEPLAY_FRAMES=<dir>: frames at the original's points - c<n>.raw at the
 // frame wait after the n-th click taken, t<n>.raw every 200th frame wait - with the
 // cursor position (2 x int16) after the pixels, as engine.cpp gr_dump writes them.
 extern "C" void PortDebug_RngRingFlush();   // reorion2.cpp, REORION2_RNG_RING
 namespace {
-enum { kGrSrc = 23, kGrClickFlag = 14, kGrWaitSrc = 3, kGrClock = 22 };
+enum { kGrSrc = 24, kGrClickFlag = 14, kGrWaitSrc = 3, kGrClock = 22, kGrBlockTick = 23, kGrTickSrcs = 8 };
+uint32_t g_grLastTick = 0;
 struct GrRun { uint32_t v; uint64_t n; };
 std::vector<GrRun> g_grRuns[kGrSrc];
 size_t g_grPos[kGrSrc];
@@ -1047,11 +1049,21 @@ uint32_t PortGr_Value(int src, uint32_t live)
     if (!GrOn() || src < 0 || src >= kGrSrc) return live;
     ++g_grReads[src];
     GrRun* r = GrCur(src);
-    if (!r) return live;
+    if (!r) { if (src < kGrTickSrcs) g_grLastTick = live; return live; }
     --g_grLeft[src];
+    if (src < kGrTickSrcs) g_grLastTick = r->v;
     PortDebug_GrTrace(src, r->v);   // wave 184: REORION2_GR_TRACE
     if (src == kGrClickFlag && (r->v & 0xFFFF)) g_grClickDump = true;
     return r->v;
+}
+
+// a tick read the record has no point for (1.50 block): the tick the game saw last -
+// it waits on the tick nearly all the time, so that is the value at that moment
+uint32_t PortGr_LastTick(uint32_t live)
+{
+    if (!GrOn()) return live;
+    if (!g_grRuns[kGrBlockTick].empty()) return PortGr_Value(kGrBlockTick, live);
+    return g_grLastTick ? g_grLastTick : live;
 }
 
 // sub_12C2C6: the original spins on lodsd until (tick - base) < 0 or >= n; the
@@ -1061,9 +1073,9 @@ uint32_t PortGr_Wait(uint32_t base, int n)
 {
     for (;;) {
         GrRun* r = GrCur(kGrWaitSrc);
-        if (!r) return base + (uint32_t)n;
+        if (!r) return g_grLastTick = base + (uint32_t)n;
         const int32_t d = (int32_t)(r->v - base);
-        if (d < 0 || d >= n) { --g_grLeft[kGrWaitSrc]; ++g_grReads[kGrWaitSrc]; return r->v; }
+        if (d < 0 || d >= n) { --g_grLeft[kGrWaitSrc]; ++g_grReads[kGrWaitSrc]; return g_grLastTick = r->v; }
         g_grReads[kGrWaitSrc] += g_grLeft[kGrWaitSrc];
         g_grLeft[kGrWaitSrc] = 0;   // the whole run is spent in the loop
     }

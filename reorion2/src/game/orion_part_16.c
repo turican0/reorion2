@@ -4397,7 +4397,7 @@ void sub_FA8A2(int a1, char *a2)
   byte_1AAF7E[a1] = 1;
   if ( word_1AAF86 == word_1AAF5E )
   {
-    if ( byte_1AAF88 == a1 )
+    if ( byte_1AAF88[0] == a1 )
       byte_1AAF88[0] = -1;
     byte_1AB072[a1] = 0;
     if ( (uint8_t)++byte_1AAF89 == word_199998 )

@@ -5248,7 +5248,7 @@ int sub_B77A6()
 
   if ( dword_182AFD[0] <= 0 )
   {
-    if ( dword_182B15 <= 0 && dword_182B01 <= 0 && dword_182B19 <= 0 )
+    if ( dword_182B15 <= 0 && dword_182B01[0] <= 0 && dword_182B19 <= 0 )
     {
       if ( dword_182B2D <= 0 && dword_182B05 <= 0 && dword_182B31 <= 0 && dword_182B1D <= 0 && dword_182B35 <= 0 )
         result = 3;

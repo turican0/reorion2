@@ -2,39 +2,6 @@
    hand fixes go to orion150_manual.c */
 #include "orion150.h"
 
-//----- (00215D47) --------------------------------------------------------
-int sub_215D47(int a1, int a2)
-{
-  int v2; // eax
-  _DWORD *v3; // ebx
-  _DWORD *v4; // eax
-
-  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x1763E));
-  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D208)));
-  ((int (*)())off_22C6C0)(a2, -1, ((int)(intptr_t)(eseg + 0x20B0)), ((int)(intptr_t)dword_193068));
-  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
-  *(_BYTE *)(v2 + 18) = 1;
-  *(_WORD *)(v2 + 24) = 257;
-  *(_BYTE *)(v2 + 26) = 1;
-  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
-  if ( v3 )
-  {
-    do
-    {
-      v4 = v3;
-      v3 = (_DWORD *)*v3;
-      nfree(v4);
-    }
-    while ( v3 );
-    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
-  }
-  *(_DWORD *)(v2 + 4) = 0;
-  return 0;
-}
-// 13CAF6: using guessed type int nfree(_DWORD);
-// 22C6C0: using guessed type int (*off_22C6C0)(int, int, int, int);
-// 2477DF: using guessed type _BYTE byte_2477DF[2];
-
 //----- (00215DBF) --------------------------------------------------------
 int sub_215DBF(int a1, int a2)
 {

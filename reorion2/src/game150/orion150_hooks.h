@@ -137,6 +137,7 @@ void Hook150_1E16F3(int owner);
 int Hook150_1E17F0(int16_t *a1, int16_t *a2);
 int Hook150_1E4AC3(int16_t *a1, int16_t *a2);
 int Hook150_CodeDword(uint32_t addr);
+unsigned int Hook150_BiosTick(void);
 int Hook150_CodeDw(uint32_t addr, int value131);
 int Hook150_CodeWord(uint32_t addr, int value131);
 int Hook150_1E1C4F(int done);

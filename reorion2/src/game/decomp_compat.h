@@ -120,6 +120,7 @@ int PortGr_Active(void);
 int PortGr_FromSave(void);
 int PortGr_StartFrom(void);
 uint32_t PortGr_Value(int src, uint32_t live);
+uint32_t PortGr_LastTick(uint32_t live);
 uint32_t PortGr_Wait(uint32_t base, int n);
 void PortGr_FrameWait(void);
 #ifdef __cplusplus

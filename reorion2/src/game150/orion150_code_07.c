@@ -2,29 +2,6 @@
    hand fixes go to orion150_manual.c */
 #include "orion150.h"
 
-//----- (001EE50F) --------------------------------------------------------
-int * sub_1EE50F(_BYTE *a1, _BYTE *a2, uint32_t *a3, ...)
-{
-  int *result; // eax
-  va_list va; // [esp+1Ch] [ebp+10h] BYREF
-
-  va_start(va, a3);
-
-  uint32_t va32[32];   // the 32-bit argument slots of the original
-
-  for ( int va32i = 0; va32i < 32; ++va32i )
-
-    va32[va32i] = (uint32_t)va_arg(va, uintptr_t);
-  result = ((int *)(uintptr_t)*a3);
-  if ( ((int *)(uintptr_t)*a3) )
-  {
-    sub_1EE127(a1, a2, (_BYTE *)((int *)(uintptr_t)*a3) + 8, *((int *)(uintptr_t)*a3), (uint32_t *)va32);
-    a2[(_DWORD)a1 - 1] = 0;
-    return (int *)sub_1ED647((int)a1, (int)a3);
-  }
-  return result;
-}
-
 //----- (001EE553) --------------------------------------------------------
 int * sub_1EE553()
 {
@@ -168,7 +145,7 @@ unsigned int sub_1EE80F()
   int v3; // eax
   _BYTE v4[112]; // [esp+0h] [ebp-70h] BYREF
 
-  v0 = *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+  v0 = Hook150_BiosTick();
   result = *(_DWORD *)&byte_23FA46[4];
   if ( *(_DWORD *)&byte_23FA46[4] && result <= v0 && v0 - result <= 0x36 )
   {
@@ -10821,13 +10798,13 @@ int * sub_1FE80F(int *a1, uint32_t *a2, unsigned int a3, void (*a4)(int *))
 LABEL_2:
     Dos150_AsmPending(0x1FE80F);   /* int     21h; DOS - GET CURRENT TIME - registers not wired yet (asm_pending.txt) */
     v16 = (int16_t)a1;
-    v4 = ((int *)(uintptr_t)*(uint32_t *)&unk_23E638);
-    v5 = *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+    
+    v5 = Hook150_BiosTick();
     LOWORD(a1) = i;
     do
     {
-      v6 = *v4;
-      if ( v5 > *v4 )
+      v6 = Hook150_BiosTick();
+      if ( v5 > Hook150_BiosTick() )
       {
         sub_1EC907(i, ((int)(intptr_t)(eseg + 0x1C759)), v5, v6, a3);
         if ( !byte_2407BE[0] )
@@ -10845,7 +10822,7 @@ LABEL_2:
       a3 = v6 - v5;
     }
     while ( v6 - v5 < i );
-    v15 = *v4;
+    v15 = Hook150_BiosTick();
     Dos150_AsmPending(0x1FE80F);   /* int     21h; DOS - GET CURRENT TIME - registers not wired yet (asm_pending.txt) */
     v7 = 10 * ((uint8_t)v16 + 100 * (HIBYTE(v16) + 60 * ((uint8_t)a2 + 60 * BYTE1(a2))));
     v8 = 10 * ((uint8_t)i + 100 * (BYTE1(i) + 60 * ((uint8_t)a2 + 60 * BYTE1(a2))));
@@ -15258,5 +15235,38 @@ int sub_215CD3(int a1, int a2)
 }
 // 13CAF6: using guessed type int nfree(_DWORD);
 // 22C760: using guessed type int (*off_22C760)(int, int, int, int);
+// 2477DF: using guessed type _BYTE byte_2477DF[2];
+
+//----- (00215D47) --------------------------------------------------------
+int sub_215D47(int a1, int a2)
+{
+  int v2; // eax
+  _DWORD *v3; // ebx
+  _DWORD *v4; // eax
+
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(a2 + 16) + 4) + 12) = ((int)(intptr_t)(eseg + 0x1763E));
+  sub_215773(a2, byte_2477DF, a1, ((int)(intptr_t)(eseg + 0x1D208)));
+  ((int (*)())off_22C6C0)(a2, -1, ((int)(intptr_t)(eseg + 0x20B0)), ((int)(intptr_t)dword_193068));
+  v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  *(_BYTE *)(v2 + 18) = 1;
+  *(_WORD *)(v2 + 24) = 257;
+  *(_BYTE *)(v2 + 26) = 1;
+  v3 = ((_DWORD *)(uintptr_t)*(uint32_t *)(v2 + 4));
+  if ( v3 )
+  {
+    do
+    {
+      v4 = v3;
+      v3 = (_DWORD *)*v3;
+      nfree(v4);
+    }
+    while ( v3 );
+    v2 = *(_DWORD *)(*(_DWORD *)(a2 + 16) + 4);
+  }
+  *(_DWORD *)(v2 + 4) = 0;
+  return 0;
+}
+// 13CAF6: using guessed type int nfree(_DWORD);
+// 22C6C0: using guessed type int (*off_22C6C0)(int, int, int, int);
 // 2477DF: using guessed type _BYTE byte_2477DF[2];
 

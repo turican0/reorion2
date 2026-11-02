@@ -1687,7 +1687,6 @@ int Vsprintf150(char *buf, const char *fmt, uint32_t *va);
 #define unk_23E207 (*(_BYTE *)(eseg + 0x13C07))
 #define unk_23E2A0 (*(_BYTE *)(eseg + 0x13CA0))
 #define unk_23E2F4 (*(_BYTE *)(eseg + 0x13CF4))
-#define unk_23E638 (*(_BYTE *)(eseg + 0x14038))
 #define unk_23E77E (*(_BYTE *)(eseg + 0x1417E))
 #define unk_23F070 (*(_BYTE *)(eseg + 0x14A70))
 #define unk_23F071 (*(_BYTE *)(eseg + 0x14A71))
@@ -2693,7 +2692,7 @@ int sub_1EAF5B(int a1, int a2, int a3, int a4);
 int sub_1EAFEB(int16_t *a1, int16_t *a2);
 _BYTE * sub_1EB0FC(void);
 int sub_1EB12F(int eax0, int a2);
-char * sub_1EB207(unsigned int a1, unsigned int a2, int a3, unsigned int a4);
+char * sub_1EB207();
 int sub_1EB293(int a1);
 unsigned int sub_1EB333(unsigned int a1);
 int sub_1EB393(int result);

@@ -930,6 +930,13 @@ def fix_partial(t):
 
 
 def fix_single(a, t):
+    # ds:23E638 holds 0x46C, the BIOS tick: Hook150_BiosTick (the port has no such memory)
+    tick = '*((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638)'
+    tptr = 'v4 = ((int *)(uintptr_t)*(uint32_t *)&unk_23E638);'
+    if tptr in t:
+        h, r = t.split(tptr)
+        t = h + r.replace('*v4', 'Hook150_BiosTick()')
+    t = t.replace(tick, 'Hook150_BiosTick()')
     for old, new, count in FIXES.get(a, []):
         if t.count(old) != count:
             raise SystemExit('FIXES %06X: %r found %d times' % (a, old, t.count(old)))

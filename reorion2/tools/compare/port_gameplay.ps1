@@ -64,6 +64,11 @@ Get-ChildItem "$sess\saves" -File | ForEach-Object { if ($_.Name -match '^save(\
 foreach ($f in (Get-ChildItem "$run\saves" -File | Sort-Object Name)) {
     if ($f.Name -notmatch '^(\d+)_') { continue }
     $n = [int]$Matches[1]
+    # the record polls the game dir and can miss a save written right after another: the port's
+    # numbers then run ahead, so an equal save of the record under another number counts too
+    $h = (Get-FileHash $f.FullName -Algorithm MD5).Hash
+    $same = $rec.Keys | Sort-Object | Where-Object { (Get-FileHash $rec[$_] -Algorithm MD5).Hash -eq $h } | Select-Object -First 1
+    if ($same -and $same -ne $n) { "save {0}: identical to record save {1}" -f $n, $same; continue }
     if (-not $rec.ContainsKey($n)) { "save {0}: not in the record" -f $n; continue }
     $a = [IO.File]::ReadAllBytes($rec[$n]); $b = [IO.File]::ReadAllBytes($f.FullName)
     $d = 0; $first = -1

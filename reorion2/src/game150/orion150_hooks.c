@@ -63,6 +63,12 @@ void Hook150_Exit(char *msg, int normal)
   sub_1EB84B((int64_t)(uint32_t)(uintptr_t)msg << 32, (int64_t)0, 0, 0, 0, (char *)0);
 }
 
+/* ds:23E638 = 0x46C: the block reads the BIOS tick directly, GAMEREC has no point for it */
+unsigned int Hook150_BiosTick(void)
+{
+  return PortGr_LastTick(PortDos_BiosTick());
+}
+
 /* ===== wrappers of the game functions 1.50 hooks at every call (the body is X_131) ===== */
 
 //----- (001E3E8A) --------------------------------------------------------

@@ -3459,10 +3459,7 @@ char sub_C9FC4( int a1)
   int v26; // [esp-4h] [ebp-7E4h]
   int v27; // [esp-4h] [ebp-7E4h]
   _BYTE v28[2000]; // [esp+0h] [ebp-7E0h] BYREF
-  _WORD v29[4]; // [esp+7D0h] [ebp-10h] BYREF
-  int16_t v30; // [esp+7D8h] [ebp-8h]
-  int16_t v31; // [esp+7DAh] [ebp-6h]
-  int16_t v32; // [esp+7DCh] [ebp-4h]
+  _WORD v29[8]; // [esp+7D0h] [ebp-10h] BYREF
 
   v2 = a1;
   sub_CDBD9();
@@ -3470,24 +3467,24 @@ char sub_C9FC4( int a1)
   v20 = sub_77B28(v2);
   v3 = (char *)sub_CDF5C(209);
   v4 = &v28[sprintf(v28, v3, v20)];
-  if ( v30 % 2 )
+  if ( v29[4] % 2 )
   {
-    v22 = v30 % 2;
-    v19 = v30 / 2;
+    v22 = v29[4] % 2;
+    v19 = v29[4] / 2;
     v7 = (char *)sub_CDF5C(100);
     v6 = sprintf(v4, v7, &unk_179E6E, &unk_179E6B, v19, v22);
   }
   else
   {
-    v21 = v30 / 2;
+    v21 = v29[4] / 2;
     v5 = (char *)sub_CDF5C(101);
     v6 = sprintf(v4, v5, &unk_179E6E, &unk_179E6B, v21);
   }
   v8 = &v4[v6];
-  v23 = v31;
+  v23 = v29[5];
   v9 = (char *)sub_CDF5C(107);
   v10 = &v8[sprintf(v8, v9, &unk_179E6E, &unk_179E6B, v23)];
-  v24 = v32;
+  v24 = v29[6];
   v11 = (char *)sub_CDF5C(115);
   v12 = &v10[sprintf(v10, v11, &unk_179E6E, &unk_179E6B, v24)];
   v25 = v29[1];
@@ -3591,10 +3588,7 @@ void sub_CA16D( int a1, int a2)
   int v78; // [esp-4h] [ebp-24h]
   int v79; // [esp-4h] [ebp-24h]
   int16_t v80; // [esp+0h] [ebp-20h]
-  _WORD v81[4]; // [esp+4h] [ebp-1Ch] BYREF
-  int16_t v82; // [esp+Ch] [ebp-14h]
-  int16_t v83; // [esp+Eh] [ebp-12h]
-  int16_t v84; // [esp+10h] [ebp-10h]
+  _WORD v81[8]; // [esp+4h] [ebp-1Ch] BYREF
   _BYTE *v85; // [esp+14h] [ebp-Ch]
   int v86; // [esp+18h] [ebp-8h]
   int v87; // [esp+1Ch] [ebp-4h]
@@ -3631,24 +3625,24 @@ void sub_CA16D( int a1, int a2)
     v61 = dword_192C74[*(uint8_t *)(v4 + (uint8_t*)dword_1930D4 + 6)];
     v11 = (char *)sub_CDF5C(83);
     v12 = sprintf(v10, v11, &unk_179E6E, v61) + v10;
-    if ( v82 % 2 )
+    if ( v81[4] % 2 )
     {
-      v63 = v82 % 2;
-      v54 = v82 / 2;
+      v63 = v81[4] % 2;
+      v54 = v81[4] / 2;
       v15 = (char *)sub_CDF5C(100);
       v14 = sprintf(v12, v15, &unk_179E6E, &unk_179E6B, v54, v63);
     }
     else
     {
-      v62 = v82 / 2;
+      v62 = v81[4] / 2;
       v13 = (char *)sub_CDF5C(101);
       v14 = sprintf(v12, v13, &unk_179E6E, &unk_179E6B, v62);
     }
     v16 = v14 + v12;
-    v64 = v83;
+    v64 = v81[5];
     v17 = (char *)sub_CDF5C(107);
     v18 = sprintf(v16, v17, &unk_179E6E, &unk_179E6B, v64) + v16;
-    v65 = v84;
+    v65 = v81[6];
     v19 = (char *)sub_CDF5C(116);
     v20 = sprintf(v18, v19, &unk_179E6E, &unk_179E6B, v65) + v18;
     v66 = v81[1];

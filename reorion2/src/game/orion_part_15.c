@@ -1680,7 +1680,7 @@ void sub_E78A7(int a1, int a2, int a3, int a4, int a5, unsigned int *a6, int16_t
   *a7 = -1;
   v25 = 0;
   v24 = -1;
-  v29 = word_1AA38A;
+  v29 = word_1AA38A[0];   /* E78D1 */
   while ( v29 > 0 )
   {
     v27 = word_1AA380[--v29];
@@ -1966,7 +1966,7 @@ unsigned int sub_E7DCA(int a1, int a2, _WORD *a3, _WORD *a4, _BYTE *a5)
     *a3 = 8;
     return result;
   }
-  if ( word_1AA38A > 0 || word_1AA3AA > 0 )
+  if ( word_1AA38A[0] > 0 || word_1AA3AA > 0 )
   {
     v7 = 3753 * v17 + (uint8_t*)dword_197F98;
     v8 = *(int16_t *)(v7 + 1991);
@@ -4652,6 +4652,14 @@ char sub_EB531( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
   char v26; // [esp+58h] [ebp-8h]
   char v27; // [esp+5Ch] [ebp-4h]
 
+  /* EB531 the callers pass movsx words; LOWORD(v) in sub_EB87D leaves junk in the high word */
+  a1 = (int16_t)a1;
+  a2 = (int16_t)a2;
+  a3 = (int16_t)a3;
+  a4 = (int16_t)a4;
+  a5 = (int16_t)a5;
+  a6 = (int16_t)a6;
+  a7 = (int16_t)a7;
   while ( 1 )
   {
     v9 = a5 - a7;

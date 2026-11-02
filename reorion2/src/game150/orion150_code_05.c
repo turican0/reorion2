@@ -4829,7 +4829,7 @@ int sub_1E7DDB(int a1)
 //----- (001E7E15) --------------------------------------------------------
 int sub_1E7E15()
 {
-  return *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+  return Hook150_BiosTick();
 }
 
 //----- (001E7E1F) --------------------------------------------------------
@@ -4837,7 +4837,7 @@ char sub_1E7E1F()
 {
   unsigned int v0; // eax
 
-  v0 = *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+  v0 = Hook150_BiosTick();
   if ( *(_DWORD *)&byte_2407BE[4] > v0 )
   {
     *(_DWORD *)&byte_2407BE[4] = v0;

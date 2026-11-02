@@ -2275,12 +2275,12 @@ int sub_1EA31F(int result)
   if ( *(int *)&byte_23FA46[8] < -2 )
   {
 LABEL_5:
-    result = *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+    result = Hook150_BiosTick();
     *(_DWORD *)&byte_23FA46[4] = result;
     return result;
   }
   --*(_DWORD *)&byte_23FA46[8];
-  result = *((_DWORD *)(uintptr_t)*(uint32_t *)&unk_23E638);
+  result = Hook150_BiosTick();
   *(_DWORD *)&byte_23FA46[4] = result;
   return result;
 }
@@ -6297,4 +6297,27 @@ LABEL_30:
   return v31;
 }
 // 1265F2: using guessed type int64_t sprintf(_DWORD, char *, ...);
+
+//----- (001EE50F) --------------------------------------------------------
+int * sub_1EE50F(_BYTE *a1, _BYTE *a2, uint32_t *a3, ...)
+{
+  int *result; // eax
+  va_list va; // [esp+1Ch] [ebp+10h] BYREF
+
+  va_start(va, a3);
+
+  uint32_t va32[32];   // the 32-bit argument slots of the original
+
+  for ( int va32i = 0; va32i < 32; ++va32i )
+
+    va32[va32i] = (uint32_t)va_arg(va, uintptr_t);
+  result = ((int *)(uintptr_t)*a3);
+  if ( ((int *)(uintptr_t)*a3) )
+  {
+    sub_1EE127(a1, a2, (_BYTE *)((int *)(uintptr_t)*a3) + 8, *((int *)(uintptr_t)*a3), (uint32_t *)va32);
+    a2[(_DWORD)a1 - 1] = 0;
+    return (int *)sub_1ED647((int)a1, (int)a3);
+  }
+  return result;
+}
 
