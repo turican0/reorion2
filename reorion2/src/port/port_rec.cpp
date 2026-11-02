@@ -61,7 +61,7 @@ namespace {
 
 enum { kSrcCount = 16 };
 int g_pressNow = 0;   // wave 183: presses replayed so far (REORION2_REPLAY_FRAMES)
-const char* const kSrcName[kSrcCount] = { "mouse", "key", "tick", "ms", "wait", "audioq", "ftime", "time" };
+const char* const kSrcName[kSrcCount] = { "mouse", "key", "tick", "ms", "wait", "audioq", "ftime", "time", "clock" };
 
 int      g_mode = 0;          // 0 off, 1 record, 2 replay
 FILE*    g_out = nullptr;     // record
@@ -69,6 +69,7 @@ std::vector<uint8_t> g_buf;   // record: pending EVTS payload
 uint64_t g_G = 0;             // global call counter
 uint64_t g_lastEvG = 0;       // G of the last written/read record
 uint32_t g_last[kSrcCount];   // last value per source (delta base)
+bool g_recClock = false;      // the replayed record has source clock (older ones do not)
 uint64_t g_lastFlushMs = 0;
 unsigned long g_thread = 0;
 
@@ -309,6 +310,7 @@ bool LoadReplay(const char* path)
                 if (e == std::string::npos) e = meta.size();
                 const std::string ln = meta.substr(a, e - a);
                 a = e + 1;
+                if (ln == "clock=1") g_recClock = true;
                 const size_t eq = ln.find('=');
                 if (ln.rfind("env.", 0) != 0 || eq == std::string::npos) continue;
                 const std::string k = ln.substr(4, eq - 4), v = ln.substr(eq + 1);
@@ -417,7 +419,7 @@ bool StartRecord(const char* spec)
     g_out = std::fopen(path.c_str(), "wb");
     if (!g_out) { Log("RECORD: cannot create %s", path.c_str()); return false; }
     std::fwrite("R2REC\x01\0\0", 1, 8, g_out);
-    std::string meta = "build=" __DATE__ " " __TIME__ "\n";
+    std::string meta = "build=" __DATE__ " " __TIME__ "\nclock=1\n";
     {
         std::time_t t = std::time(nullptr);
         meta += "started=" + std::to_string((long long)t) + "\n";
@@ -878,13 +880,14 @@ void PortRec_Flush(void) { FlushEvents(); }
 // same points, so it gets the original's inputs in the same order. Sources:
 // 0-7 tick reads (0 sub_12C2A0, 3 the wait loop of sub_12C2C6), 8 mouse x, 9 y,
 // 10 click x, 11 click y, 12 click buttons, 13 click flag 2, 14 click flag,
-// 15 buttons now, 16 key ready, 17 key read, 18 key peek, 19/20 AIL ms, 21 time.
+// 15 buttons now, 16 key ready, 17 key read, 18 key peek, 19/20 AIL ms, 21 time,
+// 22 clock (old records have none: REORION2_GAMEPLAY_CLOCK=<clock.txt of a replay>).
 // REORION2_GAMEPLAY_FRAMES=<dir>: frames at the original's points - c<n>.raw at the
 // frame wait after the n-th click taken, t<n>.raw every 200th frame wait - with the
 // cursor position (2 x int16) after the pixels, as engine.cpp gr_dump writes them.
 extern "C" void PortDebug_RngRingFlush();   // reorion2.cpp, REORION2_RNG_RING
 namespace {
-enum { kGrSrc = 22, kGrClickFlag = 14, kGrWaitSrc = 3 };
+enum { kGrSrc = 23, kGrClickFlag = 14, kGrWaitSrc = 3, kGrClock = 22 };
 struct GrRun { uint32_t v; uint64_t n; };
 std::vector<GrRun> g_grRuns[kGrSrc];
 size_t g_grPos[kGrSrc];
@@ -905,13 +908,20 @@ bool GrOn()
         if (!f) { Log("GAMEPLAY: cannot read %s", p); return false; }
         char line[256];
         size_t runs = 0;
-        while (std::fgets(line, sizeof line, f)) {
-            int s = 0; unsigned v = 0; unsigned long long n = 0;
-            if (line[0] == '#' || std::sscanf(line, "%d %X %llu", &s, &v, &n) != 3 || s < 0 || s >= kGrSrc) continue;
-            g_grRuns[s].push_back(GrRun{v, n});
-            ++runs;
+        const auto load = [&](FILE* in) {
+            while (std::fgets(line, sizeof line, in)) {
+                int s = 0; unsigned v = 0; unsigned long long n = 0;
+                if (line[0] == '#' || std::sscanf(line, "%d %X %llu", &s, &v, &n) != 3 || s < 0 || s >= kGrSrc) continue;
+                g_grRuns[s].push_back(GrRun{v, n});
+                ++runs;
+            }
+            std::fclose(in);
+        };
+        load(f);
+        if (const char* c = SDL_getenv("REORION2_GAMEPLAY_CLOCK"); c && *c) {
+            if (FILE* fc = std::fopen(c, "rt")) load(fc);
+            else Log("GAMEPLAY: cannot read %s", c);
         }
-        std::fclose(f);
         Log("GAMEPLAY %s: %zu runs", p, runs);
         g_grInit = 2;
         // wave 184: REORION2_GAMEPLAY_FROM=<save>: live until PortGr_StartFrom (GameMain)
@@ -927,6 +937,7 @@ GrRun* GrCur(int s)
         if (g_grPos[s] >= g_grRuns[s].size()) {
             if (!g_grEnd[s]) {
                 g_grEnd[s] = true;
+                if (g_grRuns[s].empty()) return nullptr;   // a source the record does not have
                 Log("GAMEPLAY: END source %d - live from here (after click frame c%llu, wait %llu)", s,
                     (unsigned long long)g_grClicks, (unsigned long long)g_grWaits);
                 PortDebug_RngRingFlush();   // wave 184: REORION2_RNG_RING
@@ -1077,6 +1088,13 @@ int PortRec_Time(void* p)
     const uint32_t v = (uint32_t)PortGr_Value(21, PortRec_Value(7, (uint32_t)std::time(nullptr)));
     if (p) std::memcpy(p, &v, 4);
     return (int)v;
+}
+
+// clock() of the game code - Watcom counts ms from the start of the program.
+uint32_t PortRec_Clock(void)
+{
+    const uint32_t live = (uint32_t)SDL_GetTicks();
+    return PortGr_Value(kGrClock, g_mode == 2 && !g_recClock ? live : PortRec_Value(8, live));
 }
 
 // First entry of the main menu (sub_816F2) = DOSBox after=0x002A56F2 anchor.

@@ -5062,32 +5062,7 @@ int16_t sub_77D32( int a1, int a2)
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   qmemcpy(v3, (void *)(99 * a2 + 3753 * a1 + (uint8_t*)dword_197F98 + 806), 0x63u);
-  return sub_582BF(
-           *(int *)v3,
-           *(int *)&v3[4],
-           *(int *)&v3[8],
-           *(int *)&v3[12],
-           v3[16],
-           *(int *)&v3[20],
-           *(int *)&v3[24],
-           *(int *)&v3[28],
-           *(int *)&v3[32],
-           *(int *)&v3[36],
-           *(int *)&v3[40],
-           *(int *)&v3[44],
-           *(int *)&v3[48],
-           *(int *)&v3[52],
-           *(int *)&v3[56],
-           *(int *)&v3[60],
-           *(int *)&v3[64],
-           *(int *)&v3[68],
-           *(int *)&v3[72],
-           *(int *)&v3[76],
-           *(int *)&v3[80],
-           *(int *)&v3[84],
-           *(int *)&v3[88],
-           *(int *)&v3[92],
-           *(int *)&v3[96]);
+  return sub_582BF(v3);
 }
 // 197F98: using guessed type int (uint8_t*)dword_197F98;
 

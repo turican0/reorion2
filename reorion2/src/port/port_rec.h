@@ -17,6 +17,7 @@ enum {
     PORTREC_AUDIOQ = 5,  // SDL audio queue depth
     PORTREC_FTIME = 6,   // file date << 16 | time
     PORTREC_TIME = 7,    // time() of the game code (PortRec_Time)
+    PORTREC_CLOCK = 8,   // clock() of the game code (PortRec_Clock)
 };
 
 void PortRec_Init(void);
@@ -24,6 +25,7 @@ uint32_t PortRec_Value(int src, uint32_t live);
 int PortRec_Replaying(void);
 int PortRec_FastReplay(void);
 void PortRec_Tick(void);
+uint32_t PortRec_Clock(void);
 void PortRec_Flush(void);
 int PortRec_PressIndex(void);   /* wave 183: presses replayed so far */
 void PortRec_Sync(void);

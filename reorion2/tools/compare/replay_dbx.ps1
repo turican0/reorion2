@@ -83,6 +83,9 @@ try {
     }
     # wave 184: the reads per source at every save - the port continues from a save with it
     if ($Gameplay) { $env:DOSBOX_GR_SAVEPOS = "$out\savepos.txt" }
+    # wave 185: a record without the clock source - the live clock_ reads go to clock.txt,
+    # the port takes them with REORION2_GAMEPLAY_CLOCK
+    if ($Gameplay) { $env:DOSBOX_GR_CLOCKLOG = "$out\clock.txt" }
     $p = Start-Process $dbx -ArgumentList $dbxArgs -PassThru -RedirectStandardError "$out\dosbox_stderr.txt"
     $last = (Select-String -Path "$sess\record.cfg" -Pattern '^SENDCLICK').Count
     $t0 = Get-Date
@@ -100,6 +103,7 @@ try {
     Remove-Item env:DOSBOX_FASTHOOK -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_FASTVGA -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_GR_SAVEPOS -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_GR_CLOCKLOG -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_MOO2_DSEG -ErrorAction SilentlyContinue
     # the session keeps the first savepos.txt (never overwritten)
     if ($Gameplay -and (Test-Path "$out\savepos.txt") -and -not (Test-Path $savepos)) { Copy-Item "$out\savepos.txt" $savepos }

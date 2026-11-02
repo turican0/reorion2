@@ -269,7 +269,8 @@ int PortDos_Int386x(int intNum, const void* inRegs);
 int int386x(int inum, void* inregs) {
     return PortDos_Int386x(inum, inregs);
 }
-int j___clock(void) { return 0; }
+/* 129FE4 clock_: Watcom ms since the start; edx stays 0 for the callers that divide */
+long long j___clock(void) { return (long long)PortRec_Clock(); }
 int j___delay(void) { return 0; }
 int j__nfree(void) { return 0; }
 int j_unlink(void) { return 0; }

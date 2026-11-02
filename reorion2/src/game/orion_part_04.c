@@ -4616,45 +4616,24 @@ int sub_58270( int a1, int a2)
 
 
 //----- (000582BF) --------------------------------------------------------
-int16_t sub_582BF(
-        int a1,
-        int a2,
-        int a3,
-        int a4, unsigned int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19,
-        int a20,
-        int a21,
-        int a22,
-        int a23,
-        int a24,
-        int a25)
+/* The original gets the 99-byte ship record by value (25 stack dwords, flag bits
+   at &a6 + 3 = byte 23); on x64 the arguments are not one block, so the port
+   passes the record's address (same as sub_54D80). */
+int16_t sub_582BF(const uint8_t *a1)
 {
   int16_t v25; // cx
   int v26; // eax
   int v27; // ebx
 
-  v25 = sub_1276F0((int)&a6 + 3, 0x1Bu);
+  v25 = sub_1276F0((int)(intptr_t)(a1 + 23), 0x1Bu);
   if ( byte_199CB4 )
   {
-    LOWORD(v26) = word_180038[18 * a5];
+    LOWORD(v26) = word_180038[18 * a1[16]];
   }
   else
   {
-    v27 = word_180026[18 * a5];
-    v26 = v27 + v27 * *(int16_t *)((char *)&word_17F642 + 15 * BYTE2(a6)) / 100;
+    v27 = word_180026[18 * a1[16]];
+    v26 = v27 + v27 * *(int16_t *)((char *)&word_17F642 + 15 * a1[22]) / 100;
     if ( v25 )
       LOWORD(v26) = 3 * v26;
   }
@@ -4697,33 +4676,7 @@ int sub_58387( int a1, int a2, int a3, int a4)
   if ( (char)v4[g_orion150 ? 93 : 99] <= 9 )   /* 1.50 5839B, 583A5: byte +5Dh */
   {
     qmemcpy(v7, v4, 0x63u);
-    LOWORD(v5) = sub_582BF(
-                   *(int *)v7,
-                   *(int *)&v7[4],
-                   *(int *)&v7[8],
-                   *(int *)&v7[12],
-                   v7[16],
-                   *(int *)&v7[20],
-                   *(int *)&v7[24],
-                   *(int *)&v7[28],
-                   *(int *)&v7[32],
-                   *(int *)&v7[36],
-                   *(int *)&v7[40],
-                   *(int *)&v7[44],
-                   *(int *)&v7[48],
-                   *(int *)&v7[52],
-                   *(int *)&v7[56],
-                   *(int *)&v7[60],
-                   *(int *)&v7[64],
-                   *(int *)&v7[68],
-                   *(int *)&v7[72],
-                   *(int *)&v7[76],
-                   *(int *)&v7[80],
-                   *(int *)&v7[84],
-                   *(int *)&v7[88],
-                   *(int *)&v7[92],
-                   *(int *)&v7[96]);
-    return v5;
+    return sub_582BF(v7);   /* 05841D mov ecx, eax */
   }
   else
   {
@@ -11337,6 +11290,7 @@ int sub_5F2F6( int a1, int a2, int a3, int a4)
   int16_t v7; // ax
   int v9; // ebx
 
+  a1 = (int16_t)a1;   /* 05F302 movsx ebx, ax / 05F35C movsx edx, ax */
   if ( byte_199CB4 )
   {
     v4 = 129 * a1;

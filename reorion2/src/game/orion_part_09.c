@@ -9868,6 +9868,7 @@ int sub_9EC4A(int a1, int a2, int a3, int a4)
   *(_DWORD *)((char *)&a25 + 2) = sub_12066F((int)v35);
   sprintf((char *)&a3 + 2, "%d", v31);
   *(_DWORD *)((char *)&a25 + 14) = sub_12066F((int)&a3 + 2) + 3;
+  /*HOFDBG*/ { char tg[120]; const uint8_t *q = (const uint8_t *)&a3 + 2; sprintf(tg, "hof val=%d w=%d spc=%d c0=%d str=%02x %02x %02x %02x %02x", (int)v31, (int)SHIWORD(a25), (int)word_1B3EA6, (int)(uint8_t)byte_1B3EA8[48], q[0], q[1], q[2], q[3], q[4]); PortDebug_Symbolize(tg, 0); }
   v27 = v32 + 4;
   sub_120BB5(4, dword_19C7C0 + 110);
   sub_120E8C(1);
