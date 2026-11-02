@@ -5126,7 +5126,7 @@ int sub_3EAA5( int a1, _WORD *a2, _WORD *a3, _WORD *a4)
   v24 = a2;
   v22 = a4;
   sub_127776(v21, 0x12Cu);
-  HIWORD(v6) = HIWORD(v24);
+  v6 = 0;   /* the callees read words only, the high half of the pointer must not leak through x64 ints */
   LOWORD(v6) = *v24;
   v33 = v6;
   LOWORD(v6) = *a3;

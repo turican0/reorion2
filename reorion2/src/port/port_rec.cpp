@@ -479,6 +479,7 @@ void PortRec_Init(void)
 }
 
 void PortVga_DumpShown(const char* path);   // port_vga.cpp: the frame on screen
+void PortVga_PresentScreen(void);
 
 // ---- REORION2_CHAIN: steps recorded in the original (my DOSBox RECORDINPUT) ----
 // REORION2_CHAIN=<file of SENDCLICK seq=1 lines>. Each step waits its gap
@@ -939,6 +940,7 @@ GrRun* GrCur(int s)
 
 void GrDump(const std::string& path)
 {
+    PortVga_PresentScreen();   // DOSBox dumps vga display_start: a page the game flipped to this frame counts
     PortVga_DumpShown(path.c_str());
     if (SDL_getenv("REORION2_GAMEPLAY_CNT"))   // wave 184: <frame>.cnt as DOSBOX_GR_CNT
         if (FILE* c = std::fopen((path + ".cnt").c_str(), "wt")) {

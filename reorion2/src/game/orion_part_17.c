@@ -8402,7 +8402,7 @@ LABEL_10:
           }
           goto LABEL_37;
         }
-        if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) == 0 )
+        if ( (dword_19306C[14] & 4) == 0 )
         {
           v86 = 0;
 LABEL_31:

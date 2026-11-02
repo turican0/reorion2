@@ -2191,7 +2191,7 @@ void sub_B306F()
       v5 = sub_B2FFA(word_1828AC[v1]);
       WORD2(v4) = v0;
     }
-    sub_102F4F(332, SWORD2(v4), (int)v5, 251);
+    sub_102F4F(332, v0, (int)v5, 251);   /* edx = the row in both branches */
     ++v1;
     v0 += 20;
     if ( v1 >= 7 )
@@ -2388,7 +2388,7 @@ LABEL_17:
       sub_120CCB(4, (int)&unk_1827AD);
       v35 = sub_B2FFA(v0);
       v36 = 13 * v70++ + 21;
-      Hook150_1E4561(306, v36, (int)v35);   /* 1.50 0B3731 */
+      sub_1212B3(306, v36, (int)v35);
       ++v70;
       sub_120CCB(3, (int)&unk_1827AD);
       sub_B3B56(dword_19F7A8, v0, &v70);
@@ -2436,7 +2436,7 @@ LABEL_17:
     case -7:
       sub_120CCB(4, (int)&unk_1827AD);
       v17 = sub_B2FFA(v0);
-      sub_1212B3(306, 13 * v70 + 21, (int)v17);
+      Hook150_1E4561(306, 13 * v70 + 21, (int)v17);   /* 1.50 0B3731 */
       v70 += 2;
       sub_B3B56(dword_19F7A8, v0, &v70);
       sub_AFB0D(209, 119, 248, 166);   /* wave 182: text id = ecx */
@@ -2567,7 +2567,7 @@ void sub_B3B56( int a1, int a2, _WORD *a3)
   sub_102F10(306, 13 * *a3 + 21, (int)v15, 156);
   v8 = (uint8_t*)dword_192B18 + 361 * v17;
   ++*a3;
-  if ( a2 == *(_WORD *)(v8 + 277) )
+  if ( (int16_t)a2 == *(int16_t *)(v8 + 277) )
   {
     v14 = (int16_t)sub_BDC93(v17);
     v9 = 544;

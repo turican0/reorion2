@@ -3162,7 +3162,7 @@ _BOOL1 sub_1692A2( int a1, int a2, _BYTE *a3)
 {
   _BOOL1 result; // al
 
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) == 0 )
+  if ( (dword_19306C[14] & 4) == 0 )
     return sub_17847(a1, a2, a3);
   sub_17847(a1, a2, a3);
   result = (char)a3;
@@ -3174,7 +3174,7 @@ _BOOL1 sub_1692A2( int a1, int a2, _BYTE *a3)
 //----- (001692C7) --------------------------------------------------------
 void sub_1692C7( int a1, int a2, int a3)
 {
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 4) != 0 )
+  if ( (dword_19306C[14] & 4) != 0 )
     *(_BYTE *)(a3 + 40) = 0;
   sub_1C417(a1, a2);
 }
@@ -3331,7 +3331,7 @@ int sub_169410(int a1, int a2)
 //----- (0016945B) --------------------------------------------------------
 int sub_16945B(int a1)
 {
-  return *(_DWORD *)(a1 + 109455);
+  return (int)(intptr_t)dword_19306C;   /* 0x1784DD + 109455 = dword_19306C */
 }
 
 
@@ -3345,7 +3345,7 @@ void sub_16946E()
 //----- (0016948F) --------------------------------------------------------
 void sub_16948F()
 {
-  if ( (*(_BYTE *)(*(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 109455) + 14) & 8) != 0 )
+  if ( (dword_19306C[14] & 8) != 0 )
     *(_DWORD *)((char *)GetGameFlagsTable_F4B81() + 41713) = -65537;
 }
 

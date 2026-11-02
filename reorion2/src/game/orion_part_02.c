@@ -4889,6 +4889,7 @@ void sub_29837(void)
       }
       vC = (int16_t)sub_2A9A5(word_1998F8, (int16_t)v_t);
           Hook150_1E24A8();   /* 1.50 29998: call sub_1E24A8 */
+      { extern void PortDebug_Message(const char *); static int dbgn; char dbg[120]; if ( ++dbgn < 60 ) { sprintf(dbg, "DBG29837 ship=%d t=%d vC=%d v4=%d m61=%d pos=%d,%d dir=%d", word_1998F8, (int16_t)v_t, vC, v4, *(int16_t *)(SHIP_29837(word_1998F8) + 61), SHIP_29837(word_1998F8)[33], SHIP_29837(word_1998F8)[34], SHIP_29837(word_1998F8)[35]); PortDebug_Message(dbg); } }   /* TEMP */
       if ( vC )
         v4 = 0;
       else
@@ -5316,7 +5317,7 @@ int sub_2A46A(int a1)
     v1 = (_BYTE *)(dword_192864 + 313 * i);
     if ( !v1[36] && v1[32] != *(_BYTE *)(313 * v3 + dword_192864 + 32) && v1[64] != 4 && !sub_3E563(i) )
     {
-      v2 = sub_2A239(v3, i, 0);   /* wave 184: 2A4C5 eax = a1, edx = i, ebx = 0 */
+      v2 = sub_2A239(i, 0, v3);   /* 2A4C5 eax = ship (a3), edx = target (a1), ebx = 0 (a2) */
       if ( v2 > v4 )
       {
         v5 = i;
@@ -5736,7 +5737,7 @@ int sub_2ACF9( int a1, int a2, int a3, int *a4, int a5)
       }
       if ( v16 == 1 )
       {
-        v9 = sub_2A239(a5, 1, a5);
+        v9 = sub_2A239((int16_t)a5, 1, a1);   /* 2AE4E eax = var_20 (a1), edx = si, ebx = 1 */
         v10 = v9;
         if ( (_WORD)a5 == a2 && v9 > 0 )
         {

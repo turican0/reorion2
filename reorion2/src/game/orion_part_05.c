@@ -3778,7 +3778,7 @@ int sub_68D3D( int a1, _WORD *a2, int16_t *a3, int a4)
   else
   {
     v11 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));   /* wave 182: result was dropped */
-    *a2 = sub_6B519(v14, v11);
+    *a2 = sub_6B519((int16_t)v14, v11);   /* 68DA0 movsx eax, word ptr [var_4] */
     v12 = sub_6F11C(*(int16_t *)((char *)&word_17EEE6 + 47 * v6));
     v13 = sub_6E70A(word_19999C, *(int16_t *)((char *)&word_17EEE6 + 47 * v6));   /* wave 182: result was dropped */
     result = sub_6E60E(v9, v13, v12);
