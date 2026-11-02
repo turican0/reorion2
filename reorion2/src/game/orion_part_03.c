@@ -5139,8 +5139,8 @@ int sub_3EAA5( int a1, _WORD *a2, _WORD *a3, _WORD *a4)
   LOWORD(v9) = *(uint8_t *)(v7 + dword_192864 + 34);
   v32 = 0;
   v38 = 0;
-  v31 = 20 * (_DWORD)v8;
-  v29 = 20 * v9;
+  v31 = 20 * (uint16_t)(uintptr_t)v8;   /* the low word only: v8 starts as a pointer here */
+  v29 = 20 * (uint16_t)v9;
   if ( word_19987E == 1 || word_1998CE )
     v26 = 12;
   else

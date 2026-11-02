@@ -4889,7 +4889,6 @@ void sub_29837(void)
       }
       vC = (int16_t)sub_2A9A5(word_1998F8, (int16_t)v_t);
           Hook150_1E24A8();   /* 1.50 29998: call sub_1E24A8 */
-      { extern void PortDebug_Message(const char *); static int dbgn; char dbg[120]; if ( ++dbgn < 60 ) { sprintf(dbg, "DBG29837 ship=%d t=%d vC=%d v4=%d m61=%d pos=%d,%d dir=%d", word_1998F8, (int16_t)v_t, vC, v4, *(int16_t *)(SHIP_29837(word_1998F8) + 61), SHIP_29837(word_1998F8)[33], SHIP_29837(word_1998F8)[34], SHIP_29837(word_1998F8)[35]); PortDebug_Message(dbg); } }   /* TEMP */
       if ( vC )
         v4 = 0;
       else

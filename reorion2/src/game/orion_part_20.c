@@ -4484,6 +4484,11 @@ int16_t sub_1344B0(int16_t *a1, int16_t *a2, int a3, int a4, int a5, int a6, int
   int16_t v9; // [esp+10h] [ebp-Ch]
   int16_t v10; // [esp+14h] [ebp-8h]
 
+  a3 = (int16_t)a3;   /* the original reads words only */
+  a4 = (int16_t)a4;
+  a5 = (int16_t)a5;
+  a6 = (int16_t)a6;
+  a7 = (int16_t)a7;
   v8 = a1;
   if ( a7 > 0 )
   {

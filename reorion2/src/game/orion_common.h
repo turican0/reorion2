@@ -11984,7 +11984,7 @@ void sub_A1157(int a1, int16_t a2);
 int sub_A11C0(int16_t a1, int16_t a2, int16_t a3, int16_t a4, int a5, int a6);
 int sub_A1299(int16_t a1, int16_t a2, int16_t a3, int16_t a4, int a5);
 char sub_A1341(int16_t a1);
-int sub_A13B0(int16_t a1, int a2, int16_t a3);
+int sub_A13B0(int16_t a1, int a2, int16_t a3, int a4);
 void sub_A1455();
 int sub_A162D(); // weak
 // void sub_A163A(int16_t a1, int a2);

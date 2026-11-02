@@ -725,7 +725,7 @@ void sub_B1458()
       if ( (word_19DEAA == word_1828AC[(int16_t)(word_1828AA[0] - 49)]
          || word_1828AA[0] != 49 && word_1828AC[v0] == -10 && word_19DEAA == word_1828AA[v0]
          || v0 < 6 && word_1828AE[v0] == -10 && word_19DEAA == word_1828AE[v0])
-        && word_1828BE >= word_1827C0
+        && word_1828BE >= word_1827C0[0]
         && word_1828BE <= word_1827CC
         && word_1828AC[v0] != -1 )
       {
@@ -2175,7 +2175,7 @@ void sub_B306F()
        && word_1828AE[v1] == -10
        && (word_19DEAA == word_1828AC[v1] || word_19DEAA == word_1828AE[v1])
        && (v2 == v1 + 1 || v1 == v2))
-      && word_1828BE >= word_1827C0
+      && word_1828BE >= word_1827C0[0]
       && word_1828BE <= word_1827CC
       && word_1828AC[v1] != -1 )
     {

@@ -1161,7 +1161,7 @@ void sub_A080D()
         {
           v14 = v16;
           v15 = sub_79917();
-          sub_A13B0(word_1906C2[6 * v0], v15, v14);
+          sub_A13B0(word_1906C2[6 * v0], v15, v14, v18);   /* A09A4 ecx = var_10 */
         }
       }
     }
@@ -1710,7 +1710,7 @@ char sub_A1341( int a1)
 
 
 //----- (000A13B0) --------------------------------------------------------
-int sub_A13B0( int a1, int a2, int a3)
+int sub_A13B0( int a1, int a2, int a3, int a4)
 {
   int16_t v3; // di
   int16_t v5; // bx
