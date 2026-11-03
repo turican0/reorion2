@@ -1654,7 +1654,8 @@ int Hook150_1E2CF9(int owner)
    level in sub_4AA36); w > 45 only asserts in 1.50 */
 int Hook150_1EDD23(int t, int w, int mode)
 {
-  return sub_1EDD23((unsigned int)t, (unsigned int)w, mode, 0);
+  /* the generated sub_1EDD23 reads the mode (ecx) from its 4th parameter; the 3rd is not used */
+  return sub_1EDD23((unsigned int)t, (unsigned int)w, mode, mode);
 }
 
 //----- (001E4717) --------------------------------------------------------

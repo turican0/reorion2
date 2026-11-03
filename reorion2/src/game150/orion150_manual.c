@@ -624,6 +624,7 @@ _WORD *sub_1ECCDF(int a1, const char *a2, ...)
     va32[i] = (uint32_t)va_arg(va, uintptr_t);
   va_end(va);
   Vsnprintf150(buf, sizeof(buf), a2, va32);
+  PortDebug_Backtrace("sub_1ECCDF", 10);   /* who reached the block's fatal check */
   PortDebug_Message(buf);
   exit(1);
   return 0;
