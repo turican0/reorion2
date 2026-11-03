@@ -14127,6 +14127,7 @@ int sub_49ED1( int a1, _WORD *a2, _WORD *a3)
   int64_t v5; // rax
   uint8_t v6; // cl
 
+  a1 = (int16_t)a1;   /* 49EDC test di, di */
   v5 = 0;
   if ( a1 )
   {

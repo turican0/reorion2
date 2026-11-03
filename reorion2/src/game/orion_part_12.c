@@ -4991,7 +4991,7 @@ void sub_C1B68()
       v12 = dword_197F9C + 129 * word_19FA26;
       v10 = (char *)sub_CDF5C(801);
       v11 = sprintf(v13, v10, (char *)(intptr_t)v12);
-      sub_BAFC9(4u, SBYTE4(v11));
+      sub_BAFC9(4u, 1);   /* C1D3A mov edx, 1 */
       sub_1210FD(320, 20, (int)v13);
       return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0xC12A4 je epilog funkce */
     }

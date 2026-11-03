@@ -2904,7 +2904,7 @@ void sub_D94B3(int a1, int a2, int a3, int a4)
                         SHIWORD(a24),
                         (int)v41,
                         BYTE2(a16),
-                        *(_BYTE **)((char *)&a25 + 2),
+                        (_BYTE *)(uintptr_t)*(uint32_t *)((char *)&a25 + 2),   /* 32-bit slot of the frame */
                         &v43[*(_DWORD *)((char *)&a23 + 14)],
                         v26,
                         v37);
