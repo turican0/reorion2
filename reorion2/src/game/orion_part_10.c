@@ -137,6 +137,7 @@ void sub_9F712(int a1, int16_t *a2)
   int v25; // [esp+394h] [ebp+7Ah]
   char v26; // [esp+398h] [ebp+7Eh]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = a1;
   v3 = -1;
   LOWORD(v4) = sub_9EA3B(a1, a2);
@@ -1483,6 +1484,7 @@ int sub_A0FA8(int16_t *a1, int a2, int a3)
   int v13; // eax
   int v14; // esi
   int16_t v15; // dx
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   /* vlna 151: [ebp-78h] je 100bajtovy BUFFER - asm ma `enter 78h, 0` a hned
      `sub_127678(&var_78, 64h, 0)`, a cte ho jako pole slov
      (`movsx eax, word ptr [esi+ebp-78h]`). IDA z nej pojmenovala jen prvni
@@ -1573,6 +1575,7 @@ void sub_A1157(int a1, int a2)
   int v5; // ebx
   int16_t v6; // [esp+0h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   memset(a1, -1, 1000);
   v4 = 0;
   sub_77FE9(a2);
@@ -1612,6 +1615,9 @@ int sub_A11C0( int a1, int a2, int a3, int a4, int a5, int a6)
   int v18; // [esp+18h] [ebp-8h]
   int v19; // [esp+1Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   v7 = 7 - a6;
   if ( 7 - (int16_t)a6 <= 0 )
     v7 = 0;
@@ -1660,6 +1666,7 @@ int sub_A1299( int a1, int a2, int a3, int a4, int a5)
   int v8; // edi
   int v9; // esi
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v6 = 3 - (int16_t)sub_79917();
   if ( v6 <= 0 )
     LOWORD(v6) = 0;
@@ -1726,6 +1733,7 @@ int sub_A13B0( int a1, int a2, int a3, int a4)
   uint16_t *v16; // [esp+5Ch] [ebp-8h]
   int v17; // [esp+60h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v3 = a2;
   LOWORD(a2) = *(int16_t *)((char *)&word_1975D4 + 5 * a1);
@@ -1868,6 +1876,7 @@ void sub_A163A( int a1, int a2)
   int v6; // eax
   int v7; // esi
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   sub_77FF5(a1);
   v3 = 0;
   for ( i = 0; i < 67 && !v3; ++i )
@@ -1958,6 +1967,7 @@ int sub_A1762( int a1, int a2, void *a3, int a4)
   _BOOL1 v25; // [esp+40h] [ebp-8h]
   _BOOL1 v26; // [esp+44h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v23 = sub_7926C(30);
   v22 = sub_1247A0(5u) + 1;
   v18 = 113 * a1;
@@ -2052,6 +2062,8 @@ void sub_A1A23( int a1, int a2, int a3)
   _BYTE v9[16]; // [esp+0h] [ebp-14h] BYREF
   int16_t v10[2]; // [esp+10h] [ebp-4h] BYREF
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v10[1] = -1;
   v10[0] = a2;
   if ( a3 )
@@ -3028,6 +3040,8 @@ int sub_A2C11( int a1, int a2, int a3)
   int16_t v6; // di
   _WORD *v7; // ebx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v5 = 3753 * a3;
   v6 = *(uint8_t *)(v5 + (uint8_t*)dword_197F98 + 38);
@@ -3047,6 +3061,7 @@ char sub_A2C66( int a1, int a2, int a3, int a4, int a5, int a6)
   int16_t v8; // si
   char result; // al
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v7 = a2 + a4 + 233;
   v8 = a5 + a3 + 243;
   if ( word_199A08 == 29 )
@@ -3081,6 +3096,7 @@ void sub_A2D2D(int a1, int a2, int a3)
   int v3; // edx
   int16_t v4; // di
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v3 = 3753 * a3;
   v4 = *(uint8_t *)(v3 + (uint8_t*)dword_197F98 + 38);
@@ -3116,6 +3132,8 @@ _DWORD *sub_A2D7C( int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
   int16_t v28; // [esp+34h] [ebp-8h]
   int16_t v29; // [esp+38h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v8 = 17 * a1;
   v9 = 14 * a2 + dword_193184;
   v28 = *(uint8_t *)(v9 + 7);
@@ -3644,6 +3662,7 @@ int sub_A3A15( int a1, int a2, int a3, int a4, int a5)
   int16_t v25; // [esp+10h] [ebp-8h]
   char v26; // [esp+14h] [ebp-4h]
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v6 = *(_WORD *)((uint8_t*)dword_1930D4 + 17 * a1);
   v26 = 0;
@@ -3926,6 +3945,7 @@ void sub_A3F21(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 //----- (000A3FE6) --------------------------------------------------------
 void sub_A3FE6( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   if ( sub_A4426(a1) )
   {
     word_1999C6 = a1;
@@ -4538,6 +4558,10 @@ int sub_A4C0F(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
   int16_t v8; // [var_8]
   int16_t v9; // [var_4]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   return sub_A2123((int16_t)a1, (int16_t)a2, (int16_t)a3, (int16_t)a4, (int16_t)a5, (int16_t)a6, (int16_t)a7, &v8, &v9, 1);
 }
 
@@ -4690,6 +4714,7 @@ unsigned int sub_A4F1F( int a1, int a2, int a3, int a4, int a5, _WORD *a6)
   int16_t v8; // [esp+0h] [ebp-8h] BYREF
   int16_t v9; // [esp+4h] [ebp-4h] BYREF
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v6 = a1;
   sub_A3FE6(a1);
@@ -4975,6 +5000,7 @@ void sub_A53DC( int a1, int a2, int a3, int a4)
   int16_t v21; // [esp+2Ch] [ebp-8h]
   uint8_t v22; // [esp+30h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v18 = *(_WORD *)dword_1BC2A8;
   v20 = *(_WORD *)(dword_1BC2A8 + 2);
@@ -5061,6 +5087,7 @@ void sub_A54F2( int a1, int a2, int a3, int a4)
   int16_t v36; // [esp+48h] [ebp-8h]
   uint8_t v37; // [esp+4Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v32 = *(_WORD *)dword_1BC2A8;
   if ( a1 < SHIWORD(dword_1BBA4A) )
   {
@@ -6145,6 +6172,8 @@ char sub_A6B9C(
   int v78; // [esp+28h] [ebp-8h]
   int v79; // [esp+2Ch] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   v75 = a1;
   v76 = a2;
   v78 = a3;
@@ -6503,6 +6532,7 @@ int sub_A7364( int a1, int a2, int a3, int a4, int a5, int a6)
 {
   int v7; // ebx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   v7 = (a6 << 6) + (a4 << 7) + 4 * a3;
@@ -6517,6 +6547,7 @@ int sub_A73B7( int a1, int a2, int a3, int a4, int a5)
 {
   int v6; // ebx
 
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v6 = (a5 << 6) + 4 * a3;
   sub_12B753(*(int *)((char *)&dword_19D390 + v6), a4 % (*(int16_t *)(*(int *)((char *)&dword_19D390 + v6) + 6) - 1));
@@ -7574,6 +7605,8 @@ int sub_A9179(int result, int a2, int a3, int a4, int a5, int a6)
 {
   int16_t v6; // si
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   v6 = result;
   if ( word_18248E < 35 && (a3 > 0 || a4 > 0 || a5 > 0) )
   {
@@ -7757,6 +7790,8 @@ int sub_A943A(int a1, int a2, char a3, int a4)
 //----- (000A947F) --------------------------------------------------------
 _BOOL1 sub_A947F( int a1, int a2)
 {
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   return ((int16_t)sub_A956C(a2, a1) + 4) % 16 < 8;
 }
 
@@ -7796,6 +7831,8 @@ int sub_A94FC( int a1, int a2, int a3)
   int v5; // [esp+0h] [ebp-8h] BYREF
   int v6; // [esp+4h] [ebp-4h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   sub_49ED1(a3, &v6, &v5);
   return (int16_t)sub_1384B9(
@@ -7816,6 +7853,7 @@ int sub_A956C( int a1, int a2)
   int v6; // [esp+8h] [ebp-8h] BYREF
   int v7; // [esp+Ch] [ebp-4h] BYREF
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   v2 = a1;
   sub_49ED1(a1, &v4, &v7);
@@ -7994,6 +8032,7 @@ int sub_A97F7( int a1, int a2, int a3, int a4)
   int v6; // eax
   int v8; // ecx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   if ( a2 >= 4 )
   {
@@ -8081,6 +8120,7 @@ void sub_A999F(int a1, int a2, int a3, int a4, int a5)
   int v15; // [esp+Ch] [ebp-8h]
   int v16; // [esp+10h] [ebp-4h]
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v12 = a1;   /* wave 181: v12 saved by the prologue (push eax) */
   v15 = a4;
   v6 = *(uint8_t *)(313 * a3 + dword_192864 + 37);
@@ -8133,6 +8173,7 @@ int16_t sub_A9AAD( int a1)
 //----- (000A9AC8) --------------------------------------------------------
 int16_t sub_A9AC8( int a1)
 {
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   /* wave 184: A9ADB jmp A9ABF - dword_A65FC = 5 words */
   static const int16_t kA65FC[5] = { 4, 5, 6, 7, 7 };
   _WORD v2[5]; // [ebp-0Ch]
@@ -8189,6 +8230,7 @@ void sub_A9AED( int a1, int a2, int a3, int a4, int a5, int a6, int a7)
   int v52; // [esp+58h] [ebp-8h]
   int v53; // [esp+5Ch] [ebp-4h] BYREF
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   LOWORD(v7) = sub_A9F9E(a6);
   v50 = v7;
   v8 = sub_A9FCB(a6);   /* A9B0C mov [var_30], eax */
@@ -8359,6 +8401,7 @@ int16_t sub_A9F9E( int a1)
 //----- (000A9FCB) --------------------------------------------------------
 int16_t sub_A9FCB(int a1)
 {
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   /* wave 184: A9FEA jmp A9FBD - word_A6626 (16 words, 8 of them align bytes) */
   static const int16_t kA6626[16] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3 };
   _WORD v2[16];
@@ -8470,6 +8513,8 @@ void sub_AA127(int a1, int a2, int a3, int a4)
   int16_t v20, v4;            // [ebp-20h] [ebp-4]
   int16_t v8, vC, v_c;
 
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v1C = *(uint8_t *)(dword_192864 + 313 * v_si + 37);
   v14 = sub_A9AAD(v1C);
   v18 = 0;
@@ -8520,6 +8565,9 @@ char sub_AA281( int a1, int a2, int a3, int a4, int a5)
   int v17; // [esp+Ch] [ebp-8h]
   int v18; // [esp+10h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v18 = a3;
   v17 = a4;
   v6 = a3;
@@ -8579,6 +8627,7 @@ _DWORD *sub_AA38D( int a1, int a2, int a3, int a4, int a5)
   int16_t v22; // [esp+Ch] [ebp-4h]
   int v23; // [esp+20h] [ebp+10h]
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
   v19 = a2;
   v5 = sub_A9F9E(a4);
@@ -9589,6 +9638,8 @@ void sub_AB850( int a1, int a2)
   int v3; // eax
   int16_t v4; // [esp+0h] [ebp-8h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v2 = a1 + 1;
   v3 = (int16_t)(a1 - 1);
   v4 = v3;
@@ -9842,6 +9893,7 @@ void sub_ABFF3( int a1, int a2)
   int v20; // [esp+1Ch] [ebp-8h]
   char v21; // [esp+20h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v19 = a2;
   v21 = 0;
   v18 = 1000;
@@ -10213,6 +10265,7 @@ void sub_AC87A(int a1, int a2)
   int v_esi, v_r;
   uint8_t *v_s;
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   if ( word_1998F6 != 1 || word_1998E0 )
     return;
   if ( !(int16_t)sub_339A7(v_di, 0, 0) )   /* AC8A6 - the target */
@@ -10299,6 +10352,7 @@ void sub_ACB4A( int a1, unsigned int a2)
   int v18; // [esp+28h] [ebp-4h] BYREF
   int v19; // [ebp-28h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v4 = a1;
   v5 = sub_33B19(a1);   /* wave 184: ACB60 test ax, ax */
   if ( !v5 )
@@ -10456,6 +10510,7 @@ _BYTE *sub_ACE08( int a1, int a2, int a3)
   int v25; // [esp+10h] [ebp-8h] BYREF
   int v26; // [esp+14h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v5 = 313 * a1;
   v21 = v5;
   LOWORD(v5) = *(uint8_t *)(v5 + dword_192864 + 66);
@@ -10570,6 +10625,7 @@ int sub_ACF83( int a1, int a2, int a3)
   int v45; // [esp+44h] [ebp-8h]
   int v46; // [esp+48h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v29 = a1;   /* wave 181: v29 saved by the prologue (push eax) */
   a1 = (int16_t)a1;   /* wave 181: the original reads only the low word (movsx) */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
@@ -10855,6 +10911,7 @@ void sub_AD580( int a1, int a2)
   int v23; // [esp+8h] [ebp-8h]
   int v24; // [esp+Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v23 = a2;
   sub_1112EC(dword_192ED4, 80);
   v3 = sub_12DAA4(80, 80);
@@ -11062,6 +11119,8 @@ _BOOL1 sub_AD98A( int a1, int a2, int a3)
   int v34; // [esp+3Ch] [ebp-8h]
   int v35; // [esp+40h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v33 = a2;
   v28 = a3;
   if ( word_1998F6 == 1 && !word_1998E0 )
@@ -11209,6 +11268,8 @@ void sub_ADD40( int a1, int a2, int a3, int a4, int a5)
   int v8; // [esp+Ch] [ebp-8h]
   int16_t v9; // [esp+10h] [ebp-4h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   v8 = a2;
   v6 = a4;
   if ( a4 >= 100 )
@@ -11350,6 +11411,7 @@ void sub_ADE18(int a1, int a2, int a3, int a4, int a5)
   int v114; // [esp+2FCh] [ebp-8h]
   char v115; // [esp+300h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v89 = a1;
   v88 = a2;
   v87 = a3;
@@ -11964,6 +12026,9 @@ void sub_AEC7B( int a1, int a2, int a3, int a4, int a5)
   int64_t v67; // [esp+5Ch] [ebp-8h] BYREF
   _DWORD savedregs[3]; // [esp+64h] [ebp+0h]
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v63 = a2;
   HIDWORD(v61) = a4;
   LODWORD(v66) = 0;
@@ -12307,6 +12372,7 @@ void sub_AF37E( int a1, int a2, int a3, int a4)
   int16_t v16; // [esp+8h] [ebp-14h]
   int16_t v18; // [esp+14h] [ebp-8h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v15 = 8;
   v18 = *(_WORD *)(dword_192B14 + 26 * a1 + 6);
   v5 = 0;
@@ -12502,6 +12568,7 @@ int sub_AF67A(int a1, int a2)
   int v3; // edx
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = a1;
   v3 = j___clock(a1, a2, a1);
   result = v2;
@@ -12551,6 +12618,8 @@ int sub_AF6DC( int a1, int a2, int a3)
   _BYTE v10[28]; // [esp+0h] [ebp-20h] BYREF
   int v11; // [esp+1Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v5 = a3 - 1;
   v6 = (char *)sub_CDF5C(201);
@@ -12718,6 +12787,10 @@ int sub_AFA5C(int a1, int a2, int a3, int a4)
   sub_120E60(2);
   sub_AFAB9((int)byte_19DA6C, a4);
   sub_103915(3, (int16_t)a1, (int16_t)a2, (int)byte_19DA6C, (int16_t)a3);   /* wave 182: 0xAFAA2 */
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   return sub_120CCB(3, (int)&unk_1827AD);
 }
 // 103915: using guessed type _DWORD sub_103915(int16_t);
@@ -12752,6 +12825,7 @@ int sub_AFB0D(int a1, int a2, int a3, int a4)
   char v5[1332]; // [ebp-548h]
   char v6[20]; // [ebp-14h]
 
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   sub_A6547(v6);
   sub_120CCB(3, (int)&unk_1827AD);
   sub_120E8C(1);
@@ -13017,6 +13091,7 @@ int sub_AFEFC(int a1, int a2, int a3)
   char v3; // al
   int v4; // eax
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   word_1827CE[0] = -2;
   word_1827D0 = -3;
   if ( g_orion150 && (dword_19306C[14] & 8) )   /* 1.50 AFF11..AFF14: call sub_16948F (cave) - dword 1827CE = 0FFFEFFFFh */
