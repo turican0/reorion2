@@ -4764,7 +4764,8 @@ int16_t sub_123EA7()
 //----- (00123FFB) --------------------------------------------------------
 int sub_123FFB()
 {
-  return *(int *)(12 * (dword_1BBA38 >> 16) + dword_1B9204) >> 16;
+  /* wave 185: GAMEPLAY point - the region comes from the mouse interrupt (raw position) */
+  return (int)PortGr_Value(25, (uint32_t)(*(int *)(12 * (dword_1BBA38 >> 16) + dword_1B9204) >> 16));
 }
 // 1B9204: using guessed type int dword_1B9204;
 // 1BBA38: using guessed type int dword_1BBA38;
@@ -4773,7 +4774,8 @@ int sub_123FFB()
 //----- (00124039) --------------------------------------------------------
 int sub_124039()
 {
-  return *(int16_t *)(12 * (dword_1BBA38 >> 16) + dword_1B9204);
+  /* wave 185: GAMEPLAY point - the region comes from the mouse interrupt (raw position) */
+  return (int)PortGr_Value(24, (uint32_t)*(int16_t *)(12 * (dword_1BBA38 >> 16) + dword_1B9204));
 }
 // 1B9204: using guessed type int dword_1B9204;
 // 1BBA38: using guessed type int dword_1BBA38;

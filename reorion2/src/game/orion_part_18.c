@@ -528,6 +528,7 @@ void sub_10DB17(int a1, int a2, unsigned int a3)
   char v6; // [esp+3h] [ebp-51h] BYREF
   int16_t v7[40]; // [esp+4h] [ebp-50h] BYREF
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v5 = a1;   /* wave 181: v5 saved by the prologue (push eax) */
   v7[0] = word_17A3A0;
   v3 = sub_10F7A1(a3, word_19999C);
@@ -1983,6 +1984,7 @@ char sub_10F8B7( int a1)
   int v3; // ebx
   char result; // al
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   do
   {

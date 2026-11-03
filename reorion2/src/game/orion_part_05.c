@@ -5405,6 +5405,7 @@ int sub_6AD7C(int result, _WORD *a2, _WORD *a3, int16_t *a4)
   int v9; // eax
   char *v10; // eax
 
+  result = (int16_t)result;   /* wave 185: the original reads only the low word */
   v4 = result;
   if ( (_WORD)result == word_19B9B2 )
   {
@@ -5481,6 +5482,7 @@ char sub_6AE96( int a1)
   int16_t v7; // bx
   int16_t v8; // dx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 3753 * word_19999C;
   v3 = *(uint8_t *)((uint8_t*)dword_197F98 + v2 + 37);
   if ( a1 == word_199866 )

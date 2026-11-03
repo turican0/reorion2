@@ -5316,7 +5316,7 @@ int sub_1478EF(int result, unsigned int a2, int a3, char *a4)
     v8 = a2 & 3;
     qmemcpy(v6, v7, v8);
     a4 = &v6[v8];
-    v4 = &v7[v8 - a2 - a2];
+    v4 = &v7[(int)(v8 - a2 - a2)];   /* 147910 sub esi, edx (x2) */
     --a3;
   }
   while ( a3 );

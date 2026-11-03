@@ -692,6 +692,7 @@ int sub_1031C6(int x, int y, int w, int h, int str, int a_word)
 {
   w = (int16_t)w;   /* wave 185: the original reads only the low word */
   h = (int16_t)h;   /* wave 185: the original reads only the low word */
+  x = (int16_t)x;   /* wave 185: the original reads only the low word */
   return sub_102FD8((int16_t)x, (int16_t)((int16_t)y + (int16_t)h / 2),
                     (int16_t)w, (int16_t)h, str, a_word, 0, 0, 1);
 }
@@ -704,6 +705,7 @@ void sub_103200(int a1, int a2, int a3)
 {
   sub_102FD8(0, 0, 0, 0, a1, a2, a3, 0, 1);
   a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   return;   /* vlna 79: JUMPOUT byl NO-OP, cil 0x103235 je epilog funkce */
 }
 // 102FD8: using guessed type _DWORD sub_102FD8(_DWORD, int16_t, _DWORD, char, char);

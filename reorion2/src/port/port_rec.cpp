@@ -881,14 +881,15 @@ void PortRec_Flush(void) { FlushEvents(); }
 // 0-7 tick reads (0 sub_12C2A0, 3 the wait loop of sub_12C2C6), 8 mouse x, 9 y,
 // 10 click x, 11 click y, 12 click buttons, 13 click flag 2, 14 click flag,
 // 15 buttons now, 16 key ready, 17 key read, 18 key peek, 19/20 AIL ms, 21 time,
-// 22 clock (old records have none: REORION2_GAMEPLAY_CLOCK=<clock.txt of a replay>),
-// 23 BIOS tick read by the 1.50 block (old records: the tick the game saw last).
+// 22 clock, 23 BIOS tick read by the 1.50 block, 24 / 25 cursor shape / field of the region
+// under the mouse (sub_124039 / sub_123FFB - the mouse interrupt picks the region).
+// Sources an older record has not: REORION2_GAMEPLAY_LIVE=<live.txt of a DOSBox replay>.
 // REORION2_GAMEPLAY_FRAMES=<dir>: frames at the original's points - c<n>.raw at the
 // frame wait after the n-th click taken, t<n>.raw every 200th frame wait - with the
 // cursor position (2 x int16) after the pixels, as engine.cpp gr_dump writes them.
 extern "C" void PortDebug_RngRingFlush();   // reorion2.cpp, REORION2_RNG_RING
 namespace {
-enum { kGrSrc = 24, kGrClickFlag = 14, kGrWaitSrc = 3, kGrClock = 22, kGrBlockTick = 23, kGrTickSrcs = 8 };
+enum { kGrSrc = 26, kGrClickFlag = 14, kGrWaitSrc = 3, kGrClock = 22, kGrBlockTick = 23, kGrTickSrcs = 8 };
 uint32_t g_grLastTick = 0;
 struct GrRun { uint32_t v; uint64_t n; };
 std::vector<GrRun> g_grRuns[kGrSrc];
@@ -920,7 +921,7 @@ bool GrOn()
             std::fclose(in);
         };
         load(f);
-        if (const char* c = SDL_getenv("REORION2_GAMEPLAY_CLOCK"); c && *c) {
+        if (const char* c = SDL_getenv("REORION2_GAMEPLAY_LIVE"); c && *c) {
             if (FILE* fc = std::fopen(c, "rt")) load(fc);
             else Log("GAMEPLAY: cannot read %s", c);
         }
@@ -1043,6 +1044,45 @@ int PortGr_StartFrom(void)
 // wave 184: reads of source s so far (debug probes)
 unsigned long long PortGr_Reads(int s) { return (s >= 0 && s < kGrSrc) ? g_grReads[s] : 0; }
 
+// wave 185: the value the next read of source s gets, without taking it (engine.cpp gr_peek)
+namespace {
+int64_t GrPeek(int s)
+{
+    if (g_grEnd[s]) return -1;
+    if (g_grLeft[s]) return g_grRuns[s][g_grPos[s] - 1].v;
+    return g_grPos[s] < g_grRuns[s].size() ? (int64_t)g_grRuns[s][g_grPos[s]].v : -1;
+}
+int16_t g_grMx = -1, g_grMy = -1;   // the emulated mouse in game pixels (-1 not yet)
+}  // namespace
+extern "C" void PortDos_GrMouseMoved(void);
+
+// wave 185: as in my DOSBox the emulated mouse follows the recorded position the game
+// reads (sources 8, 9) and goes to the click (10, 11) when the click flag is taken. The
+// mouse interrupt then stores the raw position (dword_1BBA38 / 1BBA36) and draws the
+// cursor; what the game takes from it (sources 24, 25) is replayed. DOSBox raises the
+// interrupt at once in a replay (mouse.cpp g_mouseGameplay), so the handler runs here.
+static void GrMouseFollow(int src, uint32_t v)
+{
+    if (src == 8) g_grMx = (int16_t)v;
+    else if (src == 9) g_grMy = (int16_t)v;
+    else {
+        const int64_t cx = GrPeek(10), cy = GrPeek(11);
+        if (cx < 0 || cy < 0) return;
+        g_grMx = (int16_t)cx;
+        g_grMy = (int16_t)cy;
+    }
+    if (g_grMx >= 0 && g_grMy >= 0) PortDos_GrMouseMoved();
+}
+
+// 1 and the emulated mouse (game pixels) while GAMEPLAY drives it
+int PortGr_Mouse(int* x, int* y)
+{
+    if (!GrOn() || g_grMx < 0 || g_grMy < 0) return 0;
+    *x = g_grMx;
+    *y = g_grMy;
+    return 1;
+}
+
 // one read at point src of the original: its recorded value, or live after the record
 uint32_t PortGr_Value(int src, uint32_t live)
 {
@@ -1054,6 +1094,7 @@ uint32_t PortGr_Value(int src, uint32_t live)
     if (src < kGrTickSrcs) g_grLastTick = r->v;
     PortDebug_GrTrace(src, r->v);   // wave 184: REORION2_GR_TRACE
     if (src == kGrClickFlag && (r->v & 0xFFFF)) g_grClickDump = true;
+    if (src == 8 || src == 9 || (src == kGrClickFlag && (r->v & 0xFFFF))) GrMouseFollow(src, r->v);
     return r->v;
 }
 

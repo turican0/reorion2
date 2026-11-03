@@ -1064,6 +1064,7 @@ void sub_C702E( int a1, int16_t *a2)
   int16_t v6; // [esp+0h] [ebp-8h] BYREF
   int16_t v7; // [esp+4h] [ebp-4h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   if ( word_199A08 )
     byte_1831C4 = 0;
   word_1A123E = sub_124C3B();
@@ -1694,8 +1695,9 @@ LABEL_40:
     {
       static unsigned int s_tick;
       unsigned int now;
-      while ( (now = PortDos_BiosTick()) == s_tick )
+      while ( !PortGr_Active() && (now = PortDos_BiosTick()) == s_tick )   /* wave 185: not in a replay */
         PortVga_WaitVsyncSlow();
+      now = PortDos_BiosTick();
       s_tick = now;
     }
   }
@@ -3266,6 +3268,7 @@ int64_t sub_C9AA4( int a1, int a2, int a3)
   _BYTE *v17; // [esp-8h] [ebp-10h]
   _BYTE *v18; // [esp-8h] [ebp-10h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v4 = (_BYTE *)sub_CDF5C(12);
   word_1A11DA = sub_115478(word_1A123A + 37, word_1A123C + 149, a1, a2 + 1, a1, a2, 207, 13, a3, v4, 0);
   v15 = (_BYTE *)sub_CDF5C(137);
@@ -4068,6 +4071,7 @@ void sub_CADA0( int a1, _WORD *a2)
 {
   sub_10FE41((int)&unk_1A11F8 + 18 * word_1831C2);
   ++word_1831C2;
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   sub_CADC8(a1, a2);
 }
 // 1831C2: using guessed type int16_t word_1831C2;

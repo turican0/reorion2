@@ -32,6 +32,7 @@ char sub_88B5B( int a1, char *a2, int16_t **a3)
   int v29; // [esp+50h] [ebp-8h]
   char v30; // [esp+54h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v19 = a2;
   v30 = 0;
   v23 = 200;
@@ -3180,6 +3181,7 @@ char sub_8C527( int a1)
   char v4; // dl
   int16_t v5; // cx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = sub_1247A0(0xAu);
   v3 = 113 * a1 + dword_19306C;
   v4 = 0;
@@ -3389,6 +3391,7 @@ int sub_8C807( int a1)
   char v4; // bl
   _BYTE v6[8]; // [esp+0h] [ebp-8h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   do
   {
@@ -5645,6 +5648,7 @@ int sub_8EBFE( int a1)
   char v11; // cl
   _BYTE v12[8]; // [esp+0h] [ebp-8h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   do
   {
@@ -6286,6 +6290,7 @@ void sub_8F7DF( int a1)
   char v11; // cl
   _BYTE v12[8]; // [esp+0h] [ebp-8h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   do
   {
@@ -7308,6 +7313,7 @@ int sub_9070A( int a1, int a2, int a3, int a4)
 {
   int16_t v5; // [esp-4h] [ebp-10h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   if ( word_19C540 == word_19C53E )
     v5 = (uint8_t)byte_19C548 + 110;
@@ -7375,6 +7381,7 @@ int16_t sub_9086B( int a1)
   int v4; // edx
   int v5; // edx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 28 * a1;
   /* vlna 156: word_192FEC uz je adresa pole, & se zahazuje */
   *(int16_t *)((char *)word_192FEC + v2) = -1000;
@@ -7455,6 +7462,8 @@ void sub_90945( int a1, int a2)
   int v9; // [esp-4h] [ebp-8h]
   int v10; // [esp+0h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v4 = 0;
   do
   {
@@ -8307,6 +8316,7 @@ int sub_918F4( int a1)
   int v2; // ebx
   int16_t i; // dx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   for ( i = 0; i < 5; ++i )
   {

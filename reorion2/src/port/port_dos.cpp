@@ -352,11 +352,26 @@ static void ComputeVirtualMouse(int& vx, int& vy, int& buttons)
         LogRealMouse(vx, vy, buttons);
 }
 
+extern "C" int PortGr_Mouse(int* x, int* y);
+
 static void ComputeVirtualMouseImpl(int& vx, int& vy, int& buttons)
 {
     Port::Mouse::Poll();
     const Port::Mouse::State& s = Port::Mouse::GetState();
     buttons = (s.leftButton ? 1 : 0) | (s.rightButton ? 2 : 0);
+
+    {   // wave 185: GAMEPLAY - the recorded position (port_rec.cpp GrMouseFollow), no buttons
+        int gx = 0, gy = 0;
+        if (PortGr_Mouse(&gx, &gy)) {
+            const int maxX = (g_mouseMaxX > 0 ? g_mouseMaxX : 1278);
+            vx = gx * 2;               // the game halves X (sub_1236D1)
+            vy = gy;
+            if (vx > maxX) vx = maxX;
+            if (g_mouseMaxY > 0 && vy > g_mouseMaxY) vy = g_mouseMaxY;
+            buttons = 0;
+            return;
+        }
+    }
 
     // SKRIPTOVANA MYS (vlna 62) - REORION2_CLICK="x,y@ms;x,y@ms;..."
     // Souradnice se zadavaji v HERNICH pixelech (640x480), cas v ms od startu.
@@ -689,7 +704,21 @@ extern "C" int PortDos_Int386x(int intNum, const void* inRegs)
 // originale prave tam preruseni chodila).
 //   AX = maska udalosti, BX = stav tlacitek, CX = X (dvojnasobny rozsah),
 //   DX = Y, SI/DI = prirustky v "mickey" jednotkach.
+static int ServiceMouseImpl(void);
+
+// wave 185: GAMEPLAY moved the emulated mouse (port_rec.cpp GrMouseFollow) - the interrupt
+// at once, as my DOSBox raises it in a replay (mouse.cpp g_mouseGameplay)
+extern "C" void PortDos_GrMouseMoved(void)
+{
+    ServiceMouseImpl();
+}
+
 extern "C" void PortDos_ServiceMouse(void)
+{
+    ServiceMouseImpl();
+}
+
+static int ServiceMouseImpl(void)
 {
     // REORION2_MOUSE_CALLBACK=0 emulaci preruseni vypne. Hodi se pri dumpu
     // snimku pro `compare_frames`: kdyz kurzor pri porovnani s dosboxem lezi
@@ -702,16 +731,16 @@ extern "C" void PortDos_ServiceMouse(void)
             s_on = (e && *e == '0') ? 0 : 1;
         }
         if (!s_on)
-            return;
+            return 0;
     }
     if (!g_mouseHandler)
-        return;
+        return 0;
     // Zabrana proti rekurzi: kreslici cast rutiny muze skoncit dalsim
     // Present() a tedy dalsim volanim teto funkce (herni rutina ma vlastni
     // zabranu, ale nespolehame se na ni).
     static bool s_inService = false;
     if (s_inService)
-        return;
+        return 0;
 
     int vx = 0, vy = 0, buttons = 0;
     ComputeVirtualMouse(vx, vy, buttons);
@@ -756,7 +785,7 @@ extern "C" void PortDos_ServiceMouse(void)
     // must wait, not be lost.
     const int deliverable = events & g_mouseMask;
     if (!deliverable)
-        return;
+        return events;
 
     {
         static int s_on = -1, s_calls = 0;
@@ -774,6 +803,7 @@ extern "C" void PortDos_ServiceMouse(void)
     s_inService = true;
     ((MouseCallback)(uintptr_t)g_mouseHandler)(events, buttons, vx, vy, dx, dy);
     s_inService = false;
+    return events;
 }
 
 unsigned int PortDos_BiosTick(void)

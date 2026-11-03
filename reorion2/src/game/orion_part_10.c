@@ -1615,6 +1615,7 @@ int sub_A11C0( int a1, int a2, int a3, int a4, int a5, int a6)
   int v18; // [esp+18h] [ebp-8h]
   int v19; // [esp+1Ch] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
@@ -1666,6 +1667,7 @@ int sub_A1299( int a1, int a2, int a3, int a4, int a5)
   int v8; // edi
   int v9; // esi
 
+  a4 = (int16_t)a4;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v6 = 3 - (int16_t)sub_79917();
   if ( v6 <= 0 )
@@ -2144,6 +2146,7 @@ int sub_A1B8E( int a1, int a2, int a3)
   int16_t i; // dx
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   for ( i = 0; i < 500; ++i )
   {
     result = dword_197F9C + 129 * i;
@@ -3096,6 +3099,7 @@ void sub_A2D2D(int a1, int a2, int a3)
   int v3; // edx
   int16_t v4; // di
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v3 = 3753 * a3;
@@ -4665,6 +4669,7 @@ void sub_A4E1B( int a1)
 {
   char v2[120]; // [esp+0h] [ebp-78h] BYREF
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   dword_193274 = (int)(_DWORD*)sub_110CEE((PoolMemType*)dword_19D214, 20);
   memset(dword_193274, 0, 20);
   sprintf(v2, "%d> %s", a1, (char *)(dword_19306C + 113 * a1));
@@ -6532,6 +6537,7 @@ int sub_A7364( int a1, int a2, int a3, int a4, int a5, int a6)
 {
   int v7; // ebx
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   a4 = (int16_t)a4;   /* wave 181: the original reads only the low word (movsx) */
@@ -8120,6 +8126,7 @@ void sub_A999F(int a1, int a2, int a3, int a4, int a5)
   int v15; // [esp+Ch] [ebp-8h]
   int v16; // [esp+10h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v12 = a1;   /* wave 181: v12 saved by the prologue (push eax) */
   v15 = a4;
@@ -12585,6 +12592,7 @@ int sub_AF692( int a1, int a2, int a3)
   int v4; // edx
   int result; // eax
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v4 = 0;
   do
   {

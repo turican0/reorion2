@@ -5,6 +5,7 @@
 extern "C" void PortWatchdog_Ping(void);
 // Emulace preruseni od myshi - viz komentar v Present() a port_dos.cpp.
 extern "C" void PortDos_ServiceMouse(void);
+extern "C" int PortGr_Active(void);   /* wave 185: port_rec.cpp, GAMEPLAY replay */
 #include "port_sound.h"
 #include "port_rec.h"
 
@@ -1566,6 +1567,12 @@ extern "C" {
     static void PortVga_WaitSliced(
         uint32_t totalMs)
     {
+        // wave 185: GAMEPLAY - the game's time comes from the record, real time
+        // means nothing: one picture and on (as DOSBOX_FASTVGA in my DOSBox)
+        if (PortGr_Active()) {
+            Port::Vga::Present();
+            return;
+        }
         // wave 183: the clock goes through record / replay - the number of
         // Present() calls (mouse service, audio timer) must be the same.
         const uint32_t end =

@@ -1479,7 +1479,7 @@ _BYTE *sub_F70EB(int a1, uint8_t *a2, int16_t *a3, char *a4, int a5)
       sub_126487((char *)dword_1AAEA4, v7);
     v9 = v6;
     v10 = v7;
-    v17 = &v23[-v18];
+    v17 = &v23[-(int)v18];   /* 32-bit wrap = step back */
     v11 = a4 + 1;
     v12 = v24;
     v6 = (int16_t *)(v18 + 1);
@@ -7725,6 +7725,7 @@ char sub_FE251(int a1, int a2)
   int v8; // [esp+4h] [ebp-Ch]
   char v9; // [esp+8h] [ebp-8h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v3 = (int16_t)a1;
   v8 = 3753 * (int16_t)a1;
   v4 = *(char *)(v8 + (uint8_t*)dword_197F98 + 1441);
@@ -8146,6 +8147,7 @@ char sub_FE86B(int a1, int16_t *a2)
   uint8_t v6; // al
   int v7; // eax
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v3 = (int16_t)a1;
   v4 = 3753 * (int16_t)a1;
   v5 = (uint8_t*)dword_197F98;
@@ -11343,6 +11345,7 @@ int sub_101B3C(int a1, int a2)
   int v4; // eax
   int v5; // ebx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v3 = *(int16_t *)(a1 + 1442);
   v4 = *(int16_t *)(3753 * a2 + (uint8_t*)dword_197F98 + 1442);
   if ( v3 < v4 )
@@ -11604,6 +11607,7 @@ void sub_101F82(int a1, int a2)
   int v9; // ecx
   int v10; // [esp+0h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v3 = a2;
   LOWORD(a2) = *(_WORD *)(a1 + 1476);
   HIWORD(v4) = HIWORD(dword_197F98);

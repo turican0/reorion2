@@ -975,6 +975,7 @@ int16_t *sub_E6B44(int16_t *result, int a2, int a3)
   int16_t *v3; // ebx
   int16_t *i; // edx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v3 = result;
   if ( a2 > 0 )
   {
@@ -6684,6 +6685,7 @@ char sub_ED7A3(int a1, int a2, int a3)
   int16_t v10; // [esp+8h] [ebp-Ch]
   int v11; // [esp+Ch] [ebp-8h]
 
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v11 = *(int16_t *)(3753 * a3 + (uint8_t*)dword_197F98 + 804);
   v4 = (3 * v11 + 1) / 2;
   v5 = word_19999A;

@@ -29,6 +29,9 @@ $set = @{
     REORION2_GAMEPLAY_FRAMES = "$run\frames"
     REORION2_GAMEPLAY_SAVES = "$run\saves"
 }
+# wave 185: the sources the record has not (clock, block tick, cursor), as the DOSBox replay read them
+$live = if ($env:REORION2_150 -eq '1') { "$sess\live150.txt" } else { "$sess\live.txt" }
+if (Test-Path $live) { $set.REORION2_GAMEPLAY_LIVE = $live }
 if ($FromSave -gt 0) {
     $save = Get-ChildItem "$sess\saves" -File | Where-Object { $_.Name -match ('^save{0:D3}_' -f $FromSave) } | Select-Object -First 1
     if (-not $save) { throw "save $FromSave is not in $sess\saves" }
@@ -38,7 +41,7 @@ if ($FromSave -gt 0) {
     $set.REORION2_GAMEPLAY_SAVEPOS = "$sess\savepos.txt"
     $set.REORION2_SKIPINTRO = "1"
 }
-foreach ($v in "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_INPUT_LOG", "REORION2_RECORD", "REORION2_REPLAY",
+foreach ($v in "REORION2_GAMEPLAY_LIVE", "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_INPUT_LOG", "REORION2_RECORD", "REORION2_REPLAY",
                "REORION2_CHAIN", "REORION2_CHAIN_FRAMES", "REORION2_CHAIN_SAVES", "REORION2_CHAIN_EXIT") {
     [Environment]::SetEnvironmentVariable($v, $null)
 }
@@ -49,7 +52,7 @@ try {
     # done when three sources ran out (the record ended) or the port exited
     while (-not $p.HasExited -and ((Get-Date) - $t0).TotalSeconds -lt $Secs) {
         Start-Sleep 2
-        if ((Select-String -Path "$run\stderr.txt" -Pattern "END source" -ErrorAction SilentlyContinue).Count -ge 3) { Start-Sleep 10; break }
+        if ((Select-String -Path "$run\stderr.txt" -Pattern "END source" -ErrorAction SilentlyContinue).Count -ge 3) { Start-Sleep 3; break }
     }
     if (-not $p.HasExited) { Stop-Process $p -Force; "stopped after $([int]((Get-Date) - $t0).TotalSeconds) s" }
     else { "port exited ($($p.ExitCode)) after $([int]((Get-Date) - $t0).TotalSeconds) s" }

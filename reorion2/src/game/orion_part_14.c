@@ -7039,6 +7039,7 @@ int sub_DE03E(int a1, int a2, int a3)
   int v4; // edx
   int v5; // edx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v4 = 17 * *(int16_t *)(a1 + 2);
   LOWORD(v4) = *(uint8_t *)(v4 + (uint8_t*)dword_1930D4 + 11);
   v5 = g_orion150 ? v4 : 2 * v4;   /* 1.50 DE056: nop */
@@ -7813,6 +7814,7 @@ int sub_DEC95_131(int a1, int a2, int a3)
 {
   int v4; // edx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v4 = 17 * *(int16_t *)(a1 + 2);
   LOWORD(v4) = (uint8_t)byte_DD4B5[*(uint8_t *)(v4 + (uint8_t*)dword_1930D4 + 10)];
   if ( a3 )

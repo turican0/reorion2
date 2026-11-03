@@ -17,7 +17,7 @@ param(
     [string[]]$CtlExtra,  # extra ctl lines, e.g. "DUMPREGS cond=eip:0x003487A0 label=rng" (into ctl_log.txt)
     [switch]$Slow,        # GAMEPLAY with the conf's cycles=auto (no speed-ups)
     [int]$Cycles = 1000000,   # GAMEPLAY: fixed cycles per emulated ms - few timer IRQs per game work
-    [switch]$Turbo,       # GAMEPLAY: DOSBox fast forward as well
+    [switch]$Turbo,       # GAMEPLAY: DOSBox fast forward as well (slower than fixed cycles alone)
     [switch]$V150         # the 1.50 patch (ORION150.EXE in mastori2_150), output to replay150\
 )
 $ErrorActionPreference = "Stop"
@@ -27,11 +27,13 @@ $conf = "C:\prenos\reorion2\reorion2\tools\compare\moo2_sondy.conf"
 $sess = "C:\prenos\reorion2Data\$Name"
 $out = "$sess\replay"
 $savepos = "$sess\savepos.txt"
+$live = "$sess\live.txt"   # wave 185: the sources the record has not, from the first replay
 if ($V150) {
     $game = "C:\prenos\mastori2_150"
     $conf = "C:\prenos\reorion2\reorion2\tools\compare\moo2_150_sondy.conf"
     $out = "$sess\replay150"
     $savepos = "$sess\savepos150.txt"
+    $live = "$sess\live150.txt"
     $env:DOSBOX_MOO2_DSEG = "21E000"   # 1.50: data object 0x8000 higher (C address + 0x21E000)
 }
 if (-not (Test-Path "$sess\record.cfg")) { throw "no $sess\record.cfg" }
@@ -63,7 +65,9 @@ if ($FromSave -gt 0) {
 }
 if ($Gameplay) {
     New-Item -ItemType Directory -Force "$out\grframes" | Out-Null
-    $lines += "GAMEPLAY file=$(("$sess\input.txt").Replace('\', '/')) frames=$o/grframes"
+    $gp = "GAMEPLAY file=$(("$sess\input.txt").Replace('\', '/')) frames=$o/grframes"
+    if (Test-Path $live) { $gp += " live=$($live.Replace('\', '/'))" }
+    $lines += $gp
 } else {
     $lines += ($all | Where-Object { $_ -match '^SENDCLICK' } | Select-Object -Skip $skipSteps)
 }
@@ -83,9 +87,9 @@ try {
     }
     # wave 184: the reads per source at every save - the port continues from a save with it
     if ($Gameplay) { $env:DOSBOX_GR_SAVEPOS = "$out\savepos.txt" }
-    # wave 185: a record without the clock source - the live clock_ reads go to clock.txt,
-    # the port takes them with REORION2_GAMEPLAY_CLOCK
-    if ($Gameplay) { $env:DOSBOX_GR_CLOCKLOG = "$out\clock.txt" }
+    # wave 185: the sources the record (and live150.txt) has not - clock, block tick, cursor -
+    # go live to live.txt; the session keeps the first one, DOSBox and the port read it back
+    if ($Gameplay) { $env:DOSBOX_GR_LIVELOG = "$out\live.txt" }
     $p = Start-Process $dbx -ArgumentList $dbxArgs -PassThru -RedirectStandardError "$out\dosbox_stderr.txt"
     $last = (Select-String -Path "$sess\record.cfg" -Pattern '^SENDCLICK').Count
     $t0 = Get-Date
@@ -93,7 +97,7 @@ try {
         Start-Sleep 2
         if (Select-String -Path "$out\dosbox_stderr.txt" -Pattern "CHAIN done" -Quiet) { Start-Sleep 8; break }
         # GAMEPLAY: done once every source ran out (the record ended) and 10 s passed
-        if ($Gameplay -and (Select-String -Path "$out\dosbox_stderr.txt" -Pattern "END source" -ErrorAction SilentlyContinue).Count -ge 3) { Start-Sleep 10; break }
+        if ($Gameplay -and (Select-String -Path "$out\dosbox_stderr.txt" -Pattern "END source" -ErrorAction SilentlyContinue).Count -ge 3) { Start-Sleep 3; break }
     }
     if (-not $p.HasExited) { Stop-Process $p -Force }
 } finally {
@@ -103,10 +107,14 @@ try {
     Remove-Item env:DOSBOX_FASTHOOK -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_FASTVGA -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_GR_SAVEPOS -ErrorAction SilentlyContinue
-    Remove-Item env:DOSBOX_GR_CLOCKLOG -ErrorAction SilentlyContinue
+    Remove-Item env:DOSBOX_GR_LIVELOG -ErrorAction SilentlyContinue
     Remove-Item env:DOSBOX_MOO2_DSEG -ErrorAction SilentlyContinue
-    # the session keeps the first savepos.txt (never overwritten)
+    # the session keeps the first savepos.txt and live.txt (never overwritten)
     if ($Gameplay -and (Test-Path "$out\savepos.txt") -and -not (Test-Path $savepos)) { Copy-Item "$out\savepos.txt" $savepos }
+    if ($Gameplay -and (Test-Path "$out\live.txt") -and (Get-Item "$out\live.txt").Length -gt 0 -and -not (Test-Path $live)) {
+        Copy-Item "$out\live.txt" $live
+        "live values of the sources the record has not: $live"
+    }
     Start-Sleep 1
     foreach ($f in (Get-ChildItem $game -File)) {
         if (($f.Name -match '^SAVE\d+\.GAM$') -or ($f.LastWriteTime -ge $tStart -and -not (Test-Path (Join-Path "$out\keep" $f.Name)))) { [IO.File]::Delete($f.FullName) }
@@ -119,9 +127,16 @@ Select-String -Path "$out\dosbox_stderr.txt" -Pattern "CHAIN done|STUCK|NOLOOP|D
 # saves: compare by order
 $rec = Get-ChildItem "$sess\saves" -File | Sort-Object Name | Select-Object -Skip $recSavesSkip
 $rep = Get-ChildItem "$out\saves" -File | Sort-Object Name
+# wave 185: a replay save equal to any record save is named by it (the replay may skip some)
+$recHash = @{}
+for ($i = 0; $i -lt $rec.Count; $i++) { $recHash[(Get-FileHash $rec[$i].FullName -Algorithm MD5).Hash] = $i + 1 }
 for ($i = 0; $i -lt [Math]::Max($rec.Count, $rep.Count); $i++) {
     $a = if ($i -lt $rec.Count) { $rec[$i] } else { $null }
     $b = if ($i -lt $rep.Count) { $rep[$i] } else { $null }
+    if ($b) {
+        $h = (Get-FileHash $b.FullName -Algorithm MD5).Hash
+        if ($recHash.ContainsKey($h)) { "save $($i + 1): identical to record save $($recHash[$h])"; continue }
+    }
     if (-not $a -or -not $b) { "save $($i + 1): record $($a.Name) / replay $($b.Name) - missing"; continue }
     $x = [IO.File]::ReadAllBytes($a.FullName); $y = [IO.File]::ReadAllBytes($b.FullName)
     $d = 0; $first = -1

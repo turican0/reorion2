@@ -254,6 +254,7 @@ int sub_23B28( int a1)
   int16_t v3; // bx
   int v4; // eax
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   v3 = 0;
   while ( 1 )
@@ -357,6 +358,7 @@ int sub_23CA1( int a1)
   int v4; // eax
   int v5; // ebx - the picked index (no caller in the original)
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   v5 = -1;
   for ( v3 = 0; v3 < 67; ++v3 )
@@ -2939,6 +2941,7 @@ char *sub_2720F( int a1, int a2)
   int16_t v23; // [esp+434h] [ebp+7Ah] BYREF
   int v24; // [esp+438h] [ebp+7Eh]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v24 = a2;
   result = (char *)((int16_t)a2 + (uint8_t*)dword_197F98 + 3753 * a1);
   if ( !result[1623] && result[1575] < 4 )
@@ -3047,6 +3050,7 @@ int sub_27507( int a1, int a2)
   int v7; // ebx
   int result; // eax
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   v4 = a1;
   v5 = (uint8_t*)dword_197F98;
@@ -4658,6 +4662,7 @@ int sub_293D8(int a1)
   int16_t v4; // ax
   int16_t v5; // [esp+0h] [ebp-8h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   v2 = 0;
   for ( v5 = 0; v5 < 300; ++v5 )
   {
@@ -5112,6 +5117,7 @@ int sub_29F1B( int a1, int a2, int a3)
   int16_t v16; // [esp+10h] [ebp-8h]
   int v17; // [esp+14h] [ebp-4h]
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a3 = (int16_t)a3;   /* wave 181: the original reads only the low word (movsx) */
   v4 = 0;
@@ -6340,6 +6346,7 @@ int sub_2B7CC( int a1, int a2, int a3, int a4, int16_t *a5, int a6)
   int16_t v23; // [esp+18h] [ebp-Ch]
   int16_t v25; // [esp+20h] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   a2 = (int16_t)a2;   /* wave 181: the original reads only the low word (movsx) */
   v8 = dword_192864 + 313 * a1 + 11 * a2;
   v22 = *(_WORD *)(v8 + 86);
@@ -7227,6 +7234,8 @@ int16_t sub_2CBCC( int a1, int a2, int a3)
   int16_t v46; // [esp+28h] [ebp-8h]
   int16_t v47; // [esp+2Ch] [ebp-4h]
 
+  a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
+  a3 = (int16_t)a3;   /* wave 185: the original reads only the low word */
   v5 = sub_127C27((int)aCombatLbx_0, 43, dword_193174);
   sub_12A478(a1 - 1, a2 - 1, v5);
   v6 = sub_127C27((int)aCombatLbx_0, 44, dword_193174);
@@ -12971,6 +12980,7 @@ int sub_35821_131( int a1, int a2, int a3, int a4)
   int v30; // edx
   int v31; // edx
 
+  a2 = (int16_t)a2;   /* wave 185: the original reads only the low word */
   a1 = (int16_t)a1;   /* wave 185: the original reads only the low word */
   if ( a1 )
   {
@@ -14205,7 +14215,13 @@ int16_t sub_36C9C( int a1, int a2, int a3, int a4)
             && (v18 = 313 * a1 + dword_192864, v24 = *(uint8_t *)(v18 + 33), v27 = 20, v25 / 20 == v24)
             && (int16_t)v28 / 20 == *(uint8_t *)(v18 + 34) )
           {
+            /* 36E3D: eax = ship, edx = [ebp-1Ch], ebx = [ebp-20h], ecx = target missile [ebp-14h],
+               stack: its x, its y, 1 (Hex-Rays kept only the pushes) */
             sub_38B5E(
+              (int16_t)a1,
+              (int16_t)v29,
+              (int16_t)v28,
+              (int16_t)v31,
               *(int16_t *)(26 * (int16_t)v31 + dword_192B14 + 9),
               *(int16_t *)(26 * (int16_t)v31 + dword_192B14 + 11),
               1);
