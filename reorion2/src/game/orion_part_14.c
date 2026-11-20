@@ -584,7 +584,7 @@ void sub_D6AD4()
           v17 += v18;
           --v11;
           v18 = *(uint8_t *)(v13 + 255);
-          if ( 2 * *(int16_t *)(v13 + 231) < v18 + v17 && (v8 == -1 || *(_WORD *)(v16[v8] + 8) < *((_WORD *)v12 + 4)) )
+          if ( 2 * *(int16_t *)(v13 + 231) < v18 + v17 && (v8 == -1 || *(int16_t *)(v16[v8] + 8) < *((int16_t *)v12 + 4)) )   /* D6CC3 cmp si, [eax+8] / jge (signed) */
             v8 = v20;
         }
       }
@@ -602,7 +602,7 @@ void sub_D6AD4()
             break;
           v9 = v16[v8];
           v17 = v16[v7];
-          if ( *(_WORD *)(v9 + 8) < *(_WORD *)(v17 + 8) )
+          if ( *(int16_t *)(v9 + 8) < *(int16_t *)(v17 + 8) )   /* D6C1D cmp cx, [esi+8] / jge (signed) */
             v8 = v6;
         }
       }

@@ -12,7 +12,8 @@ param(
     [Parameter(Mandatory = $true)][string]$Name,
     [int]$FromSave = 0,
     [int]$Secs = 900,
-    [string]$Out = ""
+    [string]$Out = "",
+    [string]$SavePos = ""   # -FromSave: reads per source at the saves (default the session's savepos(150).txt)
 )
 $ErrorActionPreference = "Stop"
 $sess = "C:\prenos\reorion2Data\$Name"
@@ -35,10 +36,11 @@ if (Test-Path $live) { $set.REORION2_GAMEPLAY_LIVE = $live }
 if ($FromSave -gt 0) {
     $save = Get-ChildItem "$sess\saves" -File | Where-Object { $_.Name -match ('^save{0:D3}_' -f $FromSave) } | Select-Object -First 1
     if (-not $save) { throw "save $FromSave is not in $sess\saves" }
-    if (-not (Test-Path "$sess\savepos.txt")) { throw "$sess\savepos.txt is missing - run replay_dbx.ps1 -Name $Name -Gameplay" }
+    if (-not $SavePos) { $SavePos = if ($env:REORION2_150 -eq '1') { "$sess\savepos150.txt" } else { "$sess\savepos.txt" } }
+    if (-not (Test-Path $SavePos)) { throw "$SavePos is missing - run replay_dbx.ps1 -Name $Name -Gameplay" }
     Copy-Item $save.FullName "$run\SAVE10.GAM" -Force
     $set.REORION2_GAMEPLAY_FROM = "$FromSave"
-    $set.REORION2_GAMEPLAY_SAVEPOS = "$sess\savepos.txt"
+    $set.REORION2_GAMEPLAY_SAVEPOS = $SavePos
     $set.REORION2_SKIPINTRO = "1"
 }
 foreach ($v in "REORION2_GAMEPLAY_LIVE", "REORION2_CLICK", "REORION2_SENDKEY", "REORION2_INPUT_LOG", "REORION2_RECORD", "REORION2_REPLAY",

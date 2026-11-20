@@ -14855,7 +14855,7 @@ int sub_203657(uint16_t *a1, unsigned int a2)
   v4 = nmalloc(v3);
   if ( !v4 )
     sub_1ECCDF(1, "%s: out of memory, needed %u bytes\n", &byte_2470A0[37], v3);
-  if ( (uint8_t)sub_169569() )
+  if ( (uint8_t)sub_169569(*((_DWORD *)a1 + 512), *((_DWORD *)v2 + 2), 0) )
     sub_1ECCDF(1, "seek failed for section %d", *((_DWORD *)v2 + 2));
   if ( sub_169551(v4, v3, 1, *((_DWORD *)a1 + 512)) != 1 )
     sub_1ECCDF(1, "section %d is truncated", a2);

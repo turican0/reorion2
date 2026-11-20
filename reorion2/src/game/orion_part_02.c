@@ -5381,6 +5381,7 @@ int sub_2A46A(int a1)
     if ( !v1[36] && v1[32] != *(_BYTE *)(313 * v3 + dword_192864 + 32) && v1[64] != 4 && !sub_3E563(i) )
     {
       v2 = sub_2A239(i, 0, v3);   /* 2A4C5 eax = ship (a3), edx = target (a1), ebx = 0 (a2) */
+      /*SCDBG*/ { void PortDebug_CrashLog(const char *fmt, ...); PortDebug_CrashLog("SC %d %d %d", (int)v3, (int)i, v2); }
       if ( v2 > v4 )
       {
         v5 = i;
@@ -5666,6 +5667,7 @@ int sub_2A9A5( int a1, int a2)
   int v16, v37, v23;
   int16_t v24;
 
+  /*CSDBG*/ { static char hx[2 * 3130 + 8]; static const char d[] = "0123456789ABCDEF"; int k; const uint8_t *m = (const uint8_t *)(intptr_t)dword_192864; void PortDebug_CrashLog(const char *fmt, ...); for ( k = 0; k < 3130; ++k ) { hx[2 * k] = d[m[k] >> 4]; hx[2 * k + 1] = d[m[k] & 15]; } hx[2 * 3130] = 0; PortDebug_CrashLog("CS %d %d %s", (int)(int16_t)a1, (int)(int16_t)a2, hx); }
   v8 = (uint8_t *)(intptr_t)(dword_192864 + 313 * word_1998F8);
   v4 = 0;
   v36 = 0;

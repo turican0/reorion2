@@ -5778,7 +5778,7 @@ int sub_1EDBDF(int a1, int a2, int a3, unsigned int a4)
   ((_DWORD *)(frame150 + 0x4))[1] = 0;
   ((_DWORD *)(frame150 + 0xC))[0] = 0;
   ((_DWORD *)(frame150 + 0x4))[0] = a2;
-  ftell(a2);
+  int start150 = ftell(a2);   /* 1EDC05 var_30 */
   for ( i = 0; ; i = 1 )
   {
     while ( 1 )
@@ -5796,7 +5796,7 @@ int sub_1EDBDF(int a1, int a2, int a3, unsigned int a4)
         if ( (*(unsigned int *)(frame150 + 0x0)) != 9 )
           goto LABEL_8;
 LABEL_11:
-        sub_169569();
+        sub_169569(a2, ((_DWORD *)(frame150 + 0xC))[0], 1);   /* 1EDCB0 */
       }
       else
       {
@@ -5819,7 +5819,7 @@ LABEL_8:
     }
     if ( i == 1 )
       break;
-    sub_169569();
+    sub_169569(a2, start150, 0);   /* 1EDCD7 */
   }
   return result;
 }

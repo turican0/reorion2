@@ -228,6 +228,7 @@ int sub_38B5E(int a1, unsigned int a2, unsigned int a3, int a4, int a5, int a6, 
   /* [ebp-150h..ebp-29h] is one block in the original: the hit records of 15 bytes start at +4
      and are written across what Hex-Rays split into v44..v69 */
   uint8_t f38B5E[0x128] = { 0 };
+  /*ATKDBG*/ { void PortDebug_CrashLog(const char *fmt, ...); PortDebug_CrashLog("ATK %d %d %d %d %d %d %d", (int)(int16_t)a1, (int)(int16_t)a2, (int)(int16_t)a3, (int)(int16_t)a4, (int)(int16_t)a5, (int)(int16_t)a6, (int)(int16_t)a7); }
 #define v44 (*(int64_t *)(f38B5E + 0x0))
 #define v45 (*(int64_t *)(f38B5E + 0x8))
 #define v46 (*(int64_t *)(f38B5E + 0x10))

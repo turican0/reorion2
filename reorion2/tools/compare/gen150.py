@@ -910,6 +910,15 @@ def fix_va(t):
 # must be there exactly count times
 FIXES = {
     # (the Watcom pass fixed 1ED647: its text argument comes out right now)
+    # load_pdus: Hex-Rays lost the stack arguments of sub_169569 (cdecl fseek wrapper) - an unknown pdu
+    # is skipped (1EDCB0 fseek(file, read_len, SEEK_CUR)), the second pass starts over (1EDCD7 SEEK_SET)
+    0x1EDBDF: [('  ftell(a2);\n', '  int start150 = ftell(a2);   /* 1EDC05 var_30 */\n', 1),
+               ('LABEL_11:\n        sub_169569();',
+                'LABEL_11:\n        sub_169569(a2, ((_DWORD *)(frame150 + 0xC))[0], 1);   /* 1EDCB0 */', 1),
+               ('    sub_169569();\n  }\n  return result;',
+                '    sub_169569(a2, start150, 0);   /* 1EDCD7 */\n  }\n  return result;', 1)],
+    # lbx section: 203691 fseek(file [esi+800h], section offset [ebp+8], SEEK_SET)
+    0x203657: [('(uint8_t)sub_169569()', '(uint8_t)sub_169569(*((_DWORD *)a1 + 512), *((_DWORD *)v2 + 2), 0)', 1)],
 }
 
 
